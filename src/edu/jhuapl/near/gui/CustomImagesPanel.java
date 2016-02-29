@@ -62,6 +62,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -81,6 +83,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private ModelSpectrumWindowManager spectrumPanelManager;
     final PickManager pickManager;
     Renderer renderer;
+    private ImagingInstrument instrument;
 
     private boolean initialized = false;
 
@@ -107,6 +110,11 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         return ModelNames.IMAGES;
     }
 
+    protected ModelNames getModelName()
+    {
+        return ModelNames.SMALL_BODY;
+    }
+
     private ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
@@ -118,13 +126,15 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             ModelInfoWindowManager infoPanelManager,
             ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
-            Renderer renderer)
+            Renderer renderer,
+            ImagingInstrument instrument)
     {
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;
         this.spectrumPanelManager = spectrumPanelManager;
         this.pickManager = pickManager;
         this.renderer = renderer;
+        this.instrument = instrument;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -278,17 +288,26 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             String[] imageNames = configMap.getAsArray(Image.IMAGE_NAMES);
             String[] imageFilenames = configMap.getAsArray(Image.IMAGE_FILENAMES);
             String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
+            String[] imageTypes = configMap.getAsArray(Image.IMAGE_TYPES);
+            String[] imageRotations = configMap.getAsArray(Image.IMAGE_ROTATIONS);
+            String[] imageFlips = configMap.getAsArray(Image.IMAGE_FLIPS);
             if (imageFilenames == null)
             {
                 // for backwards compatibility
                 imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
                 imageNames = new String[imageFilenames.length];
                 projectionTypes = new String[imageFilenames.length];
+                imageTypes = new String[imageFilenames.length];
+                imageRotations = new String[imageFilenames.length];
+                imageFlips = new String[imageFilenames.length];
                 for (int i=0; i<imageFilenames.length; ++i)
                 {
                     imageNames[i] = new File(imageFilenames[i]).getName();
                     imageFilenames[i] = "image" + i + ".png";
                     projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
+                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
+                    imageRotations[i] = Double.toString(0.0);
+                    imageFlips[i] = "None";
                 }
 
                 // Mark that we need to upgrade config file to latest version
@@ -309,6 +328,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageInfo.name = imageNames[i];
                 imageInfo.imagefilename = imageFilenames[i];
                 imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
+                imageInfo.imageType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
+                imageInfo.rotation = imageRotations == null ? 0.0 : Double.valueOf(imageRotations[i]);
+                imageInfo.flip = imageFlips == null ? "None" : imageFlips[i];
 
                 if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
                 {
@@ -459,12 +481,15 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private void remapImageToRenderer(int index) throws FitsException, IOException
     {
         ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
-        String filename = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
 
         // Remove the image from the renderer
-        ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE,
-                imageInfo.sumfilename != null ? FileType.SUM : FileType.INFO);
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
         if (imageCollection.containsImage(imageKey))
@@ -485,13 +510,16 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     {
         ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
 
-        String filename = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        new File(filename).delete();
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        new File(name).delete();
 
         // Remove the image from the renderer
-        ImageKey imageKey = new ImageKey(filename,
-                imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE,
-                imageInfo.sumfilename != null ? FileType.SUM : FileType.INFO);
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         imageCollection.removeImage(imageKey);
 
@@ -499,13 +527,13 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         {
             if (imageInfo.sumfilename != null)
             {
-                filename = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
-                new File(filename).delete();
+                name = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
+                new File(name).delete();
             }
             if (imageInfo.infofilename != null)
             {
-                filename = getCustomDataFolder() + File.separator + imageInfo.infofilename;
-                new File(filename).delete();
+                name = getCustomDataFolder() + File.separator + imageInfo.infofilename;
+                new File(name).delete();
             }
         }
 
@@ -532,6 +560,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String imageNames = "";
         String imageFilenames = "";
         String projectionTypes = "";
+        String imageTypes = "";
+        String imageRotations = "";
+        String imageFlips = "";
         String lllats = "";
         String lllons = "";
         String urlats = "";
@@ -547,6 +578,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             imageFilenames += imageInfo.imagefilename;
             imageNames += imageInfo.name;
             projectionTypes += imageInfo.projectionType;
+            imageTypes += imageInfo.imageType;
+            imageRotations += Math.floor(imageInfo.rotation / 90.0) * 90.0;
+            imageFlips += imageInfo.flip;
             lllats += String.valueOf(imageInfo.lllat);
             lllons += String.valueOf(imageInfo.lllon);
             urlats += String.valueOf(imageInfo.urlat);
@@ -559,6 +593,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 imageNames += CustomShapeModel.LIST_SEPARATOR;
                 imageFilenames += CustomShapeModel.LIST_SEPARATOR;
                 projectionTypes += CustomShapeModel.LIST_SEPARATOR;
+                imageTypes += CustomShapeModel.LIST_SEPARATOR;
+                imageRotations += CustomShapeModel.LIST_SEPARATOR;
+                imageFlips += CustomShapeModel.LIST_SEPARATOR;
                 lllats += CustomShapeModel.LIST_SEPARATOR;
                 lllons += CustomShapeModel.LIST_SEPARATOR;
                 urlats += CustomShapeModel.LIST_SEPARATOR;
@@ -573,6 +610,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         newMap.put(Image.IMAGE_NAMES, imageNames);
         newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
         newMap.put(Image.PROJECTION_TYPES, projectionTypes);
+        newMap.put(Image.IMAGE_TYPES, imageTypes);
+        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
+        newMap.put(Image.IMAGE_FLIPS, imageFlips);
         newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
         newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
         newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
@@ -607,7 +647,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                     String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
                     ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
                     FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-                    ImageKey imageKey = new ImageKey(name, source, fileType);
+                    ImageType imageType = imageInfo.imageType;
+                    ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
@@ -818,7 +860,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         ImageInfo imageInfo = new ImageInfo();
-        CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false);
+        CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument);
         dialog.setImageInfo(imageInfo, modelManager.getSmallBodyModel().isEllipsoid());
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -827,6 +869,12 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         if (dialog.getOkayPressed())
         {
             imageInfo = dialog.getImageInfo();
+
+            System.out.println("Image Type: " + imageInfo.imageType);
+            System.out.println("Image Rotate: " + imageInfo.rotation);
+            System.out.println("Image Flip: " + imageInfo.flip);
+            SmallBodyModel body = modelManager.getSmallBodyModel();
+
             try
             {
                 saveImage(((DefaultListModel)imageList.getModel()).getSize(), null, imageInfo);
@@ -855,7 +903,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         {
             ImageInfo oldImageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedItem);
 
-            CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true);
+            CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, instrument);
             dialog.setImageInfo(oldImageInfo, modelManager.getSmallBodyModel().isEllipsoid());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);

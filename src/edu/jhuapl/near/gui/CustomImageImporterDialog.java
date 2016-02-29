@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
+import edu.jhuapl.near.model.Image.ImagingInstrument;
+import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.tools.VtkENVIReader;
 
 
@@ -27,6 +29,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean okayPressed = false;
     private boolean isEllipsoid;
     private boolean isEditMode;
+    private ImagingInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing image>";
 
     public enum ProjectionType
@@ -40,6 +43,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public String name = ""; // name to call this image for display purposes
         public String imagefilename = ""; // filename of image on disk
         public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
+        public ImageType imageType = ImageType.GENERIC_IMAGE;
+        public double rotation = 0.0;
+        public String flip = "None";
         public double lllat = -90.0;
         public double lllon = 0.0;
         public double urlat = 90.0;
@@ -62,17 +68,18 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                return name + ", Perspective";
+                return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
             }
         }
     }
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode)
+    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, ImagingInstrument instrument)
     {
         super(parent, "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
         this.isEditMode = isEditMode;
+        this.instrument = instrument;
     }
 
     public void setImageInfo(ImageInfo info, boolean isEllipsoid)
@@ -140,6 +147,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
 
         // If name is not provided, set name to filename
+        info.imageType = ImageType.valueOf(imageTypeComboBox.getSelectedItem().toString());
+        info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
+        info.flip = imageFlipComboBox.getSelectedItem().toString();
         info.name = imageNameTextField.getText();
         if ((info.name == null || info.name.isEmpty()) && info.imagefilename != null)
             info.name = new File(info.imagefilename).getName();
@@ -327,6 +337,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         infofilePathTextField = new javax.swing.JTextField();
         sumfilePathTextField = new javax.swing.JTextField();
         browseSumfileButton = new javax.swing.JButton();
+        imageTypeLabel = new javax.swing.JLabel();
+        imageTypeComboBox = new javax.swing.JComboBox();
+        imageRotateLabel = new javax.swing.JLabel();
+        imageFlipLabel = new javax.swing.JLabel();
+        imageRotateComboBox = new javax.swing.JComboBox();
+        imageFlipComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -364,7 +380,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         lllatLabel.setText("Lower Left Latitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(lllatLabel, gridBagConstraints);
@@ -372,7 +388,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         lllonLabel.setText("Lower Left Longitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(lllonLabel, gridBagConstraints);
@@ -380,7 +396,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlatLabel.setText("Upper Right Latitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(urlatLabel, gridBagConstraints);
@@ -388,7 +404,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonLabel.setText("Upper Right Longitude");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(urlonLabel, gridBagConstraints);
@@ -422,7 +438,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_END;
         gridBagConstraints.weighty = 1.0;
@@ -433,7 +449,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         lllatFormattedTextField.setText("-90");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -443,7 +459,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         lllonFormattedTextField.setText("0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -453,7 +469,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlatFormattedTextField.setText("90");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -463,7 +479,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonFormattedTextField.setText("360");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 60;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
@@ -479,7 +495,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
         getContentPane().add(cylindricalProjectionRadioButton, gridBagConstraints);
@@ -493,7 +509,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
         getContentPane().add(perspectiveProjectionRadioButton, gridBagConstraints);
@@ -501,7 +517,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         infofilePathLabel.setText("Infofile Path");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(infofilePathLabel, gridBagConstraints);
@@ -514,7 +530,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseInfofileButton, gridBagConstraints);
@@ -541,19 +557,19 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         sumfilePathLabel.setText("Sumfile Path");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
         getContentPane().add(sumfilePathLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(infofilePathTextField, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
         getContentPane().add(sumfilePathTextField, gridBagConstraints);
@@ -566,10 +582,60 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseSumfileButton, gridBagConstraints);
+
+        imageTypeLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        imageTypeLabel.setText("Image Type");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageTypeLabel, gridBagConstraints);
+
+        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageTypeComboBox, gridBagConstraints);
+
+        imageRotateLabel.setText("Image Rotate");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageRotateLabel, gridBagConstraints);
+
+        imageFlipLabel.setText("Image Flip");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageFlipLabel, gridBagConstraints);
+
+        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageRotateComboBox, gridBagConstraints);
+
+        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+        getContentPane().add(imageFlipComboBox, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -588,10 +654,23 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         // If no name has yet been provided, set it to the filename
         if (imageNameTextField.getText() == null || imageNameTextField.getText().isEmpty())
         {
-            String imageFileName =file.getName();
-            String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+            String imageFileName = file.getName();
+            if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
+            {
+                ImageType[] allImageTypes = ImageType.values();
+                ImageType currentImageType = instrument.type;
+                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
+                imageTypeComboBox.setSelectedItem(currentImageType);
+            }
+            else
+            {
+                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
+            }
+
             imageNameTextField.setText(imageFileName);
+
             // set default info file name
+//            String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
 //            infofilePathTextField.setText(defaultInfoFileName);
         }
     }//GEN-LAST:event_browseImageButtonActionPerformed
@@ -653,10 +732,16 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private javax.swing.JButton browseSumfileButton;
     private javax.swing.JButton cancelButton;
     private javax.swing.JRadioButton cylindricalProjectionRadioButton;
+    private javax.swing.JComboBox imageFlipComboBox;
+    private javax.swing.JLabel imageFlipLabel;
     private javax.swing.JLabel imageLabel;
     private javax.swing.JTextField imageNameTextField;
     private javax.swing.JLabel imagePathLabel;
     private javax.swing.JTextField imagePathTextField;
+    private javax.swing.JComboBox imageRotateComboBox;
+    private javax.swing.JLabel imageRotateLabel;
+    private javax.swing.JComboBox imageTypeComboBox;
+    private javax.swing.JLabel imageTypeLabel;
     private javax.swing.JLabel infofilePathLabel;
     private javax.swing.JTextField infofilePathTextField;
     private javax.swing.JPanel jPanel1;
