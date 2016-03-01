@@ -39,6 +39,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import nom.tam.fits.FitsException;
 
@@ -77,7 +79,7 @@ import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
 
 
-public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener
+public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
 
     private ModelManager modelManager;
@@ -214,6 +216,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             }
         });
 
+        imageList.addListSelectionListener(this);
+
         return this;
     }
 
@@ -241,6 +245,17 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         panel.add(bandPanel, BorderLayout.NORTH);
         panel.add(monoSlider, BorderLayout.SOUTH);
+    }
+
+    private void setNumberOfBands(int nbands)
+    {
+        this.nbands = nbands;
+        int midband = nbands / 2;
+        String midbandString = Integer.toString(midband);
+        bandValue.setText(midbandString);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
+        monoSlider.setModel(monoBoundedRangeModel);
+
     }
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
@@ -1007,6 +1022,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     @Override
     public void stateChanged(ChangeEvent e)
     {
+//        System.out.println("Custom Images Panel Slider Moved");
         JSlider source = (JSlider)e.getSource();
         currentSlice = (int)source.getValue();
         bandValue.setText(Integer.toString(currentSlice));
@@ -1046,11 +1062,56 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 //            System.out.println("State changed: " + fps);
     }
 
+
+
+
+    @Override
+    public void valueChanged(ListSelectionEvent e)
+    {
+//        System.out.println("Custom Images Panel Item Selected");
+
+        int index = imageList.getSelectedIndex();
+        String imagestring = imageList.getSelectedValue().toString();
+        String[]tokens = imagestring.split(",");
+        String imagename = tokens[0].trim();
+//        System.out.println("Image: " + index + ", " + imagename);
+
+        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+
+        Set<Image> imageSet = images.getImages();
+        for (Image i : imageSet)
+        {
+            if (i instanceof PerspectiveImage)
+            {
+                PerspectiveImage image = (PerspectiveImage)i;
+                ImageKey key = image.getKey();
+                String name = i.getImageName();
+                Boolean isVisible = i.isVisible();
+                System.out.println(name + ", " + isVisible);
+                if (name.equals(imagename))
+                {
+                    int depth = image.getImageDepth();
+//                    System.out.println("Found image: " + name + ", depth = " + depth);
+                    if (image.isVisible())
+                    {
+                       setNumberOfBands(depth);
+                       image.setCurrentSlice(currentSlice);
+                       image.setDisplayedImageRange(null);
+                       return;
+                    }
+                }
+            }
+        }
+
+        // if no multi-band image found, set number of bands in slider to 1
+        setNumberOfBands(1);
+    }
+
     @Override
     public void actionPerformed(ActionEvent arg0)
     {
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
-        System.out.println("ComboBox Value Changed: " + newBandName);
+//        System.out.println("ComboBox Value Changed: " + newBandName);
     }
 
 
