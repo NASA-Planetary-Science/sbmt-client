@@ -187,7 +187,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private int imageWidth;
     private int imageHeight;
-    protected int imageDepth;
+    protected int imageDepth = 1;
 
     private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
     private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
