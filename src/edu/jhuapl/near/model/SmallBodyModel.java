@@ -11,6 +11,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -63,6 +67,8 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
+    public static final int FITS_SCALAR_COLUMN_INDEX = 4;
+
     public enum ColoringValueType {
         POINT_DATA,
         CELLDATA
@@ -75,7 +81,7 @@ public class SmallBodyModel extends Model
 
     public enum Format {
         TXT,
-        FITS,
+        FIT,
     }
 
     static public final String SlopeStr = "Slope";
@@ -225,6 +231,8 @@ public class SmallBodyModel extends Model
                 ColoringInfo info = new ColoringInfo();
                 info.coloringName = coloringNames[i];
                 info.coloringFile = coloringFiles[i];
+                if (info.coloringFile.toLowerCase().endsWith(".fit") || info.coloringFile.toLowerCase().endsWith(".fits"))
+                    info.format = Format.FIT;
                 info.coloringUnits = coloringUnits[i];
                 if (coloringHasNulls != null)
                     info.coloringHasNulls = coloringHasNulls[i];
@@ -260,6 +268,8 @@ public class SmallBodyModel extends Model
         {
             ColoringInfo info = new ColoringInfo();
             info.coloringName = coloringNames[i];
+            if (info.coloringFile.toLowerCase().endsWith(".fit") || info.coloringFile.toLowerCase().endsWith(".fits"))
+                info.format = Format.FIT;
             info.coloringUnits = coloringUnits[i];
             info.coloringValues = coloringValues[i];
             coloringInfo.add(info);
@@ -384,6 +394,8 @@ public class SmallBodyModel extends Model
                 if (!info.coloringFile.trim().isEmpty())
                 {
                     info.coloringName = cellDataNames[i];
+                    if (info.coloringFile.toLowerCase().endsWith(".fit") || info.coloringFile.toLowerCase().endsWith(".fits"))
+                        info.format = Format.FIT;
                     info.coloringUnits = cellDataUnits[i];
                     info.coloringHasNulls = Boolean.parseBoolean(cellDataHasNulls[i]);
                     info.builtIn = false;
@@ -1223,8 +1235,10 @@ public class SmallBodyModel extends Model
             if (file == null)
                 throw new IOException("Unable to download " + filename);
 
-            loadColoringDataTxt(file, info);
-
+            if (info.format == Format.TXT)
+                loadColoringDataTxt(file, info);
+            else if (info.format == Format.FIT)
+                loadColoringDataFits(file, info);
         }
 
         initializeColoringRanges();
@@ -1244,14 +1258,63 @@ public class SmallBodyModel extends Model
         else
             array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
 
+//        System.out.println("Reading Ancillary TXT Data");
         String line;
         int j = 0;
         while ((line = in.readLine()) != null)
         {
-            array.SetTuple1(j, Float.parseFloat(line));
+            float value = Float.parseFloat(line);
+            array.SetTuple1(j, value);
+//            if (j < 10)
+//                System.out.println(value);
             ++j;
         }
         in.close();
+
+        info.coloringValues = array;
+    }
+
+    private void loadColoringDataFits(File file, ColoringInfo info) throws IOException
+    {
+//        FileInputStream fs =  new FileInputStream(file);
+//        InputStreamReader isr = new InputStreamReader(fs);
+//        BufferedReader in = new BufferedReader(isr);
+
+        vtkFloatArray array = new vtkFloatArray();
+
+        array.SetNumberOfComponents(1);
+        if (coloringValueType == ColoringValueType.POINT_DATA)
+            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
+        else
+            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
+
+
+        try {
+            Fits fits = new Fits(file);
+            fits.read();
+
+            BasicHDU hdu = fits.getHDU(1);
+//            System.out.println(hdu.getClass().getCanonicalName());
+            if (hdu instanceof AsciiTableHDU)
+            {
+                AsciiTableHDU athdu = (AsciiTableHDU)hdu;
+                int ncols = athdu.getNCols();
+                int nrows = athdu.getNRows();
+
+//                System.out.println("Reading Ancillary FITS Data");
+//                System.out.println("Number of Plates: " + nrows);
+
+                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
+                for (int j=0; j<nrows; j++)
+                {
+                    float value = scalars[j];
+                    array.SetTuple1(j, value);
+//                    if (j < 10)
+//                        System.out.println(value);
+                }
+            }
+
+        } catch (Exception e) { e.printStackTrace(); }
 
         info.coloringValues = array;
     }
