@@ -98,7 +98,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 //    private JCheckBox defaultFrustum;
     private BoundedRangeModel monoBoundedRangeModel;
 
-    private int nbands = 256;
+    private int nbands = 1;
     private int currentSlice = 0;
 
     public int getCurrentSlice() { return currentSlice; }
