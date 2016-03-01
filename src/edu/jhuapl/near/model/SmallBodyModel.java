@@ -1265,8 +1265,6 @@ public class SmallBodyModel extends Model
         {
             float value = Float.parseFloat(line);
             array.SetTuple1(j, value);
-//            if (j < 10)
-//                System.out.println(value);
             ++j;
         }
         in.close();
@@ -1276,10 +1274,6 @@ public class SmallBodyModel extends Model
 
     private void loadColoringDataFits(File file, ColoringInfo info) throws IOException
     {
-//        FileInputStream fs =  new FileInputStream(file);
-//        InputStreamReader isr = new InputStreamReader(fs);
-//        BufferedReader in = new BufferedReader(isr);
-
         vtkFloatArray array = new vtkFloatArray();
 
         array.SetNumberOfComponents(1);
@@ -1294,7 +1288,6 @@ public class SmallBodyModel extends Model
             fits.read();
 
             BasicHDU hdu = fits.getHDU(1);
-//            System.out.println(hdu.getClass().getCanonicalName());
             if (hdu instanceof AsciiTableHDU)
             {
                 AsciiTableHDU athdu = (AsciiTableHDU)hdu;
@@ -1309,8 +1302,6 @@ public class SmallBodyModel extends Model
                 {
                     float value = scalars[j];
                     array.SetTuple1(j, value);
-//                    if (j < 10)
-//                        System.out.println(value);
                 }
             }
 

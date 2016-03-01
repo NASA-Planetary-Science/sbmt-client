@@ -393,7 +393,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     protected int getNumberBands()
     {
-        return 1;
+//        return 1;
+        return imageDepth;
     }
 
     /**
@@ -1924,7 +1925,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         if (getFitFileFullPath() != null)
         {
-            // Do nothing for now
+            try {
+                String filename = getFitFileFullPath();
+                Fits f = new Fits(filename);
+                BasicHDU h = f.getHDU(0);
+
+                int[] fitsAxes = h.getAxes();
+                int fitsNAxes = fitsAxes.length;
+                int fitsDepth = fitsNAxes == 3 ? fitsAxes[1] : 1;
+
+                imageDepth = fitsDepth;
+            } catch (Exception e) { e.printStackTrace(); }
         }
         else if (getPngFileFullPath() != null)
         {
