@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -22,6 +24,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
@@ -100,11 +103,20 @@ public class LidarDataPerUnit extends Model
         FileInputStream fs = new FileInputStream(file.getAbsolutePath());
 
         // Set base color
-        float[] lidarBaseHsb = Color.RGBtoHSB(0, 0, 255, null);
+        Color baseColor;
         if (path.contains("_v2"))
         {
-            lidarBaseHsb = Color.RGBtoHSB(255, 255, 0, null);
+            baseColor = new Color(255, 255, 0);
         }
+        else
+        {
+            baseColor = new Color(0, 0, 255);
+        }
+
+        // Variables to keep track of intensities
+        double minIntensity = Double.POSITIVE_INFINITY;
+        double maxIntensity = Double.NEGATIVE_INFINITY;
+        List<Double> intensityList = new LinkedList<Double>();
 
         // Parse data
         if (isBinary)
@@ -152,29 +164,19 @@ public class LidarDataPerUnit extends Model
                 idList.SetId(0, count);
                 vert.InsertNextCell(idList);
 
-                // Color the lidar point
-                Color plotColor = Color.getHSBColor(lidarBaseHsb[0], lidarBaseHsb[1], lidarBaseHsb[2]);
+                // Extract the received intensity
+                double irec = 0.0;
                 if(intensityEnabled)
                 {
-                    // Extract intensity out and received data
-                    int outIntensityOffset = count*binaryRecordSize + outgoingIntensityIndex;
+                    // Extract received intensity and keep track of min/max encountered so far
                     int recIntensityOffset = count*binaryRecordSize + receivedIntensityIndex;
-                    double iout = bb.getDouble(outIntensityOffset);
-                    double irec = bb.getDouble(recIntensityOffset);
-
-                    // Color saturation based on intensity ratio
-                    double intensityRatio = 0;
-                    if(iout > 0)
-                    {
-                        intensityRatio = irec/iout;
-                        intensityRatio = Math.max(Math.min(intensityRatio, 1.0), 0.0);
-                    }
-                    // OVERRIDE
-                    intensityRatio = ((float)count)/numRecords;
-                    // END OVERRIDE
-                    plotColor = Color.getHSBColor(lidarBaseHsb[0], lidarBaseHsb[1], (float)intensityRatio);
+                    irec = bb.getDouble(recIntensityOffset);
                 }
-                colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
+
+                // Add to list and keep track of min/max encountered so far
+                minIntensity = (irec < minIntensity) ? irec : minIntensity;
+                maxIntensity = (irec > maxIntensity) ? irec : maxIntensity;
+                intensityList.add(irec);
 
                 // assume no spacecraft position for now
                 pointsSc.InsertNextPoint(scx, scy, scz);
@@ -245,24 +247,17 @@ public class LidarDataPerUnit extends Model
                 pointsSc.InsertNextPoint(scx, scy, scz);
                 vertSc.InsertNextCell(idList);
 
-                // Color the lidar point
-                Color plotColor = Color.getHSBColor(lidarBaseHsb[0], lidarBaseHsb[1], lidarBaseHsb[2]);
+                // Extract the received intensity
+                double irec = 0.0;
                 if(intensityEnabled)
                 {
-                    // Parse intensities
-                    double iout = Double.parseDouble(vals[outgoingIntensityIndex]);
-                    double irec = Double.parseDouble(vals[receivedIntensityIndex]);
-
-                    // Color saturation based on intensity ratio
-                    double intensityRatio = 0;
-                    if(iout > 0)
-                    {
-                        intensityRatio = irec/iout;
-                        intensityRatio = Math.max(Math.min(intensityRatio, 1.0), 0.0);
-                    }
-                    plotColor = Color.getHSBColor(lidarBaseHsb[0], lidarBaseHsb[1], (float)intensityRatio);
+                    irec = Double.parseDouble(vals[receivedIntensityIndex]);
                 }
-                colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
+
+                // Add to list and keep track of min/max encountered so far
+                minIntensity = (irec < minIntensity) ? irec : minIntensity;
+                maxIntensity = (irec > maxIntensity) ? irec : maxIntensity;
+                intensityList.add(irec);
 
                 // We store the times in a vtk array. By storing in a vtk array, we don't have to
                 // worry about java out of memory errors since java doesn't know about c++ memory.
@@ -273,6 +268,15 @@ public class LidarDataPerUnit extends Model
             }
 
             in.close();
+        }
+
+        // Color each point based on base color scaled by intensity
+        Color plotColor;
+        float[] baseHSL = ColorUtil.getHSLColorComponents(baseColor);
+        for(double intensity : intensityList)
+        {
+            plotColor = ColorUtil.scaleLightness(baseHSL, intensity, minIntensity, maxIntensity);
+            colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
         }
 
         polydata.GetCellData().GetScalars().Modified();
