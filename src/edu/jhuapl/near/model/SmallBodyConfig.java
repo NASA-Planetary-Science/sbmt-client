@@ -223,7 +223,8 @@ public class SmallBodyConfig
         IMAGING_DATA("Imaging Data"),
         MVIC("MVIC"),
         LEISA("LEISA"),
-        LORRI("LORRI");
+        LORRI("LORRI"),
+        GENERIC("GENERIC");
 
         final private String str;
         private Instrument(String str)
@@ -256,6 +257,7 @@ public class SmallBodyConfig
         LORRI_IMAGE,
         POLYCAM_IMAGE,
         MAPCAM_IMAGE,
+        GENERIC_IMAGE
     }
 
     static public final int LEISA_NBANDS = 256;
@@ -1426,6 +1428,9 @@ public class SmallBodyConfig
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
             c.lidarBrowseTimeIndex = 26;
             c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
             c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
@@ -1958,6 +1963,9 @@ public class SmallBodyConfig
     public Map<String, String> lidarSearchDataSourceMap;
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;
+    public int lidarBrowseOutgoingIntensityIndex;
+    public int lidarBrowseReceivedIntensityIndex;
+    public boolean lidarBrowseIntensityEnabled = false;
     public boolean lidarBrowseIsSpacecraftInSphericalCoordinates;
     public int lidarBrowseTimeIndex;
     public int lidarBrowseNoiseIndex;
@@ -2028,6 +2036,9 @@ public class SmallBodyConfig
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
             c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
             c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
+            c.lidarBrowseOutgoingIntensityIndex = this.lidarBrowseOutgoingIntensityIndex;
+            c.lidarBrowseReceivedIntensityIndex = this.lidarBrowseReceivedIntensityIndex;
+            c.lidarBrowseIntensityEnabled = this.lidarBrowseIntensityEnabled;
             c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
             c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
             c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;

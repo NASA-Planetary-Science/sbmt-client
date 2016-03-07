@@ -57,7 +57,6 @@ public class ModelFactory
             if (key.instrument != null && key.instrument.spectralMode == SpectralMode.MULTI)
             {
                 if (key.instrument.type == ImageType.MVIC_JUPITER_IMAGE)
-//                    return new MVICJupiterImage(key, smallBodyModel, loadPointingOnly);
                     return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
@@ -99,13 +98,50 @@ public class ModelFactory
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.GENERIC_IMAGE)
+                    return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
         }
         else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.source))
         {
-            return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
+            if (key.imageType == ImageType.MSI_IMAGE)
+                return new MSIImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.AMICA_IMAGE)
+                return new AmicaImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.FC_IMAGE)
+                return new FcImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.FCCERES_IMAGE)
+                return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.PHOBOS_IMAGE)
+                return new PhobosImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.DEIMOS_IMAGE)
+                return new DeimosImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.OSIRIS_IMAGE)
+                return new OsirisImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.SATURN_MOON_IMAGE)
+                return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.SSI_GASPRA_IMAGE)
+                return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.SSI_IDA_IMAGE)
+                return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MSI_MATHILDE_IMAGE)
+                return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.LORRI_IMAGE)
+                return new LorriImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.POLYCAM_IMAGE)
+                return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MAPCAM_IMAGE)
+                return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.GENERIC_IMAGE)
+                return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)
+              return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
+                return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
+            else
+                return null;
         }
         else
         {

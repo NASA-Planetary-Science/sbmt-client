@@ -517,6 +517,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             customColorBlueComboBox.addItem(smallBodyModel.getColoringName(i));
         }
 
+        // Add Ancillary selections here... -turnerj1
+
         if (smallBodyModel.getColoringIndex() < 0 && !smallBodyModel.isFalseColoringEnabled())
         {
             noColoringButton.setSelected(true);
