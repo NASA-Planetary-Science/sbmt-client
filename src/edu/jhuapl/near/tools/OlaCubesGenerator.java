@@ -177,7 +177,7 @@ public class OlaCubesGenerator //extends LidarCubesGenerator
                         String record =
                                 TimeUtil.et2str(time) + " " +
                             (double)target[0] + " " + (double)target[1] + " " + (double)target[2] + " " +
-                            (double)scpos[0] + " " + (double)scpos[1] + " " + (double)scpos[1] + " " +
+                            (double)scpos[0] + " " + (double)scpos[1] + " " + (double)scpos[2] + " " +
                             (double)potential + "\n";
 
                         out.write(record);
