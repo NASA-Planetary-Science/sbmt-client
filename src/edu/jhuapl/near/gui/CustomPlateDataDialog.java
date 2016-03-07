@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
+import edu.jhuapl.near.model.SmallBodyModel.Format;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
@@ -152,6 +153,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
     private void saveCellData(int index, ColoringInfo oldCellDataInfo, ColoringInfo newCellDataInfo)
     {
         String uuid = UUID.randomUUID().toString();
+        Format format = newCellDataInfo.format;
 
         // If newCellDataInfo.coloringFile is the same as the oldCellDataInfo.coloringFile,
         // that means we are in edit mode and and the user did not change to a new coloring file.
@@ -160,7 +162,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
             // Copy the cell data file to the model directory
             try
             {
-                String newFilename = "platedata-" + uuid + ".txt";
+                String newFilename = "platedata-" + uuid + "." + format.toString().toLowerCase();
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
                 FileUtil.copyFile(newCellDataInfo.coloringFile, newFilepath);
                 // Change coloringFile to the new filename
@@ -326,6 +328,8 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
             if (dialog.getOkayPressed())
             {
                 cellDataInfo = dialog.getCellDataInfo();
+                if (cellDataInfo.coloringFile.toLowerCase().endsWith(".fit") || cellDataInfo.coloringFile.toLowerCase().endsWith(".fits"))
+                    cellDataInfo.format = Format.FIT;
                 saveCellData(((DefaultListModel)cellDataList.getModel()).getSize(), null, cellDataInfo);
                 modelManager.getSmallBodyModel().addCustomPlateData(cellDataInfo);
             }

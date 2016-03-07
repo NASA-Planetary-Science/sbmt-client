@@ -3,10 +3,12 @@ KPL/MK
 OCAMS Meta (FURNSH) Kernel for SBMT
 ==============================================================================
 
-This kernel contains a list of SPICE kernels to load using the furnish routine.
-SPICE priority is from bottom up.
+This file contains a list of SPICE kernels to be loaded into the SPICE system
+using the FURNSH subroutine. SPICE priority order is from bottom up.
 
-JHU/APL
+This kernel was produced by Lillian Nguyen, JHU/APL, for the Small Body Mapping
+Tool (SBMT), and is not intended for distribution.
+
 
 \begindata
 KERNELS_TO_LOAD += ('/project/osiris/ola/spice/Kernels/SPK/OREX_DRMrevC_Phase03_AP_01s.bsp'
