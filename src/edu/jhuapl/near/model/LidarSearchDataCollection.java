@@ -972,7 +972,14 @@ public class LidarSearchDataCollection extends Model
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
             double et = originalPoints.get(cellId).time;
-            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) + ", ET = %f", et);
+            double[] target = originalPoints.get(cellId).target;
+            double[] scpos = originalPoints.get(cellId).scpos;
+            double range_m = Math.sqrt(
+                    (target[0]-scpos[0])*(target[0]-scpos[0]) +
+                    (target[1]-scpos[1])*(target[1]-scpos[1]) +
+                    (target[2]-scpos[2])*(target[2]-scpos[2]))*1000;
+            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) +
+                    ", ET = %f, unmodified range = %f m", et, range_m);
         }
 
         return "";

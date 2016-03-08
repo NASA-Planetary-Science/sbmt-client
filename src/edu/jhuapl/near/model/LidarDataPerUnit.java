@@ -46,6 +46,7 @@ public class LidarDataPerUnit extends Model
     private vtkGeometryFilter geometryFilterSc;
     private String filepath;
     private vtkDoubleArray times;
+    private vtkDoubleArray ranges;
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
@@ -87,6 +88,7 @@ public class LidarDataPerUnit extends Model
         polydataSc.SetPoints( pointsSc );
         polydataSc.SetVerts( vertSc );
         times = new vtkDoubleArray();
+        ranges = new vtkDoubleArray();
 
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
@@ -163,6 +165,9 @@ public class LidarDataPerUnit extends Model
                 points.InsertNextPoint(x, y, z);
                 idList.SetId(0, count);
                 vert.InsertNextCell(idList);
+
+                // Save range data
+                ranges.InsertNextValue(Math.sqrt((x-scx)*(x-scx) + (y-scy)*(y-scy) + (z-scz)*(z-scz)));
 
                 // Extract the received intensity
                 double irec = 0.0;
@@ -246,6 +251,9 @@ public class LidarDataPerUnit extends Model
 
                 pointsSc.InsertNextPoint(scx, scy, scz);
                 vertSc.InsertNextCell(idList);
+
+                // Save range data
+                ranges.InsertNextValue(Math.sqrt((x-scx)*(x-scx) + (y-scy)*(y-scy) + (z-scz)*(z-scz)));
 
                 // Extract the received intensity
                 double irec = 0.0;
@@ -390,7 +398,9 @@ public class LidarDataPerUnit extends Model
 
         String timeStr = TimeUtil.et2str(times.GetValue(cellId));
 
-        return String.format("Lidar point " + file.getName() + " acquired at " + timeStr + ", ET = %f", times.GetValue(cellId));
+        return String.format("Lidar point " + file.getName() + " acquired at " + timeStr +
+                ", ET = %f, unmodified range = %f m", times.GetValue(cellId),
+                ranges.GetValue(cellId)*1000);
     }
 
     public ArrayList<vtkProp> getProps()
