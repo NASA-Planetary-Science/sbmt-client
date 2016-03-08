@@ -15,11 +15,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialFitter;
@@ -28,6 +30,8 @@ import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
+
+import com.google.common.base.Stopwatch;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -38,6 +42,8 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.lidar.test.MZLidarPoint;
+import edu.jhuapl.near.lidar.test.MZLidarPointSet;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -253,15 +259,21 @@ public class LidarSearchDataCollection extends Model
         int scyindex = 5;
         int sczindex = 6;
 
+        Stopwatch stopWatch=new Stopwatch();
+        System.out.println("Starting timer for OLA request...");
+        stopWatch.start();
+
         for (Integer cubeid : cubeList)
         {
-            String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube";
+            String filename = getLidarDataSourceMap().get(dataSource) + "/" + cubeid + ".lidarcube" +".bin";
+
             File file = FileCache.getFileFromServer(filename);
 
             if (file == null)
                 continue;
 
-            InputStream fs = new FileInputStream(file.getAbsolutePath());
+
+/*            InputStream fs = new FileInputStream(file.getAbsolutePath());
             InputStreamReader isr = new InputStreamReader(fs);
             BufferedReader in = new BufferedReader(isr);
 
@@ -289,8 +301,31 @@ public class LidarSearchDataCollection extends Model
                 }
             }
 
-            in.close();
+            in.close();*/
+
+            MZLidarPointSet pointSet=new MZLidarPointSet();
+            pointSet.appendPointsFromBinaryFile(Paths.get(file.getAbsolutePath()));
+            //System.out.println(pointSet.getNumberOfPoints());
+            for (int i=0; i<pointSet.getNumberOfPoints(); i++) {
+                double[] scpos = new double[3];
+                double[] target = new double[3];
+                MZLidarPoint p=pointSet.getPoint(i);
+                scpos[0]=p.scx;
+                scpos[1]=p.scy;
+                scpos[2]=p.scz;
+                target[0]=p.tgx;
+                target[1]=p.tgy;
+                target[2]=p.tgz;
+                //
+                if (pointInRegionChecker.checkPointIsInRegion(target))
+                {   double time = 0;
+                    originalPoints.add(new LidarPoint(target, scpos, time));
+                }
+            }
+
         }
+
+        System.out.println("Time elapsed for OLA request = "+stopWatch.elapsedTime(TimeUnit.SECONDS) + " s");
 
         // Sort points in time order
         Collections.sort(originalPoints);
@@ -304,6 +339,7 @@ public class LidarSearchDataCollection extends Model
         assignInitialColorToTrack();
 
         updateTrackPolydata();
+
     }
 
     public void loadTrackAscii(File file) throws IOException
