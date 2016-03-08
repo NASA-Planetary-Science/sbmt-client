@@ -12,12 +12,7 @@ public class CustomPerspectiveImage extends PerspectiveImage
 {
     public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, key.instrument != null ? key.instrument.rotation : 0.0, key.instrument != null ? key.instrument.flip : "None");
-    }
-
-    public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly, double rotation, String flip) throws FitsException, IOException
-    {
-        super(key, smallBodyModel, loadPointingOnly, rotation, flip);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     protected void initialize() throws FitsException, IOException
@@ -58,9 +53,16 @@ public class CustomPerspectiveImage extends PerspectiveImage
 //                ImageDataUtil.flipImageYAxis(rawImage);
 
                 if (getFlip().equals("X"))
+                {
                     ImageDataUtil.flipImageXAxis(rawImage);
-                else if (!getFlip().equals("Y"))
+                }
+                else if (getFlip().equals("Y"))
+                {
                     ImageDataUtil.flipImageYAxis(rawImage);
+                }
+                else // no flip
+                {
+                }
 
                 if (getRotation() != 0.0)
                     ImageDataUtil.rotateImage(rawImage, getRotation());

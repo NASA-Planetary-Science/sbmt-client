@@ -216,18 +216,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-            this(key, smallBodyModel, loadPointingOnly, 0.0, "None");
-            this.rotation = rotation;
-            this.flip = flip;
-    }
-
-    public PerspectiveImage(ImageKey key,
-            SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly, double rotation, String flip) throws FitsException, IOException
-    {
             this(key, smallBodyModel, loadPointingOnly, 0);
-            this.rotation = rotation;
-            this.flip = flip;
     }
 
     /**
@@ -244,6 +233,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         this.smallBodyModel = smallBodyModel;
         this.loadPointingOnly = loadPointingOnly;
         this.offset = getDefaultOffset();
+        this.rotation = key.instrument != null ? key.instrument.rotation : 0.0;
+        this.flip = key.instrument != null ? key.instrument.flip : "None";
+
 
         initialize();
     }

@@ -512,8 +512,14 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         if (imageCollection.containsImage(imageKey))
         {
+            Image image = imageCollection.getImage(imageKey);
+            boolean visible = image.isVisible();
+            if (visible)
+                image.setVisible(false);
             imageCollection.removeImage(imageKey);
             imageCollection.addImage(imageKey);
+            if (visible)
+                image.setVisible(true);
         }
     }
 
