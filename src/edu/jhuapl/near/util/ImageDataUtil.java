@@ -6,6 +6,7 @@ import vtk.vtkImageFlip;
 import vtk.vtkImageReslice;
 import vtk.vtkPointData;
 import vtk.vtkTransform;
+import vtk.vtkUnsignedCharArray;
 
 public class ImageDataUtil
 {
@@ -96,17 +97,40 @@ public class ImageDataUtil
         int height = dims[1];
         int depth = dims[2];
         vtkPointData pointdata = image.GetPointData();
-        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
         float[][][] array = new float[depth][height][width];
-        for(int k=0; k < depth; ++k)
+        Object dataObject = pointdata.GetScalars();
+        if (dataObject instanceof vtkFloatArray)
         {
-            for (int j=0; j < height; ++j)
+            vtkFloatArray data = (vtkFloatArray)dataObject;
+            for(int k=0; k < depth; ++k)
             {
-                for (int i=0; i < width; ++i)
+                for (int j=0; j < height; ++j)
                 {
-                    // calculate index
-                    int index = k * width * height + j * width + i;
-                    array[k][j][i] = (float)data.GetValue(index);
+                    for (int i=0; i < width; ++i)
+                    {
+                        // calculate index
+                        int index = k * width * height + j * width + i;
+                        array[k][j][i] = (float)data.GetValue(index);
+                    }
+                }
+            }
+        }
+        else if (dataObject instanceof vtkUnsignedCharArray)
+        {
+            vtkUnsignedCharArray data = (vtkUnsignedCharArray)dataObject;
+            for(int k=0; k < depth; ++k)
+            {
+                for (int j=0; j < height; ++j)
+                {
+                    for (int i=0; i < width; ++i)
+                    {
+                        // calculate index
+                        int index = k * width * height + j * width + i;
+//                        char value = (char)data.GetValue(index);
+//                        int ivalue = (int)value;
+                        int ivalue = (int)data.GetValue(index);
+                        array[k][j][i] = ((float)ivalue) / 255.0F;
+                    }
                 }
             }
         }

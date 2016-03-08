@@ -278,7 +278,8 @@ public class ImagePopupMenu extends PopupMenu
             }
             else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
             {
-                enableSaveToDisk = false;
+//                enableSaveToDisk = false;
+                enableSaveToDisk = true;
                 enableSaveBackplanes = false;
             }
         }
