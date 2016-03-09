@@ -61,11 +61,11 @@ public class OlaPointList
         return new BoundingBox(new double[]{xmin,xmax,ymin,ymax,zmin,zmax});
     }
 
-    public void appendFromPath(Path lidarFilePath)
+    public void appendFromL2File(Path l2FilePath)
     {
         try
         {
-            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(lidarFilePath.toFile())));
+            DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(l2FilePath.toFile())));
 
             while (true)
             {
@@ -117,6 +117,29 @@ public class OlaPointList
             in.close();
         } catch (Exception e)
         {
+            e.printStackTrace();
+        }
+    }
+
+    public void appendFromTreeFilePath(Path treeFilePath) {
+        try
+        {
+            DataInputStream stream=new DataInputStream(new FileInputStream(treeFilePath.toFile()));
+            while (stream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
+                OlaOctreePoint pt=new OlaOctreePoint(stream);   // this uses the OlaOctreePoint class (which extends OlaPoint) to read data from file
+                if (!pt.fullyRead)
+                    break;
+                this.points.add(pt);
+            }
+            stream.close();
+        }
+        catch (EOFException e)
+        {
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
