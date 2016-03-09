@@ -42,16 +42,6 @@ public class CustomPerspectiveImage extends PerspectiveImage
         }
         else if (key.source == ImageSource.LOCAL_PERSPECTIVE)
         {
-            // only rotate INFO files, not SUM files
-            if (key.fileType == FileType.INFO)
-            {
-                // Originally was just this one rotate 270 transformation
-                //ImageDataUtil.rotateImage(rawImage, 270.0);
-
-                // Commented out above and put this in instead to make perspective image
-                // work with ENVI files
-//                ImageDataUtil.flipImageYAxis(rawImage);
-
                 if (getFlip().equals("X"))
                 {
                     ImageDataUtil.flipImageXAxis(rawImage);
@@ -62,21 +52,7 @@ public class CustomPerspectiveImage extends PerspectiveImage
                 }
 
                 if (getRotation() != 0.0)
-                    ImageDataUtil.rotateImage(rawImage, getRotation());
-            }
-            else if (key.fileType == FileType.SUM)
-            {
-//                ImageDataUtil.flipImageXAxis(rawImage);
-//                ImageDataUtil.rotateImage(rawImage, 180.0);
-
-                if (getFlip().equals("X"))
-                    ImageDataUtil.flipImageXAxis(rawImage);
-                else if (getFlip().equals("Y"))
-                    ImageDataUtil.flipImageYAxis(rawImage);
-
-                if (getRotation() != 0.0)
-                    ImageDataUtil.rotateImage(rawImage, getRotation());
-            }
+                    ImageDataUtil.rotateImage(rawImage, 360.0 - getRotation());
         }
     }
 
