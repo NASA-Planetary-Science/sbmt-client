@@ -32,15 +32,8 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected void processRawImage(vtkImageData rawImage)
     {
-        // Flip image along y axis. For some reason we need to do
-        // this so the image is displayed properly.
         ImageKey key = getKey();
-        if (key.source == ImageSource.LOCAL_CYLINDRICAL)
-        {
-            // is this ever called? -turnerj1
-            ImageDataUtil.flipImageXAxis(rawImage);
-        }
-        else if (key.source == ImageSource.LOCAL_PERSPECTIVE)
+        if (key.source == ImageSource.LOCAL_PERSPECTIVE)
         {
                 if (getFlip().equals("X"))
                 {

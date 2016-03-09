@@ -31,7 +31,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean isEllipsoid;
     private boolean isEditMode;
     private ImagingInstrument instrument;
-    private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing image>";
+    private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
 
     public enum ProjectionType
     {
@@ -84,6 +84,16 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         initComponents();
         this.isEditMode = isEditMode;
         this.instrument = instrument;
+
+        if (isEditMode)
+        {
+            browseImageButton.setEnabled(false);
+            browseSumfileButton.setEnabled(false);
+            browseInfofileButton.setEnabled(false);
+            imagePathTextField.setEnabled(false);
+            infofilePathTextField.setEnabled(false);
+            sumfilePathTextField.setEnabled(false);
+        }
     }
 
     public void setImageInfo(ImageInfo info, boolean isEllipsoid)
@@ -92,6 +102,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         if (isEditMode)
             imagePathTextField.setText(LEAVE_UNMODIFIED);
+        else
+            imagePathTextField.setText(info.imagefilename);
 
         imageNameTextField.setText(info.name);
 
@@ -109,7 +121,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             perspectiveProjectionRadioButton.setSelected(true);
 
             if (isEditMode)
+            {
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
+                infofilePathTextField.setText(LEAVE_UNMODIFIED);
+            }
         }
 
         ImageType currentImageType = info.imageType;
@@ -181,7 +196,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         if (imagePath == null)
             imagePath = "";
 
-        if (!isEditMode || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
+        if (!isEditMode) // || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
         {
             if (imagePath.isEmpty())
                 return "Please enter the path to an image.";
@@ -204,7 +219,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
-            if (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
+            if (!isEditMode) // (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
             {
                 // Check first to see if it is a natively supported image
                 boolean supportedCustomFormat = false;
@@ -315,9 +330,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonLabel.setEnabled(cylindrical);
         urlonFormattedTextField.setEnabled(cylindrical);
         infofilePathLabel.setEnabled(!cylindrical);
-        infofilePathTextField.setEnabled(!cylindrical);
+        infofilePathTextField.setEnabled(!cylindrical && !isEditMode);
         sumfilePathLabel.setEnabled(!cylindrical);
-        sumfilePathTextField.setEnabled(!cylindrical);
+        sumfilePathTextField.setEnabled(!cylindrical && !isEditMode);
 
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
         imageFlipComboBox.setEnabled(generic && !cylindrical);
