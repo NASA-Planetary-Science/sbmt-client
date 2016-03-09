@@ -165,7 +165,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
 
         // If name is not provided, set name to filename
-        info.imageType = ImageType.valueOf(imageTypeComboBox.getSelectedItem().toString());
+        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
         info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
         info.flip = imageFlipComboBox.getSelectedItem().toString();
         info.name = imageNameTextField.getText();
@@ -320,8 +320,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         sumfilePathTextField.setEnabled(!cylindrical);
 
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
-        imageFlipComboBox.setEnabled(generic);
-        imageRotateComboBox.setEnabled(generic);
+        imageFlipComboBox.setEnabled(generic && !cylindrical);
+        imageRotateComboBox.setEnabled(generic && !cylindrical);
     }
 
     /** This method is called from within the constructor to
@@ -619,7 +619,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeLabel, gridBagConstraints);
 
-        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
+        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -686,7 +686,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
+                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
             }
 
             imageNameTextField.setText(imageFileName);
