@@ -2151,7 +2151,7 @@ public class SmallBodyConfig
         }
 
         System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
-                " and author " + author + " and version " + null);
+                " and author " + author + " and version " + version);
 
         return null;
     }
