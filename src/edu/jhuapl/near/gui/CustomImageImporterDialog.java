@@ -80,7 +80,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     /** Creates new form ShapeModelImporterDialog */
     public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, ImagingInstrument instrument)
     {
-        super(parent, "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
+        super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
         this.isEditMode = isEditMode;
         this.instrument = instrument;
