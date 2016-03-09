@@ -17,10 +17,15 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
+
+import vtk.vtkCellArray;
+import vtk.vtkHexahedron;
+import vtk.vtkPoints;
+import vtk.vtkUnstructuredGrid;
+import vtk.vtkUnstructuredGridWriter;
 
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -42,12 +47,80 @@ public class FileSystemOctree
     }
 
     public void addPointsFromFile(Path inputFilePath) throws IOException {
+        addPointsFromFile(inputFilePath, Integer.MAX_VALUE);
+    }
+
+    public void addPointsFromFile(Path inputFilePath, int nmax) throws IOException {
         OlaPointList pointList=new OlaPointList();
         pointList.appendFromPath(inputFilePath);
-        for (int i=0; i<pointList.getNumberOfPoints(); i++) {
+        for (int i=0; i<Math.min(pointList.getNumberOfPoints(),nmax); i++) {
             if ((i%20000)==0)
                 System.out.println((double)i/(double)pointList.getNumberOfPoints()*100+"%");
             root.addPoint(new OlaOctreePoint(pointList.getPoint(i)));
+        }
+    }
+
+    public vtkUnstructuredGrid getAllNonEmptyLeavesAsUnstructuredGrid() {
+        List<Node> nodeList=getAllNonEmptyLeafNodes();
+        vtkPoints points=new vtkPoints();
+        vtkCellArray cells=new vtkCellArray();
+        for (Node node : nodeList) {
+            vtkHexahedron hex=new vtkHexahedron();
+            for (int i=0; i<8; i++) {
+                Vector3D crn=node.getCorner(i);
+                int id=points.InsertNextPoint(crn.getX(),crn.getY(),crn.getZ());
+                hex.GetPointIds().SetId(i,id);
+            }
+            cells.InsertNextCell(hex);
+        }
+        //
+        vtkUnstructuredGrid grid=new vtkUnstructuredGrid();
+        grid.SetPoints(points);
+        grid.SetCells(new vtkHexahedron().GetCellType(), cells);
+        return grid;
+    }
+
+    public List<Node> getAllNonEmptyLeafNodes() {
+        List<Node> nodeList=Lists.newArrayList();
+        getAllNonEmptyLeafNodes(root, nodeList);
+        return nodeList;
+    }
+
+    void getAllNonEmptyLeafNodes(Node node, List<Node> nodeList) {
+        if (!node.isLeaf)
+            for (int i=0; i<8; i++)
+                getAllNonEmptyLeafNodes(node.children[i], nodeList);
+        else if (node.numPoints>0)
+            nodeList.add(node);
+    }
+
+/*    public List<Path> getAllNonEmptyLeafDirectories() {
+        List<Path> pathList=Lists.newArrayList();
+        getAllNonEmptyLeafDirectories(root, pathList);
+        return pathList;
+    }
+
+    void getAllNonEmptyLeafDirectories(Node node, List<Path> pathList) {
+        if (!node.isLeaf)
+            for (int i=0; i<8; i++)
+                getAllNonEmptyLeafDirectories(node.children[i], pathList);
+        else if (node.getDataFilePath().toFile().exists())
+            pathList.add(node.getSelfPath());
+    }*/
+
+    public void finalCommit() throws IOException {  // TODO: change Node data files to RandomAccessFile (to avoid having too many files open when tree becomes large)
+        finalCommit(root);
+    }
+
+    void finalCommit(Node node) throws IOException {
+        if (!node.isLeaf)
+            for (int i=0; i<8; i++)
+                finalCommit(node.children[i]);
+        else {
+            node.closeDataFileForOutput();  // close any DataOutputStreams (corresponding to leaves) that are still open
+            File dataFile=node.getDataFilePath().toFile();  // clean up any data files with zero points
+            if (dataFile.length()==0l)
+                dataFile.delete();
         }
     }
 
@@ -119,45 +192,85 @@ public class FileSystemOctree
 
     }
 
-    enum SplitDirection {
-        X,Y,Z;
-    }
-
-    static BoundingBox createBoundingBox(Node parent, SplitDirection splitDir, double val, boolean isLeft) {
+    static BoundingBox createBoundingBox(Node parent, int whichChild) {
         BoundingBox bbox=new BoundingBox(parent.getBounds());
-        if (isLeft) {
-            if (splitDir.equals(SplitDirection.X))
-                bbox.xmax=val;
-            else if (splitDir.equals(SplitDirection.Y))
-                bbox.ymax=val;
-            else if (splitDir.equals(SplitDirection.Z))
-                bbox.zmax=val;
-        } else {
-            if (splitDir.equals(SplitDirection.X))
-                bbox.xmin=val;
-            else if (splitDir.equals(SplitDirection.Y))
-                bbox.ymin=val;
-            else if (splitDir.equals(SplitDirection.Z))
-                bbox.zmin=val;
+        double xmid=bbox.getCenterPoint()[0];
+        double ymid=bbox.getCenterPoint()[1];
+        double zmid=bbox.getCenterPoint()[2];
+        switch (whichChild) {
+        case 0:
+            bbox.xmax=xmid;
+            bbox.ymax=ymid;
+            bbox.zmax=zmid;
+            break;
+        case 1:
+            bbox.xmin=xmid;
+            bbox.ymax=ymid;
+            bbox.zmax=zmid;
+            break;
+        case 2:
+            bbox.xmin=xmid;
+            bbox.ymin=ymid;
+            bbox.zmax=zmid;
+            break;
+        case 3:
+            bbox.xmax=xmid;
+            bbox.ymin=ymid;
+            bbox.zmax=zmid;
+            break;
+        case 4:
+            bbox.xmax=xmid;
+            bbox.ymax=ymid;
+            bbox.zmin=zmid;
+            break;
+        case 5:
+            bbox.xmin=xmid;
+            bbox.ymax=ymid;
+            bbox.zmin=zmid;
+            break;
+        case 6:
+            bbox.xmin=xmid;
+            bbox.ymin=ymid;
+            bbox.zmin=zmid;
+            break;
+        case 7:
+            bbox.xmax=xmid;
+            bbox.ymin=ymid;
+            bbox.zmin=zmid;
+            break;
         }
-        //System.out.println(splitDir+" "+bbox.xmin+" "+bbox.xmax+" "+bbox.ymin+" "+bbox.ymax+" "+bbox.zmin+" "+bbox.zmax+" "+parent.xmin+" "+parent.xmax+" "+parent.ymin+" "+parent.ymax+" "+parent.zmin+" "+parent.zmax);
+        //System.out.println(bbox);
         return bbox;
-    }
-
-    static SplitDirection getNextSplitDirection(SplitDirection dir) {
-        int ndir=SplitDirection.values().length;
-        int ord=dir.ordinal();
-        return SplitDirection.values()[(ord+1)%ndir];
     }
 
     class Node extends BoundingBox {
         final Path selfPath;
         boolean isLeaf=true;
-        Node[] children=new Node[]{null,null};
+        Node[] children=new Node[8];
         int numPoints=0;
-        SplitDirection splitDir;
         DataOutputStream dataOutput;
-        boolean isLeft=false;
+
+        public Vector3D getCorner(int i) {
+            switch(i) {
+            case 0:
+                return new Vector3D(xmin,ymin,zmin);
+            case 1:
+                return new Vector3D(xmax,ymin,zmin);
+            case 2:
+                return new Vector3D(xmax,ymax,zmin);
+            case 3:
+                return new Vector3D(xmin,ymax,zmin);
+            case 4:
+                return new Vector3D(xmin,ymin,zmax);
+            case 5:
+                return new Vector3D(xmax,ymin,zmax);
+            case 6:
+                return new Vector3D(xmax,ymax,zmax);
+            case 7:
+                return new Vector3D(xmin,ymax,zmax);
+            }
+            return null;
+        }
 
         public double getVolume() {
             return (xmax-xmin)*(ymax-ymin)*(zmax-zmin);
@@ -166,21 +279,17 @@ public class FileSystemOctree
         public Node(Path rootPath, BoundingBox bbox) throws IOException
         {
             super(bbox.getBounds());
-            splitDir=SplitDirection.X;
-            selfPath=rootPath.resolve(splitDir.name()+'0');
+            selfPath=rootPath;
             getSelfPath().toFile().mkdir();
             writeBounds();
             openDataFileForOutput();
         }
 
-        Node(Node parent, double val, boolean isLeft) throws IOException
+        Node(Node parent, int whichChild) throws IOException
         {
-            super(createBoundingBox(parent, parent.splitDir, val, isLeft).getBounds());
-            splitDir=getNextSplitDirection(parent.splitDir);
-            this.isLeft=isLeft;
-//            System.out.println(getVolume()/parent.getVolume());
+            super(createBoundingBox(parent, whichChild).getBounds());
             //
-            selfPath=parent.getSelfPath().resolve(splitDir.name()+(isLeft?'P':'M'));
+            selfPath=parent.getSelfPath().resolve(String.valueOf(whichChild));
             getSelfPath().toFile().mkdir();
             writeBounds();
             openDataFileForOutput();
@@ -195,10 +304,9 @@ public class FileSystemOctree
 
         boolean addPoint(OctreePoint point) throws IOException {
             if (!isLeaf) {
-                if (children[0].addPoint(point))
-                    return true;
-                else
-                    return children[1].addPoint(point);
+                for (int i=0; i<8; i++)
+                    if (children[i].addPoint(point))
+                        return true;
             } else {
                 if (isInside(point)) {
                     point.writeToStream(dataOutput);
@@ -231,24 +339,14 @@ public class FileSystemOctree
             stream.close();
         }
 
-/*        private void gatherPointsFromParent(Path parentDataFilePath) throws IOException {
-            DataInputStream parentStream=new DataInputStream(new FileInputStream(parentDataFilePath.toFile()));
-            try
-            {
-                while (parentStream.skipBytes(0)==0) {    // this is a dangerous trick to keep the loop running until all data has been read (0 bytes will always be skipped here); we expect a EOFException to be thrown when the end of the file is encountered
-                    OlaKdPoint pt=new OlaKdPoint(parentStream);
-                    if (!pt.isFullyRead())
-                        break;
-                    if (isInside(pt)) {
-                        pt.writeToStream(dataOutput);
-                        numPoints++;
-                    }
-                }
-                parentStream.close();
-            } catch (EOFException e) {
-            }
-            System.out.println("   "+getSelfPath()+" "+numPoints);
-        }*/
+        public double[] readBounds() throws IOException {
+            DataInputStream stream=new DataInputStream(new FileInputStream(getBoundsFilePath().toFile()));
+            double[] bounds=new double[6];
+            for (int i=0; i<6; i++)
+                bounds[i]=stream.readDouble();
+            stream.close();
+            return bounds;
+        }
 
         private void openDataFileForOutput() throws FileNotFoundException {
             dataOutput=new DataOutputStream(new FileOutputStream(getDataFilePath().toFile()));
@@ -263,40 +361,60 @@ public class FileSystemOctree
         }
 
         void split() throws IOException {
-            List<Double> coords=Lists.newArrayList();
             closeDataFileForOutput();
+            for (int i=0; i<8; i++)
+                children[i]=new Node(this, i);
+            //
             DataInputStream selfStream=new DataInputStream(new FileInputStream(getDataFilePath().toFile()));
             while (selfStream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
                 OlaOctreePoint pt=new OlaOctreePoint(selfStream);
                 if (!pt.isFullyRead())
                     break;
-                if (splitDir.equals(SplitDirection.X))
-                    coords.add(pt.getPosition().getX());
-                else if (splitDir.equals(SplitDirection.Y))
-                    coords.add(pt.getPosition().getY());
-                 else if (splitDir.equals(SplitDirection.Z))
-                    coords.add(pt.getPosition().getZ());
-            }
-            selfStream.close();
-            //
-            double[] array=new double[coords.size()];
-            for (int i=0; i<array.length; i++)
-                array[i]=coords.get(i);
-            double median=new Median().evaluate(array);
-            children[0]=new Node(this, median, true);
-            children[1]=new Node(this, median, false);
-            //
-            selfStream=new DataInputStream(new FileInputStream(getDataFilePath().toFile()));
-            while (selfStream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
-                OlaOctreePoint pt=new OlaOctreePoint(selfStream);
-                if (!pt.isFullyRead())
-                    break;
+/*                Vector3D pos=pt.getPosition();
+                double[] cen=getCenterPoint();
+                boolean xlt=pos.getX()<cen[0];
+                boolean ylt=pos.getY()<cen[1];
+                boolean zlt=pos.getZ()<cen[2];
+                int i=-1;
+                if (zlt) {
+                    if (ylt) {
+                        if (xlt)
+                            i=0;
+                        else
+                            i=1;
+                    } else {
+                        if (xlt)
+                            i=3;
+                        else
+                            i=2;
+                    }
+                } else  {
+                    if (ylt) {
+                        if (xlt)
+                            i=4;
+                        else
+                            i=5;
+                    } else {
+                        if (xlt)
+                            i=7;
+                        else
+                            i=6;
+                    }
+                }
+        //        if (!children[i].contains(new double[]{pos.getX(),pos.getY(),pos.getZ()}))
+        //            System.out.println("!");
+
+                children[i].addPoint(pt);*/
                 double[] p=new double[]{pt.getPosition().getX(),pt.getPosition().getY(),pt.getPosition().getZ()};
-                if (children[0].contains(p))
-                    children[0].addPoint(pt);   // TODO: make sure > and < in the contains(...) method is not falsely rejecting points on the boundary of the children boxes
-                if (children[1].contains(p))
-                    children[1].addPoint(pt);
+                boolean found=false;
+                for (int i=0; i<8 && !found; i++)
+                    if (children[i].contains(p)) {
+                        children[i].addPoint(pt);   // TODO: make sure > and < in the contains(...) method is not falsely rejecting points on the boundary of the children boxes
+                        found=true;
+                    }
             }
+//            for (int i=0; i<8; i++)
+//                System.out.println("  "+children[i].numPoints);
             selfStream.close();
             //
             isLeaf=false;
@@ -306,7 +424,7 @@ public class FileSystemOctree
         private void deleteDataFile() {
             getDataFilePath().toFile().delete();
         }
-}
+    }
 
     public static void main(String[] args) throws IOException
     {
@@ -315,11 +433,11 @@ public class FileSystemOctree
         OlaPointList list=new OlaPointList();
         list.appendFromPath(filePath);
         int megaByte=1048576;
-        int dataFileByteLimit=5*megaByte;
+        int dataFileByteLimit=10*megaByte;
         int maxPointsPerLeaf=dataFileByteLimit/(8*4);   // three doubles for scpos, three doubles for tgpos, one double for time, and one double for intensity
-        System.out.println("Total points="+list.getNumberOfPoints()+"  Approximate number of leaves="+list.getNumberOfPoints()/maxPointsPerLeaf+"  Max points per leaf="+maxPointsPerLeaf);
+        System.out.println("Total points="+list.getNumberOfPoints()+"  Max points per leaf="+maxPointsPerLeaf);
         //
-        BoundingBox bbox=new BoundingBox(new double[]{-100,100,-100,100,-100,100});
+        BoundingBox bbox=new BoundingBox(new double[]{-1,1,-1,1,-1,1});
         FileSystemOctree tree=new FileSystemOctree(Paths.get("/Volumes/dumbledore/sbmt/tree"), maxPointsPerLeaf, bbox);
         Path rootDirectory=Paths.get("/Volumes/dumbledore/sbmt/OLA/");
         List<File> fileList=Lists.newArrayList();
@@ -328,15 +446,26 @@ public class FileSystemOctree
             fileList.add(f);
         //
         Stopwatch sw=new Stopwatch();
-        for (int i=0; i<fileList.size(); i++) {
+        int i=0;
+//        for (int i=0; i<fileList.size(); i++) {
             sw.start();
             Path inputPath=Paths.get(fileList.get(i).toString());
             System.out.println(inputPath);
             tree.addPointsFromFile(inputPath);
-            System.out.println(sw.elapsedTime(TimeUnit.SECONDS)+"s elapsed");
-            sw.stop();
+                System.out.println(sw.elapsedTime(TimeUnit.SECONDS)+"s elapsed");// TODO: close down all DataOutputStreams
             sw.reset();
-        }
+//        }
+        tree.finalCommit();
+
+        //
+        vtkUnstructuredGrid grid=tree.getAllNonEmptyLeavesAsUnstructuredGrid();
+        vtkUnstructuredGridWriter writer=new vtkUnstructuredGridWriter();
+        writer.SetFileName(tree.outputDirectory.resolve("tree.vtk").toString());
+        writer.SetFileTypeToBinary();
+        writer.SetInputData(grid);
+        writer.Write();
+
+        System.out.println("Total # of cells="+grid.GetNumberOfCells());
     }
 
 }
