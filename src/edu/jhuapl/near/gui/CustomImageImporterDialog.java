@@ -673,28 +673,24 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         String filename = file.getAbsolutePath();
         imagePathTextField.setText(filename);
 
-        // If no name has yet been provided, set it to the filename
-        if (imageNameTextField.getText() == null || imageNameTextField.getText().isEmpty())
+        String imageFileName = file.getName();
+        if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
         {
-            String imageFileName = file.getName();
-            if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
-            {
-                ImageType[] allImageTypes = ImageType.values();
-                ImageType currentImageType = instrument.type;
-                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
-                imageTypeComboBox.setSelectedItem(currentImageType);
-            }
-            else
-            {
-                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
-            }
-
-            imageNameTextField.setText(imageFileName);
-
-            // set default info file name
-//            String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
-//            infofilePathTextField.setText(defaultInfoFileName);
+            ImageType[] allImageTypes = ImageType.values();
+            ImageType currentImageType = instrument.type;
+            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
+            imageTypeComboBox.setSelectedItem(currentImageType);
         }
+        else
+        {
+            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+        }
+
+        imageNameTextField.setText(imageFileName);
+
+        // set default info file name
+        // String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+        // infofilePathTextField.setText(defaultInfoFileName);
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
