@@ -60,9 +60,6 @@ public class CustomPerspectiveImage extends PerspectiveImage
                 {
                     ImageDataUtil.flipImageYAxis(rawImage);
                 }
-                else // no flip
-                {
-                }
 
                 if (getRotation() != 0.0)
                     ImageDataUtil.rotateImage(rawImage, getRotation());

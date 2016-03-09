@@ -300,6 +300,7 @@ public class ImageDataUtil
     {
         int[] dims = image.GetDimensions();
         double[] center = {(dims[1]-1.0)/2.0, (dims[0]-1.0)/2.0};
+//        double[] center = {(dims[0]-1.0)/2.0, (dims[1]-1.0)/2.0};
 
         vtkTransform imageTransform = new vtkTransform();
         imageTransform.PostMultiply();
@@ -314,7 +315,8 @@ public class ImageDataUtil
         algo.SetInterpolationModeToNearestNeighbor();
         algo.SetOutputSpacing(1.0, 1.0, 1.0);
         algo.SetOutputOrigin(0.0, 0.0, 0.0);
-        algo.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+//        algo.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
+        algo.SetOutputExtent(0, dims[0]-1, 0, dims[1]-1, 0, 0);
         algo.Update();
 
         vtkImageData output = algo.GetOutput();

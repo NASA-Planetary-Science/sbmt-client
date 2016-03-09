@@ -14,6 +14,7 @@ import java.awt.Dialog;
 import java.io.File;
 import java.text.DecimalFormat;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import vtk.vtkImageReader2;
@@ -68,7 +69,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
+                if (imageType == ImageType.GENERIC_IMAGE)
+                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
+                else
+                    return name + ", Perspective" + ", " + imageType;
             }
         }
     }
@@ -107,6 +111,20 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             if (isEditMode)
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
         }
+
+        ImageType currentImageType = info.imageType;
+        if (info.imagefilename.toUpperCase().endsWith(".FITS") || info.imagefilename.toUpperCase().endsWith(".FIT"))
+        {
+            imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
+            imageTypeComboBox.setSelectedItem(currentImageType);
+        }
+        else
+            imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+
+
+        imageTypeComboBox.setSelectedItem(info.imageType);
+        imageFlipComboBox.setSelectedItem(info.flip);
+        imageRotateComboBox.setSelectedItem(Integer.toString((int)info.rotation));
 
         updateEnabledItems();
     }
@@ -287,19 +305,23 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
     private void updateEnabledItems()
     {
-        boolean enable = cylindricalProjectionRadioButton.isSelected();
-        lllatLabel.setEnabled(enable);
-        lllatFormattedTextField.setEnabled(enable);
-        lllonLabel.setEnabled(enable);
-        lllonFormattedTextField.setEnabled(enable);
-        urlatLabel.setEnabled(enable);
-        urlatFormattedTextField.setEnabled(enable);
-        urlonLabel.setEnabled(enable);
-        urlonFormattedTextField.setEnabled(enable);
-        infofilePathLabel.setEnabled(!enable);
-        infofilePathTextField.setEnabled(!enable);
-        sumfilePathLabel.setEnabled(!enable);
-        sumfilePathTextField.setEnabled(!enable);
+        boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
+        lllatLabel.setEnabled(cylindrical);
+        lllatFormattedTextField.setEnabled(cylindrical);
+        lllonLabel.setEnabled(cylindrical);
+        lllonFormattedTextField.setEnabled(cylindrical);
+        urlatLabel.setEnabled(cylindrical);
+        urlatFormattedTextField.setEnabled(cylindrical);
+        urlonLabel.setEnabled(cylindrical);
+        urlonFormattedTextField.setEnabled(cylindrical);
+        infofilePathLabel.setEnabled(!cylindrical);
+        infofilePathTextField.setEnabled(!cylindrical);
+        sumfilePathLabel.setEnabled(!cylindrical);
+        sumfilePathTextField.setEnabled(!cylindrical);
+
+        boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
+        imageFlipComboBox.setEnabled(generic);
+        imageRotateComboBox.setEnabled(generic);
     }
 
     /** This method is called from within the constructor to
