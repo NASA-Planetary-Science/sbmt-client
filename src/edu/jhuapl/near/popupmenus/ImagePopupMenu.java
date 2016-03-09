@@ -18,8 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -43,6 +41,8 @@ import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagePopupMenu extends PopupMenu
@@ -453,8 +453,9 @@ public class ImagePopupMenu extends PopupMenu
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 String path = image.getFitFileFullPath();
                 String extension = path.substring(path.lastIndexOf("."));
+                String imageFileName = new File(path).getName();
 
-                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageKey.name + extension, "fit");
+                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
                 if (file != null)
                 {
                     File fitFile = FileCache.getFileFromServer(imageKey.name + extension);
