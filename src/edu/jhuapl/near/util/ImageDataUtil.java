@@ -6,7 +6,6 @@ import vtk.vtkImageFlip;
 import vtk.vtkImageReslice;
 import vtk.vtkPointData;
 import vtk.vtkTransform;
-import vtk.vtkUnsignedCharArray;
 
 public class ImageDataUtil
 {
@@ -97,40 +96,17 @@ public class ImageDataUtil
         int height = dims[1];
         int depth = dims[2];
         vtkPointData pointdata = image.GetPointData();
+        vtkFloatArray data = (vtkFloatArray)pointdata.GetScalars();
         float[][][] array = new float[depth][height][width];
-        Object dataObject = pointdata.GetScalars();
-        if (dataObject instanceof vtkFloatArray)
+        for(int k=0; k < depth; ++k)
         {
-            vtkFloatArray data = (vtkFloatArray)dataObject;
-            for(int k=0; k < depth; ++k)
+            for (int j=0; j < height; ++j)
             {
-                for (int j=0; j < height; ++j)
+                for (int i=0; i < width; ++i)
                 {
-                    for (int i=0; i < width; ++i)
-                    {
-                        // calculate index
-                        int index = k * width * height + j * width + i;
-                        array[k][j][i] = (float)data.GetValue(index);
-                    }
-                }
-            }
-        }
-        else if (dataObject instanceof vtkUnsignedCharArray)
-        {
-            vtkUnsignedCharArray data = (vtkUnsignedCharArray)dataObject;
-            for(int k=0; k < depth; ++k)
-            {
-                for (int j=0; j < height; ++j)
-                {
-                    for (int i=0; i < width; ++i)
-                    {
-                        // calculate index
-                        int index = k * width * height + j * width + i;
-//                        char value = (char)data.GetValue(index);
-//                        int ivalue = (int)value;
-                        int ivalue = (int)data.GetValue(index);
-                        array[k][j][i] = ((float)ivalue) / 255.0F;
-                    }
+                    // calculate index
+                    int index = k * width * height + j * width + i;
+                    array[k][j][i] = (float)data.GetValue(index);
                 }
             }
         }
@@ -300,7 +276,6 @@ public class ImageDataUtil
     {
         int[] dims = image.GetDimensions();
         double[] center = {(dims[1]-1.0)/2.0, (dims[0]-1.0)/2.0};
-//        double[] center = {(dims[0]-1.0)/2.0, (dims[1]-1.0)/2.0};
 
         vtkTransform imageTransform = new vtkTransform();
         imageTransform.PostMultiply();
@@ -315,8 +290,7 @@ public class ImageDataUtil
         algo.SetInterpolationModeToNearestNeighbor();
         algo.SetOutputSpacing(1.0, 1.0, 1.0);
         algo.SetOutputOrigin(0.0, 0.0, 0.0);
-//        algo.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
-        algo.SetOutputExtent(0, dims[0]-1, 0, dims[1]-1, 0, 0);
+        algo.SetOutputExtent(0, dims[1]-1, 0, dims[0]-1, 0, 0);
         algo.Update();
 
         vtkImageData output = algo.GetOutput();

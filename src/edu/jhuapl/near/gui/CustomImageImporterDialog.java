@@ -14,7 +14,6 @@ import java.awt.Dialog;
 import java.io.File;
 import java.text.DecimalFormat;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import vtk.vtkImageReader2;
@@ -31,7 +30,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean isEllipsoid;
     private boolean isEditMode;
     private ImagingInstrument instrument;
-    private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
+    private static final String LEAVE_UNMODIFIED = "<leave unmodified or empty to use existing image>";
 
     public enum ProjectionType
     {
@@ -69,10 +68,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             }
             else
             {
-                if (imageType == ImageType.GENERIC_IMAGE)
-                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
-                else
-                    return name + ", Perspective" + ", " + imageType;
+                return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
             }
         }
     }
@@ -80,20 +76,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     /** Creates new form ShapeModelImporterDialog */
     public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, ImagingInstrument instrument)
     {
-        super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
+        super(parent, "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
         this.isEditMode = isEditMode;
         this.instrument = instrument;
-
-        if (isEditMode)
-        {
-            browseImageButton.setEnabled(false);
-            browseSumfileButton.setEnabled(false);
-            browseInfofileButton.setEnabled(false);
-            imagePathTextField.setEnabled(false);
-            infofilePathTextField.setEnabled(false);
-            sumfilePathTextField.setEnabled(false);
-        }
     }
 
     public void setImageInfo(ImageInfo info, boolean isEllipsoid)
@@ -102,8 +88,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         if (isEditMode)
             imagePathTextField.setText(LEAVE_UNMODIFIED);
-        else
-            imagePathTextField.setText(info.imagefilename);
 
         imageNameTextField.setText(info.name);
 
@@ -121,25 +105,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             perspectiveProjectionRadioButton.setSelected(true);
 
             if (isEditMode)
-            {
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
-                infofilePathTextField.setText(LEAVE_UNMODIFIED);
-            }
         }
-
-        ImageType currentImageType = info.imageType;
-        if (info.imagefilename.toUpperCase().endsWith(".FITS") || info.imagefilename.toUpperCase().endsWith(".FIT"))
-        {
-            imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
-            imageTypeComboBox.setSelectedItem(currentImageType);
-        }
-        else
-            imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
-
-
-        imageTypeComboBox.setSelectedItem(info.imageType);
-        imageFlipComboBox.setSelectedItem(info.flip);
-        imageRotateComboBox.setSelectedItem(Integer.toString((int)info.rotation));
 
         updateEnabledItems();
     }
@@ -180,7 +147,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
 
         // If name is not provided, set name to filename
-        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+        info.imageType = ImageType.valueOf(imageTypeComboBox.getSelectedItem().toString());
         info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
         info.flip = imageFlipComboBox.getSelectedItem().toString();
         info.name = imageNameTextField.getText();
@@ -196,7 +163,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         if (imagePath == null)
             imagePath = "";
 
-        if (!isEditMode) // || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
+        if (!isEditMode || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
         {
             if (imagePath.isEmpty())
                 return "Please enter the path to an image.";
@@ -219,7 +186,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
-            if (!isEditMode) // (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
+            if (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
             {
                 // Check first to see if it is a natively supported image
                 boolean supportedCustomFormat = false;
@@ -320,23 +287,19 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
     private void updateEnabledItems()
     {
-        boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
-        lllatLabel.setEnabled(cylindrical);
-        lllatFormattedTextField.setEnabled(cylindrical);
-        lllonLabel.setEnabled(cylindrical);
-        lllonFormattedTextField.setEnabled(cylindrical);
-        urlatLabel.setEnabled(cylindrical);
-        urlatFormattedTextField.setEnabled(cylindrical);
-        urlonLabel.setEnabled(cylindrical);
-        urlonFormattedTextField.setEnabled(cylindrical);
-        infofilePathLabel.setEnabled(!cylindrical);
-        infofilePathTextField.setEnabled(!cylindrical && !isEditMode);
-        sumfilePathLabel.setEnabled(!cylindrical);
-        sumfilePathTextField.setEnabled(!cylindrical && !isEditMode);
-
-        boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
-        imageFlipComboBox.setEnabled(generic && !cylindrical);
-        imageRotateComboBox.setEnabled(generic && !cylindrical);
+        boolean enable = cylindricalProjectionRadioButton.isSelected();
+        lllatLabel.setEnabled(enable);
+        lllatFormattedTextField.setEnabled(enable);
+        lllonLabel.setEnabled(enable);
+        lllonFormattedTextField.setEnabled(enable);
+        urlatLabel.setEnabled(enable);
+        urlatFormattedTextField.setEnabled(enable);
+        urlonLabel.setEnabled(enable);
+        urlonFormattedTextField.setEnabled(enable);
+        infofilePathLabel.setEnabled(!enable);
+        infofilePathTextField.setEnabled(!enable);
+        sumfilePathLabel.setEnabled(!enable);
+        sumfilePathTextField.setEnabled(!enable);
     }
 
     /** This method is called from within the constructor to
@@ -634,7 +597,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeLabel, gridBagConstraints);
 
-        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -688,24 +651,28 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         String filename = file.getAbsolutePath();
         imagePathTextField.setText(filename);
 
-        String imageFileName = file.getName();
-        if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
+        // If no name has yet been provided, set it to the filename
+        if (imageNameTextField.getText() == null || imageNameTextField.getText().isEmpty())
         {
-            ImageType[] allImageTypes = ImageType.values();
-            ImageType currentImageType = instrument.type;
-            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
-            imageTypeComboBox.setSelectedItem(currentImageType);
-        }
-        else
-        {
-            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
-        }
+            String imageFileName = file.getName();
+            if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
+            {
+                ImageType[] allImageTypes = ImageType.values();
+                ImageType currentImageType = instrument.type;
+                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
+                imageTypeComboBox.setSelectedItem(currentImageType);
+            }
+            else
+            {
+                imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GENERIC_IMAGE" }));
+            }
 
-        imageNameTextField.setText(imageFileName);
+            imageNameTextField.setText(imageFileName);
 
-        // set default info file name
-        // String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
-        // infofilePathTextField.setText(defaultInfoFileName);
+            // set default info file name
+//            String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+//            infofilePathTextField.setText(defaultInfoFileName);
+        }
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed

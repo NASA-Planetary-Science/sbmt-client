@@ -141,15 +141,15 @@ public abstract class Image extends Model implements PropertyChangeListener
             this(SpectralMode.MONO, null, ImageType.GENERIC_IMAGE, null, null, rotation, flip);
         }
 
-//        public ImagingInstrument(ImageType type, Instrument instrumentName)
-//        {
-//            this(SpectralMode.MONO, null, type, null, instrumentName, 0.0, "None");
-//        }
+        public ImagingInstrument(ImageType type, Instrument instrumentName)
+        {
+            this(SpectralMode.MONO, null, type, null, instrumentName, 0.0, "None");
+        }
 
-//        public ImagingInstrument(SpectralMode spectralMode)
-//        {
-//            this(spectralMode, null, null, null, null, 0.0, "None");
-//        }
+        public ImagingInstrument(SpectralMode spectralMode)
+        {
+            this(spectralMode, null, null, null, null, 0.0, "None");
+        }
 
         public ImagingInstrument(SpectralMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
         {
@@ -207,9 +207,24 @@ public abstract class Image extends Model implements PropertyChangeListener
             this(name, source, null, null, null, null, 0);
         }
 
+        public ImageKey(String name, ImageSource source, FileType fileType)
+        {
+            this(name, source, fileType, null, null, null, 0);
+        }
+
+        public ImageKey(String name, ImageSource source, FileType fileType, ImageType imageType)
+        {
+            this(name, source, fileType, imageType, null, null, 0);
+        }
+
         public ImageKey(String name, ImageSource source, ImagingInstrument instrument)
         {
             this(name, source, null, null, instrument, null, 0);
+        }
+
+        public ImageKey(String name, ImageSource source, FileType fileType, ImagingInstrument instrument)
+        {
+            this(name, source, fileType, null, instrument, null, 0);
         }
 
         public ImageKey(String name, ImageSource source, FileType fileType, ImageType imageType, ImagingInstrument instrument, String band, int slice)
@@ -228,10 +243,7 @@ public abstract class Image extends Model implements PropertyChangeListener
         @Override
         public boolean equals(Object obj)
         {
-            return name.equals(((ImageKey)obj).name)
-                    && source.equals(((ImageKey)obj).source)
-//                    && fileType.equals(((ImageKey)obj).fileType)
-                    ;
+            return name.equals(((ImageKey)obj).name) && source.equals(((ImageKey)obj).source);
         }
 
         @Override

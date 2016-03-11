@@ -4,17 +4,6 @@
 
 # Recent Changes
 
-### March 9, 2016
-
--   3D view now switches to lower level of detail for shape and lidar data when dragging or zooming to improve interactive performance
--   Custom image panel can now import FITS image files, including image cubes
--   Imported custom images can now be arbitrarily rotated or flipped, including generic FITS images
--   Displayed band of imported custom image cubes can now be selected with a slider
--   Lidar point intensity now being displayed by modulating intensity of color
--   Ancillary FITS files can now be imported to specify plate coloring
--   Sensor to target range info now being displayed in status bar when selecting lidar point
--   Removed old version of Bennu model data
-
 ### January 29, 2016
 
 -   Version 2 of 67p model with documentation

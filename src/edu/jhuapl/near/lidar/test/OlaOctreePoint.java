@@ -13,7 +13,7 @@ public class OlaOctreePoint extends LidarPoint implements OctreePoint {
 
     public OlaOctreePoint(DataInputStream stream)
     {
-        super(Vector3D.ZERO, Vector3D.ZERO, 0, 0);
+        super(null, null, 0, 0);
         try
         {
             readFromStream(stream);

@@ -163,14 +163,11 @@ public class View extends JPanel
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
             if (!smallBodyConfig.customTemporary)
             {
-                ImagingInstrument instrument = null;
-                for (ImagingInstrument i : smallBodyConfig.imagingInstruments)
+                for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
                 {
-                    instrument = i;
+                    controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init());
                     break;
                 }
-
-                controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init());
             }
 
             controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));

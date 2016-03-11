@@ -888,6 +888,7 @@ public class LidarSearchDataCollection extends Model
         {
             if (tracks.get(i).getNumberOfPoints() < minTrackLength) {
                 removeTrack(i);
+                System.out.println("!");
             }
         }
     }
