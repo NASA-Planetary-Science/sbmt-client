@@ -1375,12 +1375,6 @@ public class SmallBodyConfig
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
-
-            c = c.clone();
-            c.version = "V3";
-            c.pathOnServer = "/GASKELL/RQ36_V3";
-            configArray.add(c);
-
         }
 
         //PolyCam, MapCam

@@ -12,12 +12,7 @@ public class CustomPerspectiveImage extends PerspectiveImage
 {
     public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly, key.instrument != null ? key.instrument.rotation : 0.0, key.instrument != null ? key.instrument.flip : "None");
-    }
-
-    public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly, double rotation, String flip) throws FitsException, IOException
-    {
-        super(key, smallBodyModel, loadPointingOnly, rotation, flip);
+        super(key, smallBodyModel, loadPointingOnly);
     }
 
     protected void initialize() throws FitsException, IOException
@@ -37,47 +32,20 @@ public class CustomPerspectiveImage extends PerspectiveImage
     @Override
     protected void processRawImage(vtkImageData rawImage)
     {
-        // Flip image along y axis. For some reason we need to do
-        // this so the image is displayed properly.
         ImageKey key = getKey();
-        if (key.source == ImageSource.LOCAL_CYLINDRICAL)
+        if (key.source == ImageSource.LOCAL_PERSPECTIVE)
         {
-            // is this ever called? -turnerj1
-            ImageDataUtil.flipImageXAxis(rawImage);
-        }
-        else if (key.source == ImageSource.LOCAL_PERSPECTIVE)
-        {
-            // only rotate INFO files, not SUM files
-            if (key.fileType == FileType.INFO)
-            {
-                // Originally was just this one rotate 270 transformation
-                //ImageDataUtil.rotateImage(rawImage, 270.0);
-
-                // Commented out above and put this in instead to make perspective image
-                // work with ENVI files
-//                ImageDataUtil.flipImageYAxis(rawImage);
-
                 if (getFlip().equals("X"))
+                {
                     ImageDataUtil.flipImageXAxis(rawImage);
-                else if (!getFlip().equals("Y"))
-                    ImageDataUtil.flipImageYAxis(rawImage);
-
-                if (getRotation() != 0.0)
-                    ImageDataUtil.rotateImage(rawImage, getRotation());
-            }
-            else if (key.fileType == FileType.SUM)
-            {
-//                ImageDataUtil.flipImageXAxis(rawImage);
-//                ImageDataUtil.rotateImage(rawImage, 180.0);
-
-                if (getFlip().equals("X"))
-                    ImageDataUtil.flipImageXAxis(rawImage);
+                }
                 else if (getFlip().equals("Y"))
+                {
                     ImageDataUtil.flipImageYAxis(rawImage);
+                }
 
                 if (getRotation() != 0.0)
-                    ImageDataUtil.rotateImage(rawImage, getRotation());
-            }
+                    ImageDataUtil.rotateImage(rawImage, 360.0 - getRotation());
         }
     }
 
