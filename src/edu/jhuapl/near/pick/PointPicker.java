@@ -3,7 +3,7 @@ package edu.jhuapl.near.pick;
 import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellPicker;
@@ -56,7 +56,7 @@ public class PointPicker extends Picker
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
         smallBodyModel = modelManager.getSmallBodyModel();
-        ArrayList<vtkProp> actors = smallBodyModel.getProps();
+        List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();
         for (vtkProp act : actors)

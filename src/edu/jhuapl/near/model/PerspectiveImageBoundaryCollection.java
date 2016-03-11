@@ -7,14 +7,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import nom.tam.fits.FitsException;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
+
+import nom.tam.fits.FitsException;
 
 public class PerspectiveImageBoundaryCollection extends Model implements PropertyChangeListener
 {
@@ -78,7 +79,7 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
 
         boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
 
-        ArrayList<vtkProp> boundaryPieces = boundary.getProps();
+        List<vtkProp> boundaryPieces = boundary.getProps();
 
         boundaryToActorsMap.get(boundary).addAll(boundaryPieces);
 
@@ -112,7 +113,7 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
             removeBoundary(boundary.getKey());
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
     }

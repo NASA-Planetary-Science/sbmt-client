@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -210,7 +209,7 @@ public class Renderer extends JPanel implements
         });
     }
 
-    public void setProps(ArrayList<vtkProp> props)
+    public void setProps(List<vtkProp> props)
     {
         // Go through the props and if an prop is already in the renderer,
         // do nothing. If not, add it. If an prop not listed is

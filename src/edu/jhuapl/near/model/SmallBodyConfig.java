@@ -1439,6 +1439,10 @@ public class SmallBodyConfig
             c.lidarOffsetScale = 0.0005;
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
+
+            c.lidarSearchDataSourceMap.put("TreeBased", "/GASKELL/RQ36_V3/OLA/tree");
+            c.hasTreeBasedLidarSearch=true; // enable tree-based lidar searching
+
         }
 
         if (Configuration.isAPLVersion())
@@ -1982,7 +1986,7 @@ public class SmallBodyConfig
     public String customName;
     public boolean customTemporary = false;
 
-
+    public boolean hasTreeBasedLidarSearch=false;
 
     protected SmallBodyConfig clone()
     {

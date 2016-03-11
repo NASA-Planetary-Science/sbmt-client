@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -389,7 +390,7 @@ public class LidarDataPerUnit extends Model
         return String.format("Lidar point " + file.getName() + " acquired at " + timeStr + ", ET = %f", times.GetValue(cellId));
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return actors;
     }

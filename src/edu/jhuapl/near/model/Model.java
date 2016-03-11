@@ -2,7 +2,7 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkAbstractTransform;
 import vtk.vtkAlgorithmOutput;
@@ -84,7 +84,7 @@ public abstract class Model
         }
     }
 
-    public abstract ArrayList<vtkProp> getProps();
+    public abstract List<vtkProp> getProps();
 
     /**
      * Return what text should be displayed if the user clicks on one of the

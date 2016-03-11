@@ -1,6 +1,6 @@
 package edu.jhuapl.near.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkProp;
 
@@ -8,7 +8,7 @@ public class PolyDataModel extends Model
 {
 
     @Override
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         // TODO Auto-generated method stub
         return null;

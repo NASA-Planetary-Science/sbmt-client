@@ -2082,7 +2082,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         generateFootprint = b;
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
 //        System.out.println("getProps()");
         if (footprintActor == null)

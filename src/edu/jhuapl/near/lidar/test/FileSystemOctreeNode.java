@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import edu.jhuapl.near.lidar.test.FileSystemOctreeGenerator.OctreePoint;
 import edu.jhuapl.near.util.BoundingBox;
 
 class FileSystemOctreeNode extends BoundingBox {
@@ -79,8 +78,8 @@ class FileSystemOctreeNode extends BoundingBox {
             if (isInside(point)) {
                 point.writeToStream(streamPool.getStream(getDataFilePath()));
                 numPoints++;
-                if (numPoints>maxPoints)
-                    split();
+            //    if (numPoints>maxPoints)
+            //        split();
                 return true;
             }
         }

@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import vtk.vtkProp;
 
@@ -42,7 +43,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         fileToSpectrumMap.put(path, spectrum);
         spectraActors.put(spectrum, new ArrayList<vtkProp>());
 
-        ArrayList<vtkProp> props = spectrum.getProps();
+        List<vtkProp> props = spectrum.getProps();
 
         spectraActors.get(spectrum).addAll(props);
 
@@ -83,7 +84,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
             removeSpectrum(path);
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return allActors;
     }

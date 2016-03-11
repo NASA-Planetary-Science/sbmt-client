@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
@@ -373,7 +374,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         interiorActor.Modified();
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return actors;
     }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -311,7 +312,7 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //        return polyData;
 //    }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         if (footprintActor == null && !latLons.isEmpty())
         {

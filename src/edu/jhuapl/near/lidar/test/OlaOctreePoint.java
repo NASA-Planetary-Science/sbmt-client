@@ -7,9 +7,7 @@ import java.io.IOException;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import edu.jhuapl.near.lidar.test.FileSystemOctreeGenerator.OctreePoint;
-
-public class OlaOctreePoint extends OlaPoint implements OctreePoint {
+public class OlaOctreePoint extends LidarPoint implements OctreePoint {
 
     boolean fullyRead=false;
 
@@ -27,7 +25,7 @@ public class OlaOctreePoint extends OlaPoint implements OctreePoint {
         }
     }
 
-    public OlaOctreePoint(OlaPoint point)
+    public OlaOctreePoint(LidarPoint point)
     {
         super(point.scpos, point.tgpos, point.time, point.intensity);
     }
@@ -65,6 +63,7 @@ public class OlaOctreePoint extends OlaPoint implements OctreePoint {
         fullyRead=true;
     }
 
+    @Override
     public boolean isFullyRead() {
         return fullyRead;
     }

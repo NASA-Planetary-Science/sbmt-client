@@ -51,9 +51,9 @@ import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
 {
-    private final ModelManager modelManager;
-    private PickManager pickManager;
-    private LidarSearchDataCollection lidarModel;
+    protected final ModelManager modelManager;
+    protected PickManager pickManager;
+    protected LidarSearchDataCollection lidarModel;
     private java.util.Date startDate = null;
     private java.util.Date endDate = null;
     private LidarPopupMenu lidarPopupMenu;
@@ -77,8 +77,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-
-        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
+        setLidarModel();
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
         lidarModel.addPropertyChangeListener(this);
@@ -112,6 +111,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
     }
 
+    protected void setLidarModel()
+    {
+        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
+    }
+
     protected ModelNames getLidarModelName()
     {
         return ModelNames.LIDAR_SEARCH;
@@ -139,7 +143,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         fileTypeComboBox.setVisible(true);
     }
 
-    private void showData(
+    protected void showData(
             TreeSet<Integer> cubeList,
             double[] selectionRegionCenter,
             double selectionRegionRadius)
@@ -598,7 +602,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         selectionModel.removeAllStructures();
     }//GEN-LAST:event_clearRegionButtonActionPerformed
 
-    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
+    protected void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
@@ -758,10 +762,10 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JLabel minTrackSizeLabel;
     private javax.swing.JFormattedTextField minTrackSizeTextField;
     private javax.swing.JSpinner pointSizeSpinner;
-    private edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
+    protected edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
     private javax.swing.JButton removeAllButton;
     private javax.swing.JLabel resultsLabel;
-    private javax.swing.JToggleButton selectRegionButton;
+    protected javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JPanel selectRegionPanel;
     private javax.swing.JButton showAllButton;
     private javax.swing.JComboBox sourceComboBox;

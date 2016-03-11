@@ -5,6 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkPoints;
@@ -71,7 +72,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         }
 
         @Override
-        public ArrayList<vtkProp> getProps()
+        public List<vtkProp> getProps()
         {
             ArrayList<vtkProp> props = new ArrayList<vtkProp>();
             props.add(actor);
@@ -153,7 +154,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 
         boundaryToActorsMap.put(boundary, new ArrayList<vtkProp>());
 
-        ArrayList<vtkProp> boundaryPieces = boundary.getProps();
+        List<vtkProp> boundaryPieces = boundary.getProps();
 
         boundaryToActorsMap.get(boundary).addAll(boundaryPieces);
 
@@ -188,7 +189,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
 //        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
 //    }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToBoundaryMap.keySet());
     }

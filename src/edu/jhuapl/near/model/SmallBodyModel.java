@@ -9,11 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
-
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
 
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
@@ -56,6 +53,10 @@ import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
+
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends Model
 {
@@ -928,7 +929,7 @@ public class SmallBodyModel extends Model
         }
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         initializeActorsAndMappers();
 

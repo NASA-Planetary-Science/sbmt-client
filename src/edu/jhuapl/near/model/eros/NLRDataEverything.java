@@ -2,6 +2,7 @@ package edu.jhuapl.near.model.eros;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkPolyDataMapper;
@@ -51,7 +52,7 @@ public class NLRDataEverything extends Model
         return "NLR data";
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         if (actors.isEmpty())
             initialize();

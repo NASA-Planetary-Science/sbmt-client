@@ -6,8 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
-import nom.tam.fits.FitsException;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkGenericCell;
@@ -28,6 +27,8 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.VtkDataTypes;
+
+import nom.tam.fits.FitsException;
 
 public class ColorImage extends Image implements PropertyChangeListener
 {
@@ -404,7 +405,7 @@ public class ColorImage extends Image implements PropertyChangeListener
     }
 
     @Override
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         if (footprintActor == null)
         {

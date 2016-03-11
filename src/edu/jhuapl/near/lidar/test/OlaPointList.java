@@ -16,20 +16,23 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MathUtil;
 
-public class OlaPointList
+public class OlaPointList implements LidarPointList
 {
-    List<OlaPoint> points=Lists.newArrayList();
+    List<LidarPoint> points=Lists.newArrayList();
 
+    @Override
     public int getNumberOfPoints()
     {
         return points.size();
     }
 
-    public OlaPoint getPoint(int i)
+    @Override
+    public LidarPoint getPoint(int i)
     {
         return points.get(i);
     }
 
+    @Override
     public void clear() {
         points.clear();
     }
@@ -61,10 +64,15 @@ public class OlaPointList
         return new BoundingBox(new double[]{xmin,xmax,ymin,ymax,zmin,zmax});
     }
 
-    public void appendFromL2File(Path l2FilePath)
+    @Override
+    public void appendFromFile(Path l2FilePath)
     {
         try
         {
+            String filePathString=l2FilePath.toString();
+            if (!filePathString.endsWith(".l2"))
+                throw new Exception("Incorrect file extension \""+filePathString.substring(filePathString.lastIndexOf('.'))+"\" expected .l2");
+
             DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(l2FilePath.toFile())));
 
             while (true)
@@ -111,7 +119,7 @@ public class OlaPointList
 
                 if (!noise)
                 {
-                    this.points.add(new OlaPoint(scpos, tgpos, time, intensity));
+                    this.points.add(new LidarPoint(scpos, tgpos, time, intensity));
                 }
             }
             in.close();

@@ -10,6 +10,7 @@ import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCamera;
@@ -75,7 +76,7 @@ public class DefaultPicker extends Picker
         smallBodyCellPicker = new vtkCellPicker();
         smallBodyCellPicker.PickFromListOn();
         smallBodyCellPicker.InitializePickList();
-        ArrayList<vtkProp> actors = smallBodyModel.getProps();
+        List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyCellPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();
         for (vtkProp act : actors)

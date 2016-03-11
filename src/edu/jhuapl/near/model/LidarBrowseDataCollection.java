@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -78,7 +79,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
 
     public void removeLidarData(String path)
     {
-        ArrayList<vtkProp> props = fileToLidarPerUnitMap.get(path).getProps();
+        List<vtkProp> props = fileToLidarPerUnitMap.get(path).getProps();
         for (vtkProp prop : props)
         {
             lidarPerUnitActors.remove(prop);
@@ -103,7 +104,7 @@ public class LidarBrowseDataCollection extends Model implements PropertyChangeLi
         return fileToLidarPerUnitMap.get(path);
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return lidarPerUnitActors;
     }
