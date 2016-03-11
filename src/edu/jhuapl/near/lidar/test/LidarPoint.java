@@ -17,6 +17,14 @@ public class LidarPoint implements Comparable<LidarPoint>
         this.intensity=intensity;
     }
 
+    public LidarPoint(double[] tgpos, double[] scpos, double time, double intensity)
+    {
+        this.scpos=new Vector3D(scpos);
+        this.tgpos=new Vector3D(tgpos);
+        this.time=time;
+        this.intensity=new Double(intensity);
+    }
+
     public LidarPoint(double[] tgpos, double[] scpos, double time)
     {
         this.scpos=new Vector3D(scpos);

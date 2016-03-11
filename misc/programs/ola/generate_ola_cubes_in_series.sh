@@ -1,26 +1,29 @@
 #!/bin/bash
 
+#
 # This script copies OLA level 2 data from the source directory to the pipeline directory,
 # creates a text file containing a list of these files, and processes the data for SBMT.
-# This script was modified from generate_nlr_cubes.sh. 
-#chmod u=rwx,g=rx,o=r /project/sbmtpipeline/processed/osirisrex/OLA/generate_ola_cubes.sh
+# This script was modified from generate_nlr_cubes.sh. It processes the OLA data on a 
+# single machine in series. Script batch_process_all_ola_files.sh is intended to replace
+# this script to process large numbers of OLA level 2 files.
+#
+# Pass the path to the SBMT source code on the command line.
+#
 
-SBMT_SRC_DIR=/homes/nguyel1/sbmt_workspace/sbmt
-SOURCE_INPUT_DIR=/project/osiris/altwg/outputdata/bennu_simulated_l2/
-SBMT_DATA_DIR_PREFIX=/project/nearsdc/data
+
+# Path to SBMT workspace
+SBMT_SRC_DIR=$1
+#SBMT_SRC_DIR=/homes/nguyel1/sbmt_workspace/sbmt
+
 SBMT_DATA_DIR_SUFFIX=/GASKELL/RQ36_V3/OLA
-SBMT_DATA_DIR=$SBMT_DATA_DIR_PREFIX$SBMT_DATA_DIR_SUFFIX
 INPUT_DIR=/project/sbmtpipeline/rawdata/osirisrex/OLA
 OUTPUT_DIR=/project/sbmtpipeline/processed/osirisrex/OLA
 
-# Copy source data to pipeline directory
-#cp $SOURCE_INPUT_DIR/*.l2 $INPUT_DIR
+mkdir -p $OUTPUT_DIR
 
-# Compress level 2 files (keep original files) and move zipped to model directory.
-#cd $SOURCE_INPUT_DIR
-#for file in *.l2 ; do
-#    gzip < "$file" > $INPUT_DIR/"$file".gz
-#done
+# Copy source data to pipeline directory (consider replacing "cp" with "rsync")
+#cp -r /project/osiris/altwg/outputdata/bennu_simulated_l2/Phase06_DS $INPUT_DIR
+#cp -r /project/osiris/altwg/outputdata/bennu_simulated_l2/Phase07_PS $INPUT_DIR
 
 # Create a list of all level 2 files for processing
 find -L $INPUT_DIR -maxdepth 1 -name "*.l2" -type f | sort > $OUTPUT_DIR/allOlaFiles.txt
@@ -53,8 +56,17 @@ touch allOlaFiles2.txt
 awk -v old=${INPUT_DIR} -v new=${SBMT_DATA_DIR_SUFFIX} '{gsub(old,new);print>"allOlaFiles2.txt"}' allOlaFiles.txt
 mv $OUTPUT_DIR/allOlaFiles2.txt $OUTPUT_DIR/allOlaFiles_moveToLiveDir.txt
 
-# Final move of processed data. Do this by hand.
-#cp $INPUT_DIR/*.l2 $SBMT_DATA_DIR
-#cp $OUTPUT_DIR/cubes/* $SBMT_DATA_DIR/cubes
-#cp $OUTPUT_DIR/allOlaFiles_moveToLiveDir.txt $SBMT_DATA_DIR/allOlaFiles.txt
+#
+# Final move of processed data to live directory:
+#
+# For new *.l2 files (and to keep existing files):
+#   1)  Rsync the *.l2 files to /project/nearsdc/data/GASKELL/RQ36_V3/OLA
+#   2)  *Merge* the new lidar cube files together with those in /project/nearsdc/data/GASKELL/RQ36_V3/OLA/cubes/ 
+#       directory (do not rsync if adding more data and keeping existing)
+#   3)  *Append* allOlaFiles_moveToLiveDir.txt content to the end of /project/nearsdc/data/GASKELL/RQ36_V3/OLA/allOlaFiles.txt
+#   4)  chmod 775 on all files
+#
+# For newer versions of existing *.l2 files: 
+# Will need to reprocess the entire dataset, then do the above steps except overwrite instead of append/merge.
+#
 

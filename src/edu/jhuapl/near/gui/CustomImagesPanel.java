@@ -512,8 +512,14 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         if (imageCollection.containsImage(imageKey))
         {
+            Image image = imageCollection.getImage(imageKey);
+            boolean visible = image.isVisible();
+            if (visible)
+                image.setVisible(false);
             imageCollection.removeImage(imageKey);
             imageCollection.addImage(imageKey);
+            if (visible)
+                image.setVisible(true);
         }
     }
 
@@ -1071,7 +1077,11 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 //        System.out.println("Custom Images Panel Item Selected");
 
         int index = imageList.getSelectedIndex();
-        String imagestring = imageList.getSelectedValue().toString();
+        Object selectedValue = imageList.getSelectedValue();
+        if (selectedValue == null)
+            return;
+
+        String imagestring = selectedValue.toString();
         String[]tokens = imagestring.split(",");
         String imagename = tokens[0].trim();
 //        System.out.println("Image: " + index + ", " + imagename);
