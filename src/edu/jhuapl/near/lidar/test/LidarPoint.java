@@ -53,7 +53,7 @@ public class LidarPoint implements Comparable<LidarPoint>
         return new double[]{scpos.getX(),scpos.getY(),scpos.getZ()};
     }
 
-    public Double getIntensity()
+    public Double getIntensityReceived()
     {
         return intensity;
     }

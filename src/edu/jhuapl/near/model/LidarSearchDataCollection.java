@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -268,7 +269,7 @@ public class LidarSearchDataCollection extends Model
 
                 if (pointInRegionChecker.checkPointIsInRegion(target))
                 {
-                    originalPoints.add(new LidarPoint(target, scpos, time));
+                    originalPoints.add(new LidarPoint(target, scpos, time, 0));
                 }
             }
 
@@ -360,7 +361,7 @@ public class LidarSearchDataCollection extends Model
                 throw new IOException("Error: Incorrect file format!");
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            originalPoints.add(new LidarPoint(target, scpos, time, 0));
         }
 
         in.close();
@@ -406,7 +407,7 @@ public class LidarSearchDataCollection extends Model
                 throw e;
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            originalPoints.add(new LidarPoint(target, scpos, time, 0));
         }
 
         in.close();
@@ -435,6 +436,7 @@ public class LidarSearchDataCollection extends Model
             double time = 0;
             double[] target = {0.0, 0.0, 0.0};
             double[] scpos = {0.0, 0.0, 0.0};
+            double intensityReceived = 0;
             boolean noise = false;
 
             try
@@ -453,7 +455,8 @@ public class LidarSearchDataCollection extends Model
                 skip(in, 8 + 2 * 3);
                 short flagStatus = MathUtil.swap(in.readShort());
                 noise = ((flagStatus == 0 || flagStatus == 1) ? false : true);
-                skip(in, 8 + 8 * 4);
+                skip(in, 8 + 8 * 3);
+                intensityReceived = FileUtil.readDoubleAndSwap(in);
                 target[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
@@ -469,7 +472,7 @@ public class LidarSearchDataCollection extends Model
             }
 
             if (!noise)
-                originalPoints.add(new LidarPoint(target, scpos, time));
+                originalPoints.add(new LidarPoint(target, scpos, time, intensityReceived));
         }
 
         in.close();
@@ -837,6 +840,12 @@ public class LidarSearchDataCollection extends Model
             int stopId = track.stopId;
             if (!track.hidden)
             {
+                // Variables to keep track of intensities
+                double minIntensity = Double.POSITIVE_INFINITY;
+                double maxIntensity = Double.NEGATIVE_INFINITY;
+                List<Double> intensityList = new LinkedList<Double>();
+
+                // Go through each point in the track
                 for (int i=startId; i<=stopId; ++i)
                 {
                     double[] pt = originalPoints.get(i).getTargetPositionAsArray();
@@ -846,9 +855,23 @@ public class LidarSearchDataCollection extends Model
                     idList.SetId(0, count);
                     vert.InsertNextCell(idList);
 
-                    colors.InsertNextTuple4(track.color[0], track.color[1], track.color[2], track.color[3]);
+                    double intensityReceived = originalPoints.get(i).getIntensityReceived();
+                    minIntensity = (intensityReceived < minIntensity) ? intensityReceived : minIntensity;
+                    maxIntensity = (intensityReceived > maxIntensity) ? intensityReceived : maxIntensity;
+                    intensityList.add(intensityReceived);
+
                     displayedPointToOriginalPointMap.add(i);
                     ++count;
+                }
+
+                // Assign colors to each point in that track
+                Color trackColor = new Color(track.color[0], track.color[1], track.color[2], track.color[3]);
+                float[] trackHSL = ColorUtil.getHSLColorComponents(trackColor);
+                Color plotColor;
+                for(double intensity : intensityList)
+                {
+                    plotColor = ColorUtil.scaleLightness(trackHSL, intensity, minIntensity, maxIntensity);
+                    colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
                 }
             }
         }
@@ -930,7 +953,14 @@ public class LidarSearchDataCollection extends Model
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
             double et = originalPoints.get(cellId).getTime();
-            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) + ", ET = %f", et);
+            double[] target = originalPoints.get(cellId).getTargetPositionAsArray();
+            double[] scpos = originalPoints.get(cellId).getSourcePositionAsArray();
+            double range_m = Math.sqrt(
+                    (target[0]-scpos[0])*(target[0]-scpos[0]) +
+                    (target[1]-scpos[1])*(target[1]-scpos[1]) +
+                    (target[2]-scpos[2])*(target[2]-scpos[2]))*1000;
+            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) +
+                    ", ET = %f, unmodified range = %f m", et, range_m);
         }
 
         return "";

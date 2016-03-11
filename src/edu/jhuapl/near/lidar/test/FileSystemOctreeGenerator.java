@@ -238,8 +238,11 @@ public class FileSystemOctreeGenerator
         //
         List<File> fileList=Lists.newArrayList();
         Collection<File> fileCollection=FileUtils.listFiles(olaL2FileDirectory.toFile(), new WildcardFileFilter("OBJLIST*.l2"), null);
-        for (File f : fileCollection)
+        fileCollection.addAll(FileUtils.listFiles(olaL2FileDirectory.toFile(), new WildcardFileFilter("g_0085*.l2"), null));
+        for (File f : fileCollection) {
+            System.out.println("Adding file "+f+" to the processing queue");
             fileList.add(f);
+        }
         //
         Stopwatch sw=new Stopwatch();
         int numFiles=fileList.size();
