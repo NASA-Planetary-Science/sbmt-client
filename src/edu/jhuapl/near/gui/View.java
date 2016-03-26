@@ -177,7 +177,7 @@ public class View extends JPanel
 
             if (smallBodyConfig.hasMapmaker)
             {
-                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.pathOnServer + "/mapmaker.zip");
+                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
         }

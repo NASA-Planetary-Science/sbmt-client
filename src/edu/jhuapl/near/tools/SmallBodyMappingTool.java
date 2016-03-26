@@ -32,7 +32,7 @@ public class SmallBodyMappingTool
 {
     private static vtkJavaGarbageCollector garbageCollector;
 
-    public static boolean useBetaTables = false;
+    public static boolean betaMode = false;
 
     static
     {
@@ -83,8 +83,8 @@ public class SmallBodyMappingTool
                     // Parse options that come first
                     int i = 0;
                     for (; i < args.length; ++i) {
-                        if (args[i].equals("--beta-tables")) {
-                            useBetaTables = true;
+                        if (args[i].equals("--beta")) {
+                            betaMode = true;
                         }else {
                             // We've encountered something that is not an option, must be at the args
                             break;

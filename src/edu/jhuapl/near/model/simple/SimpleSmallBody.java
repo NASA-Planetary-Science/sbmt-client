@@ -19,8 +19,8 @@ public class SimpleSmallBody extends SmallBodyModel
 
     static private String[] getImageMap(SmallBodyConfig config)
     {
-        System.out.println((new File(config.pathOnServer)).getParent() + "/image_map.png");
-        return new String[] {(new File(config.pathOnServer)).getParent() + "/image_map.png"};
+        System.out.println((new File(config.rootDirOnServer)).getParent() + "/image_map.png");
+        return new String[] {(new File(config.rootDirOnServer)).getParent() + "/image_map.png"};
     }
 
     static private final String[] coloringNames = {
@@ -52,8 +52,8 @@ public class SimpleSmallBody extends SmallBodyModel
     {
         super(config,
                 new String[] {config.body.toString()},
-                new String[] {config.pathOnServer},
-                config.hasColoringData ? getColoringFiles(config.pathOnServer) : null,
+                new String[] {config.rootDirOnServer},
+                config.hasColoringData ? getColoringFiles(config.rootDirOnServer) : null,
                 config.hasColoringData ? coloringNames : null,
                 config.hasColoringData ? coloringUnits : null,
                 null,

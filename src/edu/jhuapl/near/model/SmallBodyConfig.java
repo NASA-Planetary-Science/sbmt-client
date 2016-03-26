@@ -12,6 +12,7 @@ import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
 import edu.jhuapl.near.tools.OlaCubesGenerator;
+import edu.jhuapl.near.tools.SmallBodyMappingTool;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -290,7 +291,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/EROS";
+        c.rootDirOnServer = "/GASKELL/EROS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
@@ -342,7 +343,7 @@ public class SmallBodyConfig
         // Thomas Eros
         c = c.clone();
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/EROS";
+        c.rootDirOnServer = "/THOMAS/EROS";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
@@ -357,14 +358,14 @@ public class SmallBodyConfig
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNLR;
-        c.pathOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
+        c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         configArray.add(c);
 
         // Eros NAV
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNAV;
-        c.pathOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
+        c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -374,7 +375,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/ITOKAWA";
+        c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -429,7 +430,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.OSTRO;
-        c.pathOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
+        c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
         configArray.add(c);
 
         // Gaskell Phobos
@@ -439,7 +440,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/PHOBOS";
+        c.rootDirOnServer = "/GASKELL/PHOBOS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -478,7 +479,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
+        c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
         configArray.add(c);
 
         // New Gaskell Phobos (experimental)
@@ -490,7 +491,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.EXPERIMENTAL;
-            c.pathOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
+            c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -541,7 +542,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.hasImageMap = false;
 
@@ -586,7 +587,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
             c.hasImageMap = true;
 
             // imaging instruments
@@ -608,7 +609,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
 
             // imaging instruments
@@ -644,7 +645,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
@@ -680,7 +681,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
             c.hasImageMap = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
@@ -717,7 +718,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.JUPITER;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
+        c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -726,7 +727,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/MIMAS";
+        c.rootDirOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -754,7 +755,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/PHOEBE";
+        c.rootDirOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -785,7 +786,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/CERES";
+            c.rootDirOnServer = "/GASKELL/CERES";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
@@ -826,7 +827,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/VESTA";
+            c.rootDirOnServer = "/GASKELL/VESTA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
@@ -865,7 +866,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/VESTA_OLD";
+        c.rootDirOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -874,7 +875,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/IDA/243ida.llr.gz";
+        c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -901,7 +902,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/IDA/243ida.llr.gz";
+        c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -911,7 +912,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
+        c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -938,7 +939,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
+        c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -948,7 +949,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
+        c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -983,7 +984,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
+        c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -995,7 +996,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.EXPERIMENTAL;
-            c.pathOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
+            c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1029,7 +1030,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
+        c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1038,7 +1039,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
+        c.rootDirOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1047,7 +1048,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1056,7 +1057,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1065,7 +1066,7 @@ public class SmallBodyConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
+        c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1074,7 +1075,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
+        c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1083,7 +1084,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
+        c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1092,7 +1093,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
+        c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1101,7 +1102,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.pathOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
+        c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1110,7 +1111,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
+        c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1119,7 +1120,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
+        c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1128,7 +1129,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
+        c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1137,7 +1138,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
+        c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1146,7 +1147,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
+        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1155,7 +1156,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1164,7 +1165,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
+        c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1173,7 +1174,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/52760/52760.obj.gz";
+        c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1182,7 +1183,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
+        c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1191,7 +1192,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/YORP/yorp.obj.gz";
+        c.rootDirOnServer = "/HUDSON/YORP/yorp.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1201,7 +1202,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/WT24/wt24.obj.gz";
+        c.rootDirOnServer = "/HUDSON/WT24/wt24.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1211,7 +1212,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/SK/sk.obj.gz";
+        c.rootDirOnServer = "/HUDSON/SK/sk.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1221,7 +1222,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
+        c.rootDirOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1231,7 +1232,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
+        c.rootDirOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1241,7 +1242,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
+        c.rootDirOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1251,7 +1252,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
+        c.rootDirOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1261,7 +1262,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
+        c.rootDirOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1271,7 +1272,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
+        c.rootDirOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1281,7 +1282,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
+        c.rootDirOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1291,7 +1292,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/CE26/ce26.obj.gz";
+        c.rootDirOnServer = "/HUDSON/CE26/ce26.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1301,7 +1302,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
+        c.rootDirOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1311,7 +1312,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
+        c.rootDirOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1321,7 +1322,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
+        c.rootDirOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1331,7 +1332,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
-        c.pathOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
+        c.rootDirOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1341,7 +1342,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.NOLAN;
-        c.pathOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1353,7 +1354,7 @@ public class SmallBodyConfig
             c.dataUsed = ShapeModelDataUsed.ENHANCED;
             c.author = ShapeModelAuthor.GASKELL;
             c.version = "V2";
-            c.pathOnServer = "/GASKELL/RQ36";
+            c.rootDirOnServer = "/GASKELL/RQ36";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasLidarData = true;
@@ -1387,7 +1388,7 @@ public class SmallBodyConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
             c.version = "V3 Image";
-            c.pathOnServer = "/GASKELL/RQ36_V3";
+            c.rootDirOnServer = "/GASKELL/RQ36_V3";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
@@ -1447,7 +1448,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/LUTETIA";
+            c.rootDirOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -1476,7 +1477,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.JORDA;
-        c.pathOnServer = "/JORDA/LUTETIA";
+        c.rootDirOnServer = "/JORDA/LUTETIA";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
                 "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
@@ -1494,7 +1495,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.JORDA;
-        c.pathOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1503,7 +1504,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/DIONE";
+        c.rootDirOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -1531,7 +1532,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
-        c.pathOnServer = "/GASKELL/TETHYS";
+        c.rootDirOnServer = "/GASKELL/TETHYS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         configArray.add(c);
@@ -1544,7 +1545,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/HYPERION";
+            c.rootDirOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             configArray.add(c);
@@ -1558,7 +1559,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/RHEA";
+            c.rootDirOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             configArray.add(c);
@@ -1570,7 +1571,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1581,7 +1582,7 @@ public class SmallBodyConfig
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.pathOnServer = "/GASKELL/TEMPEL1";
+            c.rootDirOnServer = "/GASKELL/TEMPEL1";
             configArray.add(c);
         }
 
@@ -1591,7 +1592,7 @@ public class SmallBodyConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
+        c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1600,7 +1601,7 @@ public class SmallBodyConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.DUXBURY;
-        c.pathOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
+        c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1609,7 +1610,7 @@ public class SmallBodyConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.pathOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1621,7 +1622,7 @@ public class SmallBodyConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
             c.version = "SHAP5 V0.3";
-            c.pathOnServer = "/GASKELL/67P";
+            c.rootDirOnServer = "/GASKELL/67P";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -1658,7 +1659,7 @@ public class SmallBodyConfig
 
             c = c.clone();
             c.author = ShapeModelAuthor.DLR;
-            c.pathOnServer = "/DLR/67P";
+            c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR");
             c.smallBodyLabelPerResolutionLevel = new String[]{
@@ -1670,7 +1671,7 @@ public class SmallBodyConfig
             };
             configArray.add(c);
 
-            // 67P_V2 Nov. 2015 entry
+            // 67P_V2
             c = new SmallBodyConfig();
             c.body = ShapeModelBody._67P;
             c.type = ShapeModelType.COMETS;
@@ -1678,15 +1679,74 @@ public class SmallBodyConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
             c.version = "V2";
-            c.pathOnServer = "/GASKELL/67P_V2";
+            c.rootDirOnServer = "/GASKELL/67P_V2";
+
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
+                            SmallBodyMappingTool.betaMode ?
+                                    new GenericPhpQuery("/GASKELL/67P_V2_beta/IMAGING", "67P_V2","_beta") :
+                                        new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    // If a name, begins with a star, it is not selected by default
+                    "*Filter 1,2",
+                    "*Filter 1,6",
+                    "*Filter 1,8",
+                    "Filter 2,2",
+                    "*Filter 2,3",
+                    "*Filter 2,4",
+                    "*Filter 2,7",
+                    "*Filter 2,8",
+                    "*Filter 4,1",
+                    "*Filter 5,1",
+                    "*Filter 5,4",
+                    "*Filter 6,1",
+                    "*Filter 1,3",
+                    "*Filter 1,5",
+                    "*Filter 1,7",
+                    "*Filter 3,1",
+                    "*Filter 7,1",
+                    "*Filter 8,2",
+                    "*Filter 8,4",
+                    "*Filter 8,7",
+                    "*Filter 8,8"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            configArray.add(c);
+
+            // 67P_V3
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody._67P;
+            c.type = ShapeModelType.COMETS;
+            c.population = null;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V3";
+            c.rootDirOnServer = "/GASKELL/67P_V3";
+
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            SmallBodyMappingTool.betaMode ?
+                                    new GenericPhpQuery("/GASKELL/67P_V3_beta/IMAGING", "67P_V3","_beta") :
+                                        new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3"),
+                            //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.OSIRIS
@@ -1730,7 +1790,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
-        c.pathOnServer = "/CARRY/PALLAS/pallas.obj.gz";
+        c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1739,7 +1799,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
-        c.pathOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
+        c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
         configArray.add(c);
 
         c = new SmallBodyConfig();
@@ -1748,7 +1808,7 @@ public class SmallBodyConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
-        c.pathOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
+        c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1760,7 +1820,7 @@ public class SmallBodyConfig
             c.dataUsed = null;
             c.author = null;
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
-            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1805,7 +1865,7 @@ public class SmallBodyConfig
             c.dataUsed = null;
             c.author = null;
 //            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
-            c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1843,7 +1903,7 @@ public class SmallBodyConfig
             c.dataUsed = null;
             c.author = null;
 //            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
-            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1879,7 +1939,7 @@ public class SmallBodyConfig
             c.dataUsed = null;
             c.author = null;
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
-            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1914,7 +1974,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
 
@@ -1924,7 +1984,7 @@ public class SmallBodyConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
-            c.pathOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
         }
@@ -1936,7 +1996,7 @@ public class SmallBodyConfig
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
     public ShapeModelAuthor author; // e.g. Gaskell
     public String version; // e.g. 2.0
-    public String pathOnServer;
+    public String rootDirOnServer;
     public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
     public boolean hasColoringData = true;
@@ -1946,6 +2006,10 @@ public class SmallBodyConfig
     public boolean hasMapmaker = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
+    public boolean hasCustomBodyCubeSize = false;
+
+    // if hasCustomBodyCubeSize is true, the following must be filled in and valid
+    public int customBodyCubeSize; // km
 
     // if spectralModes is not empty, the following must be filled in
     public Date imageSearchDefaultStartDate;
@@ -1991,7 +2055,7 @@ public class SmallBodyConfig
         c.dataUsed = this.dataUsed;
         c.author = this.author;
         c.version = this.version;
-        c.pathOnServer = this.pathOnServer;
+        c.rootDirOnServer = this.rootDirOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
 
@@ -2008,6 +2072,8 @@ public class SmallBodyConfig
         c.hasMapmaker = this.hasMapmaker;
         c.hasSpectralData = this.hasSpectralData;
         c.hasLineamentData = this.hasLineamentData;
+        c.hasCustomBodyCubeSize = this.hasCustomBodyCubeSize;
+        c.customBodyCubeSize = this.customBodyCubeSize;
         if (this.smallBodyLabelPerResolutionLevel != null)
             c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
         if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)

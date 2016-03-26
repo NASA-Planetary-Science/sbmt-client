@@ -3,6 +3,8 @@ package edu.jhuapl.near.model;
 import java.io.IOException;
 import java.util.HashMap;
 
+import nom.tam.fits.FitsException;
+
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.SpectralMode;
@@ -36,8 +38,6 @@ import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
-
-import nom.tam.fits.FitsException;
 
 public class ModelFactory
 {
@@ -167,7 +167,7 @@ public class ModelFactory
                         name + " low"
                 };
                 String[] paths = {
-                        config.pathOnServer + "/ver64q.vtk.gz",
+                        config.rootDirOnServer + "/ver64q.vtk.gz",
                 };
 
                 return new SimpleSmallBody(config, names, paths);
@@ -181,10 +181,10 @@ public class ModelFactory
                         name + " very high"
                 };
                 String[] paths = {
-                        config.pathOnServer + "/ver64q.vtk.gz",
-                        config.pathOnServer + "/ver128q.vtk.gz",
-                        config.pathOnServer + "/ver256q.vtk.gz",
-                        config.pathOnServer + "/ver512q.vtk.gz"
+                        config.rootDirOnServer + "/ver64q.vtk.gz",
+                        config.rootDirOnServer + "/ver128q.vtk.gz",
+                        config.rootDirOnServer + "/ver256q.vtk.gz",
+                        config.rootDirOnServer + "/ver512q.vtk.gz"
                 };
 
                 return new SimpleSmallBody(config, names, paths);
@@ -223,10 +223,10 @@ public class ModelFactory
         if (ShapeModelAuthor.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
         {
             String[] graticulePaths = new String[]{
-                    config.pathOnServer + "/coordinate_grid_res0.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res1.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res2.vtk.gz",
-                    config.pathOnServer + "/coordinate_grid_res3.vtk.gz"
+                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
             };
 
             return new Graticule(smallBodyModel, graticulePaths);
