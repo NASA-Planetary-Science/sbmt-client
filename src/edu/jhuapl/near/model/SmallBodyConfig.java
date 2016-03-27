@@ -1737,6 +1737,9 @@ public class SmallBodyConfig
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/67P_V3";
 
+            c.hasCustomBodyCubeSize = true;
+            c.customBodyCubeSize = 0.05; // km
+
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -1776,7 +1779,8 @@ public class SmallBodyConfig
                     "*Filter 8,2",
                     "*Filter 8,4",
                     "*Filter 8,7",
-                    "*Filter 8,8"
+                    "*Filter 8,8",
+                    "*Filter 2,1"
             };
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
@@ -2009,7 +2013,7 @@ public class SmallBodyConfig
     public boolean hasCustomBodyCubeSize = false;
 
     // if hasCustomBodyCubeSize is true, the following must be filled in and valid
-    public int customBodyCubeSize; // km
+    public double customBodyCubeSize; // km
 
     // if spectralModes is not empty, the following must be filled in
     public Date imageSearchDefaultStartDate;
