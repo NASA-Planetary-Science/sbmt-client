@@ -1738,7 +1738,7 @@ public class SmallBodyConfig
             c.rootDirOnServer = "/GASKELL/67P_V3";
 
             c.hasCustomBodyCubeSize = true;
-            c.customBodyCubeSize = 0.05; // km
+            c.customBodyCubeSize = 0.10; // km
 
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
