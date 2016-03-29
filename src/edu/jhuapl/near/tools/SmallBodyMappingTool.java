@@ -16,6 +16,7 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
+import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -31,8 +32,6 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
 public class SmallBodyMappingTool
 {
     private static vtkJavaGarbageCollector garbageCollector;
-
-    public static boolean betaMode = false;
 
     static
     {
@@ -84,7 +83,7 @@ public class SmallBodyMappingTool
                     int i = 0;
                     for (; i < args.length; ++i) {
                         if (args[i].equals("--beta")) {
-                            betaMode = true;
+                            SmallBodyConfig.betaMode = true;
                         }else {
                             // We've encountered something that is not an option, must be at the args
                             break;

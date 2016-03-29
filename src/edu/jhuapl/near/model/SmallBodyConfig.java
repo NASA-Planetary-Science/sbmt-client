@@ -12,7 +12,6 @@ import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
 import edu.jhuapl.near.tools.OlaCubesGenerator;
-import edu.jhuapl.near.tools.SmallBodyMappingTool;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -24,6 +23,9 @@ import edu.jhuapl.near.util.Configuration;
  */
 public class SmallBodyConfig
 {
+    // Flag for beta mode
+    public static boolean betaMode = false;
+
     // Names of built-in small body models
     static public enum ShapeModelBody
     {
@@ -1687,8 +1689,8 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            SmallBodyMappingTool.betaMode ?
-                                    new GenericPhpQuery("/GASKELL/67P_V2_beta/IMAGING", "67P_V2","_beta") :
+                            betaMode ?
+                                    new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2","_beta") :
                                         new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
@@ -1696,8 +1698,8 @@ public class SmallBodyConfig
                             Instrument.OSIRIS
                             )
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 1,2",
@@ -1737,8 +1739,15 @@ public class SmallBodyConfig
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/67P_V3";
 
-            c.hasCustomBodyCubeSize = true;
-            c.customBodyCubeSize = 0.10; // km
+            if(betaMode)
+            {
+                c.hasCustomBodyCubeSize = false;
+            }
+            else
+            {
+                c.hasCustomBodyCubeSize = true;
+                c.customBodyCubeSize = 0.10; // km
+            }
 
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1746,8 +1755,8 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            SmallBodyMappingTool.betaMode ?
-                                    new GenericPhpQuery("/GASKELL/67P_V3_beta/IMAGING", "67P_V3","_beta") :
+                            betaMode ?
+                                    new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3","_beta") :
                                         new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3"),
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
@@ -1755,8 +1764,8 @@ public class SmallBodyConfig
                             Instrument.OSIRIS
                             )
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 10, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 1,2",
