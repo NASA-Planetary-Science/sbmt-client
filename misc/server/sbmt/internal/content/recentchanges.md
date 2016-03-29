@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### March 11, 2016
+
+-   Improved performance of OLA search for Bennu using a tree search algorithm
+
 ### March 9, 2016
 
 -   3D view now switches to lower level of detail for shape and lidar data when dragging or zooming to improve interactive performance
