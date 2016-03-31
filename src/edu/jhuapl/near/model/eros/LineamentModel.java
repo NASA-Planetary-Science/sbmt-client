@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -278,7 +279,7 @@ public class LineamentModel extends Model
 
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return lineamentActors;
     }

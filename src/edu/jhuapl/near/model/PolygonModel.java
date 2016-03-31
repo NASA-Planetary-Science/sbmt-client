@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
@@ -32,7 +33,7 @@ public class PolygonModel extends LineModel
 
     private vtkUnsignedCharArray interiorColors;
 
-    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private List<vtkProp> actors = new ArrayList<vtkProp>();
 
     private SmallBodyModel smallBodyModel;
 
@@ -140,7 +141,7 @@ public class PolygonModel extends LineModel
 
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         ArrayList<vtkProp> allActors = new ArrayList<vtkProp>(actors);
         allActors.addAll(super.getProps());

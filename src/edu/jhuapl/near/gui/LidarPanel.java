@@ -23,5 +23,11 @@ public class LidarPanel extends JTabbedPane
 
         addTab("Browse", lidarBrowsePanel);
         addTab("Search", lidarSearchPanel);
+
+        if (smallBodyConfig.hasTreeBasedLidarSearch)
+        {
+            LidarSearchPanel treeBasedLidarSearchPanel=new LidarTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+            addTab("TreeSearch", treeBasedLidarSearchPanel);
+        }
     }
 }

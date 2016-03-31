@@ -6,8 +6,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -45,6 +45,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 
 public class Renderer extends JPanel implements
             PropertyChangeListener, ActionListener
@@ -105,6 +106,7 @@ public class Renderer extends JPanel implements
     // axes are enabled
     private boolean interactiveAxes = true;
     private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
+    public static boolean enableLODs = true; // This is temporary to show off the LOD feature, very soon we will replace this with an actual menu
 
     public Renderer(final ModelManager modelManager)
     {
@@ -190,6 +192,10 @@ public class Renderer extends JPanel implements
         orientationWidget.SetTolerance(10);
         setAxesSize(Preferences.getInstance().getAsDouble(Preferences.AXES_SIZE, 0.2));
 
+        // Setup observers for start/stop interaction events
+        renWin.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
+        renWin.getRenderWindowInteractor().AddObserver("EndInteractionEvent", this, "onEndInteraction");
+
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -203,7 +209,7 @@ public class Renderer extends JPanel implements
         });
     }
 
-    public void setProps(ArrayList<vtkProp> props)
+    public void setProps(List<vtkProp> props)
     {
         // Go through the props and if an prop is already in the renderer,
         // do nothing. If not, add it. If an prop not listed is
@@ -253,6 +259,38 @@ public class Renderer extends JPanel implements
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
         renWin.Render();
+    }
+
+    public void onStartInteraction()
+    {
+        // LOD switching control for SbmtLODActor
+        if(enableLODs && modelManager != null)
+        {
+            List<vtkProp> props = modelManager.getProps();
+            for(vtkProp prop : props)
+            {
+                if(prop instanceof SbmtLODActor)
+                {
+                    ((SbmtLODActor)prop).selectMapper(Integer.MIN_VALUE);
+                }
+            }
+        }
+    }
+
+    public void onEndInteraction()
+    {
+        // LOD switching control for SbmtLODActor
+        if(enableLODs && modelManager != null)
+        {
+            List<vtkProp> props = modelManager.getProps();
+            for(vtkProp prop : props)
+            {
+                if(prop instanceof SbmtLODActor)
+                {
+                    ((SbmtLODActor)prop).selectMapper(Integer.MAX_VALUE);
+                }
+            }
+        }
     }
 
     /*

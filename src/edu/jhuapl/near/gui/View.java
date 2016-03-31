@@ -163,14 +163,21 @@ public class View extends JPanel
             controlPanel.addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
             if (!smallBodyConfig.customTemporary)
             {
-                controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer).init());
+                ImagingInstrument instrument = null;
+                for (ImagingInstrument i : smallBodyConfig.imagingInstruments)
+                {
+                    instrument = i;
+                    break;
+                }
+
+                controlPanel.addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init());
             }
 
             controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
 
             if (smallBodyConfig.hasMapmaker)
             {
-                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.pathOnServer + "/mapmaker.zip");
+                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
         }

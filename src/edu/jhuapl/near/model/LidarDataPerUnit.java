@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -19,12 +22,15 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
+import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.DoublePair;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarDataPerUnit extends Model
@@ -40,6 +46,7 @@ public class LidarDataPerUnit extends Model
     private vtkGeometryFilter geometryFilterSc;
     private String filepath;
     private vtkDoubleArray times;
+    private vtkDoubleArray ranges;
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
@@ -54,6 +61,9 @@ public class LidarDataPerUnit extends Model
         int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
         boolean isBinary = smallBodyConfig.lidarBrowseIsBinary;
         int binaryRecordSize = smallBodyConfig.lidarBrowseBinaryRecordSize;
+        int outgoingIntensityIndex = smallBodyConfig.lidarBrowseOutgoingIntensityIndex;
+        int receivedIntensityIndex = smallBodyConfig.lidarBrowseReceivedIntensityIndex;
+        boolean intensityEnabled = smallBodyConfig.lidarBrowseIntensityEnabled;
 
         File file = FileCache.getFileFromServer(path);
 
@@ -68,16 +78,17 @@ public class LidarDataPerUnit extends Model
         vtkCellArray vert = new vtkCellArray();
         polydata.SetPoints( points );
         polydata.SetVerts( vert );
-
+        vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
+        colors.SetNumberOfComponents(4);
+        polydata.GetCellData().SetScalars(colors);
 
         polydataSc = new vtkPolyData();
         vtkPoints pointsSc = new vtkPoints();
         vtkCellArray vertSc = new vtkCellArray();
         polydataSc.SetPoints( pointsSc );
         polydataSc.SetVerts( vertSc );
-
-
         times = new vtkDoubleArray();
+        ranges = new vtkDoubleArray();
 
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
@@ -93,6 +104,23 @@ public class LidarDataPerUnit extends Model
 
         FileInputStream fs = new FileInputStream(file.getAbsolutePath());
 
+        // Set base color
+        Color baseColor;
+        if (path.contains("_v2"))
+        {
+            baseColor = new Color(255, 255, 0);
+        }
+        else
+        {
+            baseColor = new Color(0, 0, 255);
+        }
+
+        // Variables to keep track of intensities
+        double minIntensity = Double.POSITIVE_INFINITY;
+        double maxIntensity = Double.NEGATIVE_INFINITY;
+        List<Double> intensityList = new LinkedList<Double>();
+
+        // Parse data
         if (isBinary)
         {
             FileChannel channel = fs.getChannel();
@@ -117,6 +145,7 @@ public class LidarDataPerUnit extends Model
                 int scyoffset = count*binaryRecordSize + scyindex;
                 int sczoffset = count*binaryRecordSize + sczindex;
 
+                // Add lidar (x,y,z) and spacecraft (scx,scy,scz) data
                 double x = bb.getDouble(xoffset);
                 double y = bb.getDouble(yoffset);
                 double z = bb.getDouble(zoffset);
@@ -136,6 +165,23 @@ public class LidarDataPerUnit extends Model
                 points.InsertNextPoint(x, y, z);
                 idList.SetId(0, count);
                 vert.InsertNextCell(idList);
+
+                // Save range data
+                ranges.InsertNextValue(Math.sqrt((x-scx)*(x-scx) + (y-scy)*(y-scy) + (z-scz)*(z-scz)));
+
+                // Extract the received intensity
+                double irec = 0.0;
+                if(intensityEnabled)
+                {
+                    // Extract received intensity and keep track of min/max encountered so far
+                    int recIntensityOffset = count*binaryRecordSize + receivedIntensityIndex;
+                    irec = bb.getDouble(recIntensityOffset);
+                }
+
+                // Add to list and keep track of min/max encountered so far
+                minIntensity = (irec < minIntensity) ? irec : minIntensity;
+                maxIntensity = (irec > maxIntensity) ? irec : maxIntensity;
+                intensityList.add(irec);
 
                 // assume no spacecraft position for now
                 pointsSc.InsertNextPoint(scx, scy, scz);
@@ -206,6 +252,21 @@ public class LidarDataPerUnit extends Model
                 pointsSc.InsertNextPoint(scx, scy, scz);
                 vertSc.InsertNextCell(idList);
 
+                // Save range data
+                ranges.InsertNextValue(Math.sqrt((x-scx)*(x-scx) + (y-scy)*(y-scy) + (z-scz)*(z-scz)));
+
+                // Extract the received intensity
+                double irec = 0.0;
+                if(intensityEnabled)
+                {
+                    irec = Double.parseDouble(vals[receivedIntensityIndex]);
+                }
+
+                // Add to list and keep track of min/max encountered so far
+                minIntensity = (irec < minIntensity) ? irec : minIntensity;
+                maxIntensity = (irec > maxIntensity) ? irec : maxIntensity;
+                intensityList.add(irec);
+
                 // We store the times in a vtk array. By storing in a vtk array, we don't have to
                 // worry about java out of memory errors since java doesn't know about c++ memory.
                 double t = TimeUtil.str2et(vals[timeindex]);
@@ -217,6 +278,17 @@ public class LidarDataPerUnit extends Model
             in.close();
         }
 
+        // Color each point based on base color scaled by intensity
+        Color plotColor;
+        float[] baseHSL = ColorUtil.getHSLColorComponents(baseColor);
+        for(double intensity : intensityList)
+        {
+            plotColor = ColorUtil.scaleLightness(baseHSL, intensity, minIntensity, maxIntensity);
+            colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
+        }
+
+        polydata.GetCellData().GetScalars().Modified();
+        polydata.Modified();
 
         originalPoints = new vtkPoints();
         originalPoints.DeepCopy(points);
@@ -243,30 +315,27 @@ public class LidarDataPerUnit extends Model
         geometryFilterSc.SetPointMaximum(count);
 
         vtkPolyDataMapper pointsMapper = new vtkPolyDataMapper();
+        pointsMapper.SetScalarModeToUseCellData();
         pointsMapper.SetInputConnection(geometryFilter.GetOutputPort());
 
-        vtkActor actor = new vtkActor();
+        vtkActor actor = new SbmtLODActor();
         actor.SetMapper(pointsMapper);
-        actor.GetProperty().SetColor(0.0, 0.0, 1.0);
-        if (path.contains("_v2"))
-            actor.GetProperty().SetColor(1.0, 1.0, 0.0);
+        vtkPolyDataMapper lodMapper = ((SbmtLODActor)actor).addQuadricDecimatedLODMapper(geometryFilter.GetOutputPort());
 
         actor.GetProperty().SetPointSize(2.0);
-
 
         vtkPolyDataMapper pointsMapperSc = new vtkPolyDataMapper();
         pointsMapperSc.SetInputConnection(geometryFilterSc.GetOutputPort());
 
-        actorSpacecraft = new vtkActor();
+        actorSpacecraft = new SbmtLODActor();
         actorSpacecraft.SetMapper(pointsMapperSc);
+        ((SbmtLODActor)actorSpacecraft).addQuadricDecimatedLODMapper(geometryFilterSc.GetOutputPort());
         actorSpacecraft.GetProperty().SetColor(0.0, 1.0, 0.0);
         // for Itokawa optimized lidar data, show in different color.
         if (path.contains("_v2"))
             actorSpacecraft.GetProperty().SetColor(1.0, 0.0, 1.0);
 
         actorSpacecraft.GetProperty().SetPointSize(2.0);
-
-
 
         actors.add(actor);
         actors.add(actorSpacecraft);
@@ -329,10 +398,12 @@ public class LidarDataPerUnit extends Model
 
         String timeStr = TimeUtil.et2str(times.GetValue(cellId));
 
-        return String.format("Lidar point " + file.getName() + " acquired at " + timeStr + ", ET = %f", times.GetValue(cellId));
+        return String.format("Lidar point " + file.getName() + " acquired at " + timeStr +
+                ", ET = %f, unmodified range = %f m", times.GetValue(cellId),
+                ranges.GetValue(cellId)*1000);
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return actors;
     }

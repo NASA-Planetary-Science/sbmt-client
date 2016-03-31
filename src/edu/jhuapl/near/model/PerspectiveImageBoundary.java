@@ -5,6 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCellArray;
@@ -223,7 +224,7 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
     }
 
     @Override
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         ArrayList<vtkProp> props = new ArrayList<vtkProp>();
         props.add(actor);

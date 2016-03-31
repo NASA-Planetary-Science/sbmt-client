@@ -6,9 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
-
-import nom.tam.fits.FitsException;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -16,6 +15,8 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.util.Properties;
+
+import nom.tam.fits.FitsException;
 
 public class ImageCollection extends Model implements PropertyChangeListener
 {
@@ -74,7 +75,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
 
         imageToActorsMap.put(image, new ArrayList<vtkProp>());
 
-        ArrayList<vtkProp> imagePieces = image.getProps();
+        List<vtkProp> imagePieces = image.getProps();
 
         imageToActorsMap.get(image).addAll(imagePieces);
 
@@ -118,7 +119,7 @@ public class ImageCollection extends Model implements PropertyChangeListener
                 removeImage(image.getKey());
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToImageMap.keySet());
     }

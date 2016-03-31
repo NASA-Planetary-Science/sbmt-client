@@ -5,8 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import nom.tam.fits.FitsException;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -14,6 +13,8 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.util.Properties;
+
+import nom.tam.fits.FitsException;
 
 public class ColorImageCollection extends Model implements PropertyChangeListener
 {
@@ -71,7 +72,7 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
 
         imageToActorsMap.put(image, new ArrayList<vtkProp>());
 
-        ArrayList<vtkProp> imagePieces = image.getProps();
+        List<vtkProp> imagePieces = image.getProps();
 
         imageToActorsMap.get(image).addAll(imagePieces);
 
@@ -107,7 +108,7 @@ public class ColorImageCollection extends Model implements PropertyChangeListene
             removeImage(image.getColorKey());
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToImageMap.keySet());
     }

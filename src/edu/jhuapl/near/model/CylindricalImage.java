@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkAlgorithmOutput;
@@ -668,7 +669,7 @@ public class CylindricalImage extends Image
         return false;
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         if (smallBodyActor == null)
         {

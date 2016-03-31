@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import vtk.vtkProp;
 
@@ -40,7 +41,7 @@ public class ModelManager extends Model implements PropertyChangeListener
         updateProps();
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return props;
     }

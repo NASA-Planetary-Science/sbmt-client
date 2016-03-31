@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -38,6 +40,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.near.lidar.test.LidarPoint;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -45,6 +48,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.near.util.gravity.Gravity;
 
@@ -61,7 +65,7 @@ public class LidarSearchDataCollection extends Model
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
-    private ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
+    protected ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper pointsMapper;
     private vtkPolyDataMapper selectedPointMapper;
@@ -69,8 +73,8 @@ public class LidarSearchDataCollection extends Model
     private vtkActor selectedPointActor;
     private vtkPolyData emptyPolyData; // an empty polydata for resetting
 
-    private double radialOffset = 0.0;
-    private double[] translation = {0.0, 0.0, 0.0};
+    protected double radialOffset = 0.0;
+    protected double[] translation = {0.0, 0.0, 0.0};
 
     private String dataSource;
     private double startDate;
@@ -86,25 +90,6 @@ public class LidarSearchDataCollection extends Model
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
     private boolean enableTrackErrorComputation = false;
     private double trackError;
-
-    private class LidarPoint implements Comparable<LidarPoint>
-    {
-        public double[] target;
-        public double[] scpos;
-        public Double time;
-
-        public LidarPoint(double[] target, double[] scpos, double time)
-        {
-            this.target = target;
-            this.scpos = scpos;
-            this.time = time;
-        }
-
-        public int compareTo(LidarPoint o)
-        {
-            return time.compareTo(o.time);
-        }
-    }
 
     private class Track
     {
@@ -152,14 +137,16 @@ public class LidarSearchDataCollection extends Model
         selectedPointMapper = new vtkPolyDataMapper();
         selectedPointMapper.SetInputData(selectedPointPolydata);
 
-        actor = new vtkActor();
+        actor = new SbmtLODActor();
         actor.SetMapper(pointsMapper);
+        ((SbmtLODActor)actor).addQuadricDecimatedLODMapper(polydata);
         actor.GetProperty().SetPointSize(2.0);
 
         actors.add(actor);
 
-        selectedPointActor = new vtkActor();
+        selectedPointActor = new SbmtLODActor();
         selectedPointActor.SetMapper(selectedPointMapper);
+        ((SbmtLODActor)selectedPointActor).addQuadricDecimatedLODMapper(selectedPointPolydata);
         selectedPointActor.GetProperty().SetColor(0.1, 0.1, 1.0);
         selectedPointActor.GetProperty().SetPointSize(7.0);
 
@@ -208,7 +195,7 @@ public class LidarSearchDataCollection extends Model
     }
 
 
-    private void runQuery(
+    protected void runQuery(
             String dataSource,
             double startDate,
             double stopDate,
@@ -282,7 +269,7 @@ public class LidarSearchDataCollection extends Model
 
                 if (pointInRegionChecker.checkPointIsInRegion(target))
                 {
-                    originalPoints.add(new LidarPoint(target, scpos, time));
+                    originalPoints.add(new LidarPoint(target, scpos, time, 0));
                 }
             }
 
@@ -374,7 +361,7 @@ public class LidarSearchDataCollection extends Model
                 throw new IOException("Error: Incorrect file format!");
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            originalPoints.add(new LidarPoint(target, scpos, time, 0));
         }
 
         in.close();
@@ -420,7 +407,7 @@ public class LidarSearchDataCollection extends Model
                 throw e;
             }
 
-            originalPoints.add(new LidarPoint(target, scpos, time));
+            originalPoints.add(new LidarPoint(target, scpos, time, 0));
         }
 
         in.close();
@@ -449,6 +436,7 @@ public class LidarSearchDataCollection extends Model
             double time = 0;
             double[] target = {0.0, 0.0, 0.0};
             double[] scpos = {0.0, 0.0, 0.0};
+            double intensityReceived = 0;
             boolean noise = false;
 
             try
@@ -467,7 +455,8 @@ public class LidarSearchDataCollection extends Model
                 skip(in, 8 + 2 * 3);
                 short flagStatus = MathUtil.swap(in.readShort());
                 noise = ((flagStatus == 0 || flagStatus == 1) ? false : true);
-                skip(in, 8 + 8 * 4);
+                skip(in, 8 + 8 * 3);
+                intensityReceived = FileUtil.readDoubleAndSwap(in);
                 target[0] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[1] = FileUtil.readDoubleAndSwap(in) / 1000.0;
                 target[2] = FileUtil.readDoubleAndSwap(in) / 1000.0;
@@ -483,7 +472,7 @@ public class LidarSearchDataCollection extends Model
             }
 
             if (!noise)
-                originalPoints.add(new LidarPoint(target, scpos, time));
+                originalPoints.add(new LidarPoint(target, scpos, time, intensityReceived));
         }
 
         in.close();
@@ -560,7 +549,7 @@ public class LidarSearchDataCollection extends Model
         return numVisibleTracks;
     }
 
-    private void computeTracks()
+    protected void computeTracks()
     {
         tracks.clear();
 
@@ -568,14 +557,14 @@ public class LidarSearchDataCollection extends Model
         if (size == 0)
             return;
 
-        double prevTime = originalPoints.get(0).time;
+        double prevTime = originalPoints.get(0).getTime();
         Track track = new Track();
         track.startId = 0;
         tracks.add(track);
 
         for (int i=1; i<size; ++i)
         {
-            double currentTime = originalPoints.get(i).time;
+            double currentTime = originalPoints.get(i).getTime();
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
                 track.stopId = i-1;
@@ -615,15 +604,15 @@ public class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
-            double[] target = pt.target;
-            double[] scpos = pt.scpos;
+            double[] target = pt.getTargetPositionAsArray();
+            double[] scpos = pt.getSourcePositionAsArray();
             if (transformPoint)
             {
                 target = transformLidarPoint(target);
                 scpos = transformScpos(scpos, target);
             }
 
-            String timeString = TimeUtil.et2str(pt.time);
+            String timeString = TimeUtil.et2str(pt.getTime());
 
             out.write(timeString + " " +
                     target[0] + " " +
@@ -632,7 +621,7 @@ public class LidarSearchDataCollection extends Model
                     scpos[0] + " " +
                     scpos[1] + " " +
                     scpos[2] + " " +
-                    MathUtil.distanceBetween(pt.scpos, pt.target) + newline);
+                    MathUtil.distanceBetween(pt.getSourcePositionAsArray(), pt.getTargetPositionAsArray()) + newline);
         }
 
         out.close();
@@ -668,15 +657,15 @@ public class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint pt = originalPoints.get(i);
-                    double[] target = pt.target;
-                    double[] scpos = pt.scpos;
+                    double[] target = pt.getTargetPositionAsArray();
+                    double[] scpos = pt.getSourcePositionAsArray();
                     if (transformPoint)
                     {
                         target = transformLidarPoint(target);
                         scpos = transformScpos(scpos, target);
                     }
 
-                    String timeString = TimeUtil.et2str(pt.time);
+                    String timeString = TimeUtil.et2str(pt.getTime());
 
                     out.write(timeString + " " +
                             target[0] + " " +
@@ -685,14 +674,14 @@ public class LidarSearchDataCollection extends Model
                             scpos[0] + " " +
                             scpos[1] + " " +
                             scpos[2] + " " +
-                            MathUtil.distanceBetween(pt.scpos, pt.target) + newline);
+                            MathUtil.distanceBetween(pt.getSourcePositionAsArray(), pt.getTargetPositionAsArray()) + newline);
                 }
             }
         }
         out.close();
     }
 
-    private void assignInitialColorToTrack()
+    protected void assignInitialColorToTrack()
     {
         Color[] colors = ColorUtil.generateColors(tracks.size());
         int[] color = new int[4];
@@ -829,7 +818,7 @@ public class LidarSearchDataCollection extends Model
         return new double[]{scpos[0]+translation[0], scpos[1]+translation[1], scpos[2]+translation[2]};
     }
 
-    private void updateTrackPolydata()
+    protected void updateTrackPolydata()
     {
         // Place the points into polydata
         polydata.DeepCopy(emptyPolyData);
@@ -851,18 +840,38 @@ public class LidarSearchDataCollection extends Model
             int stopId = track.stopId;
             if (!track.hidden)
             {
+                // Variables to keep track of intensities
+                double minIntensity = Double.POSITIVE_INFINITY;
+                double maxIntensity = Double.NEGATIVE_INFINITY;
+                List<Double> intensityList = new LinkedList<Double>();
+
+                // Go through each point in the track
                 for (int i=startId; i<=stopId; ++i)
                 {
-                    double[] pt = originalPoints.get(i).target;
+                    double[] pt = originalPoints.get(i).getTargetPositionAsArray();
                     pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
 
                     idList.SetId(0, count);
                     vert.InsertNextCell(idList);
 
-                    colors.InsertNextTuple4(track.color[0], track.color[1], track.color[2], track.color[3]);
+                    double intensityReceived = originalPoints.get(i).getIntensityReceived();
+                    minIntensity = (intensityReceived < minIntensity) ? intensityReceived : minIntensity;
+                    maxIntensity = (intensityReceived > maxIntensity) ? intensityReceived : maxIntensity;
+                    intensityList.add(intensityReceived);
+
                     displayedPointToOriginalPointMap.add(i);
                     ++count;
+                }
+
+                // Assign colors to each point in that track
+                Color trackColor = new Color(track.color[0], track.color[1], track.color[2], track.color[3]);
+                float[] trackHSL = ColorUtil.getHSLColorComponents(trackColor);
+                Color plotColor;
+                for(double intensity : intensityList)
+                {
+                    plotColor = ColorUtil.scaleLightness(trackHSL, intensity, minIntensity, maxIntensity);
+                    colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
                 }
             }
         }
@@ -896,12 +905,13 @@ public class LidarSearchDataCollection extends Model
         }
     }
 
-    private void removeTracksThatAreTooSmall()
+    protected void removeTracksThatAreTooSmall()
     {
         for (int i=tracks.size()-1; i>=0; --i)
         {
-            if (tracks.get(i).getNumberOfPoints() < minTrackLength)
+            if (tracks.get(i).getNumberOfPoints() < minTrackLength) {
                 removeTrack(i);
+            }
         }
     }
 
@@ -921,7 +931,7 @@ public class LidarSearchDataCollection extends Model
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return actors;
     }
@@ -942,8 +952,15 @@ public class LidarSearchDataCollection extends Model
         if (!originalPoints.isEmpty() && !tracks.isEmpty())
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
-            double et = originalPoints.get(cellId).time;
-            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) + ", ET = %f", et);
+            double et = originalPoints.get(cellId).getTime();
+            double[] target = originalPoints.get(cellId).getTargetPositionAsArray();
+            double[] scpos = originalPoints.get(cellId).getSourcePositionAsArray();
+            double range_m = Math.sqrt(
+                    (target[0]-scpos[0])*(target[0]-scpos[0]) +
+                    (target[1]-scpos[1])*(target[1]-scpos[1]) +
+                    (target[2]-scpos[2])*(target[2]-scpos[2]))*1000;
+            return String.format("Lidar point acquired at " + TimeUtil.et2str(et) +
+                    ", ET = %f, unmodified range = %f m", et, range_m);
         }
 
         return "";
@@ -994,7 +1011,7 @@ public class LidarSearchDataCollection extends Model
 
     public double getTimeOfPoint(int i)
     {
-        return originalPoints.get(i).time;
+        return originalPoints.get(i).getTime();
     }
 
     /** It is useful to fit a line to the track. The following function computes
@@ -1014,7 +1031,7 @@ public class LidarSearchDataCollection extends Model
 
         try
         {
-            double t0 = originalPoints.get(startId).time;
+            double t0 = originalPoints.get(startId).getTime();
 
             double[] lineStartPoint = new double[3];
             for (int j=0; j<3; ++j)
@@ -1023,8 +1040,8 @@ public class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     LidarPoint lp = originalPoints.get(i);
-                    double[] target = transformLidarPoint(lp.target);
-                    fitter.addObservedPoint(1.0, lp.time-t0, target[j]);
+                    double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
+                    fitter.addObservedPoint(1.0, lp.getTime()-t0, target[j]);
                 }
 
                 PolynomialFunction fitted = new PolynomialFunction(fitter.fit(new double[2]));
@@ -1036,7 +1053,7 @@ public class LidarSearchDataCollection extends Model
             // Set the fittedLinePoint to the point on the line closest to first track point
             // as this makes it easier to do distance computations along the line.
             double[] dist = new double[1];
-            double[] target = transformLidarPoint(originalPoints.get(startId).target);
+            double[] target = transformLidarPoint(originalPoints.get(startId).getTargetPositionAsArray());
             MathUtil.nplnpt(lineStartPoint, fittedLineDirection, target, fittedLinePoint, dist);
         }
         catch (Exception e)
@@ -1084,7 +1101,7 @@ public class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
-            double[] target = pt.target;
+            double[] target = pt.getTargetPositionAsArray();
             target = transformLidarPoint(target);
             xyzPointList.add(target);
         }
@@ -1105,11 +1122,11 @@ public class LidarSearchDataCollection extends Model
         fitLineToTrack(trackId, fittedLinePoint, fittedLineDirection);
         for (int i=track.startId; i<=track.stopId; ++i)
         {
-            double[] point = originalPoints.get(i).target;
+            double[] point = originalPoints.get(i).getTargetPositionAsArray();
             point = transformLidarPoint(point);
             double dist = distanceOfClosestPointOnLineToStartOfLine(point, trackId, fittedLinePoint, fittedLineDirection);
             distance.add(dist);
-            time.add(originalPoints.get(i).time);
+            time.add(originalPoints.get(i).getTime());
         }
     }
 
@@ -1171,7 +1188,7 @@ public class LidarSearchDataCollection extends Model
     public double[] getSelectedPoint()
     {
         if (selectedPoint >= 0)
-            return originalPoints.get(selectedPoint).target.clone();
+            return originalPoints.get(selectedPoint).getTargetPositionAsArray().clone();
 
         return null;
     }
@@ -1183,8 +1200,8 @@ public class LidarSearchDataCollection extends Model
         if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
             return "";
 
-        double t0 = originalPoints.get(track.startId).time;
-        double t1 = originalPoints.get(track.stopId).time;
+        double t0 = originalPoints.get(track.startId).getTime();
+        double t1 = originalPoints.get(track.stopId).getTime();
 
         return TimeUtil.et2str(t0) + " - " + TimeUtil.et2str(t1);
     }
@@ -1236,7 +1253,7 @@ public class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint lp = originalPoints.get(i);
-            double[] target = transformLidarPoint(lp.target);
+            double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
             centroid[0] += target[0];
             centroid[1] += target[1];
             centroid[2] += target[2];
@@ -1278,7 +1295,7 @@ public class LidarSearchDataCollection extends Model
             for (int i=startId,j=0; i<=stopId; ++i,++j)
             {
                 LidarPoint lp = originalPoints.get(i);
-                double[] target = transformLidarPoint(lp.target);
+                double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
                 points[0][j] = target[0] - centroid[0];
                 points[1][j] = target[1] - centroid[1];
                 points[2][j] = target[2] - centroid[2];
@@ -1334,7 +1351,7 @@ public class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint lp = originalPoints.get(i);
-            double[] target = transformLidarPoint(lp.target);
+            double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
 
             target[0] = target[0] - pointOnPlane[0];
             target[1] = target[1] - pointOnPlane[1];
@@ -1342,7 +1359,7 @@ public class LidarSearchDataCollection extends Model
 
             target = planeOrientation.operate(target);
 
-            out.write(TimeUtil.et2str(lp.time) + " " +
+            out.write(TimeUtil.et2str(lp.getTime()) + " " +
                     target[0] + " " +
                     target[1] + " " +
                     target[2] + newline);
@@ -1392,15 +1409,15 @@ public class LidarSearchDataCollection extends Model
         for (int i=startId; i<=stopId; ++i)
         {
             LidarPoint pt = originalPoints.get(i);
-            double[] target = pt.target;
-            double[] scpos = pt.scpos;
+            double[] target = pt.getTargetPositionAsArray();
+            double[] scpos = pt.getSourcePositionAsArray();
             if (transformPoint)
             {
                 target = transformLidarPoint(target);
                 scpos = transformScpos(scpos, target);
             }
 
-            FileUtil.writeDoubleAndSwap(out, pt.time);
+            FileUtil.writeDoubleAndSwap(out, pt.getTime());
             FileUtil.writeDoubleAndSwap(out, target[0]);
             FileUtil.writeDoubleAndSwap(out, target[1]);
             FileUtil.writeDoubleAndSwap(out, target[2]);

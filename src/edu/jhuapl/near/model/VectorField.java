@@ -3,6 +3,7 @@ package edu.jhuapl.near.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkArrowSource;
@@ -37,7 +38,7 @@ public class VectorField extends Model implements PropertyChangeListener
     }
 
     @Override
-    public ArrayList<vtkProp> getProps()
+    public List<vtkProp> getProps()
     {
         return actors;
     }
