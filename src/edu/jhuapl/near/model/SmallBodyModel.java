@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -53,10 +57,6 @@ import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
-
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends Model
 {
@@ -521,13 +521,24 @@ public class SmallBodyModel extends Model
     {
         if (smallBodyCubes == null)
         {
-            // The number 38.66056033363347 is used here so that the cube size
-            // comes out to 1 km for Eros.
-
             // Compute bounding box diagonal length of lowest res shape model
-            double diagonalLength =
+            double cubeSize;
+            if(smallBodyConfig.hasCustomBodyCubeSize)
+            {
+                // Custom specified cube size
+                cubeSize = smallBodyConfig.customBodyCubeSize;
+            }
+            else
+            {
+                // Old way of determining cube size, most models still use this
+                double diagonalLength =
                     new BoundingBox(getLowResSmallBodyPolyData().GetBounds()).getDiagonalLength();
-            double cubeSize = diagonalLength / 38.66056033363347;
+                // The number 38.66056033363347 is used here so that the cube size
+                // comes out to 1 km for Eros (whose diagonaLength equals 38.6605...).
+                cubeSize = diagonalLength / 38.66056033363347;
+            }
+
+            // Generate cubes based on chosen resolution
             smallBodyCubes = new SmallBodyCubes(
                     getLowResSmallBodyPolyData(),
                     cubeSize,
