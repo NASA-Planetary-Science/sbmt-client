@@ -37,7 +37,8 @@ cd misc/server/sbmt/internal
 rm -rf output
 mkdir output
 nanoc
-sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
+/bin/sed -i "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
+#/bin/sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
 scp -r output/* ${TARGET}/internal/
 )
 
@@ -46,6 +47,7 @@ cd misc/server/sbmt/public
 rm -rf output
 mkdir output
 nanoc
-sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
+#/bin/sed -i "" "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
+/bin/sed -i "s/VERSIONXXXXXX/${TODAYSDATE}/g" output/index.html output/installation.html
 scp -r output/* ${TARGET}/
 )
