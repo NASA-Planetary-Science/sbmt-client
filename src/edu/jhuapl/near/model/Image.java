@@ -153,7 +153,7 @@ public abstract class Image extends Model implements PropertyChangeListener
 
         public ImagingInstrument(SpectralMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName)
         {
-            this(SpectralMode.MONO, searchQuery, type, searchImageSources, instrumentName, 0.0, "None");
+            this(spectralMode, searchQuery, type, searchImageSources, instrumentName, 0.0, "None");
         }
 
         public ImagingInstrument(SpectralMode spectralMode, QueryBase searchQuery, ImageType type, ImageSource[] searchImageSources, Instrument instrumentName, double rotation, String flip)

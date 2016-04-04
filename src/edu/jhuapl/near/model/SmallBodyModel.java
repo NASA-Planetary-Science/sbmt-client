@@ -269,8 +269,11 @@ public class SmallBodyModel extends Model
         {
             ColoringInfo info = new ColoringInfo();
             info.coloringName = coloringNames[i];
-            if (info.coloringFile.toLowerCase().endsWith(".fit") || info.coloringFile.toLowerCase().endsWith(".fits"))
-                info.format = Format.FIT;
+            if (info.coloringFile != null)
+            {
+                if (info.coloringFile.toLowerCase().endsWith(".fit") || info.coloringFile.toLowerCase().endsWith(".fits"))
+                    info.format = Format.FIT;
+            }
             info.coloringUnits = coloringUnits[i];
             info.coloringValues = coloringValues[i];
             coloringInfo.add(info);
