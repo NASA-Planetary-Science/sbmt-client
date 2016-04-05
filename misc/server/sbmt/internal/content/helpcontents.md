@@ -78,9 +78,9 @@ to use (flat or smooth). Some of these options may be different for
 different small bodies. Note that the coordinate grid lines are
 separated by 10 degrees in latitude or longitude.
 
-### Imaging tab (e.g. MSI for Eros, AMICA for Itokawa, etc.)
+### Imaging Instrument tab (e.g. MSI for Eros, AMICA for Itokawa, etc.)
 
-The imaging tab (MSI, AMICA, etc.)  provides options for searching and
+The imaging instrument tab (MSI, AMICA, etc.)  provides options for searching and
 displaying images acquired by cameras of several of the
 asteroids. Usually, one of two databases of images can be
 searched, which can be specified in the "Pointing" dropdown menu:
@@ -306,6 +306,21 @@ and points, and each of these are controlled within a separate tab
 within the Structures tab. Each of the 5 tabs (paths, polygons, circles,
 ellipses, and points) works completely independent of each other. You
 can only be drawing one type of structure at a time.
+
+### Images tab (Available for all bodies)
+
+The Images tab allows you to import and map custom images onto the body.
+To import a custom image, click on the "New..." button at the bottom of
+the left hand panel. In the dialog box that opens, enter the path to the
+image and the image type if different than the default. Make any changes
+to the rotation and flip, and choose a projection. The Simple Cylindrical
+Projection allows you to set the coordinates to which the corners of the 
+image will be mapped. The Perspective Projection requires you to enter 
+the name of either a .SUM file (Bob Gaskell format) or .INFO file (SBMT
+format) containing the instrument pointing and spacecraft position 
+required to map the image to the body. After clicking the "OK" button,
+the image file will be displayed in the left hand panel. Right click on 
+the file name and select "Map Image" to display it on the body.
 
 #### Drawing Circles, Ellipses, or Points
 

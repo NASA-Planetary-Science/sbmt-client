@@ -4,6 +4,9 @@
 
 # Recent Changes
 
+### <Date>
+
+-   Added custom image import to user manual.
 
 ### April 4, 2016
 
