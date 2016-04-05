@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <libgen.h>
+#include <algorithm>
 #include "SpiceUsr.h"
 
 #define MAXSTRLEN   1024
@@ -124,10 +125,10 @@ void getEt(const string& startmet, const string& stopmet, string& startutc,
     stoputc = utc;
 
     cout.precision(16);
-    cout << "SPACECRAFT_CLOCK_START_COUNT " << startmet << " " << startutc
-            << " " << startet << std::endl;
-    cout << "SPACECRAFT_CLOCK_STOP_COUNT " << stopmet << " " << stoputc << " "
-            << stopet << std::endl;
+//    cout << "SPACECRAFT_CLOCK_START_COUNT " << startmet << " " << startutc
+//            << " " << startet << std::endl;
+//    cout << "SPACECRAFT_CLOCK_STOP_COUNT " << stopmet << " " << stoputc << " "
+//            << stopet << std::endl;
 }
 
 /*
@@ -162,7 +163,7 @@ void getScOrientation(double et, string body, double scposbf[3],
     SpiceInt code;
 
     namfrm_c(ref.c_str(), &code);
-    cerr << "Code for " << ref << " = " << code << endl;
+//    cerr << "Code for " << ref << " = " << code << endl;
 
     /*
      *  Compute the apparent position of the center of the target body
@@ -184,8 +185,8 @@ void getScOrientation(double et, string body, double scposbf[3],
     vminus_c(targpos, scpos);
 
     cout.precision(16);
-    cout << "Spacecraft Position: " << scpos[0] << " " << scpos[1] << " "
-            << scpos[2] << endl;
+//    cout << "Spacecraft Position: " << scpos[0] << " " << scpos[1] << " "
+//            << scpos[2] << endl;
 
     /*
      *  Get the coordinate transformation from instrument to
@@ -303,8 +304,8 @@ void getSunPosition(double et, string body, double sunpos[3]) {
     mxv_c(inert2bf, sunpos, sunpos);
 
     cout.precision(16);
-    cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " "
-            << sunpos[2] << endl;
+//    cout << "Sun position: " << sunpos[0] << " " << sunpos[1] << " "
+//            << sunpos[2] << endl;
 }
 
 void saveInfoFile(string filename, string startutc, string stoputc,
@@ -370,19 +371,26 @@ void saveInfoFile(string filename, string startutc, string stoputc,
 
  This program takes the following input arguments:
 
- 1. Body name - either DEIMOS or PHOBOS
- 2. kernelfiles - a file containing the kernel files
- 3. label file list - a file containing a list of label files to process, one per line
- 4. output folder - path to folder where infofiles should be saved to
- 5. output file list - path to file in which all files for which an infofile was
- created will be listed along with their start times.
+    bodyName       - case-independent name of target body
+    metaKernel     - SPICE meta kernel 
+    fitsFileList   - input file containing a newline-delimited list of LORRI FITS files to process. Only those images targeting the specified body will be processed into INFO files.
+    outputFolder   - output folder into which INFO files will be created
+    outputFileList - output file containing a list of the FITS files that were successfully processed into INFO files
 
  */
 int main(int argc, char** argv) {
     if (argc < 6) {
-        cerr
-                << "Usage: create_info_files <body> <kernelfiles> <labelfilelist> <outputfolder> <outputfilelist>"
-                << endl;
+        cerr << "Usage:" << endl;
+        cerr << "   create_info_files <bodyName> <metaKernel> <fitsFileList> <outputFolder> <outputFileList>" << endl;
+        cerr << "Where:" << endl;
+        cerr << "   bodyName       - case-independent name of target body" << endl;
+        cerr << "   metaKernel     - SPICE meta kernel" << endl;
+        cerr << "   fitsFileList   - input file containing a newline-delimited list of LORRI FITS" << endl;
+        cerr << "                    files to process. Only those images targeting the specified" << endl;
+        cerr << "                    body will be processed into INFO files." << endl;
+        cerr << "   outputFolder   - output folder into which INFO files will be created" << endl;
+        cerr << "   outputFileList - output file containing a list of the FITS files that were" << endl;                
+        cerr << "                    successfully processed into INFO files" << endl;   
         return 1;
     }
 
@@ -405,7 +413,8 @@ int main(int argc, char** argv) {
     }
 
     for (unsigned int i = 0; i < labelfiles.size(); ++i) {
-        cout << "starting " << labelfiles[i] << endl;
+        cout << endl;
+        cout << "Processing " << labelfiles[i] << "..." << endl;
         reset_c();
 
         string startmet;
@@ -436,11 +445,12 @@ int main(int argc, char** argv) {
 
         et = startet + (stopet - startet) / 2.0;
 
+        transform(body.begin(), body.end(), body.begin(), ::toupper);
         if (target != body) {
-//            cerr << "TARGET keyword is: " << target << " not " << body << endl;
+            cerr << body << " image " << labelfiles[i] << " will not be processed because target is " << target << "." << endl;
             continue;
         }
-
+ 
         // compute the orientation of the spacecraft
         getScOrientation(et, body, scposb, boredir, updir, frustum);
         if (failed_c()) {
@@ -467,9 +477,8 @@ int main(int argc, char** argv) {
                 << endl;
 
         fout << labelbasename << " " << startutc << endl;
-
-        cout << "finished " << infofilename << endl << endl;
     }
 
+    cout << endl;
     return 0;
 }
