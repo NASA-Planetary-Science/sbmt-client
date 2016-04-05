@@ -1,50 +1,30 @@
-#!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+#!/usr/bin/env /software/ruby-2.3.0/bin/ruby
 
-# A few helpful tips about the Rules file:
-#
-# * The string given to #compile and #route are matching patterns for
-#   identifiers--not for paths. Therefore, you can’t match on extension.
-#
-# * The order of rules is important: for each item, only the first matching
-#   rule is applied.
-#
-# * Item identifiers start and end with a slash (e.g. “/about/” for the file
-#   “content/about.html”). To select all children, grandchildren, … of an
-#   item, use the pattern “/about/*/”; “/about/*” will also select the parent,
-#   because “*” matches zero or more characters.
-
-compile '/css/*/' do
-  # don’t filter or layout
+compile '/**/*.html' do
+  layout '/default.*'
 end
 
-compile '*' do
-  if item.binary?
-    # don’t filter binary items
+# This is an example rule that matches Markdown (.md) files, and filters them
+# using the :kramdown filter. It is commented out by default, because kramdown
+# is not bundled with Nanoc or Ruby.
+#
+compile '/**/*.md' do
+#  filter :kramdown
+  filter :pandoc
+  layout '/default.*'
+end
+
+route '/**/*.{html,md}' do
+  if item.identifier =~ '/index.*'
+    '/index.html'
   else
-    #filter :erb
-    filter :pandoc
-    layout 'default'
+#   item.identifier.without_ext + '/index.html'
+    item.identifier.without_ext + '.html'
   end
 end
 
-route '/' do
-    # Write item with identifier / to /index.html
-    item.identifier + 'index.html'
+compile '/**/*' do
+  write item.identifier.to_s
 end
 
-route '/css/*/' do
-  item.identifier.chop + '.' + item[:extension]
-end
-
-route '*' do
-  if item.binary?
-    # Write item with identifier /foo/ to /foo.ext
-    item.identifier.chop + '.' + item[:extension]
-  else
-    # Write item with identifier /foo/ to /foo.html
-    item.identifier.chop + '.html'
-  end
-end
-
-layout '*', :erb
+layout '/**/*', :erb

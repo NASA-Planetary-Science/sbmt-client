@@ -4,6 +4,18 @@
 
 # Recent Changes
 
+
+### April 4, 2016
+
+-   Added "Image Galleries" link to sidebar menu.
+-   Version 3 of 67p model, increased resolution of image search.
+-   Fixed MapMaker and LEISA image search bug.
+-   Added "Save Selected Image List" option.
+
+### March 11, 2016
+
+-   Improved performance of OLA search for Bennu using a tree search algorithm
+
 ### March 9, 2016
 
 -   3D view now switches to lower level of detail for shape and lidar data when dragging or zooming to improve interactive performance

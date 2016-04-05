@@ -849,8 +849,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         removeAllImagesButton = new javax.swing.JButton();
         monochromePanel = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
-        saveImageListButton = new javax.swing.JButton();
         loadImageListButton = new javax.swing.JButton();
+        jPanel15 = new javax.swing.JPanel();
+        saveImageListButton = new javax.swing.JButton();
+        saveSelectedImageListButton = new javax.swing.JButton();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1602,7 +1604,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel9, gridBagConstraints);
@@ -1687,7 +1689,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 14;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
@@ -1701,7 +1703,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridy = 15;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel8.add(generateColorImageButton, gridBagConstraints);
 
@@ -1720,7 +1722,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridy = 16;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane3, gridBagConstraints);
 
@@ -1732,7 +1734,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridy = 17;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel8.add(removeColorImageButton, gridBagConstraints);
 
@@ -1867,22 +1869,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel8.add(jPanel13, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel8.add(monochromePanel, gridBagConstraints);
 
         jPanel14.setLayout(new java.awt.GridBagLayout());
-
-        saveImageListButton.setText("Save Image List...");
-        saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveImageListButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        jPanel14.add(saveImageListButton, gridBagConstraints);
 
         loadImageListButton.setText("Load Image List...");
         loadImageListButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1899,6 +1890,32 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
         jPanel8.add(jPanel14, gridBagConstraints);
+
+        jPanel15.setLayout(new java.awt.GridBagLayout());
+
+        saveImageListButton.setText("Save Image List...");
+        saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveImageListButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel15.add(saveImageListButton, gridBagConstraints);
+
+        saveSelectedImageListButton.setText("Save Selected Image List...");
+        saveSelectedImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveSelectedImageListButtonActionPerformed(evt);
+            }
+        });
+        jPanel15.add(saveSelectedImageListButton, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        jPanel8.add(jPanel15, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -2426,6 +2443,45 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     }//GEN-LAST:event_loadImageListButtonActionPerformed
 
+    private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSelectedImageListButtonActionPerformed
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
+
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                String nl = System.getProperty("line.separator");
+
+                int[] selectedIndices = resultList.getSelectedRows();
+                for (int selectedIndex : selectedIndices)
+                {
+                    String image = new File(imageRawResults.get(selectedIndex).get(0)).getName();
+                    String dtStr = imageRawResults.get(selectedIndex).get(1);
+                    Date dt = new Date(Long.parseLong(dtStr));
+
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                }
+
+                out.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_saveSelectedImageListButtonActionPerformed
+
 
 //    protected boolean imageVisible(ImageKey key)
 //    {
@@ -2729,6 +2785,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -2755,6 +2812,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JTable resultList;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JButton saveImageListButton;
+    private javax.swing.JButton saveSelectedImageListButton;
     private javax.swing.JCheckBox searchByFilenameCheckBox;
     private javax.swing.JFormattedTextField searchByNumberTextField;
     private javax.swing.JToggleButton selectRegionButton;

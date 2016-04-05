@@ -1,0 +1,292 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Cwd;
+use File::Path;
+use File::Basename qw(dirname);
+use Env;
+use FindBin qw($Bin);
+use FindBin qw($Script);
+use Getopt::Long;
+
+#
+# Set up constants to point to the live directories where new files will be
+# stored.
+#
+use constant LIVE_DATA_ROOT => "/project/nearsdc/data";
+use constant LIVE_CERES_FC_DIR => LIVE_DATA_ROOT . "/GASKELL/CERES/FC";
+use constant LIVE_CERES_FC_IMAGES_DIR => LIVE_CERES_FC_DIR . "/images";
+use constant LIVE_CERES_FC_GALLERY_DIR => LIVE_CERES_FC_IMAGES_DIR . "/gallery";
+
+#
+# Setup constants to point to the pipeline data processing directories, and
+# the programs directories.
+#
+use constant SBMTPIPELINE_ROOT => "/project/sbmtpipeline";
+use constant CERES_PROCESSED_DIR => SBMTPIPELINE_ROOT ." /processed/dawn/ceres";
+use constant SBMT_PROGRAMS_ROOT => SBMTPIPELINE_ROOT . "/sbmt/misc/programs";
+use constant FC_PDS_DIR => SBMT_PROGRAMS_ROOT . "/fc_pds"; 
+use constant FC_PDS_IMAGES_DIR => FC_PDS_DIR . "/images"; 
+
+
+#
+# Global Variables.  
+#
+#my $binDir = dirname($Bin);
+my $binDir = $Bin;
+
+my $update_live = 0;
+my $update_dev  = 1;  # By default, update the development area.
+my $help_wanted = 0; 
+my $dry_run = 1; 
+
+#
+# Function Prototypes
+#
+sub Main();
+
+#
+# Main Program
+#
+Main();
+exit 0;
+
+#
+# Functions
+#
+sub Main() 
+{
+
+	#
+	# Print a starting message and process command line arguments.
+	#
+	#my $date_string = `date`;
+	print "\n*************************************************************\n";
+	print `date` . ": STARTING CRON JOB TO UPDATE THE CERES DATA\n";
+	print "*************************************************************\n";
+	process_arguments();
+
+	my $cmd;
+
+	# It is important to check to see where this script is executing from. 
+	# If the script is NOT executing from the in the SBMT_PROGRAMS_ROOT directory,
+	# then, this script assumes this script is being run in someone's local 
+	# development area and the 'create_info+files_ceres.cpp' file needs to be recompiled.
+	if( $binDir ne FC_PDS_DIR ) {
+		print "Compiling create_info_files_ceres.cpp\n";
+		#if( ! -e $binDir . "/compile_ceres.sh" ) {
+		if( ! -e $binDir . "/Makefile" ) {
+			print STDERR "FAIL: Can't find $binDir/Makefile, current directory is ". cwd() . "\n";
+			exit 1;
+		}
+		#my $exit_code = execute_command("$binDir/compile_ceres.sh");
+		my $exit_code = execute_command("$binDir/Makefile");
+		if ( $exit_code ) {
+			print STDERR "$binDir/compile_ceres.sh FAILED to (re)compile\n";
+		}
+	}
+	
+
+	# Lil's notes.
+	# 5) run get_ceres_data.sh only if the /project/sbmtpipeline/rawdata/dawn/ceres/fc 
+	# soft-links are broken, or to get new data. This pulls the data from the dawn project 
+	# folder to the sbmt /project/sbmtpipeline/rawdata/dawn/ceres/fc folder.
+	
+	# Val's notes about Lil's notes.
+	# Dave Bazell has a directory where he stores Dawn data. He gets that 
+	# data from the Dawn website. Lil had made soft links to those 
+	# directories. The easiest way to copy any ‘new’ data from Dave’s 
+	# directory is to use ‘rsync’.  But if I do this work in my own directory, 
+	# that implies that I would need to have all of the Dawn data in my own 
+	# directory too.
+
+    # Need to think about how I will get the new files and whether I will do 
+	# processing in the /project/sbmtpipeline/rawdata folder.
+
+
+	
+	
+	#
+	# Get any new ceres data
+	#
+	# get_ceres_data.sh does the following: 
+	#
+	# DAWN_DATA_DIR=/project/dawn
+	# CERES_DATA_DIR=$DAWN_DATA_DIR/data2
+	# TMP_DIR=/project/sbmtpipeline/rawdata/dawn
+	# find -L $CERES_DATA_DIR -name "*.FIT" -o -name "*.LBL" -not -name "*OPNAV*" -type f | xargs cp -u -t $TMP_DIR/ceres/fc
+	# cd $TMP_DIR
+	# if [ ! -e "$TMP_DIR"/spice -o  ! -h "$TMP_DIR"/spice ] ; then
+	# 	echo "$TMP_DIR/spice link does not exist, remaking the link"
+	# 	ln -s $CERES_DATA_DIR/spice/ .
+	# else
+	# 	echo "$TMP_DIR/spice link exists"
+	# fi
+	# if [ ! -e "$TMP_DIR"/NAIF -o  ! -h "$TMP_DIR"/NAIF ] ; then
+	# 	echo "$TMP_DIR/NAIF link does not exist, remaking the link"
+	# 	ln -s $DAWN_DATA_DIR/NAIF/ .
+	# else
+	# 	echo "$TMP_DIR/NAIF link exists"
+	# fi
+	print "\nGetting new CERES data\n";
+	if( ! -e $binDir . "/get_ceres_data.sh" ) {
+		print STDERR "FAIL: Can't find $binDir/get_ceres_data.sh, current directory is ". cwd() . "\n";
+		exit 1;
+	}
+	my $exit_code = execute_command("$binDir/get_ceres_data.sh");
+
+	if ( $exit_code ) {
+		print STDERR "FAIL: get_ceres_data.sh FAILED to get new CERES data\n";
+	}
+
+	
+	# 6) (optional) create a backup of ceres data in /project/nearsdc/data/GASKELL/CERES/FC. 
+	# Particularly directories image/, infofiles/, and image list text files. Put them in 
+	# /project/sbmtpipeline/processed/dawn/ceres/<backup folder>. You can delete the existing 
+	# folders with rsync by creating an empty folder then sync-ing with it: 
+	#  rsync -a --delete emptyFolder/ folderToClear/
+
+
+	# 7) run run_ceres.sh. Make sure it creates the metakernel, kernels_ceres.mk. 
+	# (note: SPICE errors related to a CK frame missing are caused by Dawn's change 
+	# from a fixed-offset frame for the instrument to a binary CK frame, which 
+	# was needed because the instrument mounting alignment differs for Ceres and 
+	# Vesta. This error means the incorrect IK has been loaded.) 
+
+	print "\nGenerating new CERES INFO files\n";
+	$exit_code = execute_command("$binDir/run_ceres.sh");
+	if ( $exit_code ) {
+		print STDERR "FAIL: run_ceres.sh FAILED to generate new CERES INFO files\n";
+	}
+
+	# 8) run copyGoodFcImages.sh to copy images and uniqFcFiles.txt to live 
+	# directory. It will copy only the "good" images (e.g. if both a EDR and DDR 
+	# exist for the same image it will keep the more processed one; it also does 
+	# some other filtering). 
+
+	print "\nCopying good FC images to live data directory\n";
+	$exit_code = execute_command("$binDir/copyGoodFcImages.sh");
+	if ( $exit_code ) {
+		print STDERR "FAIL: copyGoodFcImages.sh FAILED to filter for good images\n";
+	}
+	
+	# When done, "more uniqFcFilesFullPath.txt | wc -l" should return the same 
+	# number as "ls -ltp /project/nearsdc/data/GASKELL/CERES/FC/images | wc -l" 
+	
+	my $more_cmd = "/bin/more " . CERES_PROCESSED_DIR . "/uniqFcFilesFullPath.txt | wc -l";
+	my $more_returned = `$more_cmd`; chomp($more_returned);
+	my $ls_cmd = "/bin/ls -ltp " . FC_PDS_IMAGES_DIR . " | wc -l";
+	my $ls_returned = `$ls_cmd`; chomp($ls_returned);
+	
+	print "\nChecking filtering results\n";
+	if ( $more_returned eq $ls_returned ) {
+		print "   The uniqFcFilesFullPath.txt file SUCCESSFULLY matches the number of images\n";
+	} else {
+		print STDERR "FAIL: The uniqFcFilesFullPath.txt file FAILED to match the number of images [$more_returned,$ls_returned]\n";
+	}
+	
+	# 9) copy /project/sbmtpipeline/processed/dawn/ceres/infofiles, and uniq*.txt 
+	# files to /project/nearsdc/data/GASKELL/CERES/FC. Use rsync to copy the infofiles 
+	# (and delete old ones no longer used), it is faster than cp: 
+	# rsync -a --delete /project/sbmtpipeline/processed/dawn/ceres/infofiles/ /project/nearsdc/data/GASKELL/CERES/FC/infofiles/
+
+	print "\nCopying uniq*.txt files to " . LIVE_CERES_FC_DIR . "\n";
+	$cmd = "cp " . $binDir . "/uniq*.txt " . LIVE_CERES_FC_IMAGES_DIR;
+	$exit_code = execute_command($cmd);
+	if ( !$exit_code ) {
+		print "   Copied new uniq*.txt files to " . LIVE_CERES_FC_DIR . "  SUCCESSFULLY\n";
+	} else {
+		print STDERR "FAIL: Failed to Copy new uniq*.txt files to " . LIVE_CERES_FC_DIR . "\n";
+	}
+	
+	print "\nrsyncing new infofiles files to " . LIVE_CERES_FC_DIR . "/infofiles\n";
+	$cmd = "rsync -a --delete " . CERES_PROCESSED_DIR . "/infofiles/ " . LIVE_CERES_FC_DIR . "/infofiles/";
+	$exit_code = execute_command($cmd);
+	if ( $exit_code ) {
+		print STDERR "FAIL: Failed to rsync new infofiles files to " . LIVE_CERES_FC_DIR . "/infofiles\n";
+	}
+
+
+	# 10) cd to workspace folder /sbmt/build/sbmt-extras/bin/ and run DatabaseGeneratorSql. 
+	# (Use Unix screen if running from SSH on Windows to keep the process running if you log 
+	# out of Windows, and Unix script to write stdout to a file.)
+
+	# This step is problematic. We don't want to have to go to someone's working folder
+	# and build a program. Should add copy the database generator program to pipeline directory 
+	# in the first step before this cron job.
+
+
+# 11)test the _beta version of SBMT locally and then if it is okay rename the database tables to remove the _beta.
+
+# NOTE: steps 5-10 should be done in a cron job. In that case use the --append-tables switch for DatabaseGeneratorSql.
+}
+
+
+#===========================================================================
+# Function:   process_arguments
+# Args:       command line arguments
+# Desription: Uses GetOptions to parse the command line arguments.  Sets
+#             global variables depending on the arguments entered.
+#===========================================================================
+sub process_arguments()
+{
+	GetOptions(
+		"update-live!" => \$update_live,
+		"update-dev!"  => \$update_dev,
+		"dry-run!"     => \$dry_run,
+		"h|help!"      => \$help_wanted
+	);
+
+	#
+	# Check for and process the help command.
+	#
+	if (defined $help_wanted && $help_wanted != 0) {
+		my $usage = "\nUsage:  $Script \n" .
+		"                   optional   -update-live          : Allows updating the live data\n" .
+		"                   optional   -update-dev (default) : Allows updating development data only\n" .
+		"                   optional   -h|-help              : Displays this help information\n\n";
+		printf STDERR $usage;
+		exit 1;
+	}
+
+	#
+	# Check for an process the update command
+	#
+	if (defined $update_live && $update_live != 0)  {
+		# Set directory variables to point to the live directory
+		# Set database related variables to point to the development or beta area.
+	}
+	
+	print "update_live = $update_live\n";
+	print "update_dev  = $update_dev\n";
+	print "help_wanted = $help_wanted\n";
+	
+}
+
+#===========================================================================
+# Function:   execute_command
+# Args:       command string
+# Desription: Checks a global variable to see if it is ok to execute
+#             the given command.
+#===========================================================================
+sub execute_command()
+{
+	my $cmd = shift(@_);
+	my $exit_code = 0;
+	
+	if( $dry_run ) {
+		print "dry-run: (not executing) $cmd\n";
+	} else {
+		print "executing: $cmd\n";
+		$exit_code = system($cmd);
+		if( !$exit_code ) {
+			print $cmd . " SUCCESSFUL\n";
+		} else {
+			print $cmd . " FAILED\n";
+		}
+	}
+	
+
+
+	return $exit_code;
+}

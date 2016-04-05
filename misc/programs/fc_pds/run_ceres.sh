@@ -18,6 +18,9 @@
 # at bottom of script for specifics.
 #
 
+echo "I'm in run_ceres.sh!!"
+exit 1
+
 cd `dirname $0`
 
 # Target body
