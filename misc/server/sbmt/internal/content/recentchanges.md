@@ -4,9 +4,10 @@
 
 # Recent Changes
 
-### <Date>
+### April 6, 2016
 
 -   Added custom image import to user manual.
+-   Fixed bug introduced in March 9, 2016 public release that prevented any images from being mapped
 
 ### April 4, 2016
 
