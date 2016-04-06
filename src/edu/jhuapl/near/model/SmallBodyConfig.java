@@ -6,12 +6,12 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import edu.jhuapl.near.lidar.OlaCubesGenerator;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.near.tools.OlaCubesGenerator;
 import edu.jhuapl.near.util.Configuration;
 
 /**
