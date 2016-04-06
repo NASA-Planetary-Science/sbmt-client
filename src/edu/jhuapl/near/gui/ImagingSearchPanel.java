@@ -46,8 +46,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -79,6 +77,8 @@ import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener

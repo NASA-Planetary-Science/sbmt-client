@@ -1,4 +1,4 @@
-package edu.jhuapl.near.tools;
+package edu.jhuapl.near.lidar;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
