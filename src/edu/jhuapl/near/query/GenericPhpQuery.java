@@ -7,28 +7,23 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.SmallBodyConfig;
 
 public class GenericPhpQuery extends QueryBase
 {
     private String rootPath;
     private String tablePrefix;
-    private String tablePostfix;
+
 
     public GenericPhpQuery clone()
     {
-        return new GenericPhpQuery(rootPath, tablePrefix, tablePostfix);
+        return new GenericPhpQuery(rootPath, tablePrefix);
     }
 
     public GenericPhpQuery(String rootPath, String tablePrefix)
     {
-        this(rootPath, tablePrefix, "");
-    }
-
-    public GenericPhpQuery(String rootPath, String tablePrefix, String tablePostfix)
-    {
         this.rootPath = rootPath;
         this.tablePrefix = tablePrefix.toLowerCase();
-        this.tablePostfix = tablePostfix;
     }
 
     public String getImagesPath()
@@ -96,6 +91,8 @@ public class GenericPhpQuery extends QueryBase
             imagesDatabase = tablePrefix + "images_pds";
             cubesDatabase = tablePrefix + "cubes_pds";
         }
+
+        String tablePostfix = SmallBodyConfig.betaMode ? "_beta" : "";
         imagesDatabase += tablePostfix;
         cubesDatabase += tablePostfix;
 

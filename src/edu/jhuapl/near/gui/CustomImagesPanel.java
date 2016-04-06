@@ -73,10 +73,10 @@ import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.tools.VtkENVIReader;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.util.VtkENVIReader;
 
 
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener

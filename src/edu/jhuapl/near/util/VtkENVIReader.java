@@ -1,4 +1,4 @@
-package edu.jhuapl.near.tools;
+package edu.jhuapl.near.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,6 @@ import java.util.HashMap;
 
 import vtk.vtkImageData;
 import vtk.vtkImageReader2;
-
-import edu.jhuapl.near.util.ImageDataUtil;
 
 // This class was written to be used like vtkPNGReader but
 // only for converting ENVI format files to vtkImageData

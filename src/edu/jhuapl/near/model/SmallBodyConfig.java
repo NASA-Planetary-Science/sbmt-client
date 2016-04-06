@@ -1689,9 +1689,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            betaMode ?
-                                    new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2","_beta") :
-                                        new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
+                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
@@ -1739,15 +1737,8 @@ public class SmallBodyConfig
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/67P_V3";
 
-            if(betaMode)
-            {
-                c.hasCustomBodyCubeSize = false;
-            }
-            else
-            {
-                c.hasCustomBodyCubeSize = true;
-                c.customBodyCubeSize = 0.10; // km
-            }
+            c.hasCustomBodyCubeSize = true;
+            c.customBodyCubeSize = 0.10; // km
 
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1755,9 +1746,7 @@ public class SmallBodyConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            betaMode ?
-                                    new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3","_beta") :
-                                        new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3"),
+                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3"),
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
