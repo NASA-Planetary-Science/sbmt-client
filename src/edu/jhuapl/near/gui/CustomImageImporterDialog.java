@@ -22,7 +22,7 @@ import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
-import edu.jhuapl.near.tools.VtkENVIReader;
+import edu.jhuapl.near.util.VtkENVIReader;
 
 
 public class CustomImageImporterDialog extends javax.swing.JDialog
