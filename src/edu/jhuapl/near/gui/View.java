@@ -180,6 +180,12 @@ public class View extends JPanel
                 JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
+
+            if (smallBodyConfig.hasBigmap)
+            {
+                JComponent component = new BigmapPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/bigmap.zip");
+                controlPanel.addTab("Bigmap", component);
+            }
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,

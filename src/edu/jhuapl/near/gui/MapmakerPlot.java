@@ -118,9 +118,9 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
         switch(coloringIndex){
         case 0:
         case 1:
-            title = "Elevation vs. Distance";
+            title = "Height vs. Distance";
             domainLabel = "Distance (m)";
-            rangeLabel = "Elevation (m)";
+            rangeLabel = "Height (m)";
             break;
         case 2:
             title = "Slope vs. Distance";
@@ -153,7 +153,7 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
         switch(coloringIndex){
         case 0:
         case 1:
-            rangeLabel = "Elevation";
+            rangeLabel = "Height";
             break;
         case 2:
             rangeLabel = "Slope";
