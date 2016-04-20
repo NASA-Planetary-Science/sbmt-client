@@ -67,7 +67,7 @@ public class Bigmap
         }
         else
         {
-            processName = execDir + File.separator + "BIGMAPO.win64.exe";
+            processName = execDir + File.separator + "BIGMAPO.win32.exe";
             //throw new IOException("Operating system not supported");
         }
 

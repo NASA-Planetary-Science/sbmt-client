@@ -3,6 +3,7 @@
 	<name>sbmt</name>
 	<comment></comment>
 	<projects>
+		<project>altwg-java-tools</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

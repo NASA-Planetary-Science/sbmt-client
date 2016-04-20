@@ -1,8 +1,10 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.Component;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Bigmap;
@@ -105,10 +107,12 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
         setLabelText("<html>Running Bigmap<br> </html>");
         setIndeterminate(true);
-        setCancelButtonEnabled(false);
+        setCancelButtonEnabled(true);
         setProgress(1);
 
         Process bigmapProcess = null;
+        BufferedReader bigmapOutputReader = null;
+        BufferedReader bigmapErrorReader = null;
 
         try
         {
@@ -134,9 +138,17 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
             bigmap.setOutputFolder(outputFolder);
             bigmap.setSmallBodyModel(smallBodyModel);
 
-            System.out.println("twupy1: Commenting out call to bigmaps for testing purposes");
-            /*bigmapProcess = bigmap.runBigmap();
+            // Create the bigmap process
+            bigmapProcess = bigmap.runBigmap();
 
+            // Get the output and error streams, this must be done because bigmap is very
+            // verbose and it will fill up the buffers of java.lang.Process quickly,
+            // which causes the process to block
+            bigmapOutputReader = new BufferedReader(new InputStreamReader(bigmapProcess.getInputStream()));
+            bigmapErrorReader = new BufferedReader(new InputStreamReader(bigmapProcess.getErrorStream()));
+            String line;
+
+            // Wait for bigmaps to finish
             while (true)
             {
                 if (isCancelled())
@@ -144,6 +156,20 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
                 try
                 {
+                    // Read java.lang.Process output and error streams to prevent it from blocking
+                    // output results to stdout and stderr
+                    while((line = bigmapOutputReader.readLine()) != null)
+                    {
+                        System.out.println(line);
+                    }
+                    while((line = bigmapErrorReader.readLine()) != null)
+                    {
+                        System.err.println(line);
+                    }
+
+                    // Calling exitValue() throws IllegalThreadStateException if
+                    // process is still alive.  This is how we check if process
+                    // has finished or not.
                     bigmapProcess.exitValue();
                     break;
                 }
@@ -154,8 +180,10 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
                 }
 
                 Thread.sleep(333);
-            }*/
+            }
 
+            // Begin post processing
+            setLabelText("<html>Postprocessing Results<br> </html>");
             bigmap.convertMapletToFitsAndSaveInOutputFolder(false);
             mapletFile = bigmap.getMapletFile();
         }
@@ -163,10 +191,36 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
         {
             e.printStackTrace();
         }
-        /*catch (InterruptedException e)
+        catch (InterruptedException e)
         {
             //e.printStackTrace();
-        }*/
+        }
+        finally
+        {
+            // Close the streams
+            if(bigmapOutputReader != null)
+            {
+                try
+                {
+                    bigmapOutputReader.close();
+                }
+                catch(IOException e)
+                {
+                    // Do nothing
+                }
+            }
+            if(bigmapErrorReader != null)
+            {
+                try
+                {
+                    bigmapErrorReader.close();
+                }
+                catch(IOException e)
+                {
+                    // Do nothing
+                }
+            }
+        }
 
         if (bigmapProcess != null && isCancelled())
         {
