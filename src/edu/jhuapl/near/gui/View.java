@@ -39,6 +39,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
@@ -336,6 +337,9 @@ public class View extends JPanel
 
                 popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+
+                popupMenu = new ImageCubePopupMenu(imageCubes, infoPanelManager, modelManager, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.CUBE_IMAGES), popupMenu);
             }
 
             else if (instrument.spectralMode == SpectralMode.MULTI)

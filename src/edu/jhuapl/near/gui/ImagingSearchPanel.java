@@ -55,8 +55,8 @@ import vtk.vtkActor;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
-import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -64,6 +64,8 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ImageCube;
+import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -468,7 +470,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (index >= 0 && imageCubesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 imageCubesDisplayedList.setSelectedIndex(index);
-                ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)imageCubesDisplayedList.getModel()).get(index);
+                ImageCubeKey colorKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).get(index);
                 imageCubePopupMenu.setCurrentImage(colorKey);
                 imageCubePopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
@@ -655,7 +657,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
-            catch (NoOverlapException e1)
+            catch (ColorImage.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                         "The 3 images you selected do not overlap.",
@@ -692,15 +694,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
         {
-            ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
+            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
             try
             {
                 DefaultListModel listModel = (DefaultListModel)imageCubesDisplayedList.getModel();
-                if (!model.containsImage(colorKey))
+                if (!model.containsImage(imageCubeKey))
                 {
-                    model.addImage(colorKey);
+                    model.addImage(imageCubeKey);
 
-                    listModel.addElement(colorKey);
+                    listModel.addElement(imageCubeKey);
                     int idx = listModel.size()-1;
                     imageCubesDisplayedList.setSelectionInterval(idx, idx);
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
@@ -709,7 +711,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
                 else
                 {
-                    int idx = listModel.indexOf(colorKey);
+                    int idx = listModel.indexOf(imageCubeKey);
                     imageCubesDisplayedList.setSelectionInterval(idx, idx);
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
@@ -732,7 +734,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
-            catch (NoOverlapException e1)
+            catch (ImageCube.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                         "The 3 images you selected do not overlap.",
@@ -747,9 +749,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         int index = imageCubesDisplayedList.getSelectedIndex();
         if (index >= 0)
         {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
+            ImageCubeKey imageCubeKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
             ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
-            model.removeImage(colorKey);
+            model.removeImage(imageCubeKey);
 
             // Select the element in its place (unless it's the last one in which case
             // select the previous one)
