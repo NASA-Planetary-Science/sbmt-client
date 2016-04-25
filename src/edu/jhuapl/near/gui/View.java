@@ -21,6 +21,7 @@ import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
@@ -269,6 +270,7 @@ public class View extends JPanel
             if (instrument.spectralMode == SpectralMode.MONO)
             {
                 allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, modelManager));
+                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, modelManager));
                 allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
             }
 
@@ -327,6 +329,7 @@ public class View extends JPanel
                 ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
                 PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+                ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(ModelNames.CUBE_IMAGES);
 
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);

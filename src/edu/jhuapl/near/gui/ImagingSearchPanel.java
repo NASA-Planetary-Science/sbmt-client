@@ -76,6 +76,7 @@ import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
@@ -107,6 +108,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
+    private ImageCubePopupMenu imageCubePopupMenu;
 
     public int getCurrentSlice() { return 0; }
 
@@ -156,6 +158,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
+
+        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, infoPanelManager, modelManager, this);
 
         return this;
     }
@@ -351,6 +356,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toResolutionTextField.setValue(smallBodyConfig.imageSearchDefaultMaxResolution);
 
         colorImagesDisplayedList.setModel(new DefaultListModel());
+        imageCubesDisplayedList.setModel(new DefaultListModel());
 
         redComboBox.setVisible(false);
         greenComboBox.setVisible(false);
@@ -449,6 +455,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
                 colorImagePopupMenu.setCurrentImage(colorKey);
                 colorImagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+
+    private void imageCubesDisplayedListMaybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = imageCubesDisplayedList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && imageCubesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                imageCubesDisplayedList.setSelectedIndex(index);
+                ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)imageCubesDisplayedList.getModel()).get(index);
+                imageCubePopupMenu.setCurrentImage(colorKey);
+                imageCubePopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -673,25 +695,25 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
             try
             {
-                DefaultListModel listModel = (DefaultListModel)colorImagesDisplayedList.getModel();
+                DefaultListModel listModel = (DefaultListModel)imageCubesDisplayedList.getModel();
                 if (!model.containsImage(colorKey))
                 {
                     model.addImage(colorKey);
 
                     listModel.addElement(colorKey);
                     int idx = listModel.size()-1;
-                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
+                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
-                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
+                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
                 }
                 else
                 {
                     int idx = listModel.indexOf(colorKey);
-                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
+                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
-                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
+                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
                 }
             }
             catch (IOException e1)
@@ -722,19 +744,19 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     protected void removeImageCube(ActionEvent e)
     {
-        int index = colorImagesDisplayedList.getSelectedIndex();
+        int index = imageCubesDisplayedList.getSelectedIndex();
         if (index >= 0)
         {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
-            ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
+            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
+            ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
             model.removeImage(colorKey);
 
             // Select the element in its place (unless it's the last one in which case
             // select the previous one)
-            if (index >= colorImagesDisplayedList.getModel().getSize())
+            if (index >= imageCubesDisplayedList.getModel().getSize())
                 --index;
             if (index >= 0)
-                colorImagesDisplayedList.setSelectionInterval(index, index);
+                imageCubesDisplayedList.setSelectionInterval(index, index);
         }
     }
 
@@ -2642,19 +2664,19 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_saveSelectedImageListButtonActionPerformed
 
     private void removeImageCubeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeImageCubeButtonActionPerformed
-        removeColorImage(evt);
+        removeImageCube(evt);
     }//GEN-LAST:event_removeImageCubeButtonActionPerformed
 
     private void generateImageCubeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateImageCubeButtonActionPerformed
-        generateColorImage(evt);
+        generateImageCube(evt);
     }//GEN-LAST:event_generateImageCubeButtonActionPerformed
 
     private void imageCubesDisplayedListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageCubesDisplayedListMousePressed
-        // TODO add your handling code here:
+        imageCubesDisplayedListMaybeShowPopup(evt);
     }//GEN-LAST:event_imageCubesDisplayedListMousePressed
 
     private void imageCubesDisplayedListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageCubesDisplayedListMouseReleased
-        // TODO add your handling code here:
+        imageCubesDisplayedListMaybeShowPopup(evt);
     }//GEN-LAST:event_imageCubesDisplayedListMouseReleased
 
 
