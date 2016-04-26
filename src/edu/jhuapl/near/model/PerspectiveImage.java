@@ -97,6 +97,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final double[] bodyOrigin = { 0.0, 0.0, 0.0 };
 
     private SmallBodyModel smallBodyModel;
+    protected SmallBodyModel getSmallBodyModel() { return smallBodyModel; }
 
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
@@ -194,8 +195,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private String enviFileFullPath; // The actual path of the ENVI binary stored on the local disk (after downloading from the server)
     private String labelFileFullPath;
     private String infoFileFullPath;
-    private String sumfileFullPath;
-    private String labelfileFullPath;
+    private String sumFileFullPath;
 
     private double offset;
     private vtkTexture imageTexture;
@@ -270,7 +270,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (key.source.equals(ImageSource.LOCAL_PERSPECTIVE))
         {
             infoFileFullPath = initLocalInfoFileFullPath();
-            sumfileFullPath = initLocalSumfileFullPath();
+            sumFileFullPath = initLocalSumfileFullPath();
         }
         else if (key.source.equals(ImageSource.SPICE) || key.source.equals(ImageSource.CORRECTED_SPICE))
         {
@@ -279,7 +279,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         else if (key.source.equals(ImageSource.LABEL))
             labelFileFullPath = initializeLabelFileFullPath();
         else
-            sumfileFullPath = initializeSumfileFullPath();
+            sumFileFullPath = initializeSumfileFullPath();
 
         loadNumSlices();
 
@@ -1600,12 +1600,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public String getSumfileFullPath()
     {
-        return sumfileFullPath;
+        return sumFileFullPath;
     }
 
     public String getLabelfileFullPath()
     {
-        return labelfileFullPath;
+        return labelFileFullPath;
     }
 
     /**

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkGenericCell;
 import vtk.vtkImageCanvasSource2D;
@@ -28,14 +30,13 @@ import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.VtkDataTypes;
 
-import nom.tam.fits.FitsException;
-
-public class ImageCube extends Image implements PropertyChangeListener
+public class ImageCube extends PerspectiveImage implements PropertyChangeListener
 {
-    private SmallBodyModel smallBodyModel;
+//    private SmallBodyModel smallBodyModel;
     private PerspectiveImage redImage;
     private PerspectiveImage greenImage;
     private PerspectiveImage blueImage;
+
     private int redImageSlice;
     private int greenImageSlice;
     private int blueImageSlice;
@@ -76,17 +77,27 @@ public class ImageCube extends Image implements PropertyChangeListener
 
     public static enum Chromatism { POLY, MONO_RED, MONO_GREEN, MONO_BLUE };
 
-    public static class ImageCubeKey
+    public static class ImageCubeKey extends Image.ImageKey
     {
         public PerspectiveImage.ImageKey redImageKey;
         public PerspectiveImage.ImageKey greenImageKey;
         public PerspectiveImage.ImageKey blueImageKey;
 
-        public ImageCubeKey(PerspectiveImage.ImageKey redImage, PerspectiveImage.ImageKey greenImage, PerspectiveImage.ImageKey blueImage)
+        public String labelFileFullPath;
+        public String infoFileFullPath;
+        public String sumFileFullPath;
+
+        public ImageCubeKey(PerspectiveImage.ImageKey redImage, PerspectiveImage.ImageKey greenImage, PerspectiveImage.ImageKey blueImage,
+                String labelFileFullPath, String infoFileFullPath, String sumFileFullPath)
         {
+            super(redImage.name + "-cube", redImage.source, redImage.fileType, redImage.imageType, redImage.instrument, redImage.band, redImage.slice);
+
             this.redImageKey = redImage;
             this.greenImageKey = greenImage;
             this.blueImageKey = blueImage;
+            this.labelFileFullPath = labelFileFullPath;
+            this.infoFileFullPath = infoFileFullPath;
+            this.sumFileFullPath = sumFileFullPath;
         }
 
         @Override
@@ -133,11 +144,19 @@ public class ImageCube extends Image implements PropertyChangeListener
         return new File(imageCubeKey.redImageKey.name).getName();
     }
 
+    protected String initializeLabelFileFullPath() { return ((ImageCubeKey)getKey()).labelFileFullPath; }
+    protected String initializeInfoFileFullPath() { return ((ImageCubeKey)getKey()).infoFileFullPath; }
+    protected String initializeSumfileFullPath() { return ((ImageCubeKey)getKey()).sumFileFullPath; }
+
+    protected String initializeFitFileFullPath() { return null; }
+    protected String initializeEnviFileFullPath() {return null; }
+    protected String initializePngFileFullPath() { return null; }
+
     public ImageCube(ImageCubeKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException, NoOverlapException
     {
-        super(new ImageKey("FalseColorImage", ImageSource.FALSE_COLOR));
+        super(key, smallBodyModel, false);
         this.imageCubeKey = key;
-        this.smallBodyModel = smallBodyModel;
+//        this.smallBodyModel = smallBodyModel;
 
         this.offset = getDefaultOffset();
 
@@ -168,7 +187,7 @@ public class ImageCube extends Image implements PropertyChangeListener
 
         shiftedFootprint = new vtkPolyData();
 
-        computeFootprintAndColorImage();
+        computeFootprintAndImageCube();
 
         int[] masking = getMaskSizes();
         int topMask =    masking[0];
@@ -208,7 +227,7 @@ public class ImageCube extends Image implements PropertyChangeListener
         return result;
     }
 
-    private void computeFootprintAndColorImage() throws NoOverlapException
+    private void computeFootprintAndImageCube() throws NoOverlapException
     {
         Frustum redFrustum = redImage.getFrustum(redImageSlice);
         Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
@@ -241,7 +260,7 @@ public class ImageCube extends Image implements PropertyChangeListener
         frustums.add(greenFrustum);
         frustums.add(blueFrustum);
 
-        footprint = smallBodyModel.computeMultipleFrustumIntersection(frustums);
+        footprint = getSmallBodyModel().computeMultipleFrustumIntersection(frustums);
 
         if (footprint == null)
             throw new NoOverlapException();
@@ -442,7 +461,7 @@ public class ImageCube extends Image implements PropertyChangeListener
         {
             try
             {
-                computeFootprintAndColorImage();
+                computeFootprintAndImageCube();
 
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
             }
@@ -504,7 +523,7 @@ public class ImageCube extends Image implements PropertyChangeListener
 
         try
         {
-            computeFootprintAndColorImage();
+            computeFootprintAndImageCube();
 
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
@@ -535,7 +554,7 @@ public class ImageCube extends Image implements PropertyChangeListener
 
     public double getDefaultOffset()
     {
-        return 4.0*smallBodyModel.getMinShiftAmount();
+        return 4.0* this.getSmallBodyModel().getMinShiftAmount();
     }
 
     public void setOffset(double offset)

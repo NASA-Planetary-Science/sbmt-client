@@ -690,11 +690,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     protected void generateImageCube(ActionEvent e)
     {
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+        PerspectiveImage redImage = (PerspectiveImage)images.getImage(selectedRedKey);
 
-        if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
+        if (redImage != null && selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
         {
-            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
+            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedRedKey, selectedGreenKey, selectedBlueKey,
+                    redImage.getLabelfileFullPath(), redImage.getInfoFileFullPath(), redImage.getSumfileFullPath());
             try
             {
                 DefaultListModel listModel = (DefaultListModel)imageCubesDisplayedList.getModel();
