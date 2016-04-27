@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -11,8 +12,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import vtk.vtkAxesActor;
@@ -38,6 +41,7 @@ import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
+import edu.jhuapl.near.gui.joglrendering.StereoMirror;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -91,7 +95,7 @@ public class Renderer extends JPanel implements
         }
     }
 
-    private vtksbmtJoglCanvasComponent renWin;
+    protected vtksbmtJoglCanvasComponent renWin;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera trackballCameraInteractorStyle;
     private vtkInteractorStyleJoystickCamera joystickCameraInteractorStyle;
@@ -108,11 +112,67 @@ public class Renderer extends JPanel implements
     private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
     public static boolean enableLODs = true; // This is temporary to show off the LOD feature, very soon we will replace this with an actual menu
 
+    private JFrame stereoFrame;
+    private StereoMirror stereoMirror;
+    private boolean stereoOn=false;
+
+    void localKeypressHandler()
+    {
+        char ch=renWin.getRenderWindowInteractor().GetKeyCode();
+        if (ch=='S')
+        {
+            stereoOn=!stereoOn;
+            if (stereoOn)
+                generateStereoFrame();
+            else
+                destroyStereoFrame();
+        }
+        if (stereoOn && stereoFrame!=null)
+        {
+            System.out.println(ch);
+            if (ch=='<')
+                stereoMirror.decreaseEyeSeparation();
+            else if (ch=='>')
+                stereoMirror.increaseEyeSeparation();
+        }
+    }
+
+    void generateStereoFrame()
+    {
+        final Dimension preferredSize=renWin.getComponent().getPreferredSize();
+        stereoMirror=new StereoMirror(renWin,1e5);
+        stereoMirror.getRenderWindow().StereoCapableWindowOn();
+        stereoMirror.getRenderWindow().SetStereoTypeToSplitViewportHorizontal();
+        stereoMirror.getRenderWindow().StereoRenderOn();
+        //
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+            @Override
+            public void run()
+            {
+                stereoFrame=new JFrame();
+                stereoFrame.setSize(preferredSize);
+                stereoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                stereoFrame.getContentPane().add(stereoMirror.getComponent());
+                stereoFrame.setVisible(true);
+                setProps(modelManager.getProps(), stereoMirror, stereoMirror.getRenderer());
+            }
+        });
+
+    }
+
+    void destroyStereoFrame()
+    {
+        stereoFrame.dispose();
+    }
+
     public Renderer(final ModelManager modelManager)
     {
         setLayout(new BorderLayout());
 
         renWin = new vtksbmtJoglCanvasComponent();
+        renWin.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
 
         this.modelManager = modelManager;
 
@@ -196,6 +256,7 @@ public class Renderer extends JPanel implements
         renWin.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
         renWin.getRenderWindowInteractor().AddObserver("EndInteractionEvent", this, "onEndInteraction");
 
+
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -211,12 +272,23 @@ public class Renderer extends JPanel implements
 
     public void setProps(List<vtkProp> props)
     {
+        setProps(props,renWin,renWin.getRenderer());
+        if (stereoOn)
+        {
+            setProps(props,stereoMirror,stereoMirror.getRenderer());
+            //setProps(props,stereoMirror,stereoMirror.getKludgeRenderer());
+        }
+    }
+
+
+    public void setProps(List<vtkProp> props, vtksbmtJoglCanvasComponent renderWindow, vtkRenderer whichRenderer)
+    {
         // Go through the props and if an prop is already in the renderer,
         // do nothing. If not, add it. If an prop not listed is
         // in the renderer, remove it from the renderer.
 
         // First remove the props not in the specified list that are currently rendered.
-        vtkPropCollection propCollection = renWin.getRenderer().GetViewProps();
+        vtkPropCollection propCollection = renderWindow.getRenderer().GetViewProps();
         int size = propCollection.GetNumberOfItems();
         HashSet<vtkProp> renderedProps = new HashSet<vtkProp>();
         for (int i=0; i<size; ++i)
@@ -224,24 +296,24 @@ public class Renderer extends JPanel implements
         renderedProps.removeAll(props);
         if (!renderedProps.isEmpty())
         {
-            renWin.getVTKLock().lock();
+            renderWindow.getVTKLock().lock();
             for (vtkProp prop : renderedProps)
-                renWin.getRenderer().RemoveViewProp(prop);
-            renWin.getVTKLock().unlock();
+                whichRenderer.RemoveViewProp(prop);
+            renderWindow.getVTKLock().unlock();
         }
 
         // Next add the new props.
         for (vtkProp prop : props)
         {
-            if (renWin.getRenderer().HasViewProp(prop) == 0)
-                renWin.getRenderer().AddViewProp(prop);
+            if (whichRenderer.HasViewProp(prop) == 0)
+                whichRenderer.AddViewProp(prop);
         }
 
         // If we are in 2D mode, then remove all props of models that
         // do not support 2D mode.
         if (modelManager.is2DMode())
         {
-            propCollection = renWin.getRenderer().GetViewProps();
+            propCollection = whichRenderer.GetViewProps();
             size = propCollection.GetNumberOfItems();
             for (int i=size-1; i>=0; --i)
             {
@@ -249,16 +321,17 @@ public class Renderer extends JPanel implements
                 Model model = modelManager.getModel(prop);
                 if (model != null && !model.supports2DMode())
                 {
-                    renWin.getVTKLock().lock();
-                    renWin.getRenderer().RemoveViewProp(prop);
-                    renWin.getVTKLock().unlock();
+                    renderWindow.getVTKLock().lock();
+                    whichRenderer.RemoveViewProp(prop);
+                    renderWindow.getVTKLock().unlock();
                 }
             }
         }
+        //
 
-        if (renWin.getRenderWindow().GetNeverRendered() > 0)
+        if (renderWindow.getRenderWindow().GetNeverRendered() > 0)
             return;
-        renWin.Render();
+        renderWindow.Render();
     }
 
     public void onStartInteraction()
@@ -1245,6 +1318,8 @@ public class Renderer extends JPanel implements
         }
 
     }
+
+
 }
 
 class CameraFrame
