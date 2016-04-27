@@ -33,6 +33,7 @@ public class Bigmap
     private double pixelSize;
     private File outputFolder;
     private File mapletFitsFile;
+    private String gravityExecutableName;
     private SmallBodyModel smallBodyModel;
 
     public Bigmap(String bigmapRootDir) throws IOException
@@ -53,26 +54,36 @@ public class Bigmap
         if (Configuration.isLinux())
         {
             if (System.getProperty("sun.arch.data.model").equals("64"))
+            {
                 processName = execDir + File.separator + "BIGMAPO.linux64";
+                gravityExecutableName = "gravity.linux64";
+            }
             else
+            {
                 processName = execDir + File.separator + "BIGMAPO.linux32";
+                gravityExecutableName = "gravity.linux32";
+            }
 
             env.put("LD_LIBRARY_PATH", execDir);
         }
         else if (Configuration.isMac())
         {
             processName = execDir + File.separator + "BIGMAPO.macosx";
+            gravityExecutableName = "gravity.macosx";
 
             env.put("DYLD_LIBRARY_PATH", execDir);
         }
         else
         {
             processName = execDir + File.separator + "BIGMAPO.win32.exe";
+            gravityExecutableName = "gravity.win32.exe";
             //throw new IOException("Operating system not supported");
         }
 
         new File(processName).setExecutable(true);
         processCommand.add(processName);
+
+        new File(execDir + File.separator + gravityExecutableName).setExecutable(true);
     }
 
     public Process runBigmap() throws IOException, InterruptedException
@@ -86,7 +97,8 @@ public class Bigmap
         double fractionHeights = .005; // fraction of heights for conditioning (value from example in BIGMAPO.F comments)
         double conditioningWeight = .025; // conditioning weight (value from example in BIGMAPO.F comments)
         int slopeIntegration = 1; // (value from example in BIGMAPO.F comments)
-        int numIterations = 6; // Not sure how many iterations is appropriate
+        int numIterations = 1; // Not sure how many iterations is appropriate
+        System.out.println("BIGMAP: HARDCODING TO 1 ITERATION FOR NOW");
 
         // Also, should we be using bigmap.f, bigmapo.f, or bigmapof.f (grotesque) ???
 
@@ -130,11 +142,11 @@ public class Bigmap
             // 8. sigma
             // 9. quality
             File origMapletFile = new File(bigmapRootDir + File.separator + "BIGMAP" + File.separator + name + ".MAP");
-            File bigmapToFitsFile = new File(outputFolder + File.separator + name + "_m2f_" + ".FIT");
+            File bigmapToFitsFile = new File(outputFolder + File.separator + name + "_m2f" + ".FIT");
             Maplet2FITS.main(new String[] {origMapletFile.getPath(), bigmapToFitsFile.getPath()});
 
             // Assemble options for calling DistributedGravity
-            File dgFitsFile = new File(outputFolder + File.separator + name + "_dg_" + ".FIT");
+            File dgFitsFile = new File(outputFolder + File.separator + name + "_dg" + ".FIT");
             File objShapeFile = new File(bigmapRootDir + File.separator + "SHAPEFILES" + File.separator + "SHAPE_LOWEST_RES.OBJ");
             List<String> dgOptionList = new LinkedList<String>();
             dgOptionList.add("-d");
@@ -149,6 +161,8 @@ public class Bigmap
             dgOptionList.add(outputFolder.getPath());
             dgOptionList.add(objShapeFile.getPath()); // Global shape model file, Olivier suggests lowest res .OBJ **/
             dgOptionList.add(dgFitsFile.getPath()); // Path to output file that will contain all results
+            dgOptionList.add(bigmapRootDir);
+            dgOptionList.add(gravityExecutableName); // Version of gravity called differs by OS
 
             // Debug output
             System.out.println("Bigmap.java: Calling Distributed Gravity with...");
