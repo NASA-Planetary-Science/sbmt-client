@@ -1397,6 +1397,7 @@ public class SmallBodyConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
+            //c.hasBigmap = true;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
@@ -2006,6 +2007,7 @@ public class SmallBodyConfig
     public ImagingInstrument[] imagingInstruments = {};
     public boolean hasLidarData = false;
     public boolean hasMapmaker = false;
+    public boolean hasBigmap = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
     public boolean hasCustomBodyCubeSize = false;

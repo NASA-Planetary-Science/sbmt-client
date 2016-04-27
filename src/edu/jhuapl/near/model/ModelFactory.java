@@ -11,6 +11,7 @@ import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
+import edu.jhuapl.near.model.bennu.Bennu;
 import edu.jhuapl.near.model.bennu.MapCamImage;
 import edu.jhuapl.near.model.bennu.PolyCamImage;
 import edu.jhuapl.near.model.ceres.FcCeresImage;
@@ -171,6 +172,10 @@ public class ModelFactory
                 };
 
                 return new SimpleSmallBody(config, names, paths);
+            }
+            else if (ShapeModelBody.RQ36 == name)
+            {
+                return new Bennu(config);
             }
             else
             {
