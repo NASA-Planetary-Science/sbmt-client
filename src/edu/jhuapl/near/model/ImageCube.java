@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import nom.tam.fits.FitsException;
 
@@ -16,7 +15,6 @@ import vtk.vtkImageCanvasSource2D;
 import vtk.vtkImageData;
 import vtk.vtkImageMask;
 import vtk.vtkPolyData;
-import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 import vtk.vtkTexture;
@@ -213,11 +211,6 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         updateImageMask();
     }
 
-    public vtkImageData getImage()
-    {
-        return displayedImage; // colorImage;
-    }
-
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException
     {
         ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
@@ -225,6 +218,16 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         if (result == null)
             result = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
         return result;
+    }
+
+    protected vtkPolyData getFootprint(int defaultSlice)
+    {
+        return footprint;
+    }
+
+    protected vtkImageData getDisplayedImage()
+    {
+        return displayedImage;
     }
 
     private void computeFootprintAndImageCube() throws NoOverlapException
@@ -423,32 +426,32 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         colorImage.Modified();
     }
 
-    @Override
-    public List<vtkProp> getProps()
-    {
-        if (footprintActor == null)
-        {
-            imageTexture = new vtkTexture();
-            imageTexture.InterpolateOn();
-            imageTexture.RepeatOff();
-            imageTexture.EdgeClampOn();
-//            texture.SetInput(colorImage);
-            imageTexture.SetInputData(displayedImage);
-
-            vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
-            footprintMapper.SetInputData(shiftedFootprint);
-            footprintMapper.Update();
-
-            footprintActor = new vtkActor();
-            footprintActor.SetMapper(footprintMapper);
-            footprintActor.SetTexture(imageTexture);
-            vtkProperty footprintProperty = footprintActor.GetProperty();
-            footprintProperty.LightingOff();
-
-            footprintActors.add(footprintActor);
-        }
-        return footprintActors;
-    }
+//    @Override
+//    public List<vtkProp> getProps()
+//    {
+//        if (footprintActor == null)
+//        {
+//            imageTexture = new vtkTexture();
+//            imageTexture.InterpolateOn();
+//            imageTexture.RepeatOff();
+//            imageTexture.EdgeClampOn();
+////            texture.SetInput(colorImage);
+//            imageTexture.SetInputData(getDisplayedImage());
+//
+//            vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
+//            footprintMapper.SetInputData(shiftedFootprint);
+//            footprintMapper.Update();
+//
+//            footprintActor = new vtkActor();
+//            footprintActor.SetMapper(footprintMapper);
+//            footprintActor.SetTexture(imageTexture);
+//            vtkProperty footprintProperty = footprintActor.GetProperty();
+//            footprintProperty.LightingOff();
+//
+//            footprintActors.add(footprintActor);
+//        }
+//        return footprintActors;
+//    }
 
     public ImageCubeKey getImageCubeKey()
     {
@@ -490,16 +493,16 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
     /**
      * Currently, just call updateImageMask
      */
-    @Override
-    public void setDisplayedImageRange(IntensityRange range)
-    {
-        if (range == null)
-        {
-            updateImageMask();
-        }
-        else
-            setDisplayedImageRange(1.0, range);
-    }
+//    @Override
+//    public void setDisplayedImageRange(IntensityRange range)
+//    {
+//        if (range == null)
+//        {
+//            updateImageMask();
+//        }
+//        else
+//            setDisplayedImageRange(1.0, range);
+//    }
 
     public void setDisplayedImageRange(double scale, IntensityRange range)
     {
@@ -604,11 +607,11 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         return new int[]{0, 0, 0, 0};
     }
 
-    @Override
-    public vtkTexture getTexture()
-    {
-        return imageTexture;
-    }
+//    @Override
+//    public vtkTexture getTexture()
+//    {
+//        return imageTexture;
+//    }
 
     @Override
     public LinkedHashMap<String, String> getProperties() throws IOException

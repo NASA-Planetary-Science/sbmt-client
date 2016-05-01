@@ -2031,7 +2031,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return rawImage;
     }
 
-    public vtkImageData getDisplayedImage()
+    protected vtkImageData getDisplayedImage()
     {
         return displayedImage;
     }
@@ -2085,7 +2085,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             imageTexture.InterpolateOn();
             imageTexture.RepeatOff();
             imageTexture.EdgeClampOn();
-            imageTexture.SetInputData(displayedImage);
+            imageTexture.SetInputData(getDisplayedImage());
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
             footprintMapper.SetInputData(shiftedFootprint[0]);
@@ -3034,6 +3034,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             return false;
     }
 
+    protected vtkPolyData getFootprint(int defaultSlice)
+    {
+        return smallBodyModel.computeFrustumIntersection(spacecraftPositionAdjusted[defaultSlice],
+                frustum1Adjusted[defaultSlice], frustum3Adjusted[defaultSlice], frustum4Adjusted[defaultSlice], frustum2Adjusted[defaultSlice]);
+    }
+
     public void loadFootprint()
     {
         if (generateFootprint)
@@ -3047,8 +3053,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     int defaultSlice = getDefaultSlice();
                     if (footprintGenerated[defaultSlice] == false)
                     {
-                        footprint[defaultSlice] = smallBodyModel.computeFrustumIntersection(spacecraftPositionAdjusted[defaultSlice],
-                                frustum1Adjusted[defaultSlice], frustum3Adjusted[defaultSlice], frustum4Adjusted[defaultSlice], frustum2Adjusted[defaultSlice]);
+                        footprint[defaultSlice] = getFootprint(defaultSlice);
                         if (footprint[defaultSlice] == null)
                             return;
 
