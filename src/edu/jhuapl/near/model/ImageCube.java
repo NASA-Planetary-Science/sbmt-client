@@ -134,12 +134,41 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
             "G: " + new File(greenImageKey.name).getName().substring(ind0, ind1) + ", " +
             "B: " + new File(blueImageKey.name).getName().substring(ind0, ind1);
         }
-    }
+
+        public String fileNameString()
+        {
+            // Find the start and stop indices of number part of the name. Should be
+            // the same for all 3 images.
+            String name = new File(redImageKey.name).getName();
+            char[] buf = name.toCharArray();
+            int ind0 = -1;
+            int ind1 = -1;
+            for (int i = 0; i<buf.length; ++i)
+            {
+                if (Character.isDigit(buf[i]) && ind0 == -1)
+                    ind0 = i;
+                else if(!Character.isDigit(buf[i]) && ind0 >= 0)
+                {
+                    ind1 = i;
+                    break;
+                }
+            }
+
+            if (buf[ind0] == '0')
+                ++ind0;
+
+            return
+            new File(redImageKey.name).getName().substring(ind0, ind1) + "-" +
+            new File(greenImageKey.name).getName().substring(ind0, ind1) + "-" +
+            new File(blueImageKey.name).getName().substring(ind0, ind1);
+        }
+}
 
 
     public String getImageName()
     {
-        return new File(imageCubeKey.redImageKey.name).getName();
+        return new File(imageCubeKey.fileNameString()).getName();
+//        return new File(imageCubeKey.redImageKey.name).getName();
     }
 
     protected String initializeLabelFileFullPath() { return ((ImageCubeKey)getKey()).labelFileFullPath; }
@@ -620,7 +649,10 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 //        result.put("pi", Double.toString(Math.PI));
 //        result.put("e", Double.toString(Math.E));
 //        return result;
-        return redImage.getProperties();
+        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>(redImage.getProperties());
+        result.put("Name", imageCubeKey.fileNameString());
+
+        return result;
     }
 
     public void updateImageMask()
