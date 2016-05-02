@@ -16,7 +16,6 @@ import vtk.vtkImageData;
 import vtk.vtkImageMask;
 import vtk.vtkPolyData;
 import vtk.vtkProp;
-import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
@@ -48,24 +47,24 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
     private float[][] redPixelData;
     private float[][] greenPixelData;
     private float[][] bluePixelData;
-    private ImageCubeKey imageCubeKey;
+//    private ImageCubeKey imageCubeKey;
     private Chromatism chromatism = Chromatism.POLY;
     private double redScale = 1.0;
     private double greenScale = 1.0;
     private double blueScale = 1.0;
-    private IntensityRange redIntensityRange = new IntensityRange(0, 255);
-    private IntensityRange greenIntensityRange = new IntensityRange(0, 255);
-    private IntensityRange blueIntensityRange = new IntensityRange(0, 255);
+    private IntensityRange redIntensityRange;
+    private IntensityRange greenIntensityRange;
+    private IntensityRange blueIntensityRange;
     private double offset;
     private double imageOpacity = 1.0;
     private int imageWidth;
     private int imageHeight;
     private vtkImageCanvasSource2D maskSource;
-    private int[] currentMask = new int[4];
+    private int[] currentMask;
 
 
 
-    static public class NoOverlapException extends Exception
+    static public class NoOverlapException extends RuntimeException
     {
         public NoOverlapException()
         {
@@ -167,7 +166,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     public String getImageName()
     {
-        return new File(imageCubeKey.fileNameString()).getName();
+        return new File(getImageCubeKey().fileNameString()).getName();
 //        return new File(imageCubeKey.redImageKey.name).getName();
     }
 
@@ -181,15 +180,26 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     public ImageCube(ImageCubeKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException, NoOverlapException
     {
-        super(key, smallBodyModel, false);
-        this.imageCubeKey = key;
-//        this.smallBodyModel = smallBodyModel;
+        super(key, smallBodyModel, modelManager, false);
+    }
+
+    protected vtkImageData loadRawImage() throws FitsException, IOException
+    {
+        ImageCubeKey imageCubeKey = (ImageCubeKey)getKey();
+
+        footprintActors = new ArrayList<vtkProp>();
+        chromatism = Chromatism.POLY;
+        redScale = 1.0;
+        greenScale = 1.0;
+        blueScale = 1.0;
+        imageOpacity = 1.0;
+        currentMask = new int[4];
 
         this.offset = getDefaultOffset();
 
-        redImage = createImage(imageCubeKey.redImageKey, smallBodyModel, modelManager);
-        greenImage = createImage(imageCubeKey.greenImageKey, smallBodyModel, modelManager);
-        blueImage = createImage(imageCubeKey.blueImageKey, smallBodyModel, modelManager);
+        redImage = createImage(imageCubeKey.redImageKey, getSmallBodyModel(), getModelManager());
+        greenImage = createImage(imageCubeKey.greenImageKey, getSmallBodyModel(), getModelManager());
+        blueImage = createImage(imageCubeKey.blueImageKey, getSmallBodyModel(), getModelManager());
 
         redImageSlice = imageCubeKey.redImageKey.slice;
         greenImageSlice = imageCubeKey.greenImageKey.slice;
@@ -214,8 +224,6 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
         shiftedFootprint = new vtkPolyData();
 
-        computeFootprintAndImageCube();
-
         int[] masking = getMaskSizes();
         int topMask =    masking[0];
         int rightMask =  masking[1];
@@ -238,6 +246,11 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         maskSource.Update();
 
         updateImageMask();
+
+        vtkImageData rawImage = computeFootprintAndImageCube();
+        return rawImage;
+
+//        return colorImage;
     }
 
     protected PerspectiveImage createImage(ImageKey key, SmallBodyModel smallBodyModel, ModelManager modelManager) throws FitsException, IOException
@@ -249,18 +262,28 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         return result;
     }
 
+    protected int loadNumSlices()
+    {
+        return 3;
+    }
+
+
     protected vtkPolyData getFootprint(int defaultSlice)
     {
         return footprint;
     }
 
-    protected vtkImageData getDisplayedImage()
-    {
-        return displayedImage;
-    }
+//    protected vtkImageData getDisplayedImage()
+//    {
+//        return displayedImage;
+//    }
 
-    private void computeFootprintAndImageCube() throws NoOverlapException
+    private vtkImageData computeFootprintAndImageCube() throws NoOverlapException
     {
+        redIntensityRange = new IntensityRange(0, 255);
+        greenIntensityRange = new IntensityRange(0, 255);
+        blueIntensityRange = new IntensityRange(0, 255);
+
         Frustum redFrustum = redImage.getFrustum(redImageSlice);
         Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
         Frustum blueFrustum = blueImage.getFrustum(blueImageSlice);
@@ -360,6 +383,8 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
         double scdist = MathUtil.vnorm(spacecraftPosition);
 
+        float[][][] array3D = new float[IMAGE_HEIGHT][3][IMAGE_WIDTH];
+
         for (int i=0; i<IMAGE_HEIGHT; ++i)
         {
             // Compute the vector on the left of the row.
@@ -448,11 +473,19 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
                     colorImage.SetScalarComponentFromFloat(j, i, 0, 0, redComponent);
                     colorImage.SetScalarComponentFromFloat(j, i, 0, 1, greenComponent);
                     colorImage.SetScalarComponentFromFloat(j, i, 0, 2, blueComponent);
+
+                    array3D[i][0][j] = (float)redComponent;
+                    array3D[i][1][j] = (float)greenComponent;
+                    array3D[i][2][j] = (float)blueComponent;
                 }
             }
         }
 
         colorImage.Modified();
+
+        vtkImageData rawImage = createRawImage(IMAGE_HEIGHT, IMAGE_WIDTH, 3, null, array3D);
+        return rawImage;
+
     }
 
 //    @Override
@@ -484,7 +517,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     public ImageCubeKey getImageCubeKey()
     {
-        return imageCubeKey;
+        return (ImageCubeKey)getKey();
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -519,6 +552,10 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         return blueImage;
     }
 
+    protected void processRawImage(vtkImageData rawImage)
+    {
+        ImageDataUtil.flipImageYAxis(rawImage);
+    }
     /**
      * Currently, just call updateImageMask
      */
@@ -533,76 +570,76 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 //            setDisplayedImageRange(1.0, range);
 //    }
 
-    public void setDisplayedImageRange(double scale, IntensityRange range)
-    {
-        setDisplayedImageRange(scale, range, scale, range, scale, range, Chromatism.POLY);
-    }
+//    public void setDisplayedImageRange(double scale, IntensityRange range)
+//    {
+//        setDisplayedImageRange(scale, range, scale, range, scale, range, Chromatism.POLY);
+//    }
+//
+//    public void setDisplayedImageRange(IntensityRange redRange, IntensityRange greenRange, IntensityRange blueRange)
+//    {
+//        setDisplayedImageRange(1.0, redRange, 1.0, greenRange, 1.0, blueRange, Chromatism.POLY);
+//    }
+//
+//    public void setDisplayedImageRange(double redScale, IntensityRange redRange, double greenScale, IntensityRange greenRange, double blueScale, IntensityRange blueRange, Chromatism chromatism)
+//    {
+//        this.chromatism = chromatism;
+//        this.redScale = redScale;
+//        this.greenScale = greenScale;
+//        this.blueScale = blueScale;
+//        redIntensityRange = redRange;
+//        greenIntensityRange = greenRange;
+//        blueIntensityRange = blueRange;
+//
+//        try
+//        {
+//            computeFootprintAndImageCube();
+//
+//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//        }
+//        catch (NoOverlapException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
-    public void setDisplayedImageRange(IntensityRange redRange, IntensityRange greenRange, IntensityRange blueRange)
-    {
-        setDisplayedImageRange(1.0, redRange, 1.0, greenRange, 1.0, blueRange, Chromatism.POLY);
-    }
+//    public double getOpacity()
+//    {
+//        return imageOpacity;
+//    }
 
-    public void setDisplayedImageRange(double redScale, IntensityRange redRange, double greenScale, IntensityRange greenRange, double blueScale, IntensityRange blueRange, Chromatism chromatism)
-    {
-        this.chromatism = chromatism;
-        this.redScale = redScale;
-        this.greenScale = greenScale;
-        this.blueScale = blueScale;
-        redIntensityRange = redRange;
-        greenIntensityRange = greenRange;
-        blueIntensityRange = blueRange;
+//    public void setOpacity(double imageOpacity)
+//    {
+//        this.imageOpacity  = imageOpacity;
+//        vtkProperty smallBodyProperty = footprintActor.GetProperty();
+//        smallBodyProperty.SetOpacity(imageOpacity);
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//    }
 
-        try
-        {
-            computeFootprintAndImageCube();
-
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
-        catch (NoOverlapException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public double getOpacity()
-    {
-        return imageOpacity;
-    }
-
-    public void setOpacity(double imageOpacity)
-    {
-        this.imageOpacity  = imageOpacity;
-        vtkProperty smallBodyProperty = footprintActor.GetProperty();
-        smallBodyProperty.SetOpacity(imageOpacity);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    public void setVisible(boolean b)
-    {
-        footprintActor.SetVisibility(b ? 1 : 0);
-        super.setVisible(b);
-    }
+//    public void setVisible(boolean b)
+//    {
+//        footprintActor.SetVisibility(b ? 1 : 0);
+//        super.setVisible(b);
+//    }
 
     public double getDefaultOffset()
     {
         return 4.0* this.getSmallBodyModel().getMinShiftAmount();
     }
 
-    public void setOffset(double offset)
-    {
-        this.offset = offset;
-
-        shiftedFootprint.DeepCopy(footprint);
-        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
-
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    public double getOffset()
-    {
-        return offset;
-    }
+//    public void setOffset(double offset)
+//    {
+//        this.offset = offset;
+//
+//        shiftedFootprint.DeepCopy(footprint);
+//        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
+//
+//        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//    }
+//
+//    public double getOffset()
+//    {
+//        return offset;
+//    }
 
     public void setCurrentMask(int[] masking)
     {
@@ -650,7 +687,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 //        result.put("e", Double.toString(Math.E));
 //        return result;
         LinkedHashMap<String, String> result = new LinkedHashMap<String, String>(redImage.getProperties());
-        result.put("Name", imageCubeKey.fileNameString());
+        result.put("Name", getImageCubeKey().fileNameString());
 
         return result;
     }

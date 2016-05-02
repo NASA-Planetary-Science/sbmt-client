@@ -99,6 +99,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private SmallBodyModel smallBodyModel;
     protected SmallBodyModel getSmallBodyModel() { return smallBodyModel; }
 
+    private ModelManager modelManager;
+    protected ModelManager getModelManager() { return modelManager; }
+
     private vtkImageData rawImage;
     private vtkImageData displayedImage;
     private int currentSlice = 0;
@@ -207,6 +210,21 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     private boolean loadPointingOnly;
 
+    public PerspectiveImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly) throws FitsException, IOException
+    {
+        this(key, smallBodyModel, null, loadPointingOnly);
+    }
+
+    public PerspectiveImage(ImageKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly, int currentSlice) throws FitsException, IOException
+    {
+        this(key, smallBodyModel, null, loadPointingOnly, currentSlice);
+    }
+
+
     /**
      * If loadPointingOnly is true then only pointing information about this
      * image will be downloaded/loaded. The image itself will not be loaded.
@@ -214,9 +232,10 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public PerspectiveImage(ImageKey key,
             SmallBodyModel smallBodyModel,
+            ModelManager modelManager,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-            this(key, smallBodyModel, loadPointingOnly, 0);
+            this(key, smallBodyModel, modelManager, loadPointingOnly, 0);
     }
 
     /**
@@ -226,11 +245,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
      */
     public PerspectiveImage(ImageKey key,
             SmallBodyModel smallBodyModel,
+            ModelManager modelManager,
             boolean loadPointingOnly, int currentSlice) throws FitsException, IOException
     {
         super(key);
         this.currentSlice = currentSlice;
         this.smallBodyModel = smallBodyModel;
+        this.modelManager = modelManager;
         this.loadPointingOnly = loadPointingOnly;
         this.offset = getDefaultOffset();
         this.rotation = key.instrument != null ? key.instrument.rotation : 0.0;
@@ -281,7 +302,9 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         else
             sumFileFullPath = initializeSumfileFullPath();
 
-        loadNumSlices();
+        imageDepth = loadNumSlices();
+        if (imageDepth > 1)
+            initSpacecraftStateVariables();
 
         loadPointing();
 
@@ -1842,7 +1865,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         maxValue = reader.getMaxValues();
     }
 
-    protected void loadImage() throws FitsException, IOException
+    protected vtkImageData loadRawImage() throws FitsException, IOException
     {
         if (getFitFileFullPath() != null)
             loadFitsFiles();
@@ -1850,6 +1873,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             loadPngFile();
         else if (getEnviFileFullPath() != null)
             loadEnviFile();
+
+        return rawImage;
+    }
+
+    protected void loadImage() throws FitsException, IOException
+    {
+        rawImage = loadRawImage();
 
         if (rawImage == null)
             return;
@@ -1909,11 +1939,13 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         {
             setDisplayedImageRange(null);
         }
+        else
+            setDisplayedImageRange(null);
 
 //        setDisplayedImageRange(new IntensityRange(0, 255));
     }
 
-    protected void loadNumSlices()
+    protected int loadNumSlices()
     {
         if (getFitFileFullPath() != null)
         {
@@ -1951,6 +1983,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             if (imageDepth > 1)
                 setCurrentSlice(imageDepth / 2);
         }
+        return imageDepth;
     }
 
     protected void loadPointing() throws FitsException, IOException
@@ -2293,8 +2326,8 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         int nfiles = infoFileNames.length;
         int nslices = getNumberBands();
 
-        if (nslices > 1)
-            initSpacecraftStateVariables();
+//        if (nslices > 1)
+//            initSpacecraftStateVariables();
 
         boolean pad = nfiles > 1;
 

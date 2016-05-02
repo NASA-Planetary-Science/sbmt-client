@@ -162,7 +162,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
 
         ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
-        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, infoPanelManager, modelManager, this);
+        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
         return this;
     }
