@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import nom.tam.fits.FitsException;
 
@@ -25,29 +26,29 @@ import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.VtkDataTypes;
 
 public class ImageCube extends PerspectiveImage implements PropertyChangeListener
 {
 //    private SmallBodyModel smallBodyModel;
-    private PerspectiveImage redImage;
-    private PerspectiveImage greenImage;
-    private PerspectiveImage blueImage;
+    private List<PerspectiveImage> images;
+    private int nimages;
+    private List<Integer> imageSlices;
+    private PerspectiveImage firstImage;
+    private int firstSlice;
+    private int firstImageIndex;
 
-    private int redImageSlice;
-    private int greenImageSlice;
-    private int blueImageSlice;
-    private vtkImageData colorImage;
+//    private vtkImageData colorImage;
+    private vtkImageData rawImage;
     private vtkImageData displayedImage;
     private vtkTexture imageTexture;
     private vtkPolyData footprint;
+    private Frustum firstFrustum;
     private vtkPolyData shiftedFootprint;
     private vtkActor footprintActor;
     private ArrayList<vtkProp> footprintActors = new ArrayList<vtkProp>();
-    private float[][] redPixelData;
-    private float[][] greenPixelData;
-    private float[][] bluePixelData;
-//    private ImageCubeKey imageCubeKey;
+    private float[][][] pixelData;
+    private float[][] firstPixelData;
+
     private Chromatism chromatism = Chromatism.POLY;
     private double redScale = 1.0;
     private double greenScale = 1.0;
@@ -76,22 +77,22 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     public static class ImageCubeKey extends Image.ImageKey
     {
-        public PerspectiveImage.ImageKey redImageKey;
-        public PerspectiveImage.ImageKey greenImageKey;
-        public PerspectiveImage.ImageKey blueImageKey;
+        public List<PerspectiveImage.ImageKey> imageKeys;
+        public PerspectiveImage.ImageKey firstImageKey;
 
         public String labelFileFullPath;
         public String infoFileFullPath;
         public String sumFileFullPath;
+        public int nimages;
 
-        public ImageCubeKey(PerspectiveImage.ImageKey redImage, PerspectiveImage.ImageKey greenImage, PerspectiveImage.ImageKey blueImage,
+        public ImageCubeKey(List<ImageKey> imageKeys, ImageKey firstImageKey,
                 String labelFileFullPath, String infoFileFullPath, String sumFileFullPath)
         {
-            super(redImage.name + "-cube", redImage.source, redImage.fileType, redImage.imageType, redImage.instrument, redImage.band, redImage.slice);
+            super(firstImageKey.name + "-cube", firstImageKey.source, firstImageKey.fileType, firstImageKey.imageType, firstImageKey.instrument, firstImageKey.band, firstImageKey.slice);
 
-            this.redImageKey = redImage;
-            this.greenImageKey = greenImage;
-            this.blueImageKey = blueImage;
+            this.imageKeys = new ArrayList<ImageKey>(imageKeys);
+            this.nimages = imageKeys.size();
+            this.firstImageKey = firstImageKey;
             this.labelFileFullPath = labelFileFullPath;
             this.infoFileFullPath = infoFileFullPath;
             this.sumFileFullPath = sumFileFullPath;
@@ -100,9 +101,17 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         @Override
         public boolean equals(Object obj)
         {
-            return redImageKey.equals(((ImageCubeKey)obj).redImageKey) &&
-            greenImageKey.equals(((ImageCubeKey)obj).greenImageKey) &&
-            blueImageKey.equals(((ImageCubeKey)obj).blueImageKey);
+            ImageCubeKey objectCubeKey = (ImageCubeKey)obj;
+            List<ImageKey> objectKeys = objectCubeKey.imageKeys;
+
+            for (int i = 0; i < imageKeys.size(); i++)
+            {
+                ImageKey thisKey = this.imageKeys.get(i);
+                ImageKey objectKey = objectKeys.get(i);
+                if (!thisKey.equals(objectKey))
+                    return false;
+            }
+            return true;
         }
 
         @Override
@@ -110,7 +119,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         {
             // Find the start and stop indices of number part of the name. Should be
             // the same for all 3 images.
-            String name = new File(redImageKey.name).getName();
+            String name = new File(firstImageKey.name).getName();
             char[] buf = name.toCharArray();
             int ind0 = -1;
             int ind1 = -1;
@@ -128,17 +137,18 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
             if (buf[ind0] == '0')
                 ++ind0;
 
-            return
-            "R: " + new File(redImageKey.name).getName().substring(ind0, ind1) + ", " +
-            "G: " + new File(greenImageKey.name).getName().substring(ind0, ind1) + ", " +
-            "B: " + new File(blueImageKey.name).getName().substring(ind0, ind1);
+            String result = "";
+            for (ImageKey key : imageKeys)
+                result = result + new File(key.name).getName().substring(ind0, ind1).toString() + ", ";
+
+            return result;
         }
 
         public String fileNameString()
         {
             // Find the start and stop indices of number part of the name. Should be
             // the same for all 3 images.
-            String name = new File(redImageKey.name).getName();
+            String name = new File(firstImageKey.name).getName();
             char[] buf = name.toCharArray();
             int ind0 = -1;
             int ind1 = -1;
@@ -156,10 +166,11 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
             if (buf[ind0] == '0')
                 ++ind0;
 
-            return
-            new File(redImageKey.name).getName().substring(ind0, ind1) + "-" +
-            new File(greenImageKey.name).getName().substring(ind0, ind1) + "-" +
-            new File(blueImageKey.name).getName().substring(ind0, ind1);
+            String result = "";
+            for (ImageKey key : imageKeys)
+                result = result + new File(key.name).getName().substring(ind0, ind1).toString() + "-";
+
+            return result;
         }
 }
 
@@ -197,30 +208,44 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
         this.offset = getDefaultOffset();
 
-        redImage = createImage(imageCubeKey.redImageKey, getSmallBodyModel(), getModelManager());
-        greenImage = createImage(imageCubeKey.greenImageKey, getSmallBodyModel(), getModelManager());
-        blueImage = createImage(imageCubeKey.blueImageKey, getSmallBodyModel(), getModelManager());
 
-        redImageSlice = imageCubeKey.redImageKey.slice;
-        greenImageSlice = imageCubeKey.greenImageKey.slice;
-        blueImageSlice = imageCubeKey.blueImageKey.slice;
+        images = new ArrayList<PerspectiveImage>();
+        imageSlices = new ArrayList<Integer>();
+        for (ImageKey key : imageCubeKey.imageKeys)
+        {
+            PerspectiveImage image = createImage(key, getSmallBodyModel(), getModelManager());
+            images.add(image);
+            imageSlices.add(key.slice);
+            if (key.equals(imageCubeKey.firstImageKey))
+            {
+                firstImage = image;
+                firstSlice = key.slice;
+                firstFrustum = image.getFrustum();
+            }
+        }
 
-        int rslice = imageCubeKey.redImageKey.slice;
-        redPixelData = ImageDataUtil.vtkImageDataToArray2D(redImage.getRawImage(), rslice);
+        int nkeys = images.size();
+        pixelData = new float[nkeys][][];
+        for (int i=0; i<nkeys; i++)
+        {
+            PerspectiveImage image = images.get(i);
+            int slice = imageSlices.get(i);
+            pixelData[i] = ImageDataUtil.vtkImageDataToArray2D(image.getRawImage(), slice);
+            if (image.equals(firstImage))
+            {
+                firstPixelData = pixelData[i];
+                firstImageIndex = 0;
+            }
 
-        int gslice = imageCubeKey.greenImageKey.slice;
-        greenPixelData = ImageDataUtil.vtkImageDataToArray2D(greenImage.getRawImage(), gslice);
+        }
 
-        int bslice = imageCubeKey.blueImageKey.slice;
-        bluePixelData = ImageDataUtil.vtkImageDataToArray2D(blueImage.getRawImage(), bslice);
-
-        colorImage = new vtkImageData();
-        imageWidth = redImage.getImageWidth();
-        imageHeight = redImage.getImageHeight();
-        colorImage.SetDimensions(imageWidth, imageHeight, 1);
-        colorImage.SetSpacing(1.0, 1.0, 1.0);
-        colorImage.SetOrigin(0.0, 0.0, 0.0);
-        colorImage.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, 3);
+//        colorImage = new vtkImageData();
+        imageWidth = firstImage.getImageWidth();
+        imageHeight = firstImage.getImageHeight();
+//        colorImage.SetDimensions(imageWidth, imageHeight, 1);
+//        colorImage.SetSpacing(1.0, 1.0, 1.0);
+//        colorImage.SetOrigin(0.0, 0.0, 0.0);
+//        colorImage.AllocateScalars(VtkDataTypes.VTK_UNSIGNED_CHAR, 3);
 
         shiftedFootprint = new vtkPolyData();
 
@@ -264,7 +289,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     protected int loadNumSlices()
     {
-        return 3;
+        return ((ImageCubeKey)getKey()).nimages;
     }
 
 
@@ -280,40 +305,56 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
     private vtkImageData computeFootprintAndImageCube() throws NoOverlapException
     {
-        redIntensityRange = new IntensityRange(0, 255);
-        greenIntensityRange = new IntensityRange(0, 255);
-        blueIntensityRange = new IntensityRange(0, 255);
+//        redIntensityRange = new IntensityRange(0, 255);
+//        greenIntensityRange = new IntensityRange(0, 255);
+//        blueIntensityRange = new IntensityRange(0, 255);
 
-        Frustum redFrustum = redImage.getFrustum(redImageSlice);
-        Frustum greenFrustum = greenImage.getFrustum(greenImageSlice);
-        Frustum blueFrustum = blueImage.getFrustum(blueImageSlice);
-
-        double[] redRange = redImage.getScalarRange(redImageSlice);
-        double[] greenRange = greenImage.getScalarRange(greenImageSlice);
-        double[] blueRange = blueImage.getScalarRange(blueImageSlice);
-
-        double redfullRange = redRange[1] - redRange[0];
-        double reddx = redfullRange / 255.0f;
-        double redmin = redRange[0] + redIntensityRange.min*reddx;
-        double redmax = redRange[0] + redIntensityRange.max*reddx;
-        double redstretchRange = redmax - redmin;
-
-        double greenfullRange = greenRange[1] - greenRange[0];
-        double greendx = greenfullRange / 255.0f;
-        double greenmin = greenRange[0] + greenIntensityRange.min*greendx;
-        double greenmax = greenRange[0] + greenIntensityRange.max*greendx;
-        double greenstretchRange = greenmax - greenmin;
-
-        double bluefullRange = blueRange[1] - blueRange[0];
-        double bluedx = bluefullRange / 255.0f;
-        double bluemin = blueRange[0] + blueIntensityRange.min*bluedx;
-        double bluemax = blueRange[0] + blueIntensityRange.max*bluedx;
-        double bluestretchRange = bluemax - bluemin;
-
+        List<IntensityRange> intensityRanges = new ArrayList<IntensityRange>();
         ArrayList<Frustum> frustums = new ArrayList<Frustum>();
-        frustums.add(redFrustum);
-        frustums.add(greenFrustum);
-        frustums.add(blueFrustum);
+        nimages = images.size();
+        double[] mins = new double[nimages];
+        double[] maxes = new double[nimages];
+        double[] stretchRanges = new double[nimages];
+        for (int i=0; i<nimages; i++)
+        {
+            PerspectiveImage image = images.get(i);
+
+            int slice = imageSlices.get(i);
+            Frustum frustum = image.getFrustum(slice);
+            frustums.add(frustum);
+
+            IntensityRange intensityRange = new IntensityRange(0, 255);
+            intensityRanges.add(intensityRange);
+
+            double[] range = image.getScalarRange(slice);
+            double fullRange = range[1] - range[0];
+            double dx = fullRange / 255.0f;
+            mins[i] = range[0] + intensityRange.min * dx;
+            maxes[i] = range[0] + intensityRange.max * dx;
+            stretchRanges[i] = maxes[i] - mins[i];
+        }
+
+//        double[] redRange = redImage.getScalarRange(redImageSlice);
+//        double[] greenRange = greenImage.getScalarRange(greenImageSlice);
+//        double[] blueRange = blueImage.getScalarRange(blueImageSlice);
+
+//        double redfullRange = redRange[1] - redRange[0];
+//        double reddx = redfullRange / 255.0f;
+//        double redmin = redRange[0] + redIntensityRange.min*reddx;
+//        double redmax = redRange[0] + redIntensityRange.max*reddx;
+//        double redstretchRange = redmax - redmin;
+//
+//        double greenfullRange = greenRange[1] - greenRange[0];
+//        double greendx = greenfullRange / 255.0f;
+//        double greenmin = greenRange[0] + greenIntensityRange.min*greendx;
+//        double greenmax = greenRange[0] + greenIntensityRange.max*greendx;
+//        double greenstretchRange = greenmax - greenmin;
+//
+//        double bluefullRange = blueRange[1] - blueRange[0];
+//        double bluedx = bluefullRange / 255.0f;
+//        double bluemin = blueRange[0] + blueIntensityRange.min*bluedx;
+//        double bluemax = blueRange[0] + blueIntensityRange.max*bluedx;
+//        double bluestretchRange = bluemax - bluemin;
 
         footprint = getSmallBodyModel().computeMultipleFrustumIntersection(frustums);
 
@@ -325,10 +366,10 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         footprint.GetCellData().SetScalars(null);
         footprint.GetPointData().SetScalars(null);
 
-        int IMAGE_WIDTH = redImage.getImageWidth();
-        int IMAGE_HEIGHT = redImage.getImageHeight();
+        int imageWidth = firstImage.getImageWidth();
+        int imageHeight = firstImage.getImageHeight();
 
-        PolyDataUtil.generateTextureCoordinates(redFrustum, IMAGE_WIDTH, IMAGE_HEIGHT, footprint);
+        PolyDataUtil.generateTextureCoordinates(firstFrustum, imageWidth, imageHeight, footprint);
 
         shiftedFootprint.DeepCopy(footprint);
         PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint, offset);
@@ -349,10 +390,10 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
         vtkGenericCell cell = new vtkGenericCell();
 
-        double[] spacecraftPosition = redFrustum.origin;
-        double[] frustum1 = redFrustum.ul;
-        double[] frustum2 = redFrustum.lr;
-        double[] frustum3 = redFrustum.ur;
+        double[] spacecraftPosition = firstFrustum.origin;
+        double[] frustum1 = firstFrustum.ul;
+        double[] frustum2 = firstFrustum.lr;
+        double[] frustum3 = firstFrustum.ur;
 
         double[] corner1 = {
                 spacecraftPosition[0] + frustum1[0],
@@ -383,21 +424,21 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
         double scdist = MathUtil.vnorm(spacecraftPosition);
 
-        float[][][] array3D = new float[IMAGE_HEIGHT][3][IMAGE_WIDTH];
+        float[][][] array3D = new float[imageHeight][nimages][imageWidth];
 
-        for (int i=0; i<IMAGE_HEIGHT; ++i)
+        for (int i=0; i<imageHeight; ++i)
         {
             // Compute the vector on the left of the row.
-            double fracHeight = ((double)i / (double)(IMAGE_HEIGHT-1));
+            double fracHeight = ((double)i / (double)(imageHeight-1));
             double[] left = {
                     corner1[0] + fracHeight*vec13[0],
                     corner1[1] + fracHeight*vec13[1],
                     corner1[2] + fracHeight*vec13[2]
             };
 
-            for (int j=0; j<IMAGE_WIDTH; ++j)
+            for (int j=0; j<imageWidth; ++j)
             {
-                double fracWidth = ((double)j / (double)(IMAGE_WIDTH-1));
+                double fracWidth = ((double)j / (double)(imageWidth-1));
                 double[] vec = {
                         left[0] + fracWidth*vec12[0],
                         left[1] + fracWidth*vec12[1],
@@ -424,66 +465,45 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 
                 if (result > 0)
                 {
-                    double redValue = redPixelData[j][i];
+                    for (int k=0; k<nimages; ++k)
+                    {
 
-                    double[] uv = new double[2];
+                        double[] uv = new double[2];
 
-                    greenFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv, true);
-                    double greenValue = ImageDataUtil.interpolateWithinImage(
-                            greenPixelData,
-                            IMAGE_WIDTH,
-                            IMAGE_HEIGHT,
-                            uv[1],
-                            uv[0]);
+                        Frustum frustum = frustums.get(k);
+                        float[][] pixels = pixelData[k];
+                        double value = 0.0;
 
-                    blueFrustum.computeTextureCoordinatesFromPoint(x, IMAGE_WIDTH, IMAGE_HEIGHT, uv, true);
-                    double blueValue = ImageDataUtil.interpolateWithinImage(
-                            bluePixelData,
-                            IMAGE_WIDTH,
-                            IMAGE_HEIGHT,
-                            uv[1],
-                            uv[0]);
+                        if (k == firstImageIndex)
+                        {
+                            value = pixelData[firstImageIndex][j][i];
+                        }
+                        else
+                        {
+                            frustum.computeTextureCoordinatesFromPoint(x, imageWidth, imageHeight, uv, true);
+                            value = ImageDataUtil.interpolateWithinImage(
+                                    pixels,
+                                    imageWidth,
+                                    imageHeight,
+                                    uv[1],
+                                    uv[0]);
+                        }
 
-                    if (redValue < redmin)
-                        redValue = redmin;
-                    if (redValue > redmax)
-                        redValue = redmax;
+                        if (value < mins[k])
+                            value = mins[k];
+                        if (value > maxes[k])
+                            value = maxes[k];
 
-                    if (greenValue < greenmin)
-                        greenValue = greenmin;
-                    if (greenValue > greenmax)
-                        greenValue = greenmax;
-
-                    if (blueValue < bluemin)
-                        blueValue = bluemin;
-                    if (blueValue > bluemax)
-                        blueValue = bluemax;
-
-                    double redComponent = 255.0 * redScale * (redValue - redmin) / redstretchRange;
-                    double greenComponent = 255.0 * greenScale * (greenValue - greenmin) / greenstretchRange;
-                    double blueComponent = 255.0 * blueScale * (blueValue - bluemin) / bluestretchRange;
-
-                    if (this.chromatism == Chromatism.MONO_RED)
-                        greenComponent = blueComponent = redComponent;
-                    else if (this.chromatism == Chromatism.MONO_GREEN)
-                        blueComponent = redComponent = greenComponent;
-                    else if (this.chromatism == Chromatism.MONO_BLUE)
-                        greenComponent = redComponent = blueComponent;
-
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 0, redComponent);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 1, greenComponent);
-                    colorImage.SetScalarComponentFromFloat(j, i, 0, 2, blueComponent);
-
-                    array3D[i][0][j] = (float)redComponent;
-                    array3D[i][1][j] = (float)greenComponent;
-                    array3D[i][2][j] = (float)blueComponent;
+                        double component = 255.0 * redScale * (value - mins[k]) / stretchRanges[k];
+                        array3D[i][k][j] = (float)component;
+                    }
                 }
             }
         }
 
-        colorImage.Modified();
+//        colorImage.Modified();
 
-        vtkImageData rawImage = createRawImage(IMAGE_HEIGHT, IMAGE_WIDTH, 3, null, array3D);
+        rawImage = createRawImage(imageHeight, imageWidth, nimages, null, array3D);
         return rawImage;
 
     }
@@ -537,21 +557,21 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         }
     }
 
-    public PerspectiveImage getRedImage()
-    {
-        return redImage;
-    }
-
-    public PerspectiveImage getGreenImage()
-    {
-        return greenImage;
-    }
-
-    public PerspectiveImage getBlueImage()
-    {
-        return blueImage;
-    }
-
+//    public PerspectiveImage getRedImage()
+//    {
+//        return redImage;
+//    }
+//
+//    public PerspectiveImage getGreenImage()
+//    {
+//        return greenImage;
+//    }
+//
+//    public PerspectiveImage getBlueImage()
+//    {
+//        return blueImage;
+//    }
+//
     protected void processRawImage(vtkImageData rawImage)
     {
         ImageDataUtil.flipImageYAxis(rawImage);
@@ -686,7 +706,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
 //        result.put("pi", Double.toString(Math.PI));
 //        result.put("e", Double.toString(Math.E));
 //        return result;
-        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>(redImage.getProperties());
+        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>(firstImage.getProperties());
         result.put("Name", getImageCubeKey().fileNameString());
 
         return result;
@@ -697,7 +717,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         vtkImageData maskSourceOutput = maskSource.GetOutput();
 
         vtkImageMask maskFilter = new vtkImageMask();
-        maskFilter.SetImageInputData(colorImage);
+        maskFilter.SetImageInputData(rawImage);
         maskFilter.SetMaskInputData(maskSourceOutput);
         maskFilter.Update();
 
