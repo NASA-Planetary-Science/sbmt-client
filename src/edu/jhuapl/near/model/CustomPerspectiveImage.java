@@ -12,7 +12,7 @@ public class CustomPerspectiveImage extends PerspectiveImage
 {
     public CustomPerspectiveImage(ImageKey key, SmallBodyModel smallBodyModel, boolean loadPointingOnly) throws FitsException, IOException
     {
-        super(key, smallBodyModel, loadPointingOnly);
+        super(key, smallBodyModel, null, loadPointingOnly);
     }
 
     protected void initialize() throws FitsException, IOException

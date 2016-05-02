@@ -21,6 +21,7 @@ import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
@@ -38,6 +39,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
@@ -180,6 +182,12 @@ public class View extends JPanel
                 JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
             }
+
+            if (smallBodyConfig.hasBigmap)
+            {
+                JComponent component = new BigmapPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/bigmap.zip");
+                controlPanel.addTab("Bigmap", component);
+            }
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -263,6 +271,7 @@ public class View extends JPanel
             if (instrument.spectralMode == SpectralMode.MONO)
             {
                 allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, modelManager));
+                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, modelManager));
                 allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
             }
 
@@ -321,12 +330,16 @@ public class View extends JPanel
                 ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
                 PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+                ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(ModelNames.CUBE_IMAGES);
 
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
                 popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+
+                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.CUBE_IMAGES), popupMenu);
             }
 
             else if (instrument.spectralMode == SpectralMode.MULTI)
@@ -346,12 +359,16 @@ public class View extends JPanel
                 ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
                 PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
+                ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(ModelNames.CUBE_IMAGES);
 
                 PopupMenu popupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
                 popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
                 popupManager.registerPopup(modelManager.getModel(ModelNames.COLOR_IMAGES), popupMenu);
+
+                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
+                popupManager.registerPopup(modelManager.getModel(ModelNames.CUBE_IMAGES), popupMenu);
             }
             }
 

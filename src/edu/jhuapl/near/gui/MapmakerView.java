@@ -160,7 +160,7 @@ public class MapmakerView extends JFrame
         createMenus();
 
         // Finally make the frame visible
-        setTitle("Mapmaker View");
+        setTitle("Mapmaker/Bigmap View");
         pack();
         setVisible(true);
     }
@@ -200,8 +200,8 @@ public class MapmakerView extends JFrame
         JPanel panel = new JPanel();
 
         Object[] coloringOptions = {
-                "Color by elevation relative to gravity",
-                "Color by elevation relative to normal plane",
+                "Color by geopotential height",
+                "Color by height relative to normal plane",
                 "Color by slope",
                 "No coloring"};
         coloringTypeComboBox = new JComboBox(coloringOptions);

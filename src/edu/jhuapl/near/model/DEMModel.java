@@ -59,8 +59,8 @@ public class DEMModel extends SmallBodyModel
         };
 
         String[] coloringNames = {
-                "Elevation Relative to Gravity",
-                "Elevation Relative to Plane",
+                "Geopotential Height",
+                "Height Relative to Normal Plane",
                 "Slope"
         };
         String[] coloringUnits = {

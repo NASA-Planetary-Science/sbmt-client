@@ -55,8 +55,8 @@ import vtk.vtkActor;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
-import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -64,6 +64,9 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ImageCube;
+import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
+import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -75,6 +78,7 @@ import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
+import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.IdPair;
@@ -106,6 +110,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
+    private ImageCubePopupMenu imageCubePopupMenu;
 
     public int getCurrentSlice() { return 0; }
 
@@ -156,6 +161,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
         colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
 
+        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+
         return this;
     }
 
@@ -200,6 +208,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ModelNames getColorImageCollectionModelName()
     {
         return ModelNames.COLOR_IMAGES;
+    }
+
+    private ModelNames getImageCubeCollectionModelName()
+    {
+        return ModelNames.CUBE_IMAGES;
     }
 
     private void postInitComponents(ImagingInstrument instrument)
@@ -345,6 +358,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         toResolutionTextField.setValue(smallBodyConfig.imageSearchDefaultMaxResolution);
 
         colorImagesDisplayedList.setModel(new DefaultListModel());
+        imageCubesDisplayedList.setModel(new DefaultListModel());
 
         redComboBox.setVisible(false);
         greenComboBox.setVisible(false);
@@ -443,6 +457,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
                 colorImagePopupMenu.setCurrentImage(colorKey);
                 colorImagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+
+    private void imageCubesDisplayedListMaybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = imageCubesDisplayedList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && imageCubesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                imageCubesDisplayedList.setSelectedIndex(index);
+                ImageCubeKey colorKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).get(index);
+                imageCubePopupMenu.setCurrentImage(colorKey);
+                imageCubePopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -581,7 +611,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    protected void showColorImage(ActionEvent e)
+    protected void generateColorImage(ActionEvent e)
     {
         ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
 
@@ -627,7 +657,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         JOptionPane.ERROR_MESSAGE);
                 e1.printStackTrace();
             }
-            catch (NoOverlapException e1)
+            catch (ColorImage.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                         "The 3 images you selected do not overlap.",
@@ -636,6 +666,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         }
     }
+
 
     protected void removeColorImage(ActionEvent e)
     {
@@ -654,6 +685,105 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 colorImagesDisplayedList.setSelectionInterval(index, index);
         }
     }
+
+
+
+    protected void generateImageCube(ActionEvent e)
+    {
+        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+
+        List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
+        int[] selectedIndices = resultList.getSelectedRows();
+        for (int selectedIndex : selectedIndices)
+        {
+            String name = imageRawResults.get(selectedIndex).get(0);
+            ImageKey selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            System.out.println("Key: " + selectedKey.name);
+            selectedKeys.add(selectedKey);
+//            if (!selectedRedKey.band.equals("0"))
+//                imageName = selectedKey.band + ":" + imageName;
+        }
+
+        ImageKey firstKey = selectedKeys.get(0);
+
+        selectedRedKey = selectedKeys.get(0);
+        selectedGreenKey = selectedKeys.get(1);
+        selectedBlueKey = selectedKeys.get(2);
+
+        PerspectiveImage firstImage = (PerspectiveImage)images.getImage(selectedRedKey);
+
+        if (selectedKeys.size() > 0)
+        {
+            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
+            try
+            {
+                DefaultListModel listModel = (DefaultListModel)imageCubesDisplayedList.getModel();
+                if (!model.containsImage(imageCubeKey))
+                {
+                    model.addImage(imageCubeKey);
+
+                    listModel.addElement(imageCubeKey);
+                    int idx = listModel.size()-1;
+                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+                }
+                else
+                {
+                    int idx = listModel.indexOf(imageCubeKey);
+                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
+                    if (cellBounds != null)
+                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+                }
+            }
+            catch (IOException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }
+            catch (FitsException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error mapping the image.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }
+            catch (ImageCube.NoOverlapException e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "The 3 images you selected do not overlap.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    protected void removeImageCube(ActionEvent e)
+    {
+        int index = imageCubesDisplayedList.getSelectedIndex();
+        if (index >= 0)
+        {
+            ImageCubeKey imageCubeKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
+            ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+            model.removeImage(imageCubeKey);
+
+            // Select the element in its place (unless it's the last one in which case
+            // select the previous one)
+            if (index >= imageCubesDisplayedList.getModel().getSize())
+                --index;
+            if (index >= 0)
+                imageCubesDisplayedList.setSelectionInterval(index, index);
+        }
+    }
+
+
 
     public void propertyChange(PropertyChangeEvent evt)
     {
@@ -828,10 +958,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         redComboBox = new javax.swing.JComboBox();
         greenComboBox = new javax.swing.JComboBox();
         blueComboBox = new javax.swing.JComboBox();
-        generateColorImageButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         colorImagesDisplayedList = new javax.swing.JList();
-        removeColorImageButton = new javax.swing.JButton();
         jPanel11 = new javax.swing.JPanel();
         hasLimbComboBox = new javax.swing.JComboBox();
         hasLimbLabel = new javax.swing.JLabel();
@@ -853,6 +981,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel15 = new javax.swing.JPanel();
         saveImageListButton = new javax.swing.JButton();
         saveSelectedImageListButton = new javax.swing.JButton();
+        jPanel17 = new javax.swing.JPanel();
+        jPanel18 = new javax.swing.JPanel();
+        removeColorImageButton = new javax.swing.JButton();
+        generateColorImageButton = new javax.swing.JButton();
+        jPanel20 = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        jPanel19 = new javax.swing.JPanel();
+        removeImageCubeButton = new javax.swing.JButton();
+        generateImageCubeButton = new javax.swing.JButton();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        imageCubesDisplayedList = new javax.swing.JList();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1695,18 +1835,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
         jPanel8.add(jPanel10, gridBagConstraints);
 
-        generateColorImageButton.setText("Generate Color Image");
-        generateColorImageButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generateColorImageButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel8.add(generateColorImageButton, gridBagConstraints);
-
         jScrollPane3.setPreferredSize(new java.awt.Dimension(300, 100));
 
         colorImagesDisplayedList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -1725,18 +1853,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 16;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane3, gridBagConstraints);
-
-        removeColorImageButton.setText("Remove");
-        removeColorImageButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeColorImageButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel8.add(removeColorImageButton, gridBagConstraints);
 
         jPanel11.setLayout(new java.awt.GridBagLayout());
 
@@ -1870,6 +1986,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         jPanel8.add(monochromePanel, gridBagConstraints);
 
@@ -1916,6 +2033,93 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
         jPanel8.add(jPanel15, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 16;
+        jPanel8.add(jPanel17, gridBagConstraints);
+
+        removeColorImageButton.setText("Remove Color Image");
+        removeColorImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeColorImageButtonActionPerformed(evt);
+            }
+        });
+        jPanel18.add(removeColorImageButton);
+
+        generateColorImageButton.setText("Generate Color Image");
+        generateColorImageButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateColorImageButtonActionPerformed(evt);
+            }
+        });
+        jPanel18.add(generateColorImageButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 15;
+        jPanel8.add(jPanel18, gridBagConstraints);
+
+        jPanel20.setLayout(new java.awt.GridBagLayout());
+
+        jLabel21.setText("Image Cube Generation");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel20.add(jLabel21, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel20.add(jSeparator2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 17;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
+        jPanel8.add(jPanel20, gridBagConstraints);
+
+        removeImageCubeButton.setText("Remove Image Cube");
+        removeImageCubeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeImageCubeButtonActionPerformed(evt);
+            }
+        });
+        jPanel19.add(removeImageCubeButton);
+
+        generateImageCubeButton.setText("Generate Image Cube");
+        generateImageCubeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateImageCubeButtonActionPerformed(evt);
+            }
+        });
+        jPanel19.add(generateImageCubeButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 18;
+        jPanel8.add(jPanel19, gridBagConstraints);
+
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(300, 100));
+
+        imageCubesDisplayedList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        imageCubesDisplayedList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imageCubesDisplayedListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                imageCubesDisplayedListMouseReleased(evt);
+            }
+        });
+        jScrollPane5.setViewportView(imageCubesDisplayedList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 19;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel8.add(jScrollPane5, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -2107,7 +2311,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void generateColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_generateColorImageButtonActionPerformed
     {//GEN-HEADEREND:event_generateColorImageButtonActionPerformed
-        showColorImage(evt);
+        generateColorImage(evt);
     }//GEN-LAST:event_generateColorImageButtonActionPerformed
 
     private void removeColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeColorImageButtonActionPerformed
@@ -2482,6 +2686,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }//GEN-LAST:event_saveSelectedImageListButtonActionPerformed
 
+    private void removeImageCubeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeImageCubeButtonActionPerformed
+        removeImageCube(evt);
+    }//GEN-LAST:event_removeImageCubeButtonActionPerformed
+
+    private void generateImageCubeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateImageCubeButtonActionPerformed
+        generateImageCube(evt);
+    }//GEN-LAST:event_generateImageCubeButtonActionPerformed
+
+    private void imageCubesDisplayedListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageCubesDisplayedListMousePressed
+        imageCubesDisplayedListMaybeShowPopup(evt);
+    }//GEN-LAST:event_imageCubesDisplayedListMousePressed
+
+    private void imageCubesDisplayedListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageCubesDisplayedListMouseReleased
+        imageCubesDisplayedListMaybeShowPopup(evt);
+    }//GEN-LAST:event_imageCubesDisplayedListMouseReleased
+
 
 //    protected boolean imageVisible(ImageKey key)
 //    {
@@ -2772,12 +2992,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JLabel fromResolutionLabel;
     private javax.swing.JFormattedTextField fromResolutionTextField;
     private javax.swing.JButton generateColorImageButton;
+    private javax.swing.JButton generateImageCubeButton;
     private javax.swing.JButton greenButton;
     private javax.swing.JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JComboBox hasLimbComboBox;
     private javax.swing.JLabel hasLimbLabel;
+    private javax.swing.JList imageCubesDisplayedList;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -2786,7 +3009,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -2797,7 +3024,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JButton loadImageListButton;
     private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton nextButton;
@@ -2809,6 +3038,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeAllButton;
     private javax.swing.JButton removeAllImagesButton;
     private javax.swing.JButton removeColorImageButton;
+    private javax.swing.JButton removeImageCubeButton;
     private javax.swing.JTable resultList;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JButton saveImageListButton;
