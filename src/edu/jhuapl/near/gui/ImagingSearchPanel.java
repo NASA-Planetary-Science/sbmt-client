@@ -1678,7 +1678,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
@@ -1733,7 +1733,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel8.add(jPanel7, gridBagConstraints);
@@ -1992,7 +1992,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 9;
         jPanel8.add(jPanel13, gridBagConstraints);
 
         jPanel14.setLayout(new java.awt.GridBagLayout());
@@ -2010,7 +2010,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 10;
         jPanel8.add(jPanel14, gridBagConstraints);
 
         jPanel15.setLayout(new java.awt.GridBagLayout());
@@ -2036,7 +2036,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 11;
         jPanel8.add(jPanel15, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -2081,7 +2081,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridy = 14;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel20, gridBagConstraints);
@@ -2104,7 +2104,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridy = 15;
         jPanel8.add(jPanel19, gridBagConstraints);
 
         jScrollPane5.setPreferredSize(new java.awt.Dimension(300, 100));
@@ -2122,12 +2122,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridy = 16;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 17;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(monochromePanel, gridBagConstraints);
