@@ -1398,7 +1398,11 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
             c.hasMapmaker = true;
-            //c.hasBigmap = true;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,

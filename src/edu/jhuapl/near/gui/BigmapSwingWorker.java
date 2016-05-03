@@ -34,7 +34,11 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
     public void setName(String name)
     {
-        this.name = name;
+        // Note: Bigmap requires exactly 6 char long names, create 6 char long pad
+        String pad = "______";
+
+        // Take only the first 6 chars, no spaces allowed
+        this.name = (name + pad).substring(0, 6).replace(" ",  "_");
     }
 
 
