@@ -697,6 +697,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
 
+        ImageKey firstKey = null;
+
         List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
         int[] selectedIndices = resultList.getSelectedRows();
         for (int selectedIndex : selectedIndices)
@@ -705,19 +707,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ImageKey selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
+            PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
+            // "first key" is indicated by the first image with a visible frustum
+            if (selectedImage.isFrustumShowing() && firstKey == null)
+                firstKey = selectedKey;
 //            if (!selectedRedKey.band.equals("0"))
 //                imageName = selectedKey.band + ":" + imageName;
         }
 
-        ImageKey firstKey = selectedKeys.get(0);
-
-//        selectedRedKey = selectedKeys.get(0);
-//        selectedGreenKey = selectedKeys.get(1);
-//        selectedBlueKey = selectedKeys.get(2);
 
         PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
 
-        if (selectedKeys.size() > 0)
+        if (selectedKeys.size() > 0 && firstKey != null)
         {
             ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
             try
