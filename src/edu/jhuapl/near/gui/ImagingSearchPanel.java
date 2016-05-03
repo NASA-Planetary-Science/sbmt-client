@@ -40,6 +40,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -85,7 +87,7 @@ import edu.jhuapl.near.util.IdPair;
 import edu.jhuapl.near.util.Properties;
 
 
-public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener
+public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private SmallBodyConfig smallBodyConfig;
     private final ModelManager modelManager;
@@ -164,6 +166,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
+        imageCubesDisplayedList.addListSelectionListener(this);
+
         return this;
     }
 
@@ -210,7 +214,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return ModelNames.COLOR_IMAGES;
     }
 
-    private ModelNames getImageCubeCollectionModelName()
+    protected ModelNames getImageCubeCollectionModelName()
     {
         return ModelNames.CUBE_IMAGES;
     }
@@ -707,11 +711,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         ImageKey firstKey = selectedKeys.get(0);
 
-        selectedRedKey = selectedKeys.get(0);
-        selectedGreenKey = selectedKeys.get(1);
-        selectedBlueKey = selectedKeys.get(2);
+//        selectedRedKey = selectedKeys.get(0);
+//        selectedGreenKey = selectedKeys.get(1);
+//        selectedBlueKey = selectedKeys.get(2);
 
-        PerspectiveImage firstImage = (PerspectiveImage)images.getImage(selectedRedKey);
+        PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
 
         if (selectedKeys.size() > 0)
         {
@@ -783,6 +787,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
+
+    @Override
+    public void valueChanged(ListSelectionEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
 
 
     public void propertyChange(PropertyChangeEvent evt)
