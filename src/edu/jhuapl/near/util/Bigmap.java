@@ -97,8 +97,7 @@ public class Bigmap
         double fractionHeights = .005; // fraction of heights for conditioning (value from example in BIGMAPO.F comments)
         double conditioningWeight = .025; // conditioning weight (value from example in BIGMAPO.F comments)
         int slopeIntegration = 1; // (value from example in BIGMAPO.F comments)
-        int numIterations = 1; // Not sure how many iterations is appropriate
-        System.out.println("BIGMAP: HARDCODING TO 1 ITERATION FOR NOW");
+        int numIterations = 6; // Not sure how many iterations is appropriate
 
         // Also, should we be using bigmap.f, bigmapo.f, or bigmapof.f (grotesque) ???
 
@@ -197,27 +196,6 @@ public class Bigmap
             Fits dgFits = new Fits(dgFitsFile.getPath());
             BasicHDU dgHdu = dgFits.getHDU(0);
             float[][][] dgData = (float[][][])dgHdu.getData().getData();
-
-            System.out.println("dgData dimensions: " + dgData.length + ", " + dgData[0].length + ", " + dgData[0][0].length);
-
-            // Extract only the planes that SBMT is interested in
-            /*int liveSize = 2 * halfSize + 1;
-            int startPixel = (MAX_HEIGHT - liveSize) / 2;
-            int endPixel = startPixel + liveSize - 1;
-            float[][][] outdata = new float[MAX_PLANES][liveSize][liveSize];
-            for (int p=0; p<MAX_PLANES; ++p)
-            {
-                for (int m=0; m<liveSize; ++m)
-                {
-                    for (int n=0; n<liveSize; ++n)
-                    {
-                        if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
-                        {
-                            outdata[p][m-startPixel][n-startPixel] = dgData[mapletFitsToDgFitsPlane(p)][m][n];
-                        }
-                    }
-                }
-            }*/
 
             // Extract only the planes that SBMT is interested in
             int liveSize = 2 * halfSize + 1;

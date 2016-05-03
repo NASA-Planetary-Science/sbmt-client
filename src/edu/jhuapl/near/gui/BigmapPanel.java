@@ -108,7 +108,7 @@ public class BigmapPanel extends JPanel implements ActionListener
         nameTextField.setText("map");
 
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
-        halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
+        halfSizeSpinner = new JSpinner(new SpinnerNumberModel(128, 1, 512, 1));
         halfSizeSpinner.setPreferredSize(new Dimension(75, 23));
 
         setSpecifyRegionManuallyCheckbox = new JCheckBox("Enter Manual Region:");
