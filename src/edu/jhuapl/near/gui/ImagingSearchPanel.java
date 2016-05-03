@@ -987,10 +987,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         removeAllButton = new javax.swing.JButton();
         removeAllImagesButton = new javax.swing.JButton();
         jPanel14 = new javax.swing.JPanel();
-        loadImageListButton = new javax.swing.JButton();
         jPanel15 = new javax.swing.JPanel();
         saveImageListButton = new javax.swing.JButton();
         saveSelectedImageListButton = new javax.swing.JButton();
+        loadImageListButton = new javax.swing.JButton();
         jPanel17 = new javax.swing.JPanel();
         jPanel18 = new javax.swing.JPanel();
         removeColorImageButton = new javax.swing.JButton();
@@ -1590,10 +1590,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 4, 2, 0);
         jPanel5.add(clearRegionButton, gridBagConstraints);
 
         submitButton.setText("Search");
@@ -1604,10 +1602,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 40, 0, 40);
+        gridBagConstraints.gridy = 0;
         jPanel5.add(submitButton, gridBagConstraints);
 
         selectRegionButton.setText("Select Region");
@@ -1617,7 +1612,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
@@ -1974,7 +1969,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel13.add(removeAllButton, gridBagConstraints);
@@ -1986,7 +1981,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         jPanel13.add(removeAllImagesButton, gridBagConstraints);
 
@@ -1996,18 +1991,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel8.add(jPanel13, gridBagConstraints);
 
         jPanel14.setLayout(new java.awt.GridBagLayout());
-
-        loadImageListButton.setText("Load Image List...");
-        loadImageListButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadImageListButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        jPanel14.add(loadImageListButton, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
@@ -2015,7 +1998,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         jPanel15.setLayout(new java.awt.GridBagLayout());
 
-        saveImageListButton.setText("Save Image List...");
+        saveImageListButton.setText("Save List...");
         saveImageListButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveImageListButtonActionPerformed(evt);
@@ -2026,13 +2009,21 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 0;
         jPanel15.add(saveImageListButton, gridBagConstraints);
 
-        saveSelectedImageListButton.setText("Save Selected Image List...");
+        saveSelectedImageListButton.setText("Save Selected List...");
         saveSelectedImageListButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveSelectedImageListButtonActionPerformed(evt);
             }
         });
         jPanel15.add(saveSelectedImageListButton, new java.awt.GridBagConstraints());
+
+        loadImageListButton.setText("Load List...");
+        loadImageListButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadImageListButtonActionPerformed(evt);
+            }
+        });
+        jPanel15.add(loadImageListButton, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
