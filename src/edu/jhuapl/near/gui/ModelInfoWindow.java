@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 
 import vtk.vtkPropPicker;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Model;
 
 public abstract class ModelInfoWindow extends JFrame implements PropertyChangeListener
@@ -29,7 +29,7 @@ public abstract class ModelInfoWindow extends JFrame implements PropertyChangeLi
      */
     public abstract Model getCollectionModel();
 
-    protected int doPick(MouseEvent e, vtkPropPicker picker, vtksbmtJoglCanvasComponent renWin)
+    protected int doPick(MouseEvent e, vtkPropPicker picker, vtksbmtJoglCanvas renWin)
     {
         int pickSucceeded = 0;
         try

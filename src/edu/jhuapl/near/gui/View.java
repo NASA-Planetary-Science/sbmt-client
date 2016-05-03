@@ -100,7 +100,8 @@ public class View extends JPanel
 
         spectrumPanelManager = new ModelSpectrumWindowManager(modelManager);
 
-        renderer = new Renderer(modelManager);
+        //renderer = new Renderer(modelManager);
+        renderer = new Renderer(modelManager,statusBar);
 
         setupPopupManager();
 

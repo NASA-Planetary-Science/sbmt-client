@@ -15,7 +15,7 @@ import vtk.rendering.vtkInteractorForwarder;
  *
  * @author Sebastien Jourdain - sebastien.jourdain@kitware.com
  */
-public class vtksbmtAbstractJoglComponent<T extends java.awt.Component> extends vtkAbstractComponent<T> {
+public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtkAbstractComponent<T> {
 
   protected T uiComponent;
   protected boolean isWindowCreated;
@@ -23,7 +23,7 @@ public class vtksbmtAbstractJoglComponent<T extends java.awt.Component> extends 
   protected vtkGenericOpenGLRenderWindow glRenderWindow;
 
 
-  public vtksbmtAbstractJoglComponent(vtkRenderWindow renderWindowToUse, T glContainer) {
+  public vtksbmtAbstractJoglCanvas(vtkRenderWindow renderWindowToUse, T glContainer) {
     super(renderWindowToUse);
     this.isWindowCreated = false;
     this.uiComponent = glContainer;
@@ -35,7 +35,7 @@ public class vtksbmtAbstractJoglComponent<T extends java.awt.Component> extends 
     // Create the JOGL Event Listener
     this.glEventListener = new GLEventListener() {
       public void init(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglComponent.this.isWindowCreated = true;
+        vtksbmtAbstractJoglCanvas.this.isWindowCreated = true;
 
         // Make sure the JOGL Context is current
         GLContext ctx = drawable.getContext();
@@ -44,24 +44,26 @@ public class vtksbmtAbstractJoglComponent<T extends java.awt.Component> extends 
         }
 
         // Init VTK OpenGL RenderWindow
-        vtksbmtAbstractJoglComponent.this.glRenderWindow.SetMapped(1);
-        vtksbmtAbstractJoglComponent.this.glRenderWindow.SetPosition(0, 0);
-        vtksbmtAbstractJoglComponent.this.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
-        vtksbmtAbstractJoglComponent.this.glRenderWindow.OpenGLInit();
+        vtksbmtAbstractJoglCanvas.this.glRenderWindow.SetMapped(1);
+        vtksbmtAbstractJoglCanvas.this.glRenderWindow.SetPosition(0, 0);
+        vtksbmtAbstractJoglCanvas.this.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+        vtksbmtAbstractJoglCanvas.this.glRenderWindow.OpenGLInit();
       }
 
       public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        vtksbmtAbstractJoglComponent.this.setSize(width, height);
+        vtksbmtAbstractJoglCanvas.this.setSize(width, height);
       }
 
       public void display(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglComponent.this.inRenderCall = true;
-        vtksbmtAbstractJoglComponent.this.glRenderWindow.Render();
-        vtksbmtAbstractJoglComponent.this.inRenderCall = false;
+        vtksbmtAbstractJoglCanvas.this.inRenderCall = true;
+        getVTKLock().lock();
+        vtksbmtAbstractJoglCanvas.this.glRenderWindow.Render();
+        getVTKLock().unlock();
+        vtksbmtAbstractJoglCanvas.this.inRenderCall = false;
       }
 
       public void dispose(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglComponent.this.Delete();
+        vtksbmtAbstractJoglCanvas.this.Delete();
         vtkObject.JAVA_OBJECT_MANAGER.gc(false);
       }
     };
@@ -91,6 +93,7 @@ public class vtksbmtAbstractJoglComponent<T extends java.awt.Component> extends 
     // Make sure we can render
     if (!inRenderCall) {
       this.uiComponent.repaint();
+
     }
   }
 
