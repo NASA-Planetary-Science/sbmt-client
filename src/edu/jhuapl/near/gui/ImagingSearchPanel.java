@@ -705,7 +705,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             String name = imageRawResults.get(selectedIndex).get(0);
             ImageKey selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            System.out.println("Key: " + selectedKey.name);
+//            System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
             // "first key" is indicated by the first image with a visible frustum
@@ -716,10 +716,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
 
 
-        PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
-
         if (selectedKeys.size() > 0 && firstKey != null)
         {
+            PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
+
             ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
             try
             {

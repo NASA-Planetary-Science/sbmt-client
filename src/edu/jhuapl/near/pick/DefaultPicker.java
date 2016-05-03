@@ -160,7 +160,7 @@ public class DefaultPicker extends Picker
 
                 if (model != null)
                 {
-                    System.out.println("Picked small body: " + model.getClass().getSimpleName());
+//                    System.out.println("Picked small body: " + model.getClass().getSimpleName());
 
                     int cellId = smallBodyCellPicker.GetCellId();
                     double[] pickPosition = smallBodyCellPicker.GetPickPosition();
