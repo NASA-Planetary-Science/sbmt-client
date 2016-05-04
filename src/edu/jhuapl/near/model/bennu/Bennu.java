@@ -57,14 +57,16 @@ public class Bennu extends SmallBodyModel
     @Override
     public double getDensity()
     {
-        return 1.26; //Steve Chesley, "Orbit and bulk density of the OSIRIS-REx target Asteroid"
+        //return 1.26; //Steve Chesley, "Orbit and bulk density of the OSIRIS-REx target Asteroid"
+        return 1;
     }
 
     @Override
     public double getRotationRate()
     {
-        double period = 4.297461; //hours, from bennu_v10.tpc
-        return (2 * Math.PI)/(period * 60 * 60);
+        //double period = 4.297461; //hours, from bennu_v10.tpc
+        //return (2 * Math.PI)/(period * 60 * 60);
+        return 0.000407026411379;
     }
 
     @Override
