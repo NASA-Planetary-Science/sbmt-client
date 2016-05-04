@@ -37,6 +37,7 @@ public class BigmapPanel extends JPanel implements ActionListener
     private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
     private JCheckBox setSpecifyRegionManuallyCheckbox;
+    private JCheckBox grotesqueModelCheckbox;
     private JTextField pixelScaleTextField;
     private JTextField latitudeTextField;
     private JTextField longitudeTextField;
@@ -113,6 +114,9 @@ public class BigmapPanel extends JPanel implements ActionListener
 
         setSpecifyRegionManuallyCheckbox = new JCheckBox("Enter Manual Region:");
         setSpecifyRegionManuallyCheckbox.setSelected(false);
+
+        grotesqueModelCheckbox = new JCheckBox("Grotesque Model");
+        grotesqueModelCheckbox.setSelected(true);
 
         final JLabel pixelScaleLabel = new JLabel("Pixel Scale (meters)");
         pixelScaleLabel.setEnabled(false);
@@ -252,6 +256,7 @@ public class BigmapPanel extends JPanel implements ActionListener
         loadPanel.add(loadButton);
 
         pane.add(selectRegionPanel, "align center");
+        pane.add(grotesqueModelCheckbox);
         pane.add(setSpecifyRegionManuallyCheckbox, "wrap");
         pane.add(latitudeLabel, ", gapleft 25, split 2");
         pane.add(latitudeTextField, "width 200!, gapleft push, wrap");
@@ -263,6 +268,7 @@ public class BigmapPanel extends JPanel implements ActionListener
         pane.add(nameTextField);
         pane.add(halfSizeLabel, "split 2");
         pane.add(halfSizeSpinner);
+
         /*
         pane.add(runGravityCheckbox, "wrap");
         pane.add(densityLabel, ", gapleft 25, split 2");
@@ -391,6 +397,7 @@ public class BigmapPanel extends JPanel implements ActionListener
             bigmapWorker.setCenterPoint(centerPoint);
             bigmapWorker.setRadius(radius);
         }
+        bigmapWorker.setGrotesque(grotesqueModelCheckbox.isSelected());
         bigmapWorker.setName(name);
         bigmapWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
         bigmapWorker.setOutputFolder(outputFolder);

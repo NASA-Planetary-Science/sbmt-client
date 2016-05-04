@@ -34,9 +34,10 @@ public class Bigmap
     private File outputFolder;
     private File mapletFitsFile;
     private String gravityExecutableName;
+    private String executableExtension;
     private SmallBodyModel smallBodyModel;
 
-    public Bigmap(String bigmapRootDir) throws IOException
+    public Bigmap(String bigmapRootDir, boolean grotesque) throws IOException
     {
         this.bigmapRootDir = bigmapRootDir;
 
@@ -50,39 +51,48 @@ public class Bigmap
 
         Map<String, String> env = processBuilder.environment();
 
-        String processName = null;
+        String executableExtension = "";
         if (Configuration.isLinux())
         {
             if (System.getProperty("sun.arch.data.model").equals("64"))
             {
-                processName = execDir + File.separator + "BIGMAPO.linux64";
-                gravityExecutableName = "gravity.linux64";
+                executableExtension = ".linux64";
             }
             else
             {
-                processName = execDir + File.separator + "BIGMAPO.linux32";
-                gravityExecutableName = "gravity.linux32";
+                executableExtension = ".linux32";
             }
 
             env.put("LD_LIBRARY_PATH", execDir);
         }
         else if (Configuration.isMac())
         {
-            processName = execDir + File.separator + "BIGMAPO.macosx";
-            gravityExecutableName = "gravity.macosx";
+            executableExtension = ".macosx";
 
             env.put("DYLD_LIBRARY_PATH", execDir);
         }
         else
         {
-            processName = execDir + File.separator + "BIGMAPO.win32.exe";
-            gravityExecutableName = "gravity.win32.exe";
+            executableExtension = ".win32.exe";
             //throw new IOException("Operating system not supported");
         }
 
+        // Build up name for bigmap executable
+        String processName;
+        if(grotesque)
+        {
+            processName = execDir + File.separator + "BIGMAPOF" + executableExtension;
+        }
+        else
+        {
+            processName = execDir + File.separator + "BIGMAPO" + executableExtension;
+        }
         new File(processName).setExecutable(true);
         processCommand.add(processName);
+        System.out.println("Running process: " + processName);
 
+        // Build up name for gravity executable
+        gravityExecutableName = "gravity" + executableExtension;
         new File(execDir + File.separator + gravityExecutableName).setExecutable(true);
     }
 
@@ -165,7 +175,7 @@ public class Bigmap
             dgOptionList.add(gravityExecutableName); // Version of gravity called differs by OS
 
             // Debug output
-            System.out.println("Bigmap.java: Calling Distributed Gravity with...");
+            System.out.println("Calling Distributed Gravity with...");
             System.out.println("  density = " + smallBodyModel.getDensity() + " g/cm^3");
             System.out.println("  rotation rate = " + smallBodyModel.getRotationRate() + " rad/s");
             System.out.println("  reference potential = " + smallBodyModel.getReferencePotential() + " J/kg");
