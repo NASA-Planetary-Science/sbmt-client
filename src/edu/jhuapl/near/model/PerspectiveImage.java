@@ -1688,6 +1688,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
         float[][] array2D = null;
         float[][][] array3D = null;
+        double[][][] array3Ddouble = null;
 
         int[] fitsAxes = null;
         int fitsNAxes = 0;
@@ -1733,6 +1734,34 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
 //               System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
             }
+            else if (data instanceof double[][][])
+            {
+                array3Ddouble = new double[fitsHeight][fitsWidth][fitsDepth];
+                if (shiftBands())
+                {
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                            for (int k=0; k<fitsDepth; ++k)
+                            {
+                                int w = i + j - fitsDepth / 2;
+                                if (w >= 0 && w < fitsHeight)
+                                    array3Ddouble[w][j][k] = ((double[][][])data)[i][j][k];
+                            }
+
+                }
+                else
+                {
+                    for (int i=0; i<fitsHeight; ++i)
+                        for (int j=0; j<fitsWidth; ++j)
+                            for (int k=0; k<fitsDepth; ++k)
+                            {
+                                array3Ddouble[i][j][k] = ((double[][][])data)[i][j][k];
+                            }
+
+                }
+
+//               System.out.println("3D pixel array detected: " + array3D.length + "x" + array3D[0].length + "x" + array3D[0][0].length);
+            }
             else if (data instanceof float[][])
             {
                 array2D = (float[][])data;
@@ -1748,6 +1777,17 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         array2D[i][j] = arrayS[i][j];
                     }
             }
+            else if (data instanceof double[][])
+            {
+                double[][] arrayDouble = (double[][])data;
+                array2D = new float[fitsHeight][fitsWidth];
+
+                for (int i=0; i<fitsHeight; ++i)
+                    for (int j=0; j<fitsWidth; ++j)
+                    {
+                        array2D[i][j] = (float)arrayDouble[i][j];
+                    }
+            }
             else if (data instanceof byte[][])
             {
                 byte[][] arrayB = (byte[][])data;
@@ -1761,7 +1801,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             }
             else
             {
-                System.out.println("Data type not supported!");
+                System.out.println("Data type not supported: " + data.getClass().getCanonicalName());
                 return;
             }
 
