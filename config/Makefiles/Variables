@@ -1,0 +1,37 @@
+
+#
+# Set the absolute path for the source tree.  If the user is 'sbmt'
+# the paths are assumed to be the live paths.  If the user is not
+# 'sbmt' the paths are assumed to be in the user's working area:
+# i.e. $HOME/working
+#
+
+SHELL = /bin/bash
+user = ${shell whoami}
+ifeq (${user},sbmt)
+    NEARSDCROOT  := /project/nearsdc
+    PIPELINEROOT := /project/sbmtpipeline
+endif
+
+ifneq (${user},sbmt)
+    NEARSDCROOT  := ${HOME}/working/nearsdc
+    PIPELINEROOT := ${HOME}/working/sbmtpipeline
+endif
+#--------------------------------------------------------------
+# Commonly used directories
+#--------------------------------------------------------------
+#
+BINROOT := ${SBMTROOT}/bin
+
+most_supported_targets := all install clean bare
+
+MAKE := /usr/bin/make
+PERL := /usr/bin/perl
+
+# Eventually want to move this script to the top level bin
+# directory, but, the jar files will need to be moved
+#DATABASE_GENERATOR := ${BINROOT}/DatabaseGeneratorSql
+DATABASE_GENERATOR := ${SBMTROOT}/build/sbmt-extras/bin/DatabaseGeneratorSql
+
+REMAKE_EVERYTHING :=
+
