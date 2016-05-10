@@ -30,7 +30,7 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.Chromatism;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -44,7 +44,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private ColorImage image;
     private ColorImageCollection imageCollection;
 
-    private vtksbmtJoglCanvasComponent renWin;
+    private vtksbmtJoglCanvas renWin;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageSlice actor;
     private vtkImageReslice reslice;
@@ -76,7 +76,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         this.image = image;
         this.imageCollection = imageCollection;
 
-        renWin = new vtksbmtJoglCanvasComponent();
+        renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style = new vtkInteractorStyleImage();

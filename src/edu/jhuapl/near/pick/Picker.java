@@ -19,7 +19,7 @@ import javax.swing.Timer;
 
 import vtk.vtkCellPicker;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -154,12 +154,12 @@ public abstract class Picker implements
         return Cursor.DEFAULT_CURSOR;
     }
 
-    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvasComponent renWin)
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
     {
         return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
     }
 
-    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtksbmtJoglCanvasComponent renWin)
+    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
     {
         if (pickingEnabled == false)
             return 0;

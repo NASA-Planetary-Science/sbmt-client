@@ -13,7 +13,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -23,7 +23,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 public class EllipsePicker extends Picker
 {
     private ModelManager modelManager;
-    private vtksbmtJoglCanvasComponent renWin;
+    private vtksbmtJoglCanvas renWin;
     private SmallBodyModel smallBodyModel;
     private EllipseModel ellipseModel;
 

@@ -6,12 +6,12 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import edu.jhuapl.near.lidar.OlaCubesGenerator;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.near.tools.OlaCubesGenerator;
 import edu.jhuapl.near.util.Configuration;
 
 /**
@@ -1398,7 +1398,11 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
             c.hasMapmaker = true;
-            //c.hasBigmap = true;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
