@@ -225,6 +225,7 @@ from the people or teams producing them and are not listed below.
     
 -   [http://osiris-rex.jhuapl.edu/altwg/inputdata/bennu-simulated-topography/Bennu_V4.5F/SHAPEFILES/]
 -   Rotation rate [http://osiris-rex.jhuapl.edu/ola/spice/Kernels/PCK/bennu_v10.tpc]
+-   Density ["Orbit and bulk density of the OSIRIS-REx target Asteroid (101955) Bennu", Steven R. Chesley et al, Icarus Volume 235, Pages 1-224 (June 2014) ]
 
 ### Vesta (Thomas)
 

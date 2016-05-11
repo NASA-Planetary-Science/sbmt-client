@@ -27,10 +27,6 @@ public class Bennu extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    /**
-     * Bennu V3
-     * @param config
-     */
     public Bennu(SmallBodyConfig config)
     {
         super(config,
@@ -69,14 +65,13 @@ public class Bennu extends SmallBodyModel
     @Override
     public double getDensity()
     {
-        return 1.26; //Steve Chesley, "Orbit and bulk density of the OSIRIS-REx target Asteroid". See also references.md
+        return getSmallBodyConfig().density;
     }
 
     @Override
     public double getRotationRate()
     {
-        double period = 4.297461; //hours, from bennu_v10.tpc. See also references.md
-        return (2 * Math.PI)/(period * 60 * 60);
+        return getSmallBodyConfig().rotationRate;
     }
 
     @Override

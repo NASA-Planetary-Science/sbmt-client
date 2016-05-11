@@ -1421,6 +1421,9 @@ public class SmallBodyConfig
                             Instrument.MAPCAM
                             )
             };
+            c.density = 1.0;
+            c.useMinimumReferencePotential = false;
+            c.rotationRate = 0.000407026411379;
             c.hasLidarData = true;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -1480,6 +1483,9 @@ public class SmallBodyConfig
                             Instrument.MAPCAM
                             )
             };
+            c.density = 1.26;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.0004061303295118512;
             configArray.add(c);
         }
 
@@ -2042,6 +2048,10 @@ public class SmallBodyConfig
     public String rootDirOnServer;
     public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
+    public boolean useMinimumReferencePotential = false; // uses average otherwise
+    public double density = 0.0; // in units g/cm^3
+    public double rotationRate = 0.0; // in units radians/sec
+
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
     public ImagingInstrument[] imagingInstruments = {};
