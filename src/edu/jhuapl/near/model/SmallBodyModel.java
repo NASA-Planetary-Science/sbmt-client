@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -57,6 +53,10 @@ import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
+
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends Model
 {
@@ -2129,17 +2129,29 @@ public class SmallBodyModel extends Model
             {
                 double potTimesAreaSum = 0.0;
                 double totalArea = 0.0;
+                double minRefPot = Double.MAX_VALUE;
                 int numFaces = smallBodyPolyData.GetNumberOfCells();
                 for (int i = 0; i < numFaces; ++i)
                 {
                     double potential = coloringInfo.get(j).coloringValues.GetTuple1(i);
+                    if (potential < minRefPot)
+                    {
+                        minRefPot = potential;
+                    }
                     double area = ((vtkTriangle)smallBodyPolyData.GetCell(i)).ComputeArea();
 
                     potTimesAreaSum += potential * area;
                     totalArea += area;
                 }
 
-                return potTimesAreaSum / totalArea;
+                if (smallBodyConfig.useMinimumReferencePotential)
+                {
+                    return minRefPot;
+                }
+                else
+                {
+                    return potTimesAreaSum / totalArea;
+                }
             }
         }
 
