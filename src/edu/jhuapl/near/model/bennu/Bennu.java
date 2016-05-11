@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model.bennu;
 
+import java.io.File;
+
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -10,20 +12,6 @@ public class Bennu extends SmallBodyModel
             "ver128q",
             "ver256q",
             "ver512q"
-    };
-
-    static private final String[] modelFiles = {
-            "/GASKELL/RQ36_V3/ver64q.vtk",
-            "/GASKELL/RQ36_V3/ver128q.vtk.gz",
-            "/GASKELL/RQ36_V3/ver256q.vtk.gz",
-            "/GASKELL/RQ36_V3/ver512q.vtk.gz"
-    };
-
-    static private final String[] coloringFiles = {
-            "/GASKELL/RQ36_V3/Slope",
-            "/GASKELL/RQ36_V3/Elevation",
-            "/GASKELL/RQ36_V3/GravitationalAcceleration",
-            "/GASKELL/RQ36_V3/GravitationalPotential"
     };
 
     static private final String[] modelFilesInPlateFormat = null;
@@ -39,12 +27,16 @@ public class Bennu extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
+    /**
+     * Bennu V3
+     * @param config
+     */
     public Bennu(SmallBodyConfig config)
     {
         super(config,
                 modelNames,
-                modelFiles,
-                coloringFiles,
+                getModelFiles(config),
+                getColoringFiles(config.rootDirOnServer),
                 coloringNames,
                 coloringUnits,
                 null,
@@ -53,17 +45,37 @@ public class Bennu extends SmallBodyModel
                 false);
     }
 
+    private static final String[] getModelFiles(SmallBodyConfig config)
+    {
+        String[] paths = {
+                config.rootDirOnServer + "/ver64q.vtk.gz",
+                config.rootDirOnServer + "/ver128q.vtk.gz",
+                config.rootDirOnServer + "/ver256q.vtk.gz",
+                config.rootDirOnServer + "/ver512q.vtk.gz"
+        };
+        return paths;
+    };
+
+    private static final String[] getColoringFiles(String path)
+    {
+        return new String[] {
+                new File(path).getParent() + "/Slope",
+                new File(path).getParent() + "/Elevation",
+                new File(path).getParent() + "/GravitationalAcceleration",
+                new File(path).getParent() + "/GravitationalPotential"
+        };
+    }
 
     @Override
     public double getDensity()
     {
-        return 1.26; //Steve Chesley, "Orbit and bulk density of the OSIRIS-REx target Asteroid"
+        return 1.26; //Steve Chesley, "Orbit and bulk density of the OSIRIS-REx target Asteroid". See also references.md
     }
 
     @Override
     public double getRotationRate()
     {
-        double period = 4.297461; //hours, from bennu_v10.tpc
+        double period = 4.297461; //hours, from bennu_v10.tpc. See also references.md
         return (2 * Math.PI)/(period * 60 * 60);
     }
 
