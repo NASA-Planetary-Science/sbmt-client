@@ -1,10 +1,13 @@
+#include <errno.h>
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <string>
+#include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <libgen.h>
+
+
 extern "C"
 {
 #include "SpiceUsr.h"
@@ -26,7 +29,7 @@ vector<string> loadFileList(const string& filelist)
     }
     else
     {
-        cerr << "Error: Unable to open file '" << filelist << "'" << endl;
+        cerr << "Error: Unable to open file '" << filelist << "' :" <<  strerror(errno) << endl;
         exit(1);
     }
 
@@ -112,7 +115,7 @@ void getEt(const string& fitfile,
     }
     else
     {
-        cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
+        cerr << "Error: Unable to open file '" << lblfilename.c_str() << "' : " << strerror(errno) << endl;
         exit(1);
     }
 
@@ -348,10 +351,12 @@ int getFilter(string fitfilename)
   3. output folder - path to folder where infofiles should be saved to
   4. bodyname - IAU name of target body, all caps
   5. imagelist - path and name of image list text file
+  6. --force - Optional, forces an info file to be created even if one already exists.
 
 */
 int main(int argc, char** argv)
 {
+
     if (argc < 4)
     {
         cerr << "Usage: create_info_files <kernelfiles> <fitfilelist> <outputfolder> <bodyname> <imagelist>" << endl;
@@ -363,6 +368,18 @@ int main(int argc, char** argv)
     string outputfolder = argv[3];
     string body = argv[4];
     string outputfilelist = argv[5];
+    bool force_create = false;
+    string force_create_str = "";
+
+    // Check for the --force parameter
+    if (argc > 6 )
+    {
+       force_create_str = argv[6];
+       if (force_create_str == "--force" )
+       {
+          force_create = true;
+       }
+    }
 
     furnsh_c(kernelfiles.c_str());
     if (failed_c()) 
@@ -378,7 +395,7 @@ int main(int argc, char** argv)
     //Image list
     ofstream fout(outputfilelist.c_str());
     if (!fout.is_open()) {
-        cerr << "Error: Unable to open file for writing" << endl;
+        cerr << "Error: Unable to open imagelist file for writing" << endl;
         exit(1);
     }
 
@@ -398,6 +415,13 @@ int main(int argc, char** argv)
         double sunPosition[3];
         double cutoff;
         
+        // Construct the .INFO file path and name and check for existance.
+        // If it already exists and force_create is false, then skip it.
+        string fitbasename = basename((char*)fitfiles[i].c_str());
+        int length = fitbasename.size();
+        string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
+        ofstream infofile_os(infofilename.c_str());
+        
         getEt(fitfiles[i], startutc, startet, stoputc, stopet);
         if (failed_c())
             continue;
@@ -408,21 +432,25 @@ int main(int argc, char** argv)
         if (et > cutoff)
         {
 //        	cout << "Processing " << fitfiles[i] << endl;
-        	
-            int filter = getFilter(fitfiles[i]);
-            getScOrientation(et, filter, body, scposb, boredir, updir, frustum);
-            if (failed_c())
-                continue;
+            if (!infofile_os.is_open() || force_create )
+            {        	
+                int filter = getFilter(fitfiles[i]);
+                getScOrientation(et, filter, body, scposb, boredir, updir, frustum);
+                if (failed_c())
+                    continue;
     
-            getSunPosition(et, body, sunPosition);
-            if (failed_c())
-                continue;
+                getSunPosition(et, body, sunPosition);
+                if (failed_c())
+                    continue;
     
-            string fitbasename = basename((char*)fitfiles[i].c_str());
-            int length = fitbasename.size();
-            string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
-            saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
+                if ( infofile_os.is_open() ) { infofile_os.close(); }
+                //string fitbasename = basename((char*)fitfiles[i].c_str());
+                //int length = fitbasename.size();
+                //string infofilename = outputfolder + "/" + fitbasename.substr(0, length-4) + ".INFO";
+                saveInfoFile(infofilename, startutc, stoputc, scposb, boredir, updir, frustum, sunPosition);
     
+            }
+
             const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
             if (std::string::npos != last_slash_idx)
             {
@@ -432,6 +460,7 @@ int main(int argc, char** argv)
             fout << fitfiles[i].substr(0, fnameLen) << " " << startutc << endl;
 //        	cout << "   finished " << infofilename << endl;
         }
+
     }
 
     return 0;
