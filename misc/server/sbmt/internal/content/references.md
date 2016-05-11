@@ -220,6 +220,11 @@ from the people or teams producing them and are not listed below.
     J.L., Ostro, S.J., and Scheeres, D.J., Asteroid (101955) Bennu
     Shape Model V1.0. EAR-A-I0037-5-BENNUSHAPE-V1.0. NASA Planetary
     Data System, 2013.")
+    
+### Bennu (V4)
+    
+-   [http://osiris-rex.jhuapl.edu/altwg/inputdata/bennu-simulated-topography/Bennu_V4.5F/SHAPEFILES/]
+-   Rotation rate [http://osiris-rex.jhuapl.edu/ola/spice/Kernels/PCK/bennu_v10.tpc]
 
 ### Vesta (Thomas)
 
@@ -525,6 +530,8 @@ computing reference potential used for each body in the gravity calculation.
 | Golevka                     | 2.7                         | 0.000289633131761                      | Average             |
 +-----------------------------+-----------------------------+----------------------------------------+---------------------+
 | Bennu                       | 1.0                         | 0.000407026411379                      | Average             |
++-----------------------------+-----------------------------+----------------------------------------+---------------------+
+| Bennu V4                    | 1.26                        | 0.0004061303295118512                  | Minimum             |
 +-----------------------------+-----------------------------+----------------------------------------+---------------------+
 | Vesta                       | 3.456                       | 0.00032671047399107775                 | Average             |
 +-----------------------------+-----------------------------+----------------------------------------+---------------------+

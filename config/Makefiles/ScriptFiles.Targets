@@ -1,0 +1,19 @@
+#
+# Note: This Makefile relies on the config/Makesfiles/Variables file having
+# been included by the Makefile that includes this Makefile.
+# BINROOT is defined in config/Makesfiles/Variables
+#
+ifdef SPECIAL_DESTINATION
+	destination := ${SPECIAL_DESTINATION}
+else
+	destination := ${BINROOT}
+endif
+
+${most_supported_targets}:
+
+install:
+	mkdir -p ${destination}
+	for file in ${SCRIPTFILES} ; do \
+		cp -v $$file ${destination} ; \
+		chmod 775 ${destination}/$$file ;\
+	done;

@@ -24,6 +24,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
     private double pixelScale;
     private double latitude;
     private double longitude;
+    private boolean grotesque;
     private SmallBodyModel smallBodyModel;
 
     public BigmapSwingWorker(Component c, String title, String filename)
@@ -34,9 +35,17 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
     public void setName(String name)
     {
-        this.name = name;
+        // Note: Bigmap requires exactly 6 char long names, create 6 char long pad
+        String pad = "______";
+
+        // Take only the first 6 chars, no spaces allowed
+        this.name = (name + pad).substring(0, 6).replace(" ",  "_");
     }
 
+    public void setGrotesque(boolean grotesque)
+    {
+        this.grotesque = grotesque;
+    }
 
     public void setCenterPoint(double[] centerPoint)
     {
@@ -121,7 +130,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
             File file = FileCache.getFileFromServer(this.getFileDownloaded());
             String bigmapRootDir = file.getParent() + File.separator + "bigmap";
 
-            Bigmap bigmap = new Bigmap(bigmapRootDir);
+            Bigmap bigmap = new Bigmap(bigmapRootDir, grotesque);
             bigmap.setName(name);
             if (regionSpecifiedWithLatLonScale)
             {

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -41,8 +43,9 @@ import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
-import edu.jhuapl.near.gui.joglrendering.StereoMirror;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
+import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;
@@ -95,7 +98,7 @@ public class Renderer extends JPanel implements
         }
     }
 
-    protected vtksbmtJoglCanvasComponent renWin;
+    protected vtksbmtJoglCanvas mainCanvas;
     private ModelManager modelManager;
     private vtkInteractorStyleTrackballCamera trackballCameraInteractorStyle;
     private vtkInteractorStyleJoystickCamera joystickCameraInteractorStyle;
@@ -112,111 +115,15 @@ public class Renderer extends JPanel implements
     private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
     public static boolean enableLODs = true; // This is temporary to show off the LOD feature, very soon we will replace this with an actual menu
 
-    private JFrame stereoFrame;
-    private StereoMirror stereoMirror;
-    private boolean stereoOn=false;
+    private JFrame mirrorFrame;
+    private StereoCapableMirrorCanvas mirrorCanvas;
+    private boolean mirrorFrameOpen=false;
+    private StereoMode mode=StereoMode.NONE;
 
-    void localKeypressHandler()
+    private StatusBar statusBar=null;
+
+    void initOrientationAxes()
     {
-        char ch=renWin.getRenderWindowInteractor().GetKeyCode();
-        if (ch=='S')
-        {
-            stereoOn=!stereoOn;
-            if (stereoOn)
-                generateStereoFrame();
-            else
-                destroyStereoFrame();
-        }
-        if (stereoOn && stereoFrame!=null)
-        {
-            System.out.println(ch);
-            if (ch=='<')
-                stereoMirror.decreaseEyeSeparation();
-            else if (ch=='>')
-                stereoMirror.increaseEyeSeparation();
-        }
-    }
-
-    void generateStereoFrame()
-    {
-        final Dimension preferredSize=renWin.getComponent().getPreferredSize();
-        stereoMirror=new StereoMirror(renWin,1e5);
-        stereoMirror.getRenderWindow().StereoCapableWindowOn();
-        stereoMirror.getRenderWindow().SetStereoTypeToSplitViewportHorizontal();
-        stereoMirror.getRenderWindow().StereoRenderOn();
-        //
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-            @Override
-            public void run()
-            {
-                stereoFrame=new JFrame();
-                stereoFrame.setSize(preferredSize);
-                stereoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                stereoFrame.getContentPane().add(stereoMirror.getComponent());
-                stereoFrame.setVisible(true);
-                setProps(modelManager.getProps(), stereoMirror, stereoMirror.getRenderer());
-            }
-        });
-
-    }
-
-    void destroyStereoFrame()
-    {
-        stereoFrame.dispose();
-    }
-
-    public Renderer(final ModelManager modelManager)
-    {
-        setLayout(new BorderLayout());
-
-        renWin = new vtksbmtJoglCanvasComponent();
-        renWin.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
-
-        this.modelManager = modelManager;
-
-        modelManager.addPropertyChangeListener(this);
-
-        trackballCameraInteractorStyle = new vtkInteractorStyleTrackballCamera();
-        joystickCameraInteractorStyle = new vtkInteractorStyleJoystickCamera();
-
-        defaultInteractorStyle = trackballCameraInteractorStyle;
-
-        InteractorStyleType interactorStyleType = InteractorStyleType.valueOf(
-                Preferences.getInstance().get(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString()));
-        setDefaultInteractorStyleType(interactorStyleType);
-
-        setMouseWheelMotionFactor(Preferences.getInstance().getAsDouble(Preferences.MOUSE_WHEEL_MOTION_FACTOR, 1.0));
-
-        setBackgroundColor(Preferences.getInstance().getAsIntArray(Preferences.BACKGROUND_COLOR, new int[]{0, 0, 0}));
-
-        headlight = renWin.getRenderer().MakeLight();
-        headlight.SetLightTypeToHeadlight();
-        headlight.SetConeAngle(180.0);
-
-        fixedLight = renWin.getRenderer().MakeLight();
-        fixedLight.SetLightTypeToSceneLight();
-        fixedLight.PositionalOn();
-        fixedLight.SetConeAngle(180.0);
-        LatLon defaultPosition = new LatLon(
-                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LATITUDE, 90.0),
-                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LONGITUDE, 0.0),
-                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_DISTANCE, 1.0e8));
-        setFixedLightPosition(defaultPosition);
-        setLightIntensity(Preferences.getInstance().getAsDouble(Preferences.LIGHT_INTENSITY, 1.0));
-
-        renWin.getRenderer().AutomaticLightCreationOff();
-        lightKit = new vtkLightKit();
-        lightKit.SetKeyToFillRatio(1.0);
-        lightKit.SetKeyToHeadRatio(20.0);
-
-        LightingType lightingType = LightingType.valueOf(
-                Preferences.getInstance().get(Preferences.LIGHTING_TYPE, LightingType.LIGHT_KIT.toString()));
-        setLighting(lightingType);
-
-        add(renWin.getComponent(), BorderLayout.CENTER);
-
         axes = new vtkAxesActor();
 
         vtkCaptionActor2D caption = axes.GetXAxisCaptionActor2D();
@@ -248,14 +155,236 @@ public class Renderer extends JPanel implements
 
         orientationWidget = new vtkOrientationMarkerWidget();
         orientationWidget.SetOrientationMarker(axes);
-        orientationWidget.SetInteractor(renWin.getRenderWindowInteractor());
+        orientationWidget.SetInteractor(mainCanvas.getRenderWindowInteractor());
         orientationWidget.SetTolerance(10);
         setAxesSize(Preferences.getInstance().getAsDouble(Preferences.AXES_SIZE, 0.2));
+    }
+
+    void initLights()
+    {
+        headlight = mainCanvas.getRenderer().MakeLight();
+        headlight.SetLightTypeToHeadlight();
+        headlight.SetConeAngle(180.0);
+
+        fixedLight = mainCanvas.getRenderer().MakeLight();
+        fixedLight.SetLightTypeToSceneLight();
+        fixedLight.PositionalOn();
+        fixedLight.SetConeAngle(180.0);
+        LatLon defaultPosition = new LatLon(
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LATITUDE, 90.0),
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_LONGITUDE, 0.0),
+                Preferences.getInstance().getAsDouble(Preferences.FIXEDLIGHT_DISTANCE, 1.0e8));
+        setFixedLightPosition(defaultPosition);
+        setLightIntensity(Preferences.getInstance().getAsDouble(Preferences.LIGHT_INTENSITY, 1.0));
+
+        mainCanvas.getRenderer().AutomaticLightCreationOff();
+        lightKit = new vtkLightKit();
+        lightKit.SetKeyToFillRatio(1.0);
+        lightKit.SetKeyToHeadRatio(20.0);
+
+        LightingType lightingType = LightingType.valueOf(
+                Preferences.getInstance().get(Preferences.LIGHTING_TYPE, LightingType.LIGHT_KIT.toString()));
+        setLighting(lightingType);
+
+    }
+
+    void localKeypressHandler() // TODO: clean up logic here
+    {
+        char ch=mainCanvas.getRenderWindowInteractor().GetKeyCode();    // check main window for keypress
+        if (ch=='0')    // this means no key was hit (not sure why it matches key '0')
+        {
+            if (mirrorFrameOpen)    // check mirror window for keypress
+            {
+                ch=mirrorCanvas.getRenderWindowInteractor().GetKeyCode();
+                if (ch=='0' || ch=='M') // don't allow mirror to be closed by keypress from itself - this crashes the whole app
+                    return;
+            }
+            else
+                return;
+        }
+        //
+        if (ch=='M' && !mirrorFrameOpen)
+            toggleMirrorFrame();
+        if (ch=='S')
+            advanceStereoMode();
+
+        mainCanvas.Render();
+        if (mirrorFrameOpen)
+            mirrorCanvas.Render();
+        //
+/*        if (stereoOn && mirrorFrame!=null)
+        {
+            System.out.println(ch);
+            if (ch=='<')
+                mirrorCanvas.decreaseEyeSeparation();
+            else if (ch=='>')
+                mirrorCanvas.increaseEyeSeparation();
+        }*/
+    }
+
+    void toggleMirrorFrame()
+    {
+        if (!mirrorFrameOpen)
+            createMirrorFrame();
+        else
+            destroyMirrorFrame();
+    }
+
+    void createMirrorFrame()
+    {
+        // something about spawning the stereo mirror window causes the small body mesh to be drawn in the orientation axes viewport, when dragged from the main window; but disabling the axes while the stereo mirror is created seems to fix this
+        setShowOrientationAxes(false);
+        //
+        final Dimension preferredSize=mainCanvas.getComponent().getPreferredSize();
+        mirrorCanvas=new StereoCapableMirrorCanvas(mainCanvas,mode);
+        //
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+            @Override
+            public void run()
+            {
+                mirrorFrameOpen=true;
+                //
+                mirrorFrame=new JFrame();
+                mirrorFrame.setSize(preferredSize);
+                mirrorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                mirrorFrame.getContentPane().add(mirrorCanvas.getComponent());
+                mirrorFrame.setVisible(true);
+                mirrorFrame.addWindowListener(new WindowListener()
+                {
+
+                    @Override
+                    public void windowOpened(WindowEvent e)
+                    {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void windowIconified(WindowEvent e)
+                    {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void windowDeiconified(WindowEvent e)
+                    {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void windowDeactivated(WindowEvent e)
+                    {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void windowClosing(WindowEvent e)
+                    {
+                        mirrorFrameOpen=false;
+                    }
+
+                    @Override
+                    public void windowClosed(WindowEvent e)
+                    {
+                    }
+
+                    @Override
+                    public void windowActivated(WindowEvent e)
+                    {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+                setProps(modelManager.getProps(), mirrorCanvas, mirrorCanvas.getRenderer());
+            }
+        });
+        //
+        // re-enable orientation axes (see remarks above where the axes are hidden)
+        setShowOrientationAxes(true);
+        //
+        mirrorCanvas.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
+
+    }
+
+    void destroyMirrorFrame()
+    {
+        mirrorFrame.dispose();
+        mirrorFrameOpen=true;
+    }
+
+    void advanceStereoMode()
+    {
+        mode=StereoMode.nextMode(mode);
+        if (mirrorFrameOpen)
+            mirrorCanvas.setMode(mode);
+        //
+        switch (mode)
+        {
+        case SIDEBYSIDE:    // don't do side by side in main window, and if the mirror window isn't open just move on to the next stereo render mode
+            if (mirrorFrameOpen)
+                mainCanvas.getRenderWindow().StereoRenderOff();
+            else
+                advanceStereoMode();
+            break;
+        case NONE:
+            mainCanvas.getRenderWindow().StereoRenderOff();
+            break;
+        default:
+            mainCanvas.getRenderWindow().StereoCapableWindowOn();
+            mainCanvas.getRenderWindow().StereoRenderOn();
+            mainCanvas.getRenderWindow().SetStereoTypeToAnaglyph();
+        }
+        mainCanvas.Render();
+        //
+        if (statusBar!=null)
+            statusBar.setLeftText("Changed stereo rendering mode to "+mode.toString());
+    }
+
+    public Renderer(final ModelManager modelManager, StatusBar statusBar)
+    {
+        this(modelManager);
+        this.statusBar=statusBar;
+    }
+
+    public Renderer(final ModelManager modelManager)
+    {
+        setLayout(new BorderLayout());
+
+        mainCanvas = new vtksbmtJoglCanvas();
+        mainCanvas.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
+
+        this.modelManager = modelManager;
+
+        modelManager.addPropertyChangeListener(this);
+
+        trackballCameraInteractorStyle = new vtkInteractorStyleTrackballCamera();
+        joystickCameraInteractorStyle = new vtkInteractorStyleJoystickCamera();
+
+        defaultInteractorStyle = trackballCameraInteractorStyle;
+
+        InteractorStyleType interactorStyleType = InteractorStyleType.valueOf(
+                Preferences.getInstance().get(Preferences.INTERACTOR_STYLE_TYPE, InteractorStyleType.TRACKBALL_CAMERA.toString()));
+        setDefaultInteractorStyleType(interactorStyleType);
+
+        setMouseWheelMotionFactor(Preferences.getInstance().getAsDouble(Preferences.MOUSE_WHEEL_MOTION_FACTOR, 1.0));
+
+        setBackgroundColor(Preferences.getInstance().getAsIntArray(Preferences.BACKGROUND_COLOR, new int[]{0, 0, 0}));
+
+        initLights();
+
+        add(mainCanvas.getComponent(), BorderLayout.CENTER);
+
 
         // Setup observers for start/stop interaction events
-        renWin.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
-        renWin.getRenderWindowInteractor().AddObserver("EndInteractionEvent", this, "onEndInteraction");
+        mainCanvas.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
+        mainCanvas.getRenderWindowInteractor().AddObserver("EndInteractionEvent", this, "onEndInteraction");
 
+        initOrientationAxes();
 
         javax.swing.SwingUtilities.invokeLater(new Runnable()
         {
@@ -264,24 +393,24 @@ public class Renderer extends JPanel implements
                 setShowOrientationAxes(Preferences.getInstance().getAsBoolean(Preferences.SHOW_AXES, true));
                 setOrientationAxesInteractive(Preferences.getInstance().getAsBoolean(Preferences.INTERACTIVE_AXES, true));
                 setProps(modelManager.getProps());
-                renWin.resetCamera();
-                renWin.Render();
+                mainCanvas.resetCamera();
+                mainCanvas.Render();
             }
         });
     }
 
     public void setProps(List<vtkProp> props)
     {
-        setProps(props,renWin,renWin.getRenderer());
-        if (stereoOn)
+        setProps(props,mainCanvas,mainCanvas.getRenderer());
+        if (mirrorFrameOpen)
         {
-            setProps(props,stereoMirror,stereoMirror.getRenderer());
+            setProps(props,mirrorCanvas,mirrorCanvas.getRenderer());
             //setProps(props,stereoMirror,stereoMirror.getKludgeRenderer());
         }
     }
 
 
-    public void setProps(List<vtkProp> props, vtksbmtJoglCanvasComponent renderWindow, vtkRenderer whichRenderer)
+    public void setProps(List<vtkProp> props, vtksbmtJoglCanvas renderWindow, vtkRenderer whichRenderer)
     {
         // Go through the props and if an prop is already in the renderer,
         // do nothing. If not, add it. If an prop not listed is
@@ -426,7 +555,7 @@ public class Renderer extends JPanel implements
     public void saveToFile()
     {
         File file = CustomFileChooser.showSaveDialog(this, "Export to PNG Image", "image.png", "png");
-        saveToFile(file, renWin);
+        saveToFile(file, mainCanvas);
     }
 
     private BlockingQueue<CameraFrame> cameraFrameQueue;
@@ -497,10 +626,10 @@ public class Renderer extends JPanel implements
 
     public void setCameraOrientationInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance)
     {
-        vtkRenderer ren = renWin.getRenderer();
+        vtkRenderer ren = mainCanvas.getRenderer();
         if (ren.VisibleActorCount() == 0) return;
 
-        renWin.getVTKLock().lock();
+        mainCanvas.getVTKLock().lock();
 
         double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
         double xSize = Math.abs(bounds[1] - bounds[0]);
@@ -563,10 +692,10 @@ public class Renderer extends JPanel implements
             cam.SetPosition(pos);
         }
 
-        renWin.getVTKLock().unlock();
+        mainCanvas.getVTKLock().unlock();
 
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public CameraFrame createCameraFrameInDirectionOfAxis(AxisType axisType, boolean preserveCurrentDistance, File file, int delayMilliseconds)
@@ -638,21 +767,21 @@ public class Renderer extends JPanel implements
 
     public void setCameraFrame(CameraFrame frame)
     {
-        vtkRenderer ren = renWin.getRenderer();
+        vtkRenderer ren = mainCanvas.getRenderer();
         if (ren.VisibleActorCount() == 0)
             return;
 
-        renWin.getVTKLock().lock();
+        mainCanvas.getVTKLock().lock();
 
         vtkCamera cam = ren.GetActiveCamera();
         cam.SetFocalPoint(frame.focalPoint[0], frame.focalPoint[1], frame.focalPoint[2]);
         cam.SetPosition(frame.position[0], frame.position[1], frame.position[2]);
         cam.SetViewUp(frame.upDirection[0], frame.upDirection[1], frame.upDirection[2]);
 
-        renWin.getVTKLock().unlock();
+        mainCanvas.getVTKLock().unlock();
 
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public void setCameraOrientation(
@@ -661,31 +790,31 @@ public class Renderer extends JPanel implements
             double[] upVector,
             double viewAngle)
     {
-        renWin.getVTKLock().lock();
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        mainCanvas.getVTKLock().lock();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         cam.SetPosition(position);
         cam.SetFocalPoint(focalPoint);
         cam.SetViewUp(upVector);
         cam.SetViewAngle(viewAngle);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public void setCameraViewAngle(
             double viewAngle)
     {
-        renWin.getVTKLock().lock();
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        mainCanvas.getVTKLock().lock();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         cam.SetViewAngle(viewAngle);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public double getCameraViewAngle()
     {
-        return renWin.getRenderer().GetActiveCamera().GetViewAngle();
+        return mainCanvas.getRenderer().GetActiveCamera().GetViewAngle();
     }
 
     public void resetToDefaultCameraViewAngle()
@@ -695,20 +824,20 @@ public class Renderer extends JPanel implements
 
     public void setProjectionType(ProjectionType projectionType)
     {
-        renWin.getVTKLock().lock();
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        mainCanvas.getVTKLock().lock();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         if (projectionType == ProjectionType.ORTHOGRAPHIC)
             cam.ParallelProjectionOn();
         else
             cam.ParallelProjectionOff();
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public ProjectionType getProjectionType()
     {
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         if (cam.GetParallelProjection() != 0)
             return ProjectionType.ORTHOGRAPHIC;
         else
@@ -724,7 +853,7 @@ public class Renderer extends JPanel implements
      */
     public void setCameraDistance(double distance)
     {
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
 
@@ -734,16 +863,16 @@ public class Renderer extends JPanel implements
         pos[1] *= distance;
         pos[2] *= distance;
 
-        renWin.getVTKLock().lock();
+        mainCanvas.getVTKLock().lock();
         cam.SetPosition(pos);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     public double getCameraDistance()
     {
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
 
@@ -765,7 +894,7 @@ public class Renderer extends JPanel implements
             double[] cz,
             double[] viewAngle)
     {
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
 
         double[] pos = cam.GetPosition();
         position[0] = pos[0];
@@ -793,7 +922,7 @@ public class Renderer extends JPanel implements
     // Gets the current lat/lon (degrees) position of the camera
     public LatLon getCameraLatLon()
     {
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         return MathUtil.reclat(cam.GetPosition()).toDegrees();
     }
 
@@ -801,7 +930,7 @@ public class Renderer extends JPanel implements
     public void setCameraLatLon(LatLon latLon)
     {
         // Get active camera and current distance from origin
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         double distance = getCameraDistance();
 
         // Convert desired Lat/Lon to unit vector and scale to maintain same distance
@@ -812,45 +941,45 @@ public class Renderer extends JPanel implements
         pos[2] *= distance;
 
         // Set the new camera position
-        renWin.getVTKLock().lock();
+        mainCanvas.getVTKLock().lock();
         cam.SetPosition(pos);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     // Set camera's focal point
     public void setCameraFocalPoint(double[] focalPoint)
     {
         // Obtain lock
-        renWin.getVTKLock().lock();
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        mainCanvas.getVTKLock().lock();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         cam.SetFocalPoint(focalPoint);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     // Sets the camera roll with roll as defined by vtkCamera
     public void setCameraRoll(double angle)
     {
-        renWin.getVTKLock().lock();
-        vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+        mainCanvas.getVTKLock().lock();
+        vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         cam.SetRoll(angle);
-        renWin.getVTKLock().unlock();
-        renWin.resetCameraClippingRange();
-        renWin.Render();
+        mainCanvas.getVTKLock().unlock();
+        mainCanvas.resetCameraClippingRange();
+        mainCanvas.Render();
     }
 
     // Gets the camera roll with roll as defined by vtkCamera
     public double getCameraRoll()
     {
-        return renWin.getRenderer().GetActiveCamera().GetRoll();
+        return mainCanvas.getRenderer().GetActiveCamera().GetRoll();
     }
 
-    public vtksbmtJoglCanvasComponent getRenderWindowPanel()
+    public vtksbmtJoglCanvas getRenderWindowPanel()
     {
-        return renWin;
+        return mainCanvas;
     }
 
     public void propertyChange(PropertyChangeEvent e)
@@ -861,7 +990,7 @@ public class Renderer extends JPanel implements
         }
         else
         {
-            renWin.Render();
+            mainCanvas.Render();
         }
     }
 
@@ -873,7 +1002,7 @@ public class Renderer extends JPanel implements
             defaultInteractorStyle = trackballCameraInteractorStyle;
 
         // Change the interactor now unless it is currently null.
-        if (renWin.getRenderWindowInteractor().GetInteractorStyle() != null)
+        if (mainCanvas.getRenderWindowInteractor().GetInteractorStyle() != null)
             setInteractorStyleToDefault();
     }
 
@@ -887,34 +1016,38 @@ public class Renderer extends JPanel implements
 
     public void setInteractorStyleToDefault()
     {
-        renWin.setInteractorStyle(defaultInteractorStyle);
+        mainCanvas.setInteractorStyle(defaultInteractorStyle);
+        if (mirrorFrameOpen)
+            mirrorCanvas.setInteractorStyle(defaultInteractorStyle);
     }
 
     public void setInteractorStyleToNone()
     {
-        renWin.setInteractorStyle(null);
+        mainCanvas.setInteractorStyle(null);
+        if (mirrorFrameOpen)
+            mirrorCanvas.setInteractorStyle(null);
     }
 
     public void setLighting(LightingType type)
     {
         if (type != currentLighting)
         {
-            renWin.getRenderer().RemoveAllLights();
+            mainCanvas.getRenderer().RemoveAllLights();
             if (type == LightingType.LIGHT_KIT)
             {
-                lightKit.AddLightsToRenderer(renWin.getRenderer());
+                lightKit.AddLightsToRenderer(mainCanvas.getRenderer());
             }
             else if (type == LightingType.HEADLIGHT)
             {
-                renWin.getRenderer().AddLight(headlight);
+                mainCanvas.getRenderer().AddLight(headlight);
             }
             else
             {
-                renWin.getRenderer().AddLight(fixedLight);
+                mainCanvas.getRenderer().AddLight(fixedLight);
             }
             currentLighting = type;
-            if (renWin.getRenderWindow().GetNeverRendered() == 0)
-                renWin.Render();
+            if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+                mainCanvas.Render();
         }
     }
 
@@ -929,8 +1062,8 @@ public class Renderer extends JPanel implements
         {
             headlight.SetIntensity(percentage);
             fixedLight.SetIntensity(percentage);
-            if (renWin.getRenderWindow().GetNeverRendered() == 0)
-                renWin.Render();
+            if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+                mainCanvas.Render();
         }
     }
 
@@ -953,8 +1086,8 @@ public class Renderer extends JPanel implements
     public void setFixedLightPosition(LatLon latLon)
     {
         fixedLight.SetPosition(MathUtil.latrec(latLon.toRadians()));
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     /**
@@ -973,8 +1106,8 @@ public class Renderer extends JPanel implements
         dir[1] *= (1.0e5 * bbd);
         dir[2] *= (1.0e5 * bbd);
         fixedLight.SetPosition(dir);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public double getLightIntensity()
@@ -986,13 +1119,13 @@ public class Renderer extends JPanel implements
     {
         if (getShowOrientationAxes() != show)
         {
-            renWin.getVTKLock().lock();
+            mainCanvas.getVTKLock().lock();
             orientationWidget.SetEnabled(show ? 1 : 0);
             if (show)
                 orientationWidget.SetInteractive(interactiveAxes ? 1 : 0);
-            renWin.getVTKLock().unlock();
-            if (renWin.getRenderWindow().GetNeverRendered() == 0)
-                renWin.Render();
+            mainCanvas.getVTKLock().unlock();
+            if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+                mainCanvas.Render();
         }
     }
 
@@ -1007,11 +1140,11 @@ public class Renderer extends JPanel implements
         if (getOrientationAxesInteractive() != interactive &&
             getShowOrientationAxes())
         {
-            renWin.getVTKLock().lock();
+            mainCanvas.getVTKLock().lock();
             orientationWidget.SetInteractive(interactive ? 1 : 0);
-            renWin.getVTKLock().unlock();
-            if (renWin.getRenderWindow().GetNeverRendered() == 0)
-                renWin.Render();
+            mainCanvas.getVTKLock().unlock();
+            if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+                mainCanvas.Render();
         }
         interactiveAxes = interactive;
     }
@@ -1034,15 +1167,15 @@ public class Renderer extends JPanel implements
 
     public int[] getBackgroundColor()
     {
-        double[] bg = renWin.getRenderer().GetBackground();
+        double[] bg = mainCanvas.getRenderer().GetBackground();
         return new int[]{(int)(255.0*bg[0]), (int)(255.0*bg[1]), (int)(255.0*bg[2])};
     }
 
     public void setBackgroundColor(int[] color)
     {
-        renWin.getRenderer().SetBackground(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        mainCanvas.getRenderer().SetBackground(color[0]/255.0, color[1]/255.0, color[2]/255.0);
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public void set2DMode(boolean enable)
@@ -1051,31 +1184,31 @@ public class Renderer extends JPanel implements
 
         if (enable)
         {
-            vtkCamera cam = renWin.getRenderer().GetActiveCamera();
+            vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
             cam.ParallelProjectionOn();
             setCameraOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, false);
-            renWin.getVTKLock().lock();
+            mainCanvas.getVTKLock().lock();
             cam.SetViewUp(0.0, 1.0, 0.0);
-            renWin.getVTKLock().unlock();
+            mainCanvas.getVTKLock().unlock();
             vtkInteractorStyleImage style = new vtkInteractorStyleImage();
-            renWin.setInteractorStyle(style);
+            mainCanvas.setInteractorStyle(style);
         }
         else
         {
-            renWin.getRenderer().GetActiveCamera().ParallelProjectionOff();
-            renWin.resetCamera();
+            mainCanvas.getRenderer().GetActiveCamera().ParallelProjectionOff();
+            mainCanvas.resetCamera();
             setInteractorStyleToDefault();
         }
 
-        renWin.Render();
+        mainCanvas.Render();
     }
 
     public void setAxesSize(double size)
     {
         this.axesSize = size;
         orientationWidget.SetViewport(0.0, 0.0, size, size);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public double getAxesSize()
@@ -1091,8 +1224,8 @@ public class Renderer extends JPanel implements
         property.SetLineWidth(width);
         property = axes.GetZAxisShaftProperty();
         property.SetLineWidth(width);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public double getAxesLineWidth()
@@ -1112,8 +1245,8 @@ public class Renderer extends JPanel implements
         caption = axes.GetZAxisCaptionActor2D();
         textProperty = caption.GetCaptionTextProperty();
         textProperty.SetFontSize(size);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public int getAxesLabelFontSize()
@@ -1134,8 +1267,8 @@ public class Renderer extends JPanel implements
         caption = axes.GetZAxisCaptionActor2D();
         textProperty = caption.GetCaptionTextProperty();
         textProperty.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public int[] getAxesLabelFontColor()
@@ -1152,8 +1285,8 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetXAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public int[] getXAxisColor()
@@ -1169,8 +1302,8 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetYAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public int[] getYAxisColor()
@@ -1186,8 +1319,8 @@ public class Renderer extends JPanel implements
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
         property = axes.GetZAxisTipProperty();
         property.SetColor(color[0]/255.0, color[1]/255.0, color[2]/255.0);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public int[] getZAxisColor()
@@ -1204,8 +1337,8 @@ public class Renderer extends JPanel implements
         axes.SetNormalizedTipLength(size, size, size);
         // Change the shaft length also to fill in any space.
         axes.SetNormalizedShaftLength(1.0-size, 1.0-size, 1.0-size);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public double getAxesConeLength()
@@ -1216,8 +1349,8 @@ public class Renderer extends JPanel implements
     public void setAxesConeRadius(double size)
     {
         axes.SetConeRadius(size);
-        if (renWin.getRenderWindow().GetNeverRendered() == 0)
-            renWin.Render();
+        if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
+            mainCanvas.Render();
     }
 
     public double getAxesConeRadius()
@@ -1225,7 +1358,7 @@ public class Renderer extends JPanel implements
         return axes.GetConeRadius();
     }
 
-    public static void saveToFile(File file, vtksbmtJoglCanvasComponent renWin)
+    public static void saveToFile(File file, vtksbmtJoglCanvas renWin)
     {
         if (file != null)
         {
@@ -1303,7 +1436,7 @@ public class Renderer extends JPanel implements
         {
             if (frame.staged && frame.file != null)
             {
-                saveToFile(frame.file, renWin);
+                saveToFile(frame.file, mainCanvas);
                 cameraFrameQueue.remove();
             }
             else

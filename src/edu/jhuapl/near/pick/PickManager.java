@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -28,7 +28,7 @@ public class PickManager extends Picker
 
     private PickMode pickMode = PickMode.DEFAULT;
     private Renderer renderer;
-    private vtksbmtJoglCanvasComponent renWin;
+    private vtksbmtJoglCanvas renWin;
 
     private DefaultPicker defaultPicker;
 

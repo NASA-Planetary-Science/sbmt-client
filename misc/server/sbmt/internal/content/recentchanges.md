@@ -4,6 +4,16 @@
 
 # Recent Changes
 
+### May 5, 2016
+
+-   MapMaker functionality has been upgraded to use BigMaps
+-   Multi-layer images (Image Cubes) can now be created from multiple overlapping images
+-   OLA LIDAR intensity data can now be displayed 
+-   Fixed bugs in importing of FITS images for custom models
+-   FITS images of type double can now be imported
+-   New version of tutorial now available
+-   Fixed another bug in "File->Export Six Views" command
+
 ### April 6, 2016
 
 -   Added custom image import to user manual.

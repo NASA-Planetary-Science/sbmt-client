@@ -1,0 +1,61 @@
+#
+#
+#
+most_supported_targets := all clean bare release client images infofiles \
+                          gallery database install install_images install_gallery \
+                          install_infofiles install_database update_ceres_fc_images
+
+.PHONY :
+
+# Common variable definitions
+#
+
+#include ${SBMTROOT}/config/Makefiles/Variables
+
+#
+# Target section
+#
+
+ifdef SUBDIRS
+
+
+#
+# Targets for executing "make" in a subdirectory
+#
+
+include ${SBMTROOT}/config/Makefiles/Subdir.Targets
+
+else
+
+ifdef CONFIGFILES
+
+#
+# Targets for executing "make" in a configuration file subdirectory
+#
+#include ${SBMTROOT}/config/Makefiles/ConfigFiles.Targets
+
+else
+
+ifdef SCRIPTFILES
+
+#
+# Targets for executing "make" in a directory containing shell scripts.
+#
+include ${SBMTROOT}/config/Makefiles/ScriptFiles.Targets
+
+else
+
+#
+# Common targets
+#
+
+#include ${SBMTROOT}/config/Makefiles/Targets
+
+endif
+endif
+endif
+
+#ifdef SBMTEXTRAS
+#include ${SBMTROOT}/config/Makefiles/SbmtExtras.Targets
+#endif
+

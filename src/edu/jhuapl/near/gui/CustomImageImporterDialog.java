@@ -692,9 +692,14 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
         {
             ImageType[] allImageTypes = ImageType.values();
-            ImageType currentImageType = instrument.type;
+            ImageType currentImageType = instrument != null ? instrument.type : ImageType.GENERIC_IMAGE;
             imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
             imageTypeComboBox.setSelectedItem(currentImageType);
+
+            boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
+            boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
+            imageFlipComboBox.setEnabled(generic && !cylindrical);
+            imageRotateComboBox.setEnabled(generic && !cylindrical);
         }
         else
         {
@@ -704,8 +709,13 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         imageNameTextField.setText(imageFileName);
 
         // set default info file name
-        // String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileName.substring(0, imageFileName.length()-3) + "INFO";
-        // infofilePathTextField.setText(defaultInfoFileName);
+        String tokens[] = imageFileName.split("\\.");
+        int ntokens = tokens.length;
+        String suffix = tokens[ntokens-1];
+        int suffixLength = suffix.length();
+        String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
+        String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "INFO";
+        infofilePathTextField.setText(defaultInfoFileName);
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed

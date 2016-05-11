@@ -37,7 +37,7 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvasComponent;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
@@ -52,7 +52,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     public static final double VIEWPOINT_DELTA = 1.0;
     public static final double ROTATION_DELTA = 5.0;
 
-    private vtksbmtJoglCanvasComponent renWin;
+    private vtksbmtJoglCanvas renWin;
     private Image image;
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
@@ -75,7 +75,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
 
-        renWin = new vtksbmtJoglCanvasComponent();
+        renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style =

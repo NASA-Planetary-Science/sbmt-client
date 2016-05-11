@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import nom.tam.fits.FitsException;
 
@@ -98,6 +99,11 @@ public class ImageCubeCollection extends Model implements PropertyChangeListener
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, image);
+    }
+
+    public Set<ImageCube> getImages()
+    {
+        return imageToActorsMap.keySet();
     }
 
     public void removeAllImages()

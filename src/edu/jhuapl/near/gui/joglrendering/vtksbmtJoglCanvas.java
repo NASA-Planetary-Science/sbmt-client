@@ -7,17 +7,17 @@ import javax.media.opengl.awt.GLCanvas;
 import vtk.vtkGenericOpenGLRenderWindow;
 import vtk.vtkRenderWindow;
 
-public class vtksbmtJoglCanvasComponent extends vtksbmtAbstractJoglComponent<GLCanvas> {
+public class vtksbmtJoglCanvas extends vtksbmtAbstractJoglCanvas<GLCanvas> {
 
-  public vtksbmtJoglCanvasComponent() {
+  public vtksbmtJoglCanvas() {
     this(new vtkGenericOpenGLRenderWindow());
   }
 
-  public vtksbmtJoglCanvasComponent(vtkRenderWindow renderWindow) {
+  public vtksbmtJoglCanvas(vtkRenderWindow renderWindow) {
     this(renderWindow, new GLCapabilities(GLProfile.getDefault()));
   }
 
-  public vtksbmtJoglCanvasComponent(vtkRenderWindow renderWindow, GLCapabilities capabilities) {
+  public vtksbmtJoglCanvas(vtkRenderWindow renderWindow, GLCapabilities capabilities) {
     super(renderWindow, new GLCanvas(capabilities));
     this.getComponent().addGLEventListener(this.glEventListener);
   }

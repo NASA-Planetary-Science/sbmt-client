@@ -1,0 +1,5 @@
+
+${most_supported_targets}:	
+	for dir in ${SUBDIRS}; do \
+		if [ -d $$dir ]; then (cd $$dir; ${MAKE} -k $@); fi; \
+	done;

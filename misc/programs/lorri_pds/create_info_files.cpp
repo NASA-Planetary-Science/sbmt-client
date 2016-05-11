@@ -224,6 +224,7 @@ void getScOrientation(double et, string body, double scposbf[3],
      *  xo = -tan(0.2907 * rpd_c() / 2.0);
      *  yo = -tan(0.2907 * rpd_c() / 2.0);
      */
+    //getfov_c(instid, MAXBND, WDSIZE, WDSIZE, shape, frame, bsight, &n, bounds); TBD
     pixel_pitch = 13.0e-6;      // in m
     focal_length = 2.619082;    // in m from Bill Owen's model
     fov = atan2(pixel_pitch * 512.0, focal_length);    // in radians

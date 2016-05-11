@@ -39,4 +39,15 @@ p {
 
 #leftcolumn ul, #leftcolumn ol {
     list-style: none;
+
 }
+
+ul.userhelp {
+    margin-top:0px;
+    margin-bottom:0px;
+}
+
+ul.userhelp li {
+    list-style: disc;
+}
+

@@ -100,7 +100,8 @@ public class View extends JPanel
 
         spectrumPanelManager = new ModelSpectrumWindowManager(modelManager);
 
-        renderer = new Renderer(modelManager);
+        //renderer = new Renderer(modelManager);
+        renderer = new Renderer(modelManager,statusBar);
 
         setupPopupManager();
 
@@ -115,9 +116,12 @@ public class View extends JPanel
             if (instrument.spectralMode == SpectralMode.MONO)
             {
                 // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
-                if (Configuration.isAPLVersion() ||
-                        smallBodyConfig.body == ShapeModelBody.EROS ||
-                        (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
+                if (smallBodyConfig.body == ShapeModelBody.EROS)
+                {
+                    JComponent component = new CubicalImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init();
+                    controlPanel.addTab(instrument.instrumentName.toString(), component);
+                }
+                else if (Configuration.isAPLVersion() || (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
                 {
                     JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init();
                     controlPanel.addTab(instrument.instrumentName.toString(), component);

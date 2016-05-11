@@ -34,9 +34,10 @@ public class Bigmap
     private File outputFolder;
     private File mapletFitsFile;
     private String gravityExecutableName;
+    private String executableExtension;
     private SmallBodyModel smallBodyModel;
 
-    public Bigmap(String bigmapRootDir) throws IOException
+    public Bigmap(String bigmapRootDir, boolean grotesque) throws IOException
     {
         this.bigmapRootDir = bigmapRootDir;
 
@@ -50,39 +51,48 @@ public class Bigmap
 
         Map<String, String> env = processBuilder.environment();
 
-        String processName = null;
+        String executableExtension = "";
         if (Configuration.isLinux())
         {
             if (System.getProperty("sun.arch.data.model").equals("64"))
             {
-                processName = execDir + File.separator + "BIGMAPO.linux64";
-                gravityExecutableName = "gravity.linux64";
+                executableExtension = ".linux64";
             }
             else
             {
-                processName = execDir + File.separator + "BIGMAPO.linux32";
-                gravityExecutableName = "gravity.linux32";
+                executableExtension = ".linux32";
             }
 
             env.put("LD_LIBRARY_PATH", execDir);
         }
         else if (Configuration.isMac())
         {
-            processName = execDir + File.separator + "BIGMAPO.macosx";
-            gravityExecutableName = "gravity.macosx";
+            executableExtension = ".macosx";
 
             env.put("DYLD_LIBRARY_PATH", execDir);
         }
         else
         {
-            processName = execDir + File.separator + "BIGMAPO.win32.exe";
-            gravityExecutableName = "gravity.win32.exe";
+            executableExtension = ".win32.exe";
             //throw new IOException("Operating system not supported");
         }
 
+        // Build up name for bigmap executable
+        String processName;
+        if(grotesque)
+        {
+            processName = execDir + File.separator + "BIGMAPOF" + executableExtension;
+        }
+        else
+        {
+            processName = execDir + File.separator + "BIGMAPO" + executableExtension;
+        }
         new File(processName).setExecutable(true);
         processCommand.add(processName);
+        System.out.println("Running process: " + processName);
 
+        // Build up name for gravity executable
+        gravityExecutableName = "gravity" + executableExtension;
         new File(execDir + File.separator + gravityExecutableName).setExecutable(true);
     }
 
@@ -97,15 +107,14 @@ public class Bigmap
         double fractionHeights = .005; // fraction of heights for conditioning (value from example in BIGMAPO.F comments)
         double conditioningWeight = .025; // conditioning weight (value from example in BIGMAPO.F comments)
         int slopeIntegration = 1; // (value from example in BIGMAPO.F comments)
-        int numIterations = 1; // Not sure how many iterations is appropriate
-        System.out.println("BIGMAP: HARDCODING TO 1 ITERATION FOR NOW");
+        int numIterations = 6; // Not sure how many iterations is appropriate
 
         // Also, should we be using bigmap.f, bigmapo.f, or bigmapof.f (grotesque) ???
 
         // Create arguments for bigmap, see header comment of BIGMAPO.F for example
         String arguments = "l" + "\n"               // specify by lat/lon
                 + latitude + ", " + longitude + "\n" // lat/lon values
-                + pixelSize + ", " + halfSize + ", " + seed + ", " + maxMapletRes + "\n" // scale, qsx, seed, max maplet res
+                + pixelSize/1000 + ", " + halfSize + ", " + seed + ", " + maxMapletRes + "\n" // scale, qsx, seed, max maplet res
                 + name + "\n"                       // bigmap name
                 + slopeIntegration + "\n"           // choose slope integration
                 + fractionHeights + "\n"            // fraction of heights for conditioning
@@ -159,36 +168,37 @@ public class Bigmap
             dgOptionList.add(Double.toString(smallBodyModel.getReferencePotential()));
             dgOptionList.add("--output-folder");
             dgOptionList.add(outputFolder.getPath());
+            dgOptionList.add("--werner");
             dgOptionList.add(objShapeFile.getPath()); // Global shape model file, Olivier suggests lowest res .OBJ **/
             dgOptionList.add(dgFitsFile.getPath()); // Path to output file that will contain all results
             dgOptionList.add(bigmapRootDir);
             dgOptionList.add(gravityExecutableName); // Version of gravity called differs by OS
 
             // Debug output
-            System.out.println("Bigmap.java: Calling Distributed Gravity with...");
+            System.out.println("Calling Distributed Gravity with...");
             System.out.println("  density = " + smallBodyModel.getDensity() + " g/cm^3");
             System.out.println("  rotation rate = " + smallBodyModel.getRotationRate() + " rad/s");
             System.out.println("  reference potential = " + smallBodyModel.getReferencePotential() + " J/kg");
 
             // Convert argument list to array and call DistributedGravity
             // Resulting FITS file has original Maplet2FITS planes plus the following:
-            // 10. Add gravity information by appending the following planes to the FITs file
-            // 11. normal vector x component
-            // 12. normal vector y component
-            // 13. normal vector z component
-            // 14. gravacc x component
-            // 15. gravacc y component
-            // 16. gravacc z component
-            // 17. magnitude of grav acc
-            // 18. grav potential
-            // 19. elevation
-            // 20. slope
-            // 21. Tilt
-            // 22. Tilt direction
-            // 23. Tilt mean
-            // 24. Tilt standard deviation
-            // 25. Distance to plane
-            // 26. Shaded relief
+            // Add gravity information by appending the following planes to the FITs file
+            // 10. normal vector x component
+            // 11. normal vector y component
+            // 12. normal vector z component
+            // 13. gravacc x component
+            // 14. gravacc y component
+            // 15. gravacc z component
+            // 16. magnitude of grav acc
+            // 17. grav potential
+            // 18. elevation
+            // 19. slope
+            // 20. Tilt
+            // 21. Tilt direction
+            // 22. Tilt mean
+            // 23. Tilt standard deviation
+            // 24. Distance to plane
+            // 25. Shaded relief
             String[] dgOptionArray = dgOptionList.toArray(new String[dgOptionList.size()]);
             DistributedGravity.main(dgOptionArray);
 
@@ -200,13 +210,57 @@ public class Bigmap
             // Extract only the planes that SBMT is interested in
             int liveSize = 2 * halfSize + 1;
             float[][][] outdata = new float[MAX_PLANES][liveSize][liveSize];
+            int dgIdx;
+            float convScale;
             for (int p=0; p<MAX_PLANES; ++p)
             {
+                // Mapping and unit conversion
+                switch(p)
+                {
+                case 0:
+                    // DG plane 19: Elevation [m] -> [km]
+                    dgIdx = 18;
+                    convScale = 0.001f;
+                    break;
+                case 1:
+                    // DG plane 7: Height [km] -> [km]
+                    dgIdx = 6;
+                    convScale = 1.0f;
+                    break;
+                case 2:
+                    // DG plane 20: Slope [deg] -> [rad]
+                    dgIdx = 19;
+                    convScale = (float)(Math.PI/180.0);
+                    break;
+                case 3:
+                    // DG plane 4: X [km] -> [km]
+                    dgIdx = 3;
+                    convScale = 1.0f;
+                    break;
+                case 4:
+                    // DG plane 5: Y [km] -> [km]
+                    dgIdx = 4;
+                    convScale = 1.0f;
+                    break;
+                case 5:
+                    // DG plane 6: Z [km] -> [km]
+                    dgIdx = 5;
+                    convScale = 1.0f;
+                    break;
+                default:
+                    System.err.println("Unrecognized FITS plane index: " + p);
+                    dgIdx = 0;
+                    convScale = 1.0f;
+                    break;
+                }
+
+                // Extract out only planes that SBMT is interested in
                 for (int m=0; m<liveSize; ++m)
                 {
                     for (int n=0; n<liveSize; ++n)
                     {
-                        outdata[p][m][n] = dgData[mapletFitsToDgFitsPlane(p)][m][n];
+
+                        outdata[p][m][n] = dgData[dgIdx][m][n] * convScale;
                     }
                 }
             }
@@ -252,27 +306,6 @@ public class Bigmap
         catch(Exception e)
         {
             e.printStackTrace();
-        }
-    }
-
-    public static int mapletFitsToDgFitsPlane(int i) throws Exception
-    {
-        switch(i)
-        {
-        case 0:
-            return 19; // Confirmed with Olivier
-        case 1:
-            return 7; // Confirmed with Olivier
-        case 2:
-            return 20; // Confirmed with Olivier
-        case 3:
-            return 3;
-        case 4:
-            return 4;
-        case 5:
-            return 5;
-        default:
-            throw new Exception("Unrecognized FITS plane index " + i);
         }
     }
 
