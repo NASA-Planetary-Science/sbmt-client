@@ -265,7 +265,7 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a ${LOCAL_INFOFILES_DIR}/ ${LIVE_INFOFILES_DIR}/
+	rsync -a ${LOCAL_INFOFILES_DIR} ${LIVE_INFOFILES_DIR}
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
 
@@ -275,7 +275,7 @@ install_infofiles :
 #  
 install_gallery : 
 	mkdir -p ${LIVE_GALLERY_DIR}/
-	rsync -a ${LOCAL_GALLERY_DIR}/ ${LIVE_GALLERY_DIR}/
+	rsync -a ${LOCAL_GALLERY_DIR} ${LIVE_GALLERY_DIR}
 	
 #where does the database generator expect to be run from?  What are the files it expects and where are the
 #expected to be located. It expects to be run from sbmt/build/sbmt-extras/bin
