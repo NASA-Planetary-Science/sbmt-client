@@ -1398,7 +1398,11 @@ public class SmallBodyConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
             c.hasMapmaker = true;
-            //c.hasBigmap = true;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
@@ -1441,7 +1445,42 @@ public class SmallBodyConfig
 
             c.lidarSearchDataSourceMap.put("TreeBased", "/GASKELL/RQ36_V3/OLA/tree");
             c.hasTreeBasedLidarSearch=true; // enable tree-based lidar searching
+        }
 
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V4 Image";
+            c.rootDirOnServer = "/GASKELL/RQ36_V4";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.hasMapmaker = true;
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY"),
+                            ImageType.POLYCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP"),
+                            ImageType.MAPCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
+            configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
