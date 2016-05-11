@@ -13,10 +13,10 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
-import altwg.tools.DistributedGravity;
 import altwg.tools.Maplet2FITS;
 
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.tools.BigmapDistributedGravity;
 
 public class Bigmap
 {
@@ -34,7 +34,6 @@ public class Bigmap
     private File outputFolder;
     private File mapletFitsFile;
     private String gravityExecutableName;
-    private String executableExtension;
     private SmallBodyModel smallBodyModel;
 
     public Bigmap(String bigmapRootDir, boolean grotesque) throws IOException
@@ -154,14 +153,14 @@ public class Bigmap
             File bigmapToFitsFile = new File(outputFolder + File.separator + name + "_m2f" + ".FIT");
             Maplet2FITS.main(new String[] {origMapletFile.getPath(), bigmapToFitsFile.getPath()});
 
-            // Assemble options for calling DistributedGravity
+            // Assemble options for calling BigmapDistributedGravity
             File dgFitsFile = new File(outputFolder + File.separator + name + "_dg" + ".FIT");
             File objShapeFile = new File(bigmapRootDir + File.separator + "SHAPEFILES" + File.separator + "SHAPE_LOWEST_RES.OBJ");
             List<String> dgOptionList = new LinkedList<String>();
             dgOptionList.add("-d");
-            dgOptionList.add(Double.toString(smallBodyModel.getDensity()));
+            dgOptionList.add(Double.toString(smallBodyModel.getSmallBodyConfig().density));
             dgOptionList.add("-r");
-            dgOptionList.add(Double.toString(smallBodyModel.getRotationRate()));
+            dgOptionList.add(Double.toString(smallBodyModel.getSmallBodyConfig().rotationRate));
             dgOptionList.add("--fits-local");
             dgOptionList.add(bigmapToFitsFile.getPath());
             dgOptionList.add("--ref-potential");
@@ -176,11 +175,11 @@ public class Bigmap
 
             // Debug output
             System.out.println("Calling Distributed Gravity with...");
-            System.out.println("  density = " + smallBodyModel.getDensity() + " g/cm^3");
-            System.out.println("  rotation rate = " + smallBodyModel.getRotationRate() + " rad/s");
+            System.out.println("  density = " + smallBodyModel.getSmallBodyConfig().density + " g/cm^3");
+            System.out.println("  rotation rate = " + smallBodyModel.getSmallBodyConfig().rotationRate + " rad/s");
             System.out.println("  reference potential = " + smallBodyModel.getReferencePotential() + " J/kg");
 
-            // Convert argument list to array and call DistributedGravity
+            // Convert argument list to array and call BigmapDistributedGravity
             // Resulting FITS file has original Maplet2FITS planes plus the following:
             // Add gravity information by appending the following planes to the FITs file
             // 10. normal vector x component
@@ -200,9 +199,9 @@ public class Bigmap
             // 24. Distance to plane
             // 25. Shaded relief
             String[] dgOptionArray = dgOptionList.toArray(new String[dgOptionList.size()]);
-            DistributedGravity.main(dgOptionArray);
+            BigmapDistributedGravity.main(dgOptionArray);
 
-            // Open the FITs file produced by DistributedGravity
+            // Open the FITs file produced by BigmapDistributedGravity
             Fits dgFits = new Fits(dgFitsFile.getPath());
             BasicHDU dgHdu = dgFits.getHDU(0);
             float[][][] dgData = (float[][][])dgHdu.getData().getData();
