@@ -105,7 +105,7 @@ EXTRACT_LIST_SCRIPT := ./extractFitFilesList.pl
 # corresponding .INFO files. The fixed list query is only used when the images
 # are not in the database. 
 IMAGELIST    := imagelist.txt
-NEWIMAGELIST := newimagelist.txt
+#NEWIMAGELIST := newimagelist.txt
 
 # The imagelist-fullpath.txt file is used by the DatabaseGeneratorSql program.  It
 # contains the list of files (with relative path) that the database generator
@@ -131,7 +131,7 @@ NEW_FIT_FILES := newFitFiles.txt
 LOCAL_ALL_FIT_FILES      := ${RAWDATA_DIR}/${ALL_FIT_FILES}
 LOCAL_NEW_FIT_FILES      := ${RAWDATA_DIR}/${NEW_FIT_FILES}
 LOCAL_IMAGELIST          := ${PROCESSED_DIR}/${IMAGELIST}
-LOCAL_NEWIMAGELIST       := ${PROCESSED_DIR}/${NEWIMAGELIST}
+#LOCAL_NEWIMAGELIST       := ${PROCESSED_DIR}/${NEWIMAGELIST}
 LOCAL_IMAGELIST_FULLPATH := ${PROCESSED_DIR}/${IMAGELIST_FULLPATH}
 TEMP_LIST := ${PROCESSED_DIR}/_tempList.txt
 
@@ -180,8 +180,8 @@ else
 	find ${CERES_DATA_DIR} \( -path "*/fc/ceres/*/FC11B*.FIT" -or -path "*/fc/ceres/*/FC21B*.FIT" \
 	-or -path "*/fc/ceres/*/FC11B*.LBL" -or -path "*/fc/ceres/*/FC21B*.LBL" \) -and \( ! -path "*/fc/ceres/*/old/*" \) \
 	| xargs cp -uv -t ${LOCAL_IMAGES_DIR} > ${TEMP_LIST}
-	chmod +x ${EXTRACT_LIST_SCRIPT}
-	${PERL} ${EXTRACT_LIST_SCRIPT} ${TEMP_LIST} ${LOCAL_NEW_FIT_FILES}
+	#chmod +x ${EXTRACT_LIST_SCRIPT}
+	#${PERL} ${EXTRACT_LIST_SCRIPT} ${TEMP_LIST} ${LOCAL_NEW_FIT_FILES}
 endif
 	find -L ${LOCAL_IMAGES_DIR} -name "*.FIT" -type f | sort > ${LOCAL_ALL_FIT_FILES}
 	awk -F: -v var=${LOCAL_IMAGES_DIR} '{gsub(var,"/GASKELL/CERES/FC/images");print}' ${LOCAL_ALL_FIT_FILES} >${LOCAL_IMAGELIST_FULLPATH}
@@ -196,12 +196,8 @@ infofiles : ${CREATE_INFOFILES_PROC} metakernel
 ifdef REMAKE_EVERYTHING
 	rm -rf ${LOCAL_INFOFILES_DIR}
 	mkdir -pv ${LOCAL_INFOFILES_DIR}
-	${CREATE_INFOFILES_PROC} ${PROCESSED_DIR}/${METAKERNEL_FILE} ${LOCAL_ALL_FIT_FILES} ${LOCAL_INFOFILES_DIR} ${BODYNAME} ${LOCAL_IMAGELIST}
-else
-	${CREATE_INFOFILES_PROC} ${PROCESSED_DIR}/${METAKERNEL_FILE} ${LOCAL_NEW_FIT_FILES} ${LOCAL_INFOFILES_DIR} ${BODYNAME} ${LOCAL_NEWIMAGELIST}
-	cp ${LIVE_IMAGELIST} ${LOCAL_IMAGELIST}
-	cat ${LOCAL_NEWIMAGELIST} >> ${LOCAL_IMAGELIST}
 endif
+	${CREATE_INFOFILES_PROC} ${PROCESSED_DIR}/${METAKERNEL_FILE} ${LOCAL_ALL_FIT_FILES} ${LOCAL_INFOFILES_DIR} ${BODYNAME} ${LOCAL_IMAGELIST}
 
 #
 # gallery : NOT USED YET.
@@ -211,10 +207,8 @@ gallery :
 ifdef REMAKE_EVERYTHING
 	rm -rf ${LOCAL_GALLERY_DIR}
 	mkdir -pv ${LOCAL_GALLERY_DIR}
-	${BINROOT}/fits2thumbnails.py "${LOCAL_IMAGES_DIR}" "${LOCAL_GALLERY_DIR}"
-else
-	${BINROOT}/fits2thumbnails.py "${LOCAL_IMAGES_DIR}" "${LOCAL_GALLERY_DIR}" ${LOCAL_NEW_FIT_FILES}
 endif
+	${BINROOT}/fits2thumbnails.py "${LOCAL_IMAGES_DIR}" "${LOCAL_GALLERY_DIR}"
 	${BINROOT}/make_gallery_webpage.py "*.FIT" "${LOCAL_IMAGES_DIR}" "${LOCAL_GALLERY_DIR}" "${BODYNAME} Image Gallery"
 
 #
@@ -250,6 +244,12 @@ else
 	@echo ${database_cmd_append}
 	${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
 endif 
+#
+# ${DATABASE_GENERATOR} :
+#  TBD - this file needs to be made by the release process and installed
+#  in SBMTROOT/bin but that is not working yet. So, this is a placeholder
+#  until that can be put in place.
+${DATABASE_GENERATOR} :
 
 #
 # install_images :
@@ -292,7 +292,7 @@ else
 	${DATABASE_GENERATOR} --append-tables --modify-main 2 ${BODYNAME} > _append_main.log
 endif 
 
-${CREATE_INFOFILES_PROC}  : 
+${CREATE_INFOFILES_PROC}  : ${SOURCES_MAIN}
 	g++ -Wall ${SOURCES_MAIN} -I ${SPICE_DIR}/include ${SPICE_DIR}/lib/cspice.a -o ${CREATE_INFOFILES_PROC}
 
 

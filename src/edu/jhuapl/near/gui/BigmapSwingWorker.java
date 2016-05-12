@@ -114,8 +114,6 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
             return null;
         }
 
-        System.out.println("BigmapSwingWorker::doInBackground()");
-
         setLabelText("<html>Running Bigmap<br> </html>");
         setIndeterminate(true);
         setCancelButtonEnabled(true);
