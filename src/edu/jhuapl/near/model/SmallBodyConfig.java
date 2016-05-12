@@ -1466,7 +1466,11 @@ public class SmallBodyConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            //c.hasMapmaker = true;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -2125,6 +2129,10 @@ public class SmallBodyConfig
 
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
+        c.hasBigmap = this.hasBigmap;
+        c.density = this.density;
+        c.rotationRate = this.rotationRate;
+        c.useMinimumReferencePotential = this.useMinimumReferencePotential;
         c.hasSpectralData = this.hasSpectralData;
         c.hasLineamentData = this.hasLineamentData;
         c.hasCustomBodyCubeSize = this.hasCustomBodyCubeSize;

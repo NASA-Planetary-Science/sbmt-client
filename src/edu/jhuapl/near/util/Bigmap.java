@@ -200,6 +200,7 @@ public class Bigmap
             // 25. Shaded relief
             String[] dgOptionArray = dgOptionList.toArray(new String[dgOptionList.size()]);
             BigmapDistributedGravity.main(dgOptionArray);
+            System.out.println("DistributedGravity finished processing bigmap outputs");
 
             // Open the FITs file produced by BigmapDistributedGravity
             Fits dgFits = new Fits(dgFitsFile.getPath());
