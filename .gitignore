@@ -6,3 +6,8 @@ nbproject/private
 CMakeLists.txt.user
 .DS_Store
 *.log
+misc/programs/fc_pds/create_info_files_ceres
+misc/server/sbmt/internal/tmp
+misc/server/sbmt/internal/output
+misc/server/sbmt/public/tmp
+misc/server/sbmt/public/output
