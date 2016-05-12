@@ -1,7 +1,5 @@
 package edu.jhuapl.near.model.bennu;
 
-import java.io.File;
-
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 
@@ -55,10 +53,10 @@ public class Bennu extends SmallBodyModel
     private static final String[] getColoringFiles(String path)
     {
         return new String[] {
-                new File(path).getParent() + "/Slope",
-                new File(path).getParent() + "/Elevation",
-                new File(path).getParent() + "/GravitationalAcceleration",
-                new File(path).getParent() + "/GravitationalPotential"
+                path + "/Slope",
+                path + "/Elevation",
+                path + "/GravitationalAcceleration",
+                path + "/GravitationalPotential"
         };
     }
 
