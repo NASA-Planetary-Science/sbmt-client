@@ -158,9 +158,9 @@ public class Bigmap
             File objShapeFile = new File(bigmapRootDir + File.separator + "SHAPEFILES" + File.separator + "SHAPE_LOWEST_RES.OBJ");
             List<String> dgOptionList = new LinkedList<String>();
             dgOptionList.add("-d");
-            dgOptionList.add(Double.toString(smallBodyModel.getSmallBodyConfig().density));
+            dgOptionList.add(Double.toString(smallBodyModel.getDensity()));
             dgOptionList.add("-r");
-            dgOptionList.add(Double.toString(smallBodyModel.getSmallBodyConfig().rotationRate));
+            dgOptionList.add(Double.toString(smallBodyModel.getRotationRate()));
             dgOptionList.add("--fits-local");
             dgOptionList.add(bigmapToFitsFile.getPath());
             dgOptionList.add("--ref-potential");
@@ -175,8 +175,8 @@ public class Bigmap
 
             // Debug output
             System.out.println("Calling Distributed Gravity with...");
-            System.out.println("  density = " + smallBodyModel.getSmallBodyConfig().density + " g/cm^3");
-            System.out.println("  rotation rate = " + smallBodyModel.getSmallBodyConfig().rotationRate + " rad/s");
+            System.out.println("  density = " + smallBodyModel.getDensity() + " g/cm^3");
+            System.out.println("  rotation rate = " + smallBodyModel.getRotationRate() + " rad/s");
             System.out.println("  reference potential = " + smallBodyModel.getReferencePotential() + " J/kg");
 
             // Convert argument list to array and call BigmapDistributedGravity

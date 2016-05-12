@@ -506,14 +506,10 @@ public class BigmapDistributedGravity {
         //DistributedGravityBatchSubmission.runBatchSubmitPrograms(commandList, rootDir, BatchType.LOCAL_SEQUENTIAL);
         DistributedGravityBatchSubmission.runBatchSubmitPrograms(commandList, rootDir, BatchType.LOCAL_PARALLEL);
 
-        System.out.println("Done running batch submission");
-
         // Now read in all results
         ArrayList<GravityValues> results = new ArrayList<GravityValues>();
         for (int i = 0; i < numCores; i++) {
-            System.out.println(i);
             String basename = new File(objfile).getName();
-            System.out.println(basename);
             File accFile = new File(outputFolder + File.separator + basename + "-acceleration.txt" + outfilename + i);
             File potFile = new File(outputFolder + File.separator + basename + "-potential.txt" + outfilename + i);
             results.addAll(readGravityResults(accFile, potFile));
@@ -542,14 +538,12 @@ public class BigmapDistributedGravity {
     }
 
     private static double getRefPotential(List<GravityValues> results, boolean minRefPotential) {
-        System.out.println("A");
         int numFaces = globalShapeModelPolyData.GetNumberOfCells();
 
         if (howToEvalute == HowToEvaluate.EVALUATE_AT_CENTERS && results.size() != numFaces) {
             System.err.println("Error: Size of array not equal to number of plates");
             System.exit(1);
         }
-        System.out.println("B");
 
         vtkIdList idList = new vtkIdList();
 
@@ -558,10 +552,8 @@ public class BigmapDistributedGravity {
         double[] pt3 = new double[3];
         double potTimesAreaSum = 0.0;
         double totalArea = 0.0;
-        System.out.println("C");
 
         if (minRefPotential) {
-            System.out.println("D1");
 
             double minRefPot = Double.NaN;
             for (GravityValues thisGrav : results) {
@@ -569,7 +561,6 @@ public class BigmapDistributedGravity {
                     minRefPot = thisGrav.potential;
                 }
             }
-
 
             //stop with error if for some reason this is still NaN
             if (Double.isNaN(minRefPot)) {
@@ -580,8 +571,6 @@ public class BigmapDistributedGravity {
             return minRefPot;
 
         } else {
-            System.out.println("D2");
-
             for (int i = 0; i < numFaces; ++i) {
                 PolyDataUtil.getCellPoints(globalShapeModelPolyData, i, idList, pt1, pt2, pt3);
 
@@ -834,23 +823,11 @@ public class BigmapDistributedGravity {
             fieldpointsfile = outfile + ".ascii";
             boolean localFits = true;
             boolean convertToxyz = true;
-            System.out.println("converting fits to ascii.");
             PolyDataUtil2.convertFitsLLRModelToAscii(inputfitsfile, fieldpointsfile, convertToxyz, localFits);
-            System.out.println("getting gravity at locations.");
             gravAtLocations = getGravityAtLocations();
-            System.out.println("About to execute PolyDataUtil2.loadLocalFitsLLRModel");
             vtkPolyData fitspolydata = PolyDataUtil2.loadLocalFitsLLRModel(inputfitsfile, null);
-            System.out.println("About to execute saveResultsAtPointsInFitsFile");
-            System.out.println("altwgName = " + altwgName);
-            System.out.println("inputfitsfile = " + inputfitsfile);
-            System.out.println("fitspolydata==null? = " + fitspolydata==null);
-            System.out.println("outfile = " + outfile);
-            System.out.println("gravAtLocations==null? = " + gravAtLocations==null);
-            System.out.println("gravAtLocations.size() = " + gravAtLocations.size());
             saveResultsAtPointsInFitsFile(altwgName, inputfitsfile, fitspolydata, outfile, gravAtLocations);
-            System.out.println("About to execute new File");
             new File(fieldpointsfile).delete();
-            System.out.println("About to return from DistributedGravity main()");
         }
     }
 }
