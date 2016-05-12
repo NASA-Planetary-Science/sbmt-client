@@ -233,15 +233,11 @@ endif
 #       
 #   Body name must be the last parameter. Options must come first.
 #
-database_cmd_everything :=${DATABASE_GENERATOR} 2 ${BODYNAME}
-database_cmd_append     :=${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME}
 
 database : ${DATABASE_GENERATOR}
 ifdef REMAKE_EVERYTHING
-	@echo ${database_cmd_everything}
 	${DATABASE_GENERATOR} 2 ${BODYNAME} > _create_beta.log
 else
-	@echo ${database_cmd_append}
 	${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
 endif 
 #
@@ -258,6 +254,7 @@ install_images :
 	find -L ${LOCAL_IMAGES_DIR} -name "*.FIT" -type f | xargs cp -uv -t ${LIVE_IMAGES_DIR} > ${PROCESSED_DIR}/_installed_images.txt
 	mv ${LIVE_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}.bak
 	cp ${LOCAL_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}
+	chmod 664 ${LIVE_IMAGELIST_FULLPATH}
 
 #
 # install_infofiles :
@@ -265,17 +262,18 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a ${LOCAL_INFOFILES_DIR}/ ${LIVE_INFOFILES_DIR}/
+	rsync -a --delete ${LOCAL_INFOFILES_DIR} ${LIVE_INFOFILES_DIR}
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
+	chmod 664 ${LIVE_IMAGELIST}
 
 #
 # install_gallery :
 #  Makes sure the live image gallery directory allready exists. before synching.
 #  
 install_gallery : 
-	mkdir -p ${LIVE_GALLERY_DIR}/
-	rsync -a ${LOCAL_GALLERY_DIR}/ ${LIVE_GALLERY_DIR}/
+	mkdir -p ${LIVE_GALLERY_DIR}
+	rsync -a ${LOCAL_GALLERY_DIR} ${LIVE_GALLERY_DIR}
 	
 #where does the database generator expect to be run from?  What are the files it expects and where are the
 #expected to be located. It expects to be run from sbmt/build/sbmt-extras/bin
