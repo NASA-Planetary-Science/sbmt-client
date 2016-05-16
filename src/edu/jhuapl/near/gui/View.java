@@ -306,7 +306,7 @@ public class View extends JPanel
             allModels.put(ModelNames.LINEAMENT, ModelFactory.createLineament());
         }
 
-        if (smallBodyConfig.hasMapmaker)
+        if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
             allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
         }
@@ -395,7 +395,7 @@ public class View extends JPanel
             popupManager.registerPopup(modelManager.getModel(ModelNames.LINEAMENT), popupMenu);
         }
 
-        if (smallBodyConfig.hasMapmaker)
+        if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
             PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
             popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
