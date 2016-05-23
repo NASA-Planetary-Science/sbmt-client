@@ -188,25 +188,30 @@ public class Renderer extends JPanel implements
 
     }
 
-    void localKeypressHandler() // TODO: clean up logic here
+    void localKeypressHandler() // this prioritizes key presses from the main canvas and if none exist then it handles any key presses from the mirror canvas
+    // TODO: clean up logic here
     {
         char ch=mainCanvas.getRenderWindowInteractor().GetKeyCode();    // check main window for keypress
-        if (ch=='0')    // this means no key was hit (not sure why it matches key '0')
+        if (ch=='0')    // this means no key was hit in the main window (not sure why it matches key '0' but whatever)
         {
             if (mirrorFrameOpen)    // check mirror window for keypress
             {
                 ch=mirrorCanvas.getRenderWindowInteractor().GetKeyCode();
-                if (ch=='0' || ch=='M') // don't allow mirror to be closed by keypress from itself - this crashes the whole app
+                if (ch=='0')
+                    return;
+            }
+/*                if (ch=='0' || ch=='M') // don't allow mirror to be closed by keypress from itself - this crashes the whole app
                     return;
             }
             else
-                return;
+                return;*/
         }
         //
         if (ch=='M' && !mirrorFrameOpen)
             toggleMirrorFrame();
         if (ch=='S')
             advanceStereoMode();
+
 
         mainCanvas.Render();
         if (mirrorFrameOpen)
@@ -245,6 +250,7 @@ public class Renderer extends JPanel implements
             public void run()
             {
                 mirrorFrameOpen=true;
+                setLighting(getLighting());
                 //
                 mirrorFrame=new JFrame();
                 mirrorFrame.setSize(preferredSize);
@@ -301,14 +307,14 @@ public class Renderer extends JPanel implements
                     }
                 });
                 setProps(modelManager.getProps(), mirrorCanvas, mirrorCanvas.getRenderer());
+                setInteractorStyleToDefault();
             }
         });
         //
-        // re-enable orientation axes (see remarks above where the axes are hidden)
+        // re-enable orientation axes (see remarks above regarding how the axes are hidden)
         setShowOrientationAxes(true);
         //
         mirrorCanvas.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
-
     }
 
     void destroyMirrorFrame()
@@ -320,30 +326,66 @@ public class Renderer extends JPanel implements
     void advanceStereoMode()
     {
         mode=StereoMode.nextMode(mode);
+        commitStereoMode(mode);
+        if (statusBar!=null)
+            statusBar.setLeftText("Changed stereo rendering mode to "+mode.toString());
+    }
+
+    void commitStereoMode(StereoMode mode)
+    {
         if (mirrorFrameOpen)
             mirrorCanvas.setMode(mode);
         //
         switch (mode)
         {
         case SIDEBYSIDE:    // don't do side by side in main window, and if the mirror window isn't open just move on to the next stereo render mode
-            if (mirrorFrameOpen)
-                mainCanvas.getRenderWindow().StereoRenderOff();
-            else
+            mainCanvas.getRenderWindow().StereoRenderOff();
+            if (!mirrorFrameOpen)
                 advanceStereoMode();
             break;
         case NONE:
             mainCanvas.getRenderWindow().StereoRenderOff();
             break;
-        default:
-            mainCanvas.getRenderWindow().StereoCapableWindowOn();
+        case ANAGLYPH:
             mainCanvas.getRenderWindow().StereoRenderOn();
             mainCanvas.getRenderWindow().SetStereoTypeToAnaglyph();
+            break;
         }
         mainCanvas.Render();
-        //
-        if (statusBar!=null)
-            statusBar.setLeftText("Changed stereo rendering mode to "+mode.toString());
     }
+
+/*    void checkStereoModeSynchronization()    // this is a really sloppy kludge to cover up the behavior of the '3' key which changes the stereo mode to anaglyph and disrupts our stereo implementation (overloading the interactor style classes does not seem to work)
+    {
+        if (mainCanvas.getRenderWindow().GetStereoType()==2)    // re-commit stereo mode to our setting if it has been switched by the user to type 2, which is the ugly anaglyph mode (the mode we use is 7)
+        {
+            commitStereoMode(mode);
+            return;
+        }
+        if (mainCanvas.getRenderWindow().GetStereoRender()==0 && !mode.equals(StereoMode.NONE)) // keyboard switch to ugly anaglyph also turns stereo render on and off, so if it gets shut off and our setting needs it on then re-enable it
+        {
+            commitStereoMode(mode);
+            return;
+        }
+        if (mode.equals(StereoMode.SIDEBYSIDE)) // override with our own mode if the main window is in side by side (which means it advances to the next mode anyway in commitStereoMode())
+        {
+            commitStereoMode(mode);
+            return;
+        }
+        if (mirrorFrameOpen)
+        {
+            if (mirrorCanvas.getRenderWindow().GetStereoType()==2)  // override ugly anaglyph mode for mirror window, just like main window above
+            {
+                commitStereoMode(mode);
+                return;
+            }
+            if (mirrorCanvas.getRenderWindow().GetStereoRender()==0)    // make sure keyboard switch doesn't turn stereo off if our mode needs it on
+            {
+                commitStereoMode(mode);
+                return;
+            }
+
+        }
+    }*/
 
     public Renderer(final ModelManager modelManager, StatusBar statusBar)
     {
@@ -353,6 +395,7 @@ public class Renderer extends JPanel implements
 
     public Renderer(final ModelManager modelManager)
     {
+
         setLayout(new BorderLayout());
 
         mainCanvas = new vtksbmtJoglCanvas();
@@ -379,6 +422,9 @@ public class Renderer extends JPanel implements
 
         add(mainCanvas.getComponent(), BorderLayout.CENTER);
 
+        mainCanvas.getRenderWindow().StereoCapableWindowOn();
+  //      mainCanvas.getRenderWindowInteractor().CreateRepeatingTimer(1000);  // once per second we make sure the stereo mode hasn't been changed via keyboard; this is admittedly a sloppy kludge to override the '3' key behavior (anaglyph toggle) in vtk
+  //      mainCanvas.getRenderWindowInteractor().AddObserver("TimerEvent", this, "checkStereoModeSynchronization");
 
         // Setup observers for start/stop interaction events
         mainCanvas.getRenderWindowInteractor().AddObserver("StartInteractionEvent", this, "onStartInteraction");
@@ -404,8 +450,7 @@ public class Renderer extends JPanel implements
         setProps(props,mainCanvas,mainCanvas.getRenderer());
         if (mirrorFrameOpen)
         {
-            setProps(props,mirrorCanvas,mirrorCanvas.getRenderer());
-            //setProps(props,stereoMirror,stereoMirror.getKludgeRenderer());
+           setProps(props,mirrorCanvas,mirrorCanvas.getRenderer());
         }
     }
 
@@ -450,9 +495,9 @@ public class Renderer extends JPanel implements
                 Model model = modelManager.getModel(prop);
                 if (model != null && !model.supports2DMode())
                 {
-                    renderWindow.getVTKLock().lock();
+                    //renderWindow.getVTKLock().lock();
                     whichRenderer.RemoveViewProp(prop);
-                    renderWindow.getVTKLock().unlock();
+                    //renderWindow.getVTKLock().unlock();
                 }
             }
         }
@@ -790,6 +835,7 @@ public class Renderer extends JPanel implements
             double[] upVector,
             double viewAngle)
     {
+//        orientationWidget.EnabledOff();
         mainCanvas.getVTKLock().lock();
         vtkCamera cam = mainCanvas.getRenderer().GetActiveCamera();
         cam.SetPosition(position);
@@ -798,6 +844,7 @@ public class Renderer extends JPanel implements
         cam.SetViewAngle(viewAngle);
         mainCanvas.getVTKLock().unlock();
         mainCanvas.resetCameraClippingRange();
+//        orientationWidget.EnabledOn();
         mainCanvas.Render();
     }
 
@@ -1018,7 +1065,9 @@ public class Renderer extends JPanel implements
     {
         mainCanvas.setInteractorStyle(defaultInteractorStyle);
         if (mirrorFrameOpen)
-            mirrorCanvas.setInteractorStyle(defaultInteractorStyle);
+        {
+//            mirrorCanvas.setInteractorStyle(defaultInteractorStyle);
+        }
     }
 
     public void setInteractorStyleToNone()
@@ -1030,25 +1079,34 @@ public class Renderer extends JPanel implements
 
     public void setLighting(LightingType type)
     {
-        if (type != currentLighting)
-        {
+//        if (type != currentLighting)  // MZ commented out this if statement so mirror canvas lighting starts in sync with main canvas
+//        {
             mainCanvas.getRenderer().RemoveAllLights();
+            if (mirrorFrameOpen)
+                mirrorCanvas.getRenderer().RemoveAllLights();
             if (type == LightingType.LIGHT_KIT)
             {
                 lightKit.AddLightsToRenderer(mainCanvas.getRenderer());
+                if (mirrorFrameOpen)
+                    lightKit.AddLightsToRenderer(mirrorCanvas.getRenderer());
             }
             else if (type == LightingType.HEADLIGHT)
             {
                 mainCanvas.getRenderer().AddLight(headlight);
+                if (mirrorFrameOpen)
+                    mirrorCanvas.getRenderer().AddLight(headlight);
             }
             else
             {
                 mainCanvas.getRenderer().AddLight(fixedLight);
+                if (mirrorFrameOpen)
+                    mirrorCanvas.getRenderer().AddLight(fixedLight);
             }
             currentLighting = type;
             if (mainCanvas.getRenderWindow().GetNeverRendered() == 0)
                 mainCanvas.Render();
-        }
+
+//        }
     }
 
     public LightingType getLighting()

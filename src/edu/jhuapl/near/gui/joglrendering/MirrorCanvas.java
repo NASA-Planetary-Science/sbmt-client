@@ -1,8 +1,6 @@
 package edu.jhuapl.near.gui.joglrendering;
 
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
 import vtk.vtkAxesActor;
 import vtk.vtkCamera;
 import vtk.vtkCaptionActor2D;
@@ -210,11 +208,13 @@ public class MirrorCanvas extends vtksbmtJoglCanvas
     {
         if(parent.getComponent().isFocusOwner())
         {
+            //System.out.println("parent "+System.currentTimeMillis());
             syncCameras(parent.getActiveCamera(), this.getActiveCamera());
             Render();
         }
         else
         {
+            //System.out.println("mirror "+System.currentTimeMillis());
             syncCameras(this.getActiveCamera(), parent.getActiveCamera());
             parent.uiComponent.repaint();
         };
@@ -224,14 +224,18 @@ public class MirrorCanvas extends vtksbmtJoglCanvas
     {
         if (sourceCam==null || targetCam==null)
             return;
-        Vector3D pos=new Vector3D(sourceCam.GetPosition());
-        Vector3D fp=new Vector3D(sourceCam.GetFocalPoint());
-        double len=pos.subtract(fp).getNorm();
+        //Vector3D pos=new Vector3D(sourceCam.GetPosition());
+        //Vector3D fp=new Vector3D(sourceCam.GetFocalPoint());
+        //double len=pos.subtract(fp).getNorm();
+        getVTKLock().lock();
         targetCam.SetPosition(sourceCam.GetPosition());
         targetCam.SetFocalPoint(sourceCam.GetFocalPoint());
         targetCam.SetViewUp(sourceCam.GetViewUp());
+        targetCam.SetViewAngle(sourceCam.GetViewAngle());
         targetCam.SetClippingRange(sourceCam.GetClippingRange());
         targetCam.SetEyeSeparation(eyeSeparation);
+        getVTKLock().unlock();
+        Render();
     }
 
     public void decreaseEyeSeparation()
