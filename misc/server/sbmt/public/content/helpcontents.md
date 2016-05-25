@@ -31,7 +31,6 @@ and key bindings work with the rendering panel:
 -   Mousewheel: zoom camera
 -   Shift + Left Mouse Button: pan camera
 -   Ctrl + Left Mouse Button: spin camera
--   Keypress 3: toggle stereo mode
 -   Keypress f: fly to point most recently clicked
 -   Keypress c: set center of rotation of camera to be point cursor is
     hovering over
@@ -51,6 +50,8 @@ and key bindings work with the rendering panel:
 -   Keypress Z (uppercase): reorient camera to point in negative z
     direction
 -   Keypress n: spin camera so that positive z points up
+-   Keypress M: spawn external window that is capable of anaglyph or stereo side-by-side rendering - this can be used for presentations on 2D and 3D projectors
+-   Keypress S: toggle stereo mode (only anaglyph is available in the main window if a mirror window isn't open)
 
 In addition, whenever one moves the mouse pointer over a point of the
 small body, the latitude, longitude, radius, and distance is shown on
