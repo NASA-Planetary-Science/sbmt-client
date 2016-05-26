@@ -226,7 +226,7 @@ To create an image cube, follow these steps:
 
 You can now see the image cube and select the "slice" using the slider. All images
 will be projected onto the master projection image. If you would
-like to save the image, select "Save as ENVI Image…" from the image popup menu.
+like to save the image, select "Save as ENVI Image" from the image popup menu.
 
 ### OSIRIS tab (67P only)
 
