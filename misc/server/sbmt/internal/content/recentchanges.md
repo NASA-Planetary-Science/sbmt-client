@@ -4,6 +4,12 @@
 
 # Recent Changes
 
+### May 26, 2016
+
+-   Changed Image Cubes to output image pixel values in scientific units
+-   Added stereo viewing capabilities
+-   Added Bennu shape model version 4
+
 ### May 5, 2016
 
 -   MapMaker functionality has been upgraded to use BigMaps
