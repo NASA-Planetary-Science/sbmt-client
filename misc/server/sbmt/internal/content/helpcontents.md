@@ -51,7 +51,7 @@ and key bindings work with the rendering panel:
     direction
 -   Keypress Z (uppercase): reorient camera to point in negative z
     direction
--   Keypress n: spin camera so that positive z points up
+-   Keypress n: rotate camera so that positive z points up
 -   Keypress M: spawn external window that is capable of anaglyph or stereo side-by-side rendering - this can be used for presentations on 2D and 3D projectors
 -   Keypress S: toggle stereo mode (only anaglyph is available in the main window if a mirror window isn't open)
 
@@ -94,6 +94,8 @@ searched, which can be specified in the "Pointing" dropdown menu:
     list is a subset of the first and are much better registered with
     the asteroid.
 
+#### Image Search
+
 To do a search, choose the desired options and click the Search button.
 A list of the matching images will be returned below. When a search is
 performed, the outline of the footprint of the first several matching
@@ -118,17 +120,39 @@ long as a part of the image is within a small distance of the circle,
 it will be returned in the search. This results from the approximations
 used in the search algorithm.
 
+#### Viewing Images
+
 To map the image directly onto the asteroid, right-click either on the
 outline in the renderer or on an item in the returned list in the
 control panel. A popup menu will appear and clicking on the "Map Image"
-option will map the image onto the asteroid. Once an image is shown,
-additional menu items become active such as showing a properties window
-and generation of backplanes.
+option will map the image onto the asteroid.
 
-The properties window that appears shows a 2D view of the image, various
+Once an image is shown, additional menu items become active the next time
+you bring up the image popup menu. Note that four of these menu items
+(Map Image, Map Image Boundary, Show Frustum, and Show Boundary) can
+also be controlled with check boxes in the image list.
+
+##### Map Image Boundary 
+
+Shows the boundary of the image as a colored rectangle
+
+##### Properties...
+
+Brings up the Image Properties dialog box. This shows a 2D view of the image, various
 properties about the image, as well as a slider to modify the contrast.
 
-The backplane generation option generates an image volume where each
+##### Spectrum...
+
+For multispectral images, brings up a dialog window that displays the spectrum
+associated with an individual pixel.
+
+##### Save Original FITS Image...
+
+Saves out the original FITS image file to the local file system.
+
+##### Generate Backplanes...
+
+This generates an image volume where each
 plane in the volume contains information about each pixel in the MSI
 Image.
 
@@ -151,6 +175,58 @@ in float (4 bytes)
 14. Elevation in meters
 15. Gravitational acceleration in meters per second squared
 16. Gravitational potential in joules per kilogram
+
+##### Center in Window
+
+Changes the 3D viewing position to look directly down the boresight of the camera.
+
+##### Show Frustum
+
+Displays the image's pointing information as a green wireframe pyramid, called the
+Viewing Frustum. This represents the volume of space visible to the camera when it
+took the image. The point of the pyramid indicates the location of the camera when
+the image was taken.
+
+##### Export ENVI Image...
+
+Exports the image in the ENVI file format.
+
+##### Export INFO File...
+
+Export the image's pointing information in the SBMT's native INFO file format.
+
+##### Change Normal Offset...
+
+Adjusts the distance the image footprint is displayed above the body's surface. This
+is used to adjust the visibility of multiple overlapping images.
+
+##### Simulate Lighting
+
+Change the lighting parameters to simulate the lighting at the time the image
+was taken.
+
+##### Changes Opacity
+
+Changes the opacity of the displayed image.
+
+##### Hide Image
+
+Makes the image invisible, although it remains loaded into memory.
+
+#### Creating Image Cubes
+
+Multiple overlapping images can be combined into a single, multi-layered
+Image Cube, where each layer of the cube represents a different image.
+To create an image cube, follow these steps:
+
+1. Map all the images you would like to merge into an Image Cube
+2. Make the Frustum visible for the ONE image you would like to be the master projection.
+3. Multiply-select all the other images you would like to merge using Command-Click
+4. Press the "Generate Image" button.
+
+You can now see the image cube and select the "slice" using the slider. All images
+will be projected onto the master projection image. If you would
+like to save the image, select "Save as ENVI Image…" from the image popup menu.
 
 ### OSIRIS tab (67P only)
 
