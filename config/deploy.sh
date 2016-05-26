@@ -14,7 +14,8 @@ TARGETHOST=bennu
 TARGETDIR=/disks/d0180/htdocs-sbmt
 # Uncomment to test in staging area
 #TARGETDIR=$TARGETDIR/internal/stage
-TARGET="${TARGETHOST}:${TARGETDIR}"
+#TARGET="${TARGETHOST}:${TARGETDIR}"
+TARGET="${TARGETDIR}"
 
 chmod 664 build/dist/internal/linux64/sbmt-${TODAYSDATE}-linux-x64.zip 
 chmod 664 build/dist/internal/mac64/sbmt-${TODAYSDATE}-macosx-x64.zip 
