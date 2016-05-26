@@ -493,8 +493,10 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
                             value = mins[k];
                         if (value > maxes[k])
                             value = maxes[k];
-
-                        double component = 255.0 * redScale * (value - mins[k]) / stretchRanges[k];
+// Note: should make this a user-selectable option -turnerj1
+//                        double component = 255.0 * redScale * (value - mins[k]) / stretchRanges[k];
+                        double component = value;
+//                        System.out.println("Band: " + k + " Value: " + component);
                         array3D[i][k][j] = (float)component;
                     }
                 }
