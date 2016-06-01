@@ -492,7 +492,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         double val = (Double)imageMapOpacitySpinner.getValue();
 
         CylindricalImage image = (CylindricalImage)imageCollection.getImage(createImageMapKey());
-        image.setImageOpacity(val);
+        image.setOpacity(val);
     }
 
     private void updateColoringComboBoxes()
