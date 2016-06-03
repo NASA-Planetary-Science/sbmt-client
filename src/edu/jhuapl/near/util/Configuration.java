@@ -4,7 +4,10 @@ import java.io.File;
 
 public class Configuration
 {
-    static private String rootURL = "http://sbmt.jhuapl.edu/sbmt";
+    static private String webURL = "http://sbmt.jhuapl.edu";
+    static private String rootURL = webURL + "/sbmt";
+    static private String helpURL = webURL;
+
     static private String appDir = null;
     static private String cacheDir = null;
     static private String cacheVersion = "2";
@@ -103,7 +106,12 @@ public class Configuration
 
     static public String getHelpRootURL()
     {
-        return rootURL + "/help/";
+        if ( isAPLVersion() ) {
+            return helpURL + "/internal/";
+        }
+        else {
+            return helpURL + "/";
+        }
     }
 
     static public String getImportedShapeModelsDir()
