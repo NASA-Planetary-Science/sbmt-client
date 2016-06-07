@@ -93,6 +93,9 @@ all : ${NEARJAR} ${NEARAPLJAR}
 install : ${NEARAPLJAR} tools
 		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar"
 		cp ${NEARAPLJAR} ${LIBROOT}/near.jar
+		rsync -av /project/nearsdc/software/vtk_all_platforms/mac64/ ${LIBROOT}
+		rsync -av /project/nearsdc/software/vtk_all_platforms/linux64/ ${LIBROOT}
+ 
 
 release: install ${int_zips} ${pub_zips}
 
@@ -122,10 +125,10 @@ clean :
 bare : clean
 
 ${NEARJAR} :
-	ant -f ${SBMTROOT}/build.xml jar
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jar
 
 ${NEARAPLJAR} :
-	ant -f ${SBMTROOT}/build.xml jarapl
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jarapl
 
 
 # Generate Run Scripts
