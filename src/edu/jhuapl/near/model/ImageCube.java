@@ -234,7 +234,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
             if (image.equals(firstImage))
             {
                 firstPixelData = pixelData[i];
-                firstImageIndex = 0;
+                firstImageIndex = i;
             }
 
         }
