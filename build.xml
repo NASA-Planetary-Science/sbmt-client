@@ -15,6 +15,7 @@
 
   <target name="compile">
     <echo>$${rootdir}=${rootdir}</echo>
+    <echo>RELEASE=${RELEASE}</echo>
     <mkdir dir="${rootdir}/build/classes"/>
     <mkdir dir="${rootdir}/build/classes/edu"/>
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl"/>
@@ -23,7 +24,13 @@
     <exec executable="sh" output="build/classes/svn.version" failifexecutionfails="false">
       <arg value="-c"/>
       <!-- <arg value="svn info | grep -i 'Last Changed Date'"/> -->
-      <arg value="echo Last Changed Date: `date +%F`"/>
+      <!-- <arg value="echo Last Changed Date: `date +%F`"/> -->
+      <!-- Changed the version string to use the release name assigned
+           when the release is made rather than hard code the use of
+           the current date as the release name. Changed the string so
+           that the version name is the 4th token in the string. This is
+           because the java code prints the 4th token in the "About" box. -->
+      <arg value="echo New Release Name: ${RELEASE} Created On `date +%F`"/> 
     </exec>
     <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>
@@ -89,6 +96,7 @@
     </jar>
   </target>
 
+<!-- Not using this target anymore. Using makefiles instead.
   <target name="generatezip" depends="jar,jarapl">
     <mkdir dir="${rootdir}/build/dist"/>
     <mkdir dir="${rootdir}/build/dist/internal"/>
@@ -104,6 +112,7 @@
       <arg value="-public"/>
     </exec>
   </target>
+-->
 
   <target name="runjarapl" depends="jarapl">
     <java classname="edu.jhuapl.near.tools.SmallBodyMappingToolAPL" fork="true"

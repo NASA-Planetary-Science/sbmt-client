@@ -1,0 +1,56 @@
+# The Makefile that includes this makefile must define 
+# WEBVERSION to be either public or internal. 
+#
+include ${SBMTROOT}/config/Makefiles/Variables
+
+web_src_dir  := ${SBMTROOT}/misc/server/sbmt/${WEBVERSION}
+web_out_dir  := ${web_src_dir}/output
+index        := ${web_out_dir}/index.html
+installation := ${web_out_dir}/installation.html
+
+# Printed messages
+compile_msg    := "Compiling ${WEBVERSION} website"
+clean_msg      := "Deleting ${web_out_dir}"
+userhelp_msg   := "Deploying user help documents: ${USER_HELP_DOCS} to ${WEBVERSION} website"
+int_deploy_msg := "Deploying internal website to ${INTERNAL_DEPLOY_WEB_DIR}"
+pub_deploy_msg := "Deploying public website to ${PUBLIC_DEPLOY_WEB_DIR}"
+release_msg    := "Setting release version to ${RELEASE} in html files"
+
+${most_supported_targets} :
+
+all: ${web_out_dir}
+
+release : bare ${web_out_dir} ${index} ${installation}
+		@echo $@: ${release_msg}
+		@/bin/sed -i "s/VERSIONXXXXXX/${RELEASE}/g" ${index} ${installation}
+
+deploy : deploy_website deploy_userdocs
+
+deploy_website : release 
+ifeq (${WEBVERSION},internal) 
+		@echo $@: ${int_deploy_msg}
+		@cp -r ${web_out_dir}/* ${INTERNAL_DEPLOY_WEB_DIR}/
+else
+		@echo $@: ${pub_deploy_msg}
+		@cp -r ${web_out_dir}/* ${PUBLIC_DEPLOY_WEB_DIR}/
+endif
+
+deploy_userdocs : 
+ifeq (${WEBVERSION},internal)
+		@echo $@: ${userhelp_msg}
+		@for doc in ${USER_HELP_DOCS}; do \
+			if [ -e ${SBMTROOT}/doc/userhelp/$$doc ]; then (cp ${SBMTROOT}/doc/userhelp/$$doc  ${INTERNAL_DEPLOY_WEB_DIR}); fi; \
+		done;
+endif
+
+clean : 
+		@echo $@: ${clean_msg}
+		@rm -rf ${web_out_dir}
+
+bare : clean
+
+${web_out_dir} : 
+		@echo ${compile_msg}
+		@nanoc
+
+include ${SBMTROOT}/config/Makefiles/Master

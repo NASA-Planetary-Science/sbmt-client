@@ -1,3 +1,3 @@
 # This Makefile executes 'make' in the subdirectories indicated 'SUBDIRS'
-SUBDIRS := scripts programs server
+SUBDIRS := internal public
 include ${SBMTROOT}/config/Makefiles/Master
