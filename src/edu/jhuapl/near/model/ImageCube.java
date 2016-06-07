@@ -747,6 +747,22 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
         return 0;
     }
 
+    @Override
+    protected String getEnviHeaderAppend()
+    {
+        String appendString = "band names = {";
+        for(int i=0; i<images.size(); i++)
+        {
+            if(i > 0)
+            {
+                appendString += ", ";
+            }
+            appendString += images.get(i).getImageName();
+        }
+        appendString += "}";
+        return appendString;
+    }
+
     /*
      * Implement Image abstract methods
      */

@@ -1146,6 +1146,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             // Network byte order
             out.write("1" + "\n");
         }
+        out.write(getEnviHeaderAppend());
         out.close();
 
         // Configure byte buffer & endianess
@@ -1218,6 +1219,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         bb.flip(); // flip() is a misleading name, nothing is being flipped.  Buffer end is set to curr pos and curr pos set to beginning.
         fc.write(bb);
         fc.close();
+    }
+
+    protected String getEnviHeaderAppend()
+    {
+        return "";
     }
 
     public void saveImageInfo(
