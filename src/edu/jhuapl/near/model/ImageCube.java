@@ -234,7 +234,7 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
             if (image.equals(firstImage))
             {
                 firstPixelData = pixelData[i];
-                firstImageIndex = 0;
+                firstImageIndex = i;
             }
 
         }
@@ -745,6 +745,22 @@ public class ImageCube extends PerspectiveImage implements PropertyChangeListene
     {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    @Override
+    protected String getEnviHeaderAppend()
+    {
+        String appendString = "band names = {";
+        for(int i=0; i<images.size(); i++)
+        {
+            if(i > 0)
+            {
+                appendString += ", ";
+            }
+            appendString += images.get(i).getImageName();
+        }
+        appendString += "}";
+        return appendString;
     }
 
     /*

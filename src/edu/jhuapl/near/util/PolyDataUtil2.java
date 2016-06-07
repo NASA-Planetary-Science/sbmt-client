@@ -17,6 +17,8 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 import vtk.vtksbCellLocator;
 
+import altwg.util.FitsUtil;
+
 /**
  * This class contains various utility functions for operating on a vtkPolyData.
  *

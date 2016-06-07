@@ -19,13 +19,14 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FitsUtil;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.gravity.ParallelGrid.GridFunction;
 import edu.jhuapl.near.util.gravity.ParallelLoop.LoopFunction;
+
+import altwg.util.FitsUtil;
 
 /**
  * Gravity program. This the abstract base class for computing gravity values
@@ -588,7 +589,7 @@ abstract public class Gravity {
 
         in.close();
 
-        FitsUtil.saveToFits(outdata, outfile);
+        FitsUtil.saveFits(outdata, outfile, null);
     }
 
     private List<GravityValues> getGravityAtLocations() throws InterruptedException, ExecutionException, IOException {

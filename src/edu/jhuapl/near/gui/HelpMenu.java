@@ -32,6 +32,9 @@ public class HelpMenu extends JMenu
         {
             mi = new JMenuItem(new ShowRecentChangesAction());
             this.add(mi);
+
+            mi = new JMenuItem(new ShowTutorialAction());
+            this.add(mi);
         }
 
         // On macs the about action is in the Application menu not the help menu
@@ -138,7 +141,28 @@ public class HelpMenu extends JMenu
             String helpRootUrl = Configuration.getHelpRootURL();
             try
             {
-                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "recentchanges.html"));
+               java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "recentchanges.html"));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class ShowTutorialAction extends AbstractAction
+    {
+        public ShowTutorialAction()
+        {
+            super("Tutorial");
+        }
+
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            String helpRootUrl = Configuration.getHelpRootURL();
+            try
+            {
+               java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "SBMT_tutorial_STM.pdf"));
             }
             catch (IOException e)
             {
