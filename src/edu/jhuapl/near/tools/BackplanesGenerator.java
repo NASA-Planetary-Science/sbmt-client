@@ -21,11 +21,12 @@ import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.util.BackplanesFile;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.FitsBackplanesFile;
+import edu.jhuapl.near.util.ImgBackplanesFile;
 import edu.jhuapl.near.util.NativeLibraryLoader;
-
-import nom.tam.fits.FitsException;
 
 
 /**
@@ -34,7 +35,7 @@ import nom.tam.fits.FitsException;
  * images only are supported. User calls this program with 3 arguments as
  * follows:
  *
- * 1. body - either EROS for MSI images or ITOKAWA for AMICA images
+ * 1. body - name of the shape model body, in SBMT naming conventions.
  * 2. filelist - path to file listing images to use. Images are specified same way as SBMT
  *               uses to download files. (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)
  * 3. outputfolder - folder where to place generated backplanes
@@ -50,10 +51,20 @@ public class BackplanesGenerator
 
     private ArrayList<String> filesProcessed = new ArrayList<String>();
 
+    /**
+     * Generates backplanes for each file in an input image list.
+     *
+     * @param imageFiles
+     * @param instr
+     * @param outputFolder
+     * @param fmt
+     * @throws IOException
+     */
     private void generateBackplanes(
             ArrayList<String> imageFiles,
             Instrument instr,
-            String outputFolder) throws FitsException, IOException
+            String outputFolder,
+            BackplanesFileFormat fmt) throws Exception
     {
         filesProcessed.clear();
 
@@ -162,23 +173,14 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             String fname = new File(filename).getName();
-            String ddrFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.img";
-            OutputStream out = new FileOutputStream(ddrFilename);
-            byte[] buf = new byte[4 * backplanes.length];
-            for (int i=0; i<backplanes.length; ++i)
-            {
-                int v = Float.floatToIntBits(backplanes[i]);
-                buf[4*i + 0] = (byte)(v >>> 24);
-                buf[4*i + 1] = (byte)(v >>> 16);
-                buf[4*i + 2] = (byte)(v >>>  8);
-                buf[4*i + 3] = (byte)(v >>>  0);
-            }
-            out.write(buf, 0, buf.length);
-            out.close();
+            String ddrFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+
+            //Write data to the appropriate format (FITS or IMG)
+            fmt.getFile().write(backplanes, ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
 
             // Generate the label file
             String ddrLabelFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-            out = new FileOutputStream(ddrLabelFilename);
+            OutputStream out = new FileOutputStream(ddrLabelFilename);
             String lblstr = image.generateBackplanesLabel(new File(ddrFilename).getName());
             byte[] bytes = lblstr.getBytes();
             out.write(bytes, 0, bytes.length);
@@ -251,12 +253,36 @@ public class BackplanesGenerator
         }
     }
 
-    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model) throws FitsException, IOException
+    /**
+     * Generates backplanes for a single image.
+     *
+     * @param imageFile - FITS 2D image
+     * @param instr
+     * @param outputFolder
+     * @param model
+     * @param fmt
+     * @throws IOException
+     */
+    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt) throws Exception
     {
         ArrayList<String> image = new ArrayList<>();
         image.add(imageFile);
         this.smallBodyModel = model;
-        generateBackplanes(image, instr, outputFolder);
+        generateBackplanes(image, instr, outputFolder, fmt);
+    }
+
+    /**
+     * Generates backplanes for a single image in IMG format.
+     *
+     * @param imageFile - FITS 2D image
+     * @param instrumentName
+     * @param outputFolder
+     * @param model
+     * @throws IOException
+     */
+    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model) throws Exception
+    {
+        generateBackplanes(imageFile, instr, outputFolder, model, BackplanesFileFormat.IMG);
     }
 
     private void printUsage()
@@ -281,15 +307,35 @@ public class BackplanesGenerator
                 + "  -r <resolution>          Shape model resolution for which the backplanes are generated.\n"
                 + "                           Resolution is an integer value ranging from 0 (lowest resolution)\n"
                 + "                           to 3 (highest resolution). Default is to generate backplanes for\n"
-                + "                           all four resolutions.\n";
+                + "                           all four resolutions.\n"
+                + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
         System.out.println(o);
         System.exit(1);
     }
 
-    /**
-     * @param args
-     * @throws IOException
-     */
+    public enum BackplanesFileFormat
+    {
+        FITS(new FitsBackplanesFile(), "fit"), IMG(new ImgBackplanesFile(), "img");
+
+        private BackplanesFile file;
+        private String extension;
+        private BackplanesFileFormat(BackplanesFile file, String extension)
+        {
+            this.file = file;
+            this.extension = extension;
+        }
+
+        public BackplanesFile getFile()
+        {
+            return file;
+        }
+
+        public String getExtension()
+        {
+            return extension;
+        }
+    }
+
     public void doMain(String[] args) throws IOException
     {
         String bodyStr;
@@ -300,6 +346,7 @@ public class BackplanesGenerator
         Integer resolution = null;
         ShapeModelBody body = null;
         Instrument instr = null;
+        BackplanesFileFormat fmt = BackplanesFileFormat.IMG;
 
         int i;
         for (i = 0; i < args.length; ++i)
@@ -315,6 +362,10 @@ public class BackplanesGenerator
             else if (args[i].equals("-r"))
             {
                 resolution = Integer.valueOf(args[++i]);
+            }
+            else if (args[i].equals("-f"))
+            {
+                fmt = BackplanesFileFormat.FITS;
             }
             else
             {
@@ -336,11 +387,12 @@ public class BackplanesGenerator
         imageFileList = args[i++];
         outputFolder = args[i++];
 
+        // VTK and authentication
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
-
         authenticate();
 
+        // Parse parameters to create SBMT classes.
         try
         {
             body = ShapeModelBody.valueOf(bodyStr.toUpperCase());
@@ -380,18 +432,21 @@ public class BackplanesGenerator
             instr = smallBodyModel.getSmallBodyConfig().imagingInstruments[0].instrumentName;
         }
 
+        // Information for user.
         System.out.println("Body " + body.name());
         System.out.println("Version " + version);
         System.out.println("Imager " + instr);
         System.out.println("Image file list " + imageFileList);
+        System.out.println("Output format " + fmt.name());
         System.out.println("Output folder " + outputFolder);
 
+        // Read image file list and process image backplanes.
         PerspectiveImage.setGenerateFootprint(true);
-
         ArrayList<String> imageFiles = null;
         try {
             imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
         } catch (IOException e2) {
+            System.out.println("Error reading image file list, " + imageFileList);
             e2.printStackTrace();
         }
 
@@ -401,7 +456,7 @@ public class BackplanesGenerator
             {
                 System.out.println("Processing backplanes for resolution " + resolution);
                 smallBodyModel.setModelResolution(resolution);
-                generateBackplanes(imageFiles, instr, outputFolder);
+                generateBackplanes(imageFiles, instr, outputFolder, fmt);
             }
             else
             {
@@ -410,7 +465,7 @@ public class BackplanesGenerator
                 {
                     System.out.println("Processing backplanes for resolution " + j);
                     smallBodyModel.setModelResolution(j);
-                    generateBackplanes(imageFiles, instr, outputFolder);
+                    generateBackplanes(imageFiles, instr, outputFolder, fmt);
                 }
             }
         }
@@ -423,4 +478,5 @@ public class BackplanesGenerator
     {
         new BackplanesGenerator().doMain(args);
     }
+
 }
