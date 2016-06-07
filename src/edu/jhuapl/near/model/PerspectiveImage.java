@@ -1233,6 +1233,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         return "";
     }
 
+    protected String getEnviHeaderAppend()
+    {
+        return "";
+    }
+
     public void saveImageInfo(
             String infoFilename,
             int slice,        // currently, we only support single-frame INFO files

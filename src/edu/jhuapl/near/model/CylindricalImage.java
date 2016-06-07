@@ -708,12 +708,12 @@ public class CylindricalImage extends Image
         super.setVisible(b);
     }
 
-    public double getImageOpacity()
+    public double getOpacity()
     {
         return imageOpacity;
     }
 
-    public void setImageOpacity(double imageOpacity)
+    public void setOpacity(double imageOpacity)
     {
         this.imageOpacity = imageOpacity;
         vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
