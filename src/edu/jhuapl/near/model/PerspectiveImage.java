@@ -22,10 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -56,6 +52,7 @@ import vtk.vtkTexture;
 import vtk.vtkXMLPolyDataReader;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.util.BackplaneInfo;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.DateTimeUtil;
 import edu.jhuapl.near.util.FileCache;
@@ -68,6 +65,10 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.VtkENVIReader;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 
 /**
  * This class represents an abstract image of a spacecraft imager instrument.
@@ -192,6 +193,12 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     private int imageWidth;
     private int imageHeight;
     protected int imageDepth = 1;
+    private int numBands = BackplaneInfo.values().length;
+
+    public int getNumBackplanes()
+    {
+        return numBands;
+    }
 
     private String pngFileFullPath; // The actual path of the PNG image stored on the local disk (after downloading from the server)
     private String fitFileFullPath; // The actual path of the FITS image stored on the local disk (after downloading from the server)
@@ -3448,8 +3455,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         if (!returnNullIfContainsLimb)
             normals = smallBodyModel.getCellNormals();
 
-        int numLayers = 16;
-        float[] data = new float[numLayers*imageHeight*imageWidth];
+        float[] data = new float[numBands*imageHeight*imageWidth];
 
         vtksbCellLocator cellLocator = smallBodyModel.getCellLocator();
 
@@ -3596,22 +3602,22 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                     double[] coloringValues = smallBodyModel.getAllColoringValues(closestPoint);
                     int colorValueSize = coloringValues.length;
 
-                    data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
-                    data[index(j,i,1)]  = (float)closestPoint[0];
-                    data[index(j,i,2)]  = (float)closestPoint[1];
-                    data[index(j,i,3)]  = (float)closestPoint[2];
-                    data[index(j,i,4)]  = (float)lat;
-                    data[index(j,i,5)]  = (float)lon;
-                    data[index(j,i,6)]  = (float)llr.rad;
-                    data[index(j,i,7)]  = (float)illumAngles[0];
-                    data[index(j,i,8)]  = (float)illumAngles[1];
-                    data[index(j,i,9)]  = (float)illumAngles[2];
-                    data[index(j,i,10)] = (float)horizPixelScale;
-                    data[index(j,i,11)] = (float)vertPixelScale;
-                    data[index(j,i,12)] = colorValueSize > 0 ? (float)coloringValues[0] : 0.0F; // slope
-                    data[index(j,i,13)] = colorValueSize > 1 ? (float)coloringValues[1] : 0.0F; // elevation
-                    data[index(j,i,14)] = colorValueSize > 2 ? (float)coloringValues[2] : 0.0F; // grav acc;
-                    data[index(j,i,15)] = colorValueSize > 3 ? (float)coloringValues[3] : 0.0F; // grav pot
+                    data[index(j,i,BackplaneInfo.PIXEL.ordinal())]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
+                    data[index(j,i,BackplaneInfo.X.ordinal())]  = (float)closestPoint[0];
+                    data[index(j,i,BackplaneInfo.Y.ordinal())]  = (float)closestPoint[1];
+                    data[index(j,i,BackplaneInfo.Z.ordinal())]  = (float)closestPoint[2];
+                    data[index(j,i,BackplaneInfo.LAT.ordinal())]  = (float)lat;
+                    data[index(j,i,BackplaneInfo.LON.ordinal())]  = (float)lon;
+                    data[index(j,i,BackplaneInfo.DIST.ordinal())]  = (float)llr.rad;
+                    data[index(j,i,BackplaneInfo.INC.ordinal())]  = (float)illumAngles[0];
+                    data[index(j,i,BackplaneInfo.EMI.ordinal())]  = (float)illumAngles[1];
+                    data[index(j,i,BackplaneInfo.PHASE.ordinal())]  = (float)illumAngles[2];
+                    data[index(j,i,BackplaneInfo.HSCALE.ordinal())] = (float)horizPixelScale;
+                    data[index(j,i,BackplaneInfo.VSCALE.ordinal())] = (float)vertPixelScale;
+                    data[index(j,i,BackplaneInfo.SLOPE.ordinal())] = colorValueSize > 0 ? (float)coloringValues[0] : 0.0F; // slope
+                    data[index(j,i,BackplaneInfo.EL.ordinal())] = colorValueSize > 1 ? (float)coloringValues[1] : 0.0F; // elevation
+                    data[index(j,i,BackplaneInfo.GRAVACC.ordinal())] = colorValueSize > 2 ? (float)coloringValues[2] : 0.0F; // grav acc;
+                    data[index(j,i,BackplaneInfo.GRAVPOT.ordinal())] = colorValueSize > 3 ? (float)coloringValues[3] : 0.0F; // grav pot
                 }
                 else
                 {
@@ -3619,7 +3625,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
                         return null;
 
                     data[index(j,i,0)]  = (float)rawImage.GetScalarComponentAsFloat(j, i, 0, 0);
-                    for (int k=1; k<numLayers; ++k)
+                    for (int k=1; k<numBands; ++k)
                         data[index(j,i,k)] = PDS_NA;
                 }
             }

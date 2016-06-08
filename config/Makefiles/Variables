@@ -1,37 +1,85 @@
+# This Makefile contains common variable defintions and is 'include'd
+# in other Makefiles
 
-#
+#--------------------------------------------------------------
 # Set the absolute path for the source tree.  If the user is 'sbmt'
 # the paths are assumed to be the live paths.  If the user is not
 # 'sbmt' the paths are assumed to be in the user's working area:
 # i.e. $HOME/working
+#--------------------------------------------------------------
 #
-
 SHELL = /bin/bash
 user = ${shell whoami}
 ifeq (${user},sbmt)
-    NEARSDCROOT  := /project/nearsdc
-    PIPELINEROOT := /project/sbmtpipeline
+   NEARSDCROOT  := /project/nearsdc
+   PIPELINEROOT := /project/sbmtpipeline
+   INTERNAL_DEPLOY_WEB_DIR := /disks/d0180/htdocs-sbmt/internal
+   PUBLIC_DEPLOY_WEB_DIR   := /disks/d0180/htdocs-sbmt
+else
+   NEARSDCROOT  := ${HOME}/working/nearsdc
+   PIPELINEROOT := ${HOME}/working/sbmtpipeline
+   INTERNAL_DEPLOY_WEB_DIR := ${PIPELINEROOT}/website/internal
+   PUBLIC_DEPLOY_WEB_DIR   := ${PIPELINEROOT}/website/public
 endif
 
-ifneq (${user},sbmt)
-    NEARSDCROOT  := ${HOME}/working/nearsdc
-    PIPELINEROOT := ${HOME}/working/sbmtpipeline
-endif
+#--------------------------------------------------------------
+# Supported Targets
+#--------------------------------------------------------------
+#
+release_targets := all install release deploy clean bare
+website_targets := website deploy_userdocs deploy_website deploy_internal_website deploy_public_website
+image_targets   := metakerkel images infofiles gallery database install_images install_infofiles \
+						install_gallery install_database install_ceres_fc_images update_ceres_fc_images
+shape_model_targets := 
+most_supported_targets := ${release_targets} ${website_targets} ${image_targets} ${shape_model_targets}
+
+#--------------------------------------------------------------
+# List of documents expected to be located in $SBMTROOT/doc/userhelp
+# that need to be installed on the website.
+#--------------------------------------------------------------
+#
+USER_HELP_DOCS := SBMT_tutorial_STM.pdf japanese_instruction_sbmt_apl.pdf
+
 #--------------------------------------------------------------
 # Commonly used directories
 #--------------------------------------------------------------
 #
 BINROOT := ${SBMTROOT}/bin
+LIBROOT := ${SBMTROOT}/lib
 
-most_supported_targets := all install clean bare
+# This is where release zip files get deployed to
+INTERNAL_DEPLOY_RELEASE_DIR := ${INTERNAL_DEPLOY_WEB_DIR}/releases
+PUBLIC_DEPLOY_RELEASE_DIR   := ${PUBLIC_DEPLOY_WEB_DIR}/releases
 
-MAKE := /usr/bin/make
+#--------------------------------------------------------------
+# Commonly used programs
+#--------------------------------------------------------------
+#
+MAKE := /usr/bin/make 
 PERL := /usr/bin/perl
+GENERATE_TOOLS     := ${SBMTROOT}/config/generate_tools.sh
+DATABASE_GENERATOR := ${BINROOT}/DatabaseGeneratorSql
 
-# Eventually want to move this script to the top level bin
-# directory, but, the jar files will need to be moved
-#DATABASE_GENERATOR := ${BINROOT}/DatabaseGeneratorSql
-DATABASE_GENERATOR := ${SBMTROOT}/build/sbmt-extras/bin/DatabaseGeneratorSql
-
+#--------------------------------------------------------------
+# REMAKE_EVERYTHING
+#--------------------------------------------------------------
+#
+# Used when updating image data, infofiles and galleries. Controlls
+# whether they are just updated or complete rebuilt. Default is
+# to leave this value undefined, and define it on the command line
+# to anything. e.g. 'make REMAKE_EVERYTHING=true'
 REMAKE_EVERYTHING :=
+
+#--------------------------------------------------------------
+# Default release name.  Anyone can build and package up a release
+# in their working area. If no release name is supplied on the
+# command line, the default name is used. Releases with
+# the default name cannot be deployed. The command to create
+# an official release and deploy it looks like this:
+# 'make deploy RELEASE=<release name>', such as:
+#    make deploy RELEASE=2016.06.02
+#--------------------------------------------------------------
+#
+todays_date = ${shell date +.%Y.%m.%d}
+RELEASE := SNAPSHOT${todays_date}
 
