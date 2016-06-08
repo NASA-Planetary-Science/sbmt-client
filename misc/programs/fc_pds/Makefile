@@ -141,7 +141,7 @@ LIVE_ALL_FIT_FILES       :=${LIVE_FC_DIR}/${ALL_FIT_FILES}
 
 
 
-.PHONY: 
+PHONY_TARGET : 
 
 
 
@@ -153,10 +153,10 @@ LIVE_ALL_FIT_FILES       :=${LIVE_FC_DIR}/${ALL_FIT_FILES}
 ###########################################################################################
 #
 # all :
-#    Executes all the targets to build everything but NOT install anything.
-#
-
-all: metakernel images infofiles database
+# install :
+#    Nothing to do for 'all' and 'install'. You must use specialized target names
+#    in this makefile.
+${most_supported_targets} : 
 
 #
 # metakernel : Creates the ${PROCESSED_DIR}/kernels_ceres.mk file.
@@ -195,7 +195,7 @@ endif
 infofiles : ${CREATE_INFOFILES_PROC} metakernel
 ifdef REMAKE_EVERYTHING
 	rm -rf ${LOCAL_INFOFILES_DIR}
-	mkdir -pv ${LOCAL_INFOFILES_DIR}
+	mkdir -p ${LOCAL_INFOFILES_DIR}
 endif
 	${CREATE_INFOFILES_PROC} ${PROCESSED_DIR}/${METAKERNEL_FILE} ${LOCAL_ALL_FIT_FILES} ${LOCAL_INFOFILES_DIR} ${BODYNAME} ${LOCAL_IMAGELIST}
 
@@ -238,6 +238,7 @@ database : ${DATABASE_GENERATOR}
 ifdef REMAKE_EVERYTHING
 	${DATABASE_GENERATOR} 2 ${BODYNAME} > _create_beta.log
 else
+	#${DATABASE_GENERATOR} --root-url ${NEARSDCROOT} --append-tables 2 ${BODYNAME} > _append_beta.log
 	${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
 endif 
 #
@@ -262,7 +263,7 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a --delete ${LOCAL_INFOFILES_DIR} ${LIVE_INFOFILES_DIR}
+	rsync -a ${LOCAL_INFOFILES_DIR}/ ${LIVE_INFOFILES_DIR}/
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
 	chmod 664 ${LIVE_IMAGELIST}
@@ -273,7 +274,7 @@ install_infofiles :
 #  
 install_gallery : 
 	mkdir -p ${LIVE_GALLERY_DIR}
-	rsync -a ${LOCAL_GALLERY_DIR} ${LIVE_GALLERY_DIR}
+	rsync -a ${LOCAL_GALLERY_DIR}/ ${LIVE_GALLERY_DIR}/
 	
 #where does the database generator expect to be run from?  What are the files it expects and where are the
 #expected to be located. It expects to be run from sbmt/build/sbmt-extras/bin
@@ -296,11 +297,10 @@ ${CREATE_INFOFILES_PROC}  : ${SOURCES_MAIN}
 
 # Don't want gallery for right now.
 # Note: install_images and install_infofiles needs to be run before 'database'
-#update_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery database 
-update_ceres_fc_images : images infofiles install_images install_infofiles database 
+#update_ceres_fc_images : images infofiles install_images install_infofiles database 
+update_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery database 
 
 # this target will be run by the cron job.
 install_ceres_fc_images : update_ceres_fc_images install_database
 
 include ${SBMTROOT}/config/Makefiles/Master
-    

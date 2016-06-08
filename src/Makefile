@@ -81,7 +81,7 @@ pub_win_zip   :=  ${pub_win_dir}/${win_zip}
 int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_win_zip}
 pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
 
-
+all_java_files := ${SBMTROOT}/src/edu/jhuapl/near/*/*.java
 
 
 .SUFFIXES: .jar .zip
@@ -124,10 +124,10 @@ clean :
 
 bare : clean
 
-${NEARJAR} :
+${NEARJAR} : ${all_java_files}
 	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jar
 
-${NEARAPLJAR} :
+${NEARAPLJAR} : ${all_java_files}
 	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jarapl
 
 
