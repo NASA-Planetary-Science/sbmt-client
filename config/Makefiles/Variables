@@ -10,6 +10,7 @@
 #
 SHELL = /bin/bash
 user = ${shell whoami}
+ifndef SBMTROOT
 ifeq (${user},sbmt)
    NEARSDCROOT  := /project/nearsdc
    PIPELINEROOT := /project/sbmtpipeline
@@ -20,6 +21,7 @@ else
    PIPELINEROOT := ${HOME}/working/sbmtpipeline
    INTERNAL_DEPLOY_WEB_DIR := ${PIPELINEROOT}/website/internal
    PUBLIC_DEPLOY_WEB_DIR   := ${PIPELINEROOT}/website/public
+endif
 endif
 
 #--------------------------------------------------------------
