@@ -66,9 +66,9 @@ pub_win64_jar   :=  ${pub_win_sbmt_lib_dir}/near.jar
 int_jars        := ${int_mac64_jar} ${int_linux64_jar} ${int_win64_jar}
 pub_jars        := ${pub_mac64_jar} ${pub_linux64_jar} ${pub_win64_jar}
 
-mac_zip   :=  sbmt-${RELEASE}-macosx-x64.zip
-linux_zip :=  sbmt-${RELEASE}-linux-x64.zip
-win_zip   :=  sbmt-${RELEASE}-windows-x64.zip
+mac_zip   :=  ${RELEASE}-macosx-x64.zip
+linux_zip :=  ${RELEASE}-linux-x64.zip
+win_zip   :=  ${RELEASE}-windows-x64.zip
 
 int_mac_zip   :=  ${int_mac_dir}/${mac_zip}
 int_linux_zip :=  ${int_linux_dir}/${linux_zip}
