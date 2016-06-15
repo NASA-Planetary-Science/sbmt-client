@@ -238,8 +238,8 @@ database : ${DATABASE_GENERATOR}
 ifdef REMAKE_EVERYTHING
 	${DATABASE_GENERATOR} 2 ${BODYNAME} > _create_beta.log
 else
-	#${DATABASE_GENERATOR} --root-url ${NEARSDCROOT} --append-tables 2 ${BODYNAME} > _append_beta.log
-	${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
+	${DATABASE_GENERATOR} --root-url ${NEARSDCROOT} --append-tables 2 ${BODYNAME} > _append_beta.log
+	#${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
 endif 
 #
 # ${DATABASE_GENERATOR} :
@@ -256,6 +256,9 @@ install_images :
 	mv ${LIVE_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}.bak
 	cp ${LOCAL_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}
 	chmod 664 ${LIVE_IMAGELIST_FULLPATH}
+	mv ${LIVE_ALL_FIT_FILES} ${LIVE_ALL_FIT_FILES}.bak
+	cp ${LOCAL_ALL_FIT_FILES} ${LIVE_ALL_FIT_FILES}
+	chmod 664 ${LIVE_ALL_FIT_FILES}
 
 #
 # install_infofiles :
@@ -263,7 +266,7 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a ${LOCAL_INFOFILES_DIR}/ ${LIVE_INFOFILES_DIR}/
+	rsync -a ${LOCAL_INFOFILES_DIR}/*.INFO ${LIVE_INFOFILES_DIR}/
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
 	chmod 664 ${LIVE_IMAGELIST}
