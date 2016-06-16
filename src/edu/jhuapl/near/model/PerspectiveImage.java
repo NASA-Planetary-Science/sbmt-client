@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -98,7 +99,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     public static final double[] bodyOrigin = { 0.0, 0.0, 0.0 };
 
     private SmallBodyModel smallBodyModel;
-    protected SmallBodyModel getSmallBodyModel() { return smallBodyModel; }
+    public SmallBodyModel getSmallBodyModel() { return smallBodyModel; }
 
     private ModelManager modelManager;
     protected ModelManager getModelManager() { return modelManager; }
@@ -1429,7 +1430,6 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         }
     }
 
-
     protected void appendWithPadding(StringBuffer strbuf, String str)
     {
         strbuf.append(str);
@@ -1444,7 +1444,14 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         strbuf.append("\r\n");
     }
 
-    public String generateBackplanesLabel(String imgName) throws IOException
+    /**
+     * Generate PDS 3 format label.
+     *
+     * @param imgName - the backplanes file name (no path) for which this label is being created
+     * @param imgName - the label file full path
+     * @throws IOException
+     */
+    public void generateBackplanesLabel(String imgName, String lblFileName) throws IOException
     {
         StringBuffer strbuf = new StringBuffer("");
 
@@ -1508,7 +1515,11 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
         appendWithPadding(strbuf, "");
         appendWithPadding(strbuf, "END");
 
-        return strbuf.toString();
+//        return strbuf.toString();
+        byte[] bytes = strbuf.toString().getBytes();
+        OutputStream out = new FileOutputStream(lblFileName);
+        out.write(bytes, 0, bytes.length);
+        out.close();
     }
 
     /**

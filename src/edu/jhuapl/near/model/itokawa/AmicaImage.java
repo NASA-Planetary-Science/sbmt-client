@@ -3,14 +3,12 @@ package edu.jhuapl.near.model.itokawa;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 
 import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
@@ -22,6 +20,10 @@ import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.VtkDataTypes;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 
 public class AmicaImage extends PerspectiveImage
 {
@@ -222,7 +224,7 @@ public class AmicaImage extends PerspectiveImage
     }
 
     @Override
-    public String generateBackplanesLabel(String imgName) throws IOException
+    public void generateBackplanesLabel(String imgName, String lblFileName) throws IOException
     {
         String lblFilename = getLabelFileFullPath();
 
@@ -347,7 +349,11 @@ public class AmicaImage extends PerspectiveImage
 
         in.close();
 
-        return strbuf.toString();
+//        return strbuf.toString();
+        byte[] bytes = strbuf.toString().getBytes();
+        OutputStream out = new FileOutputStream(lblFileName);
+        out.write(bytes, 0, bytes.length);
+        out.close();
     }
 
     public float[] cropBackplanes(float[] backplanes)

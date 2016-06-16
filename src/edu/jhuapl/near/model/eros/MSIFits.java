@@ -71,8 +71,8 @@ public class MSIFits {
 //      headers.add(fitsHdr.getHeaderCard(HeaderTags.DATASRCV));
 
       // timing information
-      headers.add(new HeaderCard("COMMENT", "Timing Information", false));
-      headers.add(fitsHdr.getHeaderCard(HeaderTags.DATASRCD));
+//      headers.add(new HeaderCard("COMMENT", "Timing Information", false));
+//      headers.add(fitsHdr.getHeaderCard(HeaderTags.DATASRCD));
 
       // DateFormat dateFormat = new
       // SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssssZ");

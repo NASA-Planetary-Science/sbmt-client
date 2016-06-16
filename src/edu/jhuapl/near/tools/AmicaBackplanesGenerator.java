@@ -16,8 +16,6 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkObject;
 
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -32,6 +30,8 @@ import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
+
+import nom.tam.fits.FitsException;
 
 public class AmicaBackplanesGenerator
 {
@@ -327,11 +327,7 @@ public class AmicaBackplanesGenerator
 
             // Generate the label file
             String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
-            out = new FileOutputStream(ddrLabelFilename);
-            String lblstr = image.generateBackplanesLabel(ddrFilename);
-            byte[] bytes = lblstr.getBytes();
-            out.write(bytes, 0, bytes.length);
-            out.close();
+            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
 
             filesProcessed.add(ddrFilename);
             System.out.println("Processed " + filesProcessed.size() + " images so far");

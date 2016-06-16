@@ -2,7 +2,6 @@ package edu.jhuapl.near.tools;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,7 +78,7 @@ public class BackplanesGenerator
         PrintStream noop   = new PrintStream(new OutputStream(){public void write(int b) {} });
 
         // Output images which do not have associated pointing information.
-        FileWriter fstream = new FileWriter(outputFolder + File.separator + "msiImageListPtgNotFound.txt", true);
+        FileWriter fstream = new FileWriter(outputFolder + File.separator + "pointingNotFound.txt");
         BufferedWriter noPtg = new BufferedWriter(fstream);
 
 
@@ -209,18 +208,14 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             String fname = new File(filename).getName();
-            String ddrFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+            String ddrFilename = fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
 
             //Write data to the appropriate format (FITS or IMG)
             fmt.getFile().write(backplanes, fname, ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
 
             // Generate the label file
-            String ddrLabelFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-            OutputStream out = new FileOutputStream(ddrLabelFilename);
-            String lblstr = image.generateBackplanesLabel(new File(ddrFilename).getName());
-            byte[] bytes = lblstr.getBytes();
-            out.write(bytes, 0, bytes.length);
-            out.close();
+            String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
+            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
 
             filesProcessed.add(ddrFilename);
             System.out.println("   Wrote backplanes to " + ddrFilename);
