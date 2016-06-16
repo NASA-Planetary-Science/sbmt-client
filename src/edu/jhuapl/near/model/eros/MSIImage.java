@@ -125,9 +125,10 @@ public class MSIImage extends PerspectiveImage
     @Override
     public void generateBackplanesLabel(String imgName, String lblFileName) throws IOException
     {
-        //
-        // TBD: create PDS4 XML label here.
-        //
         System.err.println(MSIImage.class.getName() + ": PDS 4 label creation for MSIImage backplanes not yet implemented.");
+        //
+        // TBD: create PDS4 XML label here. The following line generates the PDS 3 labels. Remove it when the XML writer is complete.
+        //
+        super.generateBackplanesLabel(imgName, lblFileName);
     }
 }

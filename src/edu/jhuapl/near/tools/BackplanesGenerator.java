@@ -208,7 +208,7 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             String fname = new File(filename).getName();
-            String ddrFilename = fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+            String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
 
             //Write data to the appropriate format (FITS or IMG)
             fmt.getFile().write(backplanes, fname, ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
