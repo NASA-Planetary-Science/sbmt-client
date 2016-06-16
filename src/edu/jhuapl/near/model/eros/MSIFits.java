@@ -1,4 +1,4 @@
-package edu.jhuapl.near.util;
+package edu.jhuapl.near.model.eros;
 
 
 import java.io.IOException;
@@ -9,8 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import edu.jhuapl.near.util.BackplaneInfo;
+
 import altwg.Fits.HeaderTags;
-import altwg.Fits.PlaneInfo;
 import altwg.util.FitsHeader;
 import altwg.util.FitsHeader.FitsHeaderBuilder;
 import altwg.util.FitsUtil;
@@ -25,7 +26,7 @@ import nom.tam.fits.HeaderCardException;
  * @author espirrc1
  *
  */
-public class Fits {
+public class MSIFits {
 
   /**
    * Return a list of HeaderCards that are common for all near.msi image products. HeaderCards are populated by the
@@ -33,7 +34,8 @@ public class Fits {
    * Enumeration tags, ex. NAXIS (always assumed to be 3). Taken from the OSIRIS-REx fits generation code.
    * Several O-REX specific fits headers have been commented out.
    *
-   * This was modified by espirrc1 from ALTWG's Fits.java for backplanes PDS delivery.
+   * nguyel1:
+   * This was modified by espirrc1 from OSIRIS-REx ALTWG's Fits.java for MSI backplanes PDS delivery.
    *
    * @param fitsHdr
    * @return
@@ -49,12 +51,13 @@ public class Fits {
 
       // mission information
       headers.add(new HeaderCard("COMMENT", "Mission Information", false));
-      headers.add(new HeaderCard(HeaderTags.MISSION.toString(), HeaderTags.MISSION.value(),
+      headers.add(new HeaderCard(HeaderTags.MISSION.toString(), "NEAR EARTH ASTEROID RENDEZVOUS",
               HeaderTags.MISSION.comment()));
-      headers.add(new HeaderCard(HeaderTags.HOSTNAME.toString(), HeaderTags.HOSTNAME.value(),
+      headers.add(new HeaderCard(HeaderTags.HOSTNAME.toString(), "NEAR",
               HeaderTags.HOSTNAME.comment()));
 
-      headers.add(fitsHdr.getHeaderCard(HeaderTags.TARGET));
+//      headers.add(fitsHdr.getHeaderCard(HeaderTags.TARGET));
+      headers.add(new HeaderCard(HeaderTags.TARGET.toString(), "EROS",  HeaderTags.HOSTNAME.comment()));
 //      headers.add(fitsHdr.getHeaderCard(HeaderTags.ORIGIN));
 
       // observation information
@@ -94,9 +97,9 @@ public class Fits {
     //grab number of planes in data cube and check to see if number of planes in the cube
     //matches the number of planes we expect.
     int numPlanes = data.length;
-    if (numPlanes != PlaneInfo.values().length) {
+    if (numPlanes != BackplaneInfo.values().length) {
       System.out.println("ERROR! The data cube has " + numPlanes + " planes while we were expecting "
-        + PlaneInfo.values().length + " planes! Something is wrong! Stopping with error!");
+        + BackplaneInfo.values().length + " planes! Something is wrong! Stopping with error!");
       System.exit(1);
     }
     // create the list of planes in the exact order they are written to the fits file
@@ -148,7 +151,7 @@ public class Fits {
       }
 
       String localFitsFile = outfile;
-      System.out.println("saving to fits file:" + localFitsFile);
+//      System.out.println("saving to fits file:" + localFitsFile);
       FitsUtil.saveFits(data, localFitsFile, headers);
 
   }
