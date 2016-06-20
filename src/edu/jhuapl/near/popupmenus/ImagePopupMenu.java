@@ -577,18 +577,12 @@ public class ImagePopupMenu extends PopupMenu
 
                     file = new File(lblName);
 
-                    OutputStream out = new FileOutputStream(file);
-
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
-                    String lblstr = image.generateBackplanesLabel(imgName);
-
-                    byte[] bytes = lblstr.getBytes();
-                    out.write(bytes, 0, bytes.length);
-                    out.close();
+                    image.generateBackplanesLabel(imgName, file.getAbsolutePath());
                 }
             }
             catch (Exception ex)
