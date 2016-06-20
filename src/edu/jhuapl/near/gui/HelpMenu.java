@@ -66,6 +66,7 @@ public class HelpMenu extends JMenu
     {
         final String COPYRIGHT  = "\u00a9";
 
+
         String versionString = "\n";
         try
         {
@@ -73,11 +74,14 @@ public class HelpMenu extends JMenu
             byte[] data = new byte[256];
             is.read(data, 0, data.length);
             String[] tmp = (new String(data)).trim().split("\\s+");
-            tmp[3] = tmp[3].replace('-', '.');
-            versionString = "Version: " + tmp[3] + "\n\n";
+            // Don't want to make the assumption that release names contain only dates.
+            // Release names can now be anything. So, display it exactly as it is.
+            //tmp[3] = tmp[3].replace('-', '.');
+           versionString = "Version: " + tmp[3] + "\n\n";
         }
         catch (Exception e)
         {
+            System.out.println("exception = " + e.toString());
         }
 
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),

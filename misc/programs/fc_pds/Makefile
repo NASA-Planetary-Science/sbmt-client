@@ -79,7 +79,6 @@ LOCAL_IMAGES_DIR    := ${RAWDATA_DIR}/fc
 LOCAL_INFOFILES_DIR := ${PROCESSED_DIR}/infofiles
 LOCAL_GALLERY_DIR   := ${PROCESSED_DIR}/gallery
 
-#NEARSDC_DATA_DIR       := ${PIPELINEROOT}/data
 NEARSDC_DATA_DIR      := ${NEARSDCROOT}/data
 LIVE_FC_DIR            := ${NEARSDC_DATA_DIR}/GASKELL/CERES/FC
 LIVE_IMAGES_DIR_SUFFIX := /GASKELL/CERES/FC/images
@@ -97,15 +96,11 @@ LIVE_GALLERY_DIR       := ${LIVE_FC_DIR}/gallery
 METAKERNEL_SCRIPT := ./mkmetakernel.pl
 METAKERNEL_FILE   := kernels_ceres.mk
 
-# Used by the images target.
-EXTRACT_LIST_SCRIPT := ./extractFitFilesList.pl
-
 # The imagelist.txt file is used by the client to display a list of files
 # for the 'fixed list' query.  It contains the full list of files that have 
 # corresponding .INFO files. The fixed list query is only used when the images
 # are not in the database. 
 IMAGELIST    := imagelist.txt
-#NEWIMAGELIST := newimagelist.txt
 
 # The imagelist-fullpath.txt file is used by the DatabaseGeneratorSql program.  It
 # contains the list of files (with relative path) that the database generator
@@ -131,7 +126,6 @@ NEW_FIT_FILES := newFitFiles.txt
 LOCAL_ALL_FIT_FILES      := ${RAWDATA_DIR}/${ALL_FIT_FILES}
 LOCAL_NEW_FIT_FILES      := ${RAWDATA_DIR}/${NEW_FIT_FILES}
 LOCAL_IMAGELIST          := ${PROCESSED_DIR}/${IMAGELIST}
-#LOCAL_NEWIMAGELIST       := ${PROCESSED_DIR}/${NEWIMAGELIST}
 LOCAL_IMAGELIST_FULLPATH := ${PROCESSED_DIR}/${IMAGELIST_FULLPATH}
 TEMP_LIST := ${PROCESSED_DIR}/_tempList.txt
 
@@ -141,7 +135,7 @@ LIVE_ALL_FIT_FILES       :=${LIVE_FC_DIR}/${ALL_FIT_FILES}
 
 
 
-.PHONY: 
+PHONY_TARGET : 
 
 
 
@@ -153,10 +147,10 @@ LIVE_ALL_FIT_FILES       :=${LIVE_FC_DIR}/${ALL_FIT_FILES}
 ###########################################################################################
 #
 # all :
-#    Executes all the targets to build everything but NOT install anything.
-#
-
-all: metakernel images infofiles database
+# install :
+#    Nothing to do for 'all' and 'install'. You must use specialized target names
+#    in this makefile.
+${most_supported_targets} : 
 
 #
 # metakernel : Creates the ${PROCESSED_DIR}/kernels_ceres.mk file.
@@ -180,8 +174,6 @@ else
 	find ${CERES_DATA_DIR} \( -path "*/fc/ceres/*/FC11B*.FIT" -or -path "*/fc/ceres/*/FC21B*.FIT" \
 	-or -path "*/fc/ceres/*/FC11B*.LBL" -or -path "*/fc/ceres/*/FC21B*.LBL" \) -and \( ! -path "*/fc/ceres/*/old/*" \) \
 	| xargs cp -uv -t ${LOCAL_IMAGES_DIR} > ${TEMP_LIST}
-	#chmod +x ${EXTRACT_LIST_SCRIPT}
-	#${PERL} ${EXTRACT_LIST_SCRIPT} ${TEMP_LIST} ${LOCAL_NEW_FIT_FILES}
 endif
 	find -L ${LOCAL_IMAGES_DIR} -name "*.FIT" -type f | sort > ${LOCAL_ALL_FIT_FILES}
 	awk -F: -v var=${LOCAL_IMAGES_DIR} '{gsub(var,"/GASKELL/CERES/FC/images");print}' ${LOCAL_ALL_FIT_FILES} >${LOCAL_IMAGELIST_FULLPATH}
@@ -195,7 +187,7 @@ endif
 infofiles : ${CREATE_INFOFILES_PROC} metakernel
 ifdef REMAKE_EVERYTHING
 	rm -rf ${LOCAL_INFOFILES_DIR}
-	mkdir -pv ${LOCAL_INFOFILES_DIR}
+	mkdir -p ${LOCAL_INFOFILES_DIR}
 endif
 	${CREATE_INFOFILES_PROC} ${PROCESSED_DIR}/${METAKERNEL_FILE} ${LOCAL_ALL_FIT_FILES} ${LOCAL_INFOFILES_DIR} ${BODYNAME} ${LOCAL_IMAGELIST}
 
@@ -255,6 +247,9 @@ install_images :
 	mv ${LIVE_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}.bak
 	cp ${LOCAL_IMAGELIST_FULLPATH} ${LIVE_IMAGELIST_FULLPATH}
 	chmod 664 ${LIVE_IMAGELIST_FULLPATH}
+	mv ${LIVE_ALL_FIT_FILES} ${LIVE_ALL_FIT_FILES}.bak
+	cp ${LOCAL_ALL_FIT_FILES} ${LIVE_ALL_FIT_FILES}
+	chmod 664 ${LIVE_ALL_FIT_FILES}
 
 #
 # install_infofiles :
@@ -262,7 +257,7 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a --delete ${LOCAL_INFOFILES_DIR} ${LIVE_INFOFILES_DIR}
+	cp -au ${LOCAL_INFOFILES_DIR}/. ${LIVE_INFOFILES_DIR}/
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
 	chmod 664 ${LIVE_IMAGELIST}
@@ -270,10 +265,13 @@ install_infofiles :
 #
 # install_gallery :
 #  Makes sure the live image gallery directory allready exists. before synching.
+#  rsync gives the following error and the make stops.
+#  rsync: failed to set times on "/project/nearsdc/data/GASKELL/CERES/FC/gallery/.": Operation not permitted (1)
+#  So I use cp instead
 #  
 install_gallery : 
 	mkdir -p ${LIVE_GALLERY_DIR}
-	rsync -a ${LOCAL_GALLERY_DIR} ${LIVE_GALLERY_DIR}
+	cp -au ${LOCAL_GALLERY_DIR}/. ${LIVE_GALLERY_DIR}/
 	
 #where does the database generator expect to be run from?  What are the files it expects and where are the
 #expected to be located. It expects to be run from sbmt/build/sbmt-extras/bin
@@ -296,11 +294,10 @@ ${CREATE_INFOFILES_PROC}  : ${SOURCES_MAIN}
 
 # Don't want gallery for right now.
 # Note: install_images and install_infofiles needs to be run before 'database'
-#update_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery database 
-update_ceres_fc_images : images infofiles install_images install_infofiles database 
+#update_ceres_fc_images : images infofiles install_images install_infofiles database 
+update_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery database 
 
 # this target will be run by the cron job.
 install_ceres_fc_images : update_ceres_fc_images install_database
 
 include ${SBMTROOT}/config/Makefiles/Master
-    

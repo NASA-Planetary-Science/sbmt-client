@@ -116,7 +116,7 @@ li{
     fout.write("<ul>\n")
 
     for f in files:
-        print "processing " + f
+        #print "processing " + f
         if valid_file_list != None:
             if not any(valid_file in f for valid_file in valid_file_list):
                 continue

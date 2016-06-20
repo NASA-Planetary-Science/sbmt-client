@@ -3,8 +3,6 @@ package edu.jhuapl.near.model.eros;
 import java.io.File;
 import java.io.IOException;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 
@@ -12,18 +10,23 @@ import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 
+import nom.tam.fits.FitsException;
+
 public class MSIImage extends PerspectiveImage
 {
     // Size of image after resampling. Before resampling image is 537 by 244 pixels.
+    // MSI pixels are resampled to make them square. According to SPICE kernel msi15.ti,
+    // MSI pixel size in degrees is 2.2623/244 in Y; 2.9505/537 in X. To square the
+    // pixels, resample X to 2.2623 * 537/2.9505 = ~412.
     public static final int RESAMPLED_IMAGE_WIDTH = 537;
     public static final int RESAMPLED_IMAGE_HEIGHT = 412;
 
     // Number of pixels on each side of the image that are
     // masked out (invalid) due to filtering.
-    public static final int LEFT_MASK = 14;
-    public static final int RIGHT_MASK = 14;
-    public static final int TOP_MASK = 2;
-    public static final int BOTTOM_MASK = 2;
+    private static final int LEFT_MASK = 14;
+    private static final int RIGHT_MASK = 14;
+    private static final int TOP_MASK = 2;
+    private static final int BOTTOM_MASK = 2;
 
     public MSIImage(ImageKey key,
             SmallBodyModel smallBodyModel,
@@ -116,5 +119,16 @@ public class MSIImage extends PerspectiveImage
     public String getCameraName()
     {
         return "MSI";
+    }
+
+
+    @Override
+    public void generateBackplanesLabel(String imgName, String lblFileName) throws IOException
+    {
+        System.err.println(MSIImage.class.getName() + ": PDS 4 label creation for MSIImage backplanes not yet implemented.");
+        //
+        // TBD: create PDS4 XML label here. The following line generates the PDS 3 labels. Remove it when the XML writer is complete.
+        //
+        super.generateBackplanesLabel(imgName, lblFileName);
     }
 }

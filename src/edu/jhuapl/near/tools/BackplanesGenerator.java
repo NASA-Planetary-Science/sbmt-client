@@ -1,7 +1,8 @@
 package edu.jhuapl.near.tools;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -21,11 +22,12 @@ import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.util.BackplanesFile;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.FitsBackplanesFile;
+import edu.jhuapl.near.util.ImgBackplanesFile;
 import edu.jhuapl.near.util.NativeLibraryLoader;
-
-import nom.tam.fits.FitsException;
 
 
 /**
@@ -34,9 +36,9 @@ import nom.tam.fits.FitsException;
  * images only are supported. User calls this program with 3 arguments as
  * follows:
  *
- * 1. body - either EROS for MSI images or ITOKAWA for AMICA images
+ * 1. body - name of the shape model body, in SBMT naming conventions.
  * 2. filelist - path to file listing images to use. Images are specified same way as SBMT
- *               uses to download files. (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)
+ *               uses to download files. (e.g. /GASKELL/EROS/MSI/images/M0131776147F1_2P_CIF.FIT)
  * 3. outputfolder - folder where to place generated backplanes
  *
  * Note that there is another program in this package called
@@ -50,22 +52,46 @@ public class BackplanesGenerator
 
     private ArrayList<String> filesProcessed = new ArrayList<String>();
 
+    /**
+     * Generates backplanes for each file in an input image list.
+     *
+     * @param imageFiles
+     * @param instr
+     * @param outputFolder
+     * @param fmt
+     * @throws IOException
+     */
     private void generateBackplanes(
             ArrayList<String> imageFiles,
             Instrument instr,
-            String outputFolder) throws FitsException, IOException
+            String outputFolder,
+            BackplanesFileFormat fmt,
+            ImageSource ptg) throws Exception
     {
         filesProcessed.clear();
-
         int resolutionLevel = smallBodyModel.getModelResolution();
-
         vtkDebugLeaks debugLeaks = new vtkDebugLeaks();
+
+        // Suppress exception output if pointing files do not exist for any of the ImageSources
+        PrintStream oldOut = System.out;
+        PrintStream oldErr = System.err;
+        PrintStream noop   = new PrintStream(new OutputStream(){public void write(int b) {} });
+
+        // Output images which do not have associated pointing information.
+        FileWriter fstream = new FileWriter(outputFolder + File.separator + "pointingNotFound.txt");
+        BufferedWriter noPtg = new BufferedWriter(fstream);
+
 
         int count = 1;
         for (String filename : imageFiles)
         {
-            filename = filename.toUpperCase(); //TBD remove
-            System.out.println("   Image " + count++ + " of " + imageFiles.size() + ": " + filename);
+            if (filename.startsWith("#") || filename.trim().length() == 0)
+            {
+                //Ignore comments and newlines
+                continue;
+            }
+
+            System.out.println("Image " + count++ + " of " + imageFiles.size() + ": " + filename);
             String ext = FilenameUtils.getExtension(filename).trim();
             if (ext.compareToIgnoreCase("fit")!=0 && ext.compareToIgnoreCase("fits")!=0)
             {
@@ -85,57 +111,77 @@ public class BackplanesGenerator
                 }
             }
 
-            //Suppress exceptions if pointing files do not exist for any of the ImageSources
-            PrintStream oldOut = System.out;
-            PrintStream oldErr = System.err;
-            PrintStream noop   = new PrintStream(new OutputStream(){public void write(int b) {} });
-            // Try Gaskell pointing first and if that fails try SPICE pointing
-            try
+            if (ptg != null)
             {
-                key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
-                System.setOut(noop);
-                System.setErr(noop);
-                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
-            }
-            catch (Exception e)
-            {
-                System.setOut(oldOut);
-                System.setErr(oldErr);
                 try
                 {
-                    key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
+                    key = new ImageKey(filename.replace("." + ext, ""), ptg, imager);
                     System.setOut(noop);
                     System.setErr(noop);
                     image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                 }
-                catch (Exception e1)
+                catch (Exception e)
+                {
+                    System.setOut(oldOut);
+                    System.setErr(oldErr);
+                    System.out.println("   Gaskell pointing not found for " + filename);
+                    noPtg.write(filename);
+                    noPtg.newLine();
+                    continue;
+                }
+            }
+            else
+            {
+                // Try Gaskell pointing first and if that fails try SPICE pointing
+                try
+                {
+                    key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
+                    System.setOut(noop);
+                    System.setErr(noop);
+                    image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                }
+                catch (Exception e)
                 {
                     System.setOut(oldOut);
                     System.setErr(oldErr);
                     try
                     {
-                        key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
+                        key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
                         System.setOut(noop);
                         System.setErr(noop);
                         image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                     }
-                    catch (Exception e2)
+                    catch (Exception e1)
                     {
                         System.setOut(oldOut);
                         System.setErr(oldErr);
                         try
                         {
-                            key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
+                            key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
                             System.setOut(noop);
                             System.setErr(noop);
                             image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
                         }
-                        catch (Exception e3)
+                        catch (Exception e2)
                         {
                             System.setOut(oldOut);
                             System.setErr(oldErr);
-                            System.out.println("   Pointing not found for " + filename);
-                            continue;
+                            try
+                            {
+                                key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
+                                System.setOut(noop);
+                                System.setErr(noop);
+                                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                            }
+                            catch (Exception e3)
+                            {
+                                System.setOut(oldOut);
+                                System.setErr(oldErr);
+                                System.out.println("   Pointing not found for " + filename);
+                                noPtg.write(filename);
+                                noPtg.newLine();
+                                continue;
+                            }
                         }
                     }
                 }
@@ -162,30 +208,17 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             String fname = new File(filename).getName();
-            String ddrFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.img";
-            OutputStream out = new FileOutputStream(ddrFilename);
-            byte[] buf = new byte[4 * backplanes.length];
-            for (int i=0; i<backplanes.length; ++i)
-            {
-                int v = Float.floatToIntBits(backplanes[i]);
-                buf[4*i + 0] = (byte)(v >>> 24);
-                buf[4*i + 1] = (byte)(v >>> 16);
-                buf[4*i + 2] = (byte)(v >>>  8);
-                buf[4*i + 3] = (byte)(v >>>  0);
-            }
-            out.write(buf, 0, buf.length);
-            out.close();
+            String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+
+            //Write data to the appropriate format (FITS or IMG)
+            fmt.getFile().write(backplanes, fname, ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
 
             // Generate the label file
-            String ddrLabelFilename = outputFolder + "/" + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-            out = new FileOutputStream(ddrLabelFilename);
-            String lblstr = image.generateBackplanesLabel(new File(ddrFilename).getName());
-            byte[] bytes = lblstr.getBytes();
-            out.write(bytes, 0, bytes.length);
-            out.close();
+            String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
+            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
 
             filesProcessed.add(ddrFilename);
-            System.out.println("   Image " + fname + " processing complete.");
+            System.out.println("   Wrote backplanes to " + ddrFilename);
 
             image.Delete();
             System.gc();
@@ -194,6 +227,7 @@ public class BackplanesGenerator
 //            System.out.println("\n\n");
         }
 
+        noPtg.close();
         System.out.println("   Total number of files processed " + filesProcessed.size());
     }
 
@@ -251,12 +285,22 @@ public class BackplanesGenerator
         }
     }
 
-    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model) throws FitsException, IOException
+    /**
+     * Generates FITS format backplanes for a single image using GASKELL pointing.
+     *
+     * @param imageFile - FITS 2D image
+     * @param instr
+     * @param outputFolder
+     * @param model
+     * @param fmt
+     * @throws IOException
+     */
+    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt) throws Exception
     {
         ArrayList<String> image = new ArrayList<>();
         image.add(imageFile);
         this.smallBodyModel = model;
-        generateBackplanes(image, instr, outputFolder);
+        generateBackplanes(image, instr, outputFolder, fmt, ImageSource.GASKELL);
     }
 
     private void printUsage()
@@ -281,15 +325,45 @@ public class BackplanesGenerator
                 + "  -r <resolution>          Shape model resolution for which the backplanes are generated.\n"
                 + "                           Resolution is an integer value ranging from 0 (lowest resolution)\n"
                 + "                           to 3 (highest resolution). Default is to generate backplanes for\n"
-                + "                           all four resolutions.\n";
+                + "                           all four resolutions.\n"
+                + "  -p <pointing type>       Pointing type. Must be one of\n"
+                + "                           GASKELL,\n"
+                + "                           CORRECTED,\n"
+                + "                           SPICE,\n"
+                + "                           CORRECTED_SPICE.\n"
+                + "                           (case insensitive). Default is to search for GASKELL pointing\n"
+                + "                           first, and if not found to traverse the other pointing types in\n"
+                + "                           the order specified above. Backplanes are generated only for\n"
+                + "                           images with pointing information.\n"
+                + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
         System.out.println(o);
         System.exit(1);
     }
 
-    /**
-     * @param args
-     * @throws IOException
-     */
+    public enum BackplanesFileFormat
+    {
+        FITS(new FitsBackplanesFile(), "fit"), IMG(new ImgBackplanesFile(), "img");
+
+        private BackplanesFile file;
+        private String extension;
+
+        private BackplanesFileFormat(BackplanesFile file, String extension)
+        {
+            this.file = file;
+            this.extension = extension;
+        }
+
+        public BackplanesFile getFile()
+        {
+            return file;
+        }
+
+        public String getExtension()
+        {
+            return extension;
+        }
+    }
+
     public void doMain(String[] args) throws IOException
     {
         String bodyStr;
@@ -300,6 +374,8 @@ public class BackplanesGenerator
         Integer resolution = null;
         ShapeModelBody body = null;
         Instrument instr = null;
+        BackplanesFileFormat fmt = BackplanesFileFormat.IMG;
+        ImageSource ptg = null;
 
         int i;
         for (i = 0; i < args.length; ++i)
@@ -316,6 +392,14 @@ public class BackplanesGenerator
             {
                 resolution = Integer.valueOf(args[++i]);
             }
+            else if (args[i].equals("-f"))
+            {
+                fmt = BackplanesFileFormat.FITS;
+            }
+            else if (args[i].equals("-p"))
+            {
+                ptg = ImageSource.valueOf(args[++i].toUpperCase());
+            }
             else
             {
                 // We've encountered something that is not an option, must be at the args
@@ -328,19 +412,25 @@ public class BackplanesGenerator
         int numberRequiredArgs = 3;
         if (args.length - i != numberRequiredArgs)
         {
-            System.out.println("Incorrectly formed arguments. \n");
+            System.out.println("Incorrectly formed arguments.\n");
             printUsage();
         }
 
         bodyStr = args[i++];
         imageFileList = args[i++];
         outputFolder = args[i++];
+        File outDir = (new File(outputFolder));
+        if (!outDir.exists())
+        {
+            outDir.mkdirs();
+        }
 
+        // VTK and authentication
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
-
         authenticate();
 
+        // Parse parameters to create SBMT classes.
         try
         {
             body = ShapeModelBody.valueOf(bodyStr.toUpperCase());
@@ -380,18 +470,23 @@ public class BackplanesGenerator
             instr = smallBodyModel.getSmallBodyConfig().imagingInstruments[0].instrumentName;
         }
 
+        // Information for user.
         System.out.println("Body " + body.name());
         System.out.println("Version " + version);
         System.out.println("Imager " + instr);
         System.out.println("Image file list " + imageFileList);
+        System.out.println("Pointing type " + ptg);
+        System.out.println("Output format " + fmt.name());
         System.out.println("Output folder " + outputFolder);
+        System.out.println();
 
+        // Read image file list and process image backplanes.
         PerspectiveImage.setGenerateFootprint(true);
-
         ArrayList<String> imageFiles = null;
         try {
             imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
         } catch (IOException e2) {
+            System.out.println("Error reading image file list, " + imageFileList);
             e2.printStackTrace();
         }
 
@@ -401,7 +496,7 @@ public class BackplanesGenerator
             {
                 System.out.println("Processing backplanes for resolution " + resolution);
                 smallBodyModel.setModelResolution(resolution);
-                generateBackplanes(imageFiles, instr, outputFolder);
+                generateBackplanes(imageFiles, instr, outputFolder, fmt, ptg);
             }
             else
             {
@@ -410,7 +505,7 @@ public class BackplanesGenerator
                 {
                     System.out.println("Processing backplanes for resolution " + j);
                     smallBodyModel.setModelResolution(j);
-                    generateBackplanes(imageFiles, instr, outputFolder);
+                    generateBackplanes(imageFiles, instr, outputFolder, fmt, ptg);
                 }
             }
         }
@@ -421,6 +516,8 @@ public class BackplanesGenerator
 
     public static void main(String[] args) throws IOException
     {
+        System.out.println("PWD = " + new File(".").getAbsolutePath());
         new BackplanesGenerator().doMain(args);
     }
+
 }

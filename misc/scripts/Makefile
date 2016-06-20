@@ -1,10 +1,13 @@
-include ${SBMTROOT}/config/Makefiles/Variables
+# Specify the list of scripts to install in $BINROOT. To install
+# in a different location, specify the location in the 
+# $SPECIAL_DESTINATION variable below.
 #
-# Specify the list of scripts to install and the destination
-# if the destination is not the default specified by BINROOT
-#
-SCRIPTFILES         := deploy-sbmt-extras.sh
+SCRIPTFILES :=  
+
 SPECIAL_DESTINATION :=
 
+
+#
+#
 # Include the common processing for this this Makefile.
 include ${SBMTROOT}/config/Makefiles/Master

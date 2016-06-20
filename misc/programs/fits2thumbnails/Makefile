@@ -1,5 +1,3 @@
-include ${SBMTROOT}/config/Makefiles/Variables
-#
 # Specify the list of scripts to install and the destination
 # if the destination is not the default specified by BINROOT
 #

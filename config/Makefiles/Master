@@ -1,16 +1,4 @@
-#
-#
-#
-most_supported_targets := all clean bare release client images infofiles \
-                          gallery database install install_images install_gallery \
-                          install_infofiles install_database update_ceres_fc_images
-
-.PHONY :
-
-# Common variable definitions
-#
-
-#include ${SBMTROOT}/config/Makefiles/Variables
+# Required by all makefiles.
 
 #
 # Target section
@@ -54,8 +42,4 @@ else
 endif
 endif
 endif
-
-#ifdef SBMTEXTRAS
-#include ${SBMTROOT}/config/Makefiles/SbmtExtras.Targets
-#endif
 

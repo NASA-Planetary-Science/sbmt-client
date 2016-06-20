@@ -87,6 +87,11 @@ public class LEISAJupiterImage extends PerspectiveImage
         return 256;
     }
 
+    protected int loadNumSlices()
+    {
+        return getNumberBands();
+    }
+
     public double[] getPixelDirection(double sample, double line)
     {
         return getPixelDirection((double)sample, (double)line, 127);
