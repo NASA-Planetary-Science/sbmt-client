@@ -17,6 +17,7 @@ public class MainWindow extends JFrame
     private StatusBar statusBar;
     private FileMenu fileMenu;
     private ViewMenu viewMenu;
+    private FavoritesMenu favoritesMenu;
     private HelpMenu helpMenu;
     private ViewManager rootPanel;
 
@@ -64,6 +65,9 @@ public class MainWindow extends JFrame
         viewMenu = new ViewMenu(rootPanel);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
+
+        favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
+        menuBar.add(favoritesMenu);
 
         helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');
