@@ -41,15 +41,7 @@ public class BigmapPanel extends JPanel implements ActionListener
     private JTextField pixelScaleTextField;
     private JTextField latitudeTextField;
     private JTextField longitudeTextField;
-    /*
-    private JCheckBox runGravityCheckbox;
-    private JTextField densityTextField;
-    private JTextField rotationRateTextField;
-    private JTextField referencePotentialTextField;
-    private JTextField tiltRadiusTextField;
-    */
     private JButton submitButton;
-    private JButton loadButton;
     private PickManager pickManager;
     private JSpinner halfSizeSpinner;
     private String bigmapPath;
@@ -161,62 +153,6 @@ public class BigmapPanel extends JPanel implements ActionListener
             }
         });
 
-        /*
-        runGravityCheckbox = new JCheckBox("Calculate Gravity");
-        runGravityCheckbox.setSelected(false);
-
-        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-
-        final JLabel densityLabel = new JLabel("Density (g/cm^3)");
-        densityLabel.setEnabled(false);
-        densityTextField = new JTextField();
-        densityTextField.setText(String.valueOf(smallBodyModel.getDensity()));
-        densityTextField.setPreferredSize(new Dimension(200, 24));
-        densityTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(densityTextField, Double.MIN_VALUE, Double.MAX_VALUE));
-        densityTextField.setEnabled(false);
-
-        final JLabel rotationRateLabel = new JLabel("Rotation Rate (rad/sec)");
-        rotationRateLabel.setEnabled(false);
-        rotationRateTextField = new JTextField();
-        rotationRateTextField.setText(String.valueOf(smallBodyModel.getRotationRate()));
-        rotationRateTextField.setPreferredSize(new Dimension(200, 24));
-        rotationRateTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(rotationRateTextField, Double.MIN_VALUE, Double.MAX_VALUE));
-        rotationRateTextField.setEnabled(false);
-
-        final JLabel referencePotentialLabel = new JLabel("Reference Potential (J/kg) ");
-        referencePotentialLabel.setEnabled(false);
-        referencePotentialTextField = new JTextField();
-        referencePotentialTextField.setText(String.valueOf(smallBodyModel.getReferencePotential()));
-        referencePotentialTextField.setPreferredSize(new Dimension(200, 24));
-        referencePotentialTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(referencePotentialTextField));
-        referencePotentialTextField.setEnabled(false);
-
-        final JLabel tiltRadiusLabel = new JLabel("Tilt Radius (J/kg) ");
-        tiltRadiusLabel.setEnabled(false);
-        tiltRadiusTextField = new JTextField();
-        tiltRadiusTextField.setText("0.0");
-        tiltRadiusTextField.setPreferredSize(new Dimension(200, 24));
-        tiltRadiusTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(tiltRadiusTextField, Double.MIN_VALUE, Double.MAX_VALUE));
-        tiltRadiusTextField.setEnabled(false);
-
-        runGravityCheckbox.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                boolean isSelected = runGravityCheckbox.isSelected();
-                densityLabel.setEnabled(isSelected);
-                densityTextField.setEnabled(isSelected);
-                rotationRateLabel.setEnabled(isSelected);
-                rotationRateTextField.setEnabled(isSelected);
-                referencePotentialLabel.setEnabled(isSelected);
-                referencePotentialTextField.setEnabled(isSelected);
-                tiltRadiusLabel.setEnabled(isSelected);
-                tiltRadiusTextField.setEnabled(isSelected);
-            }
-        });
-        */
-
         final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
         outputFolderTextField.setPreferredSize(new Dimension(200, 24));
@@ -241,20 +177,6 @@ public class BigmapPanel extends JPanel implements ActionListener
 
         submitPanel.add(submitButton);
 
-        final JPanel loadPanel = new JPanel();
-        loadButton = new JButton("Load FITS Cube File...");
-        loadButton.setEnabled(true);
-        loadButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                loadCubeFile();
-            }
-        });
-        pane.add(loadPanel, "align center");
-
-        loadPanel.add(loadButton);
-
         pane.add(selectRegionPanel, "align center");
         pane.add(grotesqueModelCheckbox);
         pane.add(setSpecifyRegionManuallyCheckbox, "wrap");
@@ -269,21 +191,9 @@ public class BigmapPanel extends JPanel implements ActionListener
         pane.add(halfSizeLabel, "split 2");
         pane.add(halfSizeSpinner);
 
-        /*
-        pane.add(runGravityCheckbox, "wrap");
-        pane.add(densityLabel, ", gapleft 25, split 2");
-        pane.add(densityTextField, "width 200!, gapleft push, wrap");
-        pane.add(rotationRateLabel, ", gapleft 25, split 2");
-        pane.add(rotationRateTextField, "width 200!, gapleft push, wrap");
-        pane.add(referencePotentialLabel, ", gapleft 25, split 2");
-        pane.add(referencePotentialTextField, "width 200!, gapleft push, wrap");
-        pane.add(tiltRadiusLabel, ", gapleft 25, split 2");
-        pane.add(tiltRadiusTextField, "width 200!, gapleft push, wrap");
-        */
         pane.add(outputFolderButton, "split 2");
         pane.add(outputFolderTextField);
         pane.add(submitPanel, "align center");
-        pane.add(loadPanel, "align center");
 
         add(pane);
 
@@ -411,9 +321,9 @@ public class BigmapPanel extends JPanel implements ActionListener
 
         try
         {
-            new MapmakerView(bigmapWorker.getMapletFile(),
+            new DEMView(bigmapWorker.getMapletFile(),
                     modelManager.getSmallBodyModel(),
-                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
+                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
         }
         catch (IOException e1)
         {
@@ -422,30 +332,6 @@ public class BigmapPanel extends JPanel implements ActionListener
         catch (FitsException e1)
         {
             e1.printStackTrace();
-        }
-    }
-
-    private void loadCubeFile()
-    {
-        File file = CustomFileChooser.showOpenDialog(this, "Load Maplet", "fit");
-        if (file == null)
-        {
-            return;
-        }
-
-        try
-        {
-            new MapmakerView(file,
-                    modelManager.getSmallBodyModel(),
-                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.MAPLET_BOUNDARY));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        catch (FitsException e)
-        {
-            e.printStackTrace();
         }
     }
 }

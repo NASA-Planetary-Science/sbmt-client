@@ -38,7 +38,9 @@ import vtk.vtkObject;
 
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
-import edu.jhuapl.near.model.DEMModel;
+import edu.jhuapl.near.model.DEM;
+import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
@@ -57,7 +59,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
-public class MapmakerView extends JFrame
+public class DEMView extends JFrame
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -70,7 +72,7 @@ public class MapmakerView extends JFrame
     private int currentColorIndex = 0;
     private MapletBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
-    private DEMModel dem;
+    private DEM dem;
     private Renderer renderer;
     private JButton scaleColoringButton;
 
@@ -83,8 +85,89 @@ public class MapmakerView extends JFrame
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
+    public DEMView(DEMKey key, DEMCollection demCollection, SmallBodyModel parentSmallBodyModel,
+            MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
+    {
+        this.mapletBoundaries = mapletBoundaries;
 
-    public MapmakerView(File cubFile, SmallBodyModel parentSmallBodyModel,
+        ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+        setIconImage(erosIcon.getImage());
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        StatusBar statusBar = new StatusBar();
+        add(statusBar, BorderLayout.PAGE_END);
+
+        final ModelManager modelManager = new ModelManager();
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
+        dem = demCollection.getDEM(key);
+        dem.setColoringIndex(0);
+        lineModel = new LineModel(dem, true);
+        lineModel.setMaximumVerticesPerLine(2);
+        allModels.put(ModelNames.SMALL_BODY, dem);
+        allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
+        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(dem));
+        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
+        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(dem));
+        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
+        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(dem));
+        modelManager.setModels(allModels);
+
+        renderer = new Renderer(modelManager);
+
+        PopupManager popupManager = new PopupManager(modelManager, null, null, renderer);
+        // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
+        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentSmallBodyModel, renderer);
+        popupManager.registerPopup(lineModel, popupMenu);
+
+        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+
+        renderer.setMinimumSize(new Dimension(100, 100));
+        renderer.setPreferredSize(new Dimension(400, 400));
+
+        // twupy1: Why do we even need this?
+        //JPanel rendererPanel = new JPanel(new BorderLayout());
+        //rendererPanel.add(renderer, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        plot = new MapmakerPlot(lineModel, dem, 0);
+        plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
+        plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+               renderer, plot.getChartPanel());
+
+        splitPane.setResizeWeight(0.5);
+        splitPane.setOneTouchExpandable(true);
+
+        panel.add(splitPane, BorderLayout.CENTER); // twupy1: This is what messes up main shape model
+        panel.add(createButtonsPanel(), BorderLayout.SOUTH);
+
+        add(panel, BorderLayout.CENTER);
+
+        mapletBoundaries.addBoundary(dem);
+
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                DEMView.this.mapletBoundaries.removeBoundary(dem);
+                System.gc();
+                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
+            }
+        });
+
+        createMenus();
+
+        // Finally make the frame visible
+        setTitle("DEM View");
+        pack();
+        setVisible(true);
+    }
+
+    // Deprecated
+    public DEMView(File cubFile, SmallBodyModel parentSmallBodyModel,
             MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
     {
         this.mapletBoundaries = mapletBoundaries;
@@ -100,7 +183,7 @@ public class MapmakerView extends JFrame
         String filename = cubFile.getAbsolutePath();
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = new DEMModel(filename);
+        dem = new DEM(filename);
         dem.setColoringIndex(0);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
@@ -151,7 +234,7 @@ public class MapmakerView extends JFrame
         {
             public void windowClosing(WindowEvent e)
             {
-                MapmakerView.this.mapletBoundaries.removeBoundary(dem);
+                DEMView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
                 vtkObject.JAVA_OBJECT_MANAGER.gc(true);
             }
@@ -160,7 +243,7 @@ public class MapmakerView extends JFrame
         createMenus();
 
         // Finally make the frame visible
-        setTitle("Mapmaker/Bigmap View");
+        setTitle("DEM View");
         pack();
         setVisible(true);
     }
@@ -597,7 +680,7 @@ public class MapmakerView extends JFrame
         public void actionPerformed(ActionEvent actionEvent)
         {
             String name = "platedata.csv";
-            File file = CustomFileChooser.showSaveDialog(MapmakerView.this, "Export Plate Data", name);
+            File file = CustomFileChooser.showSaveDialog(DEMView.this, "Export Plate Data", name);
 
             try
             {
@@ -607,7 +690,7 @@ public class MapmakerView extends JFrame
             catch (Exception e1)
             {
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(MapmakerView.this,
+                JOptionPane.showMessageDialog(DEMView.this,
                         "An error occurred exporting the plate data.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);

@@ -23,7 +23,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import edu.jhuapl.near.model.DEMModel;
+import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.util.Properties;
@@ -33,13 +33,13 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 {
     private XYDataset valueDistanceDataset;
     private LineModel lineModel;
-    private DEMModel demModel;
+    private DEM demModel;
     private ChartPanel chartPanel;
     private int coloringIndex;
 
     private int numberOfProfilesCreated = 0;
 
-    public MapmakerPlot(LineModel lineModel, DEMModel demModel, int coloringIndex)
+    public MapmakerPlot(LineModel lineModel, DEM demModel, int coloringIndex)
     {
         this.lineModel = lineModel;
         this.demModel = demModel;

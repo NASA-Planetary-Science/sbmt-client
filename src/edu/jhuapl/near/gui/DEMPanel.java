@@ -24,43 +24,48 @@ import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 
-public class MapmakerPanel extends JPanel implements ActionListener
+public class DEMPanel extends JPanel implements ActionListener
 {
     private ModelManager modelManager;
     private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
     private JCheckBox setSpecifyRegionManuallyCheckbox;
+    private JCheckBox grotesqueModelCheckbox;
     private JTextField pixelScaleTextField;
     private JTextField latitudeTextField;
     private JTextField longitudeTextField;
-
-    private JButton submitButton;
+    private JButton mapmakerSubmitButton;
+    private JButton bigmapSubmitButton;
     private JButton loadButton;
     private PickManager pickManager;
     private JSpinner halfSizeSpinner;
-    private String mapmakerpath;
+    private String mapmakerPath;
+    private String bigmapPath;
 
-    public MapmakerPanel(final ModelManager modelManager,
+    public DEMPanel(final ModelManager modelManager,
             final PickManager pickManager,
-            String mapmakerPath)
+            String shapeRootDirOnServer,
+            boolean hasMapmaker,
+            boolean hasBigmap)
     {
+        // Setup member variables
+        this.modelManager = modelManager;
+        this.pickManager = pickManager;
+        this.mapmakerPath = shapeRootDirOnServer + "/mapmaker.zip";
+        this.bigmapPath = shapeRootDirOnServer + "/bigmap.zip";
+
+        // Overall panel layout
         setLayout(new BoxLayout(this,
                 BoxLayout.PAGE_AXIS));
 
-        this.modelManager = modelManager;
-        this.pickManager = pickManager;
-        this.mapmakerpath = mapmakerPath;
-
+        // ???
         this.addComponentListener(new ComponentAdapter()
         {
             public void componentHidden(ComponentEvent e)
@@ -70,6 +75,16 @@ public class MapmakerPanel extends JPanel implements ActionListener
             }
         });
 
+        // Only add a DEM generation panel if Bigmap or Mapmaker is enabled
+        if(hasMapmaker || hasBigmap)
+        {
+            addDEMGeneratorPanel(hasMapmaker, hasBigmap);
+        }
+    }
+
+    // Adds panel for DEM generation, i.e., Mapmaker/Bigmap
+    private void addDEMGeneratorPanel(boolean hasMapmaker, boolean hasBigmap)
+    {
         JPanel pane = new JPanel();
         pane.setLayout(new MigLayout("wrap 1"));
 
@@ -110,6 +125,12 @@ public class MapmakerPanel extends JPanel implements ActionListener
 
         setSpecifyRegionManuallyCheckbox = new JCheckBox("Enter Manual Region:");
         setSpecifyRegionManuallyCheckbox.setSelected(false);
+
+        if(hasBigmap)
+        {
+            grotesqueModelCheckbox = new JCheckBox("Grotesque Model");
+            grotesqueModelCheckbox.setSelected(true);
+        }
 
         final JLabel pixelScaleLabel = new JLabel("Pixel Scale (meters)");
         pixelScaleLabel.setEnabled(false);
@@ -154,7 +175,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
             }
         });
 
-        final JButton outputFolderButton = new JButton("Output Folder...");
+        /*final JButton outputFolderButton = new JButton("Output Folder...");
         outputFolderTextField = new JFormattedTextField();
         outputFolderTextField.setPreferredSize(new Dimension(200, 24));
         outputFolderTextField.setText(System.getProperty("user.home"));
@@ -168,17 +189,26 @@ public class MapmakerPanel extends JPanel implements ActionListener
                     outputFolderTextField.setText(file.getAbsolutePath());
                 }
             }
-        });
+        });*/
 
         final JPanel submitPanel = new JPanel();
-        submitButton = new JButton("Run Mapmaker");
-        submitButton.setEnabled(true);
-        submitButton.addActionListener(this);
+        if(hasMapmaker)
+        {
+            mapmakerSubmitButton = new JButton("Run Mapmaker");
+            mapmakerSubmitButton.setEnabled(true);
+            mapmakerSubmitButton.addActionListener(this);
+            submitPanel.add(mapmakerSubmitButton);
+        }
+        if(hasBigmap)
+        {
+            bigmapSubmitButton = new JButton("Run Bigmap");
+            bigmapSubmitButton.setEnabled(true);
+            bigmapSubmitButton.addActionListener(this);
+            submitPanel.add(bigmapSubmitButton);
+        }
         pane.add(submitPanel, "align center");
 
-        submitPanel.add(submitButton);
-
-        final JPanel loadPanel = new JPanel();
+        /*final JPanel loadPanel = new JPanel();
         loadButton = new JButton("Load FITS Cube File...");
         loadButton.setEnabled(true);
         loadButton.addActionListener(new ActionListener()
@@ -190,9 +220,13 @@ public class MapmakerPanel extends JPanel implements ActionListener
         });
         pane.add(loadPanel, "align center");
 
-        loadPanel.add(loadButton);
+        loadPanel.add(loadButton);*/
 
         pane.add(selectRegionPanel, "align center");
+        if(hasBigmap)
+        {
+            pane.add(grotesqueModelCheckbox);
+        }
         pane.add(setSpecifyRegionManuallyCheckbox, "wrap");
         pane.add(latitudeLabel, ", gapleft 25, split 2");
         pane.add(latitudeTextField, "width 200!, gapleft push, wrap");
@@ -205,20 +239,28 @@ public class MapmakerPanel extends JPanel implements ActionListener
         pane.add(halfSizeLabel, "split 2");
         pane.add(halfSizeSpinner);
 
-        pane.add(outputFolderButton, "split 2");
-        pane.add(outputFolderTextField);
+        //pane.add(outputFolderButton, "split 2");
+        //pane.add(outputFolderTextField);
         pane.add(submitPanel, "align center");
+        //pane.add(loadPanel, "align center");
 
         add(pane);
-
     }
 
+    // Implements general preprocessing steps shared between Mapmaker and Bigmap
+    // and then starts Mapmaker/Bigmap-specific swing workers
     public void actionPerformed(ActionEvent e)
     {
+        // We only expect actions from Mapmaker and Bigmap submit buttons
+        if(e.getSource() != mapmakerSubmitButton &&
+                e.getSource() != bigmapSubmitButton)
+        {
+            System.err.println("Unrecognized action event source");
+            return;
+        }
+
         pickManager.setPickMode(PickMode.DEFAULT);
         selectRegionButton.setSelected(false);
-
-        // Run Bob Gaskell's mapmaker fortran program
 
         // First get the center point and radius of the selection circle
         double [] centerPoint = null;
@@ -237,15 +279,15 @@ public class MapmakerPanel extends JPanel implements ActionListener
             else
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "Please select a region on the asteroid.",
+                        "Please select a region on the shape model.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        final String name = this.nameTextField.getText();
-        if (name == null || name.length() == 0)
+        final String demName = this.nameTextField.getText();
+        if (demName == null || demName.length() == 0)
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                     "Please enter a name.",
@@ -254,7 +296,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
             return;
         }
 
-        String outputFolderStr = outputFolderTextField.getText();
+        /*String outputFolderStr = outputFolderTextField.getText();
         if (outputFolderStr == null || outputFolderStr.isEmpty())
         {
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
@@ -281,15 +323,29 @@ public class MapmakerPanel extends JPanel implements ActionListener
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
-        }
+        }*/
 
-        // Next download the entire map maker suite to the users computer
+        // Start and manage the appropriate swing worker
+        if(e.getSource() == mapmakerSubmitButton)
+        {
+            runMapmakerSwingWorker(demName, centerPoint, radius, new File(""));
+        }
+        else if(e.getSource() == bigmapSubmitButton)
+        {
+            runBigmapSwingWorker(demName, centerPoint, radius, new File(""));
+        }
+    }
+
+    // Starts and manages a MapmakerSwingWorker
+    private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
+    {
+        // Download the entire map maker suite to the users computer
         // if it has never been downloaded before.
         // Ask the user beforehand if it's okay to continue.
         final MapmakerSwingWorker mapmakerWorker =
-                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerpath);
+                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
 
-        // If we need to download, promt the user that it will take a long time
+        // If we need to download, prompt the user that it will take a long time
         if (mapmakerWorker.getIfNeedToDownload())
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
@@ -321,16 +377,14 @@ public class MapmakerPanel extends JPanel implements ActionListener
             mapmakerWorker.setCenterPoint(centerPoint);
             mapmakerWorker.setRadius(radius);
         }
-        mapmakerWorker.setName(name);
+        mapmakerWorker.setName(demName);
         mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
         mapmakerWorker.setOutputFolder(outputFolder);
 
         mapmakerWorker.executeDialog();
 
         if (mapmakerWorker.isCancelled())
-        {
             return;
-        }
 
         try
         {
@@ -348,7 +402,76 @@ public class MapmakerPanel extends JPanel implements ActionListener
         }
     }
 
-    private void loadCubeFile()
+    // Starts and manages a BigmapSwingWorker
+    private void runBigmapSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
+    {
+        // Download the entire map maker suite to the users computer
+        // if it has never been downloaded before.
+        // Ask the user beforehand if it's okay to continue.
+        final BigmapSwingWorker bigmapWorker =
+                new BigmapSwingWorker(this, "Running Bigmap", bigmapPath);
+
+        // If we need to download, promt the user that it will take a long time
+        if (bigmapWorker.getIfNeedToDownload())
+        {
+            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
+                    "Before Bigmap can be run for the first time, a very large file needs to be downloaded.\n" +
+                    "This may take several minutes. Would you like to continue?",
+                    "Confirm Download",
+                    JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        if (setSpecifyRegionManuallyCheckbox.isSelected())
+        {
+            if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please enter values for the latitude, longitude, and pixel scale.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            bigmapWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
+            bigmapWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
+            bigmapWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
+            bigmapWorker.setRegionSpecifiedWithLatLonScale(true);
+        }
+        else
+        {
+            bigmapWorker.setCenterPoint(centerPoint);
+            bigmapWorker.setRadius(radius);
+        }
+        bigmapWorker.setGrotesque(grotesqueModelCheckbox.isSelected());
+        bigmapWorker.setName(demName);
+        bigmapWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+        bigmapWorker.setOutputFolder(outputFolder);
+
+        bigmapWorker.setSmallBodyModel(modelManager.getSmallBodyModel());
+
+        bigmapWorker.executeDialog();
+
+        if (bigmapWorker.isCancelled())
+            return;
+
+        try
+        {
+            new DEMView(bigmapWorker.getMapletFile(),
+                    modelManager.getSmallBodyModel(),
+                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
+        }
+        catch (FitsException e1)
+        {
+            e1.printStackTrace();
+        }
+    }
+
+    /*private void loadCubeFile()
     {
         File file = CustomFileChooser.showOpenDialog(this, "Load Maplet", "fit");
         if (file == null)
@@ -369,9 +492,9 @@ public class MapmakerPanel extends JPanel implements ActionListener
             //new DEMView(file, modelManager.getSmallBodyModel(),
             //        (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
 
-            //new DEMView(key, demCollection,
-            //        modelManager.getSmallBodyModel(),
-            //        (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
+            new DEMView(key, demCollection,
+                    modelManager.getSmallBodyModel(),
+                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
         }
         catch (IOException e)
         {
@@ -381,5 +504,5 @@ public class MapmakerPanel extends JPanel implements ActionListener
         {
             e.printStackTrace();
         }
-    }
+    }*/
 }

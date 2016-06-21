@@ -23,9 +23,9 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         private vtkActor actor;
         private vtkPolyData boundary;
         private vtkPolyDataMapper boundaryMapper;
-        private DEMModel dem;
+        private DEM dem;
 
-        public Boundary(DEMModel dem)
+        public Boundary(DEM dem)
         {
             this.dem = dem;
 
@@ -79,7 +79,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
             return props;
         }
 
-        public DEMModel getDEM()
+        public DEM getDEM()
         {
             return dem;
         }
@@ -119,7 +119,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         this.erosModel = erosModel;
     }
 
-    private boolean containsDEM(DEMModel dem)
+    private boolean containsDEM(DEM dem)
     {
         for (Boundary boundary : boundaryToActorsMap.keySet())
         {
@@ -130,7 +130,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         return false;
     }
 
-    private Boundary getBoundaryFromDEM(DEMModel dem)
+    private Boundary getBoundaryFromDEM(DEM dem)
     {
         for (Boundary boundary : boundaryToActorsMap.keySet())
         {
@@ -142,7 +142,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
     }
 
 
-    public void addBoundary(DEMModel dem)
+    public void addBoundary(DEM dem)
     {
         if (containsDEM(dem))
             return;
@@ -164,7 +164,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    public void removeBoundary(DEMModel dem)
+    public void removeBoundary(DEM dem)
     {
         Boundary boundary = getBoundaryFromDEM(dem);
 
@@ -214,6 +214,7 @@ public class MapletBoundaryCollection extends Model implements PropertyChangeLis
         return containsDEM(dem);
     }
 */
+
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))

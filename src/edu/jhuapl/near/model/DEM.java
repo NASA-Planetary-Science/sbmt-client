@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,9 +23,14 @@ import vtk.vtksbCellLocator;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.near.util.Properties;
 
-public class DEMModel extends SmallBodyModel
+public class DEM extends SmallBodyModel implements PropertyChangeListener
 {
+    public static final String DEM_NAMES = "DemNames"; // What name to give this DEM for display
+    public static final String DEM_FILENAMES = "DemFilenames"; // Filename of DEM on disk
+    public static final String DEM_MAP_PATHS = "DemMapPaths"; // For backwards compatibility, still read this in
+    public static final String HALFSIZE = "HalfSize";
     private static final float INVALID_VALUE = -1.0e38f;
     private vtkIdList idList;
     private vtkPolyData dem;
@@ -39,8 +46,58 @@ public class DEMModel extends SmallBodyModel
     private vtksbCellLocator boundaryLocator;
     private vtkGenericCell genericCell;
 
-    public DEMModel(String filename) throws IOException, FitsException
+    /**
+     * An DEMKey should be used to uniquely distinguish one DEM from another.
+     * It also contains metadata about the DEM that may be necessary to know
+     * before the DEM is loaded.
+     *
+     * No two DEMs will have the same values for the fields of this class.
+     */
+    public static class DEMKey
     {
+        // The path of the DEM as passed into the constructor. This is not the
+        // same as fullpath but instead corresponds to the name needed to download
+        // the file from the server (excluding the hostname and extension).
+        public String name;
+
+        public DEMKey(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return name.equals(((DEMKey)obj).name)
+//                    && source.equals(((ImageKey)obj).source)
+//                    && fileType.equals(((ImageKey)obj).fileType)
+                    ;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return name.hashCode();
+        }
+    }
+
+    /** Class DEM **/
+    // Attributes
+    protected final DEMKey key;
+
+    // Old constructor based on filename only, called all over SBMT
+    public DEM(String filename) throws IOException, FitsException
+    {
+        this(new DEMKey(filename));
+    }
+
+    // New constructor making use of key
+    public DEM(DEMKey key) throws IOException, FitsException
+    {
+        // Store the key for future use
+        this.key = key;
+
+        // Initialize data structures
         idList = new vtkIdList();
         dem = new vtkPolyData();
         boundary = new vtkPolyData();
@@ -51,7 +108,7 @@ public class DEMModel extends SmallBodyModel
         heightsPlane = new vtkFloatArray();
         slopes = new vtkFloatArray();
 
-        initializeDEM(filename);
+        initializeDEM(key.name);
 
         vtkFloatArray[] coloringValues =
         {
@@ -68,6 +125,12 @@ public class DEMModel extends SmallBodyModel
         };
 
         setSmallBodyPolyData(dem, coloringValues, coloringNames, coloringUnits, ColoringValueType.CELLDATA);
+    }
+
+    // Get method for key
+    public DEMKey getKey()
+    {
+        return key;
     }
 
     private vtkPolyData initializeDEM(String filename) throws IOException, FitsException
@@ -408,5 +471,17 @@ public class DEMModel extends SmallBodyModel
         heightsPlane.Delete();
         slopes.Delete();
         super.delete();
+    }
+
+    public void demAboutToBeRemoved()
+    {
+        // TODO Do something here.
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }
