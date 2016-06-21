@@ -491,14 +491,12 @@ public class ImagePopupMenu extends PopupMenu
             {
                 PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
                 boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
-
                 viewAngle = boundary.getImage().getMaxFovAngle();
             }
             else if (imageCollection.containsImage(imageKey))
             {
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
                 image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
-
                 viewAngle = image.getMaxFovAngle();
             }
             else
