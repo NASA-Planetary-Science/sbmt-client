@@ -80,6 +80,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         vtkInteractorStyleImage style =
             new vtkInteractorStyleImage();
+
+
         renWin.setInteractorStyle(style);
 
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
@@ -393,6 +395,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             }
 
             ((PerspectiveImage)image).firePropertyChange();
+
         }
         else
             updateSpectrumRegion(e);

@@ -79,7 +79,6 @@ LOCAL_IMAGES_DIR    := ${RAWDATA_DIR}/fc
 LOCAL_INFOFILES_DIR := ${PROCESSED_DIR}/infofiles
 LOCAL_GALLERY_DIR   := ${PROCESSED_DIR}/gallery
 
-#NEARSDC_DATA_DIR       := ${PIPELINEROOT}/data
 NEARSDC_DATA_DIR      := ${NEARSDCROOT}/data
 LIVE_FC_DIR            := ${NEARSDC_DATA_DIR}/GASKELL/CERES/FC
 LIVE_IMAGES_DIR_SUFFIX := /GASKELL/CERES/FC/images
@@ -97,15 +96,11 @@ LIVE_GALLERY_DIR       := ${LIVE_FC_DIR}/gallery
 METAKERNEL_SCRIPT := ./mkmetakernel.pl
 METAKERNEL_FILE   := kernels_ceres.mk
 
-# Used by the images target.
-EXTRACT_LIST_SCRIPT := ./extractFitFilesList.pl
-
 # The imagelist.txt file is used by the client to display a list of files
 # for the 'fixed list' query.  It contains the full list of files that have 
 # corresponding .INFO files. The fixed list query is only used when the images
 # are not in the database. 
 IMAGELIST    := imagelist.txt
-#NEWIMAGELIST := newimagelist.txt
 
 # The imagelist-fullpath.txt file is used by the DatabaseGeneratorSql program.  It
 # contains the list of files (with relative path) that the database generator
@@ -131,7 +126,6 @@ NEW_FIT_FILES := newFitFiles.txt
 LOCAL_ALL_FIT_FILES      := ${RAWDATA_DIR}/${ALL_FIT_FILES}
 LOCAL_NEW_FIT_FILES      := ${RAWDATA_DIR}/${NEW_FIT_FILES}
 LOCAL_IMAGELIST          := ${PROCESSED_DIR}/${IMAGELIST}
-#LOCAL_NEWIMAGELIST       := ${PROCESSED_DIR}/${NEWIMAGELIST}
 LOCAL_IMAGELIST_FULLPATH := ${PROCESSED_DIR}/${IMAGELIST_FULLPATH}
 TEMP_LIST := ${PROCESSED_DIR}/_tempList.txt
 
@@ -180,8 +174,6 @@ else
 	find ${CERES_DATA_DIR} \( -path "*/fc/ceres/*/FC11B*.FIT" -or -path "*/fc/ceres/*/FC21B*.FIT" \
 	-or -path "*/fc/ceres/*/FC11B*.LBL" -or -path "*/fc/ceres/*/FC21B*.LBL" \) -and \( ! -path "*/fc/ceres/*/old/*" \) \
 	| xargs cp -uv -t ${LOCAL_IMAGES_DIR} > ${TEMP_LIST}
-	#chmod +x ${EXTRACT_LIST_SCRIPT}
-	#${PERL} ${EXTRACT_LIST_SCRIPT} ${TEMP_LIST} ${LOCAL_NEW_FIT_FILES}
 endif
 	find -L ${LOCAL_IMAGES_DIR} -name "*.FIT" -type f | sort > ${LOCAL_ALL_FIT_FILES}
 	awk -F: -v var=${LOCAL_IMAGES_DIR} '{gsub(var,"/GASKELL/CERES/FC/images");print}' ${LOCAL_ALL_FIT_FILES} >${LOCAL_IMAGELIST_FULLPATH}
@@ -238,8 +230,7 @@ database : ${DATABASE_GENERATOR}
 ifdef REMAKE_EVERYTHING
 	${DATABASE_GENERATOR} 2 ${BODYNAME} > _create_beta.log
 else
-	${DATABASE_GENERATOR} --root-url ${NEARSDCROOT} --append-tables 2 ${BODYNAME} > _append_beta.log
-	#${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
+	${DATABASE_GENERATOR} --append-tables 2 ${BODYNAME} > _append_beta.log
 endif 
 #
 # ${DATABASE_GENERATOR} :
@@ -266,7 +257,7 @@ install_images :
 #   directory.
 #
 install_infofiles :
-	rsync -a ${LOCAL_INFOFILES_DIR}/*.INFO ${LIVE_INFOFILES_DIR}/
+	cp -au ${LOCAL_INFOFILES_DIR}/. ${LIVE_INFOFILES_DIR}/
 	mv ${LIVE_IMAGELIST} ${LIVE_IMAGELIST}.bak
 	cp ${LOCAL_IMAGELIST} ${LIVE_IMAGELIST}
 	chmod 664 ${LIVE_IMAGELIST}
@@ -274,10 +265,13 @@ install_infofiles :
 #
 # install_gallery :
 #  Makes sure the live image gallery directory allready exists. before synching.
+#  rsync gives the following error and the make stops.
+#  rsync: failed to set times on "/project/nearsdc/data/GASKELL/CERES/FC/gallery/.": Operation not permitted (1)
+#  So I use cp instead
 #  
 install_gallery : 
 	mkdir -p ${LIVE_GALLERY_DIR}
-	rsync -a ${LOCAL_GALLERY_DIR}/ ${LIVE_GALLERY_DIR}/
+	cp -au ${LOCAL_GALLERY_DIR}/. ${LIVE_GALLERY_DIR}/
 	
 #where does the database generator expect to be run from?  What are the files it expects and where are the
 #expected to be located. It expects to be run from sbmt/build/sbmt-extras/bin

@@ -44,6 +44,8 @@ import edu.jhuapl.near.util.FileUtil;
 
 import nom.tam.fits.FitsException;
 
+import nom.tam.fits.FitsException;
+
 
 public class ImageCubePopupMenu extends PopupMenu
 {

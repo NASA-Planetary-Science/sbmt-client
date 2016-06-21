@@ -31,6 +31,8 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
     private ButtonGroup group;
     private ShapeModelImporterManagerDialog shapeModelImportedDialog;
 
+    private FavoritesFile favoritesFile=new FavoritesFile();
+
     public ViewMenu(ViewManager rootPanel)
     {
         super("View");
@@ -81,6 +83,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 this.add(mi);
             }
         }
+
     }
 
     private void addMenuItem(JMenuItem mi, SmallBodyConfig smallBodyConfig)
