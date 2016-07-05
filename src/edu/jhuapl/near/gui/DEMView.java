@@ -40,7 +40,6 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
@@ -85,7 +84,7 @@ public class DEMView extends JFrame
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
-    public DEMView(DEMKey key, DEMCollection demCollection, SmallBodyModel parentSmallBodyModel,
+    public DEMView(DEMKey key, SmallBodyModel parentSmallBodyModel,
             MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
     {
         this.mapletBoundaries = mapletBoundaries;
@@ -98,9 +97,10 @@ public class DEMView extends JFrame
         StatusBar statusBar = new StatusBar();
         add(statusBar, BorderLayout.PAGE_END);
 
+        // Create an entirely new DEM object to go with this model manager
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = demCollection.getDEM(key);
+        dem = new DEM(key);
         dem.setColoringIndex(0);
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);

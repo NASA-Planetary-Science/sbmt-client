@@ -21,7 +21,6 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.DEMView;
-import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
 import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.DEM;
@@ -46,7 +45,6 @@ public class DEMPopupMenu extends PopupMenu
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showDEMInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
-    private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideDEMMenuItem;
     private JMenu colorMenu;
@@ -89,10 +87,6 @@ public class DEMPopupMenu extends PopupMenu
         saveToDiskMenuItem = new JMenuItem(new SaveDEMAction());
         saveToDiskMenuItem.setText("Save Original FITS File...");
         this.add(saveToDiskMenuItem);
-
-        changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
-        changeNormalOffsetMenuItem.setText("Change Normal Offset...");
-        this.add(changeNormalOffsetMenuItem);
 
         changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
         changeOpacityMenuItem.setText("Change Opacity...");
@@ -142,7 +136,7 @@ public class DEMPopupMenu extends PopupMenu
         boolean enableMapBoundary = true;
         boolean enableShowDEMInfo = false;
         boolean enableSaveToDisk = false;
-        boolean enableChangeNormalOffset = false;
+        boolean enableChangeOpacity = false;
         boolean selectHideImage = true;
         boolean enableHideImage = true;
         boolean enableBoundaryColor = true;
@@ -171,7 +165,7 @@ public class DEMPopupMenu extends PopupMenu
             if (demKeys.size() == 1)
             {
                 enableSaveToDisk = containsDEM;
-                enableChangeNormalOffset = containsDEM;
+                enableChangeOpacity = containsDEM;
             }
 
             if (containsDEM)
@@ -225,7 +219,7 @@ public class DEMPopupMenu extends PopupMenu
         if (showDEMInfoMenuItem != null)
             showDEMInfoMenuItem.setEnabled(enableShowDEMInfo);
         saveToDiskMenuItem.setEnabled(enableSaveToDisk);
-        changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
+        changeOpacityMenuItem.setEnabled(enableChangeOpacity);
         hideDEMMenuItem.setSelected(selectHideImage);
         hideDEMMenuItem.setEnabled(enableHideImage);
         colorMenu.setEnabled(enableBoundaryColor);
@@ -297,8 +291,7 @@ public class DEMPopupMenu extends PopupMenu
 
             try
             {
-                new DEMView(demKey, demCollection,
-                        smallBodyModel, demBoundaryCollection);
+                new DEMView(demKey, smallBodyModel, demBoundaryCollection);
                 //imageCollection.addImage(demKey);
                 //infoPanelManager.addData(imageCollection.getImage(demKey));
 
@@ -342,24 +335,6 @@ public class DEMPopupMenu extends PopupMenu
                         "Error Saving File",
                         JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
-            }
-        }
-    }
-
-    private class ChangeNormalOffsetAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            if (demKeys.size() != 1)
-                return;
-            DEMKey demKey = demKeys.get(0);
-
-            DEM dem = demCollection.getDEM(demKey);
-            if (dem != null)
-            {
-                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(dem);
-                changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
-                changeOffsetDialog.setVisible(true);
             }
         }
     }

@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -18,6 +19,7 @@ import vtk.vtkPointDataToCellData;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
+import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.MathUtil;
@@ -476,6 +478,17 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
     public void demAboutToBeRemoved()
     {
         // TODO Do something here.
+    }
+
+    public void setVisible(boolean b)
+    {
+        List<vtkProp> props = super.getProps();
+        for (vtkProp p : props)
+        {
+            p.SetVisibility(b ? 1 : 0);
+        }
+
+        super.setVisible(b);
     }
 
     @Override
