@@ -52,7 +52,7 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -139,7 +139,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
         // Get collections
         DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        MapletBoundaryCollection boundaries = (MapletBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
 
         // Construct popup menu (right click action)
         demPopupMenu = new DEMPopupMenu(modelManager.getSmallBodyModel(), dems, boundaries, renderer, this);

@@ -40,10 +40,11 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+//import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -69,7 +70,7 @@ public class DEMView extends JFrame
     private PickManager pickManager;
     private MapmakerPlot plot;
     private int currentColorIndex = 0;
-    private MapletBoundaryCollection mapletBoundaries;
+    private DEMBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
     private DEM dem;
     private Renderer renderer;
@@ -84,11 +85,8 @@ public class DEMView extends JFrame
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
-    public DEMView(DEMKey key, SmallBodyModel parentSmallBodyModel,
-            MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
+    public DEMView(DEMKey key, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
     {
-        this.mapletBoundaries = mapletBoundaries;
-
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
 
@@ -146,13 +144,10 @@ public class DEMView extends JFrame
 
         add(panel, BorderLayout.CENTER);
 
-        mapletBoundaries.addBoundary(dem);
-
         addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
             {
-                DEMView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
                 vtkObject.JAVA_OBJECT_MANAGER.gc(true);
             }
@@ -167,11 +162,8 @@ public class DEMView extends JFrame
     }
 
     // Deprecated
-    public DEMView(File cubFile, SmallBodyModel parentSmallBodyModel,
-            MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
+    public DEMView(File cubFile, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
     {
-        this.mapletBoundaries = mapletBoundaries;
-
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
 
@@ -228,13 +220,10 @@ public class DEMView extends JFrame
 
         add(panel, BorderLayout.CENTER);
 
-        mapletBoundaries.addBoundary(dem);
-
-        addWindowListener(new WindowAdapter()
+             addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
             {
-                DEMView.this.mapletBoundaries.removeBoundary(dem);
                 System.gc();
                 vtkObject.JAVA_OBJECT_MANAGER.gc(true);
             }

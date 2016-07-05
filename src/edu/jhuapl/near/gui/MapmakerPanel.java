@@ -26,8 +26,8 @@ import nom.tam.fits.FitsException;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
@@ -335,8 +335,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         try
         {
             new DEMView(mapmakerWorker.getMapletFile(),
-                    modelManager.getSmallBodyModel(),
-                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
+                    modelManager.getSmallBodyModel());
         }
         catch (IOException e1)
         {
@@ -360,7 +359,7 @@ public class MapmakerPanel extends JPanel implements ActionListener
         {
             // twupy1
             DEM dem = new DEM(file.getAbsolutePath());
-            ((MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY)).addBoundary(dem);
+            ((DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY)).addBoundary(dem);
 
             DEMKey key = new DEMKey(file.getAbsolutePath());
             DEMCollection demCollection = (DEMCollection) modelManager.getModel(ModelNames.DEM);

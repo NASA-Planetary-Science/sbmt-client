@@ -25,7 +25,7 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
@@ -320,7 +320,7 @@ public class View extends JPanel
 
         if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
-            allModels.put(ModelNames.DEM_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
+            allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel));
         }
 
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));

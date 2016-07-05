@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -19,14 +20,16 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
+import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.DEMView;
 import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyModel;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
 import edu.jhuapl.near.util.ColorUtil;
@@ -39,7 +42,7 @@ public class DEMPopupMenu extends PopupMenu
     private Component invoker;
     private SmallBodyModel smallBodyModel;
     private DEMCollection demCollection;
-    private MapletBoundaryCollection demBoundaryCollection;
+    private DEMBoundaryCollection demBoundaryCollection;
     private ArrayList<DEMKey> demKeys = new ArrayList<DEMKey>();
     private JMenuItem mapDEMMenuItem;
     private JMenuItem mapBoundaryMenuItem;
@@ -62,13 +65,13 @@ public class DEMPopupMenu extends PopupMenu
     public DEMPopupMenu(
             SmallBodyModel smallBodyModel,
             DEMCollection demCollection,
-            MapletBoundaryCollection imageBoundaryCollection,
+            DEMBoundaryCollection demBoundaryCollection,
             Renderer renderer,
             Component invoker)
     {
         this.smallBodyModel = smallBodyModel;
         this.demCollection = demCollection;
-        this.demBoundaryCollection = imageBoundaryCollection;
+        this.demBoundaryCollection = demBoundaryCollection;
         this.renderer = renderer;
         this.invoker = invoker;
 
@@ -146,9 +149,8 @@ public class DEMPopupMenu extends PopupMenu
             boolean containsDEM = demCollection.containsDEM(demKey);
             boolean containsBoundary = false;
 
-            // twupy1
-            //if (demBoundaryCollection != null)
-            //    containsBoundary = demBoundaryCollection.containsBoundary(demKey);
+            if (demBoundaryCollection != null)
+                containsBoundary = demBoundaryCollection.containsBoundary(demKey);
 
             if (!containsBoundary)
             {
@@ -181,13 +183,12 @@ public class DEMPopupMenu extends PopupMenu
             }
         }
 
-        // twupy1
-        /*if (enableBoundaryColor)
+        if (enableBoundaryColor)
         {
             HashSet<String> colors = new HashSet<String>();
-            for (ImageKey imageKey : demKeys)
+            for (DEMKey demKey : demKeys)
             {
-                int[] c = demBoundaryCollection.getBoundary(imageKey).getBoundaryColor();
+                int[] c = demBoundaryCollection.getBoundary(demKey).getBoundaryColor();
                 colors.add(c[0] + " " + c[1] + " " + c[2]);
             }
 
@@ -210,7 +211,7 @@ public class DEMPopupMenu extends PopupMenu
                     item.setSelected(false);
                 }
             }
-        }*/
+        }
 
         mapDEMMenuItem.setSelected(selectMapImage);
         mapDEMMenuItem.setEnabled(enableMapImage);
@@ -260,8 +261,6 @@ public class DEMPopupMenu extends PopupMenu
         {
             for (DEMKey demKey : demKeys)
             {
-                // twupy1
-                /*
                 try
                 {
                     if (mapBoundaryMenuItem.isSelected())
@@ -274,7 +273,7 @@ public class DEMPopupMenu extends PopupMenu
                 }
                 catch (IOException e1) {
                     e1.printStackTrace();
-                }*/
+                }
             }
 
             updateMenuItems();
@@ -291,7 +290,7 @@ public class DEMPopupMenu extends PopupMenu
 
             try
             {
-                new DEMView(demKey, smallBodyModel, demBoundaryCollection);
+                new DEMView(demKey, smallBodyModel);
                 //imageCollection.addImage(demKey);
                 //infoPanelManager.addData(imageCollection.getImage(demKey));
 
@@ -390,12 +389,11 @@ public class DEMPopupMenu extends PopupMenu
 
         public void actionPerformed(ActionEvent e)
         {
-            // twupy1
-            /*for (DEMKey demKey : demKeys)
+            for (DEMKey demKey : demKeys)
             {
-                PerspectiveImageBoundary boundary = demBoundaryCollection.getBoundary(demKey);
+                DEMBoundary boundary = demBoundaryCollection.getBoundary(demKey);
                 boundary.setBoundaryColor(color);
-            }*/
+            }
 
             updateMenuItems();
         }
@@ -405,20 +403,17 @@ public class DEMPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            // twupy1
-            /*
-            PerspectiveImageBoundary boundary = demBoundaryCollection.getBoundary(demKeys.get(0));
+            DEMBoundary boundary = demBoundaryCollection.getBoundary(demKeys.get(0));
             int[] currentColor = boundary.getBoundaryColor();
             Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
             if (newColor != null)
             {
-                for (ImageKey imageKey : demKeys)
+                for (DEMKey demKey : demKeys)
                 {
-                    boundary = demBoundaryCollection.getBoundary(imageKey);
+                    boundary = demBoundaryCollection.getBoundary(demKey);
                     boundary.setBoundaryColor(newColor);
                 }
             }
-            */
         }
     }
 
@@ -429,10 +424,9 @@ public class DEMPopupMenu extends PopupMenu
         {
             if (demBoundaryCollection != null && demBoundaryCollection.getBoundary((vtkActor)pickedProp) != null)
             {
-                // twupy1
-                /*MapletBoundary boundary = demBoundaryCollection.getBoundary((vtkActor)pickedProp);
-                setCurrentBoundary(boundary.getKey());
-                show(e.getComponent(), e.getX(), e.getY());*/
+                DEMBoundary boundary = demBoundaryCollection.getBoundary((vtkActor)pickedProp);
+                setCurrentDEM(boundary.getKey());
+                show(e.getComponent(), e.getX(), e.getY());
             }
             else if (demCollection.getDEM((vtkActor)pickedProp) != null)
             {

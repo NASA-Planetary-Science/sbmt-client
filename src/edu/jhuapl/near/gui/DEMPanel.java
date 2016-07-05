@@ -24,7 +24,6 @@ import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.pick.PickManager;
@@ -389,8 +388,7 @@ public class DEMPanel extends JPanel implements ActionListener
         try
         {
             new DEMView(mapmakerWorker.getMapletFile(),
-                    modelManager.getSmallBodyModel(),
-                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
+                    modelManager.getSmallBodyModel());
         }
         catch (IOException e1)
         {
@@ -458,8 +456,7 @@ public class DEMPanel extends JPanel implements ActionListener
         try
         {
             new DEMView(bigmapWorker.getMapletFile(),
-                    modelManager.getSmallBodyModel(),
-                    (MapletBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY));
+                    modelManager.getSmallBodyModel());
         }
         catch (IOException e1)
         {
