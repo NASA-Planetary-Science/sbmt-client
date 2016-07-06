@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,7 +41,6 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
@@ -59,7 +59,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
-public class DEMView extends JFrame
+public class DEMView extends JFrame implements WindowListener
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -70,9 +70,9 @@ public class DEMView extends JFrame
     private PickManager pickManager;
     private MapmakerPlot plot;
     private int currentColorIndex = 0;
-    private DEMBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
     private DEM dem;
+    private DEMKey key;
     private Renderer renderer;
     private JButton scaleColoringButton;
 
@@ -87,6 +87,8 @@ public class DEMView extends JFrame
 
     public DEMView(DEMKey key, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
     {
+        this.key = key;
+
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
 
@@ -123,10 +125,6 @@ public class DEMView extends JFrame
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
-        // twupy1: Why do we even need this?
-        //JPanel rendererPanel = new JPanel(new BorderLayout());
-        //rendererPanel.add(renderer, BorderLayout.CENTER);
-
         JPanel panel = new JPanel(new BorderLayout());
 
         plot = new MapmakerPlot(lineModel, dem, 0);
@@ -144,15 +142,7 @@ public class DEMView extends JFrame
 
         add(panel, BorderLayout.CENTER);
 
-        addWindowListener(new WindowAdapter()
-        {
-            public void windowClosing(WindowEvent e)
-            {
-                System.gc();
-                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
-            }
-        });
-
+        addWindowListener(this);
         createMenus();
 
         // Finally make the frame visible
@@ -686,5 +676,55 @@ public class DEMView extends JFrame
                 return;
             }
         }
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e)
+    {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+        System.gc();
+        vtkObject.JAVA_OBJECT_MANAGER.gc(true);
+        System.out.println("DEM Window Closing!");
     }
 }
