@@ -165,8 +165,8 @@ public class DEMPopupMenu extends PopupMenu
 
             if (showDEMInfoMenuItem != null && demKeys.size() == 1)
             {
-                //enableShowDEMInfo = containsDEM;
-                enableShowDEMInfo = true;
+                enableShowDEMInfo = containsDEM;
+                //enableShowDEMInfo = true;
             }
 
             if (demKeys.size() == 1)
@@ -291,23 +291,24 @@ public class DEMPopupMenu extends PopupMenu
         {
             if (demKeys.size() != 1)
                 return;
+
             DEMKey demKey = demKeys.get(0);
 
-                try
-                {
-                    new DEMView(demKey, smallBodyModel);
-                    //imageCollection.addImage(demKey);
-                    //infoPanelManager.addData(imageCollection.getImage(demKey));
+            try
+            {
+                new DEMView(demKey, demCollection, smallBodyModel);
+                //imageCollection.addImage(demKey);
+                //infoPanelManager.addData(imageCollection.getImage(demKey));
 
-                    updateMenuItems();
-                }
-                catch (FitsException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+                updateMenuItems();
+            }
+            catch (FitsException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

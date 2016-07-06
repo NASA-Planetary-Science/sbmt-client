@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nom.tam.fits.FitsException;
@@ -23,6 +24,8 @@ public class DEMCollection extends Model implements PropertyChangeListener
     private HashMap<DEM, ArrayList<vtkProp>> demToActorsMap = new HashMap<DEM, ArrayList<vtkProp>>();
 
     private HashMap<vtkProp, DEM> actorToDemMap = new HashMap<vtkProp, DEM>();
+
+    private Map<DEMKey, Integer> demColorMap = new HashMap<DEMKey, Integer>();
 
     public DEMCollection(SmallBodyModel smallBodyModel)
     {
@@ -100,6 +103,8 @@ public class DEMCollection extends Model implements PropertyChangeListener
             actorToDemMap.put(act, dem);
         }
 
+        demColorMap.put(key, 0);
+
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -126,6 +131,8 @@ public class DEMCollection extends Model implements PropertyChangeListener
         smallBodyModel.removePropertyChangeListener(dem);
         dem.demAboutToBeRemoved();
 
+        demColorMap.remove(key);
+
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, dem);
     }
@@ -138,6 +145,11 @@ public class DEMCollection extends Model implements PropertyChangeListener
     public List<vtkProp> getProps()
     {
         return new ArrayList<vtkProp>(actorToDemMap.keySet());
+    }
+
+    public Map<DEMKey, Integer> getColorMap()
+    {
+        return demColorMap;
     }
 
     public void propertyChange(PropertyChangeEvent evt)

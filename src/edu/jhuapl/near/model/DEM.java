@@ -70,10 +70,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         @Override
         public boolean equals(Object obj)
         {
-            return name.equals(((DEMKey)obj).name)
-//                    && source.equals(((ImageKey)obj).source)
-//                    && fileType.equals(((ImageKey)obj).fileType)
-                    ;
+            return name.equals(((DEMKey)obj).name);
         }
 
         @Override

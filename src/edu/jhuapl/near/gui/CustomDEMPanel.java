@@ -51,8 +51,8 @@ import vtk.vtkActor;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -130,6 +130,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         this.pickManager = pickManager;
         this.mapmakerPath = shapeRootDirOnServer + "/mapmaker.zip";
         this.bigmapPath = shapeRootDirOnServer + "/bigmap.zip";
+        this.selectRegionButton = null;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -162,7 +163,10 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
             public void componentHidden(ComponentEvent e)
             {
-                selectRegionButton.setSelected(false);
+                if(selectRegionButton != null)
+                {
+                    selectRegionButton.setSelected(false);
+                }
                 pickManager.setPickMode(PickMode.DEFAULT);
             }
         });

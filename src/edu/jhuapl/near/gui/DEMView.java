@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
@@ -19,8 +18,10 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -41,6 +42,7 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
@@ -73,8 +75,10 @@ public class DEMView extends JFrame implements WindowListener
     private JComboBox coloringTypeComboBox;
     private DEM dem;
     private DEMKey key;
+    private DEMCollection demCollection;
     private Renderer renderer;
     private JButton scaleColoringButton;
+    private boolean syncColoring;
 
     private static final String Profile = "Profile";
     private static final String StartLatitude = "StartLatitude";
@@ -85,9 +89,13 @@ public class DEMView extends JFrame implements WindowListener
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
-    public DEMView(DEMKey key, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
+    public DEMView(DEMKey key, DEMCollection demCollection, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
     {
         this.key = key;
+        this.demCollection = demCollection;
+
+        // Don't sync coloring by default
+        syncColoring = false;
 
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
@@ -97,11 +105,15 @@ public class DEMView extends JFrame implements WindowListener
         StatusBar statusBar = new StatusBar();
         add(statusBar, BorderLayout.PAGE_END);
 
+        // Look up dem object in main view
+        DEM macroDEM = demCollection.getDEM(key);
+
         // Create an entirely new DEM object to go with this model manager
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEM(key);
-        dem.setColoringIndex(0);
+        dem.setColoringIndex(macroDEM.getColoringIndex());
+
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);
@@ -127,7 +139,7 @@ public class DEMView extends JFrame implements WindowListener
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        plot = new MapmakerPlot(lineModel, dem, 0);
+        plot = new MapmakerPlot(lineModel, dem, macroDEM.getColoringIndex());
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
         plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
 
@@ -138,7 +150,7 @@ public class DEMView extends JFrame implements WindowListener
         splitPane.setOneTouchExpandable(true);
 
         panel.add(splitPane, BorderLayout.CENTER); // twupy1: This is what messes up main shape model
-        panel.add(createButtonsPanel(), BorderLayout.SOUTH);
+        panel.add(createButtonsPanel(macroDEM.getColoringIndex()), BorderLayout.SOUTH);
 
         add(panel, BorderLayout.CENTER);
 
@@ -151,86 +163,11 @@ public class DEMView extends JFrame implements WindowListener
         setVisible(true);
     }
 
-    // Deprecated
-    public DEMView(File cubFile, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
-    {
-        ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
-        setIconImage(erosIcon.getImage());
-
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        StatusBar statusBar = new StatusBar();
-        add(statusBar, BorderLayout.PAGE_END);
-
-        String filename = cubFile.getAbsolutePath();
-        final ModelManager modelManager = new ModelManager();
-        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = new DEM(filename);
-        dem.setColoringIndex(0);
-        lineModel = new LineModel(dem, true);
-        lineModel.setMaximumVerticesPerLine(2);
-        allModels.put(ModelNames.SMALL_BODY, dem);
-        allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
-        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(dem));
-        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
-        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(dem));
-        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(dem));
-        modelManager.setModels(allModels);
-
-        renderer = new Renderer(modelManager);
-
-        PopupManager popupManager = new PopupManager(modelManager, null, null, renderer);
-        // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
-        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentSmallBodyModel, renderer);
-        popupManager.registerPopup(lineModel, popupMenu);
-
-        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-
-        renderer.setMinimumSize(new Dimension(100, 100));
-        renderer.setPreferredSize(new Dimension(400, 400));
-
-        JPanel rendererPanel = new JPanel(new BorderLayout());
-        rendererPanel.add(renderer, BorderLayout.CENTER);
-
-        JPanel panel = new JPanel(new BorderLayout());
-
-        plot = new MapmakerPlot(lineModel, dem, 0);
-        plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
-        plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                renderer, plot.getChartPanel());
-
-        splitPane.setResizeWeight(0.5);
-        splitPane.setOneTouchExpandable(true);
-
-        panel.add(splitPane, BorderLayout.CENTER);
-        panel.add(createButtonsPanel(), BorderLayout.SOUTH);
-
-        add(panel, BorderLayout.CENTER);
-
-             addWindowListener(new WindowAdapter()
-        {
-            public void windowClosing(WindowEvent e)
-            {
-                System.gc();
-                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
-            }
-        });
-
-        createMenus();
-
-        // Finally make the frame visible
-        setTitle("DEM View");
-        pack();
-        setVisible(true);
-    }
-
     private void createMenus()
     {
         JMenuBar menuBar = new JMenuBar();
 
+        // File
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
@@ -254,10 +191,20 @@ public class DEMView extends JFrame implements WindowListener
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
+        // Sync
+        JMenu syncMenu = new JMenu("Sync");
+
+        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem("Coloring");
+        syncMenu.add(cbmi);
+        cbmi.addActionListener(new SynchronizeColoringAction());
+
+        syncMenu.setMnemonic('S');
+        menuBar.add(syncMenu);
+
         setJMenuBar(menuBar);
     }
 
-    private JPanel createButtonsPanel()
+    private JPanel createButtonsPanel(int initialSelectedOption)
     {
         JPanel panel = new JPanel();
 
@@ -267,6 +214,7 @@ public class DEMView extends JFrame implements WindowListener
                 "Color by slope",
                 "No coloring"};
         coloringTypeComboBox = new JComboBox(coloringOptions);
+        coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
         coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
         coloringTypeComboBox.addActionListener(new ActionListener()
         {
@@ -281,6 +229,10 @@ public class DEMView extends JFrame implements WindowListener
                         scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
                         plot.setColoringIndex(-1);
+                        if(syncColoring)
+                        {
+                            demCollection.getDEM(key).setColoringIndex(-1);
+                        }
                     }
                     else
                     {
@@ -288,6 +240,10 @@ public class DEMView extends JFrame implements WindowListener
                         scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
                         plot.setColoringIndex(index);
+                        if(syncColoring)
+                        {
+                            demCollection.getDEM(key).setColoringIndex(index);
+                        }
                     }
                 }
                 catch (IOException e1)
@@ -678,6 +634,37 @@ public class DEMView extends JFrame implements WindowListener
         }
     }
 
+    private class SynchronizeColoringAction extends AbstractAction
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent event)
+        {
+            // TODO Auto-generated method stub
+            AbstractButton aButton = (AbstractButton) event.getSource();
+            syncColoring = aButton.getModel().isSelected();
+
+            // If true, then signal macroDEM to use current microDEM coloring
+            if(syncColoring)
+            {
+                try
+                {
+                    demCollection.getDEM(key).setColoringIndex(dem.getColoringIndex());
+                }
+                catch (Exception e1)
+                {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "An error occurred synchronizing macro view DEM coloring with micro view.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+    }
+
     @Override
     public void windowActivated(WindowEvent e)
     {
@@ -725,6 +712,5 @@ public class DEMView extends JFrame implements WindowListener
         // TODO Auto-generated method stub
         System.gc();
         vtkObject.JAVA_OBJECT_MANAGER.gc(true);
-        System.out.println("DEM Window Closing!");
     }
 }
