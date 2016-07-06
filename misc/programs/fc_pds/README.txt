@@ -1,4 +1,5 @@
 imagelist.txt contains as many lines as there are info files.
+create_info_files_ceres will reject images with start ET less than 1/1/2015
 
 make metakernel
 

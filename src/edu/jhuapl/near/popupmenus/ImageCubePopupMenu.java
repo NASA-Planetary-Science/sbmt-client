@@ -18,8 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -43,6 +41,10 @@ import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
+
+import nom.tam.fits.FitsException;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImageCubePopupMenu extends PopupMenu
@@ -580,18 +582,12 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     file = new File(lblName);
 
-                    OutputStream out = new FileOutputStream(file);
-
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
-                    String lblstr = image.generateBackplanesLabel(imgName);
-
-                    byte[] bytes = lblstr.getBytes();
-                    out.write(bytes, 0, bytes.length);
-                    out.close();
+                    image.generateBackplanesLabel(imgName, file.getAbsolutePath());
                 }
             }
             catch (Exception ex)

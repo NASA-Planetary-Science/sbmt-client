@@ -64,8 +64,6 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
             ImagingInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument);
-
-        this.nbands = nbands;
     }
 
 

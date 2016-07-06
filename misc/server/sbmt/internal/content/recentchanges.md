@@ -4,7 +4,12 @@
 
 # Recent Changes
 
-### June 8, 2016
+### June 14, 2016
+
+-   Fixed bugs in ImageCube registration and display of boundaries
+-   Tutorial can now be downloaded directly from client help menu
+-   Daphne, Hermione and Pallas models now load properly
+-   Reference potential values have now been added to the references web page
 
 ### May 26, 2016
 

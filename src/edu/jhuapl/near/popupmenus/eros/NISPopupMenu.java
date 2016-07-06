@@ -4,14 +4,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
+import com.google.common.collect.Lists;
+
 import vtk.vtkActor;
+import vtk.vtkPolyData;
 import vtk.vtkProp;
+import vtk.vtkSelectPolyData;
+import vtk.vtkTriangle;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
@@ -33,6 +41,8 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem saveSpectrumMenuItem;
     private ModelInfoWindowManager infoPanelManager;
     //private SmallBodyModel erosModel;
+
+    private JMenuItem showStatisticsMenuItem;
 
     /**
      *
@@ -58,6 +68,13 @@ public class NISPopupMenu extends PopupMenu
             showSpectrumInfoMenuItem = new JMenuItem(new ShowInfoAction());
             showSpectrumInfoMenuItem.setText("Spectrum...");
             this.add(showSpectrumInfoMenuItem);
+        }
+
+        if (this.infoPanelManager != null)
+        {
+            showStatisticsMenuItem=new JMenuItem(new ShowStatisticsAction());
+            showStatisticsMenuItem.setText("Statistics...");
+            this.add(showStatisticsMenuItem);
         }
 
         centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
@@ -145,6 +162,37 @@ public class NISPopupMenu extends PopupMenu
                 e1.printStackTrace();
             }
         }
+    }
+
+    private class ShowStatisticsAction extends AbstractAction
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            NISSpectrum spectrum=model.getSpectrum(currentSpectrum);
+            Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
+            Vector3D frustCenter=new Vector3D(spectrum.getFrustumCenter());
+            vtkPolyData footPrint=spectrum.getShiftedFootprint();
+
+            vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
+            selectionFilter.SetInputData(modelManager.getSmallBodyModel().getSmallBodyPolyData());
+            selectionFilter.SetLoop(footPrint.GetPoints());
+            selectionFilter.Update();
+
+            vtkPolyData selectedFaces=selectionFilter.GetOutput();
+            List<Double> costh=Lists.newArrayList();
+            for (int c=0; c<selectedFaces.GetNumberOfCells(); c++)
+            {
+                vtkTriangle tri=(vtkTriangle)selectedFaces.GetCell(c);
+                double[] nml=new double[3];
+                new vtkTriangle().ComputeNormal(tri.GetPoints().GetPoint(0), tri.GetPoints().GetPoint(1), tri.GetPoints().GetPoint(2), nml);
+                costh.add(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize()));
+            }
+            System.out.println(costh);
+        }
+
     }
 
 

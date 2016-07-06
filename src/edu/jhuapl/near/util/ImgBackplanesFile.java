@@ -7,7 +7,7 @@ import java.io.OutputStream;;
 public class ImgBackplanesFile implements BackplanesFile
 {
     @Override
-    public void write(float[] data, String outputFile, int imageWidth, int imageHeight, int nBackplanes) throws IOException
+    public void write(float[] data, String source, String outputFile, int imageWidth, int imageHeight, int nBackplanes) throws IOException
     {
         int datasize = nBackplanes*imageHeight*imageWidth;
         OutputStream out = new FileOutputStream(outputFile);

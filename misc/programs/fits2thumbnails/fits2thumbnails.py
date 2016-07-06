@@ -21,18 +21,18 @@ def make_thumbnails( input_dir, output_dir, valid_file_list):
 	files = sorted(glob.glob(file_glob))
 
 	for f in files:
-		print "processing " + f
+		#print "processing " + f
 		if valid_file_list != None:
 			if not any(valid_file in f for valid_file in valid_file_list):
 				continue
 		thumbnail = f+"-small.jpeg"
 		command = "convert -resize 200x200 " + f + " " + output_dir+"/"+thumbnail
-		print command
+		#print command
 		os.system(command)
 
 		fullsize = f+".jpeg"
 		command = "convert " + f + " " + output_dir+"/"+fullsize
-		print command
+		#print command
 		os.system(command)
 
     

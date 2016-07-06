@@ -47,7 +47,7 @@ for f in "$SBMTROOT"/src/edu/jhuapl/near/tools/*.java ; do
     echo 'elif [ "$(uname)" == "Linux" ]; then'                               >> $INSTALL_BIN_DIR/$f
     echo '    MEMSIZE=`grep MemTotal /proc/meminfo | awk '\''{print $2}'\''`' >> $INSTALL_BIN_DIR/$f
     echo 'fi'                                                                 >> $INSTALL_BIN_DIR/$f
-    echo 'java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib" -cp "'$CLASSPATH"\" edu.jhuapl.near.tools.$f \$@" >> $INSTALL_BIN_DIR/$f
+    echo '/project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib" -cp "'$CLASSPATH"\" edu.jhuapl.near.tools.$f \$@" >> $INSTALL_BIN_DIR/$f
     chmod +x $INSTALL_BIN_DIR/$f
 done
 

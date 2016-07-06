@@ -9,9 +9,9 @@ import java.util.List;
  * FITS data cubes. The enumeration name references the type of data stored in a given plane. This
  * way the user can choose their own value for the FITS keyword (i.e. "PLANE1" or "PLANE10").
  *
- *
  * @author espirrc1
  *
+ * nguyel1:
  * This was modified by espirrc1 from ALTWG's PlaneInfo.java for the EROS MSI backplanes PDS delivery,
  * although the backplanes here are not specific to the MSI instrument. The name of the class has been
  * changed to avoid confusion with ALTWG's PlaneInfo enumeration, which is specific to the OLA
