@@ -8,10 +8,11 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-class DataOutputStreamPool {
+public class DataOutputStreamPool {
     Map<Path,DataOutputStream> streamMap;
 
     int maxNumFiles;
+    final boolean append=true;
 
     public DataOutputStreamPool(int maxNumFiles)
     {
@@ -27,7 +28,7 @@ class DataOutputStreamPool {
     DataOutputStream newStream(Path path) throws IOException {
         if (streamMap.size()==maxNumFiles)
             closeStream(streamMap.keySet().iterator().next());    // remove a random entry in the map
-        DataOutputStream stream=new DataOutputStream(new FileOutputStream(path.toFile(),true));
+        DataOutputStream stream=new DataOutputStream(new FileOutputStream(path.toFile(),append));
         streamMap.put(path, stream);
         return stream;
     }

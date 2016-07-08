@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -53,10 +57,6 @@ import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
-
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends Model
 {
@@ -352,6 +352,11 @@ public class SmallBodyModel extends Model
         return getCustomDataFolder() + File.separator + "config.txt";
     }
 
+    public String getDEMConfigFilename()
+    {
+        return getCustomDataFolder() + File.separator + "demConfig.txt";
+    }
+
     private void clearCustomColoringInfo()
     {
         for (int i=coloringInfo.size()-1; i>=0; --i)
@@ -615,7 +620,6 @@ public class SmallBodyModel extends Model
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
             }
         }
-
     }
 
     public vtkPolyData computeFrustumIntersection(

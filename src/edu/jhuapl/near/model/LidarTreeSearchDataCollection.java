@@ -26,7 +26,7 @@ import vtk.vtkStringArray;
 import vtk.vtkUnstructuredGrid;
 import vtk.vtkUnstructuredGridReader;
 
-import edu.jhuapl.near.lidar.test.LidarPoint;
+import edu.jhuapl.near.lidar.test.BasicLidarPoint;
 import edu.jhuapl.near.lidar.test.OlaOctreePoint;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
@@ -162,8 +162,8 @@ public class LidarTreeSearchDataCollection extends LidarSearchDataCollection
 
     }
 
-    List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker) {
-        List<LidarPoint> pts=Lists.newArrayList();
+    List<BasicLidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker) {
+        List<BasicLidarPoint> pts=Lists.newArrayList();
         try {
             DataInputStream stream=new DataInputStream(new FileInputStream(dataInputFile));
             while (stream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF

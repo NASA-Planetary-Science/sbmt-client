@@ -16,6 +16,7 @@ import edu.jhuapl.near.gui.eros.NISSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
@@ -24,7 +25,7 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
@@ -181,7 +182,7 @@ public class View extends JPanel
 
             controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
 
-            if (smallBodyConfig.hasMapmaker)
+            /*if (smallBodyConfig.hasMapmaker)
             {
                 JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
@@ -191,7 +192,18 @@ public class View extends JPanel
             {
                 JComponent component = new BigmapPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/bigmap.zip");
                 controlPanel.addTab("Bigmap", component);
-            }
+            }*/
+
+            /*if(smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
+            {
+                JComponent component = new DEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
+                        smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
+                controlPanel.addTab("DEMs", component);
+            }*/
+
+            JComponent component = new CustomDEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
+                    smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
+            controlPanel.addTab("DEMs", component);
         }
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -308,7 +320,7 @@ public class View extends JPanel
 
         if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
-            allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
+            allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel));
         }
 
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
@@ -318,6 +330,7 @@ public class View extends JPanel
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
+        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
     }
@@ -398,7 +411,7 @@ public class View extends JPanel
         if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
             PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
+            popupManager.registerPopup(modelManager.getModel(ModelNames.DEM_BOUNDARY), popupMenu);
         }
     }
 

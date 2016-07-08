@@ -47,6 +47,8 @@ public class FileCache
 
         // The number of bytes in the file (regardless if actually downloaded)
         public long length = -1;
+
+        public boolean existsOnServer;
     }
 
     /**
@@ -140,6 +142,17 @@ public class FileCache
         try
         {
             URL u = new URL(Configuration.getDataRootURL() + path);
+
+            try
+            {
+                u.openStream();
+            }
+            catch (IOException e)
+            {
+                fi.existsOnServer=false;
+                return fi;
+            }
+            fi.existsOnServer=true;
 
             URLConnection conn = u.openConnection();
             conn.setRequestProperty("User-Agent", "Mozilla/4.0");

@@ -37,7 +37,7 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;

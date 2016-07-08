@@ -21,8 +21,8 @@ import vtk.vtkRenderer;
 
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.AxisType;
+import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
 import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;

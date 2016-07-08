@@ -5,8 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,8 +18,10 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -38,11 +40,13 @@ import vtk.vtkObject;
 
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
-import edu.jhuapl.near.model.DEMModel;
+import edu.jhuapl.near.model.DEM;
+import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+//import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -57,7 +61,7 @@ import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 
-public class MapmakerView extends JFrame
+public class DEMView extends JFrame implements WindowListener
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -68,11 +72,13 @@ public class MapmakerView extends JFrame
     private PickManager pickManager;
     private MapmakerPlot plot;
     private int currentColorIndex = 0;
-    private MapletBoundaryCollection mapletBoundaries;
     private JComboBox coloringTypeComboBox;
-    private DEMModel dem;
+    private DEM dem;
+    private DEMKey key;
+    private DEMCollection demCollection;
     private Renderer renderer;
     private JButton scaleColoringButton;
+    private boolean syncColoring;
 
     private static final String Profile = "Profile";
     private static final String StartLatitude = "StartLatitude";
@@ -83,11 +89,13 @@ public class MapmakerView extends JFrame
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
-
-    public MapmakerView(File cubFile, SmallBodyModel parentSmallBodyModel,
-            MapletBoundaryCollection mapletBoundaries) throws IOException, FitsException
+    public DEMView(DEMKey key, DEMCollection demCollection, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
     {
-        this.mapletBoundaries = mapletBoundaries;
+        this.key = key;
+        this.demCollection = demCollection;
+
+        // Don't sync coloring by default
+        syncColoring = false;
 
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
         setIconImage(erosIcon.getImage());
@@ -97,11 +105,15 @@ public class MapmakerView extends JFrame
         StatusBar statusBar = new StatusBar();
         add(statusBar, BorderLayout.PAGE_END);
 
-        String filename = cubFile.getAbsolutePath();
+        // Look up dem object in main view
+        DEM macroDEM = demCollection.getDEM(key);
+
+        // Create an entirely new DEM object to go with this model manager
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = new DEMModel(filename);
-        dem.setColoringIndex(0);
+        dem = new DEM(key);
+        dem.setColoringIndex(macroDEM.getColoringIndex());
+
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
         allModels.put(ModelNames.SMALL_BODY, dem);
@@ -125,42 +137,28 @@ public class MapmakerView extends JFrame
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
-        JPanel rendererPanel = new JPanel(new BorderLayout());
-        rendererPanel.add(renderer, BorderLayout.CENTER);
-
         JPanel panel = new JPanel(new BorderLayout());
 
-        plot = new MapmakerPlot(lineModel, dem, 0);
+        plot = new MapmakerPlot(lineModel, dem, macroDEM.getColoringIndex());
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
         plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                renderer, plot.getChartPanel());
+               renderer, plot.getChartPanel());
 
         splitPane.setResizeWeight(0.5);
         splitPane.setOneTouchExpandable(true);
 
-        panel.add(splitPane, BorderLayout.CENTER);
-        panel.add(createButtonsPanel(), BorderLayout.SOUTH);
+        panel.add(splitPane, BorderLayout.CENTER); // twupy1: This is what messes up main shape model
+        panel.add(createButtonsPanel(macroDEM.getColoringIndex()), BorderLayout.SOUTH);
 
         add(panel, BorderLayout.CENTER);
 
-        mapletBoundaries.addBoundary(dem);
-
-        addWindowListener(new WindowAdapter()
-        {
-            public void windowClosing(WindowEvent e)
-            {
-                MapmakerView.this.mapletBoundaries.removeBoundary(dem);
-                System.gc();
-                vtkObject.JAVA_OBJECT_MANAGER.gc(true);
-            }
-        });
-
+        addWindowListener(this);
         createMenus();
 
         // Finally make the frame visible
-        setTitle("Mapmaker/Bigmap View");
+        setTitle("DEM View");
         pack();
         setVisible(true);
     }
@@ -169,6 +167,7 @@ public class MapmakerView extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
 
+        // File
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem mi = new JMenuItem(new SaveImageAction(renderer));
@@ -192,10 +191,20 @@ public class MapmakerView extends JFrame
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
+        // Sync
+        JMenu syncMenu = new JMenu("Sync");
+
+        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem("Coloring");
+        syncMenu.add(cbmi);
+        cbmi.addActionListener(new SynchronizeColoringAction());
+
+        syncMenu.setMnemonic('S');
+        menuBar.add(syncMenu);
+
         setJMenuBar(menuBar);
     }
 
-    private JPanel createButtonsPanel()
+    private JPanel createButtonsPanel(int initialSelectedOption)
     {
         JPanel panel = new JPanel();
 
@@ -205,6 +214,7 @@ public class MapmakerView extends JFrame
                 "Color by slope",
                 "No coloring"};
         coloringTypeComboBox = new JComboBox(coloringOptions);
+        coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
         coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
         coloringTypeComboBox.addActionListener(new ActionListener()
         {
@@ -219,6 +229,10 @@ public class MapmakerView extends JFrame
                         scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
                         plot.setColoringIndex(-1);
+                        if(syncColoring)
+                        {
+                            demCollection.getDEM(key).setColoringIndex(-1);
+                        }
                     }
                     else
                     {
@@ -226,6 +240,10 @@ public class MapmakerView extends JFrame
                         scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
                         plot.setColoringIndex(index);
+                        if(syncColoring)
+                        {
+                            demCollection.getDEM(key).setColoringIndex(index);
+                        }
                     }
                 }
                 catch (IOException e1)
@@ -597,7 +615,7 @@ public class MapmakerView extends JFrame
         public void actionPerformed(ActionEvent actionEvent)
         {
             String name = "platedata.csv";
-            File file = CustomFileChooser.showSaveDialog(MapmakerView.this, "Export Plate Data", name);
+            File file = CustomFileChooser.showSaveDialog(DEMView.this, "Export Plate Data", name);
 
             try
             {
@@ -607,12 +625,92 @@ public class MapmakerView extends JFrame
             catch (Exception e1)
             {
                 e1.printStackTrace();
-                JOptionPane.showMessageDialog(MapmakerView.this,
+                JOptionPane.showMessageDialog(DEMView.this,
                         "An error occurred exporting the plate data.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
+    }
+
+    private class SynchronizeColoringAction extends AbstractAction
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent event)
+        {
+            // TODO Auto-generated method stub
+            AbstractButton aButton = (AbstractButton) event.getSource();
+            syncColoring = aButton.getModel().isSelected();
+
+            // If true, then signal macroDEM to use current microDEM coloring
+            if(syncColoring)
+            {
+                try
+                {
+                    demCollection.getDEM(key).setColoringIndex(dem.getColoringIndex());
+                }
+                catch (Exception e1)
+                {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "An error occurred synchronizing macro view DEM coloring with micro view.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e)
+    {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e)
+    {
+        // TODO Auto-generated method stub
+        System.gc();
+        vtkObject.JAVA_OBJECT_MANAGER.gc(true);
     }
 }

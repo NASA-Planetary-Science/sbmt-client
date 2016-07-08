@@ -14,15 +14,15 @@ import javax.swing.SpinnerNumberModel;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ColorChooser;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.MapletBoundaryCollection.Boundary;
 
 public class MapletBoundaryPopupMenu extends PopupMenu
 {
-    private MapletBoundaryCollection boundaryCollection;
-    private Boundary boundary;
+    private DEMBoundaryCollection boundaryCollection;
+    private DEMBoundary boundary;
     private Component invoker;
     private JMenuItem colorMenuItem;
     private JMenuItem thicknessMenuItem;
@@ -30,7 +30,7 @@ public class MapletBoundaryPopupMenu extends PopupMenu
     public MapletBoundaryPopupMenu(ModelManager modelManager,
             Component invoker)
     {
-        this.boundaryCollection = (MapletBoundaryCollection)modelManager.getModel(ModelNames.MAPLET_BOUNDARY);
+        this.boundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
         this.invoker = invoker;
 
         colorMenuItem = new JMenuItem(new ChangeColorAction());
@@ -54,7 +54,7 @@ public class MapletBoundaryPopupMenu extends PopupMenu
             if (color == null)
                 return;
 
-            boundary.setColor(color);
+            boundary.setBoundaryColor(color);
         }
     }
 

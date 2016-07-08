@@ -13,7 +13,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
