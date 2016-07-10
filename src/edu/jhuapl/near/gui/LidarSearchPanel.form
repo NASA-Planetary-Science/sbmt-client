@@ -11,7 +11,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,3,28,0,0,1,-113"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,3,30,0,0,1,48"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -35,15 +35,14 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="radialOffsetChanger" alignment="0" pref="360" max="32767" attributes="0"/>
-                          <Component id="jScrollPane1" alignment="0" pref="360" max="32767" attributes="0"/>
-                          <Component id="jPanel1" alignment="0" pref="368" max="32767" attributes="0"/>
-                          <Component id="resultsLabel" alignment="0" pref="360" max="32767" attributes="0"/>
-                          <Component id="selectRegionPanel" alignment="1" pref="360" max="32767" attributes="0"/>
-                          <Component id="submitPanel" alignment="0" pref="360" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jPanel1" alignment="0" pref="0" max="32767" attributes="0"/>
+                          <Component id="resultsLabel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="selectRegionPanel" alignment="1" max="32767" attributes="0"/>
+                          <Component id="submitPanel" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
@@ -65,7 +64,6 @@
                                       <Component id="fileTypeComboBox" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
@@ -90,12 +88,14 @@
                                           <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
                                       </Group>
                                   </Group>
+                                  <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
+                  <Component id="radialOffsetPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -139,12 +139,12 @@
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="resultsLabel" min="-2" pref="65" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="121" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="212" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="radialOffsetChanger" min="-2" pref="85" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
+                      <Component id="radialOffsetPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="translateTracksButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="dragTracksToggleButton" min="-2" max="-2" attributes="0"/>
@@ -229,8 +229,6 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="edu.jhuapl.near.gui.RadialOffsetChanger" name="radialOffsetChanger">
-            </Component>
             <Container class="javax.swing.JPanel" name="jPanel1">
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -272,6 +270,9 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectRegionButtonActionPerformed"/>
                   </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
+                  </AuxValues>
                 </Component>
                 <Component class="javax.swing.JButton" name="clearRegionButton">
                   <Properties>
@@ -407,6 +408,10 @@
                 <Property name="text" type="java.lang.String" value="File Type:"/>
               </Properties>
             </Component>
+            <Container class="javax.swing.JPanel" name="radialOffsetPanel">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+            </Container>
           </SubComponents>
         </Container>
       </SubComponents>
