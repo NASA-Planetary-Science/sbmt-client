@@ -1,8 +1,5 @@
 package edu.jhuapl.near.gui.joglrendering.old;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
@@ -28,7 +25,7 @@ public class vtksbmtJoglCanvas extends vtksbmtJoglComponent<GLCanvas>
             super(new GLCapabilities(GLProfile.getDefault()));
         }
 
-        @Override
+/*        @Override
         public void paint(Graphics arg0)
         {
             // TODO Auto-generated method stub
@@ -42,8 +39,7 @@ public class vtksbmtJoglCanvas extends vtksbmtJoglComponent<GLCanvas>
         {
             // TODO Auto-generated method stub
             super.display();
-            repaint();
-        }
+        }*/
     }
 
 

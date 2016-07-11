@@ -41,6 +41,7 @@ import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.lidar.test.BasicLidarPoint;
+import edu.jhuapl.near.lidar.test.LidarPoint;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -65,7 +66,7 @@ public class LidarSearchDataCollection extends Model
     private SmallBodyModel smallBodyModel;
     private vtkPolyData polydata;
     private vtkPolyData selectedPointPolydata;
-    protected ArrayList<BasicLidarPoint> originalPoints = new ArrayList<BasicLidarPoint>();
+    protected ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper pointsMapper;
     private vtkPolyDataMapper selectedPointMapper;
@@ -603,9 +604,9 @@ public class LidarSearchDataCollection extends Model
 
         for (int i=startId; i<=stopId; ++i)
         {
-            BasicLidarPoint pt = originalPoints.get(i);
-            double[] target = pt.getTargetPositionAsArray();
-            double[] scpos = pt.getSourcePositionAsArray();
+            LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.getTargetPosition().toArray();
+            double[] scpos = pt.getSourcePosition().toArray();
             if (transformPoint)
             {
                 target = transformLidarPoint(target);
@@ -621,7 +622,7 @@ public class LidarSearchDataCollection extends Model
                     scpos[0] + " " +
                     scpos[1] + " " +
                     scpos[2] + " " +
-                    MathUtil.distanceBetween(pt.getSourcePositionAsArray(), pt.getTargetPositionAsArray()) + newline);
+                    MathUtil.distanceBetween(pt.getSourcePosition().toArray(), pt.getTargetPosition().toArray()) + newline);
         }
 
         out.close();
@@ -656,9 +657,9 @@ public class LidarSearchDataCollection extends Model
 
                 for (int i=startId; i<=stopId; ++i)
                 {
-                    BasicLidarPoint pt = originalPoints.get(i);
-                    double[] target = pt.getTargetPositionAsArray();
-                    double[] scpos = pt.getSourcePositionAsArray();
+                    LidarPoint pt = originalPoints.get(i);
+                    double[] target = pt.getTargetPosition().toArray();
+                    double[] scpos = pt.getSourcePosition().toArray();
                     if (transformPoint)
                     {
                         target = transformLidarPoint(target);
@@ -674,7 +675,7 @@ public class LidarSearchDataCollection extends Model
                             scpos[0] + " " +
                             scpos[1] + " " +
                             scpos[2] + " " +
-                            MathUtil.distanceBetween(pt.getSourcePositionAsArray(), pt.getTargetPositionAsArray()) + newline);
+                            MathUtil.distanceBetween(pt.getSourcePosition().toArray(), pt.getTargetPosition().toArray()) + newline);
                 }
             }
         }
@@ -848,7 +849,7 @@ public class LidarSearchDataCollection extends Model
                 // Go through each point in the track
                 for (int i=startId; i<=stopId; ++i)
                 {
-                    double[] pt = originalPoints.get(i).getTargetPositionAsArray();
+                    double[] pt = originalPoints.get(i).getTargetPosition().toArray();
                     pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
 
@@ -953,8 +954,8 @@ public class LidarSearchDataCollection extends Model
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
             double et = originalPoints.get(cellId).getTime();
-            double[] target = originalPoints.get(cellId).getTargetPositionAsArray();
-            double[] scpos = originalPoints.get(cellId).getSourcePositionAsArray();
+            double[] target = originalPoints.get(cellId).getTargetPosition().toArray();
+            double[] scpos = originalPoints.get(cellId).getSourcePosition().toArray();
             double range_m = Math.sqrt(
                     (target[0]-scpos[0])*(target[0]-scpos[0]) +
                     (target[1]-scpos[1])*(target[1]-scpos[1]) +
@@ -1039,8 +1040,8 @@ public class LidarSearchDataCollection extends Model
                 PolynomialFitter fitter = new PolynomialFitter(new LevenbergMarquardtOptimizer());
                 for (int i=startId; i<=stopId; ++i)
                 {
-                    BasicLidarPoint lp = originalPoints.get(i);
-                    double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
+                    LidarPoint lp = originalPoints.get(i);
+                    double[] target = transformLidarPoint(lp.getTargetPosition().toArray());
                     fitter.addObservedPoint(1.0, lp.getTime()-t0, target[j]);
                 }
 
@@ -1053,7 +1054,7 @@ public class LidarSearchDataCollection extends Model
             // Set the fittedLinePoint to the point on the line closest to first track point
             // as this makes it easier to do distance computations along the line.
             double[] dist = new double[1];
-            double[] target = transformLidarPoint(originalPoints.get(startId).getTargetPositionAsArray());
+            double[] target = transformLidarPoint(originalPoints.get(startId).getTargetPosition().toArray());
             MathUtil.nplnpt(lineStartPoint, fittedLineDirection, target, fittedLinePoint, dist);
         }
         catch (Exception e)
@@ -1100,8 +1101,8 @@ public class LidarSearchDataCollection extends Model
         ArrayList<double[]> xyzPointList = new ArrayList<double[]>();
         for (int i=startId; i<=stopId; ++i)
         {
-            BasicLidarPoint pt = originalPoints.get(i);
-            double[] target = pt.getTargetPositionAsArray();
+            LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.getTargetPosition().toArray();
             target = transformLidarPoint(target);
             xyzPointList.add(target);
         }
@@ -1122,7 +1123,7 @@ public class LidarSearchDataCollection extends Model
         fitLineToTrack(trackId, fittedLinePoint, fittedLineDirection);
         for (int i=track.startId; i<=track.stopId; ++i)
         {
-            double[] point = originalPoints.get(i).getTargetPositionAsArray();
+            double[] point = originalPoints.get(i).getTargetPosition().toArray();
             point = transformLidarPoint(point);
             double dist = distanceOfClosestPointOnLineToStartOfLine(point, trackId, fittedLinePoint, fittedLineDirection);
             distance.add(dist);
@@ -1188,7 +1189,7 @@ public class LidarSearchDataCollection extends Model
     public double[] getSelectedPoint()
     {
         if (selectedPoint >= 0)
-            return originalPoints.get(selectedPoint).getTargetPositionAsArray().clone();
+            return originalPoints.get(selectedPoint).getTargetPosition().toArray().clone();
 
         return null;
     }
@@ -1252,8 +1253,8 @@ public class LidarSearchDataCollection extends Model
         double[] centroid = {0.0, 0.0, 0.0};
         for (int i=startId; i<=stopId; ++i)
         {
-            BasicLidarPoint lp = originalPoints.get(i);
-            double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
+            LidarPoint lp = originalPoints.get(i);
+            double[] target = transformLidarPoint(lp.getTargetPosition().toArray());
             centroid[0] += target[0];
             centroid[1] += target[1];
             centroid[2] += target[2];
@@ -1294,8 +1295,8 @@ public class LidarSearchDataCollection extends Model
             double[][] points = new double[3][trackSize];
             for (int i=startId,j=0; i<=stopId; ++i,++j)
             {
-                BasicLidarPoint lp = originalPoints.get(i);
-                double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
+                LidarPoint lp = originalPoints.get(i);
+                double[] target = transformLidarPoint(lp.getTargetPosition().toArray());
                 points[0][j] = target[0] - centroid[0];
                 points[1][j] = target[1] - centroid[1];
                 points[2][j] = target[2] - centroid[2];
@@ -1350,8 +1351,8 @@ public class LidarSearchDataCollection extends Model
 
         for (int i=startId; i<=stopId; ++i)
         {
-            BasicLidarPoint lp = originalPoints.get(i);
-            double[] target = transformLidarPoint(lp.getTargetPositionAsArray());
+            LidarPoint lp = originalPoints.get(i);
+            double[] target = transformLidarPoint(lp.getTargetPosition().toArray());
 
             target[0] = target[0] - pointOnPlane[0];
             target[1] = target[1] - pointOnPlane[1];
@@ -1408,9 +1409,9 @@ public class LidarSearchDataCollection extends Model
 
         for (int i=startId; i<=stopId; ++i)
         {
-            BasicLidarPoint pt = originalPoints.get(i);
-            double[] target = pt.getTargetPositionAsArray();
-            double[] scpos = pt.getSourcePositionAsArray();
+            LidarPoint pt = originalPoints.get(i);
+            double[] target = pt.getTargetPosition().toArray();
+            double[] scpos = pt.getSourcePosition().toArray();
             if (transformPoint)
             {
                 target = transformLidarPoint(target);

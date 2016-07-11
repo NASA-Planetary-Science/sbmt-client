@@ -1443,8 +1443,8 @@ public class SmallBodyConfig
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            c.lidarSearchDataSourceMap.put("TreeBased", "/GASKELL/RQ36_V3/OLA/tree");
-            c.hasTreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarSearchDataSourceMap.put("Local Test Data", "GASKELL/RQ36_V3/OLA/hypertree.testing");
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
         }
 
         if (Configuration.isAPLVersion())
@@ -2100,7 +2100,7 @@ public class SmallBodyConfig
     public String customName;
     public boolean customTemporary = false;
 
-    public boolean hasTreeBasedLidarSearch=false;
+    public boolean hasHypertreeBasedLidarSearch=false;
 
     protected SmallBodyConfig clone()
     {
