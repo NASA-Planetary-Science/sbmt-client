@@ -73,7 +73,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="endSpinner" alignment="0" max="32767" attributes="1"/>
-                                          <Component id="submitButton1" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="manageDatasourcesButton" alignment="0" max="32767" attributes="0"/>
                                           <Component id="sourceComboBox" alignment="0" max="32767" attributes="1"/>
                                           <Component id="startSpinner" alignment="0" max="32767" attributes="1"/>
                                       </Group>
@@ -108,7 +108,7 @@
                           <Component id="sourceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="submitButton1" min="-2" max="-2" attributes="0"/>
+                      <Component id="manageDatasourcesButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="startLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -415,12 +415,12 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
             </Container>
-            <Component class="javax.swing.JButton" name="submitButton1">
+            <Component class="javax.swing.JButton" name="manageDatasourcesButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Manage Data Sources..."/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="submitButton1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manageDatasourcesButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

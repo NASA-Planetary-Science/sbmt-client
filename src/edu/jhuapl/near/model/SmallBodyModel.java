@@ -68,6 +68,8 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
+    public static final String OLA_DATASOURCE_FILENAMES = "OlaDatasourceFilenames";
+
     public static final int FITS_SCALAR_COLUMN_INDEX = 4;
 
     public enum ColoringValueType {
@@ -137,6 +139,38 @@ public class SmallBodyModel extends Model
     private int blueFalseColor = -1; // blue channel for false coloring
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
+
+    // Class storing info related to plate data used to color shape model
+    public static class OlaDatasourceInfo
+    {
+        public String coloringName = null;
+        public String coloringUnits = null;
+        public boolean coloringHasNulls = false;
+        public int resolutionLevel = 0;
+        public double[] defaultColoringRange = null;
+        public double[] currentColoringRange = null;
+        public vtkFloatArray coloringValues = null;
+        public String coloringFile = null;
+        public boolean builtIn = true;
+        public Format format = Format.TXT;
+
+        @Override
+        public String toString()
+        {
+            String str = coloringName;
+            if (coloringUnits != null && !coloringUnits.isEmpty())
+                str += ", " + coloringUnits;
+            if (format != Format.TXT)
+                str += ", " + format.toString();
+            if (coloringHasNulls)
+                str += ", contains invalid data";
+            if (builtIn)
+                str += ", (built-in and cannot be modified)";
+            return str;
+        }
+    }
+    ArrayList<OlaDatasourceInfo> olaDatasourceInfo = new ArrayList<OlaDatasourceInfo>();
+    private int olaDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
@@ -435,13 +469,60 @@ public class SmallBodyModel extends Model
         }
     }
 
+    public void loadCustomOlaDatasourceInfo() throws IOException
+    {
+        String prevColoringName = null;
+        if (coloringIndex >= 0)
+            prevColoringName = coloringInfo.get(coloringIndex).coloringName;
+
+        clearCustomColoringInfo();
+
+        String configFilename = getConfigFilename();
+
+        if (!(new File(configFilename).exists()))
+            return;
+
+        MapUtil configMap = new MapUtil(configFilename);
+
+        convertOldConfigFormatToNewVersion(configMap);
+
+        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_FILENAMES))
+        {
+            String[] olaDatasourceFilenames = configMap.get(SmallBodyModel.OLA_DATASOURCE_FILENAMES).split(",", -1);
+
+            for (int i=0; i<olaDatasourceFilenames.length; ++i)
+            {
+                OlaDatasourceInfo info = new OlaDatasourceInfo();
+                info.coloringFile = olaDatasourceFilenames[i];
+                if (!info.coloringFile.trim().isEmpty())
+                {
+                    info.coloringName = olaDatasourceFilenames[i];
+                }
+            }
+        }
+
+        // See if there's color of the same name as previously shown and set it to that.
+        olaDatasourceIndex = -1;
+        for (int i=0; i<coloringInfo.size(); ++i)
+        {
+            if (prevColoringName != null && prevColoringName.equals(olaDatasourceInfo.get(i).coloringName))
+            {
+                olaDatasourceIndex = i;
+                break;
+            }
+        }
+    }
+
     private void initialize(File modelFile)
     {
         // Load in custom plate data
         try
         {
             if (!smallBodyConfig.customTemporary)
+            {
                 loadCustomColoringInfo();
+                loadCustomOlaDatasourceInfo();
+            }
 
             smallBodyPolyData.ShallowCopy(
                     PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
@@ -2461,5 +2542,70 @@ public class SmallBodyModel extends Model
     public ArrayList<ColoringInfo> getColoringInfoList()
     {
         return coloringInfo;
+    }
+
+
+
+
+
+    public void addCustomOlaDatasource(OlaDatasourceInfo info) throws IOException
+    {
+        info.builtIn = false;
+        info.resolutionLevel = resolutionLevel;
+        info.coloringValues = null;
+        info.defaultColoringRange = null;
+        olaDatasourceInfo.add(info);
+
+        if (coloringIndex >= 0)
+            loadColoringData();
+    }
+
+    public void setCustomOlaDatasource(int index, OlaDatasourceInfo info) throws IOException
+    {
+        if (coloringInfo.get(index).builtIn)
+            return;
+
+        info.builtIn = false;
+        info.coloringValues = null;
+        info.defaultColoringRange = null;
+
+        olaDatasourceInfo.set(index, info);
+
+        if (coloringIndex >= 0)
+        {
+            loadColoringData();
+            paintBody();
+        }
+    }
+
+    public void removeCustomOlaDatasource(int index) throws IOException
+    {
+        if (olaDatasourceInfo.get(index).builtIn)
+            return;
+
+        boolean needToRepaint = coloringIndex >= 0 || useFalseColoring;
+
+        olaDatasourceInfo.remove(index);
+
+        if (olaDatasourceIndex == index)
+            olaDatasourceIndex = -1;
+        else if (olaDatasourceIndex > index)
+            --olaDatasourceIndex;
+    }
+
+    public void reloadOlaDatasources() throws IOException
+    {
+        for (OlaDatasourceInfo info : olaDatasourceInfo)
+        {
+            info.coloringValues = null;
+            info.defaultColoringRange = null;
+        }
+
+        loadColoringData();
+    }
+
+    public ArrayList<OlaDatasourceInfo> getOlaDasourceInfoList()
+    {
+        return olaDatasourceInfo;
     }
 }

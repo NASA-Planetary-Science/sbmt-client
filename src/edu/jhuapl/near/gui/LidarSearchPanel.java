@@ -326,7 +326,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         fileTypeComboBox = new javax.swing.JComboBox();
         fileTypeLabel = new javax.swing.JLabel();
         radialOffsetPanel = new javax.swing.JPanel();
-        submitButton1 = new javax.swing.JButton();
+        manageDatasourcesButton = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -473,10 +473,10 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         radialOffsetPanel.setLayout(new java.awt.BorderLayout());
 
-        submitButton1.setText("Manage Data Sources...");
-        submitButton1.addActionListener(new java.awt.event.ActionListener() {
+        manageDatasourcesButton.setText("Manage Data Sources...");
+        manageDatasourcesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submitButton1ActionPerformed(evt);
+                manageDatasourcesButtonActionPerformed(evt);
             }
         });
 
@@ -518,7 +518,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(endSpinner)
-                                    .addComponent(submitButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(manageDatasourcesButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(sourceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(startSpinner)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
@@ -542,7 +542,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     .addComponent(sourceComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sourceLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(submitButton1)
+                .addComponent(manageDatasourcesButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(startLabel)
@@ -759,9 +759,14 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         populateTracksErrorLabel();
     }//GEN-LAST:event_trackErrorCheckBoxActionPerformed
 
-    private void submitButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_submitButton1ActionPerformed
+    private void manageDatasourcesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageDatasourcesButtonActionPerformed
+        CustomOlaDataDialog dialog = new CustomOlaDataDialog(modelManager);
+        dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(this));
+        dialog.setVisible(true);
+
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+//        updateColoringComboBoxes();
+    }//GEN-LAST:event_manageDatasourcesButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -778,6 +783,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton loadTrackButton;
+    private javax.swing.JButton manageDatasourcesButton;
     private javax.swing.JLabel minTrackSizeLabel;
     private javax.swing.JFormattedTextField minTrackSizeTextField;
     private javax.swing.JSpinner pointSizeSpinner;
@@ -792,7 +798,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JLabel startLabel;
     private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton submitButton;
-    private javax.swing.JButton submitButton1;
     private javax.swing.JPanel submitPanel;
     private javax.swing.JCheckBox trackErrorCheckBox;
     private javax.swing.JLabel trackErrorLabel;
