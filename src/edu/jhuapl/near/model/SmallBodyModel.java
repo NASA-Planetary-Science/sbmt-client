@@ -68,7 +68,8 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
-    public static final String OLA_DATASOURCE_FILENAMES = "OlaDatasourceFilenames";
+    public static final String OLA_DATASOURCE_PATHS = "OlaDatasourcePaths";
+    public static final String OLA_DATASOURCE_NAMES = "OlaDatasourceNames";
 
     public static final int FITS_SCALAR_COLUMN_INDEX = 4;
 
@@ -144,28 +145,28 @@ public class SmallBodyModel extends Model
     public static class OlaDatasourceInfo
     {
         public String coloringName = null;
-        public String coloringUnits = null;
-        public boolean coloringHasNulls = false;
-        public int resolutionLevel = 0;
-        public double[] defaultColoringRange = null;
-        public double[] currentColoringRange = null;
-        public vtkFloatArray coloringValues = null;
+//        public String coloringUnits = null;
+//        public boolean coloringHasNulls = false;
+//        public int resolutionLevel = 0;
+//        public double[] defaultColoringRange = null;
+//        public double[] currentColoringRange = null;
+//        public vtkFloatArray coloringValues = null;
         public String coloringFile = null;
-        public boolean builtIn = true;
-        public Format format = Format.TXT;
+//        public boolean builtIn = true;
+//        public Format format = Format.TXT;
 
         @Override
         public String toString()
         {
             String str = coloringName;
-            if (coloringUnits != null && !coloringUnits.isEmpty())
-                str += ", " + coloringUnits;
-            if (format != Format.TXT)
-                str += ", " + format.toString();
-            if (coloringHasNulls)
-                str += ", contains invalid data";
-            if (builtIn)
-                str += ", (built-in and cannot be modified)";
+//            if (coloringUnits != null && !coloringUnits.isEmpty())
+//                str += ", " + coloringUnits;
+//            if (format != Format.TXT)
+//                str += ", " + format.toString();
+//            if (coloringHasNulls)
+//                str += ", contains invalid data";
+//            if (builtIn)
+//                str += ", (built-in and cannot be modified)";
             return str;
         }
     }
@@ -469,11 +470,19 @@ public class SmallBodyModel extends Model
         }
     }
 
+    private void clearCustomOlaDatasourceInfo()
+    {
+        for (int i=olaDatasourceInfo.size()-1; i>=0; --i)
+        {
+            olaDatasourceInfo.remove(i);
+        }
+    }
+
     public void loadCustomOlaDatasourceInfo() throws IOException
     {
-        String prevColoringName = null;
+        String prevOlaDatasourceName = null;
         if (coloringIndex >= 0)
-            prevColoringName = coloringInfo.get(coloringIndex).coloringName;
+            prevOlaDatasourceName = olaDatasourceInfo.get(olaDatasourceIndex).coloringName;
 
         clearCustomColoringInfo();
 
@@ -486,17 +495,17 @@ public class SmallBodyModel extends Model
 
         convertOldConfigFormatToNewVersion(configMap);
 
-        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_FILENAMES))
+        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
         {
-            String[] olaDatasourceFilenames = configMap.get(SmallBodyModel.OLA_DATASOURCE_FILENAMES).split(",", -1);
+            String[] olaDatasourceNames = configMap.get(SmallBodyModel.OLA_DATASOURCE_NAMES).split(",", -1);
 
-            for (int i=0; i<olaDatasourceFilenames.length; ++i)
+            for (int i=0; i<olaDatasourceNames.length; ++i)
             {
                 OlaDatasourceInfo info = new OlaDatasourceInfo();
-                info.coloringFile = olaDatasourceFilenames[i];
+                info.coloringFile = olaDatasourceNames[i];
                 if (!info.coloringFile.trim().isEmpty())
                 {
-                    info.coloringName = olaDatasourceFilenames[i];
+                    info.coloringName = olaDatasourceNames[i];
                 }
             }
         }
@@ -505,7 +514,7 @@ public class SmallBodyModel extends Model
         olaDatasourceIndex = -1;
         for (int i=0; i<coloringInfo.size(); ++i)
         {
-            if (prevColoringName != null && prevColoringName.equals(olaDatasourceInfo.get(i).coloringName))
+            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(olaDatasourceInfo.get(i).coloringName))
             {
                 olaDatasourceIndex = i;
                 break;
@@ -1819,6 +1828,28 @@ public class SmallBodyModel extends Model
         }
     }
 
+
+    private void loadOlaDatasourceData() throws IOException
+    {
+        for (OlaDatasourceInfo info : olaDatasourceInfo)
+        {
+            // If not null, that means we've already loaded it.
+            if (info.coloringName != null)
+                continue;
+
+            String filename = info.coloringFile;
+            filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
+            if (!filename.startsWith(FileCache.FILE_PREFIX))
+                filename += "_res" + resolutionLevel + ".txt.gz";
+            File file = FileCache.getFileFromServer(filename);
+            if (file == null)
+                throw new IOException("Unable to download " + filename);
+        }
+
+        initializeColoringRanges();
+    }
+
+
     private void paintBody() throws IOException
     {
         initializeActorsAndMappers();
@@ -2550,14 +2581,14 @@ public class SmallBodyModel extends Model
 
     public void addCustomOlaDatasource(OlaDatasourceInfo info) throws IOException
     {
-        info.builtIn = false;
-        info.resolutionLevel = resolutionLevel;
-        info.coloringValues = null;
-        info.defaultColoringRange = null;
+//        info.builtIn = false;
+//        info.resolutionLevel = resolutionLevel;
+//        info.coloringValues = null;
+//        info.defaultColoringRange = null;
         olaDatasourceInfo.add(info);
 
         if (coloringIndex >= 0)
-            loadColoringData();
+            loadOlaDatasourceData();
     }
 
     public void setCustomOlaDatasource(int index, OlaDatasourceInfo info) throws IOException
@@ -2565,25 +2596,22 @@ public class SmallBodyModel extends Model
         if (coloringInfo.get(index).builtIn)
             return;
 
-        info.builtIn = false;
-        info.coloringValues = null;
-        info.defaultColoringRange = null;
+//        info.builtIn = false;
+//        info.coloringValues = null;
+//        info.defaultColoringRange = null;
 
         olaDatasourceInfo.set(index, info);
 
-        if (coloringIndex >= 0)
+        if (olaDatasourceIndex >= 0)
         {
-            loadColoringData();
+            loadOlaDatasourceData();
             paintBody();
         }
     }
 
     public void removeCustomOlaDatasource(int index) throws IOException
     {
-        if (olaDatasourceInfo.get(index).builtIn)
-            return;
-
-        boolean needToRepaint = coloringIndex >= 0 || useFalseColoring;
+        boolean needToRepaint = olaDatasourceIndex >= 0 ;
 
         olaDatasourceInfo.remove(index);
 
@@ -2597,11 +2625,11 @@ public class SmallBodyModel extends Model
     {
         for (OlaDatasourceInfo info : olaDatasourceInfo)
         {
-            info.coloringValues = null;
-            info.defaultColoringRange = null;
+            info.coloringName = null;
+            info.coloringFile = null;
         }
 
-        loadColoringData();
+        loadOlaDatasourceData();
     }
 
     public ArrayList<OlaDatasourceInfo> getOlaDasourceInfoList()
