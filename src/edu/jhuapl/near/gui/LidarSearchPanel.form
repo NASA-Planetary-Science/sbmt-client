@@ -72,9 +72,10 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="sourceComboBox" linkSize="2" max="32767" attributes="1"/>
-                                          <Component id="startSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
-                                          <Component id="endSpinner" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="endSpinner" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="submitButton1" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="sourceComboBox" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="startSpinner" alignment="0" max="32767" attributes="1"/>
                                       </Group>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -84,8 +85,8 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="trackSeparationTextField" pref="112" max="32767" attributes="1"/>
                                           <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
-                                          <Component id="trackSeparationTextField" alignment="0" min="-2" pref="112" max="-2" attributes="1"/>
                                       </Group>
                                   </Group>
                                   <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -107,6 +108,8 @@
                           <Component id="sourceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="submitButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="startLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="startSpinner" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -116,7 +119,7 @@
                           <Component id="endLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="endSpinner" linkSize="1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="minTrackSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="minTrackSizeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -139,7 +142,7 @@
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="resultsLabel" min="-2" pref="65" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="212" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="179" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
@@ -412,6 +415,14 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
             </Container>
+            <Component class="javax.swing.JButton" name="submitButton1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Manage Data Sources..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="submitButton1ActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
