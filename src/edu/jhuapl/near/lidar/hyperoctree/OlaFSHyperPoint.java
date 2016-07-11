@@ -87,13 +87,13 @@ public class OlaFSHyperPoint implements FSHyperPoint, LidarPoint
     @Override
     public Vector3D getSourcePosition()
     {
-        return new Vector3D(data[5],data[6],data[7]);
+        return new Vector3D(data[4],data[5],data[6]);
     }
 
     @Override
     public Double getIntensityReceived()
     {
-        return data[8];
+        return data[7];
     }
 
     @Override

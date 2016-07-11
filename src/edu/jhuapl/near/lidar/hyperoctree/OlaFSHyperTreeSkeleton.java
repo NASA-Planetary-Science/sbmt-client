@@ -2,21 +2,20 @@ package edu.jhuapl.near.lidar.hyperoctree;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
-import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class OlaFSHyperTreeSkeleton
 {
 
     Node rootNode;
     int idCount=0;
-    TreeMap<Integer, Node> nodeMap; // unfortunately this extra level of indirection is required by the "LidarSearchDataCollection" class
+    TreeMap<Integer, Node> nodeMap=Maps.newTreeMap(); // unfortunately this extra level of indirection is required by the "LidarSearchDataCollection" class
+    Path basePath;
 
     public static class Node
     {
@@ -32,6 +31,8 @@ public class OlaFSHyperTreeSkeleton
             this.path=path;
             this.isLeaf=isLeaf;
             children=new Node[16];
+            for (int i=0; i<16; i++)
+                children[i]=null;
             this.id=id;
         }
 
@@ -46,17 +47,23 @@ public class OlaFSHyperTreeSkeleton
         }
     }
 
-    public OlaFSHyperTreeSkeleton read(Path inputFile)  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
+    public OlaFSHyperTreeSkeleton(Path basePath)
     {
-        OlaFSHyperTreeSkeleton skeleton=new OlaFSHyperTreeSkeleton();
+        this.basePath=basePath;
+    }
+
+    public void read(Path inputFile)  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
+    {
         Path rootPath=inputFile.getParent();    // inputFile is expected to be in the root path of the tree
         double[] rootBounds=OlaFSHyperTreeNode.readBoundsFile(rootPath.resolve("bounds"), 4);
-        skeleton.rootNode=new Node(rootBounds,rootPath,false,idCount++); // false -> root is not a leaf
+        rootNode=new Node(rootBounds,rootPath,false,idCount); // false -> root is not a leaf
+        nodeMap.put(rootNode.id, rootNode);
+        idCount++;
         //
         try
         {
             Scanner scanner=new Scanner(inputFile.toFile());
-            readChildren(scanner, skeleton.rootNode);
+            readChildren(scanner, rootNode);
             scanner.close();
         }
         catch (FileNotFoundException e)
@@ -64,7 +71,6 @@ public class OlaFSHyperTreeSkeleton
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return skeleton;
     }
 
     private void readChildren(Scanner scanner, Node node)   // cf. OlaFSHyperTreeCondenser for code to write the skeleton
@@ -73,7 +79,7 @@ public class OlaFSHyperTreeSkeleton
         {
             String line=scanner.nextLine();
             String[] tokens=line.replace("\n", "").replace("\r", "").split(" ");
-            Path childPath=Paths.get(tokens[0]);
+            Path childPath=basePath.resolve(tokens[0]);
             String childInfo=tokens[1];
             //
             if (childInfo.equals("*"))   // child does not exist
@@ -84,25 +90,30 @@ public class OlaFSHyperTreeSkeleton
                 bounds[j]=Double.valueOf(tokens[2+j]);
             //
             if(childInfo.equals(">"))  // child exists but is not a leaf (i.e. does not have data)
-                node.children[i]=new Node(bounds, childPath, false, idCount++);
+                node.children[i]=new Node(bounds, childPath, false, idCount);
             else if (childInfo.equals("d")) // child exists and is a leaf (i.e. does have data)
-                node.children[i]=new Node(bounds, childPath, true, idCount++);
+                node.children[i]=new Node(bounds, childPath, true, idCount);
+            idCount++;
+            nodeMap.put(node.children[i].id, node.children[i]);
         }
         for (int i=0; i<16; i++)
             if (node.children[i]!=null && !node.children[i].isLeaf)
+            {
                 readChildren(scanner, node.children[i]);
+            }
     }
 
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(double[] searchBounds)
     {
         TreeSet<Integer> pathList=Sets.newTreeSet();
+        System.out.println(rootNode);
         getLeavesIntersectingBoundingBox(rootNode, searchBounds, pathList);
         return pathList;
     }
 
     private void getLeavesIntersectingBoundingBox(Node node, double[] searchBounds, TreeSet<Integer> pathList)
     {
-        if (node.intersects(searchBounds))
+        if (node.intersects(searchBounds) && node.isLeaf)
             pathList.add(node.id);
         for (int i=0; i<16; i++)
             if (node.children[i]!=null)
@@ -114,11 +125,5 @@ public class OlaFSHyperTreeSkeleton
         return nodeMap.get(id);
     }
 
-    public static void main(String[] args)
-    {
-        NativeLibraryLoader.loadVtkLibraries();
-        OlaFSHyperTreeSkeleton skeleton=new OlaFSHyperTreeSkeleton();
-        skeleton.read(Paths.get(args[0]));
-    }
 
 }

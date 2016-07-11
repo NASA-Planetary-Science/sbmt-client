@@ -73,7 +73,7 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
             boolean hasBounds=boundsPath.toFile().exists();
             boolean hasData=dataPath.toFile().exists();
             //
-            writer.write(childPath+" "); // child path
+            writer.write(rootNodePath.relativize(childPath)+" "); // child path
             if (hasBounds)  // child has bounds, so write them
             {
                 double[] bounds=FSHyperTreeNode.readBoundsFile(boundsPath, getDimension());
@@ -168,7 +168,7 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
     public static void main(String[] args)
     {
         Path rootPath=Paths.get(args[0]);
-        Path outFilePath=rootPath.getParent().resolve("test.txt");
+        Path outFilePath=rootPath.resolve("skeleton.txt");
         System.out.println("Root path = "+rootPath);
         System.out.println("Output path = "+outFilePath);
         OlaFSHyperTreeCondenser condenser=new OlaFSHyperTreeCondenser(rootPath,outFilePath);
