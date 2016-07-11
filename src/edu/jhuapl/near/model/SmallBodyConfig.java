@@ -1443,7 +1443,7 @@ public class SmallBodyConfig
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            c.lidarSearchDataSourceMap.put("Local Test Data", "GASKELL/RQ36_V3/OLA/hypertree.testing");
+            c.lidarSearchDataSourceMap.put("Local Test Data", "GASKELL/RQ36_V3/OLA/hyper`.testing");
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
         }
 
