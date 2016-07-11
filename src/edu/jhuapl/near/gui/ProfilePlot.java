@@ -163,6 +163,12 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
         // Update chart labels
         updateChartLabels();
 
+        // Update all the profiles
+        updateAllProfiles();
+    }
+
+    private void updateAllProfiles()
+    {
         // Update all profiles
         int numLines = ((XYSeriesCollection)valueDistanceDataset).getSeriesCount();
         for(int i=0; i<numLines; i++){
@@ -232,6 +238,10 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
             if(smallBodyModel.getColoringIndex() != coloringIndex)
             {
                 setColoringIndex(smallBodyModel.getColoringIndex());
+            }
+            else
+            {
+                updateAllProfiles();
             }
         }
     }
