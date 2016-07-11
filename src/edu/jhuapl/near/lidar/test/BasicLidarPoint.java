@@ -45,16 +45,6 @@ public class BasicLidarPoint implements LidarPoint
         return scpos;
     }
 
-    public double[] getTargetPositionAsArray()
-    {
-        return tgpos.toArray();
-    }
-
-    public double[] getSourcePositionAsArray()
-    {
-        return scpos.toArray();
-    }
-
     @Override
     public Double getIntensityReceived()
     {

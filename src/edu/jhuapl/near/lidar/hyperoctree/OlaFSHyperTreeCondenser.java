@@ -110,10 +110,6 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
 
 
 
-
-
-
-
 /*    public void save(Path outFile)
     {
         try
