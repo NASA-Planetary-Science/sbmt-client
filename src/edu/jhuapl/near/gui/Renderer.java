@@ -44,8 +44,8 @@ import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
-import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;
@@ -339,6 +339,11 @@ public class Renderer extends JPanel implements
         switch (mode)
         {
         case SIDEBYSIDE:    // don't do side by side in main window, and if the mirror window isn't open just move on to the next stereo render mode
+            mainCanvas.getRenderWindow().StereoRenderOff();
+            if (!mirrorFrameOpen)
+                advanceStereoMode();
+            break;
+        case SIDEBYSIDEBALANCED:
             mainCanvas.getRenderWindow().StereoRenderOff();
             if (!mirrorFrameOpen)
                 advanceStereoMode();

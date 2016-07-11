@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public class OlaOctreePoint extends LidarPoint implements OctreePoint {
+public class OlaOctreePoint extends BasicLidarPoint implements OctreePoint {
 
     boolean fullyRead=false;
 
@@ -25,7 +25,7 @@ public class OlaOctreePoint extends LidarPoint implements OctreePoint {
         }
     }
 
-    public OlaOctreePoint(LidarPoint point)
+    public OlaOctreePoint(BasicLidarPoint point)
     {
         super(point.scpos, point.tgpos, point.time, point.intensity);
     }

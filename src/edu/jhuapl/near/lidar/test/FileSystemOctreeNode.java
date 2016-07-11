@@ -124,6 +124,7 @@ class FileSystemOctreeNode extends BoundingBox {
         return getSelfPath().resolve("data");
     }
 
+
     void split() throws IOException {
         streamPool.closeStream(getDataFilePath());
         for (int i=0; i<8; i++)

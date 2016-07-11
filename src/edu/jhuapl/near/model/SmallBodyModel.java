@@ -921,6 +921,7 @@ public class SmallBodyModel extends Model
             //smallBodyActor = new vtkActor();
             smallBodyActor = new SbmtLODActor();
             smallBodyActor.SetMapper(smallBodyMapper);
+
             vtkPolyDataMapper decimatedMapper =
                     ((SbmtLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
             decimatedMapper.SetLookupTable(lookupTable);

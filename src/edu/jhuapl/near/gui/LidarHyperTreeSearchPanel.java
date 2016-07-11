@@ -11,7 +11,7 @@ import com.google.common.base.Stopwatch;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.LidarTreeSearchDataCollection;
+import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -21,11 +21,11 @@ import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.pick.Picker;
 import edu.jhuapl.near.util.BoundingBox;
 
-public class LidarTreeSearchPanel extends LidarSearchPanel
+public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 {
     List<Integer> cubeList;
 
-    public LidarTreeSearchPanel(SmallBodyConfig smallBodyConfig,
+    public LidarHyperTreeSearchPanel(SmallBodyConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
@@ -36,7 +36,7 @@ public class LidarTreeSearchPanel extends LidarSearchPanel
     @Override
     protected ModelNames getLidarModelName()
     {
-        return ModelNames.LIDAR_TREE_SEARCH;
+        return ModelNames.LIDAR_HYPERTREE_SEARCH;
     }
 
     @Override
@@ -64,21 +64,21 @@ public class LidarTreeSearchPanel extends LidarSearchPanel
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
                 smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-                LidarTreeSearchDataCollection coll=(LidarTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_TREE_SEARCH);
+                LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
                 //
                 Stopwatch sw=new Stopwatch();
                 sw.start();
-                cubeList=coll.getTreeLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()));
+                cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()));
                 System.out.println("Search Time="+sw.elapsedMillis()+" ms");
                 sw.stop();
             }
             else
             {
-                LidarTreeSearchDataCollection coll=(LidarTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_TREE_SEARCH);
+                LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
                 //
                 Stopwatch sw=new Stopwatch();
                 sw.start();
-                cubeList=coll.getTreeLeavesIntersectingBoundingBox(new BoundingBox(region.interiorPolyData.GetBounds()));
+                cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(region.interiorPolyData.GetBounds()));
                 System.out.println("Search Time="+sw.elapsedMillis()+" ms");
                 sw.stop();
             }

@@ -3,6 +3,7 @@ package edu.jhuapl.near.gui.joglrendering;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.awt.GLCanvas;
 
 import vtk.vtkGenericOpenGLRenderWindow;
 import vtk.vtkObject;
@@ -15,15 +16,21 @@ import vtk.rendering.vtkInteractorForwarder;
  *
  * @author Sebastien Jourdain - sebastien.jourdain@kitware.com
  */
-public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtkAbstractComponent<T> {
+class vtksbmtJoglComponent<T extends java.awt.Component> extends vtkAbstractComponent<T> {
 
   protected T uiComponent;
   protected boolean isWindowCreated;
   protected GLEventListener glEventListener;
   protected vtkGenericOpenGLRenderWindow glRenderWindow;
 
+  public static vtksbmtJoglComponent createGL()
+  {
+      vtksbmtJoglComponent<GLCanvas> component=new vtksbmtJoglComponent<GLCanvas>(new vtkGenericOpenGLRenderWindow(), new GLCanvas());
+      component.uiComponent.addGLEventListener(component.glEventListener);
+      return component;
+  }
 
-  public vtksbmtAbstractJoglCanvas(vtkRenderWindow renderWindowToUse, T glContainer) {
+  public vtksbmtJoglComponent(vtkRenderWindow renderWindowToUse, T glContainer) {
     super(renderWindowToUse);
     this.isWindowCreated = false;
     this.uiComponent = glContainer;
@@ -35,7 +42,7 @@ public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtk
     // Create the JOGL Event Listener
     this.glEventListener = new GLEventListener() {
       public void init(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglCanvas.this.isWindowCreated = true;
+        vtksbmtJoglComponent.this.isWindowCreated = true;
 
         // Make sure the JOGL Context is current
         GLContext ctx = drawable.getContext();
@@ -44,36 +51,36 @@ public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtk
         }
 
         // Init VTK OpenGL RenderWindow
-        vtksbmtAbstractJoglCanvas.this.glRenderWindow.SetMapped(1);
-        vtksbmtAbstractJoglCanvas.this.glRenderWindow.SetPosition(0, 0);
-        vtksbmtAbstractJoglCanvas.this.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
-        vtksbmtAbstractJoglCanvas.this.glRenderWindow.OpenGLInit();
+        vtksbmtJoglComponent.this.glRenderWindow.SetMapped(1);
+        vtksbmtJoglComponent.this.glRenderWindow.SetPosition(0, 0);
+        vtksbmtJoglComponent.this.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+        vtksbmtJoglComponent.this.glRenderWindow.OpenGLInit();
       }
 
       public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        vtksbmtAbstractJoglCanvas.this.setSize(width, height);
+        vtksbmtJoglComponent.this.setSize(width, height);
       }
 
       public void display(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglCanvas.this.inRenderCall = true;
+        vtksbmtJoglComponent.this.inRenderCall = true;
         getVTKLock().lock();
-        vtksbmtAbstractJoglCanvas.this.glRenderWindow.Render();
+        vtksbmtJoglComponent.this.glRenderWindow.Render();
         getVTKLock().unlock();
-        vtksbmtAbstractJoglCanvas.this.inRenderCall = false;
+        vtksbmtJoglComponent.this.inRenderCall = false;
       }
 
       public void dispose(GLAutoDrawable drawable) {
-        vtksbmtAbstractJoglCanvas.this.Delete();
+        vtksbmtJoglComponent.this.Delete();
         vtkObject.JAVA_OBJECT_MANAGER.gc(false);
       }
     };
 
     // Bind the interactor forwarder
-    vtkInteractorForwarder forwarder = this.getInteractorForwarder();
-    this.uiComponent.addMouseListener(forwarder);
-    this.uiComponent.addMouseMotionListener(forwarder);
-    this.uiComponent.addMouseWheelListener(forwarder);
-    this.uiComponent.addKeyListener(forwarder);
+    vtkInteractorForwarder eventForwarder = this.getInteractorForwarder();
+    this.uiComponent.addMouseListener(eventForwarder);
+    this.uiComponent.addMouseMotionListener(eventForwarder);
+    this.uiComponent.addMouseWheelListener(eventForwarder);
+    this.uiComponent.addKeyListener(eventForwarder);
 
     // Make sure when VTK internaly request a Render, the Render get
     // properly triggered
@@ -92,8 +99,7 @@ public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtk
   public void Render() {
     // Make sure we can render
     if (!inRenderCall) {
-      this.uiComponent.repaint();
-
+        uiComponent.repaint();
     }
   }
 
@@ -104,4 +110,5 @@ public class vtksbmtAbstractJoglCanvas<T extends java.awt.Component> extends vtk
   public boolean isWindowSet() {
     return this.isWindowCreated;
   }
+
 }

@@ -8,7 +8,7 @@ public class StereoCapableMirrorCanvas extends MirrorCanvas
 
     public static enum StereoMode
     {
-        NONE,SIDEBYSIDE,ANAGLYPH;
+        NONE,SIDEBYSIDE,ANAGLYPH, SIDEBYSIDEBALANCED;
 
         public static StereoMode nextMode(StereoMode mode)
         {
@@ -45,6 +45,10 @@ public class StereoCapableMirrorCanvas extends MirrorCanvas
             getRenderWindow().SetStereoTypeToAnaglyph();
             getRenderWindow().StereoRenderOn();
             break;
+        case SIDEBYSIDEBALANCED:
+            getRenderWindow().SetStereoTypeToSplitViewportHorizontal();
+            getRenderWindow().StereoRenderOff();
+            break;
         }
         Render();
     }
@@ -53,7 +57,5 @@ public class StereoCapableMirrorCanvas extends MirrorCanvas
     {
         return mode;
     }
-
-
 
 }

@@ -5,20 +5,43 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 
 import vtk.vtkGenericOpenGLRenderWindow;
-import vtk.vtkRenderWindow;
 
-public class vtksbmtJoglCanvas extends vtksbmtAbstractJoglCanvas<GLCanvas> {
+@Deprecated
+public class vtksbmtJoglCanvas extends vtksbmtJoglComponent<GLCanvas>
+{
 
-  public vtksbmtJoglCanvas() {
-    this(new vtkGenericOpenGLRenderWindow());
-  }
+    // this class has the default vtk interaction behavior, which can be overridden using vtksbmtInteractorStyle and its subclasses (e.g. by calling setInteractorStyle(...))
+    public vtksbmtJoglCanvas()
+    {
+        super(new vtkGenericOpenGLRenderWindow(), new vtksbmtGLCanvas());
+        uiComponent.addGLEventListener(this.glEventListener);
+    }
 
-  public vtksbmtJoglCanvas(vtkRenderWindow renderWindow) {
-    this(renderWindow, new GLCapabilities(GLProfile.getDefault()));
-  }
+    // this nested class provides the (future) ability to override methods of the GLCanvas Component
+    private static class vtksbmtGLCanvas extends GLCanvas
+    {
+        public vtksbmtGLCanvas()
+        {
+            super(new GLCapabilities(GLProfile.getDefault()));
+        }
 
-  public vtksbmtJoglCanvas(vtkRenderWindow renderWindow, GLCapabilities capabilities) {
-    super(renderWindow, new GLCanvas(capabilities));
-    this.getComponent().addGLEventListener(this.glEventListener);
-  }
+/*        @Override
+        public void paint(Graphics arg0)
+        {
+            // TODO Auto-generated method stub
+            super.paint(arg0);
+            arg0.setColor(Color.white);
+            arg0.drawString("Test", 100, 100);
+        }
+
+        @Override
+        public void display()
+        {
+            // TODO Auto-generated method stub
+            super.display();
+        }*/
+    }
+
+
+
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -89,6 +90,8 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     static private int[] channelsToColorBy = {0, 0, 0};
     static private double[] channelsColoringMinValue= {0.0, 0.0, 0.0};
     static private double[] channelsColoringMaxValue = {0.05, 0.05, 0.05};
+
+    private double[] frustumCenter;
 
     // These values were taken from Table 1 of "Spectral properties and geologic
     // processes on Eros from combined NEAR NIS and MSI data sets"
@@ -265,6 +268,10 @@ public class NISSpectrum extends Model implements PropertyChangeListener
         MathUtil.vhat(frustum2, frustum2);
         MathUtil.vhat(frustum3, frustum3);
         MathUtil.vhat(frustum4, frustum4);
+
+        frustumCenter=new double[3];
+        for (int i=0; i<3; i++)
+            frustumCenter[i]=frustum1[i]+frustum2[i]+frustum3[i]+frustum4[i];
 
         footprint = new vtkPolyData();
         shiftedFootprint = new vtkPolyData();
@@ -580,6 +587,16 @@ public class NISSpectrum extends Model implements PropertyChangeListener
     public double getMaxPhase()
     {
         return maxPhase;
+    }
+
+    public double[] getSpacecraftPosition()
+    {
+        return spacecraftPosition;
+    }
+
+    public double[] getFrustumCenter()
+    {
+        return frustumCenter;
     }
 
     private double evaluateDerivedParameters(int channel)

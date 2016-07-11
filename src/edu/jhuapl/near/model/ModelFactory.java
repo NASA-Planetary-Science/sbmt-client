@@ -3,8 +3,6 @@ package edu.jhuapl.near.model;
 import java.io.IOException;
 import java.util.HashMap;
 
-import nom.tam.fits.FitsException;
-
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -40,6 +38,8 @@ import edu.jhuapl.near.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
+
+import nom.tam.fits.FitsException;
 
 public class ModelFactory
 {
@@ -261,9 +261,9 @@ public class ModelFactory
 
         models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasTreeBasedLidarSearch)
+        if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            models.put(ModelNames.LIDAR_TREE_SEARCH, new LidarTreeSearchDataCollection(smallBodyModel));
+            models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarHyperTreeSearchDataCollection(smallBodyModel));
         }
 
         return models;
