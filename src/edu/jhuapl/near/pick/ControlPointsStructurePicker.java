@@ -11,7 +11,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.ControlPointsStructureModel;
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.Model;

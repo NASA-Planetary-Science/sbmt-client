@@ -30,7 +30,7 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.Chromatism;
 import edu.jhuapl.near.model.ColorImageCollection;
