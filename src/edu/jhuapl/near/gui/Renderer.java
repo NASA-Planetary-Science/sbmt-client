@@ -43,9 +43,9 @@ import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
-import edu.jhuapl.near.gui.joglrendering.old.StereoCapableMirrorCanvas;
-import edu.jhuapl.near.gui.joglrendering.old.StereoCapableMirrorCanvas.StereoMode;
-import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;

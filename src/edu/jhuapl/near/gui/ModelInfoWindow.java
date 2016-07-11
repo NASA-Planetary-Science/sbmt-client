@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 
 import vtk.vtkPropPicker;
 
-import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Model;
 
 public abstract class ModelInfoWindow extends JFrame implements PropertyChangeListener

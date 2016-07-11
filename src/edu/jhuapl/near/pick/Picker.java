@@ -19,7 +19,7 @@ import javax.swing.Timer;
 
 import vtk.vtkCellPicker;
 
-import edu.jhuapl.near.gui.joglrendering.old.vtksbmtJoglCanvas;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.util.Configuration;
 
 /**
