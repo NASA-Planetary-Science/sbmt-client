@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
@@ -88,8 +87,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         initComponents();
 
         radialOffsetChanger = new edu.jhuapl.near.gui.RadialOffsetChanger();
-        JButton testButton = new JButton("Test");
-//        radialOffsetPanel.add(testButton);
         radialOffsetPanel.add(radialOffsetChanger);
 
         loadTrackButton.setVisible(false);
