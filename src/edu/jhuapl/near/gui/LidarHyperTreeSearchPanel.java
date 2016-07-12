@@ -4,10 +4,9 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.swing.JOptionPane;
-
 import com.google.common.base.Stopwatch;
 
+import vtk.vtkCubeSource;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
@@ -58,9 +57,12 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
+
+        AbstractEllipsePolygonModel.EllipsePolygon region=null;
+        vtkPolyData interiorPoly=new vtkPolyData();
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
             selectionRegionCenter = region.center;
             selectionRegionRadius = region.radius;
 
@@ -69,38 +71,28 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
             // Therefore, if the selection region was created using a higher resolution model,
             // we need to recompute the selection region using the low res model.
             if (smallBodyModel.getModelResolution() > 0)
-            {
-                vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-                LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-                //
-                Stopwatch sw=new Stopwatch();
-                sw.start();
-                cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()));
-                System.out.println("Search Time="+sw.elapsedMillis()+" ms");
-                sw.stop();
-            }
+                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
             else
-            {
-                LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-                //
-                Stopwatch sw=new Stopwatch();
-                sw.start();
-                cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(region.interiorPolyData.GetBounds()));
-                System.out.println("Search Time="+sw.elapsedMillis()+" ms");
-                sw.stop();
-            }
+                interiorPoly=region.interiorPolyData;
 
         }
         else
         {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "Please select a region on the asteroid.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-
-            return;
+            vtkCubeSource box=new vtkCubeSource();
+            double[] bboxBounds=smallBodyModel.getBoundingBox().getBounds();
+            BoundingBox bbox=new BoundingBox(bboxBounds);
+            bbox.increaseSize(0.01);
+            box.SetBounds(bbox.getBounds());
+            box.Update();
+            interiorPoly.DeepCopy(box.GetOutput());
         }
+
+        LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        Stopwatch sw=new Stopwatch();
+        sw.start();
+        cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
+        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
+        sw.stop();
 
         Picker.setPickingEnabled(false);
 

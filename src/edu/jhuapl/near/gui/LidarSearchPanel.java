@@ -121,6 +121,14 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         updateLidarDatasourceComboBox();
     }
 
+    double[] getSelectedTimeLimits()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+        double start = TimeUtil.str2et(sdf.format(startDate).replace(' ', 'T'));
+        double end = TimeUtil.str2et(sdf.format(endDate).replace(' ', 'T'));
+        return new double[]{start,end};
+    }
+
     protected void setLidarModel()
     {
         this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
@@ -184,12 +192,18 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
             double start = TimeUtil.str2et(sdf.format(startDate).replace(' ', 'T'));
             double end = TimeUtil.str2et(sdf.format(endDate).replace(' ', 'T'));
+            PointInCylinderChecker checker;
+            if (selectionRegionCenter==null || selectionRegionRadius<=0)// do time-only search
+                checker=null;
+            else
+                checker=new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius);
+            //
             lidarModel.setLidarData(
                     sourceComboBox.getSelectedItem().toString(),
                     start,
                     end,
                     cubeList,
-                    new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius),
+                    checker,
                     timeSeparationBetweenTracks,
                     minTrackLength);
         }

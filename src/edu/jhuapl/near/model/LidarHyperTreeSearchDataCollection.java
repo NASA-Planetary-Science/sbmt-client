@@ -42,9 +42,10 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         skeleton.read(f.toPath());
     }
 
-    public TreeSet<Integer> getLeavesIntersectingBoundingBox(BoundingBox bbox)
+    public TreeSet<Integer> getLeavesIntersectingBoundingBox(BoundingBox bbox, double[] tlims)
     {
-        return skeleton.getLeavesIntersectingBoundingBox(bbox.getBounds());
+        double[] bounds=new double[]{bbox.xmin,bbox.xmax,bbox.ymin,bbox.ymax,bbox.zmin,bbox.zmax,tlims[0],tlims[1]};
+        return skeleton.getLeavesIntersectingBoundingBox(bounds);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
             System.out.println("Loading data partition "+(++cnt)+"/"+cubeList.size()+" (id="+cidx+") \""+leafPath+"\"");
             Path dataFilePath=leafPath.resolve("data");
             File dataFile=FileCache.getFileFromServer(dataFilePath.toString());
-            originalPoints.addAll(readDataFile(dataFile,pointInRegionChecker));
+            originalPoints.addAll(readDataFile(dataFile,pointInRegionChecker,new double[]{startDate,stopDate}));
         }
 
         System.out.println("Data Reading Time="+sw.elapsedMillis()+" ms");
@@ -106,14 +107,20 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
 
     }
 
-    List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker) {
+    List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {
         List<LidarPoint> pts=Lists.newArrayList();
         try {
             DataInputStream stream=new DataInputStream(new FileInputStream(dataInputFile));
             while (stream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
                 OlaFSHyperPoint pt=new OlaFSHyperPoint(stream);
-                if (pointInRegionChecker.checkPointIsInRegion(pt.getTargetPosition().toArray()))
-                    pts.add(pt);
+                if (pt.getTime()<timeLimits[0] || pt.getTime()>timeLimits[1])   // throw away points outside time limits
+                    continue;
+                if (pointInRegionChecker!=null && pointInRegionChecker.checkPointIsInRegion(pt.getTargetPosition().toArray()))
+                {
+                    pts.add(pt);    // if region checker exists then filter on space as well as time
+                    continue;
+                }
+                pts.add(pt);    // if the region checker does not exist and the point is within the time limits then add it
             }
         } catch (IOException e) {
             if (!e.getClass().equals(EOFException.class))

@@ -106,7 +106,7 @@ class vtksbmtInteractorStyle extends vtkInteractorStyle implements MouseListener
         interactor.SetInteractorStyle(this);
         for (StyleEvent e : StyleEvent.values())
             eventObserverTags.put(interactor.AddObserver(e.getVtkEventString(), this, e.getLocalMethodName()),e);
-        interactionObserverTag=interactor.CreateRepeatingTimer(1000/30);   // try to update at about 30 frames per second during interaction
+        interactionObserverTag=interactor.CreateRepeatingTimer(1000/10);   // try to update at about 10 frames per second during interaction
         vtkComponent.getComponent().addMouseListener(this);
     }
 

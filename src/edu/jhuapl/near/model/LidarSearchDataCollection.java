@@ -268,9 +268,17 @@ public class LidarSearchDataCollection extends Model
                 scpos[1] = Double.parseDouble(vals[scyindex]);
                 scpos[2] = Double.parseDouble(vals[sczindex]);
 
-                if (pointInRegionChecker.checkPointIsInRegion(target))
+                if (pointInRegionChecker==null) // if this part of the code has been reached and the point-checker is null then this is a time-only search, and the time criterion has already been met (cf. continue statement a few lines above)
                 {
                     originalPoints.add(new BasicLidarPoint(target, scpos, time, 0));
+                    continue;
+                }
+
+
+                if (pointInRegionChecker.checkPointIsInRegion(target))  // here, the point is known to be within the specified time bounds, and since the point checker exists the target coordinates are filtered against
+                {
+                    originalPoints.add(new BasicLidarPoint(target, scpos, time, 0));
+                    continue;
                 }
             }
 
@@ -850,6 +858,7 @@ public class LidarSearchDataCollection extends Model
                 for (int i=startId; i<=stopId; ++i)
                 {
                     double[] pt = originalPoints.get(i).getTargetPosition().toArray();
+
                     pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
 
