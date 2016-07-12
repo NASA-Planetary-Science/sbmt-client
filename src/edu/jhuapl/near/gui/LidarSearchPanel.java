@@ -14,6 +14,8 @@ package edu.jhuapl.near.gui;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
 
@@ -49,7 +52,7 @@ import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.TimeUtil;
 
 
-public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, ItemListener
 {
     protected final ModelManager modelManager;
     protected PickManager pickManager;
@@ -114,6 +117,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
 
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
+
+        updateLidarDatasourceComboBox();
     }
 
     protected void setLidarModel()
@@ -241,6 +246,17 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     }
 
 
+
+    @Override
+    public void itemStateChanged(ItemEvent e)
+    {
+        System.out.println("Lidar Datasource Changed");
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        JComboBox lidarDatasourceComboBox = (JComboBox)e.getSource();
+        int index = lidarDatasourceComboBox.getSelectedIndex();
+        smallBodyModel.setLidarDatasourceIndex(index);
+    }
+
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
@@ -282,6 +298,32 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         }
     }
+
+    private void updateLidarDatasourceComboBox()
+    {
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        if (smallBodyModel.getLidarDatasourceIndex() < 0)
+            smallBodyModel.setLidarDatasourceIndex(0);
+
+        sourceComboBox.removeItemListener(this);
+        sourceComboBox.removeAllItems();
+
+        sourceComboBox.addItem("Default");
+
+        for (int i=0; i<smallBodyModel.getNumberOfLidarDatasources(); ++i)
+        {
+            sourceComboBox.addItem(smallBodyModel.getLidarDatasourceName(i));
+        }
+
+        if (smallBodyModel.getNumberOfLidarDatasources() > 0)
+        {
+            int index = smallBodyModel.getLidarDatasourceIndex();
+            sourceComboBox.setSelectedIndex(Math.max(index, 1));
+        }
+
+        sourceComboBox.addItemListener(this);
+    }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -619,11 +661,19 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     protected void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
+        SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
+//        int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
+//        String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
+//        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
+//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+
         TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -765,7 +815,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         dialog.setVisible(true);
 
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-//        updateColoringComboBoxes();
+        updateLidarDatasourceComboBox();
     }//GEN-LAST:event_manageDatasourcesButtonActionPerformed
 
 

@@ -154,8 +154,8 @@ public class SmallBodyModel extends Model
             return str;
         }
     }
-    ArrayList<OlaDatasourceInfo> olaDatasourceInfo = new ArrayList<OlaDatasourceInfo>();
-    private int olaDatasourceIndex = -1;
+    ArrayList<OlaDatasourceInfo> lidarDatasourceInfo = new ArrayList<OlaDatasourceInfo>();
+    private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
@@ -456,9 +456,9 @@ public class SmallBodyModel extends Model
 
     private void clearCustomOlaDatasourceInfo()
     {
-        for (int i=olaDatasourceInfo.size()-1; i>=0; --i)
+        for (int i=lidarDatasourceInfo.size()-1; i>=0; --i)
         {
-            olaDatasourceInfo.remove(i);
+            lidarDatasourceInfo.remove(i);
         }
     }
 
@@ -468,8 +468,8 @@ public class SmallBodyModel extends Model
         String prevOlaDatasourcePath = null;
         if (coloringIndex >= 0)
         {
-            prevOlaDatasourceName = olaDatasourceInfo.get(olaDatasourceIndex).name;
-            prevOlaDatasourcePath = olaDatasourceInfo.get(olaDatasourceIndex).path;
+            prevOlaDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
+            prevOlaDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
         }
 
         clearCustomOlaDatasourceInfo();
@@ -498,17 +498,17 @@ public class SmallBodyModel extends Model
                     info.name = olaDatasourceNames[i];
                     info.path = olaDatasourcePaths[i];
                 }
-                olaDatasourceInfo.add(info);
+                lidarDatasourceInfo.add(info);
             }
         }
 
         // See if there's color of the same name as previously shown and set it to that.
-        olaDatasourceIndex = -1;
-        for (int i=0; i<olaDatasourceInfo.size(); ++i)
+        lidarDatasourceIndex = -1;
+        for (int i=0; i<lidarDatasourceInfo.size(); ++i)
         {
-            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(olaDatasourceInfo.get(i).name))
+            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(lidarDatasourceInfo.get(i).name))
             {
-                olaDatasourceIndex = i;
+                lidarDatasourceIndex = i;
                 break;
             }
         }
@@ -1316,6 +1316,40 @@ public class SmallBodyModel extends Model
             return null;
     }
 
+    public String getLidarDatasourceName(int i)
+    {
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).name;
+        else
+            return null;
+    }
+
+    public String getLidarDatasourcePath(int i)
+    {
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).path;
+        else
+            return null;
+    }
+
+    public int getLidarDatasourceIndex()
+    {
+        return lidarDatasourceIndex;
+    }
+
+    public void setLidarDatasourceIndex(int index)
+    {
+        if (lidarDatasourceIndex != index)
+        {
+            lidarDatasourceIndex = index;
+        }
+    }
+
+    public int getNumberOfLidarDatasources()
+    {
+        return lidarDatasourceInfo.size();
+    }
+
     /**
      * This file loads the coloring data.
      * @throws IOException
@@ -1823,7 +1857,7 @@ public class SmallBodyModel extends Model
 
     private void loadOlaDatasourceData() throws IOException
     {
-        for (OlaDatasourceInfo info : olaDatasourceInfo)
+        for (OlaDatasourceInfo info : lidarDatasourceInfo)
         {
             // If not null, that means we've already loaded it.
             if (info.name != null)
@@ -2577,7 +2611,7 @@ public class SmallBodyModel extends Model
 //        info.resolutionLevel = resolutionLevel;
 //        info.coloringValues = null;
 //        info.defaultColoringRange = null;
-        olaDatasourceInfo.add(info);
+        lidarDatasourceInfo.add(info);
 
         if (coloringIndex >= 0)
             loadOlaDatasourceData();
@@ -2592,9 +2626,9 @@ public class SmallBodyModel extends Model
 //        info.coloringValues = null;
 //        info.defaultColoringRange = null;
 
-        olaDatasourceInfo.set(index, info);
+        lidarDatasourceInfo.set(index, info);
 
-        if (olaDatasourceIndex >= 0)
+        if (lidarDatasourceIndex >= 0)
         {
             loadOlaDatasourceData();
             paintBody();
@@ -2603,19 +2637,19 @@ public class SmallBodyModel extends Model
 
     public void removeCustomOlaDatasource(int index) throws IOException
     {
-        boolean needToRepaint = olaDatasourceIndex >= 0 ;
+        boolean needToRepaint = lidarDatasourceIndex >= 0 ;
 
-        olaDatasourceInfo.remove(index);
+        lidarDatasourceInfo.remove(index);
 
-        if (olaDatasourceIndex == index)
-            olaDatasourceIndex = -1;
-        else if (olaDatasourceIndex > index)
-            --olaDatasourceIndex;
+        if (lidarDatasourceIndex == index)
+            lidarDatasourceIndex = -1;
+        else if (lidarDatasourceIndex > index)
+            --lidarDatasourceIndex;
     }
 
     public void reloadOlaDatasources() throws IOException
     {
-        for (OlaDatasourceInfo info : olaDatasourceInfo)
+        for (OlaDatasourceInfo info : lidarDatasourceInfo)
         {
             info.name = null;
             info.path = null;
@@ -2626,6 +2660,6 @@ public class SmallBodyModel extends Model
 
     public ArrayList<OlaDatasourceInfo> getOlaDasourceInfoList()
     {
-        return olaDatasourceInfo;
+        return lidarDatasourceInfo;
     }
 }
