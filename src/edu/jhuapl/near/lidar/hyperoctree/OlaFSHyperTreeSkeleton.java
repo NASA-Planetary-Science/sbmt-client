@@ -38,7 +38,7 @@ public class OlaFSHyperTreeSkeleton
 
         public boolean intersects(double[] bbox)
         {
-            return bbox[0]<=bounds[1] && bbox[1]>=bounds[0] && bbox[2]<=bounds[3] && bbox[3]>=bounds[2] && bbox[4]<=bounds[5] && bbox[5]>=bounds[4];
+            return bbox[0]<=bounds[1] && bbox[1]>=bounds[0] && bbox[2]<=bounds[3] && bbox[3]>=bounds[2] && bbox[4]<=bounds[5] && bbox[5]>=bounds[4] && bbox[6]<=bounds[7] && bbox[7]>=bounds[6];
         }
 
         public Path getPath()
@@ -106,7 +106,7 @@ public class OlaFSHyperTreeSkeleton
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(double[] searchBounds)
     {
         TreeSet<Integer> pathList=Sets.newTreeSet();
-        System.out.println(rootNode);
+        System.out.println(searchBounds[6]+" "+searchBounds[7]+" "+rootNode.bounds[6]+" "+rootNode.bounds[7]);
         getLeavesIntersectingBoundingBox(rootNode, searchBounds, pathList);
         return pathList;
     }
