@@ -1,7 +1,5 @@
 package edu.jhuapl.near.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -15,12 +13,11 @@ import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JComponent;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
+import edu.jhuapl.near.gui.ProgressBarSwingWorker;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperPoint;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperTreeSkeleton;
 import edu.jhuapl.near.lidar.test.LidarPoint;
@@ -38,15 +35,20 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
 
     OlaFSHyperTreeSkeleton skeleton;
     JComponent parentForProgressMonitor;
+    boolean loading=false;
+
+    @Override
+    public boolean isLoading()
+    {
+        return loading;
+    }
 
     public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel);
-        Path basePath=Paths.get(getLidarDataSourceMap().get("Local Test Data"));
-        Path skeletonFile=basePath.resolve("skeleton.txt");
-        skeleton=new OlaFSHyperTreeSkeleton(Paths.get(getLidarDataSourceMap().get("Local Test Data")));
-        File f=FileCache.getFileFromServer(skeletonFile.toString());
-        skeleton.read(f.toPath());
+        Path basePath=Paths.get(getLidarDataSourceMap().get("Default"));    // TODO: this shouldn't be hardcoded, but for now it matches the "Default" key set around line 1453 in SmallBodyConfig.java where Bennu V3 model is defined
+        skeleton=new OlaFSHyperTreeSkeleton(basePath);
+        skeleton.read();    // this looks for "skeleton.txt" in the basePath
     }
 
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(BoundingBox bbox, double[] tlims)
@@ -70,26 +72,18 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         // In the old LidarSearchDataCollection class the cubeList came from a predetermined set of cubes all of equal size.
         // Here it corresponds to the list of leaves of an octree that intersect the bounding box of the user selection area.
 
-
-        final ProgressMonitor progressMonitor=new ProgressMonitor(parentForProgressMonitor, "Loading OLA points", "", 0, 100);
-        progressMonitor.setMillisToPopup(0);
-        progressMonitor.setMillisToDecideToPopup(1000);
-
-        final SwingWorker<Void, Void> dataLoadingTask=new SwingWorker<Void, Void>()
+        ProgressBarSwingWorker dataLoader=new ProgressBarSwingWorker(parentForProgressMonitor,"Loading OLA datapoints")
         {
             @Override
             protected Void doInBackground() throws Exception
             {
                 Stopwatch sw=new Stopwatch();
                 sw.start();
+                loading=true;
 
                 int cnt=0;
                 for (Integer cidx : cubeList)
                 {
-                    setProgress((int)((double)cnt/(double)cubeList.size()*100));
-                    if (isCancelled())
-                        break;
-                    //
                     Path leafPath=skeleton.getNodeById(cidx).getPath();
                     System.out.println("Loading data partition "+(cnt+1)+"/"+cubeList.size()+" (id="+cidx+") \""+leafPath+"\"");
                     Path dataFilePath=leafPath.resolve("data");
@@ -97,11 +91,10 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                     originalPoints.addAll(readDataFile(dataFile,pointInRegionChecker,new double[]{startDate,stopDate}));
                     //
                     cnt++;
+                    setProgress((int)((double)cnt/(double)cubeList.size()*100));
+                    if (isCancelled())
+                        break;
                 }
-
-                progressMonitor.close();
-
-                System.out.println(originalPoints.size());
 
                 System.out.println("Data Reading Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
@@ -136,23 +129,13 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                 System.out.println("UpdatePolyData Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
 
+                loading=false;
+
                 return null;
             }
         };
-        dataLoadingTask.addPropertyChangeListener(new PropertyChangeListener()
-        {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                if (evt.getPropertyName()=="progress" && evt.getSource().equals(dataLoadingTask))
-                {
-                    progressMonitor.setProgress((Integer)evt.getNewValue());
-                    if (progressMonitor.isCanceled() || dataLoadingTask.isDone())
-                        dataLoadingTask.cancel(true);
-                }
-            }
-        });
-        dataLoadingTask.execute();
+        dataLoader.executeDialog();
+
     }
 
     List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {

@@ -154,6 +154,11 @@ public class LidarSearchDataCollection extends Model
         actors.add(selectedPointActor);
     }
 
+    public boolean isLoading()
+    {
+        return false;
+    }
+
     public double getOffsetScale()
     {
         if (smallBodyConfig.lidarOffsetScale <= 0.0)
