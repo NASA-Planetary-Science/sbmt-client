@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComponent;
 import javax.swing.ProgressMonitor;
@@ -74,7 +73,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
 
         final ProgressMonitor progressMonitor=new ProgressMonitor(parentForProgressMonitor, "Loading OLA points", "", 0, 100);
         progressMonitor.setMillisToPopup(0);
-        progressMonitor.setMillisToDecideToPopup(0);
+        progressMonitor.setMillisToDecideToPopup(1000);
 
         final SwingWorker<Void, Void> dataLoadingTask=new SwingWorker<Void, Void>()
         {
@@ -99,7 +98,6 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                     //
                     cnt++;
                 }
-
 
                 progressMonitor.close();
 
@@ -155,15 +153,6 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
             }
         });
         dataLoadingTask.execute();
-        try
-        {
-            dataLoadingTask.get();   // block for completion of dataLoadingTask
-        }
-        catch (InterruptedException | ExecutionException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {
