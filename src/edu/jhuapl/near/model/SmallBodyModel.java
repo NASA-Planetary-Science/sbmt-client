@@ -467,7 +467,9 @@ public class SmallBodyModel extends Model
     {
         String prevLidarDatasourceName = null;
         String prevLidarDatasourcePath = null;
-        if (lidarDatasourceIndex >= 0)
+        lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
+
+        if (lidarDatasourceIndex >= 0 && lidarDatasourceIndex < lidarDatasourceInfo.size())
         {
             prevLidarDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
             prevLidarDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
