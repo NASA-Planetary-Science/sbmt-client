@@ -760,7 +760,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     }//GEN-LAST:event_trackErrorCheckBoxActionPerformed
 
     private void manageDatasourcesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageDatasourcesButtonActionPerformed
-        CustomOlaDataDialog dialog = new CustomOlaDataDialog(modelManager);
+        CustomLidarDataDialog dialog = new CustomLidarDataDialog(modelManager);
         dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(this));
         dialog.setVisible(true);
 

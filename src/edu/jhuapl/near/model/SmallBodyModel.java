@@ -144,29 +144,13 @@ public class SmallBodyModel extends Model
     // Class storing info related to plate data used to color shape model
     public static class OlaDatasourceInfo
     {
-        public String coloringName = null;
-//        public String coloringUnits = null;
-//        public boolean coloringHasNulls = false;
-//        public int resolutionLevel = 0;
-//        public double[] defaultColoringRange = null;
-//        public double[] currentColoringRange = null;
-//        public vtkFloatArray coloringValues = null;
-        public String coloringFile = null;
-//        public boolean builtIn = true;
-//        public Format format = Format.TXT;
+        public String name = null;
+        public String path = null;
 
         @Override
         public String toString()
         {
-            String str = coloringName;
-//            if (coloringUnits != null && !coloringUnits.isEmpty())
-//                str += ", " + coloringUnits;
-//            if (format != Format.TXT)
-//                str += ", " + format.toString();
-//            if (coloringHasNulls)
-//                str += ", contains invalid data";
-//            if (builtIn)
-//                str += ", (built-in and cannot be modified)";
+            String str = name + " (" + path + ")";
             return str;
         }
     }
@@ -481,10 +465,14 @@ public class SmallBodyModel extends Model
     public void loadCustomOlaDatasourceInfo() throws IOException
     {
         String prevOlaDatasourceName = null;
+        String prevOlaDatasourcePath = null;
         if (coloringIndex >= 0)
-            prevOlaDatasourceName = olaDatasourceInfo.get(olaDatasourceIndex).coloringName;
+        {
+            prevOlaDatasourceName = olaDatasourceInfo.get(olaDatasourceIndex).name;
+            prevOlaDatasourcePath = olaDatasourceInfo.get(olaDatasourceIndex).path;
+        }
 
-        clearCustomColoringInfo();
+        clearCustomOlaDatasourceInfo();
 
         String configFilename = getConfigFilename();
 
@@ -495,26 +483,30 @@ public class SmallBodyModel extends Model
 
         convertOldConfigFormatToNewVersion(configMap);
 
-        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
+        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES) && configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
         {
             String[] olaDatasourceNames = configMap.get(SmallBodyModel.OLA_DATASOURCE_NAMES).split(",", -1);
+            String[] olaDatasourcePaths = configMap.get(SmallBodyModel.OLA_DATASOURCE_PATHS).split(",", -1);
 
             for (int i=0; i<olaDatasourceNames.length; ++i)
             {
                 OlaDatasourceInfo info = new OlaDatasourceInfo();
-                info.coloringFile = olaDatasourceNames[i];
-                if (!info.coloringFile.trim().isEmpty())
+                info.name = olaDatasourceNames[i];
+                info.path = olaDatasourcePaths[i];
+                if (!info.path.trim().isEmpty() && !info.name.trim().isEmpty())
                 {
-                    info.coloringName = olaDatasourceNames[i];
+                    info.name = olaDatasourceNames[i];
+                    info.path = olaDatasourcePaths[i];
                 }
+                olaDatasourceInfo.add(info);
             }
         }
 
         // See if there's color of the same name as previously shown and set it to that.
         olaDatasourceIndex = -1;
-        for (int i=0; i<coloringInfo.size(); ++i)
+        for (int i=0; i<olaDatasourceInfo.size(); ++i)
         {
-            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(olaDatasourceInfo.get(i).coloringName))
+            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(olaDatasourceInfo.get(i).name))
             {
                 olaDatasourceIndex = i;
                 break;
@@ -1834,10 +1826,10 @@ public class SmallBodyModel extends Model
         for (OlaDatasourceInfo info : olaDatasourceInfo)
         {
             // If not null, that means we've already loaded it.
-            if (info.coloringName != null)
+            if (info.name != null)
                 continue;
 
-            String filename = info.coloringFile;
+            String filename = info.path;
             filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
             if (!filename.startsWith(FileCache.FILE_PREFIX))
                 filename += "_res" + resolutionLevel + ".txt.gz";
@@ -2625,8 +2617,8 @@ public class SmallBodyModel extends Model
     {
         for (OlaDatasourceInfo info : olaDatasourceInfo)
         {
-            info.coloringName = null;
-            info.coloringFile = null;
+            info.name = null;
+            info.path = null;
         }
 
         loadOlaDatasourceData();
