@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.SmallBodyModel.OlaDatasourceInfo;
+import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.MapUtil;
 
@@ -49,8 +49,8 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)lidarDatasourceList.getModel()).clear();
-        ArrayList<OlaDatasourceInfo> list = modelManager.getSmallBodyModel().getOlaDasourceInfoList();
-        for (OlaDatasourceInfo info : list)
+        ArrayList<LidarDatasourceInfo> list = modelManager.getSmallBodyModel().getLidarDasourceInfoList();
+        for (LidarDatasourceInfo info : list)
             ((DefaultListModel)lidarDatasourceList.getModel()).addElement(info);
     }
 
@@ -69,61 +69,61 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         MapUtil configMap = new MapUtil(getConfigFilename());
 
         // Load in the plate data
-        String olaDatasourcePath = "";
-        String olaDatasourceName = "";
+        String lidarDatasourcePath = "";
+        String lidarDatasourceName = "";
 
         DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
         for (int i=0; i<cellDataListModel.size(); ++i)
         {
-            OlaDatasourceInfo olaDatasourceInfo = (OlaDatasourceInfo)cellDataListModel.get(i);
+            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)cellDataListModel.get(i);
 
-            olaDatasourcePath += olaDatasourceInfo.path;
-            olaDatasourceName += olaDatasourceInfo.name;
+            lidarDatasourcePath += lidarDatasourceInfo.path;
+            lidarDatasourceName += lidarDatasourceInfo.name;
 
             if (i < cellDataListModel.size()-1)
             {
-                olaDatasourcePath += CustomShapeModel.LIST_SEPARATOR;
-                olaDatasourceName += CustomShapeModel.LIST_SEPARATOR;
+                lidarDatasourcePath += CustomShapeModel.LIST_SEPARATOR;
+                lidarDatasourceName += CustomShapeModel.LIST_SEPARATOR;
             }
         }
 
         Map<String, String> newMap = new LinkedHashMap<String, String>();
 
-        newMap.put(SmallBodyModel.OLA_DATASOURCE_PATHS, olaDatasourcePath);
-        newMap.put(SmallBodyModel.OLA_DATASOURCE_NAMES, olaDatasourceName);
+        newMap.put(SmallBodyModel.LIDAR_DATASOURCE_PATHS, lidarDatasourcePath);
+        newMap.put(SmallBodyModel.LIDAR_DATASOURCE_NAMES, lidarDatasourceName);
 
         configMap.put(newMap);
     }
 
-    private void saveOlaDatasourceData(int index, OlaDatasourceInfo oldOlaDatasourceInfo, OlaDatasourceInfo newOlaDatasourceInfo)
+    private void saveLidarDatasourceData(int index, LidarDatasourceInfo oldLidarDatasourceInfo, LidarDatasourceInfo newLidarDatasourceInfo)
     {
         String uuid = UUID.randomUUID().toString();
 
         // If File is the same as the old File,
         // that means we are in edit mode and and the user did not change to a new file.
-        if (oldOlaDatasourceInfo == null || !newOlaDatasourceInfo.path.equals(oldOlaDatasourceInfo.path))
+        if (oldLidarDatasourceInfo == null || !newLidarDatasourceInfo.path.equals(oldLidarDatasourceInfo.path))
         {
         }
 
         DefaultListModel model = (DefaultListModel)lidarDatasourceList.getModel();
         if (index >= model.getSize())
         {
-            model.addElement(newOlaDatasourceInfo);
+            model.addElement(newLidarDatasourceInfo);
         }
         else
         {
-            model.set(index, newOlaDatasourceInfo);
+            model.set(index, newLidarDatasourceInfo);
         }
 
         updateConfigFile();
     }
 
-    private void removeOlaDatasource(int index)
+    private void removeLidarDatasource(int index)
     {
         try
         {
-            OlaDatasourceInfo olaDatasourceInfo = (OlaDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
-            String filename = getCustomDataFolder() + File.separator + olaDatasourceInfo.path;
+            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
+            String filename = getCustomDataFolder() + File.separator + lidarDatasourceInfo.path;
             new File(filename).delete();
 
             modelManager.getSmallBodyModel().removeCustomPlateData(index);
@@ -245,20 +245,18 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         try
         {
-            OlaDatasourceInfo olaDatasourceInfo = new OlaDatasourceInfo();
+            LidarDatasourceInfo lidarDatasourceInfo = new LidarDatasourceInfo();
             CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
-            dialog.setOlaDatasourceInfo(olaDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+            dialog.setLidarDatasourceInfo(lidarDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
             // If user clicks okay add to list
             if (dialog.getOkayPressed())
             {
-                olaDatasourceInfo = dialog.getOlaDatasourceInfo();
-//                if (olaDatasourceInfo.coloringFile.toLowerCase().endsWith(".fit") || olaDatasourceInfo.coloringFile.toLowerCase().endsWith(".fits"))
-//                    olaDatasourceInfo.format = Format.FIT;
-                saveOlaDatasourceData(((DefaultListModel)lidarDatasourceList.getModel()).getSize(), null, olaDatasourceInfo);
-                modelManager.getSmallBodyModel().addCustomOlaDatasource(olaDatasourceInfo);
+                lidarDatasourceInfo = dialog.getLidarDatasourceInfo();
+                saveLidarDatasourceData(((DefaultListModel)lidarDatasourceList.getModel()).getSize(), null, lidarDatasourceInfo);
+                modelManager.getSmallBodyModel().addCustomLidarDatasource(lidarDatasourceInfo);
             }
         }
         catch (IOException e)
@@ -271,7 +269,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         int selectedItem = lidarDatasourceList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            removeOlaDatasource(selectedItem);
+            removeLidarDatasource(selectedItem);
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
@@ -282,19 +280,19 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
             if (selectedItem >= 0)
             {
                 DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
-                OlaDatasourceInfo oldOlaDatasourceInfo = (OlaDatasourceInfo)cellDataListModel.get(selectedItem);
+                LidarDatasourceInfo oldLidarDatasourceInfo = (LidarDatasourceInfo)cellDataListModel.get(selectedItem);
 
                 CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), true);
-                dialog.setOlaDatasourceInfo(oldOlaDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+                dialog.setLidarDatasourceInfo(oldLidarDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
                 dialog.setLocationRelativeTo(this);
                 dialog.setVisible(true);
 
                 // If user clicks okay replace item in list
                 if (dialog.getOkayPressed())
                 {
-                    OlaDatasourceInfo cellDataInfo = dialog.getOlaDatasourceInfo();
-                    saveOlaDatasourceData(selectedItem, oldOlaDatasourceInfo, cellDataInfo);
-                    modelManager.getSmallBodyModel().setCustomOlaDatasource(selectedItem, cellDataInfo);
+                    LidarDatasourceInfo cellDataInfo = dialog.getLidarDatasourceInfo();
+                    saveLidarDatasourceData(selectedItem, oldLidarDatasourceInfo, cellDataInfo);
+                    modelManager.getSmallBodyModel().setCustomLidarDatasource(selectedItem, cellDataInfo);
                 }
             }
         }
@@ -313,7 +311,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         if (selectedItem >= 0)
         {
             DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
-            OlaDatasourceInfo cellDataInfo = (OlaDatasourceInfo)cellDataListModel.get(selectedItem);
+            LidarDatasourceInfo cellDataInfo = (LidarDatasourceInfo)cellDataListModel.get(selectedItem);
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
         }

@@ -68,8 +68,8 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
-    public static final String OLA_DATASOURCE_PATHS = "OlaDatasourcePaths";
-    public static final String OLA_DATASOURCE_NAMES = "OlaDatasourceNames";
+    public static final String LIDAR_DATASOURCE_PATHS = "LidarDatasourcePaths";
+    public static final String LIDAR_DATASOURCE_NAMES = "LidarDatasourceNames";
 
     public static final int FITS_SCALAR_COLUMN_INDEX = 4;
 
@@ -142,7 +142,7 @@ public class SmallBodyModel extends Model
     private vtkUnsignedCharArray falseColorArray;
 
     // Class storing info related to plate data used to color shape model
-    public static class OlaDatasourceInfo
+    public static class LidarDatasourceInfo
     {
         public String name = null;
         public String path = null;
@@ -154,7 +154,7 @@ public class SmallBodyModel extends Model
             return str;
         }
     }
-    ArrayList<OlaDatasourceInfo> lidarDatasourceInfo = new ArrayList<OlaDatasourceInfo>();
+    ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
     private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
@@ -454,7 +454,7 @@ public class SmallBodyModel extends Model
         }
     }
 
-    private void clearCustomOlaDatasourceInfo()
+    private void clearCustomLidarDatasourceInfo()
     {
         for (int i=lidarDatasourceInfo.size()-1; i>=0; --i)
         {
@@ -463,17 +463,17 @@ public class SmallBodyModel extends Model
         lidarDatasourceIndex = -1;
     }
 
-    public void loadCustomOlaDatasourceInfo()
+    public void loadCustomLidarDatasourceInfo()
     {
-        String prevOlaDatasourceName = null;
-        String prevOlaDatasourcePath = null;
+        String prevLidarDatasourceName = null;
+        String prevLidarDatasourcePath = null;
         if (lidarDatasourceIndex >= 0)
         {
-            prevOlaDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
-            prevOlaDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
+            prevLidarDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
+            prevLidarDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
         }
 
-        clearCustomOlaDatasourceInfo();
+        clearCustomLidarDatasourceInfo();
 
         String configFilename = getConfigFilename();
 
@@ -484,20 +484,20 @@ public class SmallBodyModel extends Model
 
         convertOldConfigFormatToNewVersion(configMap);
 
-        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES) && configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
+        if (configMap.containsKey(SmallBodyModel.LIDAR_DATASOURCE_NAMES) && configMap.containsKey(SmallBodyModel.LIDAR_DATASOURCE_NAMES))
         {
-            String[] olaDatasourceNames = configMap.get(SmallBodyModel.OLA_DATASOURCE_NAMES).split(",", -1);
-            String[] olaDatasourcePaths = configMap.get(SmallBodyModel.OLA_DATASOURCE_PATHS).split(",", -1);
+            String[] lidarDatasourceNames = configMap.get(SmallBodyModel.LIDAR_DATASOURCE_NAMES).split(",", -1);
+            String[] lidarDatasourcePaths = configMap.get(SmallBodyModel.LIDAR_DATASOURCE_PATHS).split(",", -1);
 
-            for (int i=0; i<olaDatasourceNames.length; ++i)
+            for (int i=0; i<lidarDatasourceNames.length; ++i)
             {
-                OlaDatasourceInfo info = new OlaDatasourceInfo();
-                info.name = olaDatasourceNames[i];
-                info.path = olaDatasourcePaths[i];
+                LidarDatasourceInfo info = new LidarDatasourceInfo();
+                info.name = lidarDatasourceNames[i];
+                info.path = lidarDatasourcePaths[i];
                 if (!info.path.trim().isEmpty() && !info.name.trim().isEmpty())
                 {
-                    info.name = olaDatasourceNames[i];
-                    info.path = olaDatasourcePaths[i];
+                    info.name = lidarDatasourceNames[i];
+                    info.path = lidarDatasourcePaths[i];
                 }
                 lidarDatasourceInfo.add(info);
             }
@@ -507,7 +507,7 @@ public class SmallBodyModel extends Model
         lidarDatasourceIndex = -1;
         for (int i=0; i<lidarDatasourceInfo.size(); ++i)
         {
-            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(lidarDatasourceInfo.get(i).name))
+            if (prevLidarDatasourceName != null && prevLidarDatasourceName.equals(lidarDatasourceInfo.get(i).name))
             {
                 lidarDatasourceIndex = i;
                 break;
@@ -523,7 +523,7 @@ public class SmallBodyModel extends Model
             if (!smallBodyConfig.customTemporary)
             {
                 loadCustomColoringInfo();
-                loadCustomOlaDatasourceInfo();
+                loadCustomLidarDatasourceInfo();
             }
 
             smallBodyPolyData.ShallowCopy(
@@ -1860,22 +1860,8 @@ public class SmallBodyModel extends Model
     }
 
 
-    private void loadOlaDatasourceData() throws IOException
+    private void loadLidarDatasourceData() throws IOException
     {
-//        for (OlaDatasourceInfo info : lidarDatasourceInfo)
-//        {
-//            // If not null, that means we've already loaded it.
-//            if (info.name != null)
-//                continue;
-//
-//            String filename = info.path;
-//            filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
-////            if (!filename.startsWith(FileCache.FILE_PREFIX))
-////                filename += "_res" + resolutionLevel + ".txt.gz";
-//            File file = FileCache.getFileFromServer(filename);
-//            if (file == null)
-//                throw new IOException("Unable to download " + filename);
-//        }
     }
 
 
@@ -2608,17 +2594,17 @@ public class SmallBodyModel extends Model
 
 
 
-    public void addCustomOlaDatasource(OlaDatasourceInfo info) throws IOException
+    public void addCustomLidarDatasource(LidarDatasourceInfo info) throws IOException
     {
         lidarDatasourceInfo.add(info);
     }
 
-    public void setCustomOlaDatasource(int index, OlaDatasourceInfo info) throws IOException
+    public void setCustomLidarDatasource(int index, LidarDatasourceInfo info) throws IOException
     {
         lidarDatasourceInfo.set(index, info);
     }
 
-    public void removeCustomOlaDatasource(int index) throws IOException
+    public void removeCustomLidarDatasource(int index) throws IOException
     {
              lidarDatasourceInfo.remove(index);
 
@@ -2628,18 +2614,18 @@ public class SmallBodyModel extends Model
                 --lidarDatasourceIndex;
     }
 
-    public void reloadOlaDatasources() throws IOException
+    public void reloadLidarDatasources() throws IOException
     {
-        for (OlaDatasourceInfo info : lidarDatasourceInfo)
+        for (LidarDatasourceInfo info : lidarDatasourceInfo)
         {
             info.name = null;
             info.path = null;
         }
 
-        loadOlaDatasourceData();
+        loadLidarDatasourceData();
     }
 
-    public ArrayList<OlaDatasourceInfo> getOlaDasourceInfoList()
+    public ArrayList<LidarDatasourceInfo> getLidarDasourceInfoList()
     {
         return lidarDatasourceInfo;
     }
