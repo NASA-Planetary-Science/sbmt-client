@@ -460,13 +460,14 @@ public class SmallBodyModel extends Model
         {
             lidarDatasourceInfo.remove(i);
         }
+        lidarDatasourceIndex = -1;
     }
 
     public void loadCustomOlaDatasourceInfo() throws IOException
     {
         String prevOlaDatasourceName = null;
         String prevOlaDatasourcePath = null;
-        if (coloringIndex >= 0)
+        if (lidarDatasourceIndex >= 0)
         {
             prevOlaDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
             prevOlaDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
@@ -502,7 +503,7 @@ public class SmallBodyModel extends Model
             }
         }
 
-        // See if there's color of the same name as previously shown and set it to that.
+        // See if there's a Lidar datasource of the same name as previously shown and set it to that.
         lidarDatasourceIndex = -1;
         for (int i=0; i<lidarDatasourceInfo.size(); ++i)
         {
@@ -1318,6 +1319,8 @@ public class SmallBodyModel extends Model
 
     public String getLidarDatasourceName(int i)
     {
+        if (i < 0)
+            return "Default";
         if (i < lidarDatasourceInfo.size())
             return lidarDatasourceInfo.get(i).name;
         else
@@ -1326,6 +1329,8 @@ public class SmallBodyModel extends Model
 
     public String getLidarDatasourcePath(int i)
     {
+        if (i < 0)
+            return "Default";
         if (i < lidarDatasourceInfo.size())
             return lidarDatasourceInfo.get(i).path;
         else
@@ -1857,22 +1862,20 @@ public class SmallBodyModel extends Model
 
     private void loadOlaDatasourceData() throws IOException
     {
-        for (OlaDatasourceInfo info : lidarDatasourceInfo)
-        {
-            // If not null, that means we've already loaded it.
-            if (info.name != null)
-                continue;
-
-            String filename = info.path;
-            filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
-            if (!filename.startsWith(FileCache.FILE_PREFIX))
-                filename += "_res" + resolutionLevel + ".txt.gz";
-            File file = FileCache.getFileFromServer(filename);
-            if (file == null)
-                throw new IOException("Unable to download " + filename);
-        }
-
-        initializeColoringRanges();
+//        for (OlaDatasourceInfo info : lidarDatasourceInfo)
+//        {
+//            // If not null, that means we've already loaded it.
+//            if (info.name != null)
+//                continue;
+//
+//            String filename = info.path;
+//            filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
+////            if (!filename.startsWith(FileCache.FILE_PREFIX))
+////                filename += "_res" + resolutionLevel + ".txt.gz";
+//            File file = FileCache.getFileFromServer(filename);
+//            if (file == null)
+//                throw new IOException("Unable to download " + filename);
+//        }
     }
 
 
@@ -2607,44 +2610,22 @@ public class SmallBodyModel extends Model
 
     public void addCustomOlaDatasource(OlaDatasourceInfo info) throws IOException
     {
-//        info.builtIn = false;
-//        info.resolutionLevel = resolutionLevel;
-//        info.coloringValues = null;
-//        info.defaultColoringRange = null;
         lidarDatasourceInfo.add(info);
-
-        if (coloringIndex >= 0)
-            loadOlaDatasourceData();
     }
 
     public void setCustomOlaDatasource(int index, OlaDatasourceInfo info) throws IOException
     {
-        if (coloringInfo.get(index).builtIn)
-            return;
-
-//        info.builtIn = false;
-//        info.coloringValues = null;
-//        info.defaultColoringRange = null;
-
         lidarDatasourceInfo.set(index, info);
-
-        if (lidarDatasourceIndex >= 0)
-        {
-            loadOlaDatasourceData();
-            paintBody();
-        }
     }
 
     public void removeCustomOlaDatasource(int index) throws IOException
     {
-        boolean needToRepaint = lidarDatasourceIndex >= 0 ;
+             lidarDatasourceInfo.remove(index);
 
-        lidarDatasourceInfo.remove(index);
-
-        if (lidarDatasourceIndex == index)
-            lidarDatasourceIndex = -1;
-        else if (lidarDatasourceIndex > index)
-            --lidarDatasourceIndex;
+            if (lidarDatasourceIndex == index)
+                lidarDatasourceIndex = -1;
+            else if (lidarDatasourceIndex > index)
+                --lidarDatasourceIndex;
     }
 
     public void reloadOlaDatasources() throws IOException

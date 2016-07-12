@@ -264,11 +264,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     @Override
     public void itemStateChanged(ItemEvent e)
     {
-        System.out.println("Lidar Datasource Changed");
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
         JComboBox lidarDatasourceComboBox = (JComboBox)e.getSource();
-        int index = lidarDatasourceComboBox.getSelectedIndex();
+        int index = lidarDatasourceComboBox.getSelectedIndex() - 1;
         smallBodyModel.setLidarDatasourceIndex(index);
+        System.out.println("Lidar Datasource Changed: " + index);
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -332,7 +332,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         if (smallBodyModel.getNumberOfLidarDatasources() > 0)
         {
             int index = smallBodyModel.getLidarDatasourceIndex();
-            sourceComboBox.setSelectedIndex(Math.max(index, 1));
+            sourceComboBox.setSelectedIndex(Math.max(index, 0));
         }
 
         sourceComboBox.addItemListener(this);
@@ -679,12 +679,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
-
-//        int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
-//        String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
-//        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
-//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
-//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
 

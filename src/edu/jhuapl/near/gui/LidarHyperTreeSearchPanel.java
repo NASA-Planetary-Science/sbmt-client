@@ -50,6 +50,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
         String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
         String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
         System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
         System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
