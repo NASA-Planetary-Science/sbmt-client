@@ -230,6 +230,7 @@ public class LidarSearchDataCollection extends Model
 
         originalPoints.clear();
 
+
         int timeindex = 0;
         int xindex = 1;
         int yindex = 2;

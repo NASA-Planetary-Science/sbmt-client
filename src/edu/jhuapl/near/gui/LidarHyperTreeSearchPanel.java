@@ -95,6 +95,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 
         Picker.setPickingEnabled(false);
 
+        coll.setParentForProgressMonitor(this);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
 

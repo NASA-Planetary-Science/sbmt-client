@@ -106,7 +106,6 @@ public class OlaFSHyperTreeSkeleton
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(double[] searchBounds)
     {
         TreeSet<Integer> pathList=Sets.newTreeSet();
-        System.out.println(searchBounds[6]+" "+searchBounds[7]+" "+rootNode.bounds[6]+" "+rootNode.bounds[7]);
         getLeavesIntersectingBoundingBox(rootNode, searchBounds, pathList);
         return pathList;
     }
