@@ -54,4 +54,14 @@ public class PointInCylinderChecker extends PointInRegionChecker
             return false;
         }
     }
+
+    public double[] getCenter()
+    {
+        return center;
+    }
+
+    public double getRadius()
+    {
+        return Math.sqrt(radiusSquared);
+    }
 }

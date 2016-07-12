@@ -101,11 +101,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         {
             DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(sourceMap.keySet().toArray());
             sourceComboBox.setModel(sourceComboBoxModel);
-            if (sourceMap.size() == 1)
+            /*if (sourceMap.size() == 1)
             {
                 sourceLabel.setVisible(false);
                 sourceComboBox.setVisible(false);
-            }
+            }*/
 
             startDate = smallBodyConfig.lidarSearchDefaultStartDate;
             ((SpinnerDateModel)startSpinner.getModel()).setValue(startDate);
@@ -216,9 +216,20 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             e.printStackTrace();
         }
 
+        while (lidarModel.isLoading())
+            try
+            {
+                Thread.sleep(100);  // check every fraction of a second whether the data loading is complete
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         populateTracksInfoLabel();
         populateTracksList();
         populateTracksErrorLabel();
+
     }
 
     private void populateTracksInfoLabel()
@@ -853,7 +864,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JPanel selectRegionPanel;
     private javax.swing.JButton showAllButton;
-    private javax.swing.JComboBox sourceComboBox;
+    protected javax.swing.JComboBox sourceComboBox;
     private javax.swing.JLabel sourceLabel;
     private javax.swing.JLabel startLabel;
     private javax.swing.JSpinner startSpinner;

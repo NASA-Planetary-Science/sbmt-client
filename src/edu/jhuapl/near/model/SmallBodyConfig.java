@@ -1425,7 +1425,7 @@ public class SmallBodyConfig
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
+            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
@@ -1434,7 +1434,7 @@ public class SmallBodyConfig
             c.lidarBrowseOutgoingIntensityIndex = 98;
             c.lidarBrowseReceivedIntensityIndex = 106;
             c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt";
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt"; // TODO: not sure if this is used anymore (Mike Z, Jul 12 2016)
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
@@ -1443,7 +1443,7 @@ public class SmallBodyConfig
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            c.lidarSearchDataSourceMap.put("Local Test Data", "GASKELL/RQ36_V3/OLA/hypertree.testing");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.1");
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
         }
 

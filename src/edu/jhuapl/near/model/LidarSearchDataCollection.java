@@ -154,6 +154,11 @@ public class LidarSearchDataCollection extends Model
         actors.add(selectedPointActor);
     }
 
+    public boolean isLoading()
+    {
+        return false;
+    }
+
     public double getOffsetScale()
     {
         if (smallBodyConfig.lidarOffsetScale <= 0.0)
@@ -229,6 +234,7 @@ public class LidarSearchDataCollection extends Model
         double stop = stopDate;
 
         originalPoints.clear();
+
 
         int timeindex = 0;
         int xindex = 1;

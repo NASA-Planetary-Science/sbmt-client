@@ -1,13 +1,17 @@
 package edu.jhuapl.near.lidar.hyperoctree;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import edu.jhuapl.near.util.FileCache;
 
 public class OlaFSHyperTreeSkeleton
 {
@@ -52,17 +56,27 @@ public class OlaFSHyperTreeSkeleton
         this.basePath=basePath;
     }
 
-    public void read(Path inputFile)  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
+    private double[] readBoundsFile(Path path)
     {
-        Path rootPath=inputFile.getParent();    // inputFile is expected to be in the root path of the tree
-        double[] rootBounds=OlaFSHyperTreeNode.readBoundsFile(rootPath.resolve("bounds"), 4);
-        rootNode=new Node(rootBounds,rootPath,false,idCount); // false -> root is not a leaf
+        File f=FileCache.getFileFromServer(path.toString());
+        if (f.exists())
+            return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
+        else
+            return null;
+    }
+
+    public void read()  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
+    {
+        Path inputFile=basePath.resolve("skeleton.txt");    // inputFile is expected to be in the root path of the tree
+        File f=FileCache.getFileFromServer(inputFile.toString());
+        double[] rootBounds=readBoundsFile(basePath.resolve("bounds"));
+        rootNode=new Node(rootBounds,basePath,false,idCount); // false -> root is not a leaf
         nodeMap.put(rootNode.id, rootNode);
         idCount++;
         //
         try
         {
-            Scanner scanner=new Scanner(inputFile.toFile());
+            Scanner scanner=new Scanner(f);
             readChildren(scanner, rootNode);
             scanner.close();
         }
@@ -106,7 +120,6 @@ public class OlaFSHyperTreeSkeleton
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(double[] searchBounds)
     {
         TreeSet<Integer> pathList=Sets.newTreeSet();
-        System.out.println(searchBounds[6]+" "+searchBounds[7]+" "+rootNode.bounds[6]+" "+rootNode.bounds[7]);
         getLeavesIntersectingBoundingBox(rootNode, searchBounds, pathList);
         return pathList;
     }
