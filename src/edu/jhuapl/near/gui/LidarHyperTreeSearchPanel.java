@@ -46,6 +46,13 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+
+        int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
+        String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
+        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
+        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+
         TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;

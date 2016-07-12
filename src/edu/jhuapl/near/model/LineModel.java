@@ -560,6 +560,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         updateLineActivation();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.VERTEX_REMOVED_FROM_LINE, null, activatedLine);
     }
 
 
@@ -944,6 +945,55 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public double getOffset()
     {
         return offset;
+    }
+
+    public void generateProfile(ArrayList<Point3D> xyzPointList, ArrayList<Double> profileValues,
+            ArrayList<Double> profileDistances, int coloringIndex) throws Exception
+    {
+        profileValues.clear();
+        profileDistances.clear();
+
+        // For each point in xyzPointList, find the cell containing that
+        // point and then, using barycentric coordinates find the value
+        // of the height at that point
+        //
+        // To compute the distance, assume we have a straight line connecting the first
+        // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
+        // on the line closest to p. The distance from p to the start of the line is what
+        // is placed in heights. Use SPICE's nplnpt function for this.
+
+        double[] first = xyzPointList.get(0).xyz;
+        double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
+        double[] lindir = new double[3];
+        lindir[0] = last[0] - first[0];
+        lindir[1] = last[1] - first[1];
+        lindir[2] = last[2] - first[2];
+
+        // The following can be true if the user clicks on the same point twice
+        boolean zeroLineDir = MathUtil.vzero(lindir);
+
+        double[] pnear = new double[3];
+        double[] notused = new double[1];
+
+        double distance = 0.0;
+        double val = 0.0;
+
+        for (Point3D p : xyzPointList)
+        {
+            distance = 0.0;
+            if (!zeroLineDir)
+            {
+                MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                distance = 1000.0 * MathUtil.distanceBetween(first, pnear);
+            }
+
+            // Save out the distance
+            profileDistances.add(distance);
+
+            // Save out the plate coloring value
+            val = 1000.0 * smallBodyModel.getColoringValue(coloringIndex, p.xyz);
+            profileValues.add(val);
+        }
     }
 
     /**

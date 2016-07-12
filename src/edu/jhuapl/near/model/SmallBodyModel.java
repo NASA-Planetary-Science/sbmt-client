@@ -68,6 +68,9 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
 
+    public static final String OLA_DATASOURCE_PATHS = "OlaDatasourcePaths";
+    public static final String OLA_DATASOURCE_NAMES = "OlaDatasourceNames";
+
     public static final int FITS_SCALAR_COLUMN_INDEX = 4;
 
     public enum ColoringValueType {
@@ -137,6 +140,22 @@ public class SmallBodyModel extends Model
     private int blueFalseColor = -1; // blue channel for false coloring
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
+
+    // Class storing info related to plate data used to color shape model
+    public static class OlaDatasourceInfo
+    {
+        public String name = null;
+        public String path = null;
+
+        @Override
+        public String toString()
+        {
+            String str = name + " (" + path + ")";
+            return str;
+        }
+    }
+    ArrayList<OlaDatasourceInfo> lidarDatasourceInfo = new ArrayList<OlaDatasourceInfo>();
+    private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
@@ -435,13 +454,76 @@ public class SmallBodyModel extends Model
         }
     }
 
+    private void clearCustomOlaDatasourceInfo()
+    {
+        for (int i=lidarDatasourceInfo.size()-1; i>=0; --i)
+        {
+            lidarDatasourceInfo.remove(i);
+        }
+    }
+
+    public void loadCustomOlaDatasourceInfo() throws IOException
+    {
+        String prevOlaDatasourceName = null;
+        String prevOlaDatasourcePath = null;
+        if (coloringIndex >= 0)
+        {
+            prevOlaDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
+            prevOlaDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
+        }
+
+        clearCustomOlaDatasourceInfo();
+
+        String configFilename = getConfigFilename();
+
+        if (!(new File(configFilename).exists()))
+            return;
+
+        MapUtil configMap = new MapUtil(configFilename);
+
+        convertOldConfigFormatToNewVersion(configMap);
+
+        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES) && configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
+        {
+            String[] olaDatasourceNames = configMap.get(SmallBodyModel.OLA_DATASOURCE_NAMES).split(",", -1);
+            String[] olaDatasourcePaths = configMap.get(SmallBodyModel.OLA_DATASOURCE_PATHS).split(",", -1);
+
+            for (int i=0; i<olaDatasourceNames.length; ++i)
+            {
+                OlaDatasourceInfo info = new OlaDatasourceInfo();
+                info.name = olaDatasourceNames[i];
+                info.path = olaDatasourcePaths[i];
+                if (!info.path.trim().isEmpty() && !info.name.trim().isEmpty())
+                {
+                    info.name = olaDatasourceNames[i];
+                    info.path = olaDatasourcePaths[i];
+                }
+                lidarDatasourceInfo.add(info);
+            }
+        }
+
+        // See if there's color of the same name as previously shown and set it to that.
+        lidarDatasourceIndex = -1;
+        for (int i=0; i<lidarDatasourceInfo.size(); ++i)
+        {
+            if (prevOlaDatasourceName != null && prevOlaDatasourceName.equals(lidarDatasourceInfo.get(i).name))
+            {
+                lidarDatasourceIndex = i;
+                break;
+            }
+        }
+    }
+
     private void initialize(File modelFile)
     {
         // Load in custom plate data
         try
         {
             if (!smallBodyConfig.customTemporary)
+            {
                 loadCustomColoringInfo();
+                loadCustomOlaDatasourceInfo();
+            }
 
             smallBodyPolyData.ShallowCopy(
                     PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
@@ -1234,6 +1316,40 @@ public class SmallBodyModel extends Model
             return null;
     }
 
+    public String getLidarDatasourceName(int i)
+    {
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).name;
+        else
+            return null;
+    }
+
+    public String getLidarDatasourcePath(int i)
+    {
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).path;
+        else
+            return null;
+    }
+
+    public int getLidarDatasourceIndex()
+    {
+        return lidarDatasourceIndex;
+    }
+
+    public void setLidarDatasourceIndex(int index)
+    {
+        if (lidarDatasourceIndex != index)
+        {
+            lidarDatasourceIndex = index;
+        }
+    }
+
+    public int getNumberOfLidarDatasources()
+    {
+        return lidarDatasourceInfo.size();
+    }
+
     /**
      * This file loads the coloring data.
      * @throws IOException
@@ -1737,6 +1853,28 @@ public class SmallBodyModel extends Model
             falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
         }
     }
+
+
+    private void loadOlaDatasourceData() throws IOException
+    {
+        for (OlaDatasourceInfo info : lidarDatasourceInfo)
+        {
+            // If not null, that means we've already loaded it.
+            if (info.name != null)
+                continue;
+
+            String filename = info.path;
+            filename = FileCache.FILE_PREFIX + getCustomDataFolder() + File.separator + filename;
+            if (!filename.startsWith(FileCache.FILE_PREFIX))
+                filename += "_res" + resolutionLevel + ".txt.gz";
+            File file = FileCache.getFileFromServer(filename);
+            if (file == null)
+                throw new IOException("Unable to download " + filename);
+        }
+
+        initializeColoringRanges();
+    }
+
 
     private void paintBody() throws IOException
     {
@@ -2461,5 +2599,67 @@ public class SmallBodyModel extends Model
     public ArrayList<ColoringInfo> getColoringInfoList()
     {
         return coloringInfo;
+    }
+
+
+
+
+
+    public void addCustomOlaDatasource(OlaDatasourceInfo info) throws IOException
+    {
+//        info.builtIn = false;
+//        info.resolutionLevel = resolutionLevel;
+//        info.coloringValues = null;
+//        info.defaultColoringRange = null;
+        lidarDatasourceInfo.add(info);
+
+        if (coloringIndex >= 0)
+            loadOlaDatasourceData();
+    }
+
+    public void setCustomOlaDatasource(int index, OlaDatasourceInfo info) throws IOException
+    {
+        if (coloringInfo.get(index).builtIn)
+            return;
+
+//        info.builtIn = false;
+//        info.coloringValues = null;
+//        info.defaultColoringRange = null;
+
+        lidarDatasourceInfo.set(index, info);
+
+        if (lidarDatasourceIndex >= 0)
+        {
+            loadOlaDatasourceData();
+            paintBody();
+        }
+    }
+
+    public void removeCustomOlaDatasource(int index) throws IOException
+    {
+        boolean needToRepaint = lidarDatasourceIndex >= 0 ;
+
+        lidarDatasourceInfo.remove(index);
+
+        if (lidarDatasourceIndex == index)
+            lidarDatasourceIndex = -1;
+        else if (lidarDatasourceIndex > index)
+            --lidarDatasourceIndex;
+    }
+
+    public void reloadOlaDatasources() throws IOException
+    {
+        for (OlaDatasourceInfo info : lidarDatasourceInfo)
+        {
+            info.name = null;
+            info.path = null;
+        }
+
+        loadOlaDatasourceData();
+    }
+
+    public ArrayList<OlaDatasourceInfo> getOlaDasourceInfoList()
+    {
+        return lidarDatasourceInfo;
     }
 }
