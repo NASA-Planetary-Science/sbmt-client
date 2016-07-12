@@ -72,28 +72,6 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         String olaDatasourcePath = "";
         String olaDatasourceName = "";
 
-//        // We need to make sure to save out data from other resolutions without modification.
-//        if (configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_PATHS) &&
-//                configMap.containsKey(SmallBodyModel.OLA_DATASOURCE_NAMES))
-//        {
-//            String[] cellDataFilenamesArr = configMap.get(SmallBodyModel.OLA_DATASOURCE_PATHS).split(",", -1);
-//            String[] cellDataNamesArr = configMap.get(SmallBodyModel.OLA_DATASOURCE_NAMES).split(",", -1);
-//
-//            int resolution = modelManager.getSmallBodyModel().getModelResolution();
-//            for (int i=0; i<cellDataFilenamesArr.length; ++i)
-//            {
-//                cellDataFilenames += cellDataFilenamesArr[i];
-//                cellDataNames += cellDataNamesArr[i];
-//
-//                if (i < cellDataFilenamesArr.length-1)
-//                {
-//                    cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
-//                    cellDataNames += CustomShapeModel.LIST_SEPARATOR;
-//                }
-//            }
-//        }
-
-
         DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
         for (int i=0; i<cellDataListModel.size(); ++i)
         {

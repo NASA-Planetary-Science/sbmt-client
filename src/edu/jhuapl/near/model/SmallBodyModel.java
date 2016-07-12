@@ -463,7 +463,7 @@ public class SmallBodyModel extends Model
         lidarDatasourceIndex = -1;
     }
 
-    public void loadCustomOlaDatasourceInfo() throws IOException
+    public void loadCustomOlaDatasourceInfo()
     {
         String prevOlaDatasourceName = null;
         String prevOlaDatasourcePath = null;

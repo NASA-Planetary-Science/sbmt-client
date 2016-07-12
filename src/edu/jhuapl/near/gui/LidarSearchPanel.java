@@ -822,7 +822,9 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(this));
         dialog.setVisible(true);
 
+        // update the panel to reflect changes to the lidar datasources
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel.loadCustomOlaDatasourceInfo();
         updateLidarDatasourceComboBox();
     }//GEN-LAST:event_manageDatasourcesButtonActionPerformed
 
