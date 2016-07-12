@@ -15,7 +15,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.near.model.SmallBodyModel.OlaDatasourceInfo;
+import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
 
 
 public class CustomLidarDataImporterDialog extends javax.swing.JDialog
@@ -37,7 +37,7 @@ public class CustomLidarDataImporterDialog extends javax.swing.JDialog
     /**
      * Set the cell data info
      */
-    public void setOlaDatasourceInfo(OlaDatasourceInfo info, int numCells)
+    public void setLidarDatasourceInfo(LidarDatasourceInfo info, int numCells)
     {
         if (isEditMode)
         {
@@ -52,9 +52,9 @@ public class CustomLidarDataImporterDialog extends javax.swing.JDialog
     /**
      * @return
      */
-    public OlaDatasourceInfo getOlaDatasourceInfo()
+    public LidarDatasourceInfo getLidarDatasourceInfo()
     {
-        OlaDatasourceInfo info = new OlaDatasourceInfo();
+        LidarDatasourceInfo info = new LidarDatasourceInfo();
         info.path = cellDataPathTextField.getText();
         info.name = nameTextField.getText();
 
