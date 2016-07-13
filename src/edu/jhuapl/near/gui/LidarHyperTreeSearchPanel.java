@@ -1,10 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
 
 import com.google.common.base.Stopwatch;
@@ -25,14 +22,15 @@ import edu.jhuapl.near.util.BoundingBox;
 
 public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 {
-    List<Integer> cubeList;
+    final LidarHyperTreeSearchDataCollection defaultDataSource;
+    LidarHyperTreeSearchDataCollection coll;
 
     public LidarHyperTreeSearchPanel(SmallBodyConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
         super(smallBodyConfig, modelManager, pickManager, renderer);
-
+        defaultDataSource=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
     }
 
     @Override
@@ -50,30 +48,14 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 
-        int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
+        /*int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
         String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
-        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);*/
         //System.out.println("Current Lidar Datasource Index : " + lidarIndex);
         //System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
         //System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
 
-        Path sourcePath=null;
-        String selectedSourceName=(String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
-        System.out.println("Selected lidar source name: "+selectedSourceName);
-        for (int i=0; i<smallBodyModel.getNumberOfLidarDatasources(); i++)
-            if (smallBodyModel.getLidarDatasourceName(i).equals(selectedSourceName))
-                sourcePath=Paths.get(smallBodyModel.getLidarDatasourcePath(i));
-        if (sourcePath==null)   // meaning that the user-defined sources didn't contain a match
-        {
-            Map<String,String> defaultSources=smallBodyModel.getSmallBodyConfig().lidarSearchDataSourceMap;
-            for (String name : defaultSources.keySet())
-                if (name.equals(selectedSourceName))
-                    sourcePath=Paths.get(defaultSources.get(name));
-        }
-        System.out.println("Found matching lidar data path: "+sourcePath);
-
-        TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
@@ -106,10 +88,26 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
             interiorPoly.DeepCopy(box.GetOutput());
         }
 
-        LidarHyperTreeSearchDataCollection coll=(LidarHyperTreeSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        String selectedSourceName=(String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
+        System.out.println("Selected lidar source name: "+selectedSourceName);
+        coll=defaultDataSource;
+        String sourcePath="default";
+
+        // look for custom data sources in small body model
+        for (int i=0; i<smallBodyModel.getNumberOfLidarDatasources(); i++)
+            if (smallBodyModel.getLidarDatasourceName(i).equals(selectedSourceName))
+            {
+                sourcePath=smallBodyModel.getLidarDatasourcePath(i);
+                coll=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(sourcePath));
+                break;
+            }
+
+        System.out.println("Found matching lidar data path: "+sourcePath);
+        setLidarModel();
+
         Stopwatch sw=new Stopwatch();
         sw.start();
-        cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
+        TreeSet<Integer> cubeList=coll.getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
@@ -120,6 +118,16 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         radialOffsetChanger.reset();
 
         Picker.setPickingEnabled(true);
+    }
+
+    @Override
+    protected void setLidarModel()
+    {
+        System.out.println(coll);
+        if (coll==null)
+            super.setLidarModel();
+        else
+            lidarModel=coll;
     }
 
 }

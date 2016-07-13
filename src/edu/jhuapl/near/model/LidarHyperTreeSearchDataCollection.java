@@ -46,9 +46,16 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
     public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel);
-        Path basePath=Paths.get(getLidarDataSourceMap().get("Default"));    // TODO: this shouldn't be hardcoded, but for now it matches the "Default" key set around line 1453 in SmallBodyConfig.java where Bennu V3 model is defined
+        Path basePath=Paths.get(getLidarDataSourceMap().get("Default"));
         skeleton=new OlaFSHyperTreeSkeleton(basePath);
-        skeleton.read();    // this looks for "skeleton.txt" in the basePath
+        skeleton.read();
+    }
+
+    public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel, Path basePath)
+    {
+        super(smallBodyModel);
+        skeleton=new OlaFSHyperTreeSkeleton(basePath);
+        skeleton.read();
     }
 
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(BoundingBox bbox, double[] tlims)
@@ -88,6 +95,8 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                     System.out.println("Loading data partition "+(cnt+1)+"/"+cubeList.size()+" (id="+cidx+") \""+leafPath+"\"");
                     Path dataFilePath=leafPath.resolve("data");
                     File dataFile=FileCache.getFileFromServer(dataFilePath.toString());
+                    if (!dataFile.exists())
+                        dataFile=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataFilePath.toString());
                     originalPoints.addAll(readDataFile(dataFile,pointInRegionChecker,new double[]{startDate,stopDate}));
                     //
                     cnt++;
@@ -130,12 +139,12 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                 sw.reset();
 
                 loading=false;
+                cancel(true);
 
                 return null;
             }
         };
         dataLoader.executeDialog();
-
     }
 
     List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {

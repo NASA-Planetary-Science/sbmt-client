@@ -210,6 +210,7 @@ public class LidarSearchDataCollection extends Model
             double timeSeparationBetweenTracks,
             int minTrackLength) throws IOException, ParseException
     {
+
         if (dataSource.equals(this.dataSource) &&
                 startDate == this.startDate &&
                 stopDate == this.stopDate &&
@@ -580,6 +581,7 @@ public class LidarSearchDataCollection extends Model
         for (int i=1; i<size; ++i)
         {
             double currentTime = originalPoints.get(i).getTime();
+
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
                 track.stopId = i-1;

@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JSeparator;
 
 
 /**
@@ -67,7 +68,8 @@ public class MainWindow extends JFrame
         menuBar.add(viewMenu);
 
         favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
-        menuBar.add(favoritesMenu);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(favoritesMenu);
 
         helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');

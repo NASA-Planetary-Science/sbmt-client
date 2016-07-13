@@ -168,7 +168,7 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
     public static void main(String[] args)
     {
         Path rootPath=Paths.get(args[0]);
-        Path outFilePath=rootPath.resolve("skeleton.txt");
+        Path outFilePath=rootPath.resolve("dataSource.lidar");
         System.out.println("Root path = "+rootPath);
         System.out.println("Output path = "+outFilePath);
         OlaFSHyperTreeCondenser condenser=new OlaFSHyperTreeCondenser(rootPath,outFilePath);

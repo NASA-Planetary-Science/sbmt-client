@@ -188,7 +188,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         try
         {
-            System.out.println(sourceComboBox.getSelectedItem().toString());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
             double start = TimeUtil.str2et(sdf.format(startDate).replace(' ', 'T'));
             double end = TimeUtil.str2et(sdf.format(endDate).replace(' ', 'T'));
@@ -226,6 +225,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+
         populateTracksInfoLabel();
         populateTracksList();
         populateTracksErrorLabel();
@@ -789,6 +790,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     }//GEN-LAST:event_dragTracksToggleButtonActionPerformed
 
     private void loadTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadTrackButtonActionPerformed
+
         File[] files = CustomFileChooser.showOpenDialog(this, "Select Files", null, true);
 
         if (files != null)
@@ -835,7 +837,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         // update the panel to reflect changes to the lidar datasources
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        smallBodyModel.loadCustomLidarDatasourceInfo();
+        if (smallBodyModel.getNumberOfLidarDatasources()>0)
+            smallBodyModel.loadCustomLidarDatasourceInfo();
         updateLidarDatasourceComboBox();
     }//GEN-LAST:event_manageDatasourcesButtonActionPerformed
 

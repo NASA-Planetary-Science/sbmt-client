@@ -20,8 +20,9 @@ public class OlaFSHyperTreeSkeleton
     int idCount=0;
     TreeMap<Integer, Node> nodeMap=Maps.newTreeMap(); // unfortunately this extra level of indirection is required by the "LidarSearchDataCollection" class
     Path basePath;
+    Path dataSourcePath;
 
-    public static class Node
+    public class Node
     {
         double[] bounds;
         Path path;
@@ -51,9 +52,10 @@ public class OlaFSHyperTreeSkeleton
         }
     }
 
-    public OlaFSHyperTreeSkeleton(Path basePath)
+    public OlaFSHyperTreeSkeleton(Path dataSourcePath)  // data source path defines where the .lidar file representing the tree structure resides; basepath is its parent
     {
-        this.basePath=basePath;
+        this.dataSourcePath=dataSourcePath;
+        this.basePath=dataSourcePath.getParent();
     }
 
     private double[] readBoundsFile(Path path)
@@ -61,14 +63,20 @@ public class OlaFSHyperTreeSkeleton
         File f=FileCache.getFileFromServer(path.toString());
         if (f.exists())
             return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
-        else
-            return null;
+        //
+        f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+path.toString());
+        if (f.exists())
+            return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
+        //
+        return null;
     }
 
     public void read()  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
     {
-        Path inputFile=basePath.resolve("skeleton.txt");    // inputFile is expected to be in the root path of the tree
-        File f=FileCache.getFileFromServer(inputFile.toString());
+        File f=FileCache.getFileFromServer(dataSourcePath.toString());
+        if (!f.exists())
+            f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataSourcePath.toString());
+        //
         double[] rootBounds=readBoundsFile(basePath.resolve("bounds"));
         rootNode=new Node(rootBounds,basePath,false,idCount); // false -> root is not a leaf
         nodeMap.put(rootNode.id, rootNode);

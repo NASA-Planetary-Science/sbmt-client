@@ -62,7 +62,6 @@ public class OlaFSHyperPoint implements FSHyperPoint, LidarPoint
         for (int i=0; i<8; i++)
             data[i]=inputStream.readDouble();
         fileNum=inputStream.readInt();
-        System.out.println(getTargetPosition().subtract(getSourcePosition()).getNorm());
     }
 
     @Override

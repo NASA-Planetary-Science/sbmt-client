@@ -12,10 +12,11 @@ public class FavoritesMenu extends JMenu
 {
     FavoritesFile favoritesFile;
     ViewManager manager;
+    private static final char viewNameSpaceReplacementChar='.';
 
     public FavoritesMenu(FavoritesFile file, ViewManager manager)
     {
-        super("\u2661");    // cute unicode heart
+        super("Favorites");    // cute unicode heart
         favoritesFile=file;
         this.manager=manager;
         rebuild();
@@ -27,17 +28,22 @@ public class FavoritesMenu extends JMenu
         //
         JMenuItem add=new JMenuItem();
         JMenuItem rem=new JMenuItem();
-        add.setAction(new AddFavoriteAction("Add to favorites"));
-        rem.setAction(new RemoveFavoriteAction("Remove from favorites"));
-        add(add);
-        add(rem);
-        add(new JSeparator());
+        JMenuItem def=new JMenuItem();
+        add.setAction(new AddFavoriteAction("Add current model to favorites"));
+        rem.setAction(new RemoveFavoriteAction("Remove current model from favorites"));
+        def.setAction(new SetDefaultModelAction("Set current model as default",manager));
+        //
+
         //
         List<String> stringsOnFile=favoritesFile.getAllFavorites();
         for (String viewName : stringsOnFile)
             add(new FavoritesMenuItem(viewName, manager));
         //
-
+        if (!stringsOnFile.isEmpty())
+            add(new JSeparator());
+        add(add);
+        add(rem);
+        add(def);
     }
 
     private class FavoritesMenuItem extends JMenuItem
@@ -45,8 +51,13 @@ public class FavoritesMenu extends JMenu
         public FavoritesMenuItem(String viewName, ViewManager manager)
         {
             super(viewName);
-            setAction(new ShowFavoriteAction(manager, viewName));
+            boolean isDefaultToLoad=unfilterViewName(viewName).equals(ViewManager.getDefaultBodyToLoad());
+            String modifiedName=viewName;
+            if (isDefaultToLoad)
+                modifiedName="<"+modifiedName+">";
+            setAction(new ShowFavoriteAction(manager, modifiedName));
         }
+
     }
 
     private class ShowFavoriteAction extends AbstractAction
@@ -76,9 +87,9 @@ public class FavoritesMenu extends JMenu
 
     private class AddFavoriteAction extends AbstractAction
     {
-        public AddFavoriteAction(String string)
+        public AddFavoriteAction(String desc)
         {
-            super(string);
+            super(desc);
         }
 
         @Override
@@ -91,27 +102,50 @@ public class FavoritesMenu extends JMenu
 
     private class RemoveFavoriteAction extends AbstractAction
     {
-        public RemoveFavoriteAction(String string)
+        public RemoveFavoriteAction(String desc)
         {
-            super(string);
+            super(desc);
         }
 
         @Override
         public void actionPerformed(ActionEvent e)
         {
             favoritesFile.removeFavorite(filterViewName(manager.getCurrentView().getUniqueName()));
+            if (ViewManager.getDefaultBodyToLoad().equals(manager.getCurrentView().getUniqueName()))
+                ViewManager.resetDefaultBodyToLoad();
             rebuild();
         }
     }
 
-    private String filterViewName(String str)
+    private class SetDefaultModelAction extends AbstractAction
     {
-        return str.replace(' ','|');
+
+        ViewManager manager;
+
+        public SetDefaultModelAction(String desc, ViewManager manager)
+        {
+            super(desc);
+            this.manager=manager;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            ViewManager.setDefaultBodyToLoad(manager.getCurrentView().getUniqueName());
+            favoritesFile.addFavorite(filterViewName(manager.getCurrentView().getUniqueName()));    // automatically add current view to favorites if it already is
+            rebuild();
+        }
+
+    }
+
+    private String filterViewName(String str)   // JMenuItems don't display correctly if the text is too long and contains spaces, so replace spaces with |
+    {
+        return str.replace(' ',viewNameSpaceReplacementChar);
     }
 
     private String unfilterViewName(String str)
     {
-        return str.replace('|',' ');
+        return str.replace(viewNameSpaceReplacementChar,' ');
     }
 
 }

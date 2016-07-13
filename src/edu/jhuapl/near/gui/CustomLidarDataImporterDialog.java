@@ -306,7 +306,7 @@ public class CustomLidarDataImporterDialog extends javax.swing.JDialog
 
     private void browsePlateDataButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browsePlateDataButtonActionPerformed
     {//GEN-HEADEREND:event_browsePlateDataButtonActionPerformed
-        File file = CustomFileChooser.showOpenDialog(this, "Select Lidar Data Source");
+        File file = CustomFileChooser.showOpenDialog(this, "Select Lidar Data Source", "lidar");
         if (file == null)
         {
             return;

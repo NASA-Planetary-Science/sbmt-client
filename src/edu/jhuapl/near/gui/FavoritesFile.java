@@ -1,5 +1,6 @@
 package edu.jhuapl.near.gui;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,12 +10,15 @@ import java.util.Scanner;
 
 import com.google.common.collect.Lists;
 
+import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileCache;
 
 public class FavoritesFile
 {
  //   ViewManager viewManager;
-    final Path favoritesFilePath=Paths.get(FileCache.getFileFromServer(FileCache.FILE_PREFIX+"favorites").getAbsolutePath());
+    final Path favoritesFilePath=Paths.get(Configuration.getApplicationDataDir()+File.separator+"favorites");
+    //final static String defaultModelMarker="***";
+    //String defaultModelName=null;
 
  //   public FavoritesManager() //ViewManager viewManager)
  //   {
