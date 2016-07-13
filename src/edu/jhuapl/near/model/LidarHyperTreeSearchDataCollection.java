@@ -23,6 +23,7 @@ import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperTreeSkeleton;
 import edu.jhuapl.near.lidar.test.LidarPoint;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.near.util.Properties;
 
 public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollection
 {
@@ -104,15 +105,18 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                     if (isCancelled())
                         break;
                 }
+                cancel(true);
 
                 System.out.println("Data Reading Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
+                sw.start();
 
                 // Sort points in time order
                 Collections.sort(originalPoints);
 
                 System.out.println("Sorting Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
+                sw.start();
 
                 radialOffset = 0.0;
                 translation[0] = translation[1] = translation[2] = 0.0;
@@ -121,30 +125,45 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
 
                 System.out.println("Compute Track Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
+                sw.start();
 
                 removeTracksThatAreTooSmall();
 
                 System.out.println("Remove Small Tracks Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
+                sw.start();
 
                 assignInitialColorToTrack();
 
                 System.out.println("Assign Initial Colors Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
+                sw.start();
 
 
                 updateTrackPolydata();
 
                 System.out.println("UpdatePolyData Time="+sw.elapsedMillis()+" ms");
-                sw.reset();
 
                 loading=false;
-                cancel(true);
 
                 return null;
             }
         };
         dataLoader.executeDialog();
+
+        while (isLoading())
+            try
+            {
+                Thread.sleep(100);  // check every fraction of a second whether the data loading is complete
+            }
+            catch (InterruptedException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        selectPoint(-1);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {

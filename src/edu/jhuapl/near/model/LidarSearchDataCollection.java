@@ -865,8 +865,8 @@ public class LidarSearchDataCollection extends Model
                 // Go through each point in the track
                 for (int i=startId; i<=stopId; ++i)
                 {
-                    double[] pt = originalPoints.get(i).getTargetPosition().toArray();
 
+                    double[] pt = originalPoints.get(i).getTargetPosition().toArray();
                     pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
 

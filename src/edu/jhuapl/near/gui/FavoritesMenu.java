@@ -12,7 +12,7 @@ public class FavoritesMenu extends JMenu
 {
     FavoritesFile favoritesFile;
     ViewManager manager;
-    private static final char viewNameSpaceReplacementChar='.';
+    private static final char viewNameSpaceReplacementChar='-';
 
     public FavoritesMenu(FavoritesFile file, ViewManager manager)
     {

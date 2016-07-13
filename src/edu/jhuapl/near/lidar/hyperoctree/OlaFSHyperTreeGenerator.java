@@ -153,7 +153,7 @@ public class OlaFSHyperTreeGenerator
             for (int i=0; i<node.getNumberOfChildren(); i++)
                 if (node.childExists(i))
                 {
-                    //System.out.println(node.getChild(i).getPath());
+                    System.out.println(node.getChild(i).getPath());
                     expandNode((OlaFSHyperTreeNode)node.getChild(i));
                 }
         }

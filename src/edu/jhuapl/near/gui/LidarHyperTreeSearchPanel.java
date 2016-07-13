@@ -1,6 +1,7 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import java.nio.file.Paths;
 import java.util.TreeSet;
 
@@ -118,16 +119,23 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         radialOffsetChanger.reset();
 
         Picker.setPickingEnabled(true);
+
     }
 
     @Override
     protected void setLidarModel()
     {
-        System.out.println(coll);
         if (coll==null)
             super.setLidarModel();
         else
             lidarModel=coll;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        //super.propertyChange(evt);
+        System.out.println("*");
     }
 
 }

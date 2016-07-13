@@ -215,18 +215,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             e.printStackTrace();
         }
 
-        while (lidarModel.isLoading())
-            try
-            {
-                Thread.sleep(100);  // check every fraction of a second whether the data loading is complete
-            }
-            catch (InterruptedException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-
         populateTracksInfoLabel();
         populateTracksList();
         populateTracksErrorLabel();
@@ -283,8 +271,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         System.out.println("Lidar Datasource Changed: " + index);
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
+        System.out.println("& "+evt);
+
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
@@ -307,6 +298,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
             populateTracksErrorLabel();
+            System.out.println("!");
         }
     }
 
