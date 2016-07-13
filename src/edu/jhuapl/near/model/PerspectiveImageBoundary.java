@@ -208,11 +208,6 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
 
     public void propertyChange(PropertyChangeEvent evt)
     {
-        if (Properties.MODEL_RESOLUTION_CHANGED.equals(evt.getPropertyName()))
-        {
-            initialize();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
 //      The following code seems broken and causes performance problems and issues with the colors
 //      of the image list
 //        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
