@@ -163,7 +163,8 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
             }
 
         selectPoint(-1);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        System.out.println("hypertree set lidar data");
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {

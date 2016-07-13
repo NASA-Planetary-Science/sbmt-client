@@ -80,6 +80,8 @@ public abstract class Model
         if (this.visible != b)
         {
             this.visible = b;
+            //XXX
+            System.out.println("set visible");
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }

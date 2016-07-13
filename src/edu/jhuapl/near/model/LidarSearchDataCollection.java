@@ -197,6 +197,8 @@ public class LidarSearchDataCollection extends Model
 
         selectPoint(-1);
 
+        //XXX
+        System.out.println("set lidar data");
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -899,7 +901,9 @@ public class LidarSearchDataCollection extends Model
         if (enableTrackErrorComputation)
             computeTrackError();
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        //XXX
+        System.out.println("update track polydata");
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     private void removeTrack(int trackId)
@@ -946,7 +950,9 @@ public class LidarSearchDataCollection extends Model
 
         selectPoint(-1);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        //XXX
+        System.out.println("remove all lidar data");
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public List<vtkProp> getProps()
@@ -1018,7 +1024,9 @@ public class LidarSearchDataCollection extends Model
         if (actor != null)
         {
             actor.GetProperty().SetPointSize(size);
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            //XXX
+            System.out.println("set point size");
+            pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
 
@@ -1179,7 +1187,9 @@ public class LidarSearchDataCollection extends Model
 
         selectedPointPolydata.Modified();
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        //XXX
+        System.out.println("select point");
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void updateSelectedPoint()
@@ -1200,7 +1210,9 @@ public class LidarSearchDataCollection extends Model
 
         selectedPointPolydata.Modified();
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        //XXX
+        System.out.println("update selected point");
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public double[] getSelectedPoint()

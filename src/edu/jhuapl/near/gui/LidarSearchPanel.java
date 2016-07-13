@@ -59,7 +59,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected LidarSearchDataCollection lidarModel;
     private java.util.Date startDate = null;
     private java.util.Date endDate = null;
-    private LidarPopupMenu lidarPopupMenu;
+    protected LidarPopupMenu lidarPopupMenu;
     private LidarTrackTranslationDialog translateDialog;
     protected edu.jhuapl.near.gui.RadialOffsetChanger radialOffsetChanger;
 
@@ -82,7 +82,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-        setLidarModel();
+        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
         lidarModel.addPropertyChangeListener(this);
@@ -127,11 +127,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         double start = TimeUtil.str2et(sdf.format(startDate).replace(' ', 'T'));
         double end = TimeUtil.str2et(sdf.format(endDate).replace(' ', 'T'));
         return new double[]{start,end};
-    }
-
-    protected void setLidarModel()
-    {
-        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
     }
 
     protected ModelNames getLidarModelName()
@@ -275,7 +270,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     public void propertyChange(PropertyChangeEvent evt)
     {
         System.out.println("& "+evt);
-
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
@@ -297,8 +291,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            populateTracksErrorLabel();
             System.out.println("!");
+            populateTracksErrorLabel();
         }
     }
 
@@ -317,11 +311,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
     }
 
-    private void updateLidarDatasourceComboBox()
+    protected void updateLidarDatasourceComboBox()
     {
         SmallBodyModel smallBodyModel = modelManager.getSmallBodyModel();
-        if (smallBodyModel.getLidarDatasourceIndex() < 0)
-            smallBodyModel.setLidarDatasourceIndex(0);
+//        if (smallBodyModel.getLidarDatasourceIndex() < 0)
+//            smallBodyModel.setLidarDatasourceIndex(0);
 
         sourceComboBox.removeItemListener(this);
         sourceComboBox.removeAllItems();
