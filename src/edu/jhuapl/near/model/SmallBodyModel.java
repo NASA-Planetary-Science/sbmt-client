@@ -2608,7 +2608,7 @@ public class SmallBodyModel extends Model
 
     public void removeCustomLidarDatasource(int index) throws IOException
     {
-             lidarDatasourceInfo.remove(index);
+            lidarDatasourceInfo.remove(index);
 
             if (lidarDatasourceIndex == index)
                 lidarDatasourceIndex = -1;

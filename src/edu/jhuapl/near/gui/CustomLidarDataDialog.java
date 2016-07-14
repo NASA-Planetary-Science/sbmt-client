@@ -10,7 +10,6 @@
  */
 package edu.jhuapl.near.gui;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -122,11 +121,10 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     {
         try
         {
-            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
-            String filename = getCustomDataFolder() + File.separator + lidarDatasourceInfo.path;
-            new File(filename).delete();
-
-            modelManager.getSmallBodyModel().removeCustomPlateData(index);
+//            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
+//            String filename = getCustomDataFolder() + File.separator + lidarDatasourceInfo.path;
+//            new File(filename).delete();
+            modelManager.getSmallBodyModel().removeCustomLidarDatasource(index);
             ((DefaultListModel)lidarDatasourceList.getModel()).remove(index);
             updateConfigFile();
         }
