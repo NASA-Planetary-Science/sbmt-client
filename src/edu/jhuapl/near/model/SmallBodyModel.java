@@ -1332,7 +1332,7 @@ public class SmallBodyModel extends Model
     public String getLidarDatasourcePath(int i)
     {
         if (i < 0)
-            return "Default";
+            return "/NLR/cubes";
         if (i < lidarDatasourceInfo.size())
             return lidarDatasourceInfo.get(i).path;
         else

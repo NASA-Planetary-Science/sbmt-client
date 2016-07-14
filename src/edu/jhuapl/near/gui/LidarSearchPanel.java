@@ -35,6 +35,7 @@ import javax.swing.SpinnerDateModel;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.ModelManager;
@@ -264,6 +265,9 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = lidarDatasourceComboBox.getSelectedIndex() - 1;
         smallBodyModel.setLidarDatasourceIndex(index);
         System.out.println("Lidar Datasource Changed: " + index);
+        LidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (LidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        String datasourceName = smallBodyModel.getLidarDatasourceName(index);
+        lidarHyperTreeSearchDataCollection.setCurrentDatasourceSkeleton(datasourceName);
     }
 
     @Override

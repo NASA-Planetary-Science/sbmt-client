@@ -1,7 +1,6 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
-import java.nio.file.Paths;
 import java.util.TreeSet;
 
 import com.google.common.base.Stopwatch;
@@ -11,10 +10,12 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
+import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.pick.Picker;
@@ -40,6 +41,36 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         return ModelNames.LIDAR_HYPERTREE_SEARCH;
     }
 
+    public void updateLidarDatasourceComboBox()
+    {
+        super.updateLidarDatasourceComboBox();
+
+        SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        LidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (LidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
+
+        // clear the skeletons instances (should we try to keep these around to avoid having to load them again? -turnerj1)
+        lidarHyperTreeSearchDataCollection.clearDatasourceSkeletons();
+
+        // add the server datasource
+        String defaultDatasourceName = "Default";
+        String defaultDatasourcePath = lidarModel.getLidarDataSourceMap().get("Default");
+        lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(defaultDatasourceName, defaultDatasourcePath);
+
+        // add the custome local datasources
+        for (LidarDatasourceInfo info : smallBodyModel.getLidarDasourceInfoList())
+        {
+            String datasourceName = info.name;
+            String datasourcePath = info.path;
+            lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(datasourceName, datasourcePath);
+        }
+
+        // set the current datasource
+        int index = smallBodyModel.getLidarDatasourceIndex();
+        String datasourceName = smallBodyModel.getLidarDatasourceName(index);
+        lidarHyperTreeSearchDataCollection.setCurrentDatasourceSkeleton(datasourceName);
+    }
+
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
@@ -58,6 +89,8 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
         System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
         System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
+        // read in the skeleton, if it hasn't been read in already
+        ((LidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
 
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -93,10 +126,10 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 
         String selectedSourceName=(String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
         System.out.println("Selected lidar source name: "+selectedSourceName);
-        if (lidarDatasourceName.equals("Default"))
+//        if (lidarDatasourceName.equals("Default"))
             lidarModel=(LidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
-        else
-            lidarModel=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(lidarDatasourcePath));
+//        else
+//            lidarModel=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(lidarDatasourcePath));
         // lidarModel is by default equal to the source given in the super's constructor
 
         // look for custom data sources in small body model

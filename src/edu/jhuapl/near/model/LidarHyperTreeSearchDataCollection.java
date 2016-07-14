@@ -9,7 +9,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JComponent;
@@ -34,9 +38,10 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         OLA_LEVEL_2
     };
 
-    OlaFSHyperTreeSkeleton skeleton;
-    JComponent parentForProgressMonitor;
-    boolean loading=false;
+    private Map<String, OlaFSHyperTreeSkeleton> skeletons = new HashMap<String, OlaFSHyperTreeSkeleton>();
+    private OlaFSHyperTreeSkeleton currentSkeleton;
+    private JComponent parentForProgressMonitor;
+    private boolean loading=false;
 
     @Override
     public boolean isLoading()
@@ -47,22 +52,59 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
     public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel);
-        Path basePath=Paths.get(getLidarDataSourceMap().get("Default"));
-        skeleton=new OlaFSHyperTreeSkeleton(basePath);
-        skeleton.read();
     }
 
-    public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel, Path basePath)
+    public void clearDatasourceSkeletons()
     {
-        super(smallBodyModel);
-        skeleton=new OlaFSHyperTreeSkeleton(basePath);
-        skeleton.read();
+        skeletons.clear();
+    }
+
+    /**
+     * Creates a skeleton for the specified datasource name, assumes the data source path for the name
+     * is already added to the lidarDatasourceMap
+     * @param datasourceName
+     */
+    public void addDatasourceSkeleton(String datasourceName, String datasourcePath)
+    {
+        if (datasourceName != null && datasourceName.length() > 0)
+        {
+            System.out.println("Adding datasource: " + datasourceName + " - " + datasourcePath);
+            Path basePath = Paths.get(datasourcePath);
+            OlaFSHyperTreeSkeleton skeleton = skeletons.get(datasourceName);
+            if (skeleton == null)
+            {
+                skeleton = new OlaFSHyperTreeSkeleton(basePath);
+                skeletons.put(datasourceName, skeleton);
+            }
+        }
+    }
+
+    public void setCurrentDatasourceSkeleton(String datasourceName)
+    {
+        if (datasourceName != null && datasourceName.length() > 0)
+        {
+            System.out.println("Setting current datasource: " + datasourceName);
+            OlaFSHyperTreeSkeleton skeleton = skeletons.get(datasourceName);
+            if (skeleton != null)
+                currentSkeleton = skeleton;
+        }
+    }
+
+    private Set<OlaFSHyperTreeSkeleton> readIn = new HashSet<OlaFSHyperTreeSkeleton>();
+
+    public void readSkeleton()
+    {
+        if (!readIn.contains(currentSkeleton))
+        {
+            currentSkeleton.read();
+            readIn.add(currentSkeleton);
+        }
     }
 
     public TreeSet<Integer> getLeavesIntersectingBoundingBox(BoundingBox bbox, double[] tlims)
     {
         double[] bounds=new double[]{bbox.xmin,bbox.xmax,bbox.ymin,bbox.ymax,bbox.zmin,bbox.zmax,tlims[0],tlims[1]};
-        return skeleton.getLeavesIntersectingBoundingBox(bounds);
+        return currentSkeleton.getLeavesIntersectingBoundingBox(bounds);
     }
 
     public void setParentForProgressMonitor(JComponent component)
@@ -92,7 +134,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                 int cnt=0;
                 for (Integer cidx : cubeList)
                 {
-                    Path leafPath=skeleton.getNodeById(cidx).getPath();
+                    Path leafPath=currentSkeleton.getNodeById(cidx).getPath();
                     System.out.println("Loading data partition "+(cnt+1)+"/"+cubeList.size()+" (id="+cidx+") \""+leafPath+"\"");
                     Path dataFilePath=leafPath.resolve("data");
                     File dataFile=FileCache.getFileFromServer(dataFilePath.toString());

@@ -77,6 +77,7 @@ public class OlaFSHyperTreeSkeleton
         if (!f.exists())
             f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataSourcePath.toString());
         //
+        System.out.println(f.toString());
         double[] rootBounds=readBoundsFile(basePath.resolve("bounds"));
         rootNode=new Node(rootBounds,basePath,false,idCount); // false -> root is not a leaf
         nodeMap.put(rootNode.id, rootNode);
