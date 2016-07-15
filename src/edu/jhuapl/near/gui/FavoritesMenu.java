@@ -16,7 +16,7 @@ public class FavoritesMenu extends JMenu
 
     public FavoritesMenu(FavoritesFile file, ViewManager manager)
     {
-        super("Favorites");    // cute unicode heart
+        super("Favorites");
         favoritesFile=file;
         this.manager=manager;
         rebuild();
@@ -34,16 +34,39 @@ public class FavoritesMenu extends JMenu
         def.setAction(new SetDefaultModelAction("Set current model as default",manager));
         //
 
-        //
+        // favorites
+
+        JMenuItem favoritesItem=new JMenuItem("Favorite models:");
+        favoritesItem.setEnabled(false);
+        add(favoritesItem);
+
         List<String> stringsOnFile=favoritesFile.getAllFavorites();
         for (String viewName : stringsOnFile)
-            add(new FavoritesMenuItem(viewName, manager));
-        //
+        {
+            JMenuItem menuItem=new FavoritesMenuItem(viewName, manager);
+            boolean isDefaultToLoad=unfilterViewName(viewName).equals(ViewManager.getDefaultBodyToLoad());
+            if (!isDefaultToLoad)
+                add(menuItem);
+
+        }
+
+        // show default to load
         if (!stringsOnFile.isEmpty())
             add(new JSeparator());
+        JMenuItem defaultItem=new JMenuItem("Default model:");
+        defaultItem.setEnabled(false);
+        add(defaultItem);
+
+        String defaultToLoad=ViewManager.getDefaultBodyToLoad();
+        JMenuItem menuItem=new FavoritesMenuItem(defaultToLoad, manager);
+        add(menuItem);
+
+        //
+        add(new JSeparator());
         add(add);
         add(rem);
         add(def);
+
     }
 
     private class FavoritesMenuItem extends JMenuItem
@@ -51,11 +74,7 @@ public class FavoritesMenu extends JMenu
         public FavoritesMenuItem(String viewName, ViewManager manager)
         {
             super(viewName);
-            boolean isDefaultToLoad=unfilterViewName(viewName).equals(ViewManager.getDefaultBodyToLoad());
-            String modifiedName=viewName;
-            if (isDefaultToLoad)
-                modifiedName="<"+modifiedName+">";
-            setAction(new ShowFavoriteAction(manager, modifiedName));
+            setAction(new ShowFavoriteAction(manager, viewName));
         }
 
     }

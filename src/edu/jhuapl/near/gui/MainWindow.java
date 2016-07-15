@@ -18,9 +18,9 @@ public class MainWindow extends JFrame
     private StatusBar statusBar;
     private FileMenu fileMenu;
     private ViewMenu viewMenu;
-    private FavoritesMenu favoritesMenu;
     private HelpMenu helpMenu;
     private ViewManager rootPanel;
+    private FavoritesMenu favoritesMenu;
 
     /**
      * @param tempCustomShapeModelPath path to shape model. May be null.

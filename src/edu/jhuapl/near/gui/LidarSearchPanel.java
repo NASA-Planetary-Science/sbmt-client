@@ -273,7 +273,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        System.out.println("& "+evt);
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
@@ -295,7 +294,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            System.out.println("!");
             populateTracksErrorLabel();
         }
     }
