@@ -411,6 +411,15 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             hideOrShowAllInProgress=false;
         }
 
+        public void removeAllTracks()
+        {
+            hideOrShowAllInProgress=true;
+            int cnt=getRowCount();
+            for (int r=0; r<cnt; r++)
+                removeRow(0);
+            hideOrShowAllInProgress=false;
+        }
+
         @Override
         public int getColumnCount()
         {
@@ -880,6 +889,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
         lidarModel.removeAllLidarData();
+        ((LidarTableModel)jTable1.getModel()).removeAllTracks();
 //        tracksList.setListData(new String[]{});
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
