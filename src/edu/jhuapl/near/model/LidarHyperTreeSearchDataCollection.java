@@ -206,7 +206,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
             }
 
         selectPoint(-1);
-        System.out.println("hypertree set lidar data");
+
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -242,7 +242,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         {
             Track track=tracks.get(i);
             for (int j=track.startId; j<=track.stopId; j++)
-                track.registerSourceFileIndex(((OlaFSHyperPoint)originalPoints.get(j)).getFileNum());   // TODO: this cast is obviously OLA-specific
+                track.registerSourceFileIndex(((OlaFSHyperPoint)originalPoints.get(j)).getFileNum(), getCurrentSkeleton().getFileMap());
         }
     }
 
