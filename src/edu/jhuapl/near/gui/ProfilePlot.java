@@ -97,7 +97,8 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
 
     private void updateProfile(int lineId)
     {
-        if (lineId >= ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
+        if (lineId >= ((XYSeriesCollection)valueDistanceDataset).getSeriesCount() ||
+                lineId >= lineModel.getNumberOfStructures())
             return;
 
         Line line = (Line)lineModel.getStructure(lineId);
@@ -153,7 +154,9 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
     private void removeProfile(int lineId)
     {
         if (lineId < ((XYSeriesCollection)valueDistanceDataset).getSeriesCount())
+        {
             ((XYSeriesCollection)valueDistanceDataset).removeSeries(lineId);
+        }
     }
 
     public void setColoringIndex(int index){
