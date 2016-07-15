@@ -16,6 +16,8 @@
 -   OLA search results now show name of OLA data file
 -   OLA search results list now has checkboxes to control visibility
 -   New "Favorites" menu item allows user to add frequently used small body models to the View menu
+-   Favorites menu also allows specification of default model to load on startup.
+-   Right click on current viewing tab allows user to set favorite instrument for default model.
 -   Image pull-right "Simulate Lighting" menu item can now be toggled on and off
 -   Colors of image boundaries no longer change to read when model resolution is changed
 

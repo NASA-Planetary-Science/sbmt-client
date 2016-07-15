@@ -671,6 +671,10 @@ The third section contains a list of the shape models you have
 imported. New items will be added to the list when you import a new
 shape model.
 
+The fourth section contains a "Favorites" pull-right menu item that allows
+the user to add the current shape model to a list of favorite shape models,
+as well as specify the default starting shape model.
+
 ### Help Menu
 
 ##### Help Contents
