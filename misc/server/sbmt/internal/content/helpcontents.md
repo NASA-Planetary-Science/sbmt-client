@@ -315,7 +315,7 @@ January and May 2000. Each spectrum consists of 64 separate channels
 between 812 nm and 2708 nm. The NIS tab is very similar to the MSI tab
 and much of the information described there applies here as well.
 
-### Lidar data tab (NLR for Eros, LIDAR for Itokawa)
+### Lidar data tab (NLR for Eros, LIDAR for Itokawa, OLA for Bennu)
 
 The NLR tab for Eros and the LIDAR tab for Itokawa provides an
 interface showing lidar data. Currently there are 2 subtabs within the
@@ -337,6 +337,18 @@ The Search tab can be used search for lidar data by specifying
 specific start and stop dates. In addition, a search region to
 restrict the search to can be specified as well exactly like the
 imaging tab. A radial offset slider is provided as in the Browse tab.
+
+The Bennu model's OLA Search tab contains an additional combo box for
+selecting OLA Lidar data from user-specified local data sources,
+labeled "Source:". These OLA data sources are folders containing
+the OLA data in a searchable data format. They can be created using
+a separately available tool.
+
+New OLA datasources can be added to the combo box by selecting
+the "Manage Data Sources..." button. This brings up a dialog box listing
+the currently available data sources and their location on the local file
+system. Items in the data source list can be added, removed or edited
+using the buttons at the bottom of the dialog box.
 
 After selecting the desired options and clicking Search, a list of
 tracks will be displayed. Right-clicking on a track (either in the list
@@ -636,7 +648,7 @@ and TIFF formats.
 
 ### View Menu
 
-The View menu is divided into 3 section. The top section contains all
+The View menu is divided into four section. The top section contains all
 built-in shape models that the tool supports. When you click on a
 shape model from the view menu, that shape model will be displayed in
 the renderer and the tabs in the control panel on the left will change
