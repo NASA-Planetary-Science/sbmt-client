@@ -124,7 +124,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
             interiorPoly.DeepCopy(box.GetOutput());
         }
 
-        String selectedSourceName=(String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
+        String selectedSourceName = null; // (String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
         System.out.println("Selected lidar source name: "+selectedSourceName);
 //        if (lidarDatasourceName.equals("Default"))
             lidarModel=(LidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());

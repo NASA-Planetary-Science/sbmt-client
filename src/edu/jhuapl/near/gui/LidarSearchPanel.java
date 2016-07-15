@@ -243,7 +243,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             + ", " + lidarModel.getTrackTimeRange(i);
         }
 
-        tracksList.setListData(results);
+//        tracksList.setListData(results);
     }
 
     private void populateTracksErrorLabel()
@@ -286,10 +286,10 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 int idx = lidarModel.getTrackIdFromPointId(id);
                 if (idx >= 0)
                 {
-                    tracksList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = tracksList.getCellBounds(idx, idx);
-                    if (cellBounds != null)
-                        tracksList.scrollRectToVisible(cellBounds);
+//                    tracksList.setSelectionInterval(idx, idx);
+//                    Rectangle cellBounds = tracksList.getCellBounds(idx, idx);
+//                    if (cellBounds != null)
+//                        tracksList.scrollRectToVisible(cellBounds);
                 }
             }
         }
@@ -304,14 +304,14 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     {
         if (e.isPopupTrigger())
         {
-            int index = tracksList.locationToIndex(e.getPoint());
-
-            if (index >= 0 && tracksList.getCellBounds(index, index).contains(e.getPoint()))
-            {
-                tracksList.setSelectedIndex(index);
-                lidarPopupMenu.setCurrentTrack(index);
-                lidarPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
+//            int index = tracksList.locationToIndex(e.getPoint());
+//
+//            if (index >= 0 && tracksList.getCellBounds(index, index).contains(e.getPoint()))
+//            {
+//                tracksList.setSelectedIndex(index);
+//                lidarPopupMenu.setCurrentTrack(index);
+//                lidarPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+//            }
         }
     }
 
@@ -357,8 +357,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         startSpinner = new javax.swing.JSpinner();
         endSpinner = new javax.swing.JSpinner();
         resultsLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tracksList = new javax.swing.JList();
         jPanel1 = new javax.swing.JPanel();
         hideAllButton = new javax.swing.JButton();
         showAllButton = new javax.swing.JButton();
@@ -385,6 +383,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         fileTypeLabel = new javax.swing.JLabel();
         radialOffsetPanel = new javax.swing.JPanel();
         manageDatasourcesButton = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -411,16 +411,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         });
 
         resultsLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        tracksList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                tracksListMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                tracksListMouseReleased(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tracksList);
 
         hideAllButton.setText("Hide All");
         hideAllButton.addActionListener(new java.awt.event.ActionListener() {
@@ -538,6 +528,19 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable1);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -545,7 +548,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(resultsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(selectRegionPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -588,9 +590,14 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                                     .addComponent(trackSeparationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                                     .addComponent(minTrackSizeTextField)))
                             .addComponent(translateTracksButton, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 185, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(radialOffsetPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -628,9 +635,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     .addComponent(fileTypeLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(radialOffsetPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -647,6 +652,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     .addComponent(jLabel5)
                     .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
+            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addContainerGap(417, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(200, Short.MAX_VALUE)))
         );
 
         jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {endSpinner, sourceComboBox, startSpinner});
@@ -733,14 +743,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             pickManager.setPickMode(PickMode.DEFAULT);
     }//GEN-LAST:event_selectRegionButtonActionPerformed
 
-    private void tracksListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tracksListMousePressed
-        maybeShowPopup(evt);
-    }//GEN-LAST:event_tracksListMousePressed
-
-    private void tracksListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tracksListMouseReleased
-        maybeShowPopup(evt);
-    }//GEN-LAST:event_tracksListMouseReleased
-
     private void hideAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideAllButtonActionPerformed
         lidarModel.hideAllTracks();
     }//GEN-LAST:event_hideAllButtonActionPerformed
@@ -752,7 +754,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllButtonActionPerformed
         lidarModel.removeAllLidarData();
-        tracksList.setListData(new String[]{});
+//        tracksList.setListData(new String[]{});
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void pointSizeSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_pointSizeSpinnerStateChanged
@@ -844,8 +846,9 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
     private javax.swing.JButton loadTrackButton;
     private javax.swing.JButton manageDatasourcesButton;
     private javax.swing.JLabel minTrackSizeLabel;
@@ -857,7 +860,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JPanel selectRegionPanel;
     private javax.swing.JButton showAllButton;
-    protected javax.swing.JComboBox sourceComboBox;
+    private javax.swing.JComboBox sourceComboBox;
     private javax.swing.JLabel sourceLabel;
     private javax.swing.JLabel startLabel;
     private javax.swing.JSpinner startSpinner;
@@ -867,7 +870,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JLabel trackErrorLabel;
     private javax.swing.JLabel trackSeparationLabel;
     private javax.swing.JFormattedTextField trackSeparationTextField;
-    private javax.swing.JList tracksList;
     private javax.swing.JButton translateTracksButton;
     // End of variables declaration//GEN-END:variables
 
