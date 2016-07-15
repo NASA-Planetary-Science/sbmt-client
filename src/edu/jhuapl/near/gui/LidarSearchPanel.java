@@ -986,7 +986,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JPanel selectRegionPanel;
     private javax.swing.JButton showAllButton;
-    protected javax.swing.JComboBox sourceComboBox;
+    private javax.swing.JComboBox sourceComboBox;
     private javax.swing.JLabel sourceLabel;
     private javax.swing.JLabel startLabel;
     private javax.swing.JSpinner startSpinner;
