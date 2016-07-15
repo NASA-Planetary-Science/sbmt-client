@@ -2,12 +2,18 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
@@ -112,6 +118,7 @@ public class View extends JPanel
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
+
         for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
         {
             if (instrument.spectralMode == SpectralMode.MONO)
@@ -206,6 +213,64 @@ public class View extends JPanel
             controlPanel.addTab("DEMs", component);
         }
 
+
+        // add capability to right click on tab title regions and set as default tab to load
+        controlPanel.addMouseListener(new MouseListener()
+        {
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getButton()==MouseEvent.BUTTON2 || (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown()))  // check for windows (2-button) and Mac (1-button + ctrl down) right-click
+                {
+                    JPopupMenu tabMenu=new JPopupMenu();
+                    JMenuItem menuItem=new JMenuItem("Set instrument as default");
+                    menuItem.addActionListener(new ActionListener()
+                    {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            FavoriteTabsFile.getInstance().setFavoriteTab(smallBodyConfig.getUniqueName(), controlPanel.getSelectedIndex());
+                        }
+                    });
+                    tabMenu.add(menuItem);
+                    tabMenu.show(controlPanel, e.getX(), e.getY());
+                }
+
+            }
+        });
+        int tabIndex=FavoriteTabsFile.getInstance().getFavoriteTab(smallBodyConfig.getUniqueName());
+        controlPanel.setSelectedIndex(tabIndex);    // load default tab (which is 0 if not specified in favorite tabs file)
+
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
         splitPane.setOneTouchExpandable(true);
@@ -249,6 +314,7 @@ public class View extends JPanel
             controlPanel.setMinimumSize(new Dimension(320, 100));
             controlPanel.setPreferredSize(new Dimension(320, 800));
         }
+
 
         this.add(splitPane, BorderLayout.CENTER);
 

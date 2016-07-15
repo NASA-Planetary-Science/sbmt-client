@@ -11,7 +11,6 @@
 
 package edu.jhuapl.near.gui;
 
-import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -232,7 +231,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
     }
 
-    private void populateTracksList()
+    protected void populateTracksList()
     {
         int numberOfTracks = lidarModel.getNumberOfTrack();
         String[] results = new String[numberOfTracks];
@@ -273,7 +272,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        System.out.println("& "+evt);
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
@@ -295,7 +293,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            System.out.println("!");
             populateTracksErrorLabel();
         }
     }
@@ -634,8 +631,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     .addComponent(fileTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(fileTypeLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE)
+                .addComponent(resultsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 274, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(radialOffsetPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -654,8 +651,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 .addContainerGap())
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                    .addContainerGap(417, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(370, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(200, Short.MAX_VALUE)))
         );
 

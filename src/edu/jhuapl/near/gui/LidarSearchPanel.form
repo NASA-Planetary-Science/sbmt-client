@@ -145,9 +145,9 @@
                           <Component id="fileTypeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="fileTypeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="resultsLabel" min="-2" pref="65" max="-2" attributes="0"/>
-                      <EmptySpace pref="225" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="resultsLabel" min="-2" pref="16" max="-2" attributes="0"/>
+                      <EmptySpace pref="274" max="32767" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                       <Component id="radialOffsetPanel" min="-2" max="-2" attributes="0"/>
@@ -169,8 +169,8 @@
                   </Group>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="417" max="32767" attributes="0"/>
-                          <Component id="jScrollPane3" min="-2" pref="211" max="-2" attributes="0"/>
+                          <EmptySpace pref="370" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" min="-2" pref="258" max="-2" attributes="0"/>
                           <EmptySpace pref="200" max="32767" attributes="0"/>
                       </Group>
                   </Group>
