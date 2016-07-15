@@ -101,6 +101,9 @@ public class LidarSearchDataCollection extends Model
         public boolean hidden = false;
         public int[] color = defaultColor.clone(); // blue by default
         List<Integer> sourceFiles=Lists.newArrayList();
+        public String[] timeRange=new String[]{"",""};
+        List<Map<Integer,String>> fileMaps=Lists.newArrayList();
+
 
         public int getNumberOfPoints()
         {
@@ -117,16 +120,21 @@ public class LidarSearchDataCollection extends Model
             return sourceFiles.size();
         }
 
-        public int getSourceFileIndex(int i)
+        public String getSourceFileName(int i)
         {
-            return sourceFiles.get(i);
+            return fileMaps.get(i).get(sourceFiles.get(i));
         }
 
-        public void registerSourceFileIndex(int fileNum)
+        public void registerSourceFileIndex(int fileNum, Map<Integer,String> fileMap)
         {
             if (!sourceFiles.contains(fileNum))
+            {
                 sourceFiles.add(fileNum);
+                fileMaps.add(fileMap);
+            }
         }
+
+
     }
 
     public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
@@ -216,8 +224,6 @@ public class LidarSearchDataCollection extends Model
 
         selectPoint(-1);
 
-        //XXX
-        System.out.println("set lidar data");
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -599,6 +605,7 @@ public class LidarSearchDataCollection extends Model
         track.startId = 0;
         tracks.add(track);
 
+
         for (int i=1; i<size; ++i)
         {
             double currentTime = originalPoints.get(i).getTime();
@@ -606,6 +613,10 @@ public class LidarSearchDataCollection extends Model
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
                 track.stopId = i-1;
+
+                double t0 = originalPoints.get(track.startId).getTime();
+                double t1 = originalPoints.get(track.stopId).getTime();
+                track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
 
                 track = new Track();
                 track.startId = i;
@@ -617,6 +628,9 @@ public class LidarSearchDataCollection extends Model
         }
 
         track.stopId = size-1;
+        double t0 = originalPoints.get(track.startId).getTime();
+        double t1 = originalPoints.get(track.stopId).getTime();
+        track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
     }
 
     /**
@@ -920,8 +934,6 @@ public class LidarSearchDataCollection extends Model
         if (enableTrackErrorComputation)
             computeTrackError();
 
-        //XXX
-        System.out.println("update track polydata");
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -969,8 +981,6 @@ public class LidarSearchDataCollection extends Model
 
         selectPoint(-1);
 
-        //XXX
-        System.out.println("remove all lidar data");
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -1043,8 +1053,7 @@ public class LidarSearchDataCollection extends Model
         if (actor != null)
         {
             actor.GetProperty().SetPointSize(size);
-            //XXX
-            System.out.println("set point size");
+
             pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
@@ -1206,8 +1215,6 @@ public class LidarSearchDataCollection extends Model
 
         selectedPointPolydata.Modified();
 
-        //XXX
-        System.out.println("select point");
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -1229,8 +1236,6 @@ public class LidarSearchDataCollection extends Model
 
         selectedPointPolydata.Modified();
 
-        //XXX
-        System.out.println("update selected point");
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -1240,19 +1245,6 @@ public class LidarSearchDataCollection extends Model
             return originalPoints.get(selectedPoint).getTargetPosition().toArray().clone();
 
         return null;
-    }
-
-    public String getTrackTimeRange(int trackId)
-    {
-        Track track = tracks.get(trackId);
-
-        if (originalPoints.size() == 0 || track.startId < 0 || track.stopId < 0)
-            return "";
-
-        double t0 = originalPoints.get(track.startId).getTime();
-        double t1 = originalPoints.get(track.stopId).getTime();
-
-        return TimeUtil.et2str(t0) + " - " + TimeUtil.et2str(t1);
     }
 
     public int getNumberOfPointsPerTrack(int trackId)

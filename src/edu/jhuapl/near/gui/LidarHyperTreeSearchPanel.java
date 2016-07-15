@@ -180,7 +180,7 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
             newTrackStrings[i]+=" [";
             for (int j=0; j<track.getNumberOfSourceFiles(); j++)
             {
-                newTrackStrings[i]+=((LidarHyperTreeSearchDataCollection)lidarModel).getCurrentSkeleton().getFileMap().get(track.getSourceFileIndex(j));
+                newTrackStrings[i]+=((LidarHyperTreeSearchDataCollection)lidarModel).getCurrentSkeleton().getFileMap().get(track.getSourceFileName(j));
                 if (j<track.getNumberOfSourceFiles()-1)
                     newTrackStrings[i]+="] [";
             }

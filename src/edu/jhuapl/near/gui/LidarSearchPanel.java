@@ -11,6 +11,7 @@
 
 package edu.jhuapl.near.gui;
 
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
@@ -29,13 +31,21 @@ import java.util.TreeSet;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
+import com.google.common.collect.Lists;
 
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
@@ -119,6 +129,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
         updateLidarDatasourceComboBox();
+
+
+        jTable1.setModel(new LidarTableModel());
+        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
     }
 
     double[] getSelectedTimeLimits()
@@ -210,13 +225,13 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             e.printStackTrace();
         }
 
-        populateTracksInfoLabel();
+  //      populateTracksInfoLabel();
         populateTracksList();
-        populateTracksErrorLabel();
+  //      populateTracksErrorLabel();
 
     }
 
-    private void populateTracksInfoLabel()
+/*    private void populateTracksInfoLabel()
     {
         String resultsText =
             "<html>Number of points " + lidarModel.getNumberOfPoints() + "<br><br>";
@@ -230,22 +245,35 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         resultsLabel.setText(resultsText);
     }
-
+*/
     protected void populateTracksList()
     {
         int numberOfTracks = lidarModel.getNumberOfTrack();
         String[] results = new String[numberOfTracks];
 
-        for (int i=0; i<numberOfTracks; ++i)
+        for (int i=0; i<numberOfTracks; i++)
         {
-            results[i] = "Track " + i + ", Number of points: " + lidarModel.getNumberOfPointsPerTrack(i)
-            + ", " + lidarModel.getTrackTimeRange(i);
+//            results[i] = "Track " + i + ", Number of points: " + lidarModel.getNumberOfPointsPerTrack(i)
+//            + ", " + lidarModel.getTrackTimeRange(i);
+            ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i));
         }
 
+        for (int c=0; c<jTable1.getColumnCount(); c++)
+        {
+            int w=30;
+            for (int r=0; r<jTable1.getRowCount(); r++)
+            {
+                Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
+                w=Math.max(w, comp.getPreferredSize().width+1);
+            }
+            jTable1.getColumnModel().getColumn(c).setPreferredWidth(w);
+        }
 //        tracksList.setListData(results);
     }
 
-    private void populateTracksErrorLabel()
+
+
+  /*  private void populateTracksErrorLabel()
     {
         if (trackErrorCheckBox.isSelected())
         {
@@ -253,7 +281,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             trackErrorLabel.setText(errorText);
         }
     }
-
+*/
 
 
     @Override
@@ -293,7 +321,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
-            populateTracksErrorLabel();
+//            populateTracksErrorLabel();
         }
     }
 
@@ -337,6 +365,105 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         sourceComboBox.addItemListener(this);
     }
 
+    class LidarTableModel extends DefaultTableModel
+    {
+        boolean hideOrShowAllInProgress=false;
+
+        public LidarTableModel()
+        {
+            this.addTableModelListener(new TableModelListener()
+            {
+
+                @Override
+                public void tableChanged(TableModelEvent e)
+                {
+                    if (hideOrShowAllInProgress)
+                        return;
+                    //
+                    int r=e.getFirstRow();
+                    int c=e.getColumn();
+                    TableModel model=(TableModel)e.getSource();
+                    if (c==0)   // hardcoded wiring into hide column
+                    {
+                        Boolean data=(Boolean)model.getValueAt(r,c);
+                        lidarModel.hideTrack(r, data);
+                    }
+                }
+            });
+
+        }
+
+        public void hideAllTracks()
+        {
+            hideOrShowAllInProgress=true;
+            for (int r=0; r<getRowCount(); r++)
+                setValueAt(true, r, 0);    // set checkbox value to true (0 is hardcoded as the hide column)
+            lidarModel.hideAllTracks();
+            hideOrShowAllInProgress=false;
+        }
+
+        public void showAllTracks()
+        {
+            hideOrShowAllInProgress=true;
+            for (int r=0; r<getRowCount(); r++)
+                setValueAt(false, r, 0);    // set checkbox value to false (0 is hardcoded as the hide column)
+            lidarModel.showAllTracks();
+            hideOrShowAllInProgress=false;
+        }
+
+        @Override
+        public int getColumnCount()
+        {
+            return 5;
+        }
+
+        public void addTrack(Track track)
+        {
+            List<String> sourceFiles=Lists.newArrayList();
+            for (int i=0; i<track.getNumberOfSourceFiles(); i++)
+                sourceFiles.add(track.getSourceFileName(i));
+            addRow(new Object[]{
+                    false,
+                    String.valueOf(track.getNumberOfPoints()),
+                    track.timeRange[0],
+                    track.timeRange[1],
+                    sourceFiles
+                    });
+        }
+
+        @Override
+        public String getColumnName(int column)
+        {
+            switch (column)
+            {
+            case 0:
+                return "Hide";
+            case 1:
+                return "# Pts";
+            case 2:
+                return "Start";
+            case 3:
+                return "End";
+            case 4:
+                return "L2 Files";
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            switch (columnIndex)
+            {
+            case 0:
+                return Boolean.class;
+            default:
+                return String.class;
+            }
+        }
+
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -742,10 +869,12 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     private void hideAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideAllButtonActionPerformed
         lidarModel.hideAllTracks();
+        ((LidarTableModel)jTable1.getModel()).hideAllTracks();
     }//GEN-LAST:event_hideAllButtonActionPerformed
 
     private void showAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllButtonActionPerformed
         lidarModel.showAllTracks();
+        ((LidarTableModel)jTable1.getModel()).showAllTracks();
     }//GEN-LAST:event_showAllButtonActionPerformed
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllButtonActionPerformed
@@ -807,16 +936,16 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 e.printStackTrace();
             }
 
-            populateTracksInfoLabel();
+  /*          populateTracksInfoLabel();
             populateTracksList();
-            populateTracksErrorLabel();
+            populateTracksErrorLabel();*/
         }
     }//GEN-LAST:event_loadTrackButtonActionPerformed
 
     private void trackErrorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackErrorCheckBoxActionPerformed
         lidarModel.setEnableTrackErrorComputation(trackErrorCheckBox.isSelected());
         trackErrorLabel.setEnabled(trackErrorCheckBox.isSelected());
-        populateTracksErrorLabel();
+        //populateTracksErrorLabel();
     }//GEN-LAST:event_trackErrorCheckBoxActionPerformed
 
     private void manageDatasourcesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageDatasourcesButtonActionPerformed
