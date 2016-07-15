@@ -252,7 +252,7 @@ public class View extends JPanel
                 if (e.getButton()==MouseEvent.BUTTON2 || (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown()))  // check for windows (2-button) and Mac (1-button + ctrl down) right-click
                 {
                     JPopupMenu tabMenu=new JPopupMenu();
-                    JMenuItem menuItem=new JMenuItem("Set tab as default");
+                    JMenuItem menuItem=new JMenuItem("Set instrument as default");
                     menuItem.addActionListener(new ActionListener()
                     {
 
