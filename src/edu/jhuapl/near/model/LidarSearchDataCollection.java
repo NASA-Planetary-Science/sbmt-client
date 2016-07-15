@@ -31,6 +31,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 
+import com.google.common.collect.Lists;
+
 import vtk.vtkActor;
 import vtk.vtkCellArray;
 import vtk.vtkIdList;
@@ -84,7 +86,7 @@ public class LidarSearchDataCollection extends Model
 
     private int selectedPoint = -1;
 
-    private ArrayList<Track> tracks = new ArrayList<Track>();
+    protected ArrayList<Track> tracks = new ArrayList<Track>();
     private double timeSeparationBetweenTracks = 10.0; // In seconds
     private int minTrackLength = 1;
     private int[] defaultColor = {0, 0, 255, 255};
@@ -92,12 +94,13 @@ public class LidarSearchDataCollection extends Model
     private boolean enableTrackErrorComputation = false;
     private double trackError;
 
-    private class Track
+    public class Track
     {
         public int startId = -1;
         public int stopId = -1;
         public boolean hidden = false;
         public int[] color = defaultColor.clone(); // blue by default
+        List<Integer> sourceFiles=Lists.newArrayList();
 
         public int getNumberOfPoints()
         {
@@ -107,6 +110,22 @@ public class LidarSearchDataCollection extends Model
         public boolean containsId(int id)
         {
             return startId >= 0 && stopId >=0 && id >= startId && id <= stopId;
+        }
+
+        public int getNumberOfSourceFiles()
+        {
+            return sourceFiles.size();
+        }
+
+        public int getSourceFileIndex(int i)
+        {
+            return sourceFiles.get(i);
+        }
+
+        public void registerSourceFileIndex(int fileNum)
+        {
+            if (!sourceFiles.contains(fileNum))
+                sourceFiles.add(fileNum);
         }
     }
 

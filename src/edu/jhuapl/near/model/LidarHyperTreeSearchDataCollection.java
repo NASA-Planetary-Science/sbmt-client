@@ -122,7 +122,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         // In the old LidarSearchDataCollection class the cubeList came from a predetermined set of cubes all of equal size.
         // Here it corresponds to the list of leaves of an octree that intersect the bounding box of the user selection area.
 
-        ProgressBarSwingWorker dataLoader=new ProgressBarSwingWorker(parentForProgressMonitor,"Loading OLA datapoints")
+        ProgressBarSwingWorker dataLoader=new ProgressBarSwingWorker(parentForProgressMonitor,"Loading OLA datapoints ("+cubeList.size()+" individual chunks)")
         {
             @Override
             protected Void doInBackground() throws Exception
@@ -143,7 +143,8 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                     originalPoints.addAll(readDataFile(dataFile,pointInRegionChecker,new double[]{startDate,stopDate}));
                     //
                     cnt++;
-                    setProgress((int)((double)cnt/(double)cubeList.size()*100));
+                    double progressPercentage=((double)cnt/(double)cubeList.size()*100);
+                    setProgress((int)progressPercentage);
                     if (isCancelled())
                         break;
                 }
@@ -214,7 +215,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         try {
             DataInputStream stream=new DataInputStream(new FileInputStream(dataInputFile));
             while (stream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
-                OlaFSHyperPoint pt=new OlaFSHyperPoint(stream);
+                OlaFSHyperPoint pt=new OlaFSHyperPoint(stream);                                         // TODO: this is OLA-specific
                 if (pt.getTime()<timeLimits[0] || pt.getTime()>timeLimits[1])   // throw away points outside time limits
                     continue;
                 if (pointInRegionChecker!=null)
@@ -230,6 +231,24 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
                 e.printStackTrace();
         }
         return pts;
+    }
+
+    @Override
+    protected void computeTracks()
+    {
+        super.computeTracks();
+        //
+        for (int i=0; i<tracks.size(); i++)
+        {
+            Track track=tracks.get(i);
+            for (int j=track.startId; j<=track.stopId; j++)
+                track.registerSourceFileIndex(((OlaFSHyperPoint)originalPoints.get(j)).getFileNum());   // TODO: this cast is obviously OLA-specific
+        }
+    }
+
+    public OlaFSHyperTreeSkeleton getCurrentSkeleton()
+    {
+        return currentSkeleton;
     }
 
 }

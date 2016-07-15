@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -21,6 +22,7 @@ public class OlaFSHyperTreeSkeleton
     TreeMap<Integer, Node> nodeMap=Maps.newTreeMap(); // unfortunately this extra level of indirection is required by the "LidarSearchDataCollection" class
     Path basePath;
     Path dataSourcePath;
+    Map<Integer, String> fileMap=Maps.newHashMap();
 
     public class Node
     {
@@ -77,7 +79,7 @@ public class OlaFSHyperTreeSkeleton
         if (!f.exists())
             f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataSourcePath.toString());
         //
-        System.out.println(f.toString());
+        System.out.println("Data source file = "+f.toString());
         double[] rootBounds=readBoundsFile(basePath.resolve("bounds"));
         rootNode=new Node(rootBounds,basePath,false,idCount); // false -> root is not a leaf
         nodeMap.put(rootNode.id, rootNode);
@@ -87,6 +89,30 @@ public class OlaFSHyperTreeSkeleton
         {
             Scanner scanner=new Scanner(f);
             readChildren(scanner, rootNode);
+            scanner.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //
+        Path fileMapPath=dataSourcePath.getParent().resolve("fileMap.txt");
+        f=FileCache.getFileFromServer(fileMapPath.toString());
+        if (!f.exists())
+            f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+fileMapPath.toString());
+        System.out.println("File map = "+f.toString());
+        try
+        {
+            Scanner scanner=new Scanner(f);
+            while (scanner.hasNextLine())
+            {
+                String line=scanner.nextLine();
+                String num=line.split(" ")[0];
+                String path=line.replace(num, "").trim();
+                fileMap.put(Integer.valueOf(num), path);
+            }
             scanner.close();
         }
         catch (FileNotFoundException e)
@@ -147,5 +173,10 @@ public class OlaFSHyperTreeSkeleton
         return nodeMap.get(id);
     }
 
+
+    public Map<Integer, String> getFileMap()
+    {
+        return fileMap;
+    }
 
 }

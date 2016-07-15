@@ -3,6 +3,8 @@ package edu.jhuapl.near.gui;
 import java.awt.event.ActionEvent;
 import java.util.TreeSet;
 
+import javax.swing.ListModel;
+
 import com.google.common.base.Stopwatch;
 
 import vtk.vtkCubeSource;
@@ -11,6 +13,7 @@ import vtk.vtkPolyData;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -163,6 +166,29 @@ public class LidarHyperTreeSearchPanel extends LidarSearchPanel
 
     }
 
+    @Override
+    protected void populateTracksList()
+    {
+        super.populateTracksList();
+        ListModel<String> trackStrings=tracksList.getModel();
+        String[] newTrackStrings=new String[trackStrings.getSize()];
 
+        for (int i=0; i<trackStrings.getSize(); i++)
+        {
+            Track track=lidarModel.getTrack(i);
+            newTrackStrings[i]=trackStrings.getElementAt(i);
+            newTrackStrings[i]+=" [";
+            for (int j=0; j<track.getNumberOfSourceFiles(); j++)
+            {
+                newTrackStrings[i]+=((LidarHyperTreeSearchDataCollection)lidarModel).getCurrentSkeleton().getFileMap().get(track.getSourceFileIndex(j));
+                if (j<track.getNumberOfSourceFiles()-1)
+                    newTrackStrings[i]+="] [";
+            }
+            newTrackStrings[i]+="]";
+        }
+
+        tracksList.setListData(newTrackStrings);
+
+    }
 
 }

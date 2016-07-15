@@ -232,7 +232,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
     }
 
-    private void populateTracksList()
+    protected void populateTracksList()
     {
         int numberOfTracks = lidarModel.getNumberOfTrack();
         String[] results = new String[numberOfTracks];
@@ -865,7 +865,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JLabel trackErrorLabel;
     private javax.swing.JLabel trackSeparationLabel;
     private javax.swing.JFormattedTextField trackSeparationTextField;
-    private javax.swing.JList tracksList;
+    protected javax.swing.JList tracksList;
     private javax.swing.JButton translateTracksButton;
     // End of variables declaration//GEN-END:variables
 
