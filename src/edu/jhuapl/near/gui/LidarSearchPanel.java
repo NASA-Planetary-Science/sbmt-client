@@ -11,6 +11,7 @@
 
 package edu.jhuapl.near.gui;
 
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -28,8 +29,14 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerDateModel;
 
 import vtk.vtkPolyData;
@@ -232,6 +239,31 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
     }
 
+    class TrackListCellRenderer extends JPanel implements ListCellRenderer
+    {
+
+        JCheckBox[] checkBoxes;
+        JLabel text=new JLabel();
+
+        public TrackListCellRenderer()
+        {
+            checkBoxes=new JCheckBox[1];
+            checkBoxes[0]=new JCheckBox("Show");
+            add(checkBoxes[0]);
+            add(new JSeparator(JSeparator.VERTICAL));
+            add(text);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus)
+        {
+            text.setText((String)value);
+            return this;
+        }
+
+    }
+
     protected void populateTracksList()
     {
         int numberOfTracks = lidarModel.getNumberOfTrack();
@@ -244,6 +276,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
 
         tracksList.setListData(results);
+        tracksList.setCellRenderer(new TrackListCellRenderer());
     }
 
     private void populateTracksErrorLabel()
