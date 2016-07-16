@@ -19,7 +19,7 @@
 -   Favorites menu also allows specification of default model to load on startup.
 -   Right click on current viewing tab allows user to set favorite instrument for default model.
 -   Image pull-right "Simulate Lighting" menu item can now be toggled on and off
--   Colors of image boundaries no longer change to read when model resolution is changed
+-   Colors of image boundaries no longer change to red when model resolution is changed
 
 
 ### June 14, 2016
