@@ -18,6 +18,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
     private String name;
     private double[] centerPoint;
     private double radius;
+    private File tempFolder;
     private File outputFolder;
     private File mapletFile;
     private int halfSize;
@@ -63,10 +64,14 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
         this.halfSize = halfSize;
     }
 
-
     public void setOutputFolder(File outputFolder)
     {
         this.outputFolder = outputFolder;
+    }
+
+    public void setTempFolder(File tempFolder)
+    {
+        this.tempFolder = tempFolder;
     }
 
     public void setPixelScale(double pixelScale)
@@ -144,6 +149,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
                 bigmap.setPixelSize(1000.0 * 1.5 * radius / (double)halfSize);
             }
             bigmap.setHalfSize(halfSize);
+            bigmap.setTempFolder(tempFolder);
             bigmap.setOutputFolder(outputFolder);
             bigmap.setSmallBodyModel(smallBodyModel);
 

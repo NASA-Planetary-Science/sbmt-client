@@ -322,6 +322,11 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         return modelManager.getSmallBodyModel().getCustomDataFolder();
     }
 
+    private String getCustomDataRootFolder()
+    {
+        return modelManager.getSmallBodyModel().getCustomDataRootFolder();
+    }
+
     private String getDEMConfigFilename()
     {
         return modelManager.getSmallBodyModel().getDEMConfigFilename();
@@ -947,7 +952,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         }
         else if(e.getSource() == bigmapSubmitButton)
         {
-            runBigmapSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()));
+            runBigmapSwingWorker(demName, centerPoint, radius, new File(getCustomDataRootFolder()), new File(getCustomDataFolder()));
         }
     }
 
@@ -1015,7 +1020,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     }
 
     // Starts and manages a BigmapSwingWorker
-    private void runBigmapSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
+    private void runBigmapSwingWorker(String demName, double[] centerPoint, double radius, File tempFolder, File outputFolder)
     {
         // Download the entire map maker suite to the users computer
         // if it has never been downloaded before.
@@ -1058,6 +1063,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         bigmapWorker.setGrotesque(grotesqueModelCheckbox.isSelected());
         bigmapWorker.setName(demName);
         bigmapWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+        bigmapWorker.setTempFolder(tempFolder);
         bigmapWorker.setOutputFolder(outputFolder);
 
         bigmapWorker.setSmallBodyModel(modelManager.getSmallBodyModel());

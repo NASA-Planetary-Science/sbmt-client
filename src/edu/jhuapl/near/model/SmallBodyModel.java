@@ -366,6 +366,20 @@ public class SmallBodyModel extends Model
         return imagesDir;
     }
 
+    public String getCustomDataRootFolder()
+    {
+        String customDataRootDir = Configuration.getCustomDataFolderForBuiltInViews();
+
+        // If the directory does not exist, create it
+        File dir = new File(customDataRootDir);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+
+        return customDataRootDir;
+    }
+
     public String getConfigFilename()
     {
         return getCustomDataFolder() + File.separator + "config.txt";
