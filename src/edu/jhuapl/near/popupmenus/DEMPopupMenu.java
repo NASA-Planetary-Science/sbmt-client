@@ -329,7 +329,7 @@ public class DEMPopupMenu extends PopupMenu
                 file = CustomFileChooser.showSaveDialog(invoker, "Save FITS file", imageFileName, "fit");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(demKey.name);
+                    File fitFile = FileCache.getFileFromServer("file://" + demKey.name);
                     FileUtil.copyFile(fitFile, file);
                 }
             }
