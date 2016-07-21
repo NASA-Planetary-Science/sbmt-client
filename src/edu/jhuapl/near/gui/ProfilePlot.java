@@ -36,6 +36,7 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
     private ChartPanel chartPanel;
     private SmallBodyModel smallBodyModel;
     private int coloringIndex;
+    private int defaultColoringIndex;
 
     private int numberOfProfilesCreated = 0;
 
@@ -43,7 +44,6 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
     {
         this.lineModel = lineModel;
         this.smallBodyModel = smallBodyModel;
-        this.coloringIndex = smallBodyModel.getColoringIndex();
 
         lineModel.addPropertyChangeListener(this);
         smallBodyModel.addPropertyChangeListener(this); // twupy1
@@ -69,11 +69,31 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
             renderer.setBaseShapesVisible(false);
             renderer.setBaseShapesFilled(true);
         }
+
+        // Set the coloring index last
+        setDefaultColoringIndex();
+        setColoringIndex(smallBodyModel.getColoringIndex());
     }
 
     public JPanel getChartPanel()
     {
         return chartPanel;
+    }
+
+    // Sets the default coloring index to use when an invalid selection is made
+    private void setDefaultColoringIndex()
+    {
+        // At Olivier's request, use Elevation by default (if it exists)
+        defaultColoringIndex = -1;
+        int numColors = smallBodyModel.getNumberOfColors();
+        for(int i=0; i<numColors; i++)
+        {
+            if(smallBodyModel.getColoringName(i).toLowerCase().contains("elevation"))
+            {
+                defaultColoringIndex = i;
+                break;
+            }
+        }
     }
 
     private void setSeriesColor(int lineId)
@@ -106,7 +126,8 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
         ArrayList<Double> distance = new ArrayList<Double>();
         try
         {
-            if(line.controlPoints.size() == 2 && coloringIndex >= 0 && coloringIndex < smallBodyModel.getNumberOfColors())
+            if(!line.hidden && line.controlPoints.size() == 2 && coloringIndex >= 0 &&
+                    coloringIndex < smallBodyModel.getNumberOfColors())
             {
                 // Get value of plate coloring "coloringIndex" along the profile specified in line.xyzPointList
                 lineModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
@@ -161,7 +182,18 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
 
     public void setColoringIndex(int index){
         // Save value of index
-        coloringIndex = index;
+        int numColoringIndices = smallBodyModel.getNumberOfColors();
+
+        if(index < 0 || index >= numColoringIndices)
+        {
+            // Use default if we are trying to set an index that is outside of the valid range
+            coloringIndex = defaultColoringIndex;
+        }
+        else
+        {
+            // Otherwise, use the index if it is valid
+            coloringIndex = index;
+        }
 
         // Update chart labels
         updateChartLabels();
