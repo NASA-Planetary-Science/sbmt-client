@@ -16,6 +16,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -133,6 +134,27 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         jTable1.setModel(new LidarTableModel());
         jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //jTable1.setComponentPopupMenu(lidarPopupMenu);
+        jTable1.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                maybeShowPopup(e);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                maybeShowPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                maybeShowPopup(e);
+            }
+        });
 
     }
 
@@ -330,14 +352,14 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     {
         if (e.isPopupTrigger())
         {
-//            int index = tracksList.locationToIndex(e.getPoint());
-//
-//            if (index >= 0 && tracksList.getCellBounds(index, index).contains(e.getPoint()))
-//            {
-//                tracksList.setSelectedIndex(index);
-//                lidarPopupMenu.setCurrentTrack(index);
-//                lidarPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-//            }
+            lidarPopupMenu.setVisible(false);
+            int index=jTable1.rowAtPoint(e.getPoint());
+            if (index >= 0)
+            {
+                jTable1.setRowSelectionInterval(index, index);
+                lidarPopupMenu.setCurrentTrack(index);
+                lidarPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
 
