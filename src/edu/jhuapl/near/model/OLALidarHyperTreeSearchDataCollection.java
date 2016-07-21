@@ -29,7 +29,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Properties;
 
-public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollection
+public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollection    // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     public enum TrackFileType
     {
@@ -49,7 +49,7 @@ public class LidarHyperTreeSearchDataCollection extends LidarSearchDataCollectio
         return loading;
     }
 
-    public LidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel)
+    public OLALidarHyperTreeSearchDataCollection(SmallBodyModel smallBodyModel)
     {
         super(smallBodyModel);
     }

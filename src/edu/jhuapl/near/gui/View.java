@@ -4,8 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -215,57 +215,25 @@ public class View extends JPanel
 
 
         // add capability to right click on tab title regions and set as default tab to load
-        controlPanel.addMouseListener(new MouseListener()
+        controlPanel.addMouseListener(new MouseAdapter()
         {
 
             @Override
             public void mouseReleased(MouseEvent e)
             {
-                // TODO Auto-generated method stub
-
+                showDefaultTabSelectionPopup(e);
             }
 
             @Override
             public void mousePressed(MouseEvent e)
             {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e)
-            {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e)
-            {
-                // TODO Auto-generated method stub
-
+                showDefaultTabSelectionPopup(e);
             }
 
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getButton()==MouseEvent.BUTTON2 || (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown()))  // check for windows (2-button) and Mac (1-button + ctrl down) right-click
-                {
-                    JPopupMenu tabMenu=new JPopupMenu();
-                    JMenuItem menuItem=new JMenuItem("Set instrument as default");
-                    menuItem.addActionListener(new ActionListener()
-                    {
-
-                        @Override
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            FavoriteTabsFile.getInstance().setFavoriteTab(smallBodyConfig.getUniqueName(), controlPanel.getSelectedIndex());
-                        }
-                    });
-                    tabMenu.add(menuItem);
-                    tabMenu.show(controlPanel, e.getX(), e.getY());
-                }
-
+                showDefaultTabSelectionPopup(e);
             }
         });
         int tabIndex=FavoriteTabsFile.getInstance().getFavoriteTab(smallBodyConfig.getUniqueName());
@@ -319,6 +287,27 @@ public class View extends JPanel
         this.add(splitPane, BorderLayout.CENTER);
 
         initialized = true;
+    }
+
+    private void showDefaultTabSelectionPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu tabMenu=new JPopupMenu();
+            JMenuItem menuItem=new JMenuItem("Set instrument as default");
+            menuItem.addActionListener(new ActionListener()
+            {
+
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    FavoriteTabsFile.getInstance().setFavoriteTab(smallBodyConfig.getUniqueName(), controlPanel.getSelectedIndex());
+                }
+            });
+            tabMenu.add(menuItem);
+            tabMenu.show(controlPanel, e.getX(), e.getY());
+        }
+
     }
 
     public Renderer getRenderer()

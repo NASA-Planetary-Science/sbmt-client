@@ -235,7 +235,7 @@ public class LidarPlot extends JFrame implements ChartMouseListener
             // shown and the number of points in the track is the same as the number
             // points in this plot. Without these conditions, then the selected
             // point will be incorrect.
-            if (lidarModel.getNumberOfTrack() == 1 &&
+            if (lidarModel.getNumberOfTracks() == 1 &&
                     lidarModel.getNumberOfPointsPerTrack(0) == data.size())
             {
                 lidarModel.selectPoint(id);
