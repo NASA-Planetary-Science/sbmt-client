@@ -43,12 +43,12 @@ import com.google.common.collect.Lists;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.PointInCylinderChecker;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -261,12 +261,13 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         for (int c=0; c<jTable1.getColumnCount(); c++)
         {
             int w=30;
+            int spacing=10;
             for (int r=0; r<jTable1.getRowCount(); r++)
             {
                 Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
                 w=Math.max(w, comp.getPreferredSize().width+1);
             }
-            jTable1.getColumnModel().getColumn(c).setPreferredWidth(w);
+            jTable1.getColumnModel().getColumn(c).setPreferredWidth(w+spacing);
         }
 //        tracksList.setListData(results);
     }
@@ -292,7 +293,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         int index = lidarDatasourceComboBox.getSelectedIndex() - 1;
         smallBodyModel.setLidarDatasourceIndex(index);
         System.out.println("Lidar Datasource Changed: " + index);
-        LidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (LidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        OLALidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (OLALidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
         String datasourceName = smallBodyModel.getLidarDatasourceName(index);
         lidarHyperTreeSearchDataCollection.setCurrentDatasourceSkeleton(datasourceName);
     }
@@ -433,7 +434,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 sourceFiles.add(track.getSourceFileName(i));
             addRow(new Object[]{
                     false,
-                    String.valueOf(track.getNumberOfPoints()),
+                    "Track "+getRowCount(),
                     track.timeRange[0],
                     track.timeRange[1],
                     sourceFiles
@@ -448,13 +449,13 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             case 0:
                 return "Hide";
             case 1:
-                return "# Pts";
+                return "Track";
             case 2:
-                return "Start";
+                return "Start Time";
             case 3:
-                return "End";
+                return "End Time";
             case 4:
-                return "L2 Files";
+                return "Data Source";
             default:
                 return null;
             }

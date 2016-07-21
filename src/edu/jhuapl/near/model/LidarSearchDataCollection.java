@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,6 +135,43 @@ public class LidarSearchDataCollection extends Model
             }
         }
 
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + startId;
+            result = prime * result + stopId;
+            result = prime * result + Arrays.hashCode(timeRange);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Track other = (Track) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (startId != other.startId)
+                return false;
+            if (stopId != other.stopId)
+                return false;
+            if (!Arrays.equals(timeRange, other.timeRange))
+                return false;
+            return true;
+        }
+
+        private LidarSearchDataCollection getOuterType()
+        {
+            return LidarSearchDataCollection.this;
+        }
 
     }
 
@@ -631,6 +669,7 @@ public class LidarSearchDataCollection extends Model
         double t0 = originalPoints.get(track.startId).getTime();
         double t1 = originalPoints.get(track.stopId).getTime();
         track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
+        tracks.add(track);
     }
 
     /**
