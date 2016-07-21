@@ -249,7 +249,7 @@ public class View extends JPanel
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getButton()==MouseEvent.BUTTON2 || (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown()))  // check for windows (2-button) and Mac (1-button + ctrl down) right-click
+                if (e.getButton()==MouseEvent.BUTTON3 || (e.getButton()==MouseEvent.BUTTON1 && e.isControlDown()))  // check for windows (3-button) and Mac (1-button + ctrl down) right-click
                 {
                     JPopupMenu tabMenu=new JPopupMenu();
                     JMenuItem menuItem=new JMenuItem("Set instrument as default");
