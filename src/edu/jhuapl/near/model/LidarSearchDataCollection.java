@@ -32,6 +32,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizer;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 
 import vtk.vtkActor;
@@ -559,7 +561,11 @@ public class LidarSearchDataCollection extends Model
 
         track.stopId = originalPoints.size() - 1;
         tracks.add(track);
+
     }
+
+    BiMap<Integer, String> localFileMap=HashBiMap.create();
+    List<int[]> fileBounds=Lists.newArrayList();    // for adding filenum information to tracks later; length 3 -> lowerBound,upperBound,fileNum
 
     /**
      * Load a track from a file. This will replace all currently existing tracks
@@ -571,23 +577,55 @@ public class LidarSearchDataCollection extends Model
     {
         originalPoints.clear();
         tracks.clear();
+        fileBounds.clear();
+        localFileMap.clear();
 
+        int oldBounds=0;
         for (File file : files)
         {
+            List<Track> oldTracks=Lists.newArrayList();
+            oldTracks.addAll(tracks);
+
             if (trackFileType == TrackFileType.TEXT)
                 loadTrackAscii(file);
             else if (trackFileType == TrackFileType.BINARY)
                 loadTrackBinary(file);
             else
                 loadTrackOlaL2(file);
+
+            if (!localFileMap.containsValue(file.toString()))
+                localFileMap.put(localFileMap.size(), file.toString());
+
+            fileBounds.add(new int[]{oldBounds,originalPoints.size()-1,localFileMap.inverse().get(file.toString())});
+            oldBounds=originalPoints.size();
         }
 
-        timeSeparationBetweenTracks = Double.MAX_VALUE;
-        radialOffset = 0.0;
-        translation[0] = translation[1] = translation[2] = 0.0;
+        //timeSeparationBetweenTracks = Double.MAX_VALUE;
+        //radialOffset = 0.0;
+        //translation[0] = translation[1] = translation[2] = 0.0;
+
+        //int startTrack=tracks.size();
+        computeTracks();
+        removeTracksThatAreTooSmall();
+        //int endTrack=tracks.size();
 
         assignInitialColorToTrack();
+
+        //for (int i=startTrack; i<endTrack; i++)
+        for (int i=0; i<tracks.size(); i++)
+        {
+            Track track=tracks.get(i);
+            for (int f=0; f<fileBounds.size(); f++)
+            {
+                int[] bounds=fileBounds.get(f);
+                if (track.startId>=bounds[0] && track.stopId<=bounds[1])
+                    tracks.get(i).registerSourceFileIndex(bounds[2], localFileMap);
+            }
+        }
+
         updateTrackPolydata();
+
+
     }
 
     /**
@@ -674,9 +712,9 @@ public class LidarSearchDataCollection extends Model
                 track.startId = i;
 
                 tracks.add(track);
+                prevTime = currentTime;
             }
 
-            prevTime = currentTime;
         }
 
         track.stopId = size-1;
@@ -684,6 +722,8 @@ public class LidarSearchDataCollection extends Model
         double t1 = originalPoints.get(track.stopId).getTime();
         track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
         tracks.add(track);
+
+
     }
 
     /**
@@ -1026,6 +1066,8 @@ public class LidarSearchDataCollection extends Model
         polydata.DeepCopy(emptyPolyData);
         originalPoints.clear();
         tracks.clear();
+        fileBounds.clear();
+        localFileMap.clear();
 
         this.dataSource = null;
         this.startDate = -Double.MIN_VALUE;

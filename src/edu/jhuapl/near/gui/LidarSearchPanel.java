@@ -158,6 +158,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 maybeShowPopup(e);
             }
         });
+        jTable1.removeColumn(jTable1.getColumnModel().getColumn(5));
 
     }
 
@@ -276,7 +277,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected void populateTracksList()
     {
         int numberOfTracks = lidarModel.getNumberOfTracks();
-        String[] results = new String[numberOfTracks];
 
         boolean[] hidden=new boolean[jTable1.getModel().getRowCount()];
         for (int i=0; i<hidden.length; i++)
@@ -303,10 +303,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             for (int r=0; r<jTable1.getRowCount(); r++)
             {
                 //Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
-                DefaultTableCellRenderer coloredText=new DefaultTableCellRenderer();
-                coloredText.setForeground(Color.BLUE);
-                Component comp=jTable1.prepareRenderer(coloredText, r, c);
-
+                Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
                 w=Math.max(w, comp.getPreferredSize().width+1);
             }
             jTable1.getColumnModel().getColumn(c).setPreferredWidth(w+spacing);
@@ -583,10 +580,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 //                System.out.println(renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class));
 //                System.out.println(renderer.getClass()+" "+DefaultTableCellRenderer.UIResource.class);
                 if (renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class))
-                {
                     ((DefaultTableCellRenderer)renderer).setForeground(c);
-                    System.out.println(c+" "+((DefaultTableCellRenderer)renderer).getForeground());
-                }
                 return renderer;
             }
         };
@@ -1017,6 +1011,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
                 e.printStackTrace();
             }
+
 
   /*          populateTracksInfoLabel();
             populateTracksList();
