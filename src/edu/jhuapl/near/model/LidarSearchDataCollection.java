@@ -105,7 +105,6 @@ public class LidarSearchDataCollection extends Model
         public String[] timeRange=new String[]{"",""};
         List<Map<Integer,String>> fileMaps=Lists.newArrayList();
 
-
         public int getNumberOfPoints()
         {
             return stopId - startId + 1;
@@ -614,7 +613,7 @@ public class LidarSearchDataCollection extends Model
         return -1;
     }
 
-    public int getNumberOfTrack()
+    public int getNumberOfTracks()
     {
         return tracks.size();
     }
@@ -622,13 +621,29 @@ public class LidarSearchDataCollection extends Model
     public int getNumberOfVisibleTracks()
     {
         int numVisibleTracks = 0;
-        int numTracks = getNumberOfTrack();
+        int numTracks = getNumberOfTracks();
         for (int i=0; i<numTracks; ++i)
             if (!getTrack(i).hidden)
                 ++numVisibleTracks;
 
         return numVisibleTracks;
     }
+
+/*    int nextId=0;
+    Map<Integer, Integer> trackIds=Maps.newHashMap(); // map from hash codes to ids
+
+    private Integer getTrackId(Track track)
+    {
+        int hash=track.hashCode();
+        if (trackIds.containsKey(hash))
+            return trackIds.get(hash);
+        else
+        {
+            trackIds.put(hash, nextId);
+            nextId++;
+            return trackIds.get(hash);
+        }
+    }*/
 
     protected void computeTracks()
     {
@@ -642,7 +657,6 @@ public class LidarSearchDataCollection extends Model
         Track track = new Track();
         track.startId = 0;
         tracks.add(track);
-
 
         for (int i=1; i<size; ++i)
         {
@@ -720,7 +734,7 @@ public class LidarSearchDataCollection extends Model
 
     public void saveAllVisibleTracksToFolder(File folder, boolean transformPoint) throws IOException
     {
-        int numTracks = getNumberOfTrack();
+        int numTracks = getNumberOfTracks();
         for (int i=0; i<numTracks; ++i)
         {
             if (!getTrack(i).hidden)
@@ -923,7 +937,7 @@ public class LidarSearchDataCollection extends Model
         displayedPointToOriginalPointMap.clear();
         int count = 0;
 
-        int numTracks = getNumberOfTrack();
+        int numTracks = getNumberOfTracks();
         for (int j=0; j<numTracks; ++j)
         {
             Track track = getTrack(j);

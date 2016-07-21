@@ -11,6 +11,7 @@
 
 package edu.jhuapl.near.gui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -36,7 +37,9 @@ import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import com.google.common.collect.Lists;
@@ -248,7 +251,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
 
   //      populateTracksInfoLabel();
-        populateTracksList();
+        //populateTracksList();
   //      populateTracksErrorLabel();
 
     }
@@ -268,33 +271,48 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         resultsLabel.setText(resultsText);
     }
 */
+
+    boolean populatingTracks=false;
     protected void populateTracksList()
     {
-        int numberOfTracks = lidarModel.getNumberOfTrack();
+        int numberOfTracks = lidarModel.getNumberOfTracks();
         String[] results = new String[numberOfTracks];
 
-        for (int i=0; i<numberOfTracks; i++)
-        {
-//            results[i] = "Track " + i + ", Number of points: " + lidarModel.getNumberOfPointsPerTrack(i)
-//            + ", " + lidarModel.getTrackTimeRange(i);
-            ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i));
-        }
+        boolean[] hidden=new boolean[jTable1.getModel().getRowCount()];
+        for (int i=0; i<hidden.length; i++)
+            hidden[i]=(boolean)jTable1.getModel().getValueAt(i, 0);
 
+        ((DefaultTableModel)jTable1.getModel()).setRowCount(0);
+        jTable1.revalidate();
+        for (int i=0; i<numberOfTracks; i++)
+            if (i<hidden.length)
+                ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i),i,hidden[i]);
+            else
+                ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i),i);
+
+        refreshTrackList();
+    }
+
+    private void refreshTrackList()
+    {
+        // establish nice spacing between columns
         for (int c=0; c<jTable1.getColumnCount(); c++)
         {
             int w=30;
             int spacing=10;
             for (int r=0; r<jTable1.getRowCount(); r++)
             {
-                Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
+                //Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
+                DefaultTableCellRenderer coloredText=new DefaultTableCellRenderer();
+                coloredText.setForeground(Color.BLUE);
+                Component comp=jTable1.prepareRenderer(coloredText, r, c);
+
                 w=Math.max(w, comp.getPreferredSize().width+1);
             }
             jTable1.getColumnModel().getColumn(c).setPreferredWidth(w+spacing);
         }
-//        tracksList.setListData(results);
+
     }
-
-
 
   /*  private void populateTracksErrorLabel()
     {
@@ -305,7 +323,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
     }
 */
-
 
     @Override
     public void itemStateChanged(ItemEvent e)
@@ -342,9 +359,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 }
             }
         }
-        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()) && !populatingTracks)
         {
-//            populateTracksErrorLabel();
+            populatingTracks=true;
+            populateTracksList();
+            populatingTracks=false;
         }
     }
 
@@ -416,6 +435,12 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         }
 
+        public Color getColor(int row)
+        {
+            int[] rgb=(int[])getValueAt(row, 5);
+            return new Color(rgb[0],rgb[1],rgb[2]);
+        }
+
         public void hideAllTracks()
         {
             hideOrShowAllInProgress=true;
@@ -446,20 +471,26 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         @Override
         public int getColumnCount()
         {
-            return 5;
+            return 6;
         }
 
-        public void addTrack(Track track)
+        public void addTrack(Track track, int id)
+        {
+            addTrack(track, id, false);
+        }
+
+        public void addTrack(Track track, int id, boolean hidden)
         {
             List<String> sourceFiles=Lists.newArrayList();
             for (int i=0; i<track.getNumberOfSourceFiles(); i++)
                 sourceFiles.add(track.getSourceFileName(i));
             addRow(new Object[]{
-                    false,
-                    "Track "+getRowCount(),
+                    hidden,
+                    "Track "+id,
                     track.timeRange[0],
                     track.timeRange[1],
-                    sourceFiles
+                    sourceFiles,
+                    track.color
                     });
         }
 
@@ -490,6 +521,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             {
             case 0:
                 return Boolean.class;
+            case 5:
+                return int[].class;
             default:
                 return String.class;
             }
@@ -540,7 +573,23 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         radialOffsetPanel = new javax.swing.JPanel();
         manageDatasourcesButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable1 = new javax.swing.JTable()
+        {
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column)
+            {
+                Color c=((LidarTableModel)getModel()).getColor(row);
+                TableCellRenderer renderer=super.getCellRenderer(row, column);
+//                System.out.println(renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class));
+//                System.out.println(renderer.getClass()+" "+DefaultTableCellRenderer.UIResource.class);
+                if (renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class))
+                {
+                    ((DefaultTableCellRenderer)renderer).setForeground(c);
+                    System.out.println(c+" "+((DefaultTableCellRenderer)renderer).getForeground());
+                }
+                return renderer;
+            }
+        };
 
         setLayout(new java.awt.BorderLayout());
 
