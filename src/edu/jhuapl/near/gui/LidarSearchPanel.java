@@ -13,6 +13,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -349,6 +350,10 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 int idx = lidarModel.getTrackIdFromPointId(id);
                 if (idx >= 0)
                 {
+                    jTable1.setRowSelectionInterval(idx, idx);
+                    Rectangle cellBounds=jTable1.getCellRect(idx, 0, true);
+                    if (cellBounds!=null)
+                        jTable1.scrollRectToVisible(cellBounds);
 //                    tracksList.setSelectionInterval(idx, idx);
 //                    Rectangle cellBounds = tracksList.getCellBounds(idx, idx);
 //                    if (cellBounds != null)
