@@ -4,6 +4,11 @@
 
 # Recent Changes
 
+### July 22, 2016
+-   Fixed various bugs in the lidar search panel, incl. lack of popup menu on right click, coloration of the tracks list, and unpopulated tracks list in Tracks tab.
+-   Added "Show spacecraft position" to the lidar search panel. Selecting a spacecraft point or its corresponding surface point highlights both simultaneously.
+-   Fixed bug in lidar point selection due to LODs.
+
 ### July 15, 2016
 
 -   DEM tab, added to all bodies allows DEM files to be loaded locally
