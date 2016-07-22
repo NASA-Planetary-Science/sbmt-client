@@ -59,6 +59,12 @@ public class PickManager extends Picker
         if (lidarModel != null)
             nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
 
+        // added by Mike Z 2016-Jul-22
+        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+
+
         defaultPicker = new DefaultPicker(renderer, statusBar, modelManager, popupManager);
 
         setPickTolerance(Preferences.getInstance().getAsDouble(
@@ -140,4 +146,5 @@ public class PickManager extends Picker
     {
         return popupManager;
     }
+
 }

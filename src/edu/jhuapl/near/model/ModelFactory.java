@@ -263,7 +263,7 @@ public class ModelFactory
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarHyperTreeSearchDataCollection(smallBodyModel));
+            models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OLALidarHyperTreeSearchDataCollection(smallBodyModel));
         }
 
         return models;

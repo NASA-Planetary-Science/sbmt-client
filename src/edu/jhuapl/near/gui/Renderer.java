@@ -4,8 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -44,8 +44,8 @@ import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
+import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.util.LatLon;
@@ -113,7 +113,9 @@ public class Renderer extends JPanel implements
     // axes are enabled
     private boolean interactiveAxes = true;
     private double axesSize; // needed because java wrappers do not expose vtkOrientationMarkerWidget.GetViewport() function.
+
     public static boolean enableLODs = true; // This is temporary to show off the LOD feature, very soon we will replace this with an actual menu
+    public boolean showingLODs = false;
 
     private JFrame mirrorFrame;
     private StereoCapableMirrorCanvas mirrorCanvas;
@@ -257,36 +259,8 @@ public class Renderer extends JPanel implements
                 mirrorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 mirrorFrame.getContentPane().add(mirrorCanvas.getComponent());
                 mirrorFrame.setVisible(true);
-                mirrorFrame.addWindowListener(new WindowListener()
+                mirrorFrame.addWindowListener(new WindowAdapter()
                 {
-
-                    @Override
-                    public void windowOpened(WindowEvent e)
-                    {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void windowIconified(WindowEvent e)
-                    {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void windowDeiconified(WindowEvent e)
-                    {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void windowDeactivated(WindowEvent e)
-                    {
-                        // TODO Auto-generated method stub
-
-                    }
 
                     @Override
                     public void windowClosing(WindowEvent e)
@@ -294,17 +268,6 @@ public class Renderer extends JPanel implements
                         mirrorFrameOpen=false;
                     }
 
-                    @Override
-                    public void windowClosed(WindowEvent e)
-                    {
-                    }
-
-                    @Override
-                    public void windowActivated(WindowEvent e)
-                    {
-                        // TODO Auto-generated method stub
-
-                    }
                 });
                 setProps(modelManager.getProps(), mirrorCanvas, mirrorCanvas.getRenderer());
                 setInteractorStyleToDefault();
@@ -459,7 +422,6 @@ public class Renderer extends JPanel implements
         }
     }
 
-
     public void setProps(List<vtkProp> props, vtksbmtJoglCanvas renderWindow, vtkRenderer whichRenderer)
     {
         // Go through the props and if an prop is already in the renderer,
@@ -515,9 +477,15 @@ public class Renderer extends JPanel implements
 
     public void onStartInteraction()
     {
+        showLODs();
+    }
+
+    public void showLODs()
+    {
         // LOD switching control for SbmtLODActor
         if(enableLODs && modelManager != null)
         {
+            showingLODs=true;
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)
             {
@@ -527,13 +495,14 @@ public class Renderer extends JPanel implements
                 }
             }
         }
+
     }
 
-    public void onEndInteraction()
+    public void hideLODs()
     {
-        // LOD switching control for SbmtLODActor
         if(enableLODs && modelManager != null)
         {
+            showingLODs=false;
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)
             {
@@ -543,6 +512,12 @@ public class Renderer extends JPanel implements
                 }
             }
         }
+
+    }
+
+    public void onEndInteraction()
+    {
+        hideLODs();
     }
 
     /*

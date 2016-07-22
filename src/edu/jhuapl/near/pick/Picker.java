@@ -217,4 +217,10 @@ public abstract class Picker implements
         return false;
     }
 
+    public boolean isPickingEnabled()
+    {
+        return pickingEnabled;
+    }
+
+
 }
