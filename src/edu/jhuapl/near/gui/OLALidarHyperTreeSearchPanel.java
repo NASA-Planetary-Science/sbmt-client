@@ -159,6 +159,44 @@ public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
 
+/*        vtkPoints points=new vtkPoints();
+        vtkCellArray cellArray=new vtkCellArray();
+        vtkIntArray trackIds=new vtkIntArray();
+        vtkIntArray pointTypes=new vtkIntArray();
+        for (int i=0; i<lidarModel.getNumberOfTracks(); i++)
+        {
+            Track track=lidarModel.getTrack(i);
+            for (int j=0; j<track.getNumberOfPoints(); j++)
+            {
+                LidarPoint p=track.getPoint(j);
+                //
+                int id=points.InsertNextPoint(p.getTargetPosition().toArray());
+                vtkVertex vert=new vtkVertex();
+                vert.GetPointIds().SetId(0, id);
+                cellArray.InsertNextCell(vert);
+                trackIds.InsertNextValue(i);
+                pointTypes.InsertNextValue(0);  // for target positions
+                //
+                id=points.InsertNextPoint(p.getSourcePosition().toArray());
+                vtkVertex vert2=new vtkVertex();
+                vert2.GetPointIds().SetId(0, id);
+                cellArray.InsertNextCell(vert2);
+                trackIds.InsertNextValue(i);
+                pointTypes.InsertNextValue(1);  // for target positions
+            }
+        }
+        vtkPolyData polyData=new vtkPolyData();
+        polyData.SetPoints(points);
+        polyData.SetVerts(cellArray);
+        polyData.GetCellData().AddArray(trackIds);
+        //
+        vtkPolyDataWriter writer=new vtkPolyDataWriter();
+        writer.SetFileName("/Users/zimmemi1/Desktop/test.vtk");
+        writer.SetFileTypeToBinary();
+        writer.SetInputData(polyData);
+        writer.Write();*/
+
+
         Picker.setPickingEnabled(true);
 
     }

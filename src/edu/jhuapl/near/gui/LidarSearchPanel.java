@@ -13,7 +13,10 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -32,10 +35,13 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -160,6 +166,21 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
         jTable1.removeColumn(jTable1.getColumnModel().getColumn(5));
+
+
+        JPanel showSpacecraftPanel = new JPanel(new GridLayout());
+        showSpacecraftPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
+        final JCheckBox showSpacecraftCheckBox = new JCheckBox("Show spacecraft position");
+        showSpacecraftCheckBox.setSelected(true);
+        showSpacecraftCheckBox.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //lidarModel.setShowSpacecraftPosition(showSpacecraftCheckBox.isSelected());
+            }
+        });
+        showSpacecraftPanel.add(showSpacecraftCheckBox);
+        //add(showSpacecraftPanel);
 
     }
 
@@ -348,6 +369,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 lidarModel.selectPoint(id);
 
                 int idx = lidarModel.getTrackIdFromPointId(id);
+
+
                 if (idx >= 0)
                 {
                     jTable1.setRowSelectionInterval(idx, idx);

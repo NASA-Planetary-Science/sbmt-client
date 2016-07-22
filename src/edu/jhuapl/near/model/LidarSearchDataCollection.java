@@ -69,7 +69,7 @@ public class LidarSearchDataCollection extends Model
 
     private SmallBodyConfig smallBodyConfig;
     private SmallBodyModel smallBodyModel;
-    private vtkPolyData polydata;
+    private vtkPolyData polydata;   // target points
     private vtkPolyData selectedPointPolydata;
     protected ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
@@ -78,6 +78,10 @@ public class LidarSearchDataCollection extends Model
     private vtkActor actor;
     private vtkActor selectedPointActor;
     private vtkPolyData emptyPolyData; // an empty polydata for resetting
+
+    private vtkPolyData scPosPolyData;  // spacecraft points
+    private vtkPolyDataMapper scPosMapper;
+    private vtkActor scPosActor;
 
     protected double radialOffset = 0.0;
     protected double[] translation = {0.0, 0.0, 0.0};
@@ -96,6 +100,9 @@ public class LidarSearchDataCollection extends Model
     private ArrayList<Integer> displayedPointToOriginalPointMap = new ArrayList<Integer>();
     private boolean enableTrackErrorComputation = false;
     private double trackError;
+
+
+    private boolean showSpacecraftPosition = true;
 
     public class Track
     {
@@ -134,6 +141,11 @@ public class LidarSearchDataCollection extends Model
                 sourceFiles.add(fileNum);
                 fileMaps.add(fileMap);
             }
+        }
+
+        public LidarPoint getPoint(int i)
+        {
+            return originalPoints.get(startId+i);
         }
 
         @Override
@@ -218,6 +230,15 @@ public class LidarSearchDataCollection extends Model
         selectedPointActor.GetProperty().SetPointSize(7.0);
 
         actors.add(selectedPointActor);
+
+
+        scPosPolyData=new vtkPolyData();
+        scPosPolyData.DeepCopy(emptyPolyData);
+        scPosMapper=new vtkPolyDataMapper();
+        scPosMapper.SetInputData(scPosPolyData);
+        scPosActor=new vtkActor();
+        scPosActor.SetMapper(scPosMapper);
+        actors.add(scPosActor);
     }
 
     public boolean isLoading()
@@ -718,10 +739,10 @@ public class LidarSearchDataCollection extends Model
         }
 
         track.stopId = size-1;
-        double t0 = originalPoints.get(track.startId).getTime();
+        /*double t0 = originalPoints.get(track.startId).getTime();
         double t1 = originalPoints.get(track.stopId).getTime();
         track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
-        tracks.add(track);
+        tracks.add(track);*/
 
 
     }
@@ -967,9 +988,15 @@ public class LidarSearchDataCollection extends Model
     {
         // Place the points into polydata
         polydata.DeepCopy(emptyPolyData);
+        scPosPolyData.DeepCopy(emptyPolyData);
+
         vtkPoints points = polydata.GetPoints();
         vtkCellArray vert = polydata.GetVerts();
         vtkUnsignedCharArray colors = (vtkUnsignedCharArray)polydata.GetCellData().GetScalars();
+
+        vtkPoints scPoints=scPosPolyData.GetPoints();
+        vtkCellArray scVert=scPosPolyData.GetVerts();
+        vtkUnsignedCharArray scColors=(vtkUnsignedCharArray)scPosPolyData.GetCellData().GetScalars();
 
         vtkIdList idList = new vtkIdList();
         idList.SetNumberOfIds(1);
@@ -997,9 +1024,13 @@ public class LidarSearchDataCollection extends Model
                     double[] pt = originalPoints.get(i).getTargetPosition().toArray();
                     pt = transformLidarPoint(pt);
                     points.InsertNextPoint(pt);
-
                     idList.SetId(0, count);
                     vert.InsertNextCell(idList);
+
+                    pt=originalPoints.get(i).getSourcePosition().toArray();
+                    pt=transformLidarPoint(pt);
+                    scPoints.InsertNextPoint(pt);
+                    scVert.InsertNextCell(idList);
 
                     double intensityReceived = originalPoints.get(i).getIntensityReceived();
                     minIntensity = (intensityReceived < minIntensity) ? intensityReceived : minIntensity;
@@ -1018,11 +1049,15 @@ public class LidarSearchDataCollection extends Model
                 {
                     plotColor = ColorUtil.scaleLightness(trackHSL, intensity, minIntensity, maxIntensity);
                     colors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
+                    scColors.InsertNextTuple4(plotColor.getRed(), plotColor.getGreen(), plotColor.getBlue(), plotColor.getAlpha());
                 }
             }
         }
         polydata.GetCellData().GetScalars().Modified();
         polydata.Modified();
+
+        scPosPolyData.GetCellData().GetScalars().Modified();
+        scPosPolyData.Modified();
 
         if (enableTrackErrorComputation)
             computeTrackError();
@@ -1092,7 +1127,7 @@ public class LidarSearchDataCollection extends Model
      */
     public boolean isDataPointsProp(vtkProp prop)
     {
-        return prop == actor;
+        return prop == actor || prop == scPosActor;
     }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
@@ -1298,11 +1333,12 @@ public class LidarSearchDataCollection extends Model
 
         if (ptId >= 0)
         {
-            points.InsertNextPoint(polydata.GetPoints().GetPoint(ptId));
+            int id1=points.InsertNextPoint(polydata.GetPoints().GetPoint(ptId));
+            int id2=points.InsertNextPoint(scPosPolyData.GetPoints().GetPoint(ptId));
 
             vtkIdList idList = new vtkIdList();
-            idList.SetNumberOfIds(1);
-            idList.SetId(0, 0);
+            idList.InsertNextId(id1);
+            idList.InsertNextId(id2);
             vert.InsertNextCell(idList);
 
             colors.InsertNextTuple4(0, 0, 255, 255);
@@ -1327,6 +1363,7 @@ public class LidarSearchDataCollection extends Model
         {
             vtkPoints points = selectedPointPolydata.GetPoints();
             points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
+            points.SetPoint(1, scPosPolyData.GetPoints().GetPoint(ptId));
         }
 
         selectedPointPolydata.Modified();
@@ -1565,4 +1602,10 @@ public class LidarSearchDataCollection extends Model
         out.close();
     }
 
+
+    public void setShowSpacecraftPosition(boolean show)
+    {
+        showSpacecraftPosition = show;
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
 }
