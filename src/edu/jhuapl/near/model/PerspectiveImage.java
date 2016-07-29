@@ -53,6 +53,10 @@ import vtk.vtkTexture;
 import vtk.vtkXMLPolyDataReader;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.util.BackPlanesPDS4XML;
+import edu.jhuapl.near.util.BackPlanesXml;
+import edu.jhuapl.near.util.BackPlanesXmlMeta;
+import edu.jhuapl.near.util.BackPlanesXmlMeta.BPMetaBuilder;
 import edu.jhuapl.near.util.BackplaneInfo;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.DateTimeUtil;
@@ -74,7 +78,7 @@ import nom.tam.fits.FitsException;
 /**
  * This class represents an abstract image of a spacecraft imager instrument.
  */
-abstract public class PerspectiveImage extends Image implements PropertyChangeListener
+abstract public class PerspectiveImage extends Image implements PropertyChangeListener,BackPlanesPDS4XML
 {
     public static final float PDS_NA = -1.e32f;
     public static final String FRUSTUM1 = "FRUSTUM1";
@@ -306,7 +310,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
             infoFileFullPath = initializeInfoFileFullPath();
         }
         else if (key.source.equals(ImageSource.LABEL))
-            labelFileFullPath = initializeLabelFileFullPath();
+            setLabelFileFullPath(initializeLabelFileFullPath());
         else
             sumFileFullPath = initializeSumfileFullPath();
 
@@ -1652,7 +1656,7 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
 
     public String getLabelfileFullPath()
     {
-        return labelFileFullPath;
+        return getLabelFileFullPath();
     }
 
     /**
@@ -4083,4 +4087,44 @@ abstract public class PerspectiveImage extends Image implements PropertyChangeLi
     {
         return currentMask.clone();
     }
+
+    public void setLabelFileFullPath(String labelFileFullPath)
+    {
+        this.labelFileFullPath = labelFileFullPath;
+    }
+
+    /**
+     * Generate metadata to be used in PDS4 XML creation by parsing existing PDS3 label.
+     * By default creates a bare-bones metadata class that only contains the
+     * output XML filename.
+     * Use this method to use an existing PDS3 label as the source metadata on which to
+     * describe a new PDS4 product.
+     */
+    public BackPlanesXmlMeta pds3ToXmlMeta(String pds3Fname, String outXmlFname) {
+        BPMetaBuilder xmlBuilder = new BackPlanesXmlMeta.BPMetaBuilder(outXmlFname);
+        return xmlBuilder.build();
+    }
+
+    /**
+     * Generate metadata to be used in PDS4 XML creation by parsing existing PDS4 label.
+     * By default creates a bare-bones metdata class that only contains the output
+     * XML filename.
+     * Use this method to use an existing PDS4 label as the source metadata on which to
+     * describe a new PDS4 product.
+     */
+    public BackPlanesXmlMeta pds4ToXmlMeta(String pds4Fname, String outXmlFname) {
+        BPMetaBuilder xmlBuilder = new BackPlanesXmlMeta.BPMetaBuilder(outXmlFname);
+        return xmlBuilder.build();
+    }
+
+    /**
+     * Generate XML document from XmlMetadata
+     * @param metaData - metadata to be used in populating XmlDoc
+     * @param xmlTemplate - path to XML template file
+     */
+    public BackPlanesXml metaToXmlDoc(BackPlanesXmlMeta metaData, String xmlTemplate) {
+        BackPlanesXml xmlLabel = new BackPlanesXml(metaData, xmlTemplate);
+        return xmlLabel;
+    }
+
 }
