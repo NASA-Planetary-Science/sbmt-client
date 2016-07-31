@@ -73,6 +73,12 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
             this.name = name;
         }
 
+        // Copy constructor
+        public DEMKey(DEMKey copyKey)
+        {
+            name = copyKey.name;
+        }
+
         @Override
         public boolean equals(Object obj)
         {
@@ -94,6 +100,71 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
     public DEM(String filename) throws IOException, FitsException
     {
         this(new DEMKey(filename));
+    }
+
+    // Copy constructor
+    public DEM(DEM copyDEM)
+    {
+        if(copyDEM.idList != null)
+        {
+            idList = new vtkIdList();
+            idList.DeepCopy(copyDEM.idList);
+        }
+        if(copyDEM.dem != null)
+        {
+            dem = new vtkPolyData();
+            dem.DeepCopy(copyDEM.dem);
+        }
+        if(copyDEM.boundary != null)
+        {
+            boundary = new vtkPolyData();
+            boundary.DeepCopy(copyDEM.boundary);
+        }
+        xIdx = copyDEM.xIdx;
+        yIdx = copyDEM.yIdx;
+        zIdx = copyDEM.zIdx;
+        halfsize = copyDEM.halfsize;
+        scale = copyDEM.scale;
+        latitude = copyDEM.latitude;
+        longitude = copyDEM.longitude;
+        if(copyDEM.coloringValuesPerCell != null)
+        {
+            coloringValuesPerCell = new vtkFloatArray[copyDEM.coloringValuesPerCell.length];
+            for(int i=0; i<coloringValuesPerCell.length; i++)
+            {
+                if(copyDEM.coloringValuesPerCell[i] != null)
+                {
+                    coloringValuesPerCell[i] = new vtkFloatArray();
+                    coloringValuesPerCell[i].DeepCopy(copyDEM.coloringValuesPerCell[i]);
+                }
+            }
+        }
+        if(copyDEM.coloringValuesPerPoint != null)
+        {
+            coloringValuesPerPoint = new vtkFloatArray[copyDEM.coloringValuesPerPoint.length];
+            for(int i=0; i<coloringValuesPerPoint.length; i++)
+            {
+                if(copyDEM.coloringValuesPerPoint[i] != null)
+                {
+                    coloringValuesPerPoint[i] = new vtkFloatArray();
+                    coloringValuesPerPoint[i].DeepCopy(copyDEM.coloringValuesPerPoint[i]);
+                }
+            }
+        }
+        coloringValuesScale = (copyDEM.coloringValuesScale == null) ? null : copyDEM.coloringValuesScale.clone();
+        coloringNames = (copyDEM.coloringNames == null) ? null : copyDEM.coloringNames.clone();
+        coloringUnits = (copyDEM.coloringUnits == null) ? null : copyDEM.coloringUnits.clone();
+        centerOfDEM = (copyDEM.centerOfDEM == null) ? null : copyDEM.centerOfDEM.clone();
+        normalOfDEM = (copyDEM.normalOfDEM == null) ? null : copyDEM.normalOfDEM.clone();
+        boundaryLocator = null; // Ok to leave this null, it gets constructed when used
+        if(copyDEM.genericCell != null)
+        {
+            genericCell = new vtkGenericCell();
+            genericCell.DeepCopy(copyDEM.genericCell);
+        }
+        key = new DEMKey(copyDEM.key);
+
+        setSmallBodyPolyData(dem, coloringValuesPerCell, coloringNames, coloringUnits, ColoringValueType.CELLDATA);
     }
 
     // New constructor making use of key

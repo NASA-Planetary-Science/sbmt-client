@@ -110,9 +110,10 @@ public class DEMView extends JFrame implements WindowListener
         DEM macroDEM = demCollection.getDEM(key);
 
         // Create an entirely new DEM object to go with this model manager
+        // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = new DEM(key);
+        dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
         dem.setColoringIndex(macroDEM.getColoringIndex());
 
         lineModel = new LineModel(dem, true);
