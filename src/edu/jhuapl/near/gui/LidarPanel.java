@@ -19,15 +19,14 @@ public class LidarPanel extends JTabbedPane
         setBorder(BorderFactory.createEmptyBorder());
 
         LidarBrowsePanel lidarBrowsePanel = new LidarBrowsePanel(modelManager);
-        LidarSearchPanel lidarSearchPanel = new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
+        LidarSearchPanel lidarSearchPanel;
+        if (smallBodyConfig.hasHypertreeBasedLidarSearch)
+            lidarSearchPanel=new OLALidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+        else
+            lidarSearchPanel=new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
 
         addTab("Browse", lidarBrowsePanel);
         addTab("Search", lidarSearchPanel);
 
-        if (smallBodyConfig.hasTreeBasedLidarSearch)
-        {
-            LidarSearchPanel treeBasedLidarSearchPanel=new LidarTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
-            addTab("TreeSearch", treeBasedLidarSearchPanel);
-        }
     }
 }

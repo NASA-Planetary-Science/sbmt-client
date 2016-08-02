@@ -20,9 +20,9 @@ Latest version: VERSIONXXXXXX
 Download the file below appropriate for your platform, unzip, navigate
 to the 'sbmt' folder and run the 'runsbmt' program.
 
-   -  Mac: [sbmt-VERSIONXXXXXX-macosx-x64.zip](releases/sbmt-VERSIONXXXXXX-macosx-x64.zip)
-   -  Linux: [sbmt-VERSIONXXXXXX-linux-x64.zip](releases/sbmt-VERSIONXXXXXX-linux-x64.zip)
-   -  Windows: [sbmt-VERSIONXXXXXX-windows-x64.zip](releases/sbmt-VERSIONXXXXXX-windows-x64.zip)
+   -  Mac: [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)
+   -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
+   -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
 
 For more detailed installation instructions, including system requirements, click [here](installation.html).
 

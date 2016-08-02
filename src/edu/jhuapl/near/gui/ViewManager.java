@@ -3,8 +3,13 @@ package edu.jhuapl.near.gui;
 import java.awt.CardLayout;
 import java.awt.Frame;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -19,6 +24,10 @@ public class ViewManager extends JPanel
     private View currentView;
     private final StatusBar statusBar;
     private final Frame frame;
+
+    private static String defaultModelName=null;
+    private final static Path defaultModelFile=Paths.get(Configuration.getApplicationDataDir()+File.separator+"defaultModelToLoad");
+
 
     /**
      * The top level frame is required so that the title can be updated
@@ -38,6 +47,7 @@ public class ViewManager extends JPanel
         this.statusBar = statusBar;
         this.frame = frame;
 
+
         for (SmallBodyConfig config: SmallBodyConfig.builtInSmallBodyConfigs)
         {
             builtInViews.add(new View(statusBar, config));
@@ -53,12 +63,68 @@ public class ViewManager extends JPanel
 
         if (tempCustomShapeModelPath == null)
         {
-            setCurrentView(builtInViews.get(0));
+            int idxToShow=0;
+            for (int i=0; i<builtInViews.size(); i++)
+                if (builtInViews.get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                    idxToShow=i;
+            setCurrentView(builtInViews.get(idxToShow));
         }
         else
         {
-            setCurrentView(customViews.get(0));
+            int idxToShow=0;
+            for (int i=0; i<customViews.size(); i++)
+                if (customViews.get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                    idxToShow=i;
+            setCurrentView(customViews.get(idxToShow));
         }
+    }
+
+    public static void setDefaultBodyToLoad(String uniqueName)
+    {
+        try
+        {
+            defaultModelName=uniqueName;
+            if (defaultModelFile.toFile().exists())
+                defaultModelFile.toFile().delete();
+            defaultModelFile.toFile().createNewFile();
+            FileWriter writer=new FileWriter(defaultModelFile.toFile());
+            writer.write(defaultModelName);
+            writer.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static String getDefaultBodyToLoad()
+    {
+        try
+        {
+            if (!defaultModelFile.toFile().exists())
+                return SmallBodyConfig.builtInSmallBodyConfigs.get(0).getUniqueName();
+            //
+            Scanner scanner=new Scanner(ViewManager.defaultModelFile.toFile());
+            if (scanner.hasNextLine())
+                defaultModelName=scanner.nextLine();
+            else
+                defaultModelName=null;
+            scanner.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return defaultModelName;
+    }
+
+    public static void resetDefaultBodyToLoad()
+    {
+        if (defaultModelFile.toFile().exists())
+            defaultModelFile.toFile().delete();
     }
 
     private void loadCustomViews(String newCustomShapeModelPath)
@@ -136,7 +202,7 @@ public class ViewManager extends JPanel
     {
         for (View view : customViews)
         {
-            if (view.getUniqueName().equals(name))
+            if (view.getSmallBodyConfig().getShapeModelName().equals(name))
             {
                 customViews.remove(view);
                 remove(view);

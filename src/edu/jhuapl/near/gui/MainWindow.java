@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JSeparator;
 
 
 /**
@@ -19,6 +20,7 @@ public class MainWindow extends JFrame
     private ViewMenu viewMenu;
     private HelpMenu helpMenu;
     private ViewManager rootPanel;
+    private FavoritesMenu favoritesMenu;
 
     /**
      * @param tempCustomShapeModelPath path to shape model. May be null.
@@ -64,6 +66,10 @@ public class MainWindow extends JFrame
         viewMenu = new ViewMenu(rootPanel);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
+
+        favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(favoritesMenu);
 
         helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');

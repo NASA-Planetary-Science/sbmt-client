@@ -18,7 +18,9 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -43,7 +45,10 @@ import javax.swing.table.TableCellRenderer;
 
 import net.miginfocom.swing.MigLayout;
 
+import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -73,6 +78,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     private StructureModel structureModel;
     private PickManager pickManager;
     private PickManager.PickMode pickMode;
+    private JFrame profileWindow;
 
     public AbstractStructureMappingControlPanel(
             final ModelManager modelManager,
@@ -343,6 +349,32 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                     deleteStructure();
             }
         });
+
+        if (pickMode == PickManager.PickMode.LINE_DRAW)
+        {
+            // Only add profile plots for line structures
+            ProfilePlot profilePlot = new ProfilePlot((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES),
+                    (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY));
+
+            // Create a new frame/window with profile
+            profileWindow = new JFrame();
+            ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+            profileWindow.setTitle("Profile Plot");
+            profileWindow.setIconImage(erosIcon.getImage());
+            profileWindow.add(profilePlot.getChartPanel());
+            profileWindow.setSize(600, 400);
+            profileWindow.setVisible(false);
+
+            JButton openProfilePlotButton = new JButton("Show Profile Plot...");
+            openProfilePlotButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    profileWindow.setVisible(true);
+                }
+            });
+            add(openProfilePlotButton, "span 2, w 200!, wrap");
+        }
     }
 
     private void deleteStructure()

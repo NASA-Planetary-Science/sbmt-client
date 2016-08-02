@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import altwg.Fits.HduTags;
 import altwg.XML.XmlDoc;
+import altwg.XML.XmlDocFactory;
 import nom.tam.fits.HeaderCard;
 
 
@@ -53,7 +54,7 @@ public class BackPlanesXml
      */
     public BackPlanesXml(BackPlanesXmlMeta metaData, String xmlTemplate)
     {
-        xmlDoc = new XmlDoc(xmlTemplate);
+        xmlDoc = XmlDocFactory.getXmlDoc(xmlTemplate);
 
         // update the XML template, populating tags with metaData
         updateImgXml(xmlDoc, metaData);
@@ -72,7 +73,7 @@ public class BackPlanesXml
         // add <Array_2D_Image>, 1 per FITS header tag that
         // contains PLANE<X> type of string.
         /**
-         * For now this portion is commented out, as it assumes the XML planes
+         * For now the following portion is commented out, as it assumes the XML planes
          * are hardcoded relative to the subclass of PerspectiveImage. For example,
          * MSIImage will always have the same number of planes in the same order
          * for all it's XML labels. Thus, the <Array_2D_Image> objects are already
@@ -116,18 +117,7 @@ public class BackPlanesXml
         // file_name
         myElemList = docElem.getElementsByTagName("file_name");
         myElem = myElemList.item(0);
-        myElem.setTextContent(metaData.fileName);
-
-        // filesize
-        long fileSize = metaData.fileSize;
-        myElemList = docElem.getElementsByTagName("file_size");
-        myElem = myElemList.item(0);
-        myElem.setTextContent(Long.toString(fileSize));
-
-        // creation time
-        myElemList = docElem.getElementsByTagName("creation_date_time");
-        myElem = myElemList.item(0);
-        myElem.setTextContent(metaData.creationDateTime);
+        myElem.setTextContent(metaData.productFileName);
 
         // number of lines in FITS image (assumed the same among multiple
         // planes)
@@ -237,6 +227,31 @@ public class BackPlanesXml
     }
 
     /**
+     * Set the value of an <lidvid_reference> child of the <Internal_Reference> tag. There are potentially many
+     * instances of <lidvid_reference> so the caller must also specify the associated <reference_type> to narrow
+     * down the possible choices.
+     *
+     * For example, in order to add an lidvid reference to the source calibrated data product which was used
+     * to generate the product being referenced by the XML file in File_Area_Observational.File.file_name.
+     * set lidvidRef = "<source file name>" and refType = "data_to_calibrated_product".
+     * @param doc
+     * @param reference
+     * @param refType
+     * @param refVal
+     */
+    public void setLidvidReference(String lidvidRef, String refType) {
+
+        NodeList myElemList = xmlDoc.doc.getElementsByTagName("Internal_Reference");
+        for (int ii = 0; ii < myElemList.getLength(); ii++) {
+            Node parentNode = myElemList.item(ii);
+            String refTypeTag = "reference_type";
+            String lidvidTag = "lidvid_reference";
+            XmlDoc.setChildbySiblingNameVal(parentNode, refTypeTag, refType, lidvidTag, lidvidRef);
+        }
+
+    }
+
+    /**
      * Set the image offsets for each of the 2D image planes in the fits file.
      * The offset consists of the offset from the fits header plus the offset
      * from the previous image plane. Formula is: img offset = (hdr size) +
@@ -258,10 +273,7 @@ public class BackPlanesXml
         for (int ii = 0; ii < myElemList.getLength(); ii++)
         {
             Node imgNode = myElemList.item(ii);
-            String offsetVal = String.valueOf(metaData.headerSize
-                    + (metaData.lines * metaData.samples * 4 * ii));
-            // String offsetVal = String.valueOf((metaData.lines *
-            // metaData.samples * 4 * ii));
+            String offsetVal = String.valueOf(metaData.imageOffsets.get(ii));
             XmlDoc.setChildNode(imgNode, childName, offsetVal);
         }
     }

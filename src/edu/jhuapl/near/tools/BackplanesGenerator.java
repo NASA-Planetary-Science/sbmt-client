@@ -190,14 +190,7 @@ public class BackplanesGenerator
             System.setOut(oldOut);
             System.setErr(oldErr);
 
-
-           String lblFname = image.getLabelFileFullPath();
-           ArrayList<String> lblContent = FileUtil.getFileLinesAsStringList(lblFname);
-           for (String line : lblContent) {
-               System.out.println("line:"+line);
-           }
-
-            image.loadFootprint();
+           image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
                 System.out.println("   Skipping this image since no intersecting cells");
@@ -232,7 +225,7 @@ public class BackplanesGenerator
             // Generate the label
 //          String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
 //          image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
-            generateLabel(image, key, ddrFilename, ddrLabelFilename);
+            generateLabel(image, key, new File(ddrFilename), new File(ddrLabelFilename));
 
             filesProcessed.add(ddrFilename);
             System.out.println("   Wrote backplanes to " + ddrFilename);
@@ -310,7 +303,7 @@ public class BackplanesGenerator
      * @param ddrLabelFilename - full path to the DDR label file.
      * @throws IOException
      */
-    private void generateLabel(PerspectiveImage image, ImageKey key, String ddrFilename, String ddrLabelFilename) throws IOException {
+    private void generateLabel(PerspectiveImage image, ImageKey key, File ddrFilename, File ddrLabelFilename) throws IOException {
 
 //        if (image instanceof MSIImage) {
 //

@@ -68,7 +68,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         if (isEllipsoid)
         {
             equatorialRadiusXFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS_X));
-            equatorialRadiusYFormattedTextField.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
+            equatorialRadiusYFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS_Y));
+            polarRadiusFormattedTextField1.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
             resolutionFormattedTextField.setText(configMap.get(CustomShapeModel.RESOLUTION));
         }
         else
@@ -94,6 +95,8 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         equatorialRadiusXFormattedTextField.setEnabled(enabled);
         equatorialRadiusYLabel.setEnabled(enabled);
         equatorialRadiusYFormattedTextField.setEnabled(enabled);
+        polarRadiusLabel1.setEnabled(enabled);
+        polarRadiusFormattedTextField1.setEnabled(enabled);
         resolutionLabel.setEnabled(enabled);
         resolutionFormattedTextField.setEnabled(enabled);
     }

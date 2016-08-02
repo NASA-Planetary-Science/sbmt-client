@@ -41,6 +41,7 @@ import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.near.util.LatLon;
 
 import nom.tam.fits.FitsException;
 
@@ -62,7 +63,7 @@ public class ImagePopupMenu extends PopupMenu
     private JMenuItem exportENVIImageMenuItem;
     private JMenuItem exportInfofileMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
-    private JMenuItem simulateLightingMenuItem;
+    private JCheckBoxMenuItem simulateLightingMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
     private JMenu colorMenu;
@@ -147,7 +148,7 @@ public class ImagePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
         this.add(changeNormalOffsetMenuItem);
 
-        simulateLightingMenuItem = new JMenuItem(new SimulateLightingAction());
+        simulateLightingMenuItem = new JCheckBoxMenuItem(new SimulateLightingAction());
         simulateLightingMenuItem.setText("Simulate Lighting");
         this.add(simulateLightingMenuItem);
 
@@ -564,8 +565,8 @@ public class ImagePopupMenu extends PopupMenu
             {
                 if (file != null)
                 {
-                    String imgName = file.getName();
-
+//                    String imgName = file.getName();
+                    File imgName = file;
                     String lblName = file.getAbsolutePath();
                     lblName = lblName.substring(0, lblName.length()-4);
                     if (file.getAbsolutePath().endsWith("img"))
@@ -573,14 +574,14 @@ public class ImagePopupMenu extends PopupMenu
                     else
                         lblName += ".LBL";
 
-                    file = new File(lblName);
+                    File lblFile = new File(lblName);
 
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
-                    image.generateBackplanesLabel(imgName, file.getAbsolutePath());
+                    image.generateBackplanesLabel(imgName, lblFile);
                 }
             }
             catch (Exception ex)
@@ -724,6 +725,10 @@ public class ImagePopupMenu extends PopupMenu
         }
     }
 
+    private LightingType origLightingType;
+    private Double origLightIntensity;
+    private LatLon origLightPosition;
+
     private class SimulateLightingAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -735,9 +740,25 @@ public class ImagePopupMenu extends PopupMenu
             PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
             if (image != null)
             {
-                double[] sunDir = image.getSunVector();
-                renderer.setFixedLightDirection(sunDir);
-                renderer.setLighting(LightingType.FIXEDLIGHT);
+                if (simulateLightingMenuItem.isSelected())
+                {
+                    System.out.println("Simulate Lighting On");
+                    // store original lighting parameters
+                    origLightingType = renderer.getLighting();
+                    origLightIntensity = renderer.getLightIntensity();
+                    origLightPosition = renderer.getFixedLightPosition();
+
+                    double[] sunDir = image.getSunVector();
+                    renderer.setFixedLightDirection(sunDir);
+                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                }
+                else
+                {
+                    System.out.println("Simulate Lighting Off");
+                    renderer.setLighting(origLightingType);
+                    renderer.setLightIntensity(origLightIntensity);
+                    renderer.setFixedLightPosition(origLightPosition);
+                }
             }
         }
     }

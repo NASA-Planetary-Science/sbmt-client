@@ -32,6 +32,7 @@ public class Bigmap
     private int halfSize = 512;
     private double pixelSize;
     private File outputFolder;
+    private File tempFolder;
     private File mapletFitsFile;
     private String gravityExecutableName;
     private SmallBodyModel smallBodyModel;
@@ -150,11 +151,11 @@ public class Bigmap
             // 8. sigma
             // 9. quality
             File origMapletFile = new File(bigmapRootDir + File.separator + "BIGMAP" + File.separator + name + ".MAP");
-            File bigmapToFitsFile = new File(outputFolder + File.separator + name + "_m2f" + ".FIT");
+            File bigmapToFitsFile = new File(tempFolder + File.separator + name + "_m2f" + ".FIT");
             Maplet2FITS.main(new String[] {origMapletFile.getPath(), bigmapToFitsFile.getPath()});
 
             // Assemble options for calling BigmapDistributedGravity
-            File dgFitsFile = new File(outputFolder + File.separator + name + "_dg" + ".FIT");
+            File dgFitsFile = new File(tempFolder + File.separator + name + "_dg" + ".FIT");
             File objShapeFile = new File(bigmapRootDir + File.separator + "SHAPEFILES" + File.separator + "SHAPE_LOWEST_RES.OBJ");
             List<String> dgOptionList = new LinkedList<String>();
             dgOptionList.add("-d");
@@ -166,7 +167,7 @@ public class Bigmap
             dgOptionList.add("--ref-potential");
             dgOptionList.add(Double.toString(smallBodyModel.getReferencePotential()));
             dgOptionList.add("--output-folder");
-            dgOptionList.add(outputFolder.getPath());
+            dgOptionList.add(tempFolder.getPath());
             dgOptionList.add("--werner");
             dgOptionList.add(objShapeFile.getPath()); // Global shape model file, Olivier suggests lowest res .OBJ **/
             dgOptionList.add(dgFitsFile.getPath()); // Path to output file that will contain all results
@@ -383,6 +384,11 @@ public class Bigmap
     public void setOutputFolder(File outputFolder)
     {
         this.outputFolder = outputFolder;
+    }
+
+    public void setTempFolder(File tempFolder)
+    {
+        this.tempFolder = tempFolder;
     }
 
     public void setSmallBodyModel(SmallBodyModel smallBodyModel)

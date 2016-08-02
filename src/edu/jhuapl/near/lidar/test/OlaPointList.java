@@ -18,7 +18,7 @@ import edu.jhuapl.near.util.MathUtil;
 
 public class OlaPointList implements LidarPointList
 {
-    List<LidarPoint> points=Lists.newArrayList();
+    List<BasicLidarPoint> points=Lists.newArrayList();
 
     @Override
     public int getNumberOfPoints()
@@ -27,7 +27,7 @@ public class OlaPointList implements LidarPointList
     }
 
     @Override
-    public LidarPoint getPoint(int i)
+    public BasicLidarPoint getPoint(int i)
     {
         return points.get(i);
     }
@@ -119,7 +119,7 @@ public class OlaPointList implements LidarPointList
 
                 if (!noise)
                 {
-                    this.points.add(new LidarPoint(scpos, tgpos, time, intensity));
+                    this.points.add(new BasicLidarPoint(scpos, tgpos, time, intensity));
                 }
             }
             in.close();

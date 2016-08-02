@@ -294,10 +294,9 @@ ${CREATE_INFOFILES_PROC}  : ${SOURCES_MAIN}
 
 # Don't want gallery for right now.
 # Note: install_images and install_infofiles needs to be run before 'database'
-#update_ceres_fc_images : images infofiles install_images install_infofiles database 
 update_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery database 
 
 # this target will be run by the cron job.
-install_ceres_fc_images : update_ceres_fc_images install_database
+install_ceres_fc_images : images infofiles gallery install_images install_infofiles install_gallery install_database
 
 include ${SBMTROOT}/config/Makefiles/Master

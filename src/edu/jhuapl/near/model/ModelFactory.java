@@ -3,6 +3,7 @@ package edu.jhuapl.near.model;
 import java.io.IOException;
 import java.util.HashMap;
 
+import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.SpectralMode;
@@ -260,11 +261,19 @@ public class ModelFactory
 
         models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasTreeBasedLidarSearch)
+        if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            models.put(ModelNames.LIDAR_TREE_SEARCH, new LidarTreeSearchDataCollection(smallBodyModel));
+            models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OLALidarHyperTreeSearchDataCollection(smallBodyModel));
         }
 
         return models;
     }
+
+    static public DEM createDEM(
+            DEMKey key,
+            SmallBodyModel smallBodyModel) throws IOException, FitsException
+    {
+        return new DEM(key);
+    }
+
 }

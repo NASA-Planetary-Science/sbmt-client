@@ -2,12 +2,18 @@ package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
@@ -16,6 +22,8 @@ import edu.jhuapl.near.gui.eros.NISSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.model.DEMBoundaryCollection;
+import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
@@ -24,7 +32,6 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.MapletBoundaryCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
@@ -111,6 +118,7 @@ public class View extends JPanel
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
         controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
+
         for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
         {
             if (instrument.spectralMode == SpectralMode.MONO)
@@ -181,7 +189,7 @@ public class View extends JPanel
 
             controlPanel.addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
 
-            if (smallBodyConfig.hasMapmaker)
+            /*if (smallBodyConfig.hasMapmaker)
             {
                 JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
                 controlPanel.addTab("Mapmaker", component);
@@ -191,8 +199,45 @@ public class View extends JPanel
             {
                 JComponent component = new BigmapPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/bigmap.zip");
                 controlPanel.addTab("Bigmap", component);
-            }
+            }*/
+
+            /*if(smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
+            {
+                JComponent component = new DEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
+                        smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
+                controlPanel.addTab("DEMs", component);
+            }*/
+
+            JComponent component = new CustomDEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
+                    smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
+            controlPanel.addTab("DEMs", component);
         }
+
+
+        // add capability to right click on tab title regions and set as default tab to load
+        controlPanel.addMouseListener(new MouseAdapter()
+        {
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                showDefaultTabSelectionPopup(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                showDefaultTabSelectionPopup(e);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                showDefaultTabSelectionPopup(e);
+            }
+        });
+        int tabIndex=FavoriteTabsFile.getInstance().getFavoriteTab(smallBodyConfig.getUniqueName());
+        controlPanel.setSelectedIndex(tabIndex);    // load default tab (which is 0 if not specified in favorite tabs file)
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 controlPanel, renderer);
@@ -238,9 +283,31 @@ public class View extends JPanel
             controlPanel.setPreferredSize(new Dimension(320, 800));
         }
 
+
         this.add(splitPane, BorderLayout.CENTER);
 
         initialized = true;
+    }
+
+    private void showDefaultTabSelectionPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu tabMenu=new JPopupMenu();
+            JMenuItem menuItem=new JMenuItem("Set instrument as default");
+            menuItem.addActionListener(new ActionListener()
+            {
+
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    FavoriteTabsFile.getInstance().setFavoriteTab(smallBodyConfig.getUniqueName(), controlPanel.getSelectedIndex());
+                }
+            });
+            tabMenu.add(menuItem);
+            tabMenu.show(controlPanel, e.getX(), e.getY());
+        }
+
     }
 
     public Renderer getRenderer()
@@ -308,7 +375,7 @@ public class View extends JPanel
 
         if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
-            allModels.put(ModelNames.MAPLET_BOUNDARY, new MapletBoundaryCollection(smallBodyModel));
+            allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel));
         }
 
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
@@ -318,6 +385,7 @@ public class View extends JPanel
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
+        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel));
 
         modelManager.setModels(allModels);
     }
@@ -398,7 +466,7 @@ public class View extends JPanel
         if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
         {
             PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
-            popupManager.registerPopup(modelManager.getModel(ModelNames.MAPLET_BOUNDARY), popupMenu);
+            popupManager.registerPopup(modelManager.getModel(ModelNames.DEM_BOUNDARY), popupMenu);
         }
     }
 

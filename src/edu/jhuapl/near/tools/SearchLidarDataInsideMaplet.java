@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel.EllipsePolygon;
 import edu.jhuapl.near.model.CircleSelectionModel;
-import edu.jhuapl.near.model.DEMModel;
+import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelNames;
@@ -91,10 +91,10 @@ public class SearchLidarDataInsideMaplet
 
         NativeLibraryLoader.loadVtkLibraries();
 
-        DEMModel dem = null;
+        DEM dem = null;
         try
         {
-            dem = new DEMModel(mapletFile);
+            dem = new DEM(mapletFile);
         }
         catch (Exception e)
         {

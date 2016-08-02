@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -54,10 +58,6 @@ import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 public class SmallBodyModel extends Model
 {
     public static final String LIST_SEPARATOR = ",";
@@ -67,6 +67,9 @@ public class SmallBodyModel extends Model
     public static final String CELL_DATA_UNITS = "CellDataUnits";
     public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
     public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
+
+    public static final String LIDAR_DATASOURCE_PATHS = "LidarDatasourcePaths";
+    public static final String LIDAR_DATASOURCE_NAMES = "LidarDatasourceNames";
 
     public static final int FITS_SCALAR_COLUMN_INDEX = 4;
 
@@ -137,6 +140,22 @@ public class SmallBodyModel extends Model
     private int blueFalseColor = -1; // blue channel for false coloring
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
+
+    // Class storing info related to plate data used to color shape model
+    public static class LidarDatasourceInfo
+    {
+        public String name = null;
+        public String path = null;
+
+        @Override
+        public String toString()
+        {
+            String str = name + " (" + path + ")";
+            return str;
+        }
+    }
+    ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
+    private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
     private vtkPolyData lowResSmallBodyPolyData;
@@ -347,9 +366,28 @@ public class SmallBodyModel extends Model
         return imagesDir;
     }
 
+    public String getCustomDataRootFolder()
+    {
+        String customDataRootDir = Configuration.getCustomDataFolderForBuiltInViews();
+
+        // If the directory does not exist, create it
+        File dir = new File(customDataRootDir);
+        if (!dir.exists())
+        {
+            dir.mkdirs();
+        }
+
+        return customDataRootDir;
+    }
+
     public String getConfigFilename()
     {
         return getCustomDataFolder() + File.separator + "config.txt";
+    }
+
+    public String getDEMConfigFilename()
+    {
+        return getCustomDataFolder() + File.separator + "demConfig.txt";
     }
 
     private void clearCustomColoringInfo()
@@ -430,13 +468,79 @@ public class SmallBodyModel extends Model
         }
     }
 
+    private void clearCustomLidarDatasourceInfo()
+    {
+        for (int i=lidarDatasourceInfo.size()-1; i>=0; --i)
+        {
+            lidarDatasourceInfo.remove(i);
+        }
+        lidarDatasourceIndex = -1;
+    }
+
+    public void loadCustomLidarDatasourceInfo()
+    {
+        String prevLidarDatasourceName = null;
+        String prevLidarDatasourcePath = null;
+        lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
+
+        if (lidarDatasourceIndex >= 0 && lidarDatasourceIndex < lidarDatasourceInfo.size())
+        {
+            prevLidarDatasourceName = lidarDatasourceInfo.get(lidarDatasourceIndex).name;
+            prevLidarDatasourcePath = lidarDatasourceInfo.get(lidarDatasourceIndex).path;
+        }
+
+        clearCustomLidarDatasourceInfo();
+
+        String configFilename = getConfigFilename();
+
+        if (!(new File(configFilename).exists()))
+            return;
+
+        MapUtil configMap = new MapUtil(configFilename);
+
+        convertOldConfigFormatToNewVersion(configMap);
+
+        if (configMap.containsKey(SmallBodyModel.LIDAR_DATASOURCE_NAMES) && configMap.containsKey(SmallBodyModel.LIDAR_DATASOURCE_NAMES))
+        {
+            String[] lidarDatasourceNames = configMap.get(SmallBodyModel.LIDAR_DATASOURCE_NAMES).split(",", -1);
+            String[] lidarDatasourcePaths = configMap.get(SmallBodyModel.LIDAR_DATASOURCE_PATHS).split(",", -1);
+
+            for (int i=0; i<lidarDatasourceNames.length; ++i)
+            {
+                LidarDatasourceInfo info = new LidarDatasourceInfo();
+                info.name = lidarDatasourceNames[i];
+                info.path = lidarDatasourcePaths[i];
+                if (!info.path.trim().isEmpty() && !info.name.trim().isEmpty())
+                {
+                    info.name = lidarDatasourceNames[i];
+                    info.path = lidarDatasourcePaths[i];
+                }
+                lidarDatasourceInfo.add(info);
+            }
+        }
+
+        // See if there's a Lidar datasource of the same name as previously shown and set it to that.
+        lidarDatasourceIndex = -1;
+        for (int i=0; i<lidarDatasourceInfo.size(); ++i)
+        {
+            if (prevLidarDatasourceName != null && prevLidarDatasourceName.equals(lidarDatasourceInfo.get(i).name))
+            {
+                lidarDatasourceIndex = i;
+                break;
+            }
+        }
+    }
+
     private void initialize(File modelFile)
     {
         // Load in custom plate data
         try
         {
             if (!smallBodyConfig.customTemporary)
+            {
                 loadCustomColoringInfo();
+                loadCustomLidarDatasourceInfo();
+            }
 
             smallBodyPolyData.ShallowCopy(
                     PolyDataUtil.loadShapeModel(modelFile.getAbsolutePath()));
@@ -615,7 +719,6 @@ public class SmallBodyModel extends Model
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
             }
         }
-
     }
 
     public vtkPolyData computeFrustumIntersection(
@@ -917,6 +1020,7 @@ public class SmallBodyModel extends Model
             //smallBodyActor = new vtkActor();
             smallBodyActor = new SbmtLODActor();
             smallBodyActor.SetMapper(smallBodyMapper);
+
             vtkPolyDataMapper decimatedMapper =
                     ((SbmtLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
             decimatedMapper.SetLookupTable(lookupTable);
@@ -1227,6 +1331,44 @@ public class SmallBodyModel extends Model
             return modelNames[resolutionLevel];
         else
             return null;
+    }
+
+    public String getLidarDatasourceName(int i)
+    {
+        if (i < 0)
+            return "Default";
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).name;
+        else
+            return null;
+    }
+
+    public String getLidarDatasourcePath(int i)
+    {
+        if (i < 0)
+            return "/NLR/cubes";
+        if (i < lidarDatasourceInfo.size())
+            return lidarDatasourceInfo.get(i).path;
+        else
+            return null;
+    }
+
+    public int getLidarDatasourceIndex()
+    {
+        return lidarDatasourceIndex;
+    }
+
+    public void setLidarDatasourceIndex(int index)
+    {
+        if (lidarDatasourceIndex != index)
+        {
+            lidarDatasourceIndex = index;
+        }
+    }
+
+    public int getNumberOfLidarDatasources()
+    {
+        return lidarDatasourceInfo.size();
     }
 
     /**
@@ -1732,6 +1874,12 @@ public class SmallBodyModel extends Model
             falseColorArray.SetTuple3(i, redValue, greenValue, blueValue);
         }
     }
+
+
+    private void loadLidarDatasourceData() throws IOException
+    {
+    }
+
 
     private void paintBody() throws IOException
     {
@@ -2456,5 +2604,45 @@ public class SmallBodyModel extends Model
     public ArrayList<ColoringInfo> getColoringInfoList()
     {
         return coloringInfo;
+    }
+
+
+
+
+
+    public void addCustomLidarDatasource(LidarDatasourceInfo info) throws IOException
+    {
+        lidarDatasourceInfo.add(info);
+    }
+
+    public void setCustomLidarDatasource(int index, LidarDatasourceInfo info) throws IOException
+    {
+        lidarDatasourceInfo.set(index, info);
+    }
+
+    public void removeCustomLidarDatasource(int index) throws IOException
+    {
+            lidarDatasourceInfo.remove(index);
+
+            if (lidarDatasourceIndex == index)
+                lidarDatasourceIndex = -1;
+            else if (lidarDatasourceIndex > index)
+                --lidarDatasourceIndex;
+    }
+
+    public void reloadLidarDatasources() throws IOException
+    {
+        for (LidarDatasourceInfo info : lidarDatasourceInfo)
+        {
+            info.name = null;
+            info.path = null;
+        }
+
+        loadLidarDatasourceData();
+    }
+
+    public ArrayList<LidarDatasourceInfo> getLidarDasourceInfoList()
+    {
+        return lidarDatasourceInfo;
     }
 }

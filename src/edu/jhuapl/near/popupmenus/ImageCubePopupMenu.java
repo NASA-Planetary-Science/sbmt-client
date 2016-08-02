@@ -44,8 +44,6 @@ import edu.jhuapl.near.util.FileUtil;
 
 import nom.tam.fits.FitsException;
 
-import nom.tam.fits.FitsException;
-
 
 public class ImageCubePopupMenu extends PopupMenu
 {
@@ -571,7 +569,8 @@ public class ImageCubePopupMenu extends PopupMenu
             {
                 if (file != null)
                 {
-                    String imgName = file.getName();
+//                    String imgName = file.getName();
+                    File imgName = file;
 
                     String lblName = file.getAbsolutePath();
                     lblName = lblName.substring(0, lblName.length()-4);
@@ -580,14 +579,14 @@ public class ImageCubePopupMenu extends PopupMenu
                     else
                         lblName += ".LBL";
 
-                    file = new File(lblName);
+                    File labelFile = new File(lblName);
 
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
-                    image.generateBackplanesLabel(imgName, file.getAbsolutePath());
+                    image.generateBackplanesLabel(imgName, labelFile);
                 }
             }
             catch (Exception ex)

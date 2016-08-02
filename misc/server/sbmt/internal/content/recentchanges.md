@@ -4,6 +4,29 @@
 
 # Recent Changes
 
+### July 22, 2016
+-   Fixed various bugs in the lidar search panel, incl. lack of popup menu on right click, coloration of the tracks list, and unpopulated tracks list in Tracks tab.
+-   Added "Show spacecraft position" to the lidar search panel. Selecting a spacecraft point or its corresponding surface point highlights both simultaneously.
+-   Fixed bug in lidar point selection due to LODs.
+
+### July 15, 2016
+
+-   DEM tab, added to all bodies allows DEM files to be loaded locally
+-   DEMs can now be displayed directly on the body surface in the 3D View
+-   MapMaker and BigMaps generated DEMs can be selected from DEM tab and viewed in DEM Properties View
+-   DEM plate coloring in DEM Properties View can now be optionally synchronized with the 3D View
+-   2D Profiles can now be viewed on tracks in the 3D View, as well as the DEM Properties View
+-   OLA panel in the Bennu model is now optimized for time queries as well as spatial queries
+-   OLA search tab now allows user to select from multiple locally generated OLA data sources
+-   OLA search results now show name of OLA data file
+-   OLA search results list now has checkboxes to control visibility
+-   New "Favorites" menu item allows user to add frequently used small body models to the View menu
+-   Favorites menu also allows specification of default model to load on startup.
+-   Right click on current viewing tab allows user to set favorite instrument for default model.
+-   Image pull-right "Simulate Lighting" menu item can now be toggled on and off
+-   Colors of image boundaries no longer change to red when model resolution is changed
+
+
 ### June 14, 2016
 
 -   Fixed bugs in ImageCube registration and display of boundaries

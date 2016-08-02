@@ -118,8 +118,16 @@ public class DefaultPicker extends Picker
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
+        // need to shut off LODs to make sure pick is done on correct geometry
+        boolean wasShowingLODs=renderer.showingLODs;
+        renderer.hideLODs();
+
         // First try picking on the non-small-body picker. If that fails try the small body picker.
         int pickSucceeded = doPick(e, mousePressNonSmallBodyCellPicker, renWin);
+
+        // show LODs again if they were shown before picking; view-menu enabling of LODs is handled by the renderer so we don't need to worry about it here
+        if (wasShowingLODs)
+            renderer.showLODs();
 
         if (pickSucceeded == 1)
         {
@@ -137,6 +145,7 @@ public class DefaultPicker extends Picker
                     if (firstImage instanceof PerspectiveImage)
                         setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)firstImage);
                 }
+
 
                 int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
                 double[] pickPosition = mousePressNonSmallBodyCellPicker.GetPickPosition();
