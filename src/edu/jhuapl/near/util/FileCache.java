@@ -143,19 +143,22 @@ public class FileCache
         {
             URL u = new URL(Configuration.getDataRootURL() + path);
 
+            URLConnection conn = u.openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/4.0");
+
             try
             {
-                u.openStream();
+            //    u.openStream();   // sometimes this throws a FileNotFoundException because the server returns HTTP 404 even though the file exists; the declaration of conn just above, with the subsequent properties, seems to give the correct result (e.g. not a 404 for files that do exist)
+                conn.getInputStream();
             }
             catch (IOException e)
             {
+                e.printStackTrace();
                 fi.existsOnServer=false;
                 return fi;
             }
             fi.existsOnServer=true;
 
-            URLConnection conn = u.openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 
             long urlLastModified = conn.getLastModified();
 
@@ -280,7 +283,6 @@ public class FileCache
         File file = new File(realFilename + getTemporarySuffix());
 
         file.getParentFile().mkdirs();
-
         FileOutputStream os = new FileOutputStream(file);
 
         abortDownload = false;
