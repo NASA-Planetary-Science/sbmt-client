@@ -38,6 +38,7 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
     private PerspectiveImage image;
     private SmallBodyModel smallBodyModel;
     private static vtkPolyData emptyPolyData;
+    private double offset =0.003;
 
     public PerspectiveImageBoundary(PerspectiveImage image, SmallBodyModel smallBodyModel) throws IOException
     {
@@ -68,7 +69,27 @@ public class PerspectiveImageBoundary extends Model implements PropertyChangeLis
 
         initialize();
 
+        smallBodyModel.shiftPolyLineInNormalDirection(boundary, offset);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void setOffset(double offsetnew)
+    {
+        this.offset=offsetnew;
+
+        update();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public double getOffset()
+    {
+        return offset;
+    }
+
+    public double getDefaultOffset()
+    {
+        // Subclasses should redefine this if they support offset.
+        return 3.0;
     }
 
     private void initialize()
