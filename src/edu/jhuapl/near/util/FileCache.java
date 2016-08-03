@@ -145,6 +145,7 @@ public class FileCache
 
             URLConnection conn = u.openConnection();
             conn.setRequestProperty("User-Agent", "Mozilla/4.0");
+            conn.setRequestProperty("Accept","*/*");
 
             try
             {

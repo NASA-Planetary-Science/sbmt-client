@@ -75,11 +75,22 @@ public class OlaFSHyperTreeSkeleton
 
     public void read()  // cf. OlaFSHyperTreeCondenser for code to write the skeleton file
     {
+/*        File fp=FileCache.getFileFromServer(dataSourcePath.getParent().toString());
+        if (!fp.exists())
+            try
+            {
+                FileUtils.forceMkdir(fp);
+            }
+            catch (IOException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }*/
+
         File f=FileCache.getFileFromServer(dataSourcePath.toString());
         if (!f.exists())
             f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataSourcePath.toString());
         //
-        System.out.println("Data source file = "+f.toString());
         double[] rootBounds=readBoundsFile(basePath.resolve("bounds"));
         rootNode=new Node(rootBounds,basePath,false,idCount); // false -> root is not a leaf
         nodeMap.put(rootNode.id, rootNode);

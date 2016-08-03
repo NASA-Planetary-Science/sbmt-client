@@ -21,6 +21,9 @@ import javax.swing.JComponent;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
+import vtk.vtkCellArray;
+import vtk.vtkPoints;
+
 import edu.jhuapl.near.gui.ProgressBarSwingWorker;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperPoint;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperTreeSkeleton;
@@ -131,6 +134,7 @@ public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollec
                 sw.start();
                 loading=true;
 
+                originalPoints.clear();
                 int cnt=0;
                 for (Integer cidx : cubeList)
                 {
@@ -156,6 +160,7 @@ public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollec
 
                 // Sort points in time order
                 Collections.sort(originalPoints);
+
 
                 System.out.println("Sorting Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
@@ -210,11 +215,14 @@ public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollec
         pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {
+    static vtkPoints points=new vtkPoints();
+    static vtkCellArray cells=new vtkCellArray();
+
+    public static List<LidarPoint> readDataFile(File dataInputFile, PointInRegionChecker pointInRegionChecker, double[] timeLimits) {
         List<LidarPoint> pts=Lists.newArrayList();
         try {
             DataInputStream stream=new DataInputStream(new FileInputStream(dataInputFile));
-            while (stream.skipBytes(0)==0) {  // dirty trick to keep reading until EOF
+            while (true) {
                 OlaFSHyperPoint pt=new OlaFSHyperPoint(stream);                                         // TODO: this is OLA-specific
                 if (pt.getTime()<timeLimits[0] || pt.getTime()>timeLimits[1])   // throw away points outside time limits
                     continue;
@@ -224,12 +232,28 @@ public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollec
                         pts.add(pt);    // if region checker exists then filter on space as well as time
                     continue;
                 }
+                //
+/*                int id=points.InsertNextPoint(pt.getTargetPosition().toArray());
+                vtkVertex vert=new vtkVertex();
+                vert.GetPointIds().SetId(0, id);
+                cells.InsertNextCell(vert);*/
                 pts.add(pt);    // if the region checker does not exist and the point is within the time limits then add it
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             if (!e.getClass().equals(EOFException.class))
                 e.printStackTrace();
         }
+/*        //
+        vtkPolyData polyData=new vtkPolyData();
+        polyData.SetPoints(points);
+        polyData.SetVerts(cells);
+        //
+        vtkPolyDataWriter writer=new vtkPolyDataWriter();
+        writer.SetFileName("/Users/zimmemi1/Desktop/test.vtk");
+        writer.SetFileTypeToBinary();
+        writer.SetInputData(polyData);
+        writer.Write();*/
         return pts;
     }
 

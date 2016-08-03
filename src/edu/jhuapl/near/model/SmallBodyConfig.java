@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import edu.jhuapl.near.lidar.OlaCubesGenerator;
+import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
@@ -1443,7 +1443,8 @@ public class SmallBodyConfig
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.1/dataSource.lidar");
+            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.1/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.rebuild/dataSource.lidar");
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
         }
 

@@ -1,7 +1,7 @@
-package edu.jhuapl.near.lidar;
+package edu.jhuapl.near.lidar.old;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
-import edu.jhuapl.near.lidar.LidarCubesGenerator.LidarDataType;
+import edu.jhuapl.near.lidar.old.LidarCubesGenerator.LidarDataType;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;

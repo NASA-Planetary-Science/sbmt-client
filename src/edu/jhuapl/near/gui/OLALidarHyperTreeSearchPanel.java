@@ -25,7 +25,6 @@ import edu.jhuapl.near.util.BoundingBox;
 public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
-    final static String defaultLidarDataSourcePath="/GASKELL/RQ36_V3/OLA/hypertree.1/dataSource.lidar";
 
     public OLALidarHyperTreeSearchPanel(SmallBodyConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
