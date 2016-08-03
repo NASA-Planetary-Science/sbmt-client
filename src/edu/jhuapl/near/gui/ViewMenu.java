@@ -30,10 +30,11 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
     private ViewManager rootPanel;
     private ButtonGroup group;
     private ShapeModelImporterManagerDialog shapeModelImportedDialog;
-
+    private RecentlyViewed viewed;
+    JMenu customImageMenu;
     private FavoritesFile favoritesFile=new FavoritesFile();
 
-    public ViewMenu(ViewManager rootPanel)
+    public ViewMenu(ViewManager rootPanel, RecentlyViewed viewed)
     {
         super("View");
 
@@ -55,22 +56,18 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             addMenuItem(mi, smallBodyConfig);
         }
 
-        // Enable LODs checkbox menu item
-        this.addSeparator();
-        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(new EnableLODsAction());
-        cbmi.setSelected(true);
-        this.add(cbmi);
-
+        JMenu customImageMenu = new JMenu("Custom Shape Models...");
+        this.add(customImageMenu);
         // Import shape models
         if (Configuration.isAPLVersion())
         {
             //this.addSeparator();
 
             JMenuItem mi = new JMenuItem(new ImportShapeModelsAction());
-            this.add(mi);
+            customImageMenu.add(mi);
 
             if (rootPanel.getNumberOfCustomViews() > 0)
-                this.addSeparator();
+                customImageMenu.addSeparator();
 
             for (int i=0; i < rootPanel.getNumberOfCustomViews(); ++i)
             {
@@ -80,10 +77,18 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 if (i==0)
                     mi.setSelected(true);
                 group.add(mi);
-                this.add(mi);
+                customImageMenu.add(mi);
             }
         }
 
+        // Enable LODs checkbox menu item
+        this.addSeparator();
+        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(new EnableLODsAction());
+        cbmi.setSelected(true);
+        this.add(cbmi);
+
+
+        this.viewed=viewed;
     }
 
     private void addMenuItem(JMenuItem mi, SmallBodyConfig smallBodyConfig)
@@ -143,7 +148,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                 if (action instanceof ShowBodyAction)
                 {
                     customMenuItems.add(item);
-                    this.remove(item);
+                    customImageMenu.remove(item);
                 }
             }
         }
@@ -164,7 +169,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         for (int i=0; i<numberItems; ++i)
         {
             JMenuItem item = customMenuItems.get(i);
-            this.add(item);
+            customImageMenu.add(item);
         }
     }
 
@@ -176,7 +181,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
         mi.setText(view.getDisplayName());
         group.add(mi);
-        this.add(mi);
+        customImageMenu.add(mi);
 
         sortCustomMenuItems();
     }
@@ -195,7 +200,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
                     ShowBodyAction showBodyAction = (ShowBodyAction) action;
                     if (view == showBodyAction.view)
                     {
-                        this.remove(item);
+                        customImageMenu.remove(item);
                         group.remove(item);
 
                         // Remove the final separator if no custom models remain
@@ -240,7 +245,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         else if (Properties.CUSTOM_MODEL_EDITED.equals(evt.getPropertyName()))
         {
             String name = (String) evt.getNewValue();
-            View view = rootPanel.getCustomView(name);
+            View view = rootPanel.getCustomView("Custom/"+name);
 
             ModelManager modelManager = view.getModelManager();
 
@@ -274,6 +279,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
         public void actionPerformed(ActionEvent actionEvent)
         {
+            viewed.updateMenu(view.getUniqueName());
             rootPanel.setCurrentView(view);
         }
     }

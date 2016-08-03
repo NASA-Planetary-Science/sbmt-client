@@ -35,6 +35,8 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
@@ -72,6 +74,7 @@ public class ImagePopupMenu extends PopupMenu
     private ModelInfoWindowManager infoPanelManager;
     private ModelSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
+    private ModelManager modelManager;
 
     /**
      *
@@ -81,6 +84,7 @@ public class ImagePopupMenu extends PopupMenu
      * mapped to Eros.
      */
     public ImagePopupMenu(
+            ModelManager modelManager,
             ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             ModelInfoWindowManager infoPanelManager,
@@ -88,6 +92,7 @@ public class ImagePopupMenu extends PopupMenu
             Renderer renderer,
             Component invoker)
     {
+        this.modelManager = modelManager;
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
         this.infoPanelManager = infoPanelManager;
@@ -371,7 +376,11 @@ public class ImagePopupMenu extends PopupMenu
                 try
                 {
                     if (mapBoundaryMenuItem.isSelected())
+                    {
                         imageBoundaryCollection.addBoundary(imageKey);
+                        Image image = imageCollection.getImage(imageKey);
+                        imageBoundaryCollection.getBoundary(imageKey).setOffset(image.getOffset());
+                    }
                     else
                         imageBoundaryCollection.removeBoundary(imageKey);
                 }
@@ -565,8 +574,8 @@ public class ImagePopupMenu extends PopupMenu
             {
                 if (file != null)
                 {
-                    String imgName = file.getName();
-
+//                    String imgName = file.getName();
+                    File imgName = file;
                     String lblName = file.getAbsolutePath();
                     lblName = lblName.substring(0, lblName.length()-4);
                     if (file.getAbsolutePath().endsWith("img"))
@@ -574,14 +583,14 @@ public class ImagePopupMenu extends PopupMenu
                     else
                         lblName += ".LBL";
 
-                    file = new File(lblName);
+                    File lblFile = new File(lblName);
 
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                     updateMenuItems();
 
-                    image.generateBackplanesLabel(imgName, file.getAbsolutePath());
+                    image.generateBackplanesLabel(imgName, lblFile);
                 }
             }
             catch (Exception ex)
@@ -718,9 +727,14 @@ public class ImagePopupMenu extends PopupMenu
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
                 changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
+                int[] temp = boundaries.getBoundary(imageKey).getBoundaryColor();
+                boundaries.getBoundary(imageKey).setOffset(image.getOffset());
+                Color color = new Color(temp[0],temp[1],temp[2]);
+                boundaries.getBoundary(imageKey).setBoundaryColor(color);
             }
         }
     }

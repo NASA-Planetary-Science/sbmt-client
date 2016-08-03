@@ -635,6 +635,11 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         getContentPane().add(imageTypeLabel, gridBagConstraints);
 
         imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+        imageTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imageTypeComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -716,6 +721,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
         String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "INFO";
         infofilePathTextField.setText(defaultInfoFileName);
+
+        updateEnabledItems();
     }//GEN-LAST:event_browseImageButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed
@@ -768,6 +775,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         String filename = file.getAbsolutePath();
         sumfilePathTextField.setText(filename);
     }//GEN-LAST:event_browseSumfileButtonActionPerformed
+
+    private void imageTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageTypeComboBoxActionPerformed
+        updateEnabledItems();
+    }//GEN-LAST:event_imageTypeComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseImageButton;

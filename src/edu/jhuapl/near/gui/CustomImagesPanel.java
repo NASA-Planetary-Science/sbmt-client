@@ -191,7 +191,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
 
 //        boundaries.addPropertyChangeListener(this);
@@ -562,6 +562,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         }
 
         ((DefaultListModel)imageList.getModel()).remove(index);
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        boundaries.removeBoundary(imageKey);
     }
 
     private void moveDown(int i)

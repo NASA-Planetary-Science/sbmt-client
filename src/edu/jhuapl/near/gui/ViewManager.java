@@ -202,7 +202,7 @@ public class ViewManager extends JPanel
     {
         for (View view : customViews)
         {
-            if (view.getUniqueName().equals(name))
+            if (view.getSmallBodyConfig().getShapeModelName().equals(name))
             {
                 customViews.remove(view);
                 remove(view);

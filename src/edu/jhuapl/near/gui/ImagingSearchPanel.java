@@ -156,7 +156,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
         boundaries.addPropertyChangeListener(this);
         images.addPropertyChangeListener(this);
 

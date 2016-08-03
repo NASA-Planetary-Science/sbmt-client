@@ -70,8 +70,9 @@ public class DEMView extends JFrame implements WindowListener
     private JButton loadButton;
     private LineModel lineModel;
     private PickManager pickManager;
-    private MapmakerPlot plot;
+    private DEMPlot plot;
     private int currentColorIndex = 0;
+    private int numColors;
     private JComboBox coloringTypeComboBox;
     private DEM dem;
     private DEMKey key;
@@ -109,9 +110,10 @@ public class DEMView extends JFrame implements WindowListener
         DEM macroDEM = demCollection.getDEM(key);
 
         // Create an entirely new DEM object to go with this model manager
+        // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
         final ModelManager modelManager = new ModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        dem = new DEM(key);
+        dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
         dem.setColoringIndex(macroDEM.getColoringIndex());
 
         lineModel = new LineModel(dem, true);
@@ -139,7 +141,7 @@ public class DEMView extends JFrame implements WindowListener
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        plot = new MapmakerPlot(lineModel, dem, macroDEM.getColoringIndex());
+        plot = new DEMPlot(lineModel, dem, macroDEM.getColoringIndex());
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
         plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
 
@@ -208,11 +210,15 @@ public class DEMView extends JFrame implements WindowListener
     {
         JPanel panel = new JPanel();
 
-        Object[] coloringOptions = {
-                "Color by geopotential height",
-                "Color by height relative to normal plane",
-                "Color by slope",
-                "No coloring"};
+        String[] coloringNames = dem.getColoringNames();
+        numColors = coloringNames.length;
+        Object[] coloringOptions = new Object[numColors + 1];
+        for(int i=0; i<numColors; i++)
+        {
+            coloringOptions[i] = coloringNames[i];
+        }
+        coloringOptions[numColors] = "No coloring";
+
         coloringTypeComboBox = new JComboBox(coloringOptions);
         coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
         coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
@@ -223,7 +229,7 @@ public class DEMView extends JFrame implements WindowListener
                 try
                 {
                     int index = coloringTypeComboBox.getSelectedIndex();
-                    if (index == 3)
+                    if (index == numColors)
                     {
                         // No coloring
                         scaleColoringButton.setEnabled(false);

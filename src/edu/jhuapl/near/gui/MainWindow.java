@@ -21,7 +21,7 @@ public class MainWindow extends JFrame
     private HelpMenu helpMenu;
     private ViewManager rootPanel;
     private FavoritesMenu favoritesMenu;
-
+    private RecentlyViewed recentsMenu;
     /**
      * @param tempCustomShapeModelPath path to shape model. May be null.
      * If non-null, the main window will create a temporary custom view of the shape model
@@ -63,13 +63,16 @@ public class MainWindow extends JFrame
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
-        viewMenu = new ViewMenu(rootPanel);
+        recentsMenu= new RecentlyViewed(rootPanel);
+        viewMenu = new ViewMenu(rootPanel, recentsMenu);
         viewMenu.setMnemonic('V');
         menuBar.add(viewMenu);
 
         favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
         viewMenu.add(new JSeparator());
         viewMenu.add(favoritesMenu);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(recentsMenu);
 
         helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');

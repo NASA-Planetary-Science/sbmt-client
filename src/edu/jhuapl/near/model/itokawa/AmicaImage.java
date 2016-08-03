@@ -224,7 +224,7 @@ public class AmicaImage extends PerspectiveImage
     }
 
     @Override
-    public void generateBackplanesLabel(String imgName, String lblFileName) throws IOException
+    public void generateBackplanesLabel(File imgName, File lblFileName) throws IOException
     {
         String lblFilename = getLabelFileFullPath();
 
@@ -299,7 +299,7 @@ public class AmicaImage extends PerspectiveImage
                 appendWithPadding(strbuf, "");
                 appendWithPadding(strbuf, "OBJECT                       = FILE");
 
-                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imgName + "\"");
+                appendWithPadding(strbuf, "  ^IMAGE                     = \"" + imgName.getName() + "\"");
 
                 appendWithPadding(strbuf, "  RECORD_TYPE                = FIXED_LENGTH");
                 appendWithPadding(strbuf, "  RECORD_BYTES               = " + (croppedSize[1] * 4));

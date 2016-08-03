@@ -327,7 +327,7 @@ public class AmicaBackplanesGenerator
 
             // Generate the label file
             String ddrLabelFilename = filename.substring(0, filename.length()-4) + "_ddr.lbl";
-            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
+            image.generateBackplanesLabel(new File(ddrFilename), new File(ddrLabelFilename));
 
             filesProcessed.add(ddrFilename);
             System.out.println("Processed " + filesProcessed.size() + " images so far");

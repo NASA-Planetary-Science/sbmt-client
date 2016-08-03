@@ -22,6 +22,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.BackplanesFile;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
@@ -189,7 +190,7 @@ public class BackplanesGenerator
             System.setOut(oldOut);
             System.setErr(oldErr);
 
-            image.loadFootprint();
+           image.loadFootprint();
             if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
                 System.out.println("   Skipping this image since no intersecting cells");
@@ -207,15 +208,24 @@ public class BackplanesGenerator
             // Save out the backplanes
             new File(outputFolder).mkdirs();
 
-            String fname = new File(filename).getName();
-            String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+            //determine output ddr filename
+            String ddrFilename = getddrFilename(image, key, resolutionLevel, fmt, outputFolder);
 
             //Write data to the appropriate format (FITS or IMG)
-            fmt.getFile().write(backplanes, fname, ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
 
-            // Generate the label file
-            String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
+            fmt.getFile().write(backplanes, new File(filename).getName(), ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
+
+            if (image instanceof MSIImage) {
+                System.out.println("This is an MSI Image");
+            }
+
+            //determine output ddr labelFilename
+            String ddrLabelFilename = getddrLblname(image, key, resolutionLevel, fmt, outputFolder);
+
+            // Generate the label
+//          String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
+//          image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
+            generateLabel(image, key, new File(ddrFilename), new File(ddrLabelFilename));
 
             filesProcessed.add(ddrFilename);
             System.out.println("   Wrote backplanes to " + ddrFilename);
@@ -230,6 +240,78 @@ public class BackplanesGenerator
         noPtg.close();
         System.out.println("   Total number of files processed " + filesProcessed.size());
     }
+
+    /**
+     * Generate ddr filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
+     * different filenaming conventions based on which PerspectiveImage subclass is being processed.
+     *
+     * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
+     * @param key - base filename.
+     * @param resolutionLevel - resolution level
+     * @param fmt - output file format
+     * @param outputFolder - destination folder for output file
+     * @return
+     */
+    private String getddrFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder) {
+
+        //key class is initialized with base filename (i.e. no ".extension")
+        String fname = new File(key.name).getName();
+
+//        String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+        String ddrFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+
+        return ddrFilename;
+
+    }
+
+    /**
+     * Generate ddr label filename given the parameters. Currently there are two file naming conventions, one for PDS3 labels, and one for
+     * PDS4 xml labels. The naming convention is based on the PerspectiveImage subclass being processed.
+     * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
+     * @param key - base filename.
+     * @param resolutionLevel - resolution level
+     * @param fmt - output file format
+     * @param outputFolder - destination folder for output file
+     * @return
+     */
+    private String getddrLblname(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder) {
+
+        //key class is initialized with base filename (i.e. no ".extension")
+        String fname = new File(key.name).getName();
+
+//        String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
+//      String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
+
+        String ddrLabelFilename = "";
+        if (image instanceof MSIImage) {
+            System.out.println("This is an MSI Image");
+             ddrLabelFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.xml";
+        } else {
+             ddrLabelFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
+        }
+
+        return ddrLabelFilename;
+
+    }
+
+
+    /**
+     * Generate the label file. Allows for different, potentially more complicated methods to be called depending on PerspectiveImage subclass
+     * @param image
+     * @param key
+     * @param ddrFilename - full path to the DDR file.
+     * @param ddrLabelFilename - full path to the DDR label file.
+     * @throws IOException
+     */
+    private void generateLabel(PerspectiveImage image, ImageKey key, File ddrFilename, File ddrLabelFilename) throws IOException {
+
+//        if (image instanceof MSIImage) {
+//
+//        } else {
+            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
+//        }
+    }
+
 
     private void authenticate()
     {

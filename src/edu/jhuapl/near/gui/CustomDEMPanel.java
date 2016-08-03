@@ -119,6 +119,11 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         }
     }
 
+    private ModelNames getDEMBoundaryCollectionModelName()
+    {
+        return ModelNames.DEM_BOUNDARY;
+    }
+
     public CustomDEMPanel(final ModelManager modelManager,
             final PickManager pickManager,
             String shapeRootDirOnServer,
@@ -403,6 +408,9 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
         // Remove from the list
         ((DefaultListModel)imageList.getModel()).remove(index);
+        DEMBoundaryCollection boundaries =
+                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
+        boundaries.removeBoundary(demKey);
     }
 
     // Moves an item in list down
