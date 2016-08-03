@@ -731,7 +731,10 @@ public class ImagePopupMenu extends PopupMenu
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
                 changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
+                int[] temp = boundaries.getBoundary(imageKey).getBoundaryColor();
                 boundaries.getBoundary(imageKey).setOffset(image.getOffset());
+                Color color = new Color(temp[0],temp[1],temp[2]);
+                boundaries.getBoundary(imageKey).setBoundaryColor(color);
             }
         }
     }
