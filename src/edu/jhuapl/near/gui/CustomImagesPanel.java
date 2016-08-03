@@ -562,6 +562,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         }
 
         ((DefaultListModel)imageList.getModel()).remove(index);
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        boundaries.removeBoundary(imageKey);
     }
 
     private void moveDown(int i)
