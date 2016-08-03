@@ -29,7 +29,7 @@ import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.util.Properties;
 
 
-public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
+public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 {
     private XYDataset valueDistanceDataset;
     private LineModel lineModel;
@@ -39,7 +39,7 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
 
     private int numberOfProfilesCreated = 0;
 
-    public MapmakerPlot(LineModel lineModel, DEM demModel, int coloringIndex)
+    public DEMPlot(LineModel lineModel, DEM demModel, int coloringIndex)
     {
         this.lineModel = lineModel;
         this.demModel = demModel;
@@ -115,23 +115,27 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
     private void updateChartLabels(){
         // Figure out labels to use
         String title, domainLabel, rangeLabel;
-        switch(coloringIndex){
-        case 0:
-        case 1:
-            title = "Height vs. Distance";
-            domainLabel = "Distance (m)";
-            rangeLabel = "Height (m)";
-            break;
-        case 2:
-            title = "Slope vs. Distance";
-            domainLabel = "Distance (m)";
-            rangeLabel = "Slope (deg)";
-            break;
-        default:
+        String[] coloringNames = demModel.getColoringNames();
+        String[] coloringUnits = demModel.getColoringUnits();
+        int numColors = coloringNames.length;
+
+        if(coloringIndex < 0 || coloringIndex >= numColors)
+        {
             title = "";
             domainLabel = "";
             rangeLabel = "";
-            break;
+        }
+        else
+        {
+            title = coloringNames[coloringIndex] + " vs. Distance";
+            domainLabel = "Distance (m)";
+            rangeLabel = coloringNames[coloringIndex];
+
+            // Try to add units for range label if possible
+            if(coloringUnits[coloringIndex].length() > 0)
+            {
+                rangeLabel += " (" + coloringUnits[coloringIndex] + ")";
+            }
         }
 
         // Apply the labels to the chart
@@ -150,17 +154,16 @@ public class MapmakerPlot implements ChartMouseListener, PropertyChangeListener
     {
         // Figure out what to label the range
         String rangeLabel;
-        switch(coloringIndex){
-        case 0:
-        case 1:
-            rangeLabel = "Height";
-            break;
-        case 2:
-            rangeLabel = "Slope";
-            break;
-        default:
+        String[] coloringNames = demModel.getColoringNames();
+        int numColors = coloringNames.length;
+
+        if(coloringIndex < 0 || coloringIndex >= numColors)
+        {
             rangeLabel = "Value";
-            break;
+        }
+        else
+        {
+            rangeLabel = coloringNames[coloringIndex];
         }
 
         StringBuilder buffer = new StringBuilder();

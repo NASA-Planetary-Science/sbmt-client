@@ -137,22 +137,37 @@ public class DEMBoundaryCollection extends Model implements PropertyChangeListen
     private HashMap<DEMBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<DEMBoundary, ArrayList<vtkProp>>();
     private HashMap<vtkProp, DEMBoundary> actorToBoundaryMap = new HashMap<vtkProp, DEMBoundary>();
     private SmallBodyModel smallBodyModel;
+    private ModelManager modelManager;
     // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
     private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
             Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
             Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
 
-    public DEMBoundaryCollection(SmallBodyModel smallBodyModel)
+    public DEMBoundaryCollection(SmallBodyModel smallBodyModel, ModelManager modelManager)
     {
         this.smallBodyModel = smallBodyModel;
+        this.modelManager = modelManager;
     }
 
     protected DEMBoundary createBoundary(
             DEMKey key,
             SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        DEMBoundary boundary = new DEMBoundary((DEM)ModelFactory.createDEM(key, smallBodyModel));
+        DEMBoundary boundary;
+
+        // If the DEM already exists in the DEM collection, use that instead of creating a new one
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        DEM dem = demCollection.getDEM(key);
+        if(dem != null)
+        {
+            boundary = new DEMBoundary(dem);
+        }
+        else
+        {
+            boundary = new DEMBoundary((DEM)ModelFactory.createDEM(key, smallBodyModel));
+        }
+
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);
         if (initialColorIndex >= initialColors.length)
             initialColorIndex = 0;

@@ -15,11 +15,13 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.DEM.DEMKey;
+import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.util.Properties;
 
 public class DEMCollection extends Model implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
+    private ModelManager modelManager;
 
     private HashMap<DEM, ArrayList<vtkProp>> demToActorsMap = new HashMap<DEM, ArrayList<vtkProp>>();
 
@@ -27,15 +29,28 @@ public class DEMCollection extends Model implements PropertyChangeListener
 
     private Map<DEMKey, Integer> demColorMap = new HashMap<DEMKey, Integer>();
 
-    public DEMCollection(SmallBodyModel smallBodyModel)
+    public DEMCollection(SmallBodyModel smallBodyModel, ModelManager modelManager)
     {
         this.smallBodyModel = smallBodyModel;
+        this.modelManager = modelManager;
     }
 
     // Creates a DEM based on a key
     protected DEM createDEM(DEMKey key, SmallBodyModel smallBodyModel) throws FitsException, IOException
     {
-        return new DEM(key);
+        // Check to see if we've already created the DEM through its boundary
+        DEMBoundaryCollection demBoundaryCollection = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        DEMBoundary demBoundary = demBoundaryCollection.getBoundary(key);
+        if(demBoundary != null)
+        {
+            // If boundary exists, use the associated DEM to save time
+            return demBoundary.getDEM();
+        }
+        else
+        {
+            // If boundary does not exist, then go ahead and create one from scratch (takes time)
+            return new DEM(key);
+        }
     }
 
     // Checks if key exists in map

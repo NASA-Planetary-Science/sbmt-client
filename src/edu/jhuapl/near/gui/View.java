@@ -373,11 +373,6 @@ public class View extends JPanel
             allModels.put(ModelNames.LINEAMENT, ModelFactory.createLineament());
         }
 
-        if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
-        {
-            allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel));
-        }
-
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
         allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
@@ -385,7 +380,8 @@ public class View extends JPanel
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
-        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel));
+        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, modelManager));
+        allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, modelManager));
 
         modelManager.setModels(allModels);
     }
