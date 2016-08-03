@@ -376,7 +376,11 @@ public class ImagePopupMenu extends PopupMenu
                 try
                 {
                     if (mapBoundaryMenuItem.isSelected())
+                    {
                         imageBoundaryCollection.addBoundary(imageKey);
+                        Image image = imageCollection.getImage(imageKey);
+                        imageBoundaryCollection.getBoundary(imageKey).setOffset(image.getOffset());
+                    }
                     else
                         imageBoundaryCollection.removeBoundary(imageKey);
                 }
@@ -727,7 +731,6 @@ public class ImagePopupMenu extends PopupMenu
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
                 changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
-                System.out.println(image.getOffset());
                 boundaries.getBoundary(imageKey).setOffset(image.getOffset());
             }
         }
