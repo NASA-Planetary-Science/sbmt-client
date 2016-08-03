@@ -52,7 +52,7 @@ public class PopupManager
                 (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         PerspectiveImageBoundaryCollection imageBoundaries =
                 (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-        popupMenu = new ImagePopupMenu(imageCollection, imageBoundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
+        popupMenu = new ImagePopupMenu(modelManager, imageCollection, imageBoundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
         LidarSearchDataCollection tracks = (LidarSearchDataCollection)modelManager.getModel(ModelNames.TRACKS);

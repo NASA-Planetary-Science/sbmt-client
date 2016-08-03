@@ -18,6 +18,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -33,6 +35,8 @@ import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
@@ -42,8 +46,6 @@ import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.LatLon;
-
-import nom.tam.fits.FitsException;
 
 
 public class ImagePopupMenu extends PopupMenu
@@ -72,6 +74,7 @@ public class ImagePopupMenu extends PopupMenu
     private ModelInfoWindowManager infoPanelManager;
     private ModelSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
+    private ModelManager modelManager;
 
     /**
      *
@@ -81,6 +84,7 @@ public class ImagePopupMenu extends PopupMenu
      * mapped to Eros.
      */
     public ImagePopupMenu(
+            ModelManager modelManager,
             ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             ModelInfoWindowManager infoPanelManager,
@@ -88,6 +92,7 @@ public class ImagePopupMenu extends PopupMenu
             Renderer renderer,
             Component invoker)
     {
+        this.modelManager = modelManager;
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
         this.infoPanelManager = infoPanelManager;
@@ -718,9 +723,12 @@ public class ImagePopupMenu extends PopupMenu
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
                 changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
+                System.out.println(image.getOffset());
+                boundaries.getBoundary(imageKey).setOffset(image.getOffset());
             }
         }
     }
