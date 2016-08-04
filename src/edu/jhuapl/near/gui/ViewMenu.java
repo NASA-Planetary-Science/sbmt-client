@@ -56,7 +56,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             addMenuItem(mi, smallBodyConfig);
         }
 
-        JMenu customImageMenu = new JMenu("Custom Shape Models");
+        customImageMenu = new JMenu("Custom Shape Models");
         this.add(customImageMenu);
         // Import shape models
         if (Configuration.isAPLVersion())
@@ -138,10 +138,10 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         // First create a list of the custom menu items and remove them
         // from the menu.
         ArrayList<JMenuItem> customMenuItems = new ArrayList<JMenuItem>();
-        int numberItems = this.getItemCount();
+        int numberItems = customImageMenu.getItemCount();
         for (int i=numberItems-1; i>=0; --i)
         {
-            JMenuItem item = this.getItem(i);
+            JMenuItem item = customImageMenu.getItem(i);
             if (item != null)
             {
                 Action action = item.getAction();
@@ -188,10 +188,10 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
     public void removeCustomMenuItem(View view)
     {
-        int numberItems = this.getItemCount();
-        for (int i=0; i<numberItems; ++i)
+        int numberItems = customImageMenu.getItemCount()-2;
+        for (int i=2; i<numberItems; ++i)
         {
-            JMenuItem item = this.getItem(i);
+            JMenuItem item = customImageMenu.getItem(i);
             if (item != null)
             {
                 Action action = item.getAction();

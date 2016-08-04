@@ -57,7 +57,7 @@ public class RecentlyViewed extends JMenu
 
         JMenuItem recentItem = new JMenuItem();
         items.add(recentItem);
-        this.add(recentItem);
+        this.add(recentItem, 0);
         recentItem.setAction(new RecentAction(manager, name));
         try{
             FileWriter f_out=new FileWriter(Configuration.getApplicationDataDir()+File.separator+"recents.txt", false);
