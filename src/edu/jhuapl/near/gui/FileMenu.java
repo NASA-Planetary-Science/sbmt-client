@@ -42,6 +42,8 @@ public class FileMenu extends JMenu
         //this.add(mi);
         mi = new JCheckBoxMenuItem(new ShowSimpleCylindricalProjectionAction());
         //this.add(mi);
+        mi= new JMenuItem(new ClearCacheAction());
+        this.add(mi);
 
         // On macs the exit action is in the Application menu not the file menu
         if (!Configuration.isMac())
@@ -249,6 +251,36 @@ public class FileMenu extends JMenu
         public void actionPerformed(ActionEvent actionEvent)
         {
             showPreferences();
+        }
+    }
+
+    private class ClearCacheAction extends AbstractAction
+    {
+        public ClearCacheAction()
+        {
+            super("Clear Cache");
+        }
+        public void actionPerformed(ActionEvent actionEvent)
+        {
+            int option = JOptionPane.showOptionDialog(frame, "Do you wish to clear your local data cache? If you do, all remotely loaded data will need to be reloaded "
+                    + "from the server the next time you wish to view it. This may take a few moments…", "Clear cache", 1, 3, null, null, null);
+            if(option == 0)
+            {
+                deleteFile(new File(Configuration.getApplicationDataDir()+File.separator+"cache\\2"));
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void deleteFile(File file)
+        {
+            if (file.isDirectory())
+                for (File subDir : file.listFiles())
+                    deleteFile(subDir);
+
+            file.delete();
         }
     }
 
