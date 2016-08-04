@@ -66,9 +66,13 @@ public class OlaFSHyperTreeSkeleton
     private double[] readBoundsFile(Path path)
     {
         File f=FileCache.getFileFromServer(path.toString());
-
         if (f.exists())
             return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
+        //
+        f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+path.toString());
+        if (f.exists())
+            return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
+
         //
         return null;
     }
