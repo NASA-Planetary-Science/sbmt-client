@@ -2,12 +2,15 @@ package edu.jhuapl.near.lidar.hyperoctree;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -63,10 +66,7 @@ public class OlaFSHyperTreeSkeleton
     private double[] readBoundsFile(Path path)
     {
         File f=FileCache.getFileFromServer(path.toString());
-        if (f.exists())
-            return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
-        //
-        f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+path.toString());
+
         if (f.exists())
             return OlaFSHyperTreeNode.readBoundsFile(Paths.get(f.getAbsolutePath()), 4);
         //
@@ -88,6 +88,19 @@ public class OlaFSHyperTreeSkeleton
             }*/
 
         File f=FileCache.getFileFromServer(dataSourcePath.toString());
+        if (!f.exists())
+        {
+            try
+            {
+                FileUtils.forceMkdir(f.getParentFile());
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        f=FileCache.getFileFromServer(dataSourcePath.toString());
         if (!f.exists())
             f=FileCache.getFileFromServer(FileCache.FILE_PREFIX+dataSourcePath.toString());
         //

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -44,9 +43,7 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import com.google.common.collect.Lists;
@@ -171,17 +168,17 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         JPanel showSpacecraftPanel = new JPanel(new GridLayout());
         showSpacecraftPanel.setBorder(new EmptyBorder(5, 0, 5, 0));
-        final JCheckBox showSpacecraftCheckBox = new JCheckBox("Show spacecraft position");
-        showSpacecraftCheckBox.setSelected(true);
-        showSpacecraftCheckBox.addActionListener(new ActionListener()
+
+        spacecraftPositionCheckbox.addActionListener(new ActionListener()
         {
+
+            @Override
             public void actionPerformed(ActionEvent e)
             {
-                //lidarModel.setShowSpacecraftPosition(showSpacecraftCheckBox.isSelected());
+                lidarModel.setShowSpacecraftPosition(spacecraftPositionCheckbox.isSelected());
+
             }
         });
-        showSpacecraftPanel.add(showSpacecraftCheckBox);
-        //add(showSpacecraftPanel);
 
     }
 

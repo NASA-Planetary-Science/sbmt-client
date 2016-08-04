@@ -102,7 +102,7 @@ public class LidarSearchDataCollection extends Model
     private double trackError;
 
 
-    private boolean showSpacecraftPosition = true;
+    private boolean showSpacecraftPosition = false;
 
     public class Track
     {
@@ -1061,6 +1061,10 @@ public class LidarSearchDataCollection extends Model
         polydata.GetCellData().GetScalars().Modified();
         polydata.Modified();
 
+        if (!showSpacecraftPosition)
+            scPosActor.VisibilityOff();
+        else
+            scPosActor.VisibilityOn();
         scPosPolyData.GetCellData().GetScalars().Modified();
         scPosPolyData.Modified();
 
@@ -1338,12 +1342,16 @@ public class LidarSearchDataCollection extends Model
 
         if (ptId >= 0)
         {
-            int id1=points.InsertNextPoint(polydata.GetPoints().GetPoint(ptId));
-            int id2=points.InsertNextPoint(scPosPolyData.GetPoints().GetPoint(ptId));
-
             vtkIdList idList = new vtkIdList();
+            int id1=points.InsertNextPoint(polydata.GetPoints().GetPoint(ptId));
             idList.InsertNextId(id1);
-            idList.InsertNextId(id2);
+
+            if (showSpacecraftPosition)
+            {
+                int id2=points.InsertNextPoint(scPosPolyData.GetPoints().GetPoint(ptId));
+                idList.InsertNextId(id2);
+            }
+
             vert.InsertNextCell(idList);
 
             colors.InsertNextTuple4(0, 0, 255, 255);
@@ -1366,9 +1374,11 @@ public class LidarSearchDataCollection extends Model
         }
         else
         {
-            vtkPoints points = selectedPointPolydata.GetPoints();
-            points.SetPoint(0, polydata.GetPoints().GetPoint(ptId));
-            points.SetPoint(1, scPosPolyData.GetPoints().GetPoint(ptId));
+            vtkPoints points=new vtkPoints();
+            points.InsertNextPoint(polydata.GetPoints().GetPoint(ptId));
+            if (showSpacecraftPosition)
+                points.InsertNextPoint(scPosPolyData.GetPoints().GetPoint(ptId));
+            selectedPointPolydata.SetPoints(points);
         }
 
         selectedPointPolydata.Modified();
@@ -1611,6 +1621,9 @@ public class LidarSearchDataCollection extends Model
     public void setShowSpacecraftPosition(boolean show)
     {
         showSpacecraftPosition = show;
+        updateTrackPolydata();
+        //selectedPoint=-1;
+        updateSelectedPoint();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }
