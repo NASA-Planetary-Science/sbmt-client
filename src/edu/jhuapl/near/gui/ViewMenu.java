@@ -188,7 +188,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
 
     public void removeCustomMenuItem(View view)
     {
-        int numberItems = customImageMenu.getItemCount()-2;
+        int numberItems = customImageMenu.getItemCount();
         for (int i=2; i<numberItems; ++i)
         {
             JMenuItem item = customImageMenu.getItem(i);
