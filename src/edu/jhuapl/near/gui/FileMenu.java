@@ -262,8 +262,8 @@ public class FileMenu extends JMenu
         }
         public void actionPerformed(ActionEvent actionEvent)
         {
-            int option = JOptionPane.showOptionDialog(frame, "Do you wish to clear your local data cache? If you do, all remotely loaded data will need to be reloaded "
-                    + "from the server the next time you wish to view it. This may take a few moments…", "Clear cache", 1, 3, null, null, null);
+            int option = JOptionPane.showOptionDialog(frame, "Do you wish to clear your local data cache? \nIf you do, all remotely loaded data will need to be reloaded "
+                    + "from the server the next time you wish to view it. \nThis may take a few moments…", "Clear cache", 1, 3, null, null, null);
             if(option == 0)
             {
                 deleteFile(new File(Configuration.getApplicationDataDir()+File.separator+"cache\\2"));
