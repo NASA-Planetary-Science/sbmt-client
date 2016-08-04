@@ -1444,7 +1444,7 @@ public class SmallBodyConfig
             configArray.add(c);
 
             //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.1/dataSource.lidar");
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/Phase06_DS/02_noise_navError/trees/goodFiles/hypertree.goodFiles/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/Phase06_DS/02_noise_navError/trees/goodFiles/hypertree/dataSource.lidar");
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
         }
 
