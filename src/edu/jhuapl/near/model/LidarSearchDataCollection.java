@@ -900,6 +900,7 @@ public class LidarSearchDataCollection extends Model
     {
         tracks.get(trackId).hidden = hide;
         updateTrackPolydata();
+        selectedPoint=-1;
         updateSelectedPoint();
     }
 
@@ -913,6 +914,7 @@ public class LidarSearchDataCollection extends Model
         }
 
         updateTrackPolydata();
+        selectedPoint=-1;
         updateSelectedPoint();
     }
 
@@ -924,6 +926,7 @@ public class LidarSearchDataCollection extends Model
         }
 
         updateTrackPolydata();
+        selectedPoint=-1;
         updateSelectedPoint();
     }
 
@@ -935,6 +938,8 @@ public class LidarSearchDataCollection extends Model
         }
 
         updateTrackPolydata();
+        selectedPoint=-1;
+        updateSelectedPoint();
     }
 
     public boolean isTrackHidden(int trackId)
