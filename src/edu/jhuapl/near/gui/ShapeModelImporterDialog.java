@@ -344,12 +344,31 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
 
     private void customShapeModelRadioButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_customShapeModelRadioButtonActionPerformed
     {//GEN-HEADEREND:event_customShapeModelRadioButtonActionPerformed
-        updateEnabledState();
+        if(!editMode)
+        {
+            updateEnabledState();
+        }
+        else
+        {
+            customShapeModelRadioButton.setSelected(false);
+            ellipsoidRadioButton.setSelected(true);
+            customShapeModelRadioButton.setEnabled(false);
+        }
+
     }//GEN-LAST:event_customShapeModelRadioButtonActionPerformed
 
     private void ellipsoidRadioButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ellipsoidRadioButtonActionPerformed
     {//GEN-HEADEREND:event_ellipsoidRadioButtonActionPerformed
-        updateEnabledState();
+        if(!editMode)
+        {
+            updateEnabledState();
+        }
+        else
+        {
+            customShapeModelRadioButton.setSelected(true);
+            ellipsoidRadioButton.setSelected(false);
+            ellipsoidRadioButton.setEnabled(false);
+        }
     }//GEN-LAST:event_ellipsoidRadioButtonActionPerformed
 
     private void browseShapeModelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseShapeModelButtonActionPerformed
