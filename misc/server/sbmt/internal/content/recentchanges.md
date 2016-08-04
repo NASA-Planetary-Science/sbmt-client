@@ -4,9 +4,9 @@
 
 # Recent Changes
 
-### August 3, 2016
+### August 4, 2016
 
--   Added "Show spacecraft position" to the lidar search panel.
+-   Added "Show spacecraft position" checkbox to the lidar search panel.
 -   Selecting a spacecraft point or its corresponding surface point highlights both simultaneously.
 -   Fixed bug in lidar point selection due to LODs.
 -   DEM tab is now able to save original FITs files
@@ -24,6 +24,9 @@
 -   Paths show interpolated profiles if no plate coloring is selected
 -   Boundary of deleted custom image or DEM no longer stays on shape model after deleted
 -   If the normal offset of an image is changed, the normal offset of the boundary now changes
+-   Added a "Clear Cache" menu item
+-   Fixed bugs in "Import Shape Models" dialog
+-   Improved look of LidarSearchPanel GUI
 
 ### July 15, 2016
 
