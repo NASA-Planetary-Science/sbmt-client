@@ -1,4 +1,4 @@
-<project default="generatezip">
+<project default="compile">
 
 <!--
   <fail message="Unsupported Java version: ${ant.java.version}. Make sure that the Java version is 1.8.">
@@ -30,7 +30,7 @@
            the current date as the release name. Changed the string so
            that the version name is the 4th token in the string. This is
            because the java code prints the 4th token in the "About" box. -->
-      <arg value="echo New Release Name: ${RELEASE} Created On `date +%F`"/> 
+      <arg value="echo New Release Name: ${RELEASE} Created On `date +%F`"/>
     </exec>
     <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>
