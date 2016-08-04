@@ -43,7 +43,9 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import com.google.common.collect.Lists;
@@ -597,7 +599,19 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         radialOffsetPanel = new javax.swing.JPanel();
         manageDatasourcesButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable1 = new javax.swing.JTable(){
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column)
+            {
+                Color c=((LidarTableModel)getModel()).getColor(row);
+                TableCellRenderer renderer=super.getCellRenderer(row, column);
+                //                    System.out.println(renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class));
+                //                    System.out.println(renderer.getClass()+" "+DefaultTableCellRenderer.UIResource.class);
+                if (renderer.getClass().equals(DefaultTableCellRenderer.UIResource.class))
+                    ((DefaultTableCellRenderer)renderer).setForeground(c);
+                return renderer;
+            }
+        };
         spacecraftPositionCheckbox = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.BorderLayout());

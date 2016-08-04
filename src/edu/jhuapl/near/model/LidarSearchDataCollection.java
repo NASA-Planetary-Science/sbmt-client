@@ -1064,9 +1064,11 @@ public class LidarSearchDataCollection extends Model
         if (!showSpacecraftPosition)
             scPosActor.VisibilityOff();
         else
+        {
             scPosActor.VisibilityOn();
-        scPosPolyData.GetCellData().GetScalars().Modified();
-        scPosPolyData.Modified();
+            scPosPolyData.GetCellData().GetScalars().Modified();
+            scPosPolyData.Modified();
+        }
 
         if (enableTrackErrorComputation)
             computeTrackError();
