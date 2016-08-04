@@ -43,19 +43,9 @@
                           <Component id="resultsLabel" alignment="0" max="32767" attributes="0"/>
                           <Component id="selectRegionPanel" alignment="1" max="32767" attributes="0"/>
                           <Component id="submitPanel" alignment="0" max="32767" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="trackErrorCheckBox" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="24" pref="24" max="24" attributes="0"/>
-                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                          <Component id="jScrollPane3" alignment="0" pref="383" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="loadTrackButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -63,7 +53,6 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="fileTypeComboBox" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
@@ -89,11 +78,31 @@
                                           <Component id="minTrackSizeTextField" max="32767" attributes="1"/>
                                       </Group>
                                   </Group>
-                                  <Component id="translateTracksButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
+                                      <Component id="translateTracksButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="dragTracksToggleButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="trackErrorCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="spacecraftPositionCheckbox" min="-2" max="-2" attributes="0"/>
+                                          <Component id="trackErrorLabel" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
                               </Group>
-                              <EmptySpace min="0" pref="37" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane3" alignment="0" pref="383" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -142,26 +151,28 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="resultsLabel" min="-2" pref="31" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" pref="480" max="32767" attributes="0"/>
+                      <Component id="jScrollPane3" pref="483" max="32767" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                       <Component id="radialOffsetPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="translateTracksButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="dragTracksToggleButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="translateTracksButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="dragTracksToggleButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="trackErrorCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="spacecraftPositionCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="trackErrorLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="pointSizeSpinner" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                          <Component id="pointSizeSpinner" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -424,6 +435,15 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JCheckBox" name="spacecraftPositionCheckbox">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Show Spacecraft Position:"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;If checked, the track error will be calculated and shown to the right of this checkbox.&lt;br&gt;&#xa;Whenever a change is made to the tracks, the track error will be updated. This can be&lt;br&gt;&#xa;a slow operation which is why this checkbox is provided to disable it.&lt;br&gt;&#xa;&lt;br&gt;&#xa;The track error is computed as the mean distance between each lidar point and its&lt;br&gt;&#xa;closest point on the asteroid."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spacecraftPositionCheckboxActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
