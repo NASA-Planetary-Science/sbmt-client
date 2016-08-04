@@ -113,6 +113,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         radialOffsetChanger = new edu.jhuapl.near.gui.RadialOffsetChanger();
         radialOffsetPanel.add(radialOffsetChanger);
 
+        // make the load track panel invisible for now -turnerj1
         loadTrackButton.setVisible(false);
         fileTypeLabel.setVisible(false);
         fileTypeComboBox.setVisible(false);
@@ -217,6 +218,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         loadTrackButton.setVisible(true);
         fileTypeLabel.setVisible(true);
         fileTypeComboBox.setVisible(true);
+        manageDatasourcesButton.setVisible(false);
     }
 
     protected void showData(
