@@ -400,7 +400,7 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
         }
 
         String[] errorMessage = new String[1];
-        boolean success = importer.importShapeModel(errorMessage);
+        boolean success = importer.importShapeModel(errorMessage,editMode);
 
         if (!success)
         {
