@@ -154,7 +154,7 @@ public class FileCache
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                //e.printStackTrace();
                 fi.existsOnServer=false;
                 return fi;
             }
