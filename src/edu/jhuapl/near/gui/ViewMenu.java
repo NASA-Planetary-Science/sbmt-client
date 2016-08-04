@@ -56,7 +56,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             addMenuItem(mi, smallBodyConfig);
         }
 
-        JMenu customImageMenu = new JMenu("Custom Shape Models...");
+        JMenu customImageMenu = new JMenu("Custom Shape Models");
         this.add(customImageMenu);
         // Import shape models
         if (Configuration.isAPLVersion())
