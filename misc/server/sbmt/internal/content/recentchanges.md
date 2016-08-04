@@ -4,10 +4,26 @@
 
 # Recent Changes
 
-### July 22, 2016
--   Fixed various bugs in the lidar search panel, incl. lack of popup menu on right click, coloration of the tracks list, and unpopulated tracks list in Tracks tab.
--   Added "Show spacecraft position" to the lidar search panel. Selecting a spacecraft point or its corresponding surface point highlights both simultaneously.
+### August 3, 2016
+
+-   Added "Show spacecraft position" to the lidar search panel.
+-   Selecting a spacecraft point or its corresponding surface point highlights both simultaneously.
 -   Fixed bug in lidar point selection due to LODs.
+-   DEM tab is now able to save original FITs files
+-   Bigmaps now works on shape models with spaces in name
+-   Track name now displayed in OLA track list
+-   Right click on instrument tab now brings up "set default instrument"
+-   OLA track labels now match the color of their respective tracks
+-   OLA tracklist in Tracks tab does now populates when .L2 files are loaded
+-   OLA point selection now works when LODs are enabled
+-   Right click on OLA track list now produces popup menu
+-   "Recently viewed models" pullright added to view menu
+-   Flip and Rotate controls in Import New Image dialog are now enabled for GENERIC_IMAGE type
+-   Import New Shape Model dialog Polar Radius Z axis is no longer corrupted when editing
+-   Can now load generic FITS DTM files into DEM view
+-   Paths show interpolated profiles if no plate coloring is selected
+-   Boundary of deleted custom image or DEM no longer stays on shape model after deleted
+-   If the normal offset of an image is changed, the normal offset of the boundary now changes
 
 ### July 15, 2016
 

@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import altwg.Fits.HduTags;
 import altwg.XML.XmlDoc;
+import altwg.XML.XmlDocFactory;
 import nom.tam.fits.HeaderCard;
 
 
