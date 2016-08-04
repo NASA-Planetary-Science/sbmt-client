@@ -53,9 +53,9 @@ public class ShapeModelImporter
     private FormatType format;
     private vtkPolyData shapeModelPolydata;
 
-    public boolean importShapeModel(String[] errorMessage)
+    public boolean importShapeModel(String[] errorMessage, boolean edit)
     {
-        String validationErrorMessage = validateInput();
+        String validationErrorMessage = validateInput(edit);
         if (validationErrorMessage != null)
         {
             errorMessage[0] = validationErrorMessage;
@@ -187,7 +187,7 @@ public class ShapeModelImporter
         return true;
     }
 
-    private String validateInput()
+    private String validateInput(boolean edit)
     {
         if (name == null || name.trim().isEmpty())
             return "Please enter a name for the shape model.";
@@ -204,7 +204,7 @@ public class ShapeModelImporter
         {
             for (File dir : dirs)
             {
-                if (dir.getName().equalsIgnoreCase(name))
+                if (dir.getName().equalsIgnoreCase(name)&&edit==false)
                     return "Name already exists.";
             }
         }
