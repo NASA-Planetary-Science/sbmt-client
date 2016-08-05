@@ -403,7 +403,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
         // Remove the DEM from the renderer
         DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        DEMKey demKey = new DEMKey(name);
+        DEMKey demKey = new DEMKey(name, demInfo.name);
         demCollection.removeDEM(demKey);
 
         // Remove from the list
@@ -508,7 +508,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
                 {
                     DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
                     String name = getCustomDataFolder() + File.separator + demInfo.demfilename;
-                    DEMKey demKey = new DEMKey(name);
+                    DEMKey demKey = new DEMKey(name, demInfo.name);
                     demKeys.add(demKey);
                 }
                 demPopupMenu.setCurrentDEMs(demKeys);
@@ -525,7 +525,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
             Model model = modelManager.getModel(e.getPickedProp());
             if (model instanceof DEMCollection)
             {
-                String name = ((DEMCollection)model).getDEM((vtkActor)e.getPickedProp()).getKey().name;
+                String name = ((DEMCollection)model).getDEM((vtkActor)e.getPickedProp()).getKey().fileName;
 
                 int idx = -1;
                 int size = imageList.getModel().getSize();

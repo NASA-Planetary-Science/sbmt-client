@@ -66,29 +66,32 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         // The path of the DEM as passed into the constructor. This is not the
         // same as fullpath but instead corresponds to the name needed to download
         // the file from the server (excluding the hostname and extension).
-        public String name;
+        public String fileName;
+        public String displayName;
 
-        public DEMKey(String name)
+        public DEMKey(String fileName, String displayName)
         {
-            this.name = name;
+            this.fileName = fileName;
+            this.displayName = displayName;
         }
 
         // Copy constructor
         public DEMKey(DEMKey copyKey)
         {
-            name = copyKey.name;
+            fileName = copyKey.fileName;
+            this.displayName = copyKey.displayName;
         }
 
         @Override
         public boolean equals(Object obj)
         {
-            return name.equals(((DEMKey)obj).name);
+            return fileName.equals(((DEMKey)obj).fileName);
         }
 
         @Override
         public int hashCode()
         {
-            return name.hashCode();
+            return fileName.hashCode();
         }
     }
 
@@ -99,7 +102,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
     // Old constructor based on filename only, called all over SBMT
     public DEM(String filename) throws IOException, FitsException
     {
-        this(new DEMKey(filename));
+        this(new DEMKey(filename,filename));
     }
 
     // Copy constructor
@@ -178,7 +181,7 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
         dem = new vtkPolyData();
         boundary = new vtkPolyData();
 
-        initializeDEM(key.name);
+        initializeDEM(key.fileName);
 
         setSmallBodyPolyData(dem, coloringValuesPerCell, coloringNames, coloringUnits, ColoringValueType.CELLDATA);
     }
