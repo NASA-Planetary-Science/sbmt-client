@@ -699,7 +699,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // User specifies a DEM
-        File file = CustomFileChooser.showOpenDialog(this, "Load DEM", "fit");
+        File file = CustomFileChooser.showOpenDialog(this, "Load DEM",
+                new ArrayList<String>(Arrays.asList("fit","fits")));
 
         // Check if the file provided is valid
         if (file == null || !file.exists())

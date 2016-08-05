@@ -83,22 +83,22 @@ public class CustomFileChooser extends FileChooserBase
         return showOpenDialog(parent, title, null);
     }
 
-    public static File showOpenDialog(Component parent, String title, String extension)
+    public static File showOpenDialog(Component parent, String title, List<String> extensions)
     {
-        File[] files = showOpenDialog(parent, title, extension, false);
+        File[] files = showOpenDialog(parent, title, extensions, false);
         if (files == null || files.length < 1)
             return null;
         else
             return files[0];
     }
 
-    public static File[] showOpenDialog(Component parent, String title, String extension, boolean multiSelectionEnabled)
+    public static File[] showOpenDialog(Component parent, String title, List<String> extensions, boolean multiSelectionEnabled)
     {
         FileDialog fc = new FileDialog(JOptionPane.getFrameForComponent(parent), title, FileDialog.LOAD);
         //fc.setAcceptAllFileFilterUsed(true);
         fc.setMultipleMode(multiSelectionEnabled);
-        if (extension != null)
-            fc.setFilenameFilter(new CustomExtensionFilter(extension));
+        if (extensions != null)
+            fc.setFilenameFilter(new CustomExtensionFilter(extensions));
         if (getLastDirectory() != null)
             fc.setDirectory(getLastDirectory().getAbsolutePath());
         fc.setVisible(true);
