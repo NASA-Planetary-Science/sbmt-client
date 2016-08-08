@@ -51,8 +51,8 @@ public class RecentlyViewed extends JMenu
     {
         if(items.size()>9)
         {
-            items.remove(0);
-            this.remove(0);
+            items.remove(9);
+            this.remove(9);
         }
 
         JMenuItem recentItem = new JMenuItem();
