@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
-
-import nom.tam.fits.FitsException;
 
 public class PerspectiveImageBoundaryCollection extends Model implements PropertyChangeListener
 {
@@ -93,17 +93,23 @@ public class PerspectiveImageBoundaryCollection extends Model implements Propert
     {
         PerspectiveImageBoundary boundary = getBoundaryFromKey(key);
 
-        ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
+        if(boundary != null)
+        {
+            ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
 
-        for (vtkProp act : actors)
-            actorToBoundaryMap.remove(act);
+            if(actors != null)
+            {
+                for (vtkProp act : actors)
+                    actorToBoundaryMap.remove(act);
+            }
 
-        boundaryToActorsMap.remove(boundary);
+            boundaryToActorsMap.remove(boundary);
 
-        boundary.removePropertyChangeListener(this);
-        smallBodyModel.removePropertyChangeListener(boundary);
+            boundary.removePropertyChangeListener(this);
+            smallBodyModel.removePropertyChangeListener(boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public void removeAllBoundaries()

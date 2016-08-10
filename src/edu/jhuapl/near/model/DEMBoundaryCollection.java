@@ -283,17 +283,23 @@ public class DEMBoundaryCollection extends Model implements PropertyChangeListen
     {
         DEMBoundary boundary = getBoundaryFromKey(key);
 
-        boundary.removePropertyChangeListener(this);
-        smallBodyModel.removePropertyChangeListener(boundary);
+        if(boundary != null)
+        {
+            boundary.removePropertyChangeListener(this);
+            smallBodyModel.removePropertyChangeListener(boundary);
 
-        ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
+            ArrayList<vtkProp> actors = boundaryToActorsMap.get(boundary);
 
-        for (vtkProp act : actors)
-            actorToBoundaryMap.remove(act);
+            if(actors != null)
+            {
+                for (vtkProp act : actors)
+                    actorToBoundaryMap.remove(act);
+            }
 
-        boundaryToActorsMap.remove(boundary);
+            boundaryToActorsMap.remove(boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
     }
 
     public void removeAllBoundaries()

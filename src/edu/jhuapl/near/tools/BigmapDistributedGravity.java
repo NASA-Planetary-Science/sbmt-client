@@ -397,13 +397,11 @@ public class BigmapDistributedGravity {
             //StatisticalSummaryValues tiltStats = tiltClass.regionalTiltStats(smallBodyModel.getPointLocator(), fitspolydata, pt,
             //      normal, idList);
 
+            // twupy1: Hardcoded zero values, this was giving us problems
             //outdata[k++][m][n] = tiltStats.getMean();
             //outdata[k++][m][n] = tiltStats.getStandardDeviation();
-
-            // twupy1: Hardcoded zero values, this was giving us problems
             outdata[k++][m][n] = 0;
             outdata[k++][m][n] = 0;
-
 
             outdata[k++][m][n] = PolyDataUtil2.getDistanceToPlane(pt, pointOnPlane, rot);
             outdata[k++][m][n] = getShadedRelief(normal, eye, sun);
