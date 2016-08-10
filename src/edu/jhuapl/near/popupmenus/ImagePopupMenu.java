@@ -379,7 +379,10 @@ public class ImagePopupMenu extends PopupMenu
                     {
                         imageBoundaryCollection.addBoundary(imageKey);
                         Image image = imageCollection.getImage(imageKey);
-                        imageBoundaryCollection.getBoundary(imageKey).setOffset(image.getOffset());
+                        if(image != null)
+                        {
+                            imageBoundaryCollection.getBoundary(imageKey).setOffset(image.getOffset());
+                        }
                     }
                     else
                         imageBoundaryCollection.removeBoundary(imageKey);
