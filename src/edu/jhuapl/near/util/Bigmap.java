@@ -8,12 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsFactory;
-import nom.tam.util.BufferedFile;
 import altwg.tools.Maplet2FITS;
+
+import com.google.common.io.Files;
 
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.tools.BigmapDistributedGravity;
@@ -155,7 +153,7 @@ public class Bigmap
             Maplet2FITS.main(new String[] {origMapletFile.getPath(), bigmapToFitsFile.getPath()});
 
             // Assemble options for calling BigmapDistributedGravity
-            File dgFitsFile = new File(tempFolder + File.separator + name + "_dg" + ".FIT");
+            File dgFitsFile = new File(tempFolder + File.separator + name + ".FIT");
             File objShapeFile = new File(bigmapRootDir + File.separator + "SHAPEFILES" + File.separator + "SHAPE_LOWEST_RES.OBJ");
             List<String> dgOptionList = new LinkedList<String>();
             dgOptionList.add("-d");
@@ -203,90 +201,9 @@ public class Bigmap
             BigmapDistributedGravity.main(dgOptionArray);
             System.out.println("DistributedGravity finished processing bigmap outputs");
 
-            // Open the FITs file produced by BigmapDistributedGravity
-            Fits dgFits = new Fits(dgFitsFile.getPath());
-            BasicHDU dgHdu = dgFits.getHDU(0);
-            float[][][] dgData = (float[][][])dgHdu.getData().getData();
-
-            // Extract only the planes that SBMT is interested in
-            int liveSize = 2 * halfSize + 1;
-            float[][][] outdata = new float[MAX_PLANES][liveSize][liveSize];
-            int dgIdx;
-            float convScale;
-            for (int p=0; p<MAX_PLANES; ++p)
-            {
-                // Mapping and unit conversion
-                switch(p)
-                {
-                case 0:
-                    // DG plane 19: Elevation [m] -> [km]
-                    dgIdx = 18;
-                    convScale = 0.001f;
-                    break;
-                case 1:
-                    // DG plane 7: Height [km] -> [km]
-                    dgIdx = 6;
-                    convScale = 1.0f;
-                    break;
-                case 2:
-                    // DG plane 20: Slope [deg] -> [rad]
-                    dgIdx = 19;
-                    convScale = (float)(Math.PI/180.0);
-                    break;
-                case 3:
-                    // DG plane 4: X [km] -> [km]
-                    dgIdx = 3;
-                    convScale = 1.0f;
-                    break;
-                case 4:
-                    // DG plane 5: Y [km] -> [km]
-                    dgIdx = 4;
-                    convScale = 1.0f;
-                    break;
-                case 5:
-                    // DG plane 6: Z [km] -> [km]
-                    dgIdx = 5;
-                    convScale = 1.0f;
-                    break;
-                default:
-                    System.err.println("Unrecognized FITS plane index: " + p);
-                    dgIdx = 0;
-                    convScale = 1.0f;
-                    break;
-                }
-
-                // Extract out only planes that SBMT is interested in
-                for (int m=0; m<liveSize; ++m)
-                {
-                    for (int n=0; n<liveSize; ++n)
-                    {
-
-                        outdata[p][m][n] = dgData[dgIdx][m][n] * convScale;
-                    }
-                }
-            }
-
             // Write the output FITS file
             mapletFitsFile = new File(outputFolder + File.separator + name + ".FIT");
-
-            Fits f = new Fits();
-            BasicHDU hdu = FitsFactory.HDUFactory(outdata);
-
-            hdu.getHeader().addValue("PLANE1", "Elevation Relative to Gravity (kilometers)", null);
-            hdu.getHeader().addValue("PLANE2", "Elevation Relative to Normal Plane (kilometers)", null);
-            hdu.getHeader().addValue("PLANE3", "Slope (radians)", null);
-            hdu.getHeader().addValue("PLANE4", "X coordinate of maplet vertices (kilometers)", null);
-            hdu.getHeader().addValue("PLANE5", "Y coordinate of maplet vertices (kilometers)", null);
-            hdu.getHeader().addValue("PLANE6", "Z coordinate of maplet vertices (kilometers)", null);
-            hdu.getHeader().addValue("HALFSIZE", halfSize, "Half Size (pixels)");
-            hdu.getHeader().addValue("SCALE", pixelSize, "Horizontal Scale (meters per pixel)");
-            hdu.getHeader().addValue("LATITUDE", latitude, "Latitude of Maplet Center (degrees)");
-            hdu.getHeader().addValue("LONGTUDE", longitude, "Longitude of Maplet Center (degrees)");
-
-            f.addHDU(hdu);
-            BufferedFile bf = new BufferedFile(mapletFitsFile, "rw");
-            f.write(bf);
-            bf.close();
+            Files.copy(dgFitsFile, mapletFitsFile);
 
             // Delete the files that are no longer needed
             bigmapToFitsFile.delete();
