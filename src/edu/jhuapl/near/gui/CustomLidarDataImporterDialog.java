@@ -12,6 +12,8 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Dialog;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
@@ -306,7 +308,8 @@ public class CustomLidarDataImporterDialog extends javax.swing.JDialog
 
     private void browsePlateDataButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browsePlateDataButtonActionPerformed
     {//GEN-HEADEREND:event_browsePlateDataButtonActionPerformed
-        File file = CustomFileChooser.showOpenDialog(this, "Select Lidar Data Source", "lidar");
+        File file = CustomFileChooser.showOpenDialog(this, "Select Lidar Data Source",
+                new ArrayList<String>(Arrays.asList("lidar")));
         if (file == null)
         {
             return;

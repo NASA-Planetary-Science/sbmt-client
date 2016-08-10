@@ -324,12 +324,12 @@ public class DEMPopupMenu extends PopupMenu
             try
             {
                 demCollection.addDEM(demKey);
-                String imageFileName = new File(demKey.name).getName();
+                String imageFileName = new File(demKey.fileName).getName();
 
                 file = CustomFileChooser.showSaveDialog(invoker, "Save FITS file", imageFileName, "fit");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer("file://" + demKey.name);
+                    File fitFile = FileCache.getFileFromServer("file://" + demKey.fileName);
                     FileUtil.copyFile(fitFile, file);
                 }
             }

@@ -160,7 +160,7 @@ public class DEMView extends JFrame implements WindowListener
         createMenus();
 
         // Finally make the frame visible
-        setTitle("DEM View");
+        setTitle("DEM View: " + key.displayName);
         pack();
         setVisible(true);
     }

@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.FileDialog;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -13,21 +15,36 @@ public class CustomFileChooser extends FileChooserBase
 {
     private static class CustomExtensionFilter implements FilenameFilter
     {
-        private String extension;
+        private List<String> extensions;
 
         public CustomExtensionFilter(String extension)
         {
-            if (extension != null)
-                extension = extension.toLowerCase();
+            extensions = new LinkedList<String>();
 
-            this.extension = extension;
+            if (extension != null)
+            {
+                extensions.add(extension.toLowerCase());
+            }
+        }
+
+        public CustomExtensionFilter(List<String> extensions)
+        {
+            this.extensions = new LinkedList<String>();
+
+            if(extensions != null)
+            {
+                for(String s : extensions)
+                {
+                    this.extensions.add(s.toLowerCase());
+                }
+            }
         }
 
         //Accept all directories and all files with specified extension.
         public boolean accept(File dir, String filename)
         {
             File f = new File(dir, filename);
-            if (f.isDirectory() || (extension == null || extension.isEmpty()))
+            if (f.isDirectory() || (extensions == null || extensions.isEmpty()))
             {
                 return true;
             }
@@ -35,13 +52,12 @@ public class CustomFileChooser extends FileChooserBase
             String ext = getExtension(f);
             if (ext != null)
             {
-                if (ext.equals(extension))
+                for(String s : extensions)
                 {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    if(ext.equals(s))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -67,22 +83,22 @@ public class CustomFileChooser extends FileChooserBase
         return showOpenDialog(parent, title, null);
     }
 
-    public static File showOpenDialog(Component parent, String title, String extension)
+    public static File showOpenDialog(Component parent, String title, List<String> extensions)
     {
-        File[] files = showOpenDialog(parent, title, extension, false);
+        File[] files = showOpenDialog(parent, title, extensions, false);
         if (files == null || files.length < 1)
             return null;
         else
             return files[0];
     }
 
-    public static File[] showOpenDialog(Component parent, String title, String extension, boolean multiSelectionEnabled)
+    public static File[] showOpenDialog(Component parent, String title, List<String> extensions, boolean multiSelectionEnabled)
     {
         FileDialog fc = new FileDialog(JOptionPane.getFrameForComponent(parent), title, FileDialog.LOAD);
         //fc.setAcceptAllFileFilterUsed(true);
         fc.setMultipleMode(multiSelectionEnabled);
-        if (extension != null)
-            fc.setFilenameFilter(new CustomExtensionFilter(extension));
+        if (extensions != null)
+            fc.setFilenameFilter(new CustomExtensionFilter(extensions));
         if (getLastDirectory() != null)
             fc.setDirectory(getLastDirectory().getAbsolutePath());
         fc.setVisible(true);

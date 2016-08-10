@@ -69,10 +69,10 @@ public class MainWindow extends JFrame
         menuBar.add(viewMenu);
 
         favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
-        viewMenu.add(new JSeparator());
-        viewMenu.add(favoritesMenu);
-        viewMenu.add(new JSeparator());
-        viewMenu.add(recentsMenu);
+        viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
+        viewMenu.add(favoritesMenu, viewMenu.getItemCount()-2);
+        viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
+        viewMenu.add(recentsMenu, viewMenu.getItemCount()-2);
 
         helpMenu = new HelpMenu(rootPanel);
         helpMenu.setMnemonic('H');

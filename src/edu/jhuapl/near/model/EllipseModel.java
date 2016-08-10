@@ -154,4 +154,9 @@ public class EllipseModel extends AbstractEllipsePolygonModel
     {
         return activationPolyData.GetNumberOfPoints();
     }
+    public void removeAllStructures()
+    {
+        super.removeAllStructures();
+        this.resetCircumferencePoints();
+    }
 }

@@ -4,6 +4,11 @@
 
 # Recent Changes
 
+### August 5, 2016
+
+-   DEMs with .fits, .FITS, .fit, and .FIT file extensions can now be loaded
+-   Name of DEM file now displayed in title of DEM view
+
 ### August 4, 2016
 
 -   Added "Show spacecraft position" checkbox to the lidar search panel.
