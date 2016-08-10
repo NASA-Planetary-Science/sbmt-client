@@ -318,6 +318,16 @@ public class NISSpectrum extends Model implements PropertyChangeListener
 //        return polyData;
 //    }
 
+    void shiftFootprintToHeight(double h)
+    {
+        vtkPolyData tmp = erosModel.computeFrustumIntersection(spacecraftPosition,
+                frustum1, frustum2, frustum3, frustum4);
+        shiftedFootprint.DeepCopy(tmp);
+        PolyDataUtil.shiftPolyDataInNormalDirection(shiftedFootprint,h);
+        ((vtkPolyDataMapper)footprintActor.GetMapper()).SetInputData(shiftedFootprint);
+        ((vtkPolyDataMapper)footprintActor.GetMapper()).Update();
+    }
+
     public List<vtkProp> getProps()
     {
         if (footprintActor == null && !latLons.isEmpty())

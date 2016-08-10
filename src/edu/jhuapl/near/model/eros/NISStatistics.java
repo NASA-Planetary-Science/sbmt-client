@@ -15,11 +15,13 @@ public class NISStatistics extends Model
     double minth,maxth;
 
     List<vtkProp> props=Lists.newArrayList();
+    List<NISSpectrum> spectra=Lists.newArrayList();
 
-    public NISStatistics(double[] th)
+    public NISStatistics(double[] th, List<NISSpectrum> spectra)
     {
         this.th=th;
         nFaces=th.length;
+        this.spectra=spectra;
 
         minth=Double.POSITIVE_INFINITY;
         maxth=Double.NEGATIVE_INFINITY;
@@ -56,6 +58,11 @@ public class NISStatistics extends Model
     public double getMaxTheta()
     {
         return maxth;
+    }
+
+    public List<NISSpectrum> getOriginalSpectra()
+    {
+        return spectra;
     }
 
 }

@@ -34,31 +34,58 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
     private Map<NISSpectrum, vtkActor> selectionActors=Maps.newHashMap();
     boolean selectAll=false;
 
-    double footprintDecimationFactor=0.1;
+    Map<NISSpectrum,Integer> ordinals=Maps.newHashMap();
+    final static int defaultOrdinal=0;
+    double totalShiftAmount=1;  // TODO: make this more meaningful
 
     public NISSpectraCollection(SmallBodyModel eros)
     {
         this.erosModel = eros;
     }
 
+    public void reshiftFootprints()
+    {
+        int minOrdinal=Integer.MAX_VALUE;
+        int maxOrdinal=Integer.MIN_VALUE;
+        for (int i :ordinals.values())
+        {
+            if (i<minOrdinal)
+                minOrdinal=i;
+            if (i>maxOrdinal)
+                maxOrdinal=i;
+        }
+        for (NISSpectrum spectrum : ordinals.keySet())
+        {
+            double unitShiftAmount=0;
+            if (maxOrdinal>minOrdinal)
+                unitShiftAmount=((double)ordinals.get(spectrum)-(double)minOrdinal)/((double)maxOrdinal-(double)minOrdinal);
+            spectrum.shiftFootprintToHeight(spectrum.getOffset()+unitShiftAmount*totalShiftAmount);
+/*            selectionActors.remove(spectrum);
+            selectionActors.put(spectrum, createSelectionActor(spectrum));
+            if (selectionActors.containsKey(spectrum))
+                selectionActors.get(spectrum).VisibilityOn();
+            else
+                selectionActors.get(spectrum).VisibilityOff();*/
+
+        }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+    }
+
+    public void setOrdinal(NISSpectrum spectrum, int ordinal)
+    {
+        if (ordinals.containsKey(spectrum))
+            ordinals.remove(spectrum);
+        ordinals.put(spectrum, ordinal);
+        reshiftFootprints();
+    }
+
     public void addSpectrum(String path) throws IOException
     {
-        if (fileToSpectrumMap.containsKey(path))
-            return;
+        addSpectrum(path,defaultOrdinal);
+    }
 
-        //NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);
-        NISSpectrum spectrum = new NISSpectrum(path, erosModel);
-
-        erosModel.addPropertyChangeListener(spectrum);
-        spectrum.addPropertyChangeListener(this);
-
-        fileToSpectrumMap.put(path, spectrum);
-        spectraActors.put(spectrum, new ArrayList<vtkProp>());
-
-        List<vtkProp> props = spectrum.getProps();
-
-        spectraActors.get(spectrum).addAll(props);
-
+    private vtkActor createSelectionActor(NISSpectrum spectrum)
+    {
         vtkFeatureEdges edgeFilter=new vtkFeatureEdges();
         edgeFilter.SetInputData(spectrum.getShiftedFootprint());
         edgeFilter.BoundaryEdgesOn();
@@ -75,6 +102,29 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         actor.GetProperty().EdgeVisibilityOn();
         actor.GetProperty().SetColor(1,0,0);
         actor.GetProperty().SetLineWidth(3);
+        return actor;
+    }
+
+    public void addSpectrum(String path, int ordinal) throws IOException
+    {
+        if (fileToSpectrumMap.containsKey(path))
+            return;
+
+        //NISSpectrum spectrum = NISSpectrum.NISSpectrumFactory.createSpectrum(path, erosModel);
+        NISSpectrum spectrum = new NISSpectrum(path, erosModel);
+        ordinals.put(spectrum, ordinal);
+
+        erosModel.addPropertyChangeListener(spectrum);
+        spectrum.addPropertyChangeListener(this);
+
+        fileToSpectrumMap.put(path, spectrum);
+        spectraActors.put(spectrum, new ArrayList<vtkProp>());
+
+        List<vtkProp> props = spectrum.getProps();
+
+        spectraActors.get(spectrum).addAll(props);
+
+        vtkActor actor=createSelectionActor(spectrum);
         selectionActors.put(spectrum, actor);
 
         for (vtkProp act : props)
@@ -104,6 +154,8 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
         spectrum.removePropertyChangeListener(this);
         erosModel.removePropertyChangeListener(spectrum);
         spectrum.setShowFrustum(false);
+
+        ordinals.remove(spectrum);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrum);
@@ -156,7 +208,6 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
             selectAll=false;
         }
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
-
     }
 
     public List<NISSpectrum> getSelectedSpectra()
@@ -167,6 +218,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
                 spectra.add(s);
         return spectra;
     }
+
 
     public List<vtkProp> getProps()
     {

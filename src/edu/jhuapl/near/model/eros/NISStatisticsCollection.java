@@ -20,6 +20,13 @@ public class NISStatisticsCollection extends Model implements PropertyChangeList
         this.stats.add(stats);
     }
 
+    public enum SpectrumOrdering
+    {
+        TH_MEAN,TH_VARIANCE,TH_SKEWNESS,TH_KURTOSIS;
+    }
+
+
+
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {

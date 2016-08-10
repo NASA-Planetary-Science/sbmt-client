@@ -28,7 +28,6 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NISStatistics;
-import edu.jhuapl.near.model.eros.NISStatisticsCollection;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
 
@@ -199,12 +198,20 @@ public class NISPopupMenu extends PopupMenu
                 }
             }
 
+            int cnt=0;
+            for (NISSpectrum spectrum : spectra)
+            {
+                model.setOrdinal(spectrum, cnt);
+                cnt++;
+            }
+
+
             double[] thArray=new double[th.size()];
             for (int i=0; i<thArray.length; i++)
                 thArray[i]=th.get(i);
-            NISStatistics stats=new NISStatistics(thArray);
-            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
-            statsModel.addStatistics(stats);
+            NISStatistics stats=new NISStatistics(thArray, spectra);
+            //NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+            //statsModel.addStatistics(stats);
 
             try
             {
