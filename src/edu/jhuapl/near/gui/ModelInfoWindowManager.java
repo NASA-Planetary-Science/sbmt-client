@@ -7,6 +7,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import edu.jhuapl.near.gui.eros.NISSpectrumInfoPanel;
+import edu.jhuapl.near.gui.eros.NISStatisticsInfoPanel;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
@@ -16,6 +17,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.model.eros.NISStatistics;
 import edu.jhuapl.near.util.Properties;
 
 public class ModelInfoWindowManager implements PropertyChangeListener
@@ -29,6 +31,7 @@ public class ModelInfoWindowManager implements PropertyChangeListener
     {
         this.modelManager = modelManager;
     }
+
     public void addData(final Model model) throws Exception
     {
         if (infoPanels.containsKey(model))
@@ -47,6 +50,8 @@ public class ModelInfoWindowManager implements PropertyChangeListener
             final Model collectionModel = infoPanel.getCollectionModel();
 
             model.addPropertyChangeListener(infoPanel);
+            System.out.println(collectionModel);
+
             collectionModel.addPropertyChangeListener(this);
 
             infoPanel.addWindowListener(new WindowAdapter()
@@ -94,6 +99,10 @@ public class ModelInfoWindowManager implements PropertyChangeListener
         else if (model instanceof NISSpectrum)
         {
             return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+        }
+        else if (model instanceof NISStatistics)
+        {
+            return new NISStatisticsInfoPanel((NISStatistics)model,modelManager);
         }
         else
         {

@@ -44,6 +44,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.eros.NISStatisticsCollection;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
@@ -361,6 +362,8 @@ public class View extends JPanel
         if (smallBodyConfig.hasSpectralData)
         {
             allModels.put(ModelNames.SPECTRA, ModelFactory.createSpectralModel(smallBodyModel));
+            if (smallBodyConfig.body == ShapeModelBody.EROS)
+                allModels.put(ModelNames.STATISTICS, new NISStatisticsCollection());
         }
 
         if (smallBodyConfig.hasLidarData)

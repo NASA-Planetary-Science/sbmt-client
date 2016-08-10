@@ -23,5 +23,6 @@ public enum ModelNames
     LIDAR_HYPERTREE_SEARCH,
     DEM_BOUNDARY,
     TRACKS,
-    DEM
+    DEM,
+    STATISTICS
 }
