@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -12,8 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
-import com.google.common.collect.Lists;
 
 import vtk.vtkActor;
 import vtk.vtkPolyData;
@@ -27,6 +24,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.model.eros.NISStatistics;
+import edu.jhuapl.near.model.eros.NISStatisticsCollection;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 
 
@@ -65,7 +64,7 @@ public class NISPopupMenu extends PopupMenu
 
         if (this.infoPanelManager != null)
         {
-            showSpectrumInfoMenuItem = new JMenuItem(new ShowInfoAction());
+            showSpectrumInfoMenuItem = new JMenuItem(new ShowSpectrumAction());
             showSpectrumInfoMenuItem.setText("Spectrum...");
             this.add(showSpectrumInfoMenuItem);
         }
@@ -144,7 +143,7 @@ public class NISPopupMenu extends PopupMenu
         }
     }
 
-    private class ShowInfoAction extends AbstractAction
+    private class ShowSpectrumAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
@@ -182,19 +181,31 @@ public class NISPopupMenu extends PopupMenu
             selectionFilter.Update();
 
             vtkPolyData selectedFaces=selectionFilter.GetOutput();
-            List<Double> costh=Lists.newArrayList();
+            double[] th=new double[selectedFaces.GetNumberOfCells()];
             for (int c=0; c<selectedFaces.GetNumberOfCells(); c++)
             {
                 vtkTriangle tri=(vtkTriangle)selectedFaces.GetCell(c);
                 double[] nml=new double[3];
                 new vtkTriangle().ComputeNormal(tri.GetPoints().GetPoint(0), tri.GetPoints().GetPoint(1), tri.GetPoints().GetPoint(2), nml);
-                costh.add(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize()));
+                th[c]=Math.acos(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize()));
             }
-            System.out.println(costh);
+
+            NISStatistics stats=new NISStatistics(th);
+            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+            statsModel.addStatistics(stats);
+            try
+            {
+                infoPanelManager.addData(stats);
+            }
+            catch (Exception e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
         }
 
     }
-
 
     private class CenterImageAction extends AbstractAction
     {
