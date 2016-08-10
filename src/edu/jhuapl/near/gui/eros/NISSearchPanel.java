@@ -10,8 +10,12 @@
  */
 package edu.jhuapl.near.gui.eros;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -25,24 +29,29 @@ import javax.swing.SpinnerDateModel;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import vtk.vtkActor;
 import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
+import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.query.eros.NisQuery;
 import edu.jhuapl.near.util.IdPair;
+import edu.jhuapl.near.util.Properties;
 
 
-public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
+public class NISSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
 {
     private final ModelManager modelManager;
     private final PickManager pickManager;
@@ -58,7 +67,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
     /** Creates new form NISSearchPanel */
     public NISSearchPanel(final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
-            final PickManager pickManager)
+            final PickManager pickManager, final Renderer renderer)
     {
         this.modelManager = modelManager;
         this.pickManager = pickManager;
@@ -68,6 +77,9 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         initComponents();
 
         postInitComponents();
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+        renderer.addKeyListener(this);
     }
 
 // TODO make this class abstract with these abstract functions. Subclasses will
@@ -186,6 +198,31 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
         }
     }
 
+
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        if (e.getKeyChar()=='a')
+        {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            model.toggleSelectAll();
+        }
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
     private void showNISFootprints(IdPair idPair)
     {
         int startId = idPair.id1;
@@ -278,6 +315,53 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
                     new double[]{redMaxVal, greenMaxVal, blueMaxVal});
         }
     }
+
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            PickEvent e = (PickEvent)evt.getNewValue();
+            Model model = modelManager.getModel(e.getPickedProp());
+            if (model instanceof NISSpectraCollection)
+            {
+                NISSpectraCollection coll=(NISSpectraCollection)model;
+                MouseEvent event=e.getMouseEvent();
+                if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
+                {
+                    String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                    coll.toggleSelect(coll.getSpectrum(name));
+                }
+
+/*                int idx = -1;
+                int size = imageRawResults.size();
+                for (int i=0; i<size; ++i)
+                {
+                    // Ignore extension (The name returned from getImageName or getBoundary
+                    // is the same as the first element of each list with the imageRawResults
+                    // but without the extension).
+                    String imagePath = imageRawResults.get(i).get(0);
+                    imagePath = imagePath.substring(0, imagePath.lastIndexOf("."));
+                    if (name.equals(imagePath))
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+
+                if (idx >= 0)
+                {
+                    resultList.setRowSelectionInterval(idx, idx);
+                    Rectangle cellBounds = resultList.getCellRect(idx, 0, true);
+                    if (cellBounds != null)
+                        resultList.scrollRectToVisible(cellBounds);
+                }*/
+            }
+        }
+
+    }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -1522,4 +1606,5 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener
     private javax.swing.JLabel toPhaseLabel;
     private javax.swing.JFormattedTextField toPhaseTextField;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -11,6 +12,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
+import com.google.common.collect.Lists;
 
 import vtk.vtkActor;
 import vtk.vtkPolyData;
@@ -170,29 +173,39 @@ public class NISPopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent e)
         {
             NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            NISSpectrum spectrum=model.getSpectrum(currentSpectrum);
-            Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
-            Vector3D frustCenter=new Vector3D(spectrum.getFrustumCenter());
-            vtkPolyData footPrint=spectrum.getShiftedFootprint();
-
-            vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
-            selectionFilter.SetInputData(modelManager.getSmallBodyModel().getSmallBodyPolyData());
-            selectionFilter.SetLoop(footPrint.GetPoints());
-            selectionFilter.Update();
-
-            vtkPolyData selectedFaces=selectionFilter.GetOutput();
-            double[] th=new double[selectedFaces.GetNumberOfCells()];
-            for (int c=0; c<selectedFaces.GetNumberOfCells(); c++)
+            List<NISSpectrum> spectra=model.getSelectedSpectra();
+            if (spectra.size()==0)
+                spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
+            //
+            List<Double> th=Lists.newArrayList();   // TODO: should keep references to spectra, too
+            for (NISSpectrum spectrum : spectra)
             {
-                vtkTriangle tri=(vtkTriangle)selectedFaces.GetCell(c);
-                double[] nml=new double[3];
-                new vtkTriangle().ComputeNormal(tri.GetPoints().GetPoint(0), tri.GetPoints().GetPoint(1), tri.GetPoints().GetPoint(2), nml);
-                th[c]=Math.acos(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize()));
+                Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
+                Vector3D frustCenter=new Vector3D(spectrum.getFrustumCenter());
+                vtkPolyData footPrint=spectrum.getShiftedFootprint();
+
+                vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
+                selectionFilter.SetInputData(modelManager.getSmallBodyModel().getSmallBodyPolyData());
+                selectionFilter.SetLoop(footPrint.GetPoints());
+                selectionFilter.Update();
+
+                vtkPolyData selectedFaces=selectionFilter.GetOutput();
+                for (int c=0; c<selectedFaces.GetNumberOfCells(); c++)
+                {
+                    vtkTriangle tri=(vtkTriangle)selectedFaces.GetCell(c);
+                    double[] nml=new double[3];
+                    new vtkTriangle().ComputeNormal(tri.GetPoints().GetPoint(0), tri.GetPoints().GetPoint(1), tri.GetPoints().GetPoint(2), nml);
+                    th.add(Math.acos(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize())));
+                }
             }
 
-            NISStatistics stats=new NISStatistics(th);
+            double[] thArray=new double[th.size()];
+            for (int i=0; i<thArray.length; i++)
+                thArray[i]=th.get(i);
+            NISStatistics stats=new NISStatistics(thArray);
             NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
             statsModel.addStatistics(stats);
+
             try
             {
                 infoPanelManager.addData(stats);

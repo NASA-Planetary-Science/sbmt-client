@@ -207,7 +207,7 @@ public class DefaultPicker extends Picker
             if (pickSucceeded == 1)
             {
                 double[] p = smallBodyCellPicker.GetPickPosition();
-                System.out.println(p[0] + " " + p[1] + " " + p[2]);
+                
             }
         }
     }

@@ -6,7 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import vtk.vtkActor;
+import vtk.vtkFeatureEdges;
+import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Model;
@@ -23,6 +30,11 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
     private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
     private SmallBodyModel erosModel;
+
+    private Map<NISSpectrum, vtkActor> selectionActors=Maps.newHashMap();
+    boolean selectAll=false;
+
+    double footprintDecimationFactor=0.1;
 
     public NISSpectraCollection(SmallBodyModel eros)
     {
@@ -47,10 +59,29 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
 
         spectraActors.get(spectrum).addAll(props);
 
+        vtkFeatureEdges edgeFilter=new vtkFeatureEdges();
+        edgeFilter.SetInputData(spectrum.getShiftedFootprint());
+        edgeFilter.BoundaryEdgesOn();
+        edgeFilter.FeatureEdgesOff();
+        edgeFilter.ManifoldEdgesOff();
+        edgeFilter.NonManifoldEdgesOff();
+        edgeFilter.Update();
+        vtkPolyDataMapper mapper=new vtkPolyDataMapper();
+        mapper.SetInputData(edgeFilter.GetOutput());
+        mapper.Update();
+        vtkActor actor=new vtkActor();
+        actor.SetMapper(mapper);
+        actor.VisibilityOff();
+        actor.GetProperty().EdgeVisibilityOn();
+        actor.GetProperty().SetColor(1,0,0);
+        actor.GetProperty().SetLineWidth(3);
+        selectionActors.put(spectrum, actor);
+
         for (vtkProp act : props)
             actorToFileMap.put(act, path);
 
         allActors.addAll(props);
+        allActors.add(actor);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
@@ -66,6 +97,7 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
             actorToFileMap.remove(act);
 
         spectraActors.remove(spectrum);
+        selectionActors.remove(spectrum);
 
         fileToSpectrumMap.remove(path);
 
@@ -84,6 +116,58 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
             removeSpectrum(path);
     }
 
+    public void toggleSelect(NISSpectrum spectrum)
+    {
+        boolean selected=selectionActors.get(spectrum).GetVisibility()==1;
+        if (selected)
+            selectionActors.get(spectrum).VisibilityOff();
+        else
+            selectionActors.get(spectrum).VisibilityOn();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        selectAll=false;
+    }
+
+    public void select(NISSpectrum spectrum)
+    {
+        selectionActors.get(spectrum).VisibilityOn();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        selectAll=false;
+    }
+
+    public void deselect(NISSpectrum spectrum)
+    {
+        selectionActors.get(spectrum).VisibilityOff();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        selectAll=false;
+    }
+
+    public void toggleSelectAll()
+    {
+        if (!selectAll) // we're not in "select all" mode so go ahead and select all actors
+        {
+            for (vtkActor actor : selectionActors.values())
+                actor.VisibilityOn();
+            selectAll=true;
+        }
+        else
+        {
+            for (vtkActor actor : selectionActors.values())
+                actor.VisibilityOff();
+            selectAll=false;
+        }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+
+    }
+
+    public List<NISSpectrum> getSelectedSpectra()
+    {
+        List<NISSpectrum> spectra=Lists.newArrayList();
+        for (NISSpectrum s : selectionActors.keySet())
+            if (selectionActors.get(s).GetVisibility()==1)
+                spectra.add(s);
+        return spectra;
+    }
+
     public List<vtkProp> getProps()
     {
         return allActors;
@@ -98,6 +182,8 @@ public class NISSpectraCollection extends Model implements PropertyChangeListene
     {
         String filename = actorToFileMap.get(prop);
         NISSpectrum spectrum = this.fileToSpectrumMap.get(filename);
+        if (spectrum==null)
+            return "";
         return "NIS Spectrum " + filename.substring(16, 25) + " acquired at " + spectrum.getDateTime().toString();
     }
 

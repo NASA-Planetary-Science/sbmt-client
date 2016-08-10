@@ -46,7 +46,7 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         double[] th=stats.getTheta();
         double minth=stats.getMinTheta();
         double maxth=stats.getMaxTheta();
-        int nBins=(int)((double)Math.ceil(stats.getNumberOfFaces())/3.);
+        int nBins=Math.max(10, (int)((double)Math.ceil(stats.getNumberOfFaces())/3.));
         dataset.addSeries("Frustum-face incidence angle",th, nBins, minth, maxth);
         //
         JFreeChart chart=ChartFactory.createHistogram("Incidence histogram", "Theta", "# Faces", dataset, PlotOrientation.VERTICAL, true, true, false);

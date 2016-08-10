@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -19,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+
+import com.google.common.collect.Lists;
 
 import vtk.vtkAxesActor;
 import vtk.vtkBMPWriter;
@@ -190,9 +194,26 @@ public class Renderer extends JPanel implements
 
     }
 
+    List<KeyListener> listeners=Lists.newArrayList();
+
+    @Override
+    public synchronized void addKeyListener(KeyListener l)
+    {
+        listeners.add(l);
+    }
+
     void localKeypressHandler() // this prioritizes key presses from the main canvas and if none exist then it handles any key presses from the mirror canvas
     // TODO: clean up logic here
     {
+        for (KeyListener listener : listeners)
+        {
+            int shiftDown=mainCanvas.getRenderWindowInteractor().GetShiftKey();
+            int altDown=mainCanvas.getRenderWindowInteractor().GetAltKey();
+            int ctrlDown=mainCanvas.getRenderWindowInteractor().GetControlKey();
+            int modifiers=(KeyEvent.SHIFT_DOWN_MASK*shiftDown) | (KeyEvent.ALT_DOWN_MASK*altDown) | (KeyEvent.CTRL_DOWN_MASK*ctrlDown);
+            listener.keyPressed(new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, mainCanvas.getRenderWindowInteractor().GetKeyCode(), mainCanvas.getRenderWindowInteractor().GetKeyCode()));
+        }
+
         char ch=mainCanvas.getRenderWindowInteractor().GetKeyCode();    // check main window for keypress
         if (ch=='0')    // this means no key was hit in the main window (not sure why it matches key '0' but whatever)
         {
@@ -227,6 +248,8 @@ public class Renderer extends JPanel implements
             else if (ch=='>')
                 mirrorCanvas.increaseEyeSeparation();
         }*/
+
+
     }
 
     void toggleMirrorFrame()

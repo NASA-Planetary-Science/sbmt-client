@@ -157,7 +157,7 @@ public class View extends JPanel
 
         if (smallBodyConfig.hasSpectralData)
         {
-            JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager);
+            JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
             controlPanel.addTab(Instrument.NIS.toString(), component);
         }
 
