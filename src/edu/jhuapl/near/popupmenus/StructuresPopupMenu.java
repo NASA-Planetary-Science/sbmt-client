@@ -35,6 +35,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem centerStructureMenuItem;
     private JMenuItem centerStructurePreserveDistanceMenuItem;
     private JMenuItem displayInteriorMenuItem;
+    private JMenuItem setLabelButton;
+    private JMenuItem showLabelButton;
+
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
@@ -60,6 +63,14 @@ abstract public class StructuresPopupMenu extends PopupMenu
         hideMenuItem = new JCheckBoxMenuItem(new ShowHideAction());
         hideMenuItem.setText("Hide");
         this.add(hideMenuItem);
+
+        setLabelButton = new JMenuItem(new SetLabelAction());
+        setLabelButton.setText("Set Label");
+        this.add(setLabelButton);
+
+        showLabelButton = new JMenuItem(new ShowLabelAction());
+        showLabelButton.setText("Show Label");
+        this.add(showLabelButton);
 
         JMenuItem deleteAction = new JMenuItem(new DeleteAction());
         deleteAction.setText("Delete");
@@ -304,6 +315,44 @@ abstract public class StructuresPopupMenu extends PopupMenu
                     e1.printStackTrace();
                 }
             }
+        }
+    }
+
+    public void updateLabel(String label, int row)
+    {
+        model.setStructureLabel(row, label);
+    }
+
+    protected class SetLabelAction extends AbstractAction
+    {
+        public SetLabelAction()
+        {
+            super("Set Label");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures[0] == -1)
+                return;
+            String option = JOptionPane.showInputDialog("How do you wish to name the structure? Leave blank for default.");
+            for (int idx : selectedStructures)
+                model.setStructureLabel(idx, option);
+
+        }
+    }
+
+    protected class ShowLabelAction extends AbstractAction
+    {
+        public ShowLabelAction()
+        {
+            super("Show Label");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            for (int idx : selectedStructures)
+                model.showLabel(idx);
+            //showLabelButton.
         }
     }
 
