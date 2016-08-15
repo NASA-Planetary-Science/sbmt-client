@@ -1182,6 +1182,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             if (pol.hidden == b)
             {
+                actors.get(pol.getLabelID()).VisibilityOn();
                 pol.hidden = !b;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
                 needToUpdate = true;
@@ -1212,6 +1213,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             EllipsePolygon pol = polygons.get(polygonIds[i]);
             if (pol.hidden != hidden)
             {
+                actors.get(pol.getLabelID()).VisibilityOff();
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
@@ -1271,10 +1273,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 return;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
-            v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
+            v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
-            v.VisibilityOff();
+            v.VisibilityOn();
             v.BorderOff();
             v.GetCaptionTextProperty().SetFontSize(-100);
             v.ThreeDimensionalLeaderOn();

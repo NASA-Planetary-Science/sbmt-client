@@ -1327,10 +1327,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 return;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
-            v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
+            v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
-            v.VisibilityOff();
+            v.VisibilityOn();
             v.BorderOff();
             v.GetCaptionTextProperty().SetFontSize(-100);
             v.ThreeDimensionalLeaderOn();
