@@ -568,13 +568,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void removeStructure(int cellId)
     {
-        lines.remove(cellId);
-
-        updatePolyData();
-
         int id =lines.get(cellId).labelId;
         if(id!=-1)
             actors.remove(id);
+
+        lines.remove(cellId);
+
+        updatePolyData();
 
         if (hasProfileMode())
             updateLineActivation();
@@ -595,6 +595,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         Arrays.sort(indices);
         for (int i=indices.length-1; i>=0; --i)
         {
+            int id =lines.get(indices[i]).labelId;
+            if(id!=-1)
+                actors.remove(id);
             lines.remove(indices[i]);
             this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, indices[i]);
         }
@@ -613,6 +616,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public void removeAllStructures()
     {
         lines.clear();
+
+        for(int i =0;i<actors.size();i++)
+        {
+            if(actors.get(i) instanceof vtkCaptionActor2D)
+            {
+                actors.remove(i);
+                i--;
+            }
+
+        }
 
         updatePolyData();
 
