@@ -1213,7 +1213,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             EllipsePolygon pol = polygons.get(polygonIds[i]);
             if (pol.hidden != hidden)
             {
-                actors.get(pol.getLabelID()).VisibilityOff();
+                vtkProp a = actors.get(polygons.get(i).getLabelID());
+                a.SetVisibility(1-a.GetVisibility());
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
@@ -1250,7 +1251,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
 
     @Override
-    public void setStructureLabel(int idx, String label)
+    public boolean setStructureLabel(int idx, String label)
     {
         polygons.get(idx).setLabel(label);
         if(polygons.get(idx).editingLabel)
@@ -1270,7 +1271,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             if(label==null||label.equals(""))
             {
-                return;
+                return true;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
             v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
@@ -1294,6 +1295,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, idx);
+        return true;
     }
 
     public void showLabel(int index)

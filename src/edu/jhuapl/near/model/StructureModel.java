@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import vtk.vtkCaptionActor2D;
 import vtk.vtkProp;
 
 
@@ -59,7 +58,7 @@ public abstract class StructureModel extends Model
 
     public abstract void setStructureColor(int idx, int[] color);
 
-    public abstract void setStructureLabel(int idx, String label);
+    public abstract boolean setStructureLabel(int idx, String label);
 
     public abstract double getLineWidth();
 

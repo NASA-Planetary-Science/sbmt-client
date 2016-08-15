@@ -608,7 +608,12 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             if (label != null && !label.equals(structure.getLabel()))
             {
                 structure.setLabel(label);
-                structuresPopupMenu.updateLabel(label, row);
+                boolean empty = structuresPopupMenu.updateLabel(label, row);
+                if(!empty)
+                {
+                    label="";
+                    structuresTable.setValueAt("",row, col);
+                }
             }
         }
     }

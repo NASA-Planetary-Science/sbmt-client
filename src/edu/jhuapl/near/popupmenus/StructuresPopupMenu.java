@@ -318,9 +318,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
         }
     }
 
-    public void updateLabel(String label, int row)
+    public boolean updateLabel(String label, int row)
     {
-        model.setStructureLabel(row, label);
+        return model.setStructureLabel(row, label);
     }
 
     protected class SetLabelAction extends AbstractAction

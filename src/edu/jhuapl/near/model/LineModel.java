@@ -572,6 +572,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
         updatePolyData();
 
+        int id =lines.get(cellId).labelId;
+        if(id!=-1)
+            actors.remove(id);
+
         if (hasProfileMode())
             updateLineActivation();
 
@@ -1245,6 +1249,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         {
             if (line.hidden == b)
             {
+                actors.get(line.labelId).VisibilityOn();
                 line.hidden = !b;
                 needToUpdate = true;
             }
@@ -1265,6 +1270,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         for (int i=0; i<lineIds.length; ++i)
         {
+            vtkProp a = actors.get(lines.get(i).labelId);
+            a.SetVisibility(1-a.GetVisibility());
             Line line = lines.get(lineIds[i]);
             line.hidden = hidden;
         }
@@ -1304,8 +1311,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     }
 
     @Override
-    public void setStructureLabel(int idx, String label)
+    public boolean setStructureLabel(int idx, String label)
     {
+        if(lines.get(idx).xyzPointList.isEmpty())
+            return false;
         lines.get(idx).setLabel(label);
         if(lines.get(idx).editingLabel)
         {
@@ -1324,7 +1333,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         {
             if(label==null||label.equals(""))
             {
-                return;
+                return true;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
             v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
@@ -1348,6 +1357,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         }
         updatePolyData();
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, idx);
+        return true;
     }
 
     public void showLabel(int index)
