@@ -35,6 +35,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem centerStructureMenuItem;
     private JMenuItem centerStructurePreserveDistanceMenuItem;
     private JMenuItem displayInteriorMenuItem;
+    private JMenuItem setLabelButton;
     private JMenuItem showLabelButton;
 
     private JCheckBoxMenuItem hideMenuItem;
@@ -62,6 +63,10 @@ abstract public class StructuresPopupMenu extends PopupMenu
         hideMenuItem = new JCheckBoxMenuItem(new ShowHideAction());
         hideMenuItem.setText("Hide");
         this.add(hideMenuItem);
+
+        setLabelButton = new JMenuItem(new SetLabelAction());
+        setLabelButton.setText("Edit Label Text");
+        this.add(setLabelButton);
 
         showLabelButton = new JMenuItem(new ShowLabelAction());
         showLabelButton.setText("Show Label");
@@ -318,7 +323,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         model.setStructureLabel(row, label);
     }
 
-    /*protected class SetLabelAction extends AbstractAction
+    protected class SetLabelAction extends AbstractAction
     {
         public SetLabelAction()
         {
@@ -329,12 +334,12 @@ abstract public class StructuresPopupMenu extends PopupMenu
             int[] selectedStructures = model.getSelectedStructures();
             if (selectedStructures[0] == -1)
                 return;
-            String option = JOptionPane.showInputDialog("How do you wish to name the structure? Leave blank for default.");
+            String option = JOptionPane.showInputDialog("Enter structure label text. Leave blank to remove label.");
             for (int idx : selectedStructures)
                 model.setStructureLabel(idx, option);
 
         }
-    }*/
+    }
 
     protected class ShowLabelAction extends AbstractAction
     {
