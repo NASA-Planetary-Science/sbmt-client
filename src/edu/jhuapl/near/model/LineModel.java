@@ -1329,6 +1329,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         if(lines.get(idx).xyzPointList.isEmpty())
             return false;
         lines.get(idx).setLabel(label);
+        int numLetters = label.length();
         if(lines.get(idx).editingLabel)
         {
             if(label==null||label.equals(""))
@@ -1340,6 +1341,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 int l=lines.get(idx).labelId;
                 vtkProp prop = actors.get(l);
                 ((vtkCaptionActor2D)prop).SetCaption(label);
+                ((vtkCaptionActor2D)prop).SetPosition2(0.04, numLetters*0.02);
             }
         }
         else
@@ -1360,7 +1362,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             {
                 v.SetAttachmentPoint(lines.get(index).getCentroid());
                 v.SetPosition(0, 0);
-                v.SetPosition2(0.04, 0.06);
+                v.SetPosition2(0.04, numLetters*0.02);
                 v.SetCaption(lines.get(index).getLabel());
                 actors.add(v);
                 lines.get(index).labelId=(actors.size()-1);

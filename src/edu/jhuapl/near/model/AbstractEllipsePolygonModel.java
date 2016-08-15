@@ -1254,6 +1254,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     public boolean setStructureLabel(int idx, String label)
     {
         polygons.get(idx).setLabel(label);
+        int numLetters = label.length();
         if(polygons.get(idx).editingLabel)
         {
             if(label==null||label.equals(""))
@@ -1265,6 +1266,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 int l=polygons.get(idx).getLabelID();
                 vtkProp prop = actors.get(l);
                 ((vtkCaptionActor2D)prop).SetCaption(label);
+                ((vtkCaptionActor2D)prop).SetPosition2(0.04, numLetters*0.02);
             }
         }
         else
@@ -1285,7 +1287,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             {
                 v.SetAttachmentPoint(polygons.get(index).center);
                 v.SetPosition(0, 0);
-                v.SetPosition2(0.04, 0.06);
+                v.SetPosition2(0.04, numLetters*0.02);
                 v.SetCaption(polygons.get(index).getLabel());
                 actors.add(v);
                 polygons.get(index).setLabelID(actors.size()-1);
