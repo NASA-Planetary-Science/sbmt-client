@@ -36,7 +36,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem centerStructurePreserveDistanceMenuItem;
     private JMenuItem displayInteriorMenuItem;
     private JMenuItem setLabelButton;
-    private JMenuItem showLabelButton;
+    private JCheckBoxMenuItem showLabelButton;
 
     private JCheckBoxMenuItem hideMenuItem;
 
@@ -68,7 +68,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         setLabelButton.setText("Edit Label Text");
         this.add(setLabelButton);
 
-        showLabelButton = new JMenuItem(new ShowLabelAction());
+        showLabelButton = new JCheckBoxMenuItem(new ShowLabelAction());
         showLabelButton.setText("Show Label");
         this.add(showLabelButton);
 
@@ -345,7 +345,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public ShowLabelAction()
         {
-            super("Show Label");
+            super("Hide Label");
         }
         public void actionPerformed(ActionEvent e)
         {

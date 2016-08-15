@@ -1351,7 +1351,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 return true;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
-            v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
+            v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
             v.VisibilityOn();
@@ -1362,7 +1362,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             {
                 v.SetAttachmentPoint(lines.get(index).getCentroid());
                 v.SetPosition(0, 0);
-                v.SetPosition2(0.04, numLetters*0.02);
+                v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
                 v.SetCaption(lines.get(index).getLabel());
                 actors.add(v);
                 lines.get(index).labelId=(actors.size()-1);

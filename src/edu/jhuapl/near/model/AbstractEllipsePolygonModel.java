@@ -1276,7 +1276,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 return true;
             }
             vtkCaptionActor2D v = new vtkCaptionActor2D();
-            v.GetCaptionTextProperty().SetColor(1.0, 0.1, 0.2);
+            v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
             v.VisibilityOn();
@@ -1287,7 +1287,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             {
                 v.SetAttachmentPoint(polygons.get(index).center);
                 v.SetPosition(0, 0);
-                v.SetPosition2(0.04, numLetters*0.02);
+                v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);;
                 v.SetCaption(polygons.get(index).getLabel());
                 actors.add(v);
                 polygons.get(index).setLabelID(actors.size()-1);
