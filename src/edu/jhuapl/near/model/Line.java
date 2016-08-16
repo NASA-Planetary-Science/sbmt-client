@@ -169,7 +169,7 @@ public class Line extends StructureModel.Structure
 
             controlPointIds.add(xyzPointList.size());
 
-            // Note, this point will be replaced with the correct value
+            // Note, this point will be replaced with the correct values
             // when we call updateSegment
             double[] dummy = {0.0, 0.0, 0.0};
             xyzPointList.add(new Point3D(dummy));

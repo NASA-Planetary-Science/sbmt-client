@@ -1396,7 +1396,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         for (int index : selectedStructures)
         {
-            vtkCaptionActor2D v =lines.get(index).caption;
+            vtkCaptionActor2D v =lines.get(index).caption;s
             v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
         }
     }*/

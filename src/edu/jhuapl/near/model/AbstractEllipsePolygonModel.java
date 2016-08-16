@@ -1345,7 +1345,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
     }
 
-   /* public void colorLabel(int[] colors)
+   /*a public void colorLabel(int[] colors)
     {
         for (int index : selectedStructures)
         {

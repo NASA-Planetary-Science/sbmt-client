@@ -439,7 +439,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         @Override
         public void actionPerformed(ActionEvent e)
         {
-
+               return;
         }
     }
 
