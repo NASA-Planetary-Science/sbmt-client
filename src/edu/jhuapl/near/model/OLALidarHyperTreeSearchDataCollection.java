@@ -161,7 +161,6 @@ public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollec
                 // Sort points in time order
                 Collections.sort(originalPoints);
 
-
                 System.out.println("Sorting Time="+sw.elapsedMillis()+" ms");
                 sw.reset();
                 sw.start();
