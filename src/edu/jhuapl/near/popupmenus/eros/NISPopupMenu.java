@@ -71,12 +71,13 @@ public class NISPopupMenu extends PopupMenu
             this.add(showSpectrumInfoMenuItem);
         }
 
-        if (this.infoPanelManager != null)
+    /*    if (this.infoPanelManager != null)
         {
             showStatisticsMenuItem=new JMenuItem(new ShowStatisticsAction());
             showStatisticsMenuItem.setText("Statistics...");
             this.add(showStatisticsMenuItem);
-        }
+        }*/
+        // XXX: IN-PROGRESS NIS STATISTICS FUNCTIONALITY IS TEMPORARILY DISABLED FOR RELEASE OF OLA BUGFIXES - SEE nisStats BRANCH
 
         centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
         centerSpectrumMenuItem.setText("Center in Window");

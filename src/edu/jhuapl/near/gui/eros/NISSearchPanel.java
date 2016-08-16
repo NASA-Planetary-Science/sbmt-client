@@ -79,7 +79,9 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         postInitComponents();
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
-        renderer.addKeyListener(this);
+        //renderer.addKeyListener(this);
+        // XXX: IN-PROGRESS NIS STATISTICS FUNCTIONALITY IS TEMPORARILY DISABLED FOR RELEASE OF OLA BUGFIXES - SEE nisStats BRANCH
+
     }
 
 // TODO make this class abstract with these abstract functions. Subclasses will
