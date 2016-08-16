@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -37,7 +38,11 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem displayInteriorMenuItem;
     private JMenuItem setLabelButton;
     private JCheckBoxMenuItem showLabelButton;
-
+    private JMenu labelProperties;
+    //private JMenuItem changeFontButton;
+    //private JMenuItem changeLabelColorButton;
+    //private JMenuItem changeLabelSize;
+    private JMenuItem setLabelBorder;
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
@@ -69,8 +74,29 @@ abstract public class StructuresPopupMenu extends PopupMenu
         this.add(setLabelButton);
 
         showLabelButton = new JCheckBoxMenuItem(new ShowLabelAction());
-        showLabelButton.setText("Show Label");
+        showLabelButton.setText("Hide Label");
         this.add(showLabelButton);
+
+        labelProperties= new JMenu();
+        labelProperties.setText("Edit Label Properties...");
+        this.add(labelProperties);
+
+        /*changeFontButton= new JMenuItem(new changeFontAction());
+        changeFontButton.setText("Change Font");
+        labelProperties.add(changeFontButton);
+
+        changeLabelColorButton= new JMenuItem(new changeLabelColorAction());
+        changeLabelColorButton.setText("Change Label Color");
+        labelProperties.add(changeLabelColorButton);
+
+        changeLabelSize = new JMenuItem(new changeLabelSizeAction());
+        changeLabelSize.setText("Change Label Size");
+        labelProperties.add(changeLabelSize);*/
+
+        setLabelBorder = new JMenuItem(new showLabelBorderAction());
+        setLabelBorder.setText("Show the label border");
+        labelProperties.add(setLabelBorder);
+
 
         JMenuItem deleteAction = new JMenuItem(new DeleteAction());
         deleteAction.setText("Delete");
@@ -356,6 +382,48 @@ abstract public class StructuresPopupMenu extends PopupMenu
         }
     }
 
+    protected class changeFontAction extends AbstractAction
+    {
+        public changeFontAction()
+        {
+            super("Change Font");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+
+        }
+    }
+
+    protected class changeLabelColorAction extends AbstractAction
+    {
+        public changeLabelColorAction()
+        {
+            super("Change Label Color");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+                return;
+
+            // Use the color of the first item as the default to show
+            Color color = ColorChooser.showColorChooser(
+                    getInvoker(),
+                    model.getStructure(selectedStructures[0]).getColor());
+
+            if (color == null)
+                return;
+
+            int[] c = new int[4];
+            c[0] = color.getRed();
+            c[1] = color.getGreen();
+            c[2] = color.getBlue();
+            c[3] = color.getAlpha();
+            //model.colorLabel(c);
+
+        }
+    }
+
     protected class DisplayInteriorAction extends AbstractAction
     {
         @Override
@@ -363,6 +431,23 @@ abstract public class StructuresPopupMenu extends PopupMenu
         {
             int[] selectedStructures = model.getSelectedStructures();
             model.setShowStructuresInterior(selectedStructures, displayInteriorMenuItem.isSelected());
+        }
+    }
+
+    protected class changeLabelSizeAction extends AbstractAction
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+
+        }
+    }
+
+    protected class showLabelBorderAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            model.showBorders();
         }
     }
 }

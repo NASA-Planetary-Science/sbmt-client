@@ -85,6 +85,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public int id;
         public String label = "";
         public int label_id=-1;
+        public vtkCaptionActor2D caption;
 
         public double[] center;
         public double radius; // or semimajor axis
@@ -474,9 +475,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void removeStructure(int polygonId)
     {
-        int id =polygons.get(polygonId).getLabelID();
-        if(id!=-1)
-            actors.remove(id);
+        if(polygons.get(polygonId).caption!=null) polygons.get(polygonId).caption.VisibilityOff();
+        polygons.get(polygonId).setLabelID(-1);
+        polygons.get(polygonId).caption=null;
         polygons.remove(polygonId);
         updatePolyData();
 
@@ -492,9 +493,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         Arrays.sort(polygonIds);
         for (int i=polygonIds.length-1; i>=0; --i)
         {
-            int id =polygons.get(i).getLabelID();
-            if(id!=-1)
-                actors.remove(id);
+            if(polygons.get(polygonIds[i]).caption!=null) polygons.get(polygonIds[i]).caption.VisibilityOff();
+            polygons.get(polygonIds[i]).setLabelID(-1);
+            polygons.get(polygonIds[i]).caption=null;
             polygons.remove(polygonIds[i]);
             this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, polygonIds[i]);
         }
@@ -506,17 +507,14 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void removeAllStructures()
     {
+        for(int i =0;i<polygons.size();i++)
+        {
+            if(polygons.get(i).caption!=null) polygons.get(i).caption.VisibilityOff();
+            polygons.get(i).setLabelID(-1);
+            polygons.get(i).caption=null;
+        }
         polygons.clear();
 
-        for(int i =0;i<actors.size();i++)
-        {
-            if(actors.get(i) instanceof vtkCaptionActor2D)
-            {
-                actors.remove(i);
-                i--;
-            }
-
-        }
         updatePolyData();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
@@ -757,7 +755,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     public void loadModel(File file, boolean append) throws IOException
     {
         ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-
+        ArrayList<String> labels= new ArrayList<String>();
         ArrayList<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
         for (int i=0; i<lines.size(); ++i)
         {
@@ -828,18 +826,35 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 }
             }
 
-            if(words[words.length-1].substring(0, 2).equals("l:"))
-                pol.label=words[words.length-1].substring(2);
+
 
             pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             newPolygons.add(pol);
+            if(words[words.length-1].substring(0, 2).equals("l:"))
+            {
+                pol.label=words[words.length-1].substring(2);
+                labels.add(pol.label);
+            }
         }
 
         // Only if we reach here and no exception is thrown do we modify this class
         if (append)
+        {
+            int init = polygons.size()-1;
             polygons.addAll(newPolygons);
+            for(int i=init;i<init+labels.size();i++)
+            {
+                setStructureLabel(i, labels.get(i-init));
+            }
+        }
         else
+        {
             polygons = newPolygons;
+            for(int i=0;i<labels.size();i++)
+            {
+                setStructureLabel(i, labels.get(i));
+            }
+        }
 
         updatePolyData();
 
@@ -1182,7 +1197,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             if (pol.hidden == b)
             {
-                actors.get(pol.getLabelID()).VisibilityOn();
+                if(pol.caption!=null)
+                    pol.caption.VisibilityOn();
                 pol.hidden = !b;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
                 needToUpdate = true;
@@ -1213,8 +1229,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             EllipsePolygon pol = polygons.get(polygonIds[i]);
             if (pol.hidden != hidden)
             {
-                vtkProp a = actors.get(polygons.get(i).getLabelID());
-                a.SetVisibility(1-a.GetVisibility());
+                if(pol.caption!=null)
+                    pol.caption.SetVisibility(1-pol.caption.GetVisibility());
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
@@ -1259,14 +1275,22 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             if(label==null||label.equals(""))
             {
-                actors.get(polygons.get(idx).getLabelID()).VisibilityOff();
+                polygons.get(idx).caption.VisibilityOff();
+                for(int i=0; i<actors.size();i++)
+                {
+                    if(polygons.get(idx).caption==actors.get(i))
+                    {
+                        actors.remove(i);
+                        i--;
+                    }
+                }
+                polygons.get(idx).editingLabel=false;
+                polygons.get(idx).setLabelID(-1);
+                polygons.get(idx).caption=null;
             }
             else
             {
-                int l=polygons.get(idx).getLabelID();
-                vtkProp prop = actors.get(l);
-                ((vtkCaptionActor2D)prop).SetCaption(label);
-                ((vtkCaptionActor2D)prop).SetPosition2(0.04, numLetters*0.02);
+                polygons.get(idx).caption.SetCaption(label);
             }
         }
         else
@@ -1281,18 +1305,17 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             v.GetCaptionTextProperty().BoldOn();
             v.VisibilityOn();
             v.BorderOff();
-            v.GetCaptionTextProperty().SetFontSize(-100);
             v.ThreeDimensionalLeaderOn();
-            for (int index : selectedStructures)
-            {
-                v.SetAttachmentPoint(polygons.get(index).center);
-                v.SetPosition(0, 0);
-                v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);;
-                v.SetCaption(polygons.get(index).getLabel());
-                actors.add(v);
-                polygons.get(index).setLabelID(actors.size()-1);
-                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
-            }
+            v.SetAttachmentPoint(polygons.get(idx).center);
+            v.SetPosition(0, 0);
+            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
+            v.SetCaption(polygons.get(idx).getLabel());
+
+            polygons.get(idx).setLabelID(actors.size()-1);
+            polygons.get(idx).caption=v;
+            actors.add(polygons.get(idx).caption);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, idx);
+
             polygons.get(idx).editingLabel=true;
         }
         updatePolyData();
@@ -1308,14 +1331,27 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             return;
         }
 
-        EllipsePolygon p = polygons.get(index);
-        int l=p.getLabelID();
-        vtkProp prop = actors.get(l);
-        prop.SetVisibility(1-prop.GetVisibility());
+        polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
-
-
     }
+
+    public void showBorders()
+    {
+        for (int index : selectedStructures)
+        {
+            vtkCaptionActor2D v =polygons.get(index).caption;
+            v.SetBorder(1-v.GetBorder());
+        }
+    }
+
+   /* public void colorLabel(int[] colors)
+    {
+        for (int index : selectedStructures)
+        {
+            vtkCaptionActor2D v =polygons.get(index).caption;
+            v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
+        }
+    }*/
 
 }

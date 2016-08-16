@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import vtk.vtkCaptionActor2D;
 import vtk.vtkPoints;
 import vtk.vtkPolyData;
 
@@ -37,6 +38,7 @@ public class Line extends StructureModel.Structure
     protected static final DecimalFormat decimalFormatter = new DecimalFormat("#.###");
 
     private boolean closed = false;
+    public vtkCaptionActor2D caption;
     private static int maxId = 0;
 
     public static final String PATH = "path";
