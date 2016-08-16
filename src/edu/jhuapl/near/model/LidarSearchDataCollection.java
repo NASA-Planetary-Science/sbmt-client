@@ -723,8 +723,8 @@ public class LidarSearchDataCollection extends Model
 
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
+                System.out.println(currentTime-prevTime);
                 track.stopId = i-1;
-
                 double t0 = originalPoints.get(track.startId).getTime();
                 double t1 = originalPoints.get(track.stopId).getTime();
                 track.timeRange=new String[]{TimeUtil.et2str(t0),TimeUtil.et2str(t1)};
@@ -733,9 +733,9 @@ public class LidarSearchDataCollection extends Model
                 track.startId = i;
 
                 tracks.add(track);
-                prevTime = currentTime;
             }
 
+            prevTime = currentTime;
         }
 
         track.stopId = size-1;
