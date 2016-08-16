@@ -16,6 +16,7 @@ import edu.jhuapl.near.util.Point3D;
 public class Line extends StructureModel.Structure
 {
     public String name = "default";
+    public String label = "";
     public int id;
 
     // Note that controlPoints is what gets stored in the saved file.
@@ -27,6 +28,8 @@ public class Line extends StructureModel.Structure
     public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
     public int[] color;
     public boolean hidden = false;
+    public int labelId=-1;
+    public boolean editingLabel=false;
 
     private SmallBodyModel smallBodyModel;
 
@@ -42,6 +45,7 @@ public class Line extends StructureModel.Structure
     public static final String VERTICES = "vertices";
     public static final String LENGTH = "length";
     public static final String COLOR = "color";
+    public static final String LABEL = "label";
 
     public Line(SmallBodyModel smallBodyModel, boolean closed, int id)
     {
@@ -54,6 +58,16 @@ public class Line extends StructureModel.Structure
     public int getId()
     {
         return id;
+    }
+
+    public String getLabel()
+    {
+        return label;
+    }
+
+    public void setLabel(String label)
+    {
+        this.label = label;
     }
 
     public String getName()
@@ -91,6 +105,7 @@ public class Line extends StructureModel.Structure
         Element linEle = dom.createElement(getType());
         linEle.setAttribute(ID, String.valueOf(id));
         linEle.setAttribute(NAME, name);
+        linEle.setAttribute(LABEL, label);
         linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
 
         String colorStr = color[0] + "," + color[1] + "," + color[2];
@@ -131,6 +146,7 @@ public class Line extends StructureModel.Structure
             maxId = id;
 
         name = element.getAttribute(NAME);
+        label = element.getAttribute(LABEL);
         String tmp = element.getAttribute(VERTICES);
 
         if (tmp.length() == 0)
@@ -314,7 +330,6 @@ public class Line extends StructureModel.Structure
             if (dist > maxDistFromCentroid)
                 maxDistFromCentroid = dist;
         }
-
         return maxDistFromCentroid;
     }
 }

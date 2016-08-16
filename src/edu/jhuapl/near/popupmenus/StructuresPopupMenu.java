@@ -35,6 +35,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem centerStructureMenuItem;
     private JMenuItem centerStructurePreserveDistanceMenuItem;
     private JMenuItem displayInteriorMenuItem;
+    private JMenuItem setLabelButton;
+    private JCheckBoxMenuItem showLabelButton;
+
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
@@ -60,6 +63,14 @@ abstract public class StructuresPopupMenu extends PopupMenu
         hideMenuItem = new JCheckBoxMenuItem(new ShowHideAction());
         hideMenuItem.setText("Hide");
         this.add(hideMenuItem);
+
+        setLabelButton = new JMenuItem(new SetLabelAction());
+        setLabelButton.setText("Edit Label Text");
+        this.add(setLabelButton);
+
+        showLabelButton = new JCheckBoxMenuItem(new ShowLabelAction());
+        showLabelButton.setText("Show Label");
+        this.add(showLabelButton);
 
         JMenuItem deleteAction = new JMenuItem(new DeleteAction());
         deleteAction.setText("Delete");
@@ -304,6 +315,44 @@ abstract public class StructuresPopupMenu extends PopupMenu
                     e1.printStackTrace();
                 }
             }
+        }
+    }
+
+    public boolean updateLabel(String label, int row)
+    {
+        return model.setStructureLabel(row, label);
+    }
+
+    protected class SetLabelAction extends AbstractAction
+    {
+        public SetLabelAction()
+        {
+            super("Set Label");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures[0] == -1)
+                return;
+            String option = JOptionPane.showInputDialog("Enter structure label text. Leave blank to remove label.");
+            for (int idx : selectedStructures)
+                model.setStructureLabel(idx, option);
+
+        }
+    }
+
+    protected class ShowLabelAction extends AbstractAction
+    {
+        public ShowLabelAction()
+        {
+            super("Hide Label");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            for (int idx : selectedStructures)
+                model.showLabel(idx);
+            //showLabelButton.
         }
     }
 

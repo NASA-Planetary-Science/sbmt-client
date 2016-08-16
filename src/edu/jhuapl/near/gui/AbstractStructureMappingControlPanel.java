@@ -143,7 +143,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 "Type",
                 "Name",
                 "Details",
-                "Color"};
+                "Color",
+                "Label"};
 
         /*
         structuresList = new JList();
@@ -581,6 +582,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             structuresTable.setValueAt(structure.getName(), i, 2);
             structuresTable.setValueAt(structure.getInfo(), i, 3);
             structuresTable.setValueAt(new Color(c[0], c[1], c[2]), i, 4);
+            structuresTable.setValueAt(structure.getLabel(), i, 5);
         }
     }
 
@@ -595,6 +597,23 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             if (name != null && !name.equals(structure.getName()))
             {
                 structure.setName(name);
+            }
+        }
+        if(e.getColumn()==5)
+        {
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            StructureModel.Structure structure = structureModel.getStructure(row);
+            String label = (String)structuresTable.getValueAt(row, col);
+            if (label != null && !label.equals(structure.getLabel()))
+            {
+                structure.setLabel(label);
+                boolean empty = structuresPopupMenu.updateLabel(label, row);
+                if(!empty)
+                {
+                    label="";
+                    structuresTable.setValueAt("",row, col);
+                }
             }
         }
     }
@@ -768,7 +787,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         public boolean isCellEditable(int row, int column)
         {
-            if (column == 2)
+            if (column == 2 || column ==5)
                 return true;
             else
                 return false;

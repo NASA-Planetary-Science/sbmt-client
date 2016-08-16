@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -29,6 +30,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import vtk.vtkActor;
+import vtk.vtkCaptionActor2D;
 import vtk.vtkCellArray;
 import vtk.vtkCellData;
 import vtk.vtkIdList;
@@ -566,6 +568,10 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void removeStructure(int cellId)
     {
+        int id =lines.get(cellId).labelId;
+        if(id!=-1)
+            actors.remove(id);
+
         lines.remove(cellId);
 
         updatePolyData();
@@ -589,6 +595,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         Arrays.sort(indices);
         for (int i=indices.length-1; i>=0; --i)
         {
+            int id =lines.get(indices[i]).labelId;
+            if(id!=-1)
+                actors.remove(id);
             lines.remove(indices[i]);
             this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, indices[i]);
         }
@@ -607,6 +616,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public void removeAllStructures()
     {
         lines.clear();
+
+        for(int i =0;i<actors.size();i++)
+        {
+            if(actors.get(i) instanceof vtkCaptionActor2D)
+            {
+                actors.remove(i);
+                i--;
+            }
+
+        }
 
         updatePolyData();
 
@@ -1243,6 +1262,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         {
             if (line.hidden == b)
             {
+                actors.get(line.labelId).VisibilityOn();
                 line.hidden = !b;
                 needToUpdate = true;
             }
@@ -1263,6 +1283,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     {
         for (int i=0; i<lineIds.length; ++i)
         {
+            vtkProp a = actors.get(lines.get(i).labelId);
+            a.SetVisibility(1-a.GetVisibility());
             Line line = lines.get(lineIds[i]);
             line.hidden = hidden;
         }
@@ -1299,5 +1321,73 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
     {
         return new Line(smallBodyModel, false, ++maxPolygonId);
+    }
+
+    @Override
+    public boolean setStructureLabel(int idx, String label)
+    {
+        if(lines.get(idx).xyzPointList.isEmpty())
+            return false;
+        lines.get(idx).setLabel(label);
+        int numLetters = label.length();
+        if(lines.get(idx).editingLabel)
+        {
+            if(label==null||label.equals(""))
+            {
+                actors.get(lines.get(idx).labelId).VisibilityOff();
+            }
+            else
+            {
+                int l=lines.get(idx).labelId;
+                vtkProp prop = actors.get(l);
+                ((vtkCaptionActor2D)prop).SetCaption(label);
+                ((vtkCaptionActor2D)prop).SetPosition2(0.04, numLetters*0.02);
+            }
+        }
+        else
+        {
+            if(label==null||label.equals(""))
+            {
+                return true;
+            }
+            vtkCaptionActor2D v = new vtkCaptionActor2D();
+            v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
+            v.GetCaptionTextProperty().SetJustificationToCentered();
+            v.GetCaptionTextProperty().BoldOn();
+            v.VisibilityOn();
+            v.BorderOff();
+            v.GetCaptionTextProperty().SetFontSize(-100);
+            v.ThreeDimensionalLeaderOn();
+            for (int index : selectedStructures)
+            {
+                v.SetAttachmentPoint(lines.get(index).getCentroid());
+                v.SetPosition(0, 0);
+                v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
+                v.SetCaption(lines.get(index).getLabel());
+                actors.add(v);
+                lines.get(index).labelId=(actors.size()-1);
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
+            }
+            lines.get(idx).editingLabel=true;
+        }
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, idx);
+        return true;
+    }
+
+    public void showLabel(int index)
+    {
+        if(lines.get(index).getLabel().equals(""))
+        {
+            JOptionPane.showMessageDialog(null, "Please name the structure!");
+            return;
+        }
+        int l=lines.get(index).labelId;
+        vtkProp prop = actors.get(l);
+        prop.SetVisibility(1-prop.GetVisibility());
+
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
+
+
     }
 }

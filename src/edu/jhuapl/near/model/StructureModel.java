@@ -2,6 +2,7 @@ package edu.jhuapl.near.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import vtk.vtkProp;
 
@@ -21,7 +22,11 @@ public abstract class StructureModel extends Model
         public abstract String getInfo();
         public abstract int[] getColor();
         public abstract void setColor(int[] color);
+        public abstract void setLabel(String label);
+        public abstract String getLabel();
     }
+
+    public abstract List<vtkProp> getProps();
 
     public abstract void addNewStructure();
 
@@ -52,6 +57,8 @@ public abstract class StructureModel extends Model
     public abstract void saveModel(File file) throws Exception;
 
     public abstract void setStructureColor(int idx, int[] color);
+
+    public abstract boolean setStructureLabel(int idx, String label);
 
     public abstract double getLineWidth();
 
@@ -89,4 +96,6 @@ public abstract class StructureModel extends Model
     public abstract double getStructureSize(int id);
 
     public abstract double[] getStructureNormal(int id);
+
+    public abstract void showLabel(int idx);
 }
