@@ -7,7 +7,7 @@
 ### August 17, 2016
 
 -   Recents menu is now updating properly
--   Added text labels and tooltip descriptions to all structures
+-   Added text labels to all structures
 -   OLA tracks are no longer divided into 10 second chunks	
 -   Bigmaps now makes all DistributedGravity results available
 
