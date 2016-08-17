@@ -194,6 +194,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
                 this.lines.add(lin);
                 setStructureLabel(lines.size()-1, lines.get(lines.size()-1).label);
+                colorLabel(lines.size()-1,lines.get(lines.size()-1).labelcolor);
             }
         }
 
@@ -1276,6 +1277,26 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         super.setVisible(b);
     }
 
+    public void setLabelsVisible(boolean b)
+    {
+        boolean needToUpdate = false;
+        for (Line lin : lines)
+        {
+            if(lin.caption!=null)
+            {
+                if(b)
+                    lin.caption.VisibilityOn();
+                else
+                    lin.caption.VisibilityOff();
+            }
+        }
+        if (needToUpdate)
+        {
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
     @Override
     public void setStructuresHidden(int[] lineIds, boolean hidden)
     {
@@ -1347,6 +1368,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             else
             {
                 lines.get(idx).caption.SetCaption(label);
+                lines.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, 0.02);
+                lines.get(idx).caption.GetCaptionTextProperty().Modified();
             }
         }
         else
@@ -1392,14 +1415,24 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
     }
 
-    /*public void colorLabel(int[] colors)
+    public void colorLabel(int[] colors)
     {
         for (int index : selectedStructures)
         {
-            vtkCaptionActor2D v =lines.get(index).caption;s
+            vtkCaptionActor2D v =lines.get(index).caption;
             v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
+            double color[] = {colors[0]/256.0, colors[1]/256.0, colors[2]/256.0};
+            lines.get(index).labelcolor=color;
         }
-    }*/
+    }
+
+    private void colorLabel(int loc, double[]colors)
+    {
+        vtkCaptionActor2D v =lines.get(loc).caption;
+        if(v==null)
+            return;
+        v.GetCaptionTextProperty().SetColor(colors);
+    }
 
     public void showBorders()
     {

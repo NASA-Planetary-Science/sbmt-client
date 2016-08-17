@@ -40,8 +40,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JCheckBoxMenuItem showLabelButton;
     private JMenu labelProperties;
     //private JMenuItem changeFontButton;
-    //private JMenuItem changeLabelColorButton;
-    //private JMenuItem changeLabelSize;
+    private JMenuItem changeLabelColorButton;
     private JMenuItem setLabelBorder;
     private JCheckBoxMenuItem hideMenuItem;
 
@@ -81,17 +80,13 @@ abstract public class StructuresPopupMenu extends PopupMenu
         labelProperties.setText("Edit Label Properties...");
         this.add(labelProperties);
 
-        /*changeFontButton= new JMenuItem(new changeFontAction());
+       /* changeFontButton= new JMenuItem(new changeFontAction());
         changeFontButton.setText("Change Font");
-        labelProperties.add(changeFontButton);
+        labelProperties.add(changeFontButton);*/
 
         changeLabelColorButton= new JMenuItem(new changeLabelColorAction());
         changeLabelColorButton.setText("Change Label Color");
         labelProperties.add(changeLabelColorButton);
-
-        changeLabelSize = new JMenuItem(new changeLabelSizeAction());
-        changeLabelSize.setText("Change Label Size");
-        labelProperties.add(changeLabelSize);*/
 
         setLabelBorder = new JMenuItem(new showLabelBorderAction());
         setLabelBorder.setText("Show the label border");
@@ -378,7 +373,6 @@ abstract public class StructuresPopupMenu extends PopupMenu
             int[] selectedStructures = model.getSelectedStructures();
             for (int idx : selectedStructures)
                 model.showLabel(idx);
-            //showLabelButton.
         }
     }
 
@@ -419,8 +413,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
             c[1] = color.getGreen();
             c[2] = color.getBlue();
             c[3] = color.getAlpha();
-            //model.colorLabel(c);
-
+            model.colorLabel(c);
         }
     }
 
@@ -431,15 +424,6 @@ abstract public class StructuresPopupMenu extends PopupMenu
         {
             int[] selectedStructures = model.getSelectedStructures();
             model.setShowStructuresInterior(selectedStructures, displayInteriorMenuItem.isSelected());
-        }
-    }
-
-    protected class changeLabelSizeAction extends AbstractAction
-    {
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-               return;
         }
     }
 

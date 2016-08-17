@@ -28,6 +28,7 @@ public class Line extends StructureModel.Structure
     public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
     public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
     public int[] color;
+    public double[] labelcolor={1,1,1};
     public boolean hidden = false;
     public int labelId=-1;
     public boolean editingLabel=false;
@@ -48,6 +49,7 @@ public class Line extends StructureModel.Structure
     public static final String LENGTH = "length";
     public static final String COLOR = "color";
     public static final String LABEL = "label";
+    public static final String LABELCOLOR = "labelcolor";
 
     public Line(SmallBodyModel smallBodyModel, boolean closed, int id)
     {
@@ -108,6 +110,8 @@ public class Line extends StructureModel.Structure
         linEle.setAttribute(ID, String.valueOf(id));
         linEle.setAttribute(NAME, name);
         linEle.setAttribute(LABEL, label);
+        String labelcolorStr=labelcolor[0] + "," + labelcolor[1] + "," + labelcolor[2];
+        linEle.setAttribute(LABELCOLOR, labelcolorStr);
         linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
 
         String colorStr = color[0] + "," + color[1] + "," + color[2];
@@ -193,6 +197,12 @@ public class Line extends StructureModel.Structure
         color[0] = Integer.parseInt(tokens[0]);
         color[1] = Integer.parseInt(tokens[1]);
         color[2] = Integer.parseInt(tokens[2]);
+
+        String[] labelColors=element.getAttribute(LABELCOLOR).split(",");
+        labelcolor[0] = Double.parseDouble(labelColors[0]);
+        labelcolor[1] = Double.parseDouble(labelColors[1]);
+        labelcolor[2] = Double.parseDouble(labelColors[2]);
+
     }
 
     public String getClickStatusBarText()

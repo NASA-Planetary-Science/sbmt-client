@@ -68,7 +68,9 @@ public abstract class StructureModel extends Model
 
     public abstract boolean isStructureHidden(int id);
 
-//    public abstract void colorLabel(int[] colors); color label
+    public abstract void colorLabel(int[] colors);
+
+    public abstract void setLabelsVisible(boolean b);
 
     public abstract void showBorders();
 

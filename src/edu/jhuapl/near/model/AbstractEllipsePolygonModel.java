@@ -98,6 +98,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public int numberOfSides;
         public String type;
         public int[] color;
+        public double[] labelcolor = {1,1,1};
         private Mode mode;
         private boolean editingLabel=false;
 
@@ -756,6 +757,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     {
         ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
         ArrayList<String> labels= new ArrayList<String>();
+        ArrayList<double[]> colors= new ArrayList<double[]>();
         ArrayList<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
         for (int i=0; i<lines.size(); ++i)
         {
@@ -813,7 +815,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             // the new and old formats.
             if (words.length > 9)
             {
-                int colorIdx = words.length - 1;
+                int colorIdx = words.length - 3;
                 if (words.length == 17)
                     colorIdx = 15;
 
@@ -826,14 +828,25 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 }
             }
 
-
-
             pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             newPolygons.add(pol);
-            if(words[words.length-1].substring(0, 2).equals("l:"))
+
+            //Second to last word is the label, last string is the color
+            if(words[words.length-2].substring(0, 2).equals("l:"))
             {
-                pol.label=words[words.length-1].substring(2);
+                pol.label=words[words.length-2].substring(2);
                 labels.add(pol.label);
+            }
+
+            if(words[words.length-1].substring(0, 3).equals("lc:"))
+            {
+                double[] labelcoloradd = {1.0,1.0,1.0};
+                String[] labelColors=words[words.length-1].substring(3).split(",");
+                labelcoloradd[0] = Double.parseDouble(labelColors[0]);
+                labelcoloradd[1] = Double.parseDouble(labelColors[1]);
+                labelcoloradd[2] = Double.parseDouble(labelColors[2]);
+                pol.labelcolor=labelcoloradd;
+                colors.add(labelcoloradd);
             }
         }
 
@@ -842,9 +855,17 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             int init = polygons.size()-1;
             polygons.addAll(newPolygons);
+
             for(int i=init;i<init+labels.size();i++)
             {
-                setStructureLabel(i, labels.get(i-init));
+                if(polygons.get(i).label!=null)
+                {
+                    setStructureLabel(i, labels.get(i-init));
+                    if(polygons.get(i).labelcolor!=null)
+                    {
+                        colorLabel(i,colors.get((i-init)));
+                    }
+                }
             }
         }
         else
@@ -852,7 +873,14 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             polygons = newPolygons;
             for(int i=0;i<labels.size();i++)
             {
-                setStructureLabel(i, labels.get(i));
+                if(polygons.get(i).label!=null)
+                {
+                    setStructureLabel(i, labels.get(i));
+                    if(polygons.get(i).labelcolor!=null)
+                    {
+                        colorLabel(i,colors.get(i));
+                    }
+                }
             }
         }
 
@@ -924,6 +952,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
              }
 
             str+="\tl:"+pol.label;
+
+            String labelcolorStr="\tlc:"+pol.labelcolor[0] + "," + pol.labelcolor[1] + "," + pol.labelcolor[2];
+            str+=labelcolorStr;
 
             str += "\n";
 
@@ -1215,6 +1246,21 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         super.setVisible(b);
     }
 
+    public void setLabelsVisible(boolean b)
+    {
+        boolean needToUpdate = false;
+        for (EllipsePolygon pol : polygons)
+        {
+            if(pol.caption!=null)
+                pol.caption.SetVisibility(b ? 1 : 0);
+        }
+        if (needToUpdate)
+        {
+            updatePolyData();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        }
+    }
+
     public void savePlateDataInsideStructure(int idx, File file) throws IOException
     {
         vtkPolyData polydata = polygons.get(idx).interiorPolyData;
@@ -1229,8 +1275,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             EllipsePolygon pol = polygons.get(polygonIds[i]);
             if (pol.hidden != hidden)
             {
+                int hide = (hidden) ? 0 : 1;
                 if(pol.caption!=null)
-                    pol.caption.SetVisibility(1-pol.caption.GetVisibility());
+                    pol.caption.SetVisibility(hide);
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
@@ -1291,6 +1338,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             else
             {
                 polygons.get(idx).caption.SetCaption(label);
+                polygons.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, 0.02);
+                polygons.get(idx).caption.GetCaptionTextProperty().Modified();
             }
         }
         else
@@ -1303,12 +1352,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
+            v.GetCaptionTextProperty().SetJustificationToLeft();
+            //v.GetCaptionTextProperty().set
             v.VisibilityOn();
             v.BorderOff();
             v.ThreeDimensionalLeaderOn();
             v.SetAttachmentPoint(polygons.get(idx).center);
             v.SetPosition(0, 0);
-            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
+            //v.GetCaptionTextProperty().SetFontSize(0);
+            v.SetPosition2(numLetters*0.0025+0.03, 0.02);
             v.SetCaption(polygons.get(idx).getLabel());
 
             polygons.get(idx).setLabelID(actors.size()-1);
@@ -1345,13 +1397,23 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
     }
 
-   /*a public void colorLabel(int[] colors)
+    public void colorLabel(int[] colors)
     {
         for (int index : selectedStructures)
         {
             vtkCaptionActor2D v =polygons.get(index).caption;
             v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
+            double color[] = {colors[0]/256.0, colors[1]/256.0, colors[2]/256.0};
+            polygons.get(index).labelcolor=color;
         }
-    }*/
+    }
+
+    private void colorLabel(int loc, double[]colors)
+    {
+        vtkCaptionActor2D v =polygons.get(loc).caption;
+        if(v==null)
+            return;
+        v.GetCaptionTextProperty().SetColor(colors);
+    }
 
 }

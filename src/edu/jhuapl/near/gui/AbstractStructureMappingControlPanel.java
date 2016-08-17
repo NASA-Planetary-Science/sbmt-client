@@ -74,6 +74,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
     private JToggleButton editButton;
     private JButton hideAllButton;
     private JButton showAllButton;
+    private JButton hideAllLabelsButton;
+    private JButton showAllLabelsButton;
     //private JComboBox structureTypeComboBox;
     private StructureModel structureModel;
     private PickManager pickManager;
@@ -236,6 +238,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             {
                 hideAllButton.setEnabled(!editButton.isSelected());
                 showAllButton.setEnabled(!editButton.isSelected());
+                showAllLabelsButton.setEnabled(!editButton.isSelected());
+                hideAllLabelsButton.setEnabled(!editButton.isSelected());
             }
         });
         add(editButton, "w 100!");
@@ -269,6 +273,26 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             }
         });
         add(showAllButton, "w 100!");
+
+        hideAllLabelsButton = new JButton("Hide All Labels");
+        hideAllLabelsButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                structureModel.setLabelsVisible(false);
+            }
+        });
+        add(hideAllLabelsButton, "w 100!");
+
+        showAllLabelsButton = new JButton("Show All Labels");
+        showAllLabelsButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                structureModel.setLabelsVisible(true);
+            }
+        });
+        add(showAllLabelsButton, "w 100!");
 
         JButton deleteAllButton = new JButton("Delete All");
         deleteAllButton.addActionListener(new ActionListener()
