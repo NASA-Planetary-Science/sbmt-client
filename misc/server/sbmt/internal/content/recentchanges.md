@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### August 17, 2016
+
+-   Recents menu is now updating properly
+-   Added text labels and tooltip descriptions to all structures
+-   OLA tracks are no longer divided into 10 second chunks	
+-   Bigmaps now makes all DistributedGravity results available
+
 ### August 5, 2016
 
 -   DEMs with .fits, .FITS, .fit, and .FIT file extensions can now be loaded

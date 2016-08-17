@@ -394,7 +394,8 @@ types of structures are supported: paths, polygons, circles, ellipses,
 and points, and each of these are controlled within a separate tab
 within the Structures tab. Each of the 5 tabs (paths, polygons, circles,
 ellipses, and points) works completely independent of each other. You
-can only be drawing one type of structure at a time.
+can only be drawing one type of structure at a time. Text labels may be
+added to all structures.
 
 ### Images tab (Available for all bodies)
 
