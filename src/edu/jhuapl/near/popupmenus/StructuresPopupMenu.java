@@ -228,7 +228,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent e)
         {
             int[] selectedStructures = model.getSelectedStructures();
-            model.setStructuresHidden(selectedStructures, hideMenuItem.isSelected());
+            model.setStructuresHidden(selectedStructures, hideMenuItem.isSelected(), showLabelButton.isSelected());
         }
     }
 

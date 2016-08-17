@@ -1268,16 +1268,20 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     }
 
     @Override
-    public void setStructuresHidden(int[] polygonIds, boolean hidden)
+    public void setStructuresHidden(int[] polygonIds, boolean hidden, boolean labelHidden)
     {
         for (int i=0; i<polygonIds.length; ++i)
         {
             EllipsePolygon pol = polygons.get(polygonIds[i]);
             if (pol.hidden != hidden)
             {
-                int hide = (hidden) ? 0 : 1;
                 if(pol.caption!=null)
-                    pol.caption.SetVisibility(hide);
+                {
+                    if(!hidden&&!labelHidden)
+                        pol.caption.VisibilityOn();
+                    else
+                        pol.caption.VisibilityOff();
+                }
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
@@ -1382,8 +1386,8 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             JOptionPane.showMessageDialog(null, "Please name the structure!");
             return;
         }
-
-        polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
+        if(!polygons.get(index).hidden)
+            polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
     }

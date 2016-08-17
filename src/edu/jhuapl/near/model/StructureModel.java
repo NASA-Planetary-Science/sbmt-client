@@ -64,7 +64,7 @@ public abstract class StructureModel extends Model
 
     public abstract void setLineWidth(double width);
 
-    public abstract void setStructuresHidden(int[] indices, boolean hidden);
+    public abstract void setStructuresHidden(int[] indices, boolean hidden, boolean labelHidden);
 
     public abstract boolean isStructureHidden(int id);
 

@@ -1298,14 +1298,19 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     }
 
     @Override
-    public void setStructuresHidden(int[] lineIds, boolean hidden)
+    public void setStructuresHidden(int[] lineIds, boolean hidden, boolean labelHidden)
     {
         for (int i=0; i<lineIds.length; ++i)
         {
             Line line = lines.get(lineIds[i]);
             line.hidden = hidden;
             if(line.caption!=null)
-                line.caption.SetVisibility(1-line.caption.GetVisibility());
+            {
+                if(!hidden&&!labelHidden)
+                    line.caption.VisibilityOn();
+                else
+                    line.caption.VisibilityOff();
+            }
 
         }
 
@@ -1410,7 +1415,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             return;
         }
 
-        lines.get(index).caption.SetVisibility(1-lines.get(index).caption.GetVisibility());
+        if(!lines.get(index).hidden)
+            lines.get(index).caption.SetVisibility(1-lines.get(index).caption.GetVisibility());
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
     }
