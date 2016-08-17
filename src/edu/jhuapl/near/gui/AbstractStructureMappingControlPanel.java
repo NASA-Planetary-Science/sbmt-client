@@ -282,6 +282,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.setLabelsVisible(false);
             }
         });
+        // temporarily disable because of update issues -turnerj1
+        hideAllLabelsButton.setVisible(false);
         add(hideAllLabelsButton, "w 100!");
 
         showAllLabelsButton = new JButton("Show All Labels");

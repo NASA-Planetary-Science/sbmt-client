@@ -78,6 +78,8 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         labelProperties= new JMenu();
         labelProperties.setText("Edit Label Properties...");
+        // temporarily disable due to update issues -turnerj1
+        labelProperties.setVisible(false);
         this.add(labelProperties);
 
        /* changeFontButton= new JMenuItem(new changeFontAction());
