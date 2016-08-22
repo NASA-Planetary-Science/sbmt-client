@@ -16,11 +16,11 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 public class ScaleDataRangeDialog extends JDialog implements ActionListener
 {
-    SmallBodyModel smallBodyModel;
+    PolyhedralModel smallBodyModel;
     private JButton applyButton;
     private JButton resetButton;
     private JButton okayButton;
@@ -28,7 +28,7 @@ public class ScaleDataRangeDialog extends JDialog implements ActionListener
     private JFormattedTextField minTextField;
     private JFormattedTextField maxTextField;
 
-    public ScaleDataRangeDialog(SmallBodyModel smallBodyModel)
+    public ScaleDataRangeDialog(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
 

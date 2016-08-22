@@ -15,7 +15,7 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 /**
  * Popup menu used by the mapmaker view for profiles. It is meant to replace LinesPopupMenu
@@ -26,12 +26,12 @@ public class MapmakerLinesPopupMenu extends PopupMenu
     private LineModel model = null;
     private JMenuItem saveProfileAction;
     private int pickedCellId = -1;
-    private SmallBodyModel parentSmallBodyModel;
+    private PolyhedralModel parentPolyhedralModel;
 
-    public MapmakerLinesPopupMenu(ModelManager modelManager, SmallBodyModel parentSmallBodyModel, Renderer renderer)
+    public MapmakerLinesPopupMenu(ModelManager modelManager, PolyhedralModel parentPolyhedralModel, Renderer renderer)
     {
         this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
-        this.parentSmallBodyModel = parentSmallBodyModel;
+        this.parentPolyhedralModel = parentPolyhedralModel;
 
         saveProfileAction = new JMenuItem(new SaveProfileAction());
         saveProfileAction.setText("Save Profile...");
@@ -58,7 +58,7 @@ public class MapmakerLinesPopupMenu extends PopupMenu
             {
                 File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
                 if (file != null)
-                    model.saveProfileUsingGravityProgram(pickedCellId, file, parentSmallBodyModel);
+                    model.saveProfileUsingGravityProgram(pickedCellId, file, parentPolyhedralModel);
             }
             catch (Exception e1)
             {

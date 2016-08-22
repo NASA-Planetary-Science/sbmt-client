@@ -2,7 +2,7 @@ package edu.jhuapl.near.gui;
 
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.pick.PickManager;
 
 /**
@@ -12,7 +12,7 @@ import edu.jhuapl.near.pick.PickManager;
 public class TrackPanel extends LidarSearchPanel
 {
 
-    public TrackPanel(SmallBodyConfig smallBodyConfig,
+    public TrackPanel(PolyhedralModel smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {

@@ -30,7 +30,7 @@ import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.FileCache;
@@ -40,7 +40,7 @@ import edu.jhuapl.near.util.FileUtil;
 public class DEMPopupMenu extends PopupMenu
 {
     private Component invoker;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private DEMCollection demCollection;
     private DEMBoundaryCollection demBoundaryCollection;
     private ArrayList<DEMKey> demKeys = new ArrayList<DEMKey>();
@@ -63,7 +63,7 @@ public class DEMPopupMenu extends PopupMenu
      * mapped to Eros.
      */
     public DEMPopupMenu(
-            SmallBodyModel smallBodyModel,
+            PolyhedralModel smallBodyModel,
             DEMCollection demCollection,
             DEMBoundaryCollection demBoundaryCollection,
             Renderer renderer,

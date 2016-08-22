@@ -278,7 +278,7 @@ public class Renderer extends JPanel implements
                 setLighting(getLighting());
                 //
                 mirrorFrame=new JFrame();
-                mirrorFrame.setTitle(modelManager.getSmallBodyModel().getSmallBodyConfig().getUniqueName());
+                mirrorFrame.setTitle(modelManager.getSmallBodyModel().getPolyhedralModelConfig().getUniqueName());
                 mirrorFrame.setSize(preferredSize);
                 mirrorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 mirrorFrame.getContentPane().add(mirrorCanvas.getComponent());

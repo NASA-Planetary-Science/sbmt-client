@@ -37,6 +37,8 @@ public class PickManager extends Picker
     private PopupManager popupManager;
     private StatusBar statusBar;
 
+    public StatusBar getStatusBar() { return statusBar; }
+
     public PickManager(
             Renderer renderer,
             StatusBar statusBar,
@@ -47,12 +49,18 @@ public class PickManager extends Picker
         this.renWin = renderer.getRenderWindowPanel();
         this.popupManager = popupManager;
 
-        nondefaultPickers.put(PickMode.LINE_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.LINE_STRUCTURES));
-        nondefaultPickers.put(PickMode.POLYGON_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.POLYGON_STRUCTURES));
-        nondefaultPickers.put(PickMode.CIRCLE_DRAW, new CirclePicker(renderer, modelManager));
-        nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
-        nondefaultPickers.put(PickMode.POINT_DRAW, new PointPicker(renderer, modelManager));
-        nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
+        if (modelManager.getModel(ModelNames.LINE_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.LINE_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.LINE_STRUCTURES));
+        if (modelManager.getModel(ModelNames.POLYGON_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.POLYGON_DRAW, new ControlPointsStructurePicker(renderer, modelManager, ModelNames.POLYGON_STRUCTURES));
+        if (modelManager.getModel(ModelNames.CIRCLE_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.CIRCLE_DRAW, new CirclePicker(renderer, modelManager));
+        if (modelManager.getModel(ModelNames.ELLIPSE_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
+        if (modelManager.getModel(ModelNames.POINT_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.POINT_DRAW, new PointPicker(renderer, modelManager));
+        if (modelManager.getModel(ModelNames.CIRCLE_STRUCTURES) != null)
+            nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
 
         defaultPicker = new ImageDefaultPicker(renderer, statusBar, modelManager, popupManager);
 

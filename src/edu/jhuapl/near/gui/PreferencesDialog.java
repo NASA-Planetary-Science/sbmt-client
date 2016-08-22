@@ -22,7 +22,7 @@ import com.google.common.primitives.Ints;
 
 import edu.jhuapl.near.gui.Renderer.InteractorStyleType;
 import edu.jhuapl.near.gui.Renderer.LightingType;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.util.ColorUtil;
 import edu.jhuapl.near.util.LatLon;
@@ -69,7 +69,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             else
                 trackballRadioButton.setSelected(true);
 
-            SmallBodyModel smallBodyModel =
+            PolyhedralModel smallBodyModel =
                     viewManager.getCurrentView().getModelManager().getSmallBodyModel();
             showScaleBarCheckBox.setSelected(smallBodyModel.getShowScaleBar());
 
@@ -157,7 +157,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             else
                 renderer.setDefaultInteractorStyleType(InteractorStyleType.TRACKBALL_CAMERA);
 
-            SmallBodyModel smallBodyModel = v.getModelManager().getSmallBodyModel();
+            PolyhedralModel smallBodyModel = v.getModelManager().getSmallBodyModel();
             smallBodyModel.setShowScaleBar(showScaleBarCheckBox.isSelected());
 
             PickManager pickManager = v.getPickManager();

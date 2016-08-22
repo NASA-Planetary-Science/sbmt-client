@@ -52,7 +52,8 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.MapmakerLinesPopupMenu;
@@ -90,7 +91,7 @@ public class DEMView extends JFrame implements WindowListener
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
-    public DEMView(DEMKey key, DEMCollection demCollection, SmallBodyModel parentSmallBodyModel) throws IOException, FitsException
+    public DEMView(DEMKey key, DEMCollection demCollection, PolyhedralModel parentPolyhedralModel) throws IOException, FitsException
     {
         this.key = key;
         this.demCollection = demCollection;
@@ -111,7 +112,7 @@ public class DEMView extends JFrame implements WindowListener
 
         // Create an entirely new DEM object to go with this model manager
         // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
-        final ModelManager modelManager = new ModelManager();
+        final ModelManager modelManager = new SbmtModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
         dem.setColoringIndex(macroDEM.getColoringIndex());
@@ -131,7 +132,7 @@ public class DEMView extends JFrame implements WindowListener
 
         PopupManager popupManager = new PopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
-        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentSmallBodyModel, renderer);
+        PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
