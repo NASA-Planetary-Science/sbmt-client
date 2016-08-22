@@ -57,7 +57,7 @@ public class ImageDefaultPicker extends DefaultPicker
             ModelManager modelManager,
             PopupManager popupManager)
     {
-        super
+        super(renderer, statusBar, modelManager, popupManager);
         this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
         this.statusBar = statusBar;
