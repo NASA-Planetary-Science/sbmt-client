@@ -21,14 +21,14 @@ import edu.jhuapl.near.gui.ChangeLatLonDialog;
 import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.util.MathUtil;
 
 abstract public class StructuresPopupMenu extends PopupMenu
 {
     private StructureModel model;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private Renderer renderer;
     private JMenuItem changeLatLonAction;
     private JMenuItem exportPlateDataAction;
@@ -46,7 +46,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
     public StructuresPopupMenu(
             StructureModel model,
-            SmallBodyModel smallBodyModel,
+            PolyhedralModel smallBodyModel,
             Renderer renderer,
             boolean showChangeLatLon,
             boolean showExportPlateDataInsidePolygon,

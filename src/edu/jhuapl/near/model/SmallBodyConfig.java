@@ -21,7 +21,7 @@ import edu.jhuapl.near.util.Configuration;
  * imaging data. This class is also used when creating (to know which tabs
  * to create).
  */
-public class SmallBodyConfig
+public class SmallBodyConfig extends PolyhedralModelConfig
 {
     // Flag for beta mode
     public static boolean betaMode = false;

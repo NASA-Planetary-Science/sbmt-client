@@ -37,7 +37,7 @@ import edu.jhuapl.near.util.Properties;
 /**
  * This is the picker normally in use by default.
  */
-public class DefaultPicker extends Picker
+public class ImageDefaultPicker extends DefaultPicker
 {
     private Renderer renderer;
     private vtksbmtJoglCanvas renWin;
@@ -51,12 +51,13 @@ public class DefaultPicker extends Picker
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
 
-    public DefaultPicker(
+    public ImageDefaultPicker(
             Renderer renderer,
             StatusBar statusBar,
             ModelManager modelManager,
             PopupManager popupManager)
     {
+        super
         this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
         this.statusBar = statusBar;

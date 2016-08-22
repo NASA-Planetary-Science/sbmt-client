@@ -153,6 +153,52 @@ public abstract class Picker implements
     {
         return Cursor.DEFAULT_CURSOR;
     }
+/*    
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
+    {
+        if (pickingEnabled == false)
+            return 0;
+
+        // Don't do a pick if the event is more than a third of a second old
+        final long currentTime = System.currentTimeMillis();
+        final long when = e.getWhen();
+
+        //System.err.println("elapsed time " + (currentTime - when));
+        if (currentTime - when > 333)
+            return 0;
+
+        // When picking, choosing the right tolerance is not simple. If it's too small, then
+        // the pick will only work well if we are zoomed in very close to the object. If it's
+        // too large, the pick will only work well when we are zoomed out a lot. To deal
+        // with this situation, do a series of picks starting out with a low tolerance
+        // and increase the tolerance after each new pick. Stop as soon as the pick succeeds
+        // or we reach the maximum tolerance.
+
+        int pickSucceeded = 0;
+        double tolerance = 0.0002;
+        final double originalTolerance = picker.GetTolerance();
+        final double maxTolerance = 0.004;
+        final double incr = 0.0002;
+        renWin.lock();
+        picker.SetTolerance(tolerance);
+        while (tolerance <= maxTolerance)
+        {
+            picker.SetTolerance(tolerance);
+
+            pickSucceeded = picker.Pick(e.getX(), renWin.getHeight()-e.getY()-1, 0.0, renWin.GetRenderer());
+
+            if (pickSucceeded == 1)
+                break;
+
+            tolerance += incr;
+        }
+        picker.SetTolerance(originalTolerance);
+        renWin.unlock();
+
+        return pickSucceeded;
+    }
+*/
+
 
     protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
     {

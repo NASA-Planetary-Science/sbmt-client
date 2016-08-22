@@ -17,7 +17,7 @@ import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 /**
  * Picker for editing control point based structures such as Paths and Polygons.
@@ -31,7 +31,7 @@ public class ControlPointsStructurePicker extends Picker
 {
     private ModelManager modelManager;
     private vtksbmtJoglCanvas renWin;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private ControlPointsStructureModel structureModel;
 
     private vtkCellPicker smallBodyPicker;
@@ -69,7 +69,7 @@ public class ControlPointsStructurePicker extends Picker
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
-        smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel = (PolyhedralModel)modelManager.getSmallBodyModel();
         List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();

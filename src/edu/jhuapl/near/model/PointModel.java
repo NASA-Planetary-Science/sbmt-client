@@ -6,7 +6,7 @@ package edu.jhuapl.near.model;
  */
 public class PointModel extends AbstractEllipsePolygonModel
 {
-    public PointModel(SmallBodyModel smallBodyModel)
+    public PointModel(PolyhedralModel smallBodyModel)
     {
         super(smallBodyModel, 4, Mode.POINT_MODE, "point");
         setInteriorOpacity(1.0);

@@ -4,122 +4,37 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.near.model.Model.CommonData;
 
-public class ModelManager extends Model implements PropertyChangeListener
+public interface ModelManager extends PropertyChangeListener
 {
-    private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
-    private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
-    private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
-    private HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-    private boolean mode2D = false;
+    public boolean isBuiltIn();
 
-    public boolean isBuiltIn()
-    {
-        return getSmallBodyModel().isBuiltIn();
-    }
+    public CommonData getCommonData();
 
-    public void setModels(HashMap<ModelNames, Model> models)
-    {
-        allModels.clear();
+    public void setModels(HashMap<ModelNames, Model> models);
 
-        CommonData commonData = new CommonData();
-        setCommonData(commonData);
+    public ArrayList<vtkProp> getProps();
 
-        for (ModelNames modelName : models.keySet())
-        {
-            Model model = models.get(modelName);
-            model.addPropertyChangeListener(this);
-            model.setCommonData(commonData);
-            allModels.put(modelName, model);
-        }
+    public ArrayList<vtkProp> getPropsExceptSmallBody();
 
-        updateProps();
-    }
+    public void propertyChange(PropertyChangeEvent evt);
 
-    public List<vtkProp> getProps()
-    {
-        return props;
-    }
+    public Model getModel(vtkProp prop);
 
-    public ArrayList<vtkProp> getPropsExceptSmallBody()
-    {
-        return propsExceptSmallBody;
-    }
+    public Model getModel(ModelNames modelName);
 
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-        {
-            updateProps();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
-    }
+    public PolyhedralModel getSmallBodyModel();
 
-    private void updateProps()
-    {
-        props.clear();
-        propsExceptSmallBody.clear();
-        propToModelMap.clear();
+    public void deleteAllModels();
 
-        for (ModelNames modelName : allModels.keySet())
-        {
-            Model model = allModels.get(modelName);
-            if (model.isVisible())
-            {
-                props.addAll(model.getProps());
+    public void set2DMode(boolean enable);
 
-                for (vtkProp prop : model.getProps())
-                    propToModelMap.put(prop, model);
+    public boolean is2DMode();
 
-                if (!(model instanceof SmallBodyModel))
-                    propsExceptSmallBody.addAll(model.getProps());
-            }
-        }
-    }
+    public void addPropertyChangeListener(PropertyChangeListener listener);
 
-    public Model getModel(vtkProp prop)
-    {
-        return propToModelMap.get(prop);
-    }
-
-    public Model getModel(ModelNames modelName)
-    {
-        return allModels.get(modelName);
-    }
-
-    public SmallBodyModel getSmallBodyModel()
-    {
-        for (ModelNames modelName : allModels.keySet())
-        {
-            Model model = allModels.get(modelName);
-            if (model instanceof SmallBodyModel)
-                return (SmallBodyModel)model;
-        }
-
-        return null;
-    }
-
-    public void deleteAllModels()
-    {
-        for (ModelNames modelName : allModels.keySet())
-            allModels.get(modelName).delete();
-    }
-
-    public void set2DMode(boolean enable)
-    {
-        mode2D = enable;
-
-        for (ModelNames modelName : allModels.keySet())
-            allModels.get(modelName).set2DMode(enable);
-    }
-
-    public boolean is2DMode()
-    {
-        return mode2D;
-    }
 }

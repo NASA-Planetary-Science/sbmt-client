@@ -74,6 +74,8 @@ public abstract class StructureModel extends Model
 
     public abstract void showBorders();
 
+
+
     public void savePlateDataInsideStructure(int idx, File file) throws IOException
     {
         // do nothing by default. Only structures that have an inside need to implement this.

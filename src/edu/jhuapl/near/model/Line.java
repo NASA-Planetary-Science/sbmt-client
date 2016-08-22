@@ -33,7 +33,7 @@ public class Line extends StructureModel.Structure
     public int labelId=-1;
     public boolean editingLabel=false;
 
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
 
     private static final int[] purpleColor = {255, 0, 255, 255}; // RGBA purple
     protected static final DecimalFormat decimalFormatter = new DecimalFormat("#.###");
@@ -51,7 +51,7 @@ public class Line extends StructureModel.Structure
     public static final String LABEL = "label";
     public static final String LABELCOLOR = "labelcolor";
 
-    public Line(SmallBodyModel smallBodyModel, boolean closed, int id)
+    public Line(PolyhedralModel smallBodyModel, boolean closed, int id)
     {
         this.smallBodyModel = smallBodyModel;
         this.closed = closed;

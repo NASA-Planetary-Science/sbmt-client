@@ -57,7 +57,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     private vtkUnsignedCharArray interiorColors;
 
     private vtkPolyData emptyPolyData;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private double defaultRadius = 0.25; // radius for new polygons drawn
     private double maxRadius = 5.0;
     private int numberOfSides = 4;
@@ -178,7 +178,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
 
         public void updatePolygon(
-                SmallBodyModel sbModel,
+                PolyhedralModel sbModel,
                 double[] center,
                 double radius,
                 double flattening,
@@ -220,7 +220,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     }
 
     public AbstractEllipsePolygonModel(
-            SmallBodyModel smallBodyModel,
+            PolyhedralModel smallBodyModel,
             int numberOfSides,
             Mode mode,
             String type)

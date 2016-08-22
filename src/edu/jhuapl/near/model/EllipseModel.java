@@ -13,14 +13,14 @@ import edu.jhuapl.near.util.Properties;
 
 public class EllipseModel extends AbstractEllipsePolygonModel
 {
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private vtkPolyData activationPolyData;
     private vtkPolyDataMapper activationMapper;
     private vtkActor activationActor;
     private double[] unshiftedPoint1;
     private double[] unshiftedPoint2;
 
-    public EllipseModel(SmallBodyModel smallBodyModel)
+    public EllipseModel(PolyhedralModel smallBodyModel)
     {
         super(smallBodyModel, 20, Mode.ELLIPSE_MODE, "ellipse");
 

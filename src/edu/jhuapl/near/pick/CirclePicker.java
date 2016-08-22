@@ -18,13 +18,13 @@ import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 public class CirclePicker extends Picker
 {
     private ModelManager modelManager;
     private vtksbmtJoglCanvas renWin;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private CircleModel circleModel;
 
     private vtkCellPicker smallBodyPicker;
@@ -57,7 +57,7 @@ public class CirclePicker extends Picker
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
-        smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel = (PolyhedralModel)modelManager.getSmallBodyModel();
         List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();

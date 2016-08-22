@@ -14,7 +14,7 @@ import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 /**
  * This class is used to allow the user to translate a lidar track to a new location.
@@ -25,7 +25,7 @@ public class LidarShiftPicker extends Picker
 {
     private ModelManager modelManager;
     private vtksbmtJoglCanvas renWin;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private LidarSearchDataCollection lidarModel;
     private vtkCellPicker smallBodyPicker;
     private vtkCellPicker pointPicker;
@@ -43,7 +43,7 @@ public class LidarShiftPicker extends Picker
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
-        smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel = (PolyhedralModel)modelManager.getSmallBodyModel();
         List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();

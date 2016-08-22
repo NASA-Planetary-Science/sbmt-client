@@ -68,7 +68,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private vtkPolyDataMapper lineActivationMapper;
     private vtkActor lineActor;
     private vtkActor lineActivationActor;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private int activatedLine = -1;
     private int currentLineVertex = -1000;
     private int[] selectedStructures = {};
@@ -88,17 +88,17 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     private static final int[] greenColor = {0, 255, 0, 255}; // RGBA green
     private static final int[] blueColor = {0, 0, 255, 255}; // RGBA blue
 
-    public LineModel(SmallBodyModel smallBodyModel)
+    public LineModel(PolyhedralModel smallBodyModel)
     {
         this(smallBodyModel, false);
     }
 
-    public LineModel(SmallBodyModel smallBodyModel, boolean profileMode)
+    public LineModel(PolyhedralModel smallBodyModel, boolean profileMode)
     {
         this(smallBodyModel, profileMode ? Mode.PROFILE : Mode.DEFAULT);
     }
 
-    public LineModel(SmallBodyModel smallBodyModel, Mode mode)
+    public LineModel(PolyhedralModel smallBodyModel, Mode mode)
     {
         this.smallBodyModel = smallBodyModel;
         this.mode = mode;
@@ -1116,14 +1116,14 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
      *
      * @param cellId
      * @param file
-     * @param otherSmallBodyModel - use this small body for running gravity program. If null
+     * @param otherPolyhedralModel - use this small body for running gravity program. If null
      *                              use small body model passed into constructor.
      * @throws Exception
      */
-    public void saveProfileUsingGravityProgram(int cellId, File file, SmallBodyModel otherSmallBodyModel) throws Exception
+    public void saveProfileUsingGravityProgram(int cellId, File file, PolyhedralModel otherPolyhedralModel) throws Exception
     {
-        if (otherSmallBodyModel == null)
-            otherSmallBodyModel = this.smallBodyModel;
+        if (otherPolyhedralModel == null)
+            otherPolyhedralModel = this.smallBodyModel;
 
         Line lin = this.lines.get(cellId);
 
@@ -1343,7 +1343,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return lines.get(id).getSize();
     }
 
-    protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
+    protected StructureModel.Structure createStructure(PolyhedralModel smallBodyModel)
     {
         return new Line(smallBodyModel, false, ++maxPolygonId);
     }

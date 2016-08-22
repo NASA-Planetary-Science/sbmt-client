@@ -18,13 +18,13 @@ import edu.jhuapl.near.model.EllipseModel;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 
 public class EllipsePicker extends Picker
 {
     private ModelManager modelManager;
     private vtksbmtJoglCanvas renWin;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private EllipseModel ellipseModel;
 
     private vtkCellPicker smallBodyPicker;
@@ -59,7 +59,7 @@ public class EllipsePicker extends Picker
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
-        smallBodyModel = modelManager.getSmallBodyModel();
+        smallBodyModel = (PolyhedralModel)modelManager.getSmallBodyModel();
         List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();

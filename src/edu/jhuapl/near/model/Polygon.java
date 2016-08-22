@@ -10,14 +10,14 @@ import edu.jhuapl.near.util.PolyDataUtil;
 public class Polygon extends Line
 {
     public vtkPolyData interiorPolyData;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private double surfaceArea = 0.0;
     private boolean showInterior = false;
 
     public static final String POLYGON = "polygon";
     public static final String AREA = "area";
 
-    public Polygon(SmallBodyModel smallBodyModel, int id)
+    public Polygon(PolyhedralModel smallBodyModel, int id)
     {
         super(smallBodyModel, true, id);
 

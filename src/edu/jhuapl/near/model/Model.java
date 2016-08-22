@@ -45,6 +45,8 @@ public abstract class Model
             selectionColor = Preferences.getInstance().getAsIntArray(Preferences.SELECTION_COLOR, new int[]{0, 0, 255});
         }
 
+
+
         public int[] getSelectionColor()
         {
             return selectionColor;
@@ -55,6 +57,7 @@ public abstract class Model
             this.selectionColor = selectionColor.clone();
         }
     }
+
 
     /**
      * Should be called be the model manager to set the common data.
@@ -70,6 +73,13 @@ public abstract class Model
         return this.commonData;
     }
 
+    public abstract List<vtkProp> getProps();
+
+    public boolean isBuiltIn()
+    {
+        return true;
+    }
+
     public boolean isVisible()
     {
         return visible;
@@ -83,8 +93,6 @@ public abstract class Model
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
-
-    public abstract List<vtkProp> getProps();
 
     /**
      * Return what text should be displayed if the user clicks on one of the

@@ -58,7 +58,7 @@ import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
-public class SmallBodyModel extends Model
+public class SmallBodyModel extends PolyhedralModel
 {
     public static final String LIST_SEPARATOR = ",";
     public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
@@ -194,13 +194,12 @@ public class SmallBodyModel extends Model
     private double scaleBarWidthInKm = -1.0;
     private boolean showScaleBar = true;
 
-    private SmallBodyConfig smallBodyConfig;
-
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
      */
     public SmallBodyModel()
     {
+        super(null);
         smallBodyPolyData = new vtkPolyData();
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();
@@ -239,7 +238,7 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this.smallBodyConfig = config;
+        super(config);
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
         this.imageMapNames = imageMapNames;
@@ -308,7 +307,7 @@ public class SmallBodyModel extends Model
 
     public SmallBodyConfig getSmallBodyConfig()
     {
-        return smallBodyConfig;
+        return (SmallBodyConfig)getPolyhedralModelConfig();
     }
 
     public boolean isBuiltIn()
@@ -349,7 +348,7 @@ public class SmallBodyModel extends Model
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + smallBodyConfig.getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getSmallBodyConfig().getUniqueName();
         }
         else
         {
@@ -536,7 +535,7 @@ public class SmallBodyModel extends Model
         // Load in custom plate data
         try
         {
-            if (!smallBodyConfig.customTemporary)
+            if (!getSmallBodyConfig().customTemporary)
             {
                 loadCustomColoringInfo();
                 loadCustomLidarDatasourceInfo();
@@ -630,10 +629,10 @@ public class SmallBodyModel extends Model
         {
             // Compute bounding box diagonal length of lowest res shape model
             double cubeSize;
-            if(smallBodyConfig.hasCustomBodyCubeSize)
+            if(getSmallBodyConfig().hasCustomBodyCubeSize)
             {
                 // Custom specified cube size
-                cubeSize = smallBodyConfig.customBodyCubeSize;
+                cubeSize = getSmallBodyConfig().customBodyCubeSize;
             }
             else
             {
@@ -2292,7 +2291,7 @@ public class SmallBodyModel extends Model
                     totalArea += area;
                 }
 
-                if (smallBodyConfig.useMinimumReferencePotential)
+                if (getSmallBodyConfig().useMinimumReferencePotential)
                 {
                     return minRefPot;
                 }

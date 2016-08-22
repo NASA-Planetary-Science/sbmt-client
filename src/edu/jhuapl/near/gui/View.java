@@ -45,6 +45,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISStatisticsCollection;
+import edu.jhuapl.near.pick.LidarPickManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
@@ -113,7 +114,8 @@ public class View extends JPanel
 
         setupPopupManager();
 
-        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+//        pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+        pickManager = new LidarPickManager(renderer, statusBar, modelManager, popupManager);
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());

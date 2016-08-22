@@ -6,12 +6,13 @@ import java.util.HashMap;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.Preferences;
 
-public class PickManager extends Picker
+public class LidarPickManager extends PickManager
 {
     public static final double DEFAULT_PICK_TOLERANCE = 0.002;
 
@@ -37,12 +38,13 @@ public class PickManager extends Picker
     private PopupManager popupManager;
     private StatusBar statusBar;
 
-    public PickManager(
+    public LidarPickManager(
             Renderer renderer,
             StatusBar statusBar,
             ModelManager modelManager,
             PopupManager popupManager)
     {
+        super(renderer, statusBar, modelManager, popupManager);
         this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
         this.popupManager = popupManager;
@@ -53,6 +55,19 @@ public class PickManager extends Picker
         nondefaultPickers.put(PickMode.ELLIPSE_DRAW, new EllipsePicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.POINT_DRAW, new PointPicker(renderer, modelManager));
         nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
+
+        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_SEARCH);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.TRACKS);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+
+        // added by Mike Z 2016-Jul-22
+        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        if (lidarModel != null)
+            nondefaultPickers.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+
 
         defaultPicker = new ImageDefaultPicker(renderer, statusBar, modelManager, popupManager);
 

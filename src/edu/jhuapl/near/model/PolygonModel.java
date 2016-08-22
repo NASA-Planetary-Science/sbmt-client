@@ -35,7 +35,7 @@ public class PolygonModel extends LineModel
 
     private List<vtkProp> actors = new ArrayList<vtkProp>();
 
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
 
     private double interiorOpacity = 0.3;
     private int maxPolygonId = 0;
@@ -44,7 +44,7 @@ public class PolygonModel extends LineModel
 
     private static final String POLYGONS = "polygons";
 
-    public PolygonModel(SmallBodyModel smallBodyModel)
+    public PolygonModel(PolyhedralModel smallBodyModel)
     {
         super(smallBodyModel, Mode.CLOSED);
 
@@ -275,7 +275,7 @@ public class PolygonModel extends LineModel
         return getPolygon(id).isShowInterior();
     }
 
-    protected StructureModel.Structure createStructure(SmallBodyModel smallBodyModel)
+    protected StructureModel.Structure createStructure(PolyhedralModel smallBodyModel)
     {
         return new Polygon(smallBodyModel, ++maxPolygonId);
     }

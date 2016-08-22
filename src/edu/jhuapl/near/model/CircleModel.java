@@ -22,7 +22,7 @@ import edu.jhuapl.near.util.Properties;
  */
 public class CircleModel extends AbstractEllipsePolygonModel
 {
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private vtkPolyData activationPolyData;
     private vtkPolyDataMapper activationMapper;
     private vtkActor activationActor;
@@ -30,7 +30,7 @@ public class CircleModel extends AbstractEllipsePolygonModel
     private double[] unshiftedPoint2;
 
 
-    public CircleModel(SmallBodyModel smallBodyModel)
+    public CircleModel(PolyhedralModel smallBodyModel)
     {
         super(smallBodyModel, 20, Mode.CIRCLE_MODE, "circle");
 
