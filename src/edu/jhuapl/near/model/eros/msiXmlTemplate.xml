@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?xml-model href="http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1301.sch" ?><?xml-model href="http://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1100.sch"?><?xml-model href="http://pds.nasa.gov/pds4/mission/near/v1/NEARMSI_LDD_1000.sch"?><Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:nearmsi="http://pds.nasa.gov/pds4/mission/nearmsi/v1" xmlns:disp="http://pds.nasa.gov/pds4/disp/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1301.xsd            http://pds.nasa.gov/pds4/disp/v1            http://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1100.xsd           http://pds.nasa.gov/pds4/mission/nearmsi/v1   http://pds.nasa.gov/pds4/mission/nearmsi/v1/NEARMSI_LDD_1000.xsd ">
+<?xml-model href="http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1600.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?><?xml-model href="http://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1600.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?><Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:nearmsi="http://pds.nasa.gov/pds4/mission/nearmsi/v1" xmlns:disp="http://pds.nasa.gov/pds4/disp/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 http://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1600.xsd            http://pds.nasa.gov/pds4/disp/v1            http://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1600.xsd           http://pds.nasa.gov/pds4/mission/nearmsi/v1   http://pds.nasa.gov/pds4/mission/nearmsi/v1/NEARMSI_LDD_1000.xsd ">
  <Identification_Area>
-  <logical_identifier>urn:nasa:pds:nearmsi.shapebackplane:M0151743394F1_2P_CIF_SPICE_res0_ddr</logical_identifier>
+  <logical_identifier>urn:nasa:pds:nearmsi.shapebackplane:data:ddrplaceholder</logical_identifier>
   <version_id>1.0</version_id>
   <title>Geometric Backplane Images from NEAR MSI Eros Shape Model</title>
   <information_model_version>1.6.0.0</information_model_version>
@@ -13,10 +13,10 @@
    <stop_date_time></stop_date_time>
   </Time_Coordinates>
   <Investigation_Area>
-   <name>NearMSI</name>
+   <name>NEAR EARTH ASTEROID RENDEZVOUS</name>
    <type>Mission</type>
    <Internal_Reference>
-    <lid_reference>urn:nasa:pds:context:investigation:mission.nearmsi
+    <lid_reference>urn:nasa:pds:context:investigation:mission.near_earth_asteroid_rendezvous
         </lid_reference>
     <reference_type>data_to_investigation</reference_type>
    </Internal_Reference>
@@ -26,7 +26,7 @@
     <name>Near</name>
     <type>Spacecraft</type>
     <Internal_Reference>
-     <lid_reference>urn:nasa:pds:context:instrument_host:near</lid_reference>
+     <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.near</lid_reference>
      <reference_type>is_instrument_host</reference_type>
     </Internal_Reference>
    </Observing_System_Component>
@@ -35,23 +35,23 @@
     <name>MSI</name>
     <type>Instrument</type>
     <Internal_Reference>
-     <lid_reference>urn:nasa:pds:context:instrument_host:near.msi</lid_reference>
+     <lid_reference>urn:nasa:pds:context:instrument:msi.near</lid_reference>
      <reference_type>is_instrument</reference_type>
     </Internal_Reference>
    </Observing_System_Component>
   </Observing_System>
 
   <Target_Identification>
-   <name>Eros</name>
+   <name> (433) Eros</name>
    <type>Asteroid</type>
   </Target_Identification>
   <Discipline_Area>
   
      <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>pixelvalue</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>pixelvalue</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -63,9 +63,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>xcoord</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>xcoord</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -77,9 +77,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>ycoord</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>ycoord</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -91,9 +91,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>zcoord</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>zcoord</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -105,9 +105,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>latitude</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>latitude</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -119,9 +119,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>longitude</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>longitude</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -133,9 +133,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>radius</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>radius</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -147,9 +147,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>incidence</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>incidence</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -161,9 +161,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>emission</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>emission</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -175,9 +175,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>phase</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>phase</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -189,9 +189,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>horizpixscale</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>horizpixscale</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -203,9 +203,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>vertpixscale</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>vertpixscale</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -217,9 +217,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>slope</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>slope</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -231,9 +231,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>elevation</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>elevation</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -245,9 +245,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>gravacc</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>gravacc</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -259,9 +259,9 @@
    </disp:Display_Settings>
    <disp:Display_Settings>
     <disp:Local_Internal_Reference>
-     <disp:local_identifier_reference>gravpot</disp:local_identifier_reference>
-     <disp:local_reference_type>display_settings_to_array
-          </disp:local_reference_type>
+     <local_identifier_reference>gravpot</local_identifier_reference>
+     <local_reference_type>display_settings_to_array
+          </local_reference_type>
     </disp:Local_Internal_Reference>
     <disp:Display_Direction>
      <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
@@ -274,14 +274,11 @@
 
   </Discipline_Area>
  </Observation_Area>
- <Reference_List>
-  <Internal_Reference>
-       <lidvid_reference>urn:nasa:pds:nearmsi:shape_model>NEAR-A-MSI-5-EROSSHAPE-V1.0 ver64q</lidvid_reference>
-       <reference_type>data_to_geometry</reference_type>
-       <lidvid_reference></lidvid_reference>
-       <reference_type>data_to_calibrated_product</reference_type>
-  </Internal_Reference>
- </Reference_List>
+<Reference_List>
+ <External_Reference>
+     <reference_text>Gaskell, R.W., Gaskell Eros Shape Model V1.0. NEAR-A-MSI-5-EROSSHAPE-V1.0. NASA Planetary Data System, 2008.</reference_text>
+ </External_Reference>
+</Reference_List>
  <File_Area_Observational>
   <File>
    <file_name></file_name>

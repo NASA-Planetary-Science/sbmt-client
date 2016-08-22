@@ -9,6 +9,9 @@ import java.util.Date;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 
@@ -17,6 +20,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.BackPlanesXml;
 import edu.jhuapl.near.util.BackPlanesXmlMeta;
 import edu.jhuapl.near.util.BackPlanesXmlMeta.BPMetaBuilder;
+import edu.jhuapl.near.util.BackPlanesXmlMeta.MetaField;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
 
@@ -178,18 +182,25 @@ public class MSIImage extends PerspectiveImage
         //add more metadata not parsed from fits or label file
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        String createDate = sdf.format(date).replace(' ', 'T');
-        xmlMetaDataBuilder.creationDate(createDate);
+        String createDate = sdf.format(date).replace(' ', 'T') + "Z";
+        xmlMetaDataBuilder.setMetaField(MetaField.CREATIONDATETIME, createDate);
 
         //generate Xml Document
         BackPlanesXmlMeta xmlMetaData = xmlMetaDataBuilder.build();
         BackPlanesXml xmlLabel = metaToXmlDoc(xmlMetaData, getXmlTemplate());
 
-        //add pointer to source file as an lidvid_reference
-        //PDS node will tell us what kind of reference type to use for source data
-        String refType = "data_to_calibrated_product";
-        String lidvidRef = xmlMetaData.srcFileName;
-        xmlLabel.setLidvidReference(lidvidRef, refType);
+        //add source file as an external reference. Do this because the source is in PDS3 and has no PDS4 LID.
+        //the following assumes there is only 1 <Reference_List>. This will have to be modified if multiple <Reference_List> tags exist.
+        NodeList docNodeList = xmlLabel.xmlDoc.doc.getElementsByTagName("Reference_List");
+        Node externalRefList = docNodeList.item(0);
+
+        //text for <description> tag within <External_Reference>
+        String datasetId = xmlMetaData.metaStrings.get(MetaField.DATASETID);
+        String desc = xmlMetaData.metaStrings.get(MetaField.SRCFILENAME) + " from " + datasetId;
+
+        //text for <reference_text> tag within <External_Reference>
+        String refText = "Murchie S., Taylor H., NEAR MSI IMAGES FOR EROS/ORBIT, " + datasetId + " NASA Planetary Data System, 2001.";
+        xmlLabel.addExternalRef(xmlLabel.xmlDoc, externalRefList, desc, refText);
 
         //create PDS4 XML label
         try
@@ -219,7 +230,10 @@ public class MSIImage extends PerspectiveImage
             //add metadata describing fits file.
             BasicHDU thisHDU = thisFits.getHDU(0);
             xmlMetaDataBuilder.hdrSize(thisHDU.getHeader().getSize());
-            xmlMetaDataBuilder.setProduct(fitsFile.getName());
+            xmlMetaDataBuilder.setMetaField(MetaField.PRODUCTFILENAME, fitsFile.getName().toLowerCase());
+
+            //build logical ID
+            xmlMetaDataBuilder.setMetaField(MetaField.LOGICALID, "urn:nasa:pds:nearmsi.shapebackplane:data:" + fitsFile.getName().toLowerCase());
 
             /*
              * retrieve FITS axes information. Fits library returns the axes in order of
@@ -322,11 +336,15 @@ public class MSIImage extends PerspectiveImage
         //parse contents of PDS3 label. This could be streamlined and made more OO but for now I brute force.
         for (String line : labelContents) {
             if (line.startsWith("START_TIME")) {
-                metaBuilder.startDate(BackPlanesXmlMeta.valFromKeyVal(line));
+                metaBuilder.setMetaField(MetaField.STARTDATETIME, BackPlanesXmlMeta.valFromKeyVal(line));
             } else if (line.startsWith("STOP_TIME")) {
-                metaBuilder.stopDate(BackPlanesXmlMeta.valFromKeyVal(line));
+                metaBuilder.setMetaField(MetaField.STOPDATETIME, BackPlanesXmlMeta.valFromKeyVal(line));
             } else if (line.startsWith("PRODUCT_ID")) {
-                metaBuilder.setSource(BackPlanesXmlMeta.valFromKeyVal(line));
+
+                //this is the product ID of the original PDS3 label, which is referenced in the PDS4 label as the source filename.
+                metaBuilder.setMetaField(MetaField.SRCFILENAME, BackPlanesXmlMeta.valFromKeyVal(line));
+            } else if (line.startsWith("DATA_SET_ID")) {
+                metaBuilder.setMetaField(MetaField.DATASETID, BackPlanesXmlMeta.valFromKeyVal(line));
             }
         }
 
