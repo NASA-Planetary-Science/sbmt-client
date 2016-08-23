@@ -32,6 +32,7 @@ public class Line extends StructureModel.Structure
     public boolean hidden = false;
     public int labelId=-1;
     public boolean editingLabel=false;
+    public boolean labelHidden=false;
 
     private SmallBodyModel smallBodyModel;
 
@@ -343,5 +344,25 @@ public class Line extends StructureModel.Structure
                 maxDistFromCentroid = dist;
         }
         return maxDistFromCentroid;
+    }
+
+    public boolean getHidden()
+    {
+        return hidden;
+    }
+
+    public boolean getLabelHidden()
+    {
+        return labelHidden;
+    }
+
+    public void setHidden(boolean b)
+    {
+        hidden = b;
+    }
+
+    public void setLabelHidden(boolean b)
+    {
+        labelHidden=b;
     }
 }

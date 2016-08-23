@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
 import vtk.vtkCaptionActor2D;
@@ -92,6 +90,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public double flattening; // ratio of semiminor axis to semimajor axis
         public double angle;
         public boolean hidden = false;
+        public boolean labelHidden=false;
 
         public vtkPolyData boundaryPolyData;
         public vtkPolyData interiorPolyData;
@@ -215,6 +214,26 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public String getLabel()
         {
             return label;
+        }
+
+        public boolean getHidden()
+        {
+            return hidden;
+        }
+
+        public boolean getLabelHidden()
+        {
+            return labelHidden;
+        }
+
+        public void setHidden(boolean b)
+        {
+            hidden = b;
+        }
+
+        public void setLabelHidden(boolean b)
+        {
+            labelHidden=b;
         }
 
     }
@@ -1231,6 +1250,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 if(pol.caption!=null)
                     pol.caption.VisibilityOn();
                 pol.hidden = !b;
+                setLabelsVisible(!b);
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
                 needToUpdate = true;
             }
@@ -1241,24 +1261,25 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
 
-        boundaryActor.SetVisibility(b ? 1 : 0);
-        interiorActor.SetVisibility(b ? 1 : 0);
-        super.setVisible(b);
+        //boundaryActor.SetVisibility(b ? 1 : 0);
+        //interiorActor.SetVisibility(b ? 1 : 0);
+        //super.setVisible(b);
     }
 
     public void setLabelsVisible(boolean b)
     {
-        boolean needToUpdate = false;
         for (EllipsePolygon pol : polygons)
         {
             if(pol.caption!=null)
+            {
                 pol.caption.SetVisibility(b ? 1 : 0);
+                pol.labelHidden=b;
+            }
         }
-        if (needToUpdate)
-        {
-            updatePolyData();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
     }
 
     public void savePlateDataInsideStructure(int idx, File file) throws IOException
@@ -1273,6 +1294,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         for (int i=0; i<polygonIds.length; ++i)
         {
             EllipsePolygon pol = polygons.get(polygonIds[i]);
+            System.out.println(pol.getHidden());
             if (pol.hidden != hidden)
             {
                 if(pol.caption!=null)
@@ -1280,11 +1302,15 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                     if(!hidden&&!labelHidden)
                         pol.caption.VisibilityOn();
                     else
+                    {
                         pol.caption.VisibilityOff();
+                        pol.labelHidden=true;
+                    }
                 }
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
+            System.out.println(pol.getHidden());
         }
 
         updatePolyData();
@@ -1296,6 +1322,12 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
     {
         return polygons.get(id).hidden;
     }
+
+    public boolean isLabelHidden(int id)
+    {
+        return polygons.get(id).labelHidden;
+    }
+
 
     @Override
     public double[] getStructureCenter(int id)
@@ -1381,13 +1413,13 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void showLabel(int index)
     {
-        if(polygons.get(index).getLabel().equals(""))
+        if(polygons.get(index).caption==null||polygons.get(index).caption.GetCaption().equals(""))
         {
-            JOptionPane.showMessageDialog(null, "Please name the structure!");
-            return;
+            setStructureLabel(index, " ");
         }
-        if(!polygons.get(index).hidden)
-            polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
+        polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
+        boolean b = (polygons.get(index).caption.GetVisibility() == 0);
+        polygons.get(index).labelHidden=b;
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
     }

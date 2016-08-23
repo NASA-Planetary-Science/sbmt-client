@@ -24,6 +24,10 @@ public abstract class StructureModel extends Model
         public abstract void setColor(int[] color);
         public abstract void setLabel(String label);
         public abstract String getLabel();
+        public abstract boolean getHidden();
+        public abstract boolean getLabelHidden();
+        public abstract void setHidden(boolean b);
+        public abstract void setLabelHidden(boolean b);
     }
 
     public abstract List<vtkProp> getProps();
@@ -71,6 +75,8 @@ public abstract class StructureModel extends Model
     public abstract void colorLabel(int[] colors);
 
     public abstract void setLabelsVisible(boolean b);
+
+    public abstract boolean isLabelHidden(int id);
 
     public abstract void showBorders();
 

@@ -163,6 +163,16 @@ abstract public class StructuresPopupMenu extends PopupMenu
             }
         }
 
+        showLabelButton.setSelected(true);
+        for (int i=0; i<selectedStructures.length; ++i)
+        {
+            if (!model.isLabelHidden(selectedStructures[i]))
+            {
+                showLabelButton.setSelected(false);
+                break;
+            }
+        }
+
         // If any of the selected structures are displaying interior then show
         // the display interior menu item as unchecked. Otherwise show it checked.
         if (displayInteriorMenuItem != null)

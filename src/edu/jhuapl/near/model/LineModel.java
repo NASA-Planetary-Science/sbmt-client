@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -1409,16 +1408,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void showLabel(int index)
     {
-        if(lines.get(index).getLabel().equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Please name the structure!");
-            return;
-        }
-
         if(!lines.get(index).hidden)
             lines.get(index).caption.SetVisibility(1-lines.get(index).caption.GetVisibility());
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
+    }
+
+    public boolean isLabelHidden(int id)
+    {
+        return lines.get(id).labelHidden;
     }
 
     public void colorLabel(int[] colors)
