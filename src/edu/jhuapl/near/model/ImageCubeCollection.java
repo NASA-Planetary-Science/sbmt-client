@@ -16,7 +16,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.util.Properties;
 
-public class ImageCubeCollection extends Model implements PropertyChangeListener
+public class ImageCubeCollection extends AbstractModel implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
 

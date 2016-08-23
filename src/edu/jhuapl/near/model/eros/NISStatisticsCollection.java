@@ -8,9 +8,9 @@ import com.google.common.collect.Lists;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 
-public class NISStatisticsCollection extends Model implements PropertyChangeListener
+public class NISStatisticsCollection extends AbstractModel implements PropertyChangeListener
 {
     List<vtkProp> props=Lists.newArrayList();
     List<NISStatistics> stats=Lists.newArrayList();

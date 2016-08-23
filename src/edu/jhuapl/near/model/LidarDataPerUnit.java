@@ -33,7 +33,7 @@ import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 
-public class LidarDataPerUnit extends Model
+public class LidarDataPerUnit extends AbstractModel
 {
     private vtkPolyData polydata;
     private vtkPolyData polydataSc;

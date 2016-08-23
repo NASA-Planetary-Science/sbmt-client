@@ -6,9 +6,9 @@ import com.google.common.collect.Lists;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 
-public class NISStatistics extends Model
+public class NISStatistics extends AbstractModel
 {
     int nFaces;
     double[] th;

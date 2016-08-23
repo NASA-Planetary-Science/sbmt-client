@@ -24,7 +24,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class Graticule extends Model implements PropertyChangeListener
+public class Graticule extends AbstractModel implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();

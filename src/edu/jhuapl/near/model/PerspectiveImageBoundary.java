@@ -24,7 +24,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class PerspectiveImageBoundary extends Model implements PropertyChangeListener
+public class PerspectiveImageBoundary extends AbstractModel implements PropertyChangeListener
 {
     private vtkActor actor;
     private vtkPolyData boundary;

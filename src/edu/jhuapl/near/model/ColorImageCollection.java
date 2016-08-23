@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -14,9 +16,7 @@ import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.util.Properties;
 
-import nom.tam.fits.FitsException;
-
-public class ColorImageCollection extends Model implements PropertyChangeListener
+public class ColorImageCollection extends AbstractModel implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
 

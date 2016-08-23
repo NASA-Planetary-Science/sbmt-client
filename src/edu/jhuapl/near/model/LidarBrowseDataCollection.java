@@ -19,7 +19,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.Properties;
 
-public class LidarBrowseDataCollection extends Model implements PropertyChangeListener
+public class LidarBrowseDataCollection extends AbstractModel implements PropertyChangeListener
 {
     /**
      * Contains information about a single lidar file.

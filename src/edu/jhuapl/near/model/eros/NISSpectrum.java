@@ -26,7 +26,7 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.FileUtil;
@@ -36,7 +36,7 @@ import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
 
-public class NISSpectrum extends Model implements PropertyChangeListener
+public class NISSpectrum extends AbstractModel implements PropertyChangeListener
 {
     private String fullpath; // The actual path of the spectrum stored on the local disk (after downloading from the server)
     private String serverpath; // The path of the spectrum as passed into the constructor. This is not the

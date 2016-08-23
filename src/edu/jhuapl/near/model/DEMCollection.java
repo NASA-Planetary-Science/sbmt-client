@@ -18,7 +18,7 @@ import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.util.Properties;
 
-public class DEMCollection extends Model implements PropertyChangeListener
+public class DEMCollection extends AbstractModel implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
     private ModelManager modelManager;

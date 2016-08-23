@@ -20,7 +20,7 @@ public class PointInCylinderChecker extends PointInRegionChecker
      * radius.
      */
     public PointInCylinderChecker(
-            SmallBodyModel smallBodyModel,
+            PolyhedralModel smallBodyModel,
             double[] center,
             double radius)
     {

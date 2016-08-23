@@ -7,9 +7,7 @@ import java.util.HashMap;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model.CommonData;
-
-public interface ModelManager extends PropertyChangeListener
+public interface ModelManager extends Model, PropertyChangeListener
 {
     public boolean isBuiltIn();
 

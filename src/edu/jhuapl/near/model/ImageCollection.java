@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import nom.tam.fits.FitsException;
+
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -16,9 +18,7 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.util.Properties;
 
-import nom.tam.fits.FitsException;
-
-public class ImageCollection extends Model implements PropertyChangeListener
+public class ImageCollection extends AbstractModel implements PropertyChangeListener
 {
     private SmallBodyModel smallBodyModel;
 

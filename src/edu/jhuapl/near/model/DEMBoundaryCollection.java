@@ -20,9 +20,9 @@ import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Properties;
 
-public class DEMBoundaryCollection extends Model implements PropertyChangeListener
+public class DEMBoundaryCollection extends AbstractModel implements PropertyChangeListener
 {
-    public class DEMBoundary extends Model implements PropertyChangeListener
+    public class DEMBoundary extends AbstractModel implements PropertyChangeListener
     {
         private vtkActor actor;
         private vtkPolyData boundary;

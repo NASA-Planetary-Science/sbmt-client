@@ -58,7 +58,7 @@ import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.near.util.gravity.Gravity;
 
-public class LidarSearchDataCollection extends Model
+public class LidarSearchDataCollection extends AbstractModel
 {
     public enum TrackFileType
     {

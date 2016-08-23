@@ -12,7 +12,7 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.LatLon;
 
 
-public abstract class PolyhedralModel extends Model
+public abstract class PolyhedralModel extends AbstractModel
 {
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";

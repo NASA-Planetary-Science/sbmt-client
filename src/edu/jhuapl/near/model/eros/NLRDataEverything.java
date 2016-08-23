@@ -9,10 +9,10 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkPolyDataReader;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 import edu.jhuapl.near.util.FileCache;
 
-public class NLRDataEverything extends Model
+public class NLRDataEverything extends AbstractModel
 {
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
 

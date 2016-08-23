@@ -18,10 +18,10 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 import edu.jhuapl.near.util.Properties;
 
-public class LineamentModel extends Model
+public class LineamentModel extends AbstractModel
 {
     private HashMap<Integer, Lineament> idToLineamentMap = new HashMap<Integer, Lineament>();
     private HashMap<Integer, Lineament> cellIdToLineamentMap = new HashMap<Integer, Lineament>();

@@ -14,7 +14,7 @@ import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.Properties;
 
 
-public abstract class Image extends Model implements PropertyChangeListener
+public abstract class Image extends AbstractModel implements PropertyChangeListener
 {
     public static final String IMAGE_NAMES = "ImageNames"; // What name to give this image for display
     public static final String IMAGE_FILENAMES = "ImageFilenames"; // Filename of image on disk

@@ -56,11 +56,11 @@ import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.PointInCylinderChecker;
 import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -74,7 +74,7 @@ import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, ItemListener
 {
-    protected final SbmtModelManager modelManager;
+    protected final ModelManager modelManager;
     protected PickManager pickManager;
     protected LidarSearchDataCollection lidarModel;
     private java.util.Date startDate = null;
@@ -86,7 +86,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     /** Creates new form LidarSearchPanel */
     public LidarSearchPanel(SmallBodyConfig smallBodyConfig,
-            final SbmtModelManager modelManager,
+            final ModelManager modelManager,
             final PickManager pickManager,
             Renderer renderer)
     {

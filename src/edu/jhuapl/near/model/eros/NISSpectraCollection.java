@@ -16,11 +16,11 @@ import vtk.vtkFeatureEdges;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.AbstractModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Properties;
 
-public class NISSpectraCollection extends Model implements PropertyChangeListener
+public class NISSpectraCollection extends AbstractModel implements PropertyChangeListener
 {
     private ArrayList<vtkProp> allActors = new ArrayList<vtkProp>();
 

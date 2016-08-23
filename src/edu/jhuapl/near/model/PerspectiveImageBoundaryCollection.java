@@ -17,7 +17,7 @@ import vtk.vtkProp;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.util.Properties;
 
-public class PerspectiveImageBoundaryCollection extends Model implements PropertyChangeListener
+public class PerspectiveImageBoundaryCollection extends AbstractModel implements PropertyChangeListener
 {
     private HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>> boundaryToActorsMap = new HashMap<PerspectiveImageBoundary, ArrayList<vtkProp>>();
     private HashMap<vtkProp, PerspectiveImageBoundary> actorToBoundaryMap = new HashMap<vtkProp, PerspectiveImageBoundary>();
