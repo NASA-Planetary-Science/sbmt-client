@@ -1271,29 +1271,24 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
 
-        lineActor.SetVisibility(b ? 1 : 0);
+        /*lineActor.SetVisibility(b ? 1 : 0);
         lineActivationActor.SetVisibility(b ? 1 : 0);
-        super.setVisible(b);
+        super.setVisible(b);*/
     }
 
     public void setLabelsVisible(boolean b)
     {
-        boolean needToUpdate = false;
         for (Line lin : lines)
         {
             if(lin.caption!=null)
             {
-                if(b)
-                    lin.caption.VisibilityOn();
-                else
-                    lin.caption.VisibilityOff();
+                lin.caption.SetVisibility(b ? 1 : 0);
+                lin.labelHidden=b;
             }
         }
-        if (needToUpdate)
-        {
-            updatePolyData();
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     @Override

@@ -1294,7 +1294,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         for (int i=0; i<polygonIds.length; ++i)
         {
             EllipsePolygon pol = polygons.get(polygonIds[i]);
-            System.out.println(pol.getHidden());
             if (pol.hidden != hidden)
             {
                 if(pol.caption!=null)
@@ -1310,7 +1309,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 pol.hidden = hidden;
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
             }
-            System.out.println(pol.getHidden());
         }
 
         updatePolyData();
@@ -1417,7 +1415,9 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             setStructureLabel(index, " ");
         }
-        polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
+
+        if(!polygons.get(index).getHidden())
+            polygons.get(index).caption.SetVisibility(1-polygons.get(index).caption.GetVisibility());
         boolean b = (polygons.get(index).caption.GetVisibility() == 0);
         polygons.get(index).labelHidden=b;
 
