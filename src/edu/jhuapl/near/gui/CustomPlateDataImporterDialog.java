@@ -26,8 +26,8 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 
 import edu.jhuapl.near.model.ColoringInfo;
+import edu.jhuapl.near.model.GenericPolyhedralModel.Format;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.SmallBodyModel.Format;
 
 
 public class CustomPlateDataImporterDialog extends javax.swing.JDialog
