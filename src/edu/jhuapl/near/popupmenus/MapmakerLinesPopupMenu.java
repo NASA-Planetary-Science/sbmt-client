@@ -12,10 +12,12 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.Renderer;
+import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.near.util.gravity.Gravity;
 
 /**
  * Popup menu used by the mapmaker view for profiles. It is meant to replace LinesPopupMenu
@@ -58,7 +60,10 @@ public class MapmakerLinesPopupMenu extends PopupMenu
             {
                 File file = CustomFileChooser.showSaveDialog(getInvoker(), "Save Profile", "profile.csv");
                 if (file != null)
-                    model.saveProfileUsingGravityProgram(pickedCellId, file, parentPolyhedralModel);
+                {
+                    Line lin = model.getLines().get(pickedCellId);
+                    Gravity.saveProfileUsingGravityProgram(lin, pickedCellId, file, parentPolyhedralModel, parentPolyhedralModel);
+                }
             }
             catch (Exception e1)
             {

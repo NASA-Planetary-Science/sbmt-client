@@ -12,12 +12,16 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import altwg.util.FitsUtil;
+
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkIdList;
 import vtk.vtkPointLocator;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
+import edu.jhuapl.near.model.Line;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
@@ -25,8 +29,6 @@ import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.gravity.ParallelGrid.GridFunction;
 import edu.jhuapl.near.util.gravity.ParallelLoop.LoopFunction;
-
-import altwg.util.FitsUtil;
 
 /**
  * Gravity program. This the abstract base class for computing gravity values
@@ -279,6 +281,137 @@ abstract public class Gravity {
             potential.add(values.potential);
        }
    }
+
+    /**
+     * Similar to the saveProfile function but this one uses the gravity program
+     * directly to compute the slope, elevation, acceleration, and potential columns
+     * rather than simply getting the value from the plate data. It also has
+     * a third argument for passing in a different shape model to use which is useful
+     * for saving profiles on mapmaker maplets since we can't run the gravity program
+     * on a maplet. It also does not save out any of the plate data.
+     *
+     * @param cellId
+     * @param file
+     * @param otherPolyhedralModel - use this small body for running gravity program. If null
+     *                              use small body model passed into constructor.
+     * @throws Exception
+     */
+    public static void saveProfileUsingGravityProgram(Line lin, int cellId, File file, PolyhedralModel smallBodyModel, PolyhedralModel otherPolyhedralModel) throws Exception
+    {
+        if (otherPolyhedralModel == null)
+            otherPolyhedralModel = smallBodyModel;
+
+//        Line lin = this.lines.get(cellId);
+
+        if (lin.controlPointIds.size() != 2)
+            throw new Exception("Line must contain exactly 2 control points.");
+
+        final String lineSeparator = System.getProperty("line.separator");
+
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        // write header
+        out.write("Distance (m)");
+        out.write(",X (m)");
+        out.write(",Y (m)");
+        out.write(",Z (m)");
+        out.write(",Latitude (deg)");
+        out.write(",Longitude (deg)");
+        out.write(",Radius (m)");
+
+        out.write(",Slope (deg)");
+        out.write(",Elevation (m)");
+        out.write(",Gravitational Acceleration (m/s^2)");
+        out.write(",Gravitational Potential (J/kg)");
+
+        out.write(lineSeparator);
+
+
+        ArrayList<Point3D> xyzPointList = lin.xyzPointList;
+
+        // Run the gravity program
+        ArrayList<Double> elevation = new ArrayList<Double>();
+        ArrayList<Double> accelerationMagnitude = new ArrayList<Double>();
+        ArrayList<Point3D> accelerationVector = new ArrayList<Point3D>();
+        ArrayList<Double> potential = new ArrayList<Double>();
+        ArrayList<double[]> pointList = new ArrayList<double[]>();
+        for (Point3D p : lin.xyzPointList)
+            pointList.add(p.xyz);
+        Gravity.getGravityAtPoints(
+                pointList,
+                smallBodyModel.getDensity(),
+                smallBodyModel.getRotationRate(),
+                smallBodyModel.getReferencePotential(),
+                smallBodyModel.getSmallBodyPolyData(),
+                elevation,
+                accelerationMagnitude,
+                accelerationVector,
+                potential);
+
+        // To compute the distance, assume we have a straight line connecting the first
+        // and last points of xyzPointList. For each point, p, in xyzPointList, find the point
+        // on the line closest to p. The distance from p to the start of the line is what
+        // is placed in heights. Use SPICE's nplnpt function for this.
+
+        double[] first = xyzPointList.get(0).xyz;
+        double[] last = xyzPointList.get(xyzPointList.size()-1).xyz;
+        double[] lindir = new double[3];
+        lindir[0] = last[0] - first[0];
+        lindir[1] = last[1] - first[1];
+        lindir[2] = last[2] - first[2];
+
+        // The following can be true if the user clicks on the same point twice
+        boolean zeroLineDir = MathUtil.vzero(lindir);
+
+        double[] pnear = new double[3];
+        double[] notused = new double[1];
+
+        int i = 0;
+        for (Point3D p : xyzPointList)
+        {
+            double distance = 0.0;
+            if (!zeroLineDir)
+            {
+                MathUtil.nplnpt(first, lindir, p.xyz, pnear, notused);
+                distance = 1000.0 * MathUtil.distanceBetween(first, pnear);
+            }
+
+            out.write(String.valueOf(distance));
+
+            out.write("," + 1000.0 * p.xyz[0]);
+            out.write("," + 1000.0 * p.xyz[1]);
+            out.write("," + 1000.0 * p.xyz[2]);
+
+            LatLon llr = MathUtil.reclat(p.xyz).toDegrees();
+            out.write("," + llr.lat);
+            out.write("," + llr.lon);
+            out.write("," + 1000.0 * llr.rad);
+
+            // compute slope. Note to get the normal, use the smallBodyModel passed into constructor of
+            // this class, not the smallBodyModel passed into this function.
+            // The slope is the angular separation between the (negative) acceleration vector and
+            // the normal vector.
+            double[] normal = smallBodyModel.getClosestNormal(p.xyz);
+            double[] accVector = accelerationVector.get(i).xyz;
+            accVector[0] = -accVector[0];
+            accVector[1] = -accVector[1];
+            accVector[2] = -accVector[2];
+            double slope = MathUtil.vsep(normal, accVector) * 180.0 / Math.PI;
+
+            out.write("," + slope);
+            out.write("," + elevation.get(i));
+            out.write("," + accelerationMagnitude.get(i));
+            out.write("," + potential.get(i));
+
+            out.write(lineSeparator);
+            ++i;
+        }
+
+        out.close();
+    }
+
+
 
     private void getCellPoints(vtkPolyData polydata, int cellId, vtkIdList idList, double[] pt0, double[] pt1,
             double[] pt2) {

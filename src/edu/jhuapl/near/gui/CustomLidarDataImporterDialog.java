@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
+import edu.jhuapl.near.model.LidarDatasourceInfo;
 
 
 public class CustomLidarDataImporterDialog extends javax.swing.JDialog

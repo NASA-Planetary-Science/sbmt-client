@@ -10,8 +10,6 @@ import vtk.vtkDataArray;
 import vtk.vtkPolyData;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
-import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.LatLon;
 

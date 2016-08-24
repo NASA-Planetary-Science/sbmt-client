@@ -2057,7 +2057,7 @@ public class SmallBodyConfig extends PolyhedralModelConfig
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
     public ImagingInstrument[] imagingInstruments = {};
-    public boolean hasLidarData = false;
+
     public boolean hasMapmaker = false;
     public boolean hasBigmap = false;
     public boolean hasSpectralData = false;

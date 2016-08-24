@@ -100,35 +100,6 @@ public class SmallBodyModel extends PolyhedralModel
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
 
-    // Class storing info related to plate data used to color shape model
-    public static class ColoringInfo
-    {
-        public String coloringName = null;
-        public String coloringUnits = null;
-        public boolean coloringHasNulls = false;
-        public int resolutionLevel = 0;
-        public double[] defaultColoringRange = null;
-        public double[] currentColoringRange = null;
-        public vtkFloatArray coloringValues = null;
-        public String coloringFile = null;
-        public boolean builtIn = true;
-        public Format format = Format.TXT;
-
-        @Override
-        public String toString()
-        {
-            String str = coloringName;
-            if (coloringUnits != null && !coloringUnits.isEmpty())
-                str += ", " + coloringUnits;
-            if (format != Format.TXT)
-                str += ", " + format.toString();
-            if (coloringHasNulls)
-                str += ", contains invalid data";
-            if (builtIn)
-                str += ", (built-in and cannot be modified)";
-            return str;
-        }
-    }
     ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
     private ColoringValueType coloringValueType;
     private int coloringIndex = -1;
@@ -141,19 +112,6 @@ public class SmallBodyModel extends PolyhedralModel
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
 
-    // Class storing info related to plate data used to color shape model
-    public static class LidarDatasourceInfo
-    {
-        public String name = null;
-        public String path = null;
-
-        @Override
-        public String toString()
-        {
-            String str = name + " (" + path + ")";
-            return str;
-        }
-    }
     ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
     private int lidarDatasourceIndex = -1;
 

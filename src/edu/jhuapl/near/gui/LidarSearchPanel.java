@@ -118,7 +118,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         fileTypeComboBox.setVisible(false);
 
         Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();
-        if (smallBodyConfig.hasLidarData)
+        boolean hasLidarData = smallBodyConfig.hasLidarData;
+        if (hasLidarData)
         {
             DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(sourceMap.keySet().toArray());
             sourceComboBox.setModel(sourceComboBoxModel);
