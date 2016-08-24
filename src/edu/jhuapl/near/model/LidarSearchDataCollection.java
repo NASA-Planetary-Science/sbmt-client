@@ -67,8 +67,8 @@ public class LidarSearchDataCollection extends AbstractModel
         OLA_LEVEL_2
     };
 
-    private SmallBodyConfig smallBodyConfig;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModelConfig smallBodyConfig;
+    private PolyhedralModel smallBodyModel;
     private vtkPolyData polydata;   // target points
     private vtkPolyData selectedPointPolydata;
     protected ArrayList<LidarPoint> originalPoints = new ArrayList<LidarPoint>();

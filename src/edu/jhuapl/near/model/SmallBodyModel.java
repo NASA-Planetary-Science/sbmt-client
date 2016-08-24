@@ -1,5 +1,13 @@
 package edu.jhuapl.near.model;
 
+import java.io.File;
+import java.io.IOException;
+
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
+import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
 public class SmallBodyModel extends GenericPolyhedralModel
@@ -50,4 +58,44 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //
 //        initialize(defaultModelFile);
     }
+
+    protected void loadColoringDataFits(File file, ColoringInfo info) throws IOException
+    {
+        vtkFloatArray array = new vtkFloatArray();
+
+        array.SetNumberOfComponents(1);
+        if (getColoringValueType() == ColoringValueType.POINT_DATA)
+            array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfPoints());
+        else
+            array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfCells());
+
+
+        try {
+            Fits fits = new Fits(file);
+            fits.read();
+
+            BasicHDU hdu = fits.getHDU(1);
+            if (hdu instanceof AsciiTableHDU)
+            {
+                AsciiTableHDU athdu = (AsciiTableHDU)hdu;
+                int ncols = athdu.getNCols();
+                int nrows = athdu.getNRows();
+
+//                System.out.println("Reading Ancillary FITS Data");
+//                System.out.println("Number of Plates: " + nrows);
+
+                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
+                for (int j=0; j<nrows; j++)
+                {
+                    float value = scalars[j];
+                    array.SetTuple1(j, value);
+                }
+            }
+
+        } catch (Exception e) { e.printStackTrace(); }
+
+        info.coloringValues = array;
+    }
+
+
 }

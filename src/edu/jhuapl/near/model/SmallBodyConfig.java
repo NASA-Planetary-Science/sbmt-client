@@ -1,10 +1,8 @@
 package edu.jhuapl.near.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.model.Image.ImageSource;
@@ -280,7 +278,129 @@ public class SmallBodyConfig extends PolyhedralModelConfig
         3145728
     };
 
+    //
+    // Additional variables not inherited from parent
+    //
+
+    public ShapeModelBody body; // e.g. EROS or ITOKAWA
+    public ShapeModelType type; // e.g. asteroid, comet, satellite
+    public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
+    public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
+    public ShapeModelAuthor author; // e.g. Gaskell
+
     static public final ArrayList<SmallBodyConfig> builtInSmallBodyConfigs = new ArrayList<SmallBodyConfig>();
+
+
+    //
+    // methods
+    //
+    /**
+     * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
+     */
+     public String getPathRepresentation()
+     {
+         if (ShapeModelAuthor.CUSTOM == author)
+         {
+             return ShapeModelAuthor.CUSTOM + " > " + customName;
+         }
+         else
+         {
+             String path = type.str;
+             if (population != null)
+                 path += " > " + population;
+             path += " > " + body;
+             if (dataUsed != null)
+                 path += " > " + dataUsed;
+             if (author != null)
+                 path += " > " + author;
+             if (version != null)
+                 path += " (" + version + ")";
+             return path;
+         }
+     }
+
+     /**
+      * Return a unique name for this model. No other model may have this
+      * name. Note that only applies within built-in models or custom models
+      * but a custom model can share the name of a built-in one or vice versa.
+      * By default simply return the author concatenated with the
+      * name if the author is not null or just the name if the author
+      * is null.
+      * @return
+      */
+     public String getUniqueName()
+     {
+         if (ShapeModelAuthor.CUSTOM == author)
+             return author + "/" + customName;
+         else if (author != null)
+         {
+             if (version == null)
+                 return author + "/" + body;
+             else
+                 return author + "/" + body + " (" + version + ")";
+         }
+         else
+             return body.toString();
+     }
+
+     public String getShapeModelName()
+     {
+         if (author == ShapeModelAuthor.CUSTOM)
+             return customName;
+         else
+         {
+             String ver = "";
+             if (version != null)
+                 ver += " (" + version + ")";
+             return body.toString() + ver;
+         }
+     }
+
+    /**
+     * Get a SmallBodyConfig of a specific name and author.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same. This version of the function
+     * assumes the version is null (unlike the other version in which you can specify
+     * the version).
+     *
+     * @param name
+     * @param author
+     * @return
+     */
+    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
+    {
+        return getSmallBodyConfig(name, author, null);
+    }
+
+    /**
+     * Get a SmallBodyConfig of a specific name, author, and version.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same.
+     *
+     * @param name
+     * @param author
+     * @param version
+     * @return
+     */
+    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
+    {
+        for (SmallBodyConfig config : builtInSmallBodyConfigs)
+        {
+            if (config.body == name && config.author == author &&
+                    ((config.version == null && version == null) || (version != null && version.equals(config.version)))
+                    )
+                return config;
+        }
+
+        System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
+                " and author " + author + " and version " + version);
+
+        return null;
+    }
+
+    //
+    //  Define all the built-in bodies to be loaded from the server
+    //
 
     static
     {
@@ -2042,239 +2162,21 @@ public class SmallBodyConfig extends PolyhedralModelConfig
         }
     }
 
-    public ShapeModelBody body; // e.g. EROS or ITOKAWA
-    public ShapeModelType type; // e.g. asteroid, comet, satellite
-    public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
-    public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
-    public ShapeModelAuthor author; // e.g. Gaskell
-    public String version; // e.g. 2.0
-    public String rootDirOnServer;
-    public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
-    public boolean useMinimumReferencePotential = false; // uses average otherwise
-    public double density = 0.0; // in units g/cm^3
-    public double rotationRate = 0.0; // in units radians/sec
-
-    public boolean hasColoringData = true;
-    public boolean hasImageMap = false;
-    public ImagingInstrument[] imagingInstruments = {};
-
-    public boolean hasMapmaker = false;
-    public boolean hasBigmap = false;
-    public boolean hasSpectralData = false;
-    public boolean hasLineamentData = false;
-    public boolean hasCustomBodyCubeSize = false;
-
-    // if hasCustomBodyCubeSize is true, the following must be filled in and valid
-    public double customBodyCubeSize; // km
-
-    // if spectralModes is not empty, the following must be filled in
-    public Date imageSearchDefaultStartDate;
-    public Date imageSearchDefaultEndDate;
-    public String[] imageSearchFilterNames;
-    public String[] imageSearchUserDefinedCheckBoxesNames;
-    public double imageSearchDefaultMaxSpacecraftDistance;
-    public double imageSearchDefaultMaxResolution;
-
-    // if hasLidarData is true, the following must be filled in
-    public Map<String, String> lidarSearchDataSourceMap;
-    public int[] lidarBrowseXYZIndices;
-    public int[] lidarBrowseSpacecraftIndices;
-    public int lidarBrowseOutgoingIntensityIndex;
-    public int lidarBrowseReceivedIntensityIndex;
-    public boolean lidarBrowseIntensityEnabled = false;
-    public boolean lidarBrowseIsSpacecraftInSphericalCoordinates;
-    public int lidarBrowseTimeIndex;
-    public int lidarBrowseNoiseIndex;
-    public String lidarBrowseFileListResourcePath;
-    public int lidarBrowseNumberHeaderLines;
-    public boolean lidarBrowseIsBinary = false;
-    public int lidarBrowseBinaryRecordSize; // only required if lidarBrowseIsBinary is true
-
-    // Return whether or not the units of the lidar points are in meters. If false
-    // they are assumed to be in kilometers.
-    public boolean lidarBrowseIsInMeters;
-    public double lidarOffsetScale;
-    public Instrument lidarInstrumentName = Instrument.LIDAR;
-    public String customName;
-    public boolean customTemporary = false;
-
-    public boolean hasHypertreeBasedLidarSearch=false;
-
     protected SmallBodyConfig clone()
     {
-        SmallBodyConfig c = new SmallBodyConfig();
+        SmallBodyConfig c = (SmallBodyConfig)super.clone();
+
         c.body = this.body;
         c.type = this.type;
         c.population = this.population;
         c.dataUsed = this.dataUsed;
         c.author = this.author;
         c.version = this.version;
-        c.rootDirOnServer = this.rootDirOnServer;
-        c.hasColoringData = this.hasColoringData;
-        c.hasImageMap = this.hasImageMap;
 
-        // deep clone imaging instruments
-        if (this.imagingInstruments != null)
-        {
-            int length = this.imagingInstruments.length;
-            c.imagingInstruments = new ImagingInstrument[length];
-            for (int i = 0; i < length; i++)
-                c.imagingInstruments[i] = this.imagingInstruments[i].clone();
-        }
-
-        c.hasLidarData = this.hasLidarData;
-        c.hasMapmaker = this.hasMapmaker;
-        c.hasBigmap = this.hasBigmap;
-        c.density = this.density;
-        c.rotationRate = this.rotationRate;
-        c.useMinimumReferencePotential = this.useMinimumReferencePotential;
-        c.hasSpectralData = this.hasSpectralData;
-        c.hasLineamentData = this.hasLineamentData;
-        c.hasCustomBodyCubeSize = this.hasCustomBodyCubeSize;
-        c.customBodyCubeSize = this.customBodyCubeSize;
-        if (this.smallBodyLabelPerResolutionLevel != null)
-            c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
-        if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
-            c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
-
-        if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
-        {
-            c.imagingInstruments = this.imagingInstruments.clone();
-            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
-            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
-            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
-            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
-            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
-            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
-        }
-
-        if (this.hasLidarData)
-        {
-            c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
-            c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>(this.lidarSearchDataSourceMap);
-            c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
-            c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
-            c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
-            c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
-            c.lidarBrowseOutgoingIntensityIndex = this.lidarBrowseOutgoingIntensityIndex;
-            c.lidarBrowseReceivedIntensityIndex = this.lidarBrowseReceivedIntensityIndex;
-            c.lidarBrowseIntensityEnabled = this.lidarBrowseIntensityEnabled;
-            c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
-            c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
-            c.lidarBrowseIsInMeters = this.lidarBrowseIsInMeters;
-            c.lidarBrowseIsBinary = this.lidarBrowseIsBinary;
-            c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
-            c.lidarOffsetScale = this.lidarOffsetScale;
-            c.lidarInstrumentName = this.lidarInstrumentName;
-        }
         c.customName = this.customName;
         c.customTemporary = this.customTemporary;
+
         return c;
     }
 
-    /**
-     * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
-     */
-     public String getPathRepresentation()
-     {
-         if (ShapeModelAuthor.CUSTOM == author)
-         {
-             return ShapeModelAuthor.CUSTOM + " > " + customName;
-         }
-         else
-         {
-             String path = type.str;
-             if (population != null)
-                 path += " > " + population;
-             path += " > " + body;
-             if (dataUsed != null)
-                 path += " > " + dataUsed;
-             if (author != null)
-                 path += " > " + author;
-             if (version != null)
-                 path += " (" + version + ")";
-             return path;
-         }
-     }
-
-     /**
-      * Return a unique name for this model. No other model may have this
-      * name. Note that only applies within built-in models or custom models
-      * but a custom model can share the name of a built-in one or vice versa.
-      * By default simply return the author concatenated with the
-      * name if the author is not null or just the name if the author
-      * is null.
-      * @return
-      */
-     public String getUniqueName()
-     {
-         if (ShapeModelAuthor.CUSTOM == author)
-             return author + "/" + customName;
-         else if (author != null)
-         {
-             if (version == null)
-                 return author + "/" + body;
-             else
-                 return author + "/" + body + " (" + version + ")";
-         }
-         else
-             return body.toString();
-     }
-
-     public String getShapeModelName()
-     {
-         if (author == ShapeModelAuthor.CUSTOM)
-             return customName;
-         else
-         {
-             String ver = "";
-             if (version != null)
-                 ver += " (" + version + ")";
-             return body.toString() + ver;
-         }
-     }
-
-    /**
-     * Get a SmallBodyConfig of a specific name and author.
-     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
-     * No two small body configs can have all the same. This version of the function
-     * assumes the version is null (unlike the other version in which you can specify
-     * the version).
-     *
-     * @param name
-     * @param author
-     * @return
-     */
-    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
-    {
-        return getSmallBodyConfig(name, author, null);
-    }
-
-    /**
-     * Get a SmallBodyConfig of a specific name, author, and version.
-     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
-     * No two small body configs can have all the same.
-     *
-     * @param name
-     * @param author
-     * @param version
-     * @return
-     */
-    static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
-    {
-        for (SmallBodyConfig config : builtInSmallBodyConfigs)
-        {
-            if (config.body == name && config.author == author &&
-                    ((config.version == null && version == null) || (version != null && version.equals(config.version)))
-                    )
-                return config;
-        }
-
-        System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
-                " and author " + author + " and version " + version);
-
-        return null;
-    }
 }

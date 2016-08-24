@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
@@ -101,7 +97,10 @@ public class GenericPolyhedralModel extends PolyhedralModel
     static public final String SmoothShadingStr = "Smooth";
 
     ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
+
     private ColoringValueType coloringValueType;
+    public ColoringValueType getColoringValueType() { return coloringValueType; }
+
     private int coloringIndex = -1;
     // If true, a false color will be used by using 3 of the existing
     // colors for the red, green, and blue channels
@@ -125,6 +124,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkPointLocator lowResPointLocator;
     private vtkScalarBarActor scalarBarActor;
     private SmallBodyCubes smallBodyCubes;
+    private String defaultModelFileName;
     private File defaultModelFile;
     private int resolutionLevel = 0;
     private vtkGenericCell genericCell;
@@ -158,6 +158,14 @@ public class GenericPolyhedralModel extends PolyhedralModel
     public GenericPolyhedralModel()
     {
         super(null);
+        smallBodyPolyData = new vtkPolyData();
+        genericCell = new vtkGenericCell();
+        idList = new vtkIdList();
+    }
+
+    public GenericPolyhedralModel(GenericPolyhedralModelConfig config)
+    {
+        super(config);
         smallBodyPolyData = new vtkPolyData();
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();
@@ -263,9 +271,9 @@ public class GenericPolyhedralModel extends PolyhedralModel
         lowResPointLocator = pointLocator;
     }
 
-    public SmallBodyConfig getSmallBodyConfig()
+    public PolyhedralModelConfig getSmallBodyConfig()
     {
-        return (SmallBodyConfig)getPolyhedralModelConfig();
+        return getPolyhedralModelConfig();
     }
 
     public boolean isBuiltIn()
@@ -1386,43 +1394,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         info.coloringValues = array;
     }
 
-    private void loadColoringDataFits(File file, ColoringInfo info) throws IOException
-    {
-        vtkFloatArray array = new vtkFloatArray();
-
-        array.SetNumberOfComponents(1);
-        if (coloringValueType == ColoringValueType.POINT_DATA)
-            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfPoints());
-        else
-            array.SetNumberOfTuples(smallBodyPolyData.GetNumberOfCells());
-
-
-        try {
-            Fits fits = new Fits(file);
-            fits.read();
-
-            BasicHDU hdu = fits.getHDU(1);
-            if (hdu instanceof AsciiTableHDU)
-            {
-                AsciiTableHDU athdu = (AsciiTableHDU)hdu;
-                int ncols = athdu.getNCols();
-                int nrows = athdu.getNRows();
-
-//                System.out.println("Reading Ancillary FITS Data");
-//                System.out.println("Number of Plates: " + nrows);
-
-                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
-                for (int j=0; j<nrows; j++)
-                {
-                    float value = scalars[j];
-                    array.SetTuple1(j, value);
-                }
-            }
-
-        } catch (Exception e) { e.printStackTrace(); }
-
-        info.coloringValues = array;
-    }
+    protected void loadColoringDataFits(File file, ColoringInfo info) throws IOException {}
 
     private void invertLookupTableCharArray(vtkUnsignedCharArray table)
     {

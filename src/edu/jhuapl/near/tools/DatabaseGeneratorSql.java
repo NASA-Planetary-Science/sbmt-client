@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -25,8 +27,6 @@ import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.NativeLibraryLoader;
-
-import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -140,7 +140,7 @@ public class DatabaseGeneratorSql
             PerspectiveImage.ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        SmallBodyConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyConfig config = (SmallBodyConfig)smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");

@@ -50,7 +50,7 @@ public class LidarDataPerUnit extends AbstractModel
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
-            SmallBodyConfig smallBodyConfig) throws IOException
+            PolyhedralModelConfig smallBodyConfig) throws IOException
     {
         int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
         int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
