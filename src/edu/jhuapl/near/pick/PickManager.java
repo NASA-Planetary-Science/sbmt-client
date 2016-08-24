@@ -34,6 +34,8 @@ public class PickManager extends Picker
     private DefaultPicker defaultPicker;
 
     private HashMap<PickMode, Picker> nondefaultPickers = new HashMap<PickMode, Picker>();
+    public HashMap<PickMode, Picker> getNonDefaultPickers() { return nondefaultPickers; }
+
     private PopupManager popupManager;
     private StatusBar statusBar;
 
