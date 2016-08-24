@@ -54,8 +54,8 @@ import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -67,7 +67,7 @@ import edu.jhuapl.near.util.Properties;
 
 public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
-    private SbmtModelManager modelManager;
+    private ModelManager modelManager;
     private JToggleButton selectRegionButton;
     private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
@@ -124,7 +124,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         return ModelNames.DEM_BOUNDARY;
     }
 
-    public CustomDEMPanel(final SbmtModelManager modelManager,
+    public CustomDEMPanel(final ModelManager modelManager,
             final PickManager pickManager,
             String shapeRootDirOnServer,
             boolean hasMapmaker,

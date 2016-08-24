@@ -13,7 +13,7 @@ import altwg.tools.Maplet2FITS;
 
 import com.google.common.io.Files;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.tools.BigmapDistributedGravity;
 
 public class Bigmap
@@ -33,7 +33,7 @@ public class Bigmap
     private File tempFolder;
     private File mapletFitsFile;
     private String gravityExecutableName;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
 
     public Bigmap(String bigmapRootDir, boolean grotesque) throws IOException
     {
@@ -308,12 +308,12 @@ public class Bigmap
         this.tempFolder = tempFolder;
     }
 
-    public void setSmallBodyModel(SmallBodyModel smallBodyModel)
+    public void setSmallBodyModel(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
     }
 
-    public SmallBodyModel getSmallBodyModel()
+    public PolyhedralModel getSmallBodyModel()
     {
         return smallBodyModel;
     }

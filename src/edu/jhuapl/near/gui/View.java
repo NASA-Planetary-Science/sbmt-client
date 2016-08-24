@@ -39,6 +39,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
+import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
@@ -330,7 +331,7 @@ public class View extends JPanel
 
     private void setupModelManager()
     {
-        modelManager = new ModelManager();
+        modelManager = new SbmtModelManager();
 
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
         Graticule graticule = ModelFactory.createGraticule(smallBodyModel);

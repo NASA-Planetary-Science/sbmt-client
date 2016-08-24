@@ -2049,7 +2049,6 @@ public class SmallBodyConfig extends PolyhedralModelConfig
     public ShapeModelAuthor author; // e.g. Gaskell
     public String version; // e.g. 2.0
     public String rootDirOnServer;
-    public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
     public boolean useMinimumReferencePotential = false; // uses average otherwise
     public double density = 0.0; // in units g/cm^3
@@ -2077,8 +2076,6 @@ public class SmallBodyConfig extends PolyhedralModelConfig
     public double imageSearchDefaultMaxResolution;
 
     // if hasLidarData is true, the following must be filled in
-    public Date lidarSearchDefaultStartDate;
-    public Date lidarSearchDefaultEndDate;
     public Map<String, String> lidarSearchDataSourceMap;
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;

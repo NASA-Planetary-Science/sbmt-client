@@ -16,6 +16,7 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
@@ -23,7 +24,7 @@ import edu.jhuapl.near.model.SmallBodyModel;
  */
 public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener, ItemListener
 {
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private JLabel opacityLabel;
     private JSpinner opacitySpinner;
     private JRadioButton flatShadingButton;
@@ -58,7 +59,7 @@ public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener
 
     private DisplayMode displayMode = DisplayMode.SURFACE;
 
-    public DisplayPropertyEditorPanel(SmallBodyModel smallBodyModel)
+    public DisplayPropertyEditorPanel(PolyhedralModel smallBodyModel)
     {
         super(new MigLayout("insets 0"));
         this.smallBodyModel = smallBodyModel;

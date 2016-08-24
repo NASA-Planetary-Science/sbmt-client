@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.util.Date;
+
 
 
 /**
@@ -10,4 +12,10 @@ package edu.jhuapl.near.model;
  */
 public abstract class PolyhedralModelConfig extends Config
 {
+    public boolean hasLidarData = false;
+    public Date lidarSearchDefaultStartDate;
+    public Date lidarSearchDefaultEndDate;
+
+    public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
+
 }

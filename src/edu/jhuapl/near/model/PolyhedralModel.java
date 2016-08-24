@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
+import vtk.vtkDataArray;
 import vtk.vtkPolyData;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.model.SmallBodyModel.ColoringInfo;
+import edu.jhuapl.near.model.SmallBodyModel.LidarDatasourceInfo;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.LatLon;
 
@@ -43,6 +47,96 @@ public abstract class PolyhedralModel extends AbstractModel
     public abstract String getCustomDataFolder();
 
     public abstract String getConfigFilename();
+
+    public abstract vtkDataArray getGravityVectorData();
+
+    public abstract ArrayList<LidarDatasourceInfo> getLidarDasourceInfoList();
+
+    public abstract int getLidarDatasourceIndex();
+
+    public abstract void setLidarDatasourceIndex(int index);
+
+    public abstract String getLidarDatasourceName(int i);
+
+    public abstract String getLidarDatasourcePath(int i);
+
+    public abstract int getNumberOfLidarDatasources();
+
+    public abstract int getModelResolution();
+
+    public abstract TreeSet<Integer> getIntersectingCubes(vtkPolyData polydata);
+
+    public abstract TreeSet<Integer> getIntersectingCubes(BoundingBox bb);
+
+    public abstract void addCustomLidarDatasource(LidarDatasourceInfo info) throws IOException;
+
+    public abstract void setCustomLidarDatasource(int index, LidarDatasourceInfo info) throws IOException;
+
+
+    public abstract void loadCustomLidarDatasourceInfo();
+
+    public abstract void removeCustomLidarDatasource(int index) throws IOException;
+
+    public abstract void setCustomPlateData(int index, ColoringInfo info) throws IOException;
+
+    public abstract void addCustomPlateData(ColoringInfo info) throws IOException;
+
+    public abstract void removeCustomPlateData(int index) throws IOException;
+
+    public abstract ArrayList<ColoringInfo> getColoringInfoList();
+
+    public abstract int getNumberOfCustomColors();
+
+    public abstract void saveAsPLT(File file) throws IOException;
+
+    public abstract void saveAsOBJ(File file) throws IOException;
+
+    public abstract void saveAsVTK(File file) throws IOException;
+
+    public abstract void saveAsSTL(File file) throws IOException;
+
+    public abstract int getNumberResolutionLevels();
+
+    public abstract SmallBodyConfig getSmallBodyConfig();
+
+    public abstract void drawRegularPolygonLowRes(
+            double[] center,
+            double radius,
+            int numberOfSides,
+            vtkPolyData outputInterior,
+            vtkPolyData outputBoundary);
+
+    public abstract String getCustomDataRootFolder();
+
+    public abstract String getDEMConfigFilename();
+
+    public abstract boolean isImageMapAvailable();
+
+    public abstract int getNumberOfBuiltInColors();
+
+    public abstract void setShowSmallBody(boolean show);
+
+    public abstract void setModelResolution(int level) throws IOException;
+
+    public abstract void setFalseColoring(int redChannel, int greenChannel, int blueChannel) throws IOException;
+
+    public abstract String[] getImageMapNames();
+
+    public abstract boolean isFalseColoringEnabled();
+
+    public abstract int[] getFalseColoring();
+
+    public abstract double getSurfaceArea();
+
+    public abstract double getVolume();
+
+    public abstract double getMeanCellArea();
+
+    public abstract double getMinCellArea();
+
+    public abstract double getMaxCellArea();
+
+    public abstract void savePlateData(File file) throws IOException;
 
     public PolyhedralModelConfig getPolyhedralModelConfig()
     {

@@ -63,12 +63,12 @@ import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
+import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.SbmtModelManager;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
-import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -82,7 +82,7 @@ import edu.jhuapl.near.util.VtkENVIReader;
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
 
-    private SbmtModelManager modelManager;
+    private ModelManager modelManager;
     private ImagePopupMenu imagePopupMenu;
     private ModelInfoWindowManager infoPanelManager;
     private ModelSpectrumWindowManager spectrumPanelManager;
@@ -105,7 +105,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     public String getCurrentBand() { return Integer.toString(currentSlice); }
 
-    protected SbmtModelManager getModelManager()
+    protected ModelManager getModelManager()
     {
         return modelManager;
     }
@@ -127,7 +127,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     /** Creates new form CustomImageLoaderPanel */
     public CustomImagesPanel(
-            final SbmtModelManager modelManager,
+            final ModelManager modelManager,
             ModelInfoWindowManager infoPanelManager,
             ModelSpectrumWindowManager spectrumPanelManager,
             final PickManager pickManager,
@@ -899,7 +899,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             System.out.println("Image Type: " + imageInfo.imageType);
             System.out.println("Image Rotate: " + imageInfo.rotation);
             System.out.println("Image Flip: " + imageInfo.flip);
-            SmallBodyModel body = modelManager.getSmallBodyModel();
+            PolyhedralModel body = modelManager.getSmallBodyModel();
 
             try
             {

@@ -61,7 +61,7 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.near.model.PointInCylinderChecker;
 import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -85,7 +85,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
 
     /** Creates new form LidarSearchPanel */
-    public LidarSearchPanel(SmallBodyConfig smallBodyConfig,
+    public LidarSearchPanel(PolyhedralModelConfig smallBodyConfig,
             final ModelManager modelManager,
             final PickManager pickManager,
             Renderer renderer)

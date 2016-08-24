@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.util.Bigmap;
 import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
@@ -26,7 +26,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
     private double latitude;
     private double longitude;
     private boolean grotesque;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
 
     public BigmapSwingWorker(Component c, String title, String filename)
     {
@@ -91,7 +91,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
         this.longitude = longitude;
     }
 
-    public void setSmallBodyModel(SmallBodyModel smallBodyModel)
+    public void setSmallBodyModel(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
     }
