@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 
 
 /**
@@ -44,7 +43,6 @@ public class PolyhedralModelConfig extends Config
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
-    public Instrument lidarInstrumentName = Instrument.LIDAR;
     public Map<String, String> lidarSearchDataSourceMap;
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;
@@ -125,7 +123,6 @@ public class PolyhedralModelConfig extends Config
             c.lidarBrowseIsBinary = this.lidarBrowseIsBinary;
             c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
             c.lidarOffsetScale = this.lidarOffsetScale;
-            c.lidarInstrumentName = this.lidarInstrumentName;
         }
         c.customName = this.customName;
         c.customTemporary = this.customTemporary;

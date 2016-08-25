@@ -289,6 +289,7 @@ public class SmallBodyConfig extends PolyhedralModelConfig
     public ShapeModelAuthor author; // e.g. Gaskell
 
     public ImagingInstrument[] imagingInstruments = {};
+    public Instrument lidarInstrumentName = Instrument.LIDAR;
 
 
     static public final ArrayList<SmallBodyConfig> builtInSmallBodyConfigs = new ArrayList<SmallBodyConfig>();
@@ -2198,6 +2199,9 @@ public class SmallBodyConfig extends PolyhedralModelConfig
             c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
             c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
         }
+
+        if (this.hasLidarData)
+            c.lidarInstrumentName = this.lidarInstrumentName;
 
         return c;
     }
