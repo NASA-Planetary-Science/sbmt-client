@@ -523,6 +523,41 @@ public class GenericPolyhedralModel extends PolyhedralModel
         //this.computeSurfaceArea();
     }
 
+    
+    
+    
+    private boolean defaultModelInitialized;
+    public boolean isDefaultModelInitialized() { return defaultModelInitialized; }
+
+    public void initializeDefaultModel()
+    {
+        // Load in custom plate data
+        try
+        {
+            loadCustomColoringInfo();
+
+            smallBodyPolyData.ShallowCopy(
+                    PolyDataUtil.loadShapeModel(defaultModelFile.getAbsolutePath()));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        initializeLocators();
+
+        this.computeShapeModelStatistics();
+
+        //this.computeLargestSmallestEdgeLength();
+        //this.computeSurfaceArea();
+
+        defaultModelInitialized = true;
+    }
+    
+    
+    
+    
+    
     private void initializeLocators()
     {
         if (cellLocator == null)
@@ -970,6 +1005,11 @@ public class GenericPolyhedralModel extends PolyhedralModel
             return cellId[0];
         else
             return -1;
+    }
+
+    public void reinitialize()
+    {
+        smallBodyActor = null;
     }
 
     protected void initializeActorsAndMappers()
@@ -1986,10 +2026,17 @@ public class GenericPolyhedralModel extends PolyhedralModel
 
     public void delete()
     {
+        if (smallBodyPolyData != null) smallBodyPolyData.Delete();
+        if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
+        if (smallBodyActor != null) smallBodyActor.Delete();
+        if (smallBodyMapper != null) smallBodyMapper.Delete();
+        for (vtkProp prop : smallBodyActors)
+            if (prop != null) prop.Delete();
         if (cellLocator != null) cellLocator.Delete();
         if (pointLocator != null) pointLocator.Delete();
         //if (lowResPointLocator != null) lowResPointLocator.Delete();
         if (genericCell != null) genericCell.Delete();
+        if (scalarBarActor != null) scalarBarActor.Delete();
         if (smallBodyPolyData != null) smallBodyPolyData.Delete();
         //if (lowResSmallBodyPolyData != null) lowResSmallBodyPolyData.Delete();
     }
