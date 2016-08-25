@@ -78,8 +78,6 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         labelProperties= new JMenu();
         labelProperties.setText("Edit Label Properties...");
-        // temporarily disable due to update issues -turnerj1
-        labelProperties.setVisible(false);
         this.add(labelProperties);
 
        /* changeFontButton= new JMenuItem(new changeFontAction());
@@ -426,6 +424,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
             c[2] = color.getBlue();
             c[3] = color.getAlpha();
             model.colorLabel(c);
+            model.setStructureColor(selectedStructures[0], c);
         }
     }
 

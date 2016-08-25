@@ -1442,6 +1442,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
             double color[] = {colors[0]/256.0, colors[1]/256.0, colors[2]/256.0};
             polygons.get(index).labelcolor=color;
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
     }
 

@@ -1423,6 +1423,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             double color[] = {colors[0]/256.0, colors[1]/256.0, colors[2]/256.0};
             lines.get(index).labelcolor=color;
         }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     private void colorLabel(int loc, double[]colors)
