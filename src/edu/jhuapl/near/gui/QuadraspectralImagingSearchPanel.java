@@ -32,8 +32,8 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.ImageCollection;
+import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;

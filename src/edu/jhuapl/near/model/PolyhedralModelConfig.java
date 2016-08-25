@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
 
 
@@ -14,7 +13,7 @@ import edu.jhuapl.near.model.SmallBodyConfig.Instrument;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public abstract class PolyhedralModelConfig extends Config
+public class PolyhedralModelConfig extends Config
 {
     public String version; // e.g. 2.0
     public String rootDirOnServer;
@@ -25,7 +24,6 @@ public abstract class PolyhedralModelConfig extends Config
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    public ImagingInstrument[] imagingInstruments = {};
 
     public boolean hasMapmaker = false;
     public boolean hasBigmap = false;
@@ -83,22 +81,15 @@ public abstract class PolyhedralModelConfig extends Config
     // Clone operation
     //
 
-    protected PolyhedralModelConfig clone()
+    public PolyhedralModelConfig clone() // throws CloneNotSupportedException
     {
-        PolyhedralModelConfig c = new SmallBodyConfig();
+//      PolyhedralModelConfig c = new PolyhedralModelConfig();
+        PolyhedralModelConfig c = (PolyhedralModelConfig)super.clone();
 
         c.rootDirOnServer = this.rootDirOnServer;
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
 
-        // deep clone imaging instruments
-        if (this.imagingInstruments != null)
-        {
-            int length = this.imagingInstruments.length;
-            c.imagingInstruments = new ImagingInstrument[length];
-            for (int i = 0; i < length; i++)
-                c.imagingInstruments[i] = this.imagingInstruments[i].clone();
-        }
 
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
@@ -114,17 +105,6 @@ public abstract class PolyhedralModelConfig extends Config
             c.smallBodyLabelPerResolutionLevel = this.smallBodyLabelPerResolutionLevel.clone();
         if (this.smallBodyNumberOfPlatesPerResolutionLevel != null)
             c.smallBodyNumberOfPlatesPerResolutionLevel = this.smallBodyNumberOfPlatesPerResolutionLevel.clone();
-
-        if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
-        {
-            c.imagingInstruments = this.imagingInstruments.clone();
-            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
-            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
-            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
-            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
-            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
-            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
-        }
 
         if (this.hasLidarData)
         {
@@ -149,6 +129,7 @@ public abstract class PolyhedralModelConfig extends Config
         }
         c.customName = this.customName;
         c.customTemporary = this.customTemporary;
+
         return c;
     }
 

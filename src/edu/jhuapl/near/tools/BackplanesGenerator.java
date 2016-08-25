@@ -14,7 +14,7 @@ import vtk.vtkDebugLeaks;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.Image.ImagingInstrument;
+import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -104,11 +104,11 @@ public class BackplanesGenerator
             ImageKey key = null;
 
             ImagingInstrument imager = null;
-            for (int i = 0; i < smallBodyModel.getSmallBodyConfig().imagingInstruments.length; i++)
+            for (int i = 0; i < ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments.length; i++)
             {
-                if (instr.equals(smallBodyModel.getSmallBodyConfig().imagingInstruments[i].instrumentName))
+                if (instr.equals(((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i].instrumentName))
                 {
-                    imager = smallBodyModel.getSmallBodyConfig().imagingInstruments[i];
+                    imager = ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i];
                 }
             }
 
@@ -549,7 +549,7 @@ public class BackplanesGenerator
         smallBodyModel = ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
         if (instr == null)
         {
-            instr = smallBodyModel.getSmallBodyConfig().imagingInstruments[0].instrumentName;
+            instr = ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;
         }
 
         // Information for user.

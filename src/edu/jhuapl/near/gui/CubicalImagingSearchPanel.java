@@ -28,10 +28,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.ImageCube;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
+import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;

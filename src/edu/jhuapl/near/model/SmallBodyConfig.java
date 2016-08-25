@@ -1,12 +1,12 @@
 package edu.jhuapl.near.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 
 import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.Image.ImagingInstrument;
 import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
@@ -287,6 +287,9 @@ public class SmallBodyConfig extends PolyhedralModelConfig
     public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
     public ShapeModelAuthor author; // e.g. Gaskell
+
+    public ImagingInstrument[] imagingInstruments = {};
+
 
     static public final ArrayList<SmallBodyConfig> builtInSmallBodyConfigs = new ArrayList<SmallBodyConfig>();
 
@@ -2162,7 +2165,7 @@ public class SmallBodyConfig extends PolyhedralModelConfig
         }
     }
 
-    protected SmallBodyConfig clone()
+    public SmallBodyConfig clone() // throws CloneNotSupportedException
     {
         SmallBodyConfig c = (SmallBodyConfig)super.clone();
 
@@ -2175,6 +2178,26 @@ public class SmallBodyConfig extends PolyhedralModelConfig
 
         c.customName = this.customName;
         c.customTemporary = this.customTemporary;
+
+        // deep clone imaging instruments
+        if (this.imagingInstruments != null)
+        {
+            int length = this.imagingInstruments.length;
+            c.imagingInstruments = new ImagingInstrument[length];
+            for (int i = 0; i < length; i++)
+                c.imagingInstruments[i] = this.imagingInstruments[i].clone();
+        }
+
+        if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
+        {
+            c.imagingInstruments = this.imagingInstruments.clone();
+            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
+            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
+            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
+            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
+            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
+            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+        }
 
         return c;
     }

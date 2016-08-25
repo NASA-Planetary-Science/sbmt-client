@@ -8,11 +8,20 @@ package edu.jhuapl.near.model;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public abstract class Config
+public abstract class Config implements Cloneable
 {
     public String customName;
 
-    protected abstract Config clone();
+    public Config clone() // throws CloneNotSupportedException
+    {
+        Config result = null;
+        try {
+            result = (Config)super.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     /**
      * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
