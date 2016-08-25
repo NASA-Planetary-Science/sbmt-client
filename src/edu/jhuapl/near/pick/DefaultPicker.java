@@ -23,11 +23,8 @@ import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.gui.Renderer.AxisType;
 import edu.jhuapl.near.gui.StatusBar;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.util.LatLon;
@@ -137,14 +134,14 @@ public class DefaultPicker extends Picker
             if (model != null)
             {
 //                System.out.println("Picked non-small body: " + model.getClass().getSimpleName());
-                if (model instanceof ImageCollection)
-                {
-                    ImageCollection imageCollection = (ImageCollection)model;
-                    Image firstImage = imageCollection.getImages().iterator().next();
-//                    System.out.println("Picked image: " + firstImage.getClass().getSimpleName());
-                    if (firstImage instanceof PerspectiveImage)
-                        setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)firstImage);
-                }
+//                if (model instanceof ImageCollection)
+//                {
+//                    ImageCollection imageCollection = (ImageCollection)model;
+//                    Image firstImage = imageCollection.getImages().iterator().next();
+////                    System.out.println("Picked image: " + firstImage.getClass().getSimpleName());
+//                    if (firstImage instanceof PerspectiveImage)
+//                        setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)firstImage);
+//                }
 
 
                 int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
@@ -347,24 +344,24 @@ public class DefaultPicker extends Picker
         }
     }
 
-    private void setPositionInfoOnPerspectiveImage(MouseEvent e, PerspectiveImage pi)
-    {
-//        System.out.println("Setting position on image" + pi.getImageName());
-
-        if (renWin.getRenderWindow().GetNeverRendered() > 0)
-            return;
-
-        vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
-        double[] cameraPos = activeCamera.GetPosition();
-
-        int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
-
-        if (pickSucceeded == 1)
-        {
-            double[] pos = smallBodyCellPicker.GetPickPosition();
-            pi.setPickedPosition(pos);
-        }
-    }
+//    private void setPositionInfoOnPerspectiveImage(MouseEvent e, PerspectiveImage pi)
+//    {
+////        System.out.println("Setting position on image" + pi.getImageName());
+//
+//        if (renWin.getRenderWindow().GetNeverRendered() > 0)
+//            return;
+//
+//        vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
+//        double[] cameraPos = activeCamera.GetPosition();
+//
+//        int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
+//
+//        if (pickSucceeded == 1)
+//        {
+//            double[] pos = smallBodyCellPicker.GetPickPosition();
+//            pi.setPickedPosition(pos);
+//        }
+//    }
 
     /**
      * Computes the size of a pixel in body fixed coordinates. This is only meaningful

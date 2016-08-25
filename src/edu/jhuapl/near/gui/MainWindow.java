@@ -34,7 +34,7 @@ public class MainWindow extends JFrame
 
         createStatusBar();
 
-        rootPanel = new ViewManager(statusBar, this, tempCustomShapeModelPath);
+        rootPanel = new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
 
         createMenus();
 
@@ -55,33 +55,59 @@ public class MainWindow extends JFrame
 //        this.setResizable(true);
     }
 
+    protected FileMenu createFileMenu(ViewManager rootPanel)
+    {
+        return new FileMenu(rootPanel);
+    }
+
+    protected RecentlyViewed createRecentsMenu(ViewManager rootPanel)
+    {
+        return new RecentlyViewed(rootPanel);
+    }
+
+    protected ViewMenu createViewMenu(ViewManager rootPanel, RecentlyViewed recentsMenu)
+    {
+        return new ViewMenu(rootPanel, recentsMenu);
+    }
+
+    protected FavoritesMenu createFavoritesMenu(ViewManager rootPanel)
+    {
+        return new FavoritesMenu(new FavoritesFile(), rootPanel);
+    }
+
+    protected HelpMenu createHelpMenu(ViewManager rootPanel)
+    {
+        return new HelpMenu(rootPanel);
+    }
+
     private void createMenus()
     {
         JMenuBar menuBar = new JMenuBar();
 
-        fileMenu = new FileMenu(rootPanel);
+        fileMenu = createFileMenu(rootPanel);
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
-        recentsMenu= new RecentlyViewed(rootPanel);
-        viewMenu = new ViewMenu(rootPanel, recentsMenu);
+        recentsMenu = createRecentsMenu(rootPanel);
+        viewMenu = createViewMenu(rootPanel, recentsMenu);
         viewMenu.setMnemonic('V');
+
         menuBar.add(viewMenu);
 
-        favoritesMenu = new FavoritesMenu(new FavoritesFile(), rootPanel);
+        favoritesMenu = createFavoritesMenu(rootPanel);
         viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
         viewMenu.add(favoritesMenu, viewMenu.getItemCount()-2);
         viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
         viewMenu.add(recentsMenu, viewMenu.getItemCount()-2);
 
-        helpMenu = new HelpMenu(rootPanel);
+        helpMenu = createHelpMenu(rootPanel);
         helpMenu.setMnemonic('H');
         menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
     }
 
-    private void createStatusBar()
+    protected void createStatusBar()
     {
         statusBar = new StatusBar();
         this.getContentPane().add(statusBar, BorderLayout.PAGE_END);

@@ -64,7 +64,7 @@ public class PickManager extends Picker
         if (modelManager.getModel(ModelNames.CIRCLE_STRUCTURES) != null)
             nondefaultPickers.put(PickMode.CIRCLE_SELECTION, new CircleSelectionPicker(renderer, modelManager));
 
-        defaultPicker = new ImageDefaultPicker(renderer, statusBar, modelManager, popupManager);
+        setDefaultPicker(new DefaultPicker(renderer, statusBar, modelManager, popupManager));
 
         setPickTolerance(Preferences.getInstance().getAsDouble(
                 Preferences.PICK_TOLERANCE, Picker.DEFAULT_PICK_TOLERANCE));
@@ -111,7 +111,12 @@ public class PickManager extends Picker
         return defaultPicker;
     }
 
-    private void addPicker(Picker picker)
+    protected void setDefaultPicker(DefaultPicker defaultPicker)
+    {
+        this.defaultPicker = defaultPicker;
+    }
+
+    protected void addPicker(Picker picker)
     {
         renWin.getComponent().addMouseListener(picker);
         renWin.getComponent().addMouseMotionListener(picker);

@@ -24,6 +24,7 @@ public class ViewManager extends JPanel
     private View currentView;
     private final StatusBar statusBar;
     private final Frame frame;
+    private String tempCustomShapeModelPath;
 
     private static String defaultModelName=null;
     private final static Path defaultModelFile=Paths.get(Configuration.getApplicationDataDir()+File.separator+"defaultModelToLoad");
@@ -46,36 +47,51 @@ public class ViewManager extends JPanel
         setBorder(BorderFactory.createEmptyBorder());
         this.statusBar = statusBar;
         this.frame = frame;
+        this.tempCustomShapeModelPath = tempCustomShapeModelPath;
 
+        setupViews();
+    }
 
+    protected void addBuiltInView(View view)
+    {
+        builtInViews.add(view);
+    }
+
+    protected void addBuiltInViews()
+    {
         for (SmallBodyConfig config: SmallBodyConfig.builtInSmallBodyConfigs)
         {
-            builtInViews.add(new View(statusBar, config));
+            addBuiltInView(new View(statusBar, config));
         }
+    }
 
-        for (View view : builtInViews)
+    protected void setupViews()
+    {
+        addBuiltInViews();
+
+        for (View view : getBuiltInViews())
             add(view, view.getUniqueName());
 
-        loadCustomViews(tempCustomShapeModelPath);
+        loadCustomViews(getTempCustomShapeModelPath());
 
-        for (View view : customViews)
+        for (View view : getCustomViews())
             add(view, view.getUniqueName());
 
-        if (tempCustomShapeModelPath == null)
+        if (getTempCustomShapeModelPath() == null)
         {
             int idxToShow=0;
-            for (int i=0; i<builtInViews.size(); i++)
-                if (builtInViews.get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+            for (int i=0; i<getBuiltInViews().size(); i++)
+                if (getBuiltInViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
                     idxToShow=i;
-            setCurrentView(builtInViews.get(idxToShow));
+            setCurrentView(getBuiltInViews().get(idxToShow));
         }
         else
         {
             int idxToShow=0;
-            for (int i=0; i<customViews.size(); i++)
-                if (customViews.get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+            for (int i=0; i<getCustomViews().size(); i++)
+                if (getCustomViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
                     idxToShow=i;
-            setCurrentView(customViews.get(idxToShow));
+            setCurrentView(getCustomViews().get(idxToShow));
         }
     }
 
@@ -131,7 +147,7 @@ public class ViewManager extends JPanel
     {
         if (newCustomShapeModelPath != null)
         {
-            customViews.add(View.createTemporaryCustomView(statusBar, newCustomShapeModelPath));
+            addCustomView(View.createTemporaryCustomView(statusBar, newCustomShapeModelPath));
         }
 
         File modelsDir = new File(Configuration.getImportedShapeModelsDir());
@@ -143,11 +159,36 @@ public class ViewManager extends JPanel
             {
                 if (new File(dir, "model.vtk").isFile())
                 {
-                    customViews.add(View.createCustomView(statusBar, dir.getName()));
+                    addCustomView(View.createCustomView(statusBar, dir.getName()));
                 }
             }
         }
 
+    }
+
+    public ArrayList<View> getBuiltInViews()
+    {
+        return builtInViews;
+    }
+
+    public void setBuiltInViews(ArrayList<View> builtInViews)
+    {
+        this.builtInViews = builtInViews;
+    }
+
+    public ArrayList<View> getCustomViews()
+    {
+        return customViews;
+    }
+
+    public void setCustomViews(ArrayList<View> customViews)
+    {
+        this.customViews = customViews;
+    }
+
+    public String getTempCustomShapeModelPath()
+    {
+        return tempCustomShapeModelPath;
     }
 
     public View getCurrentView()
@@ -190,10 +231,15 @@ public class ViewManager extends JPanel
         return customViews.size();
     }
 
+    protected void addCustomView(View view)
+    {
+        customViews.add(view);
+    }
+
     public View addCustomView(String name)
     {
         View view = View.createCustomView(statusBar, name);
-        customViews.add(view);
+        addCustomView(view);
         add(view, view.getUniqueName());
         return view;
     }

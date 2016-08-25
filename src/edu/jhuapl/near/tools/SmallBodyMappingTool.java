@@ -16,6 +16,7 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
+import edu.jhuapl.near.gui.SbmtMainWindow;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -109,7 +110,7 @@ public class SmallBodyMappingTool
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
-                    MainWindow frame = new MainWindow(tempShapeModelPath);
+                    MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
                     frame.setVisible(true);
                 }
             });
