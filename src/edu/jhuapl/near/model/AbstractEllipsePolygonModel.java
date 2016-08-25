@@ -1247,10 +1247,16 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         {
             if (pol.hidden == b)
             {
-                if(pol.caption!=null)
-                    pol.caption.VisibilityOn();
                 pol.hidden = !b;
-                setLabelsVisible(!b);
+                if(pol.caption!=null&&pol.hidden==true)
+                    pol.caption.VisibilityOff();
+                else if(pol.caption!=null&&pol.hidden==false)
+                {
+                    if(pol.labelHidden)
+                        pol.caption.VisibilityOff();
+                    else
+                       pol.caption.VisibilityOn();
+                }
                 pol.updatePolygon(smallBodyModel, pol.center, pol.radius, pol.flattening, pol.angle);
                 needToUpdate = true;
             }
@@ -1260,20 +1266,18 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             updatePolyData();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
-
-        //boundaryActor.SetVisibility(b ? 1 : 0);
-        //interiorActor.SetVisibility(b ? 1 : 0);
-        //super.setVisible(b);
     }
+
+
 
     public void setLabelsVisible(boolean b)
     {
         for (EllipsePolygon pol : polygons)
         {
-            if(pol.caption!=null)
+            pol.labelHidden=!b;
+            if(pol.caption!=null&&!pol.getHidden())
             {
                 pol.caption.SetVisibility(b ? 1 : 0);
-                pol.labelHidden=b;
             }
         }
 
@@ -1303,7 +1307,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                     else
                     {
                         pol.caption.VisibilityOff();
-                        pol.labelHidden=true;
                     }
                 }
                 pol.hidden = hidden;

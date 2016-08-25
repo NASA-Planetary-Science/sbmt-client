@@ -260,7 +260,6 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             public void actionPerformed(ActionEvent e)
             {
                 structureModel.setVisible(false);
-                structureModel.setLabelsVisible(false);
             }
         });
         add(hideAllButton, "w 100!");
@@ -271,7 +270,6 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             public void actionPerformed(ActionEvent e)
             {
                 structureModel.setVisible(true);
-                structureModel.setLabelsVisible(true);
             }
         });
         add(showAllButton, "w 100!");
