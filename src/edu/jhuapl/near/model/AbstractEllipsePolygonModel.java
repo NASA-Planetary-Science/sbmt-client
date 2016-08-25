@@ -1268,8 +1268,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
     }
 
-
-
     public void setLabelsVisible(boolean b)
     {
         for (EllipsePolygon pol : polygons)

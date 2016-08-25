@@ -294,6 +294,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         });
         add(showAllLabelsButton, "w 100!");
 
+
         JButton deleteAllButton = new JButton("Delete All");
         deleteAllButton.addActionListener(new ActionListener()
         {
