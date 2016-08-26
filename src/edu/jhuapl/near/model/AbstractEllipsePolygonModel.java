@@ -1373,7 +1373,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             else
             {
                 polygons.get(idx).caption.SetCaption(label);
-                polygons.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, 0.02);
+                polygons.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
                 polygons.get(idx).caption.GetCaptionTextProperty().Modified();
             }
         }
@@ -1395,7 +1395,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             v.SetAttachmentPoint(polygons.get(idx).center);
             v.SetPosition(0, 0);
             //v.GetCaptionTextProperty().SetFontSize(0);
-            v.SetPosition2(numLetters*0.0025+0.03, 0.02);
+            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
             v.SetCaption(polygons.get(idx).getLabel());
 
             polygons.get(idx).setLabelID(actors.size()-1);
@@ -1454,4 +1454,11 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         v.GetCaptionTextProperty().SetColor(colors);
     }
 
+    public void changeFont(int font_size, int structure)
+    {
+        int len = (polygons.get(structure).caption.GetCaption().length());
+        polygons.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
+        polygons.get(structure).caption.GetCaptionTextProperty().Modified();
+        polygons.get(structure).caption.Modified();
+    }
 }
