@@ -1433,6 +1433,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             vtkCaptionActor2D v =polygons.get(index).caption;
             v.SetBorder(1-v.GetBorder());
         }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void colorLabel(int[] colors)
@@ -1461,6 +1462,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
         polygons.get(structure).caption.GetCaptionTextProperty().Modified();
         polygons.get(structure).caption.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void changeFontType(int structure)
@@ -1475,5 +1477,6 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         else
             v.GetCaptionTextProperty().SetFontFamilyToCourier();
         v.GetCaptionTextProperty().Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

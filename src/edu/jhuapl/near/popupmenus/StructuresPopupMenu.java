@@ -42,7 +42,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem changeFontButton;
     private JMenuItem changeFontTypeButton;
     private JMenuItem changeLabelColorButton;
-    private JMenuItem setLabelBorder;
+    private JCheckBoxMenuItem setLabelBorder;
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
@@ -93,7 +93,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         changeLabelColorButton.setText("Change Label Color");
         labelProperties.add(changeLabelColorButton);
 
-        setLabelBorder = new JMenuItem(new showLabelBorderAction());
+        setLabelBorder = new JCheckBoxMenuItem(new showLabelBorderAction());
         setLabelBorder.setText("Show the label border");
         labelProperties.add(setLabelBorder);
 

@@ -1468,6 +1468,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             vtkCaptionActor2D v =lines.get(index).caption;
             v.SetBorder(1-v.GetBorder());
         }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void changeFont(int font_size, int structure)
@@ -1476,6 +1477,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         lines.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
         lines.get(structure).caption.GetCaptionTextProperty().Modified();
         lines.get(structure).caption.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
     public void changeFontType(int structure)
     {
@@ -1489,5 +1491,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         else
             v.GetCaptionTextProperty().SetFontFamilyToCourier();
         v.GetCaptionTextProperty().Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }
