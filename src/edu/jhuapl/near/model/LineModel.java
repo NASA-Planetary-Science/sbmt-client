@@ -1400,6 +1400,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
+
             v.VisibilityOn();
             v.BorderOff();
             v.ThreeDimensionalLeaderOn();
