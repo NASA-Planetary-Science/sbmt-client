@@ -8,12 +8,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel
@@ -27,6 +25,7 @@ public class ViewManager extends JPanel
 
     private static String defaultModelName=null;
     private final static Path defaultModelFile=Paths.get(Configuration.getApplicationDataDir()+File.separator+"defaultModelToLoad");
+
 
 
     /**
@@ -94,24 +93,6 @@ public class ViewManager extends JPanel
 
     public String getDefaultBodyToLoad()
     {
-        try
-        {
-            if (!defaultModelFile.toFile().exists())
-                return SmallBodyConfig.builtInSmallBodyConfigs.get(0).getUniqueName();
-            //
-            Scanner scanner=new Scanner(ViewManager.defaultModelFile.toFile());
-            if (scanner.hasNextLine())
-                defaultModelName=scanner.nextLine();
-            else
-                defaultModelName=null;
-            scanner.close();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
         return defaultModelName;
     }
 

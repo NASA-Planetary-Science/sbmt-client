@@ -17,7 +17,6 @@ import vtk.vtkJavaGarbageCollector;
 import edu.jhuapl.near.gui.ExampleMainWindow;
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
@@ -85,11 +84,7 @@ public class ExampleTool
                     int nargs = args.length;
                     int i = 0;
                     for (; i < nargs; ++i) {
-                        if (args[i].equals("--beta"))
-                        {
-                            SmallBodyConfig.betaMode = true;
-                        }
-                        else if (args[i].equals("--model") && i < nargs + 1)
+                        if (args[i].equals("--model") && i < nargs + 1)
                         {
                             tempShapeModelPath = args[i+1];
                         }
