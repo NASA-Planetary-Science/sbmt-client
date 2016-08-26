@@ -1367,7 +1367,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             else
             {
                 lines.get(idx).caption.SetCaption(label);
-                lines.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, 0.02);
+                lines.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
                 lines.get(idx).caption.GetCaptionTextProperty().Modified();
             }
         }
@@ -1386,7 +1386,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             v.ThreeDimensionalLeaderOn();
             v.SetAttachmentPoint(lines.get(idx).getCentroid());
             v.SetPosition(0, 0);
-            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
+            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
             v.SetCaption(lines.get(idx).getLabel());
 
             lines.get(idx).labelId=(actors.size()-1);
@@ -1441,5 +1441,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             vtkCaptionActor2D v =lines.get(index).caption;
             v.SetBorder(1-v.GetBorder());
         }
+    }
+
+    public void changeFont(int font_size, int structure)
+    {
+        int len = (lines.get(structure).caption.GetCaption().length());
+        lines.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
+        lines.get(structure).caption.GetCaptionTextProperty().Modified();
+        lines.get(structure).caption.Modified();
     }
 }

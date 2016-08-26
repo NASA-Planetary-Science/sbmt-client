@@ -39,7 +39,8 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem setLabelButton;
     private JCheckBoxMenuItem showLabelButton;
     private JMenu labelProperties;
-    //private JMenuItem changeFontButton;
+    private JMenuItem changeFontButton;
+    private JMenuItem changeFontTypeButton;
     private JMenuItem changeLabelColorButton;
     private JMenuItem setLabelBorder;
     private JCheckBoxMenuItem hideMenuItem;
@@ -80,9 +81,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
         labelProperties.setText("Edit Label Properties...");
         this.add(labelProperties);
 
-       /* changeFontButton= new JMenuItem(new changeFontAction());
-        changeFontButton.setText("Change Font");
-        labelProperties.add(changeFontButton);*/
+        changeFontButton= new JMenuItem(new changeFontSizeAction());
+        changeFontButton.setText("Change Font Size");
+        labelProperties.add(changeFontButton);
 
         changeLabelColorButton= new JMenuItem(new changeLabelColorAction());
         changeLabelColorButton.setText("Change Label Color");
@@ -386,15 +387,22 @@ abstract public class StructuresPopupMenu extends PopupMenu
         }
     }
 
-    protected class changeFontAction extends AbstractAction
+    protected class changeFontSizeAction extends AbstractAction
     {
-        public changeFontAction()
+        public changeFontSizeAction()
         {
             super("Change Font");
         }
         public void actionPerformed(ActionEvent e)
         {
-
+            String option = JOptionPane.showInputDialog("Enter font size. Font is 12 by default.");
+            int op = Integer.parseInt(option);
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+            {
+                return;
+            }
+            model.changeFont(op, selectedStructures[0]);
         }
     }
 
