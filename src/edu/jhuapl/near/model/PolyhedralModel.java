@@ -136,6 +136,8 @@ public abstract class PolyhedralModel extends AbstractModel
 
     public abstract void savePlateData(File file) throws IOException;
 
+    public abstract void reloadShapeModel() throws IOException;
+
     public PolyhedralModelConfig getPolyhedralModelConfig()
     {
         return polyhedralModelConfig;

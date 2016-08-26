@@ -222,39 +222,43 @@ public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener
         if (!initialized)
             return;
 
-        if (e.getItemSelectable() == surfaceButton)
+        if (((JRadioButton)e.getSource()).isSelected())
         {
-            if (surfaceButton.isSelected())
-                smallBodyModel.setRepresentationToSurface();
-        }
-        else if (e.getItemSelectable() == wireframeButton)
-        {
-            if (wireframeButton.isSelected())
-                smallBodyModel.setRepresentationToWireframe();
-        }
-        else if (e.getItemSelectable() == pointsButton)
-        {
-            if (pointsButton.isSelected())
-                smallBodyModel.setRepresentationToPoints();
-        }
-        else if (e.getItemSelectable() == surfaceWithEdgesButton)
-        {
-            if (surfaceWithEdgesButton.isSelected())
-                smallBodyModel.setRepresentationToSurfaceWithEdges();
-        }
-        else if (e.getItemSelectable() == flatShadingButton)
-        {
-            if (flatShadingButton.isSelected())
-                smallBodyModel.setShadingToFlat();
-        }
-        else if (e.getItemSelectable() == smoothShadingButton)
-        {
-            if (smoothShadingButton.isSelected())
-                smallBodyModel.setShadingToSmooth();
-        }
-        else if (e.getItemSelectable() == cullFrontfaceCheckBox)
-        {
-            smallBodyModel.setCullFrontface(cullFrontfaceCheckBox.isSelected());
+
+            if (e.getItemSelectable() == surfaceButton)
+            {
+                if (surfaceButton.isSelected())
+                    smallBodyModel.setRepresentationToSurface();
+            }
+            else if (e.getItemSelectable() == wireframeButton)
+            {
+                if (wireframeButton.isSelected())
+                    smallBodyModel.setRepresentationToWireframe();
+            }
+            else if (e.getItemSelectable() == pointsButton)
+            {
+                if (pointsButton.isSelected())
+                    smallBodyModel.setRepresentationToPoints();
+            }
+            else if (e.getItemSelectable() == surfaceWithEdgesButton)
+            {
+                if (surfaceWithEdgesButton.isSelected())
+                    smallBodyModel.setRepresentationToSurfaceWithEdges();
+            }
+            else if (e.getItemSelectable() == flatShadingButton)
+            {
+                if (flatShadingButton.isSelected())
+                    smallBodyModel.setShadingToFlat();
+            }
+            else if (e.getItemSelectable() == smoothShadingButton)
+            {
+                if (smoothShadingButton.isSelected())
+                    smallBodyModel.setShadingToSmooth();
+            }
+            else if (e.getItemSelectable() == cullFrontfaceCheckBox)
+            {
+                smallBodyModel.setCullFrontface(cullFrontfaceCheckBox.isSelected());
+            }
         }
 
         if (displayMode == DisplayMode.SURFACE)

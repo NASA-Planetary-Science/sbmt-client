@@ -14,6 +14,7 @@ import com.jgoodies.looks.LookUtils;
 
 import vtk.vtkJavaGarbageCollector;
 
+import edu.jhuapl.near.gui.ExampleMainWindow;
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -24,7 +25,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  * This class contains the "main" function called at the start of the program.
  * This class sets up the top level window and other initialization.
  * The main function may take one optional argument. If there are no
- * arguments specified, then the tool starts up as usual showing Eros
+ * arguments specified, then the tool starts up as usual showing a generic shape
  * by default. If one argument is specified, it is assumed to be a path
  * to a temporary shape model which is then loaded as a custom view
  * though it is not retained the next time the tool starts.
@@ -38,7 +39,7 @@ public class ExampleTool
         if (Configuration.isMac())
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon("data/earth.png");
+            ImageIcon erosIcon = new ImageIcon("data/vetruvian-3D.png");
             OSXAdapter.setDockIconImage(erosIcon.getImage());
         }
     }
@@ -79,22 +80,28 @@ public class ExampleTool
             {
                 public void run()
                 {
+                    String tempShapeModelPath = null;
                     // Parse options that come first
+                    int nargs = args.length;
                     int i = 0;
-                    for (; i < args.length; ++i) {
-                        if (args[i].equals("--beta")) {
+                    for (; i < nargs; ++i) {
+                        if (args[i].equals("--beta"))
+                        {
                             SmallBodyConfig.betaMode = true;
-                        }else {
+                        }
+                        else if (args[i].equals("--model") && i < nargs + 1)
+                        {
+                            tempShapeModelPath = args[i+1];
+                        }
+                        else
+                        {
                             // We've encountered something that is not an option, must be at the args
                             break;
                         }
                     }
 
-                    // After options comes the args
-                    String tempShapeModelPath = null;
-                    if (Configuration.isAPLVersion() && args.length - i >= 1){
-                        tempShapeModelPath = args[i++];
-                    }
+                    if (tempShapeModelPath == null)
+                        tempShapeModelPath = "data/frank.obj";
 
                     NativeLibraryLoader.loadVtkLibraries();
 
@@ -109,8 +116,7 @@ public class ExampleTool
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
-//                    MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-                    MainWindow frame = new MainWindow("data/Torso.stl");
+                    MainWindow frame = new ExampleMainWindow(tempShapeModelPath);
                     frame.setVisible(true);
                 }
             });
