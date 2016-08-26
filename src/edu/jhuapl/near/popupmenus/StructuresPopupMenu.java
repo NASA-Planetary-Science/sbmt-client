@@ -85,6 +85,10 @@ abstract public class StructuresPopupMenu extends PopupMenu
         changeFontButton.setText("Change Font Size");
         labelProperties.add(changeFontButton);
 
+        changeFontTypeButton = new JMenuItem(new changeFontTypeAction());
+        changeFontButton.setText("Change Font");
+        labelProperties.add(changeFontTypeButton);
+
         changeLabelColorButton= new JMenuItem(new changeLabelColorAction());
         changeLabelColorButton.setText("Change Label Color");
         labelProperties.add(changeLabelColorButton);
@@ -391,7 +395,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
     {
         public changeFontSizeAction()
         {
-            super("Change Font");
+            super("Change Font Size");
         }
         public void actionPerformed(ActionEvent e)
         {
@@ -403,6 +407,23 @@ abstract public class StructuresPopupMenu extends PopupMenu
                 return;
             }
             model.changeFont(op, selectedStructures[0]);
+        }
+    }
+
+    protected class changeFontTypeAction extends AbstractAction
+    {
+        public changeFontTypeAction()
+        {
+            super("Change Font Type");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+            {
+                return;
+            }
+            model.changeFontType(selectedStructures[0]);
         }
     }
 

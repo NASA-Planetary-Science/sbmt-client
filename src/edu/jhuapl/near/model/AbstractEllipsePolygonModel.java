@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import vtk.vtkActor;
 import vtk.vtkAppendPolyData;
 import vtk.vtkCaptionActor2D;
@@ -90,7 +92,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         public double flattening; // ratio of semiminor axis to semimajor axis
         public double angle;
         public boolean hidden = false;
-        public boolean labelHidden=false;
+        public boolean labelHidden = false;
 
         public vtkPolyData boundaryPolyData;
         public vtkPolyData interiorPolyData;
@@ -1296,7 +1298,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         for (int i=0; i<polygonIds.length; ++i)
         {
             EllipsePolygon pol = polygons.get(polygonIds[i]);
-            if (pol.hidden != hidden)
+            if (pol.hidden != hidden&&pol!=null)
             {
                 if(pol.caption!=null)
                 {
@@ -1313,6 +1315,7 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         }
 
         updatePolyData();
+
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
@@ -1388,13 +1391,11 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
             v.GetCaptionTextProperty().SetJustificationToLeft();
-            //v.GetCaptionTextProperty().set
             v.VisibilityOn();
             v.BorderOff();
             v.ThreeDimensionalLeaderOn();
             v.SetAttachmentPoint(polygons.get(idx).center);
             v.SetPosition(0, 0);
-            //v.GetCaptionTextProperty().SetFontSize(0);
             v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
             v.SetCaption(polygons.get(idx).getLabel());
 
@@ -1460,5 +1461,19 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
         polygons.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
         polygons.get(structure).caption.GetCaptionTextProperty().Modified();
         polygons.get(structure).caption.Modified();
+    }
+
+    public void changeFontType(int structure)
+    {
+        vtkCaptionActor2D v =polygons.get(structure).caption;
+        Object[] options = { "Times", "Arial", "Courier" };
+        int option = JOptionPane.showOptionDialog(null, "Pick the font you wish to use", "Choose", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if(option==0)
+            v.GetCaptionTextProperty().SetFontFamilyToTimes();
+        else if(option==1)
+            v.GetCaptionTextProperty().SetFontFamilyToArial();
+        else
+            v.GetCaptionTextProperty().SetFontFamilyToCourier();
+        v.GetCaptionTextProperty().Modified();
     }
 }
