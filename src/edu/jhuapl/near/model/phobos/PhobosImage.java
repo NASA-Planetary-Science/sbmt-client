@@ -17,6 +17,10 @@ public class PhobosImage extends PerspectiveImage
             boolean loadPointingOnly) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly);
+
+        // Label files are still used for determining Viking image
+        // camera and filter names to display in image properties window
+        setLabelFileFullPath(initializeLabelFileFullPath());
     }
 
     /**
@@ -308,7 +312,7 @@ public class PhobosImage extends PerspectiveImage
             {
                 e.printStackTrace();
             }
-            return -1;
         }
+        return -1;
     }
 }
