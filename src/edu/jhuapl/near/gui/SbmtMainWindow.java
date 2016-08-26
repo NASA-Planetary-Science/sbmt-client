@@ -1,5 +1,7 @@
 package edu.jhuapl.near.gui;
 
+import javax.swing.ImageIcon;
+
 
 
 /**
@@ -14,8 +16,19 @@ public class SbmtMainWindow extends MainWindow
         super(tempCustomShapeModelPath);
    }
 
+    protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
+    {
+        return new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
+    }
+
     protected ViewMenu createViewMenu(ViewManager rootPanel, RecentlyViewed recentsMenu)
     {
         return new SbmtViewMenu(rootPanel, recentsMenu);
     }
+
+    protected ImageIcon createImageIcon()
+    {
+        return new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+    }
+
 }

@@ -19,9 +19,7 @@ public class SbmtView extends View
      * this function should be called prior to first time the View is
      * shown in order to cause it
      */
-    public SbmtView(
-            StatusBar statusBar,
-            SmallBodyConfig smallBodyConfig)
+    public SbmtView(StatusBar statusBar, SmallBodyConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
     }

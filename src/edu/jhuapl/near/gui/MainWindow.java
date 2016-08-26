@@ -34,14 +34,15 @@ public class MainWindow extends JFrame
 
         createStatusBar();
 
-        rootPanel = new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
+        rootPanel = createViewManager(statusBar, this, tempCustomShapeModelPath);
 
         createMenus();
 
         this.add(rootPanel, BorderLayout.CENTER);
 
-        ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
-        setIconImage(erosIcon.getImage());
+        ImageIcon icon = createImageIcon();
+
+        setIconImage(icon.getImage());
         pack();
 
 //        // Center the application on the screen.
@@ -53,6 +54,16 @@ public class MainWindow extends JFrame
 //        int y = parentLocation.y + (parentSize.height - prefSize.height) / 2;
 //        this.setLocation(x, y);
 //        this.setResizable(true);
+    }
+
+    protected ImageIcon createImageIcon()
+    {
+        return new ImageIcon("data/yin-yang.gif");
+    }
+
+    protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
+    {
+        return new ViewManager(statusBar, this, tempCustomShapeModelPath);
     }
 
     protected FileMenu createFileMenu(ViewManager rootPanel)
@@ -95,10 +106,10 @@ public class MainWindow extends JFrame
         menuBar.add(viewMenu);
 
         favoritesMenu = createFavoritesMenu(rootPanel);
-        viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
-        viewMenu.add(favoritesMenu, viewMenu.getItemCount()-2);
-        viewMenu.add(new JSeparator(), viewMenu.getItemCount()-2);
-        viewMenu.add(recentsMenu, viewMenu.getItemCount()-2);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(favoritesMenu);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(recentsMenu);
 
         helpMenu = createHelpMenu(rootPanel);
         helpMenu.setMnemonic('H');

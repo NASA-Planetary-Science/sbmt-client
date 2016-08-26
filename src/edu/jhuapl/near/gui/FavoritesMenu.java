@@ -44,7 +44,7 @@ public class FavoritesMenu extends JMenu
         for (String viewName : stringsOnFile)
         {
             JMenuItem menuItem=new FavoritesMenuItem(viewName, manager);
-            boolean isDefaultToLoad=unfilterViewName(viewName).equals(ViewManager.getDefaultBodyToLoad());
+            boolean isDefaultToLoad=unfilterViewName(viewName).equals(manager.getDefaultBodyToLoad());
             if (!isDefaultToLoad)
                 add(menuItem);
 
@@ -57,8 +57,8 @@ public class FavoritesMenu extends JMenu
         defaultItem.setEnabled(false);
         add(defaultItem);
 
-        String defaultToLoad=ViewManager.getDefaultBodyToLoad();
-        JMenuItem menuItem=new FavoritesMenuItem(defaultToLoad, manager);
+        String defaultToLoad = manager.getDefaultBodyToLoad();
+        JMenuItem menuItem = new FavoritesMenuItem(defaultToLoad, manager);
         add(menuItem);
 
         //
@@ -130,8 +130,8 @@ public class FavoritesMenu extends JMenu
         public void actionPerformed(ActionEvent e)
         {
             favoritesFile.removeFavorite(filterViewName(manager.getCurrentView().getUniqueName()));
-            if (ViewManager.getDefaultBodyToLoad().equals(manager.getCurrentView().getUniqueName()))
-                ViewManager.resetDefaultBodyToLoad();
+            if (manager.getDefaultBodyToLoad().equals(manager.getCurrentView().getUniqueName()))
+                manager.resetDefaultBodyToLoad();
             rebuild();
         }
     }
@@ -150,7 +150,7 @@ public class FavoritesMenu extends JMenu
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            ViewManager.setDefaultBodyToLoad(manager.getCurrentView().getUniqueName());
+            manager.setDefaultBodyToLoad(manager.getCurrentView().getUniqueName());
             favoritesFile.addFavorite(filterViewName(manager.getCurrentView().getUniqueName()));    // automatically add current view to favorites if it already is
             rebuild();
         }

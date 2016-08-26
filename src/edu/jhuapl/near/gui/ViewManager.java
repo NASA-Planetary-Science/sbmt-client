@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -57,45 +56,24 @@ public class ViewManager extends JPanel
         builtInViews.add(view);
     }
 
-    protected void addBuiltInViews()
+    protected void addBuiltInViews(StatusBar statusBar)
     {
-        for (SmallBodyConfig config: SmallBodyConfig.builtInSmallBodyConfigs)
-        {
-            addBuiltInView(new View(statusBar, config));
-        }
     }
 
     protected void setupViews()
     {
-        addBuiltInViews();
+        addBuiltInViews(statusBar);
 
         for (View view : getBuiltInViews())
             add(view, view.getUniqueName());
 
-        loadCustomViews(getTempCustomShapeModelPath());
+        loadCustomViews(getTempCustomShapeModelPath(), statusBar);
 
         for (View view : getCustomViews())
             add(view, view.getUniqueName());
-
-        if (getTempCustomShapeModelPath() == null)
-        {
-            int idxToShow=0;
-            for (int i=0; i<getBuiltInViews().size(); i++)
-                if (getBuiltInViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
-                    idxToShow=i;
-            setCurrentView(getBuiltInViews().get(idxToShow));
-        }
-        else
-        {
-            int idxToShow=0;
-            for (int i=0; i<getCustomViews().size(); i++)
-                if (getCustomViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
-                    idxToShow=i;
-            setCurrentView(getCustomViews().get(idxToShow));
-        }
     }
 
-    public static void setDefaultBodyToLoad(String uniqueName)
+    public void setDefaultBodyToLoad(String uniqueName)
     {
         try
         {
@@ -114,7 +92,7 @@ public class ViewManager extends JPanel
         }
     }
 
-    public static String getDefaultBodyToLoad()
+    public String getDefaultBodyToLoad()
     {
         try
         {
@@ -137,33 +115,18 @@ public class ViewManager extends JPanel
         return defaultModelName;
     }
 
-    public static void resetDefaultBodyToLoad()
+    public void resetDefaultBodyToLoad()
     {
         if (defaultModelFile.toFile().exists())
             defaultModelFile.toFile().delete();
     }
 
-    private void loadCustomViews(String newCustomShapeModelPath)
+    protected void loadCustomViews(String newCustomShapeModelPath, StatusBar statusBar)
     {
         if (newCustomShapeModelPath != null)
         {
             addCustomView(View.createTemporaryCustomView(statusBar, newCustomShapeModelPath));
         }
-
-        File modelsDir = new File(Configuration.getImportedShapeModelsDir());
-        File[] dirs = modelsDir.listFiles();
-        if (dirs != null && dirs.length > 0)
-        {
-            Arrays.sort(dirs);
-            for (File dir : dirs)
-            {
-                if (new File(dir, "model.vtk").isFile())
-                {
-                    addCustomView(View.createCustomView(statusBar, dir.getName()));
-                }
-            }
-        }
-
     }
 
     public ArrayList<View> getBuiltInViews()

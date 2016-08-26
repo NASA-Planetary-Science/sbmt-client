@@ -16,7 +16,6 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
-import edu.jhuapl.near.gui.SbmtMainWindow;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.NativeLibraryLoader;
@@ -30,7 +29,7 @@ import edu.jhuapl.near.util.NativeLibraryLoader;
  * to a temporary shape model which is then loaded as a custom view
  * though it is not retained the next time the tool starts.
  */
-public class SmallBodyMappingTool
+public class ExampleTool
 {
     private static vtkJavaGarbageCollector garbageCollector;
 
@@ -39,7 +38,7 @@ public class SmallBodyMappingTool
         if (Configuration.isMac())
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/near/data/erosMacDock.png"));
+            ImageIcon erosIcon = new ImageIcon("data/earth.png");
             OSXAdapter.setDockIconImage(erosIcon.getImage());
         }
     }
@@ -110,8 +109,8 @@ public class SmallBodyMappingTool
                     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
                     ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
-                    MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-//                    MainWindow frame = new MainWindow("data/Torso.stl");
+//                    MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
+                    MainWindow frame = new MainWindow("data/Torso.stl");
                     frame.setVisible(true);
                 }
             });
