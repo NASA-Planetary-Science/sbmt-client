@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -1259,9 +1260,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         {
             if (line.hidden == b)
             {
-                if(line.caption!=null)
-                    line.caption.VisibilityOn();
                 line.hidden = !b;
+                if(line.caption!=null&&line.hidden==true)
+                    line.caption.VisibilityOff();
+                else if(line.caption!=null&&line.hidden==false)
+                {
+                    if(line.labelHidden)
+                        line.caption.VisibilityOff();
+                    else
+                        line.caption.VisibilityOn();
+                }
                 needToUpdate = true;
             }
         }
@@ -1270,20 +1278,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             updatePolyData();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
-
-        /*lineActor.SetVisibility(b ? 1 : 0);
-        lineActivationActor.SetVisibility(b ? 1 : 0);
-        super.setVisible(b);*/
     }
 
     public void setLabelsVisible(boolean b)
     {
         for (Line lin : lines)
         {
-            if(lin.caption!=null)
+            lin.labelHidden=!b;
+            if(lin.caption!=null&&!lin.getHidden())
             {
                 lin.caption.SetVisibility(b ? 1 : 0);
-                lin.labelHidden=b;
             }
         }
 
@@ -1297,6 +1301,20 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         for (int i=0; i<lineIds.length; ++i)
         {
             Line line = lines.get(lineIds[i]);
+            if (line.hidden != hidden&&line!=null)
+            {
+                if(line.caption!=null)
+                {
+                    if(!hidden&&!labelHidden)
+                        line.caption.VisibilityOn();
+                    else
+                    {
+                        line.caption.VisibilityOff();
+                    }
+                }
+                line.hidden = hidden;
+            }
+            /*Line line = lines.get(lineIds[i]);
             line.hidden = hidden;
             if(line.caption!=null)
             {
@@ -1304,7 +1322,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                     line.caption.VisibilityOn();
                 else
                     line.caption.VisibilityOff();
-            }
+            }*/
 
         }
 
@@ -1346,7 +1364,6 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     public boolean setStructureLabel(int idx, String label)
     {
         lines.get(idx).setLabel(label);
-        int numLetters = label.length();
         if(lines.get(idx).editingLabel)
         {
             if(label==null||label.equals(""))
@@ -1366,6 +1383,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             }
             else
             {
+                int numLetters = label.length();
                 lines.get(idx).caption.SetCaption(label);
                 lines.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
                 lines.get(idx).caption.GetCaptionTextProperty().Modified();
@@ -1377,10 +1395,12 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             {
                 return true;
             }
+            int numLetters = label.length();
             vtkCaptionActor2D v = new vtkCaptionActor2D();
             v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
+
             v.VisibilityOn();
             v.BorderOff();
             v.ThreeDimensionalLeaderOn();
@@ -1403,8 +1423,15 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void showLabel(int index)
     {
-        if(!lines.get(index).hidden)
+        if(lines.get(index).caption==null||lines.get(index).caption.GetCaption().equals(""))
+        {
+            setStructureLabel(index, " ");
+        }
+
+        if(!lines.get(index).getHidden())
             lines.get(index).caption.SetVisibility(1-lines.get(index).caption.GetVisibility());
+        boolean b = (lines.get(index).caption.GetVisibility() == 0);
+        lines.get(index).labelHidden=b;
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
     }
@@ -1441,6 +1468,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             vtkCaptionActor2D v =lines.get(index).caption;
             v.SetBorder(1-v.GetBorder());
         }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     public void changeFont(int font_size, int structure)
@@ -1449,5 +1477,20 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         lines.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
         lines.get(structure).caption.GetCaptionTextProperty().Modified();
         lines.get(structure).caption.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    public void changeFontType(int structure)
+    {
+        vtkCaptionActor2D v =lines.get(structure).caption;
+        Object[] options = { "Times", "Arial", "Courier" };
+        int option = JOptionPane.showOptionDialog(null, "Pick the font you wish to use", "Choose", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if(option==0)
+            v.GetCaptionTextProperty().SetFontFamilyToTimes();
+        else if(option==1)
+            v.GetCaptionTextProperty().SetFontFamilyToArial();
+        else
+            v.GetCaptionTextProperty().SetFontFamilyToCourier();
+        v.GetCaptionTextProperty().Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

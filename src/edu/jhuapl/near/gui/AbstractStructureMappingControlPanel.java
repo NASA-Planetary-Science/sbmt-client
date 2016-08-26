@@ -147,6 +147,9 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 "Details",
                 "Color",
                 "Label"};
+                //"Hide Label",
+                //"Hide Structure"
+
 
         /*
         structuresList = new JList();
@@ -154,7 +157,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         structuresList.addMouseListener(this);
         JScrollPane listScrollPane = new JScrollPane(structuresList);
         */
-
+        //Object[][] data = new Object[0][7];
         Object[][] data = new Object[0][5];
 
         structuresTable = new JTable(new StructuresTableModel(data, columnNames));
@@ -170,7 +173,10 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         structuresTable.getModel().addTableModelListener(this);
         structuresTable.getSelectionModel().addListSelectionListener(this);
         structuresTable.addMouseListener(new TableMouseHandler());
-
+        /*structuresTable.getColumnModel().getColumn(6).setPreferredWidth(31);
+        structuresTable.getColumnModel().getColumn(7).setPreferredWidth(31);
+        structuresTable.getColumnModel().getColumn(6).setResizable(false);
+        structuresTable.getColumnModel().getColumn(7).setResizable(false);*/
         JScrollPane tableScrollPane = new JScrollPane(structuresTable);
         tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
 
@@ -608,6 +614,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
             structuresTable.setValueAt(structure.getInfo(), i, 3);
             structuresTable.setValueAt(new Color(c[0], c[1], c[2]), i, 4);
             structuresTable.setValueAt(structure.getLabel(), i, 5);
+            //structuresTable.setValueAt(structure.getLabelHidden(), i, 6);
+            //structuresTable.setValueAt(structure.getHidden(), i, 6);
         }
     }
 
@@ -641,6 +649,30 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 }
             }
         }
+        /*if(e.getColumn()==6)
+        {
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            StructureModel.Structure structure = structureModel.getStructure(row);
+            Boolean hidden = (Boolean)structuresTable.getValueAt(row, col);
+            if(structuresTable.getValueAt(row, col-1)!=null&&!(structuresTable.getValueAt(row, col-1)).equals(""))
+            {
+                structure.setHidden(hidden);
+                //structureModel.
+            }
+        }
+        if(e.getColumn()==7)
+        {
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            if(structuresTable.getValueAt(row, col-1)!=null&&!(structuresTable.getValueAt(row, col-2)).equals(""))
+            {
+                Boolean labelHidden = (Boolean)structuresTable.getValueAt(row, col-1);
+                Boolean hidden = (Boolean)structuresTable.getValueAt(row, col);
+                int [] loc = {row};
+                structureModel.setStructuresHidden(loc, hidden, labelHidden, false);
+            }
+        }*/
     }
 
     public void valueChanged(ListSelectionEvent e)
@@ -812,7 +844,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
 
         public boolean isCellEditable(int row, int column)
         {
-            if (column == 2 || column ==5)
+            if (column == 2 || column ==5) //|| column ==6 || column ==7)
                 return true;
             else
                 return false;
@@ -822,6 +854,8 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         {
             if (columnIndex == 4)
                 return Color.class;
+            //else if(columnIndex == 6||columnIndex == 7)
+             //   return Boolean.class;
             else
                 return String.class;
         }
