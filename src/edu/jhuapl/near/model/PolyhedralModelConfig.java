@@ -163,8 +163,8 @@ public class PolyhedralModelConfig extends Config
       * @return
       */
     /**
-     * Get a SmallBodyConfig of a specific name and author.
-     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * Get a PolyhedralModelConfig of a specific name and author.
+     * Note a PolyhedralModelConfig is uniquely described by its name, author, and version.
      * No two small body configs can have all the same. This version of the function
      * assumes the version is null (unlike the other version in which you can specify
      * the version).
@@ -179,8 +179,8 @@ public class PolyhedralModelConfig extends Config
     }
 
     /**
-     * Get a SmallBodyConfig of a specific name, author, and version.
-     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * Get a PolyhedralModelConfig of a specific name, author, and version.
+     * Note a PolyhedralModelConfig is uniquely described by its name, author, and version.
      * No two small body configs can have all the same.
      *
      * @param name
@@ -198,7 +198,7 @@ public class PolyhedralModelConfig extends Config
                 return (PolyhedralModelConfig)config;
         }
 
-        System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
+        System.err.println("Error: Cannot find PolyhedralModelConfig with name " + name +
                 " and author " + author + " and version " + version);
 
         return null;
