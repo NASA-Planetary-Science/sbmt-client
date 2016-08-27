@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class PolyhedralModelConfig extends Config
 {
-    public String version; // e.g. 2.0
     public String rootDirOnServer;
     public int[] smallBodyNumberOfPlatesPerResolutionLevel; // only needed when number resolution levels > 1
     public boolean useMinimumReferencePotential = false; // uses average otherwise
@@ -68,10 +67,146 @@ public class PolyhedralModelConfig extends Config
 
     public String[] smallBodyLabelPerResolutionLevel; // only needed when number resolution levels > 1
 
+    // Flag for beta mode
+    public static boolean betaMode = false;
+
+    static public final int LEISA_NBANDS = 256;
+    static public final int MVIC_NBANDS = 4;
+
+    static public final String[] DEFAULT_GASKELL_LABELS_PER_RESOLUTION = {
+        "Low (49152 plates)",
+        "Medium (196608 plates)",
+        "High (786432 plates)",
+        "Very High (3145728 plates)"
+    };
+
+    static public final int[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
+        49152,
+        196608,
+        786432,
+        3145728
+    };
+
+    //
+    // Additional variables not inherited from parent
+    //
+
+    public ShapeModelBody body; // e.g. EROS or ITOKAWA
+    public ShapeModelType type; // e.g. asteroid, comet, satellite
+    public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
+    public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
+
+    public ImagingInstrument[] imagingInstruments = {};
+    public Instrument lidarInstrumentName = Instrument.LIDAR;
+
+    public String getUniqueName()
+    {
+        if (ShapeModelAuthor.CUSTOM == author)
+            return author + "/" + customName;
+        else if (author != null)
+        {
+            if (version == null)
+                return author + "/" + body;
+            else
+                return author + "/" + body + " (" + version + ")";
+        }
+        else
+            return body.toString();
+    }
+
+    public String getShapeModelName()
+    {
+        if (author == ShapeModelAuthor.CUSTOM)
+            return customName;
+        else
+        {
+            String ver = "";
+            if (version != null)
+                ver += " (" + version + ")";
+            return body.toString() + ver;
+        }
+    }
+
+
     public String getPathRepresentation()
     {
-        return "Default Path Representation";
+        if (ShapeModelAuthor.CUSTOM == author)
+        {
+            return ShapeModelAuthor.CUSTOM + " > " + customName;
+        }
+        else
+        {
+            String path = type.str;
+            if (population != null)
+                path += " > " + population;
+            path += " > " + body;
+            if (dataUsed != null)
+                path += " > " + dataUsed;
+            if (author != null)
+                path += " > " + author;
+            if (version != null)
+                path += " (" + version + ")";
+            return path;
+        }
     }
+
+//
+    // methods
+    //
+     /**
+      * Return a unique name for this model. No other model may have this
+      * name. Note that only applies within built-in models or custom models
+      * but a custom model can share the name of a built-in one or vice versa.
+      * By default simply return the author concatenated with the
+      * name if the author is not null or just the name if the author
+      * is null.
+      * @return
+      */
+    /**
+     * Get a SmallBodyConfig of a specific name and author.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same. This version of the function
+     * assumes the version is null (unlike the other version in which you can specify
+     * the version).
+     *
+     * @param name
+     * @param author
+     * @return
+     */
+    static public PolyhedralModelConfig getPolyhedralModelConfig(ShapeModelBody name, ShapeModelAuthor author)
+    {
+        return getPolyhedralModelConfig(name, author, null);
+    }
+
+    /**
+     * Get a SmallBodyConfig of a specific name, author, and version.
+     * Note a SmallBodyConfig is uniquely described by its name, author, and version.
+     * No two small body configs can have all the same.
+     *
+     * @param name
+     * @param author
+     * @param version
+     * @return
+     */
+    static public PolyhedralModelConfig getPolyhedralModelConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
+    {
+        for (Config config : getBuiltInConfigs())
+        {
+            if (((PolyhedralModelConfig)config).body == name && config.author == author &&
+                    ((config.version == null && version == null) || (version != null && version.equals(config.version)))
+                    )
+                return (PolyhedralModelConfig)config;
+        }
+
+        System.err.println("Error: Cannot find SmallBodyConfig with name " + name +
+                " and author " + author + " and version " + version);
+
+        return null;
+    }
+
+    //
+    //  Define all the built-in bodies to be loaded from the server
+    //
 
     //
     // Clone operation
@@ -86,6 +221,33 @@ public class PolyhedralModelConfig extends Config
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
 
+        c.body = this.body;
+        c.type = this.type;
+        c.population = this.population;
+        c.dataUsed = this.dataUsed;
+
+        // deep clone imaging instruments
+        if (this.imagingInstruments != null)
+        {
+            int length = this.imagingInstruments.length;
+            c.imagingInstruments = new ImagingInstrument[length];
+            for (int i = 0; i < length; i++)
+                c.imagingInstruments[i] = this.imagingInstruments[i].clone();
+        }
+
+        if (this.imagingInstruments != null && this.imagingInstruments.length > 0)
+        {
+            c.imagingInstruments = this.imagingInstruments.clone();
+            c.imageSearchDefaultStartDate = (Date)this.imageSearchDefaultStartDate.clone();
+            c.imageSearchDefaultEndDate = (Date)this.imageSearchDefaultEndDate.clone();
+            c.imageSearchFilterNames = this.imageSearchFilterNames.clone();
+            c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
+            c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
+            c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+        }
+
+        if (this.hasLidarData)
+            c.lidarInstrumentName = this.lidarInstrumentName;
 
         c.hasLidarData = this.hasLidarData;
         c.hasMapmaker = this.hasMapmaker;
@@ -126,25 +288,5 @@ public class PolyhedralModelConfig extends Config
         c.customTemporary = this.customTemporary;
 
         return c;
-    }
-
-
-    /**
-     * Return a unique name for this model. No other model may have this
-     * name. Note that only applies within built-in models or custom models
-     * but a custom model can share the name of a built-in one or vice versa.
-     * By default simply return the author concatenated with the
-     * name if the author is not null or just the name if the author
-     * is null.
-     * @return
-     */
-    public String getUniqueName()
-    {
-        return "Default Unique Name";
-    }
-
-    public String getShapeModelName()
-    {
-        return "Default Shape Model Name";
     }
 }

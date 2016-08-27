@@ -35,7 +35,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
      * for each resolution level.
      */
     public SmallBodyModel(
-            SmallBodyConfig config,
+            PolyhedralModelConfig config,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,

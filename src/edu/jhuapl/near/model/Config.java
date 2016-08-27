@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import java.util.ArrayList;
+
 
 
 /**
@@ -8,26 +10,43 @@ package edu.jhuapl.near.model;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public abstract class Config implements Cloneable
+public class Config implements Cloneable
 {
     public String customName;
     public boolean customTemporary = false;
+    public ShapeModelAuthor author; // e.g. Gaskell
+    public String version; // e.g. 2.0
 
     public Config clone() // throws CloneNotSupportedException
     {
-        Config result = null;
+        Config c = null;
         try {
-            result = (Config)super.clone();
+            c = (Config)super.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+
+        c.author = this.author;
+        c.version = this.version;
+
+        c.customName = this.customName;
+        c.customTemporary = this.customTemporary;
+
+        return c;
     }
 
     /**
      * Returns model as a path. e.g. "Asteroid > Near-Earth > Eros > Image Based > Gaskell"
      */
-     public abstract String getPathRepresentation();
+     public String getPathRepresentation()
+     {
+         if (ShapeModelAuthor.CUSTOM == author)
+         {
+             return ShapeModelAuthor.CUSTOM + " > " + customName;
+         }
+         else
+             return "DefaultPath";
+     }
 
      /**
       * Return a unique name for this model. No other model may have this
@@ -38,7 +57,29 @@ public abstract class Config implements Cloneable
       * is null.
       * @return
       */
-     public abstract String getUniqueName();
 
-     public abstract String getShapeModelName();
+     public String getUniqueName()
+     {
+         if (ShapeModelAuthor.CUSTOM == author)
+             return author + "/" + customName;
+         else
+             return "DefaultName";
+     }
+
+     public String getShapeModelName()
+     {
+         if (author == ShapeModelAuthor.CUSTOM)
+             return customName;
+         else
+         {
+             String ver = "";
+             if (version != null)
+                 ver += " (" + version + ")";
+             return "DefaultName" + ver;
+         }
+     }
+
+     static private ArrayList<Config> builtInConfigs = new ArrayList<Config>();
+     static public ArrayList<Config> getBuiltInConfigs() { return builtInConfigs; }
+
 }

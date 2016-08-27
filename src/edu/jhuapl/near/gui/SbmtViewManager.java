@@ -2,6 +2,7 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Frame;
 
+import edu.jhuapl.near.model.Config;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig;
 
@@ -14,9 +15,9 @@ public class SbmtViewManager extends ViewManager
 
     protected void addBuiltInViews(StatusBar statusBar)
     {
-        for (SmallBodyConfig config: SmallBodyConfig.builtInSmallBodyConfigs)
+        for (Config config: SmallBodyConfig.getBuiltInConfigs())
         {
-            addBuiltInView(new SbmtView(statusBar, config));
+            addBuiltInView(new SbmtView(statusBar, (SmallBodyConfig)config));
         }
     }
 

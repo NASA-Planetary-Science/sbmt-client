@@ -80,6 +80,8 @@ public class SmallBodyMappingTool
             {
                 public void run()
                 {
+                    SmallBodyConfig.initialize();
+
                     // Parse options that come first
                     int i = 0;
                     for (; i < args.length; ++i) {

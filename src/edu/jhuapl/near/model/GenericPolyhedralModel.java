@@ -193,7 +193,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
      * for each resolution level.
      */
     public GenericPolyhedralModel(
-            SmallBodyConfig config,
+            PolyhedralModelConfig config,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -523,9 +523,9 @@ public class GenericPolyhedralModel extends PolyhedralModel
         //this.computeSurfaceArea();
     }
 
-    
-    
-    
+
+
+
     private boolean defaultModelInitialized;
     public boolean isDefaultModelInitialized() { return defaultModelInitialized; }
 
@@ -553,11 +553,11 @@ public class GenericPolyhedralModel extends PolyhedralModel
 
         defaultModelInitialized = true;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     private void initializeLocators()
     {
         if (cellLocator == null)
