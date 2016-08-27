@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel
@@ -70,6 +73,24 @@ public class ViewManager extends JPanel
 
         for (View view : getCustomViews())
             add(view, view.getUniqueName());
+
+
+        if (getTempCustomShapeModelPath() == null)
+        {
+            int idxToShow=0;
+            for (int i=0; i<getBuiltInViews().size(); i++)
+                if (getBuiltInViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                    idxToShow=i;
+            setCurrentView(getBuiltInViews().get(idxToShow));
+        }
+        else
+        {
+            int idxToShow=0;
+            for (int i=0; i<getCustomViews().size(); i++)
+                if (getCustomViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                    idxToShow=i;
+            setCurrentView(getCustomViews().get(idxToShow));
+        }
     }
 
     public void setDefaultBodyToLoad(String uniqueName)
@@ -106,8 +127,27 @@ public class ViewManager extends JPanel
     {
         if (newCustomShapeModelPath != null)
         {
-            addCustomView(View.createTemporaryCustomView(statusBar, newCustomShapeModelPath));
+            addCustomView(statusBar, newCustomShapeModelPath);
         }
+
+        File modelsDir = new File(Configuration.getImportedShapeModelsDir());
+        File[] dirs = modelsDir.listFiles();
+        if (dirs != null && dirs.length > 0)
+        {
+            Arrays.sort(dirs);
+            for (File dir : dirs)
+            {
+                if (new File(dir, "model.vtk").isFile())
+                {
+                    addCustomView(createCustomView(statusBar, dir.getName(), false));
+                }
+            }
+        }
+    }
+
+    protected void addCustomView(StatusBar statusBar, String shapeModelPath)
+    {
+        addCustomView(createCustomView(statusBar, shapeModelPath, true));
     }
 
     public ArrayList<View> getBuiltInViews()
@@ -182,7 +222,7 @@ public class ViewManager extends JPanel
 
     public View addCustomView(String name)
     {
-        View view = View.createCustomView(statusBar, name);
+        View view = createCustomView(statusBar, name, false);
         addCustomView(view);
         add(view, view.getUniqueName());
         return view;
@@ -201,6 +241,15 @@ public class ViewManager extends JPanel
         }
 
         return null;
+    }
+
+    public View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    {
+        SmallBodyConfig config = new SmallBodyConfig();
+        config.customName = name;
+        config.customTemporary = temporary;
+        config.author = ShapeModelAuthor.CUSTOM;
+        return new View(statusBar, config);
     }
 
     public View getCustomView(String name)

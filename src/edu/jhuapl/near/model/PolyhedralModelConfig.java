@@ -61,8 +61,6 @@ public class PolyhedralModelConfig extends Config
     // they are assumed to be in kilometers.
     public boolean lidarBrowseIsInMeters;
     public double lidarOffsetScale;
-    public String customName;
-    public boolean customTemporary = false;
 
     public boolean hasLidarData = false;
     public Date lidarSearchDefaultStartDate;

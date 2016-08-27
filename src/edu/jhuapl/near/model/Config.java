@@ -11,6 +11,7 @@ package edu.jhuapl.near.model;
 public abstract class Config implements Cloneable
 {
     public String customName;
+    public boolean customTemporary = false;
 
     public Config clone() // throws CloneNotSupportedException
     {

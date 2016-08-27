@@ -626,20 +626,4 @@ public class View extends JPanel
         return smallBodyConfig;
     }
 
-    static public View createCustomView(StatusBar statusBar, String name)
-    {
-        SmallBodyConfig config = new SmallBodyConfig();
-        config.customName = name;
-        config.author = ShapeModelAuthor.CUSTOM;
-        return new View(statusBar, config);
-    }
-
-    static public View createTemporaryCustomView(StatusBar statusBar, String pathToShapeModel)
-    {
-        SmallBodyConfig config = new SmallBodyConfig();
-        config.customName = pathToShapeModel;
-        config.customTemporary = true;
-        config.author = ShapeModelAuthor.CUSTOM;
-        return new View(statusBar, config);
-    }
 }
