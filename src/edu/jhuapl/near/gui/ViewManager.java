@@ -13,8 +13,8 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 import edu.jhuapl.near.util.Configuration;
 
 public class ViewManager extends JPanel

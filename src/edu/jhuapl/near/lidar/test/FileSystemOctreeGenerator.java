@@ -23,9 +23,9 @@ import vtk.vtkStringArray;
 import vtk.vtkUnstructuredGrid;
 import vtk.vtkUnstructuredGridWriter;
 
+import edu.jhuapl.near.model.ShapeModelAuthor;
+import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.bennu.Bennu;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;

@@ -2,8 +2,8 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Frame;
 
+import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
 
 public class SbmtViewManager extends ViewManager
 {

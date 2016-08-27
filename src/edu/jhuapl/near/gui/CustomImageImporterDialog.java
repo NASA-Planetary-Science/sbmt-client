@@ -20,8 +20,8 @@ import javax.swing.JOptionPane;
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
+import edu.jhuapl.near.model.ImageType;
 import edu.jhuapl.near.model.ImagingInstrument;
-import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.util.VtkENVIReader;
 
 

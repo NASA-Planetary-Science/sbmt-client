@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 
 import vtk.vtkTexture;
 
-import edu.jhuapl.near.model.SmallBodyConfig.ImageType;
 import edu.jhuapl.near.util.IntensityRange;
 import edu.jhuapl.near.util.Properties;
 

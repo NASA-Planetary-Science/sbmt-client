@@ -4,9 +4,9 @@ import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
 import edu.jhuapl.near.model.ModelFactory;
+import edu.jhuapl.near.model.ShapeModelAuthor;
+import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.VtkDataTypes;
