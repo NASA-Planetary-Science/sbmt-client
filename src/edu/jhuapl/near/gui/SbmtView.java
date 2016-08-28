@@ -32,6 +32,7 @@ import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.SpectralMode;
 import edu.jhuapl.near.model.eros.NISStatisticsCollection;
+import edu.jhuapl.near.pick.ImagePickManager;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupManager;
@@ -327,4 +328,8 @@ public class SbmtView extends View
         }
     }
 
+    protected void setupPickManager()
+    {
+      setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
+    }
 }

@@ -16,6 +16,7 @@ import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.model.ShapeModelAuthor;
+import edu.jhuapl.near.pick.StructuresPickManager;
 import edu.jhuapl.near.popupmenus.StructuresPopupManager;
 
 
@@ -123,4 +124,10 @@ public class ExampleView extends View
 //        addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
 
     }
+
+    protected void setupPickManager()
+    {
+      setPickManager(new StructuresPickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
+    }
+
 }

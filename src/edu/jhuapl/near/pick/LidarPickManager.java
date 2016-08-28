@@ -7,7 +7,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.popupmenus.PopupManager;
 
-public class LidarPickManager extends PickManager
+public class LidarPickManager extends StructuresPickManager
 {
     public LidarPickManager(
             Renderer renderer,

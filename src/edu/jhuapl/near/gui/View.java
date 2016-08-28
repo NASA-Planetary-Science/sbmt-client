@@ -21,7 +21,6 @@ import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PolyhedralModelConfig;
-import edu.jhuapl.near.pick.ImagePickManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
@@ -342,10 +341,5 @@ public abstract class View extends JPanel
         setRenderer(new Renderer(getModelManager(), getStatusBar()));
     }
 
-    protected void setupPickManager()
-    {
-//      pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-//      pickManager = new LidarPickManager(renderer, statusBar, modelManager, popupManager);
-      setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
-    }
+    protected abstract void setupPickManager();
 }
