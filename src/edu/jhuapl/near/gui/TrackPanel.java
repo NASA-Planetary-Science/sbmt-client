@@ -12,11 +12,11 @@ import edu.jhuapl.near.pick.PickManager;
 public class TrackPanel extends LidarSearchPanel
 {
 
-    public TrackPanel(PolyhedralModelConfig smallBodyConfig,
+    public TrackPanel(PolyhedralModelConfig polyhedralModelConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
-        super(smallBodyConfig, modelManager, pickManager, renderer);
+        super(polyhedralModelConfig, modelManager, pickManager, renderer);
         hideSearchControls();
     }
 

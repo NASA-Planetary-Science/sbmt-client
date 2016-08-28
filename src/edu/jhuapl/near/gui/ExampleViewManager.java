@@ -2,8 +2,8 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Frame;
 
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig;
 
 public class ExampleViewManager extends ViewManager
 {
@@ -14,7 +14,7 @@ public class ExampleViewManager extends ViewManager
 
     public View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        SmallBodyConfig config = new SmallBodyConfig();
+        PolyhedralModelConfig config = new PolyhedralModelConfig();
         config.customName = name;
         config.customTemporary = temporary;
         config.author = ShapeModelAuthor.CUSTOM;

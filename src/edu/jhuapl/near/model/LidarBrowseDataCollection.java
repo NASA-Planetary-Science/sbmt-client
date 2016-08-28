@@ -37,7 +37,7 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
         }
     }
 
-    private PolyhedralModelConfig smallBodyConfig;
+    private PolyhedralModelConfig polyhedralModelConfig;
     private ArrayList<vtkProp> lidarPerUnitActors = new ArrayList<vtkProp>();
 
     private HashMap<String, LidarDataPerUnit> fileToLidarPerUnitMap = new HashMap<String, LidarDataPerUnit>();
@@ -49,7 +49,7 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
 
     public LidarBrowseDataCollection(SmallBodyModel smallBodyModel)
     {
-        this.smallBodyConfig = smallBodyModel.getSmallBodyConfig();
+        this.polyhedralModelConfig = smallBodyModel.getSmallBodyConfig();
     }
 
     public void addLidarData(String path) throws IOException
@@ -58,7 +58,7 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
             return;
 
         LidarDataPerUnit lidarData = new LidarDataPerUnit(
-                path, smallBodyConfig);
+                path, polyhedralModelConfig);
         lidarData.setShowSpacecraftPosition(showSpacecraftPosition);
 
         lidarData.addPropertyChangeListener(this);
@@ -130,13 +130,13 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
         ArrayList<LidarDataFileSpec> lidarSpecs = new ArrayList<LidarDataFileSpec>();
 
         InputStream is;
-        if (smallBodyConfig.lidarBrowseFileListResourcePath.startsWith("/edu"))
+        if (polyhedralModelConfig.lidarBrowseFileListResourcePath.startsWith("/edu"))
         {
-            is = getClass().getResourceAsStream(smallBodyConfig.lidarBrowseFileListResourcePath);
+            is = getClass().getResourceAsStream(polyhedralModelConfig.lidarBrowseFileListResourcePath);
         }
         else
         {
-            is = new FileInputStream(FileCache.getFileFromServer(smallBodyConfig.lidarBrowseFileListResourcePath));
+            is = new FileInputStream(FileCache.getFileFromServer(polyhedralModelConfig.lidarBrowseFileListResourcePath));
         }
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
@@ -227,6 +227,6 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
 
     public double getOffsetScale()
     {
-        return smallBodyConfig.lidarOffsetScale;
+        return polyhedralModelConfig.lidarOffsetScale;
     }
 }

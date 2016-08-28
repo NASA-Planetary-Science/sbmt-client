@@ -50,20 +50,20 @@ public class LidarDataPerUnit extends AbstractModel
     private vtkActor actorSpacecraft;
 
     public LidarDataPerUnit(String path,
-            PolyhedralModelConfig smallBodyConfig) throws IOException
+            PolyhedralModelConfig polyhedralModelConfig) throws IOException
     {
-        int[] xyzIndices = smallBodyConfig.lidarBrowseXYZIndices;
-        int[] scXyzIndices = smallBodyConfig.lidarBrowseSpacecraftIndices;
-        boolean isSpacecraftInSphericalCoordinates = smallBodyConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
-        int timeindex = smallBodyConfig.lidarBrowseTimeIndex;
-        int numberHeaderLines = smallBodyConfig.lidarBrowseNumberHeaderLines;
-        boolean isInMeters = smallBodyConfig.lidarBrowseIsInMeters;
-        int noiseindex = smallBodyConfig.lidarBrowseNoiseIndex;
-        boolean isBinary = smallBodyConfig.lidarBrowseIsBinary;
-        int binaryRecordSize = smallBodyConfig.lidarBrowseBinaryRecordSize;
-        int outgoingIntensityIndex = smallBodyConfig.lidarBrowseOutgoingIntensityIndex;
-        int receivedIntensityIndex = smallBodyConfig.lidarBrowseReceivedIntensityIndex;
-        boolean intensityEnabled = smallBodyConfig.lidarBrowseIntensityEnabled;
+        int[] xyzIndices = polyhedralModelConfig.lidarBrowseXYZIndices;
+        int[] scXyzIndices = polyhedralModelConfig.lidarBrowseSpacecraftIndices;
+        boolean isSpacecraftInSphericalCoordinates = polyhedralModelConfig.lidarBrowseIsSpacecraftInSphericalCoordinates;
+        int timeindex = polyhedralModelConfig.lidarBrowseTimeIndex;
+        int numberHeaderLines = polyhedralModelConfig.lidarBrowseNumberHeaderLines;
+        boolean isInMeters = polyhedralModelConfig.lidarBrowseIsInMeters;
+        int noiseindex = polyhedralModelConfig.lidarBrowseNoiseIndex;
+        boolean isBinary = polyhedralModelConfig.lidarBrowseIsBinary;
+        int binaryRecordSize = polyhedralModelConfig.lidarBrowseBinaryRecordSize;
+        int outgoingIntensityIndex = polyhedralModelConfig.lidarBrowseOutgoingIntensityIndex;
+        int receivedIntensityIndex = polyhedralModelConfig.lidarBrowseReceivedIntensityIndex;
+        boolean intensityEnabled = polyhedralModelConfig.lidarBrowseIntensityEnabled;
 
         File file = FileCache.getFileFromServer(path);
 

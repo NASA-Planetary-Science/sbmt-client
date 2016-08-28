@@ -95,7 +95,7 @@ public abstract class PolyhedralModel extends AbstractModel
 
     public abstract int getNumberResolutionLevels();
 
-    public abstract PolyhedralModelConfig getSmallBodyConfig();
+//    public abstract PolyhedralModelConfig getSmallBodyConfig();
 
     public abstract void drawRegularPolygonLowRes(
             double[] center,

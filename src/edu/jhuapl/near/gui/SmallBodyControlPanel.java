@@ -106,8 +106,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         final PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         int numberResolutionLevels = smallBodyModel.getNumberResolutionLevels();
-        String[] labels = smallBodyModel.getSmallBodyConfig().smallBodyLabelPerResolutionLevel;
-        int[] plateCount = smallBodyModel.getSmallBodyConfig().smallBodyNumberOfPlatesPerResolutionLevel;
+        String[] labels = smallBodyModel.getPolyhedralModelConfig().smallBodyLabelPerResolutionLevel;
+        int[] plateCount = smallBodyModel.getPolyhedralModelConfig().smallBodyNumberOfPlatesPerResolutionLevel;
 
         if (numberResolutionLevels > 1)
         {
@@ -200,7 +200,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         saveColoringButton.addActionListener(new SavePlateDataAction());
 
         customizeColoringButton = new JButton("Customize Plate Coloring...");
-        if (smallBodyModel.getSmallBodyConfig().customTemporary)
+        if (smallBodyModel.getPolyhedralModelConfig().customTemporary)
             customizeColoringButton.setEnabled(false);
         else
             customizeColoringButton.setEnabled(true);

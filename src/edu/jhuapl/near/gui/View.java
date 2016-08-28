@@ -47,7 +47,7 @@ public abstract class View extends JPanel
     private ModelSpectrumWindowManager spectrumPanelManager;
     private StatusBar statusBar;
     private boolean initialized = false;
-    private PolyhedralModelConfig smallBodyConfig;
+    private PolyhedralModelConfig polyhedralModelConfig;
     static private boolean initializedPanelSizing = false;
 
     // accessor methods
@@ -129,11 +129,11 @@ public abstract class View extends JPanel
      */
     public View(
             StatusBar statusBar,
-            PolyhedralModelConfig smallBodyConfig)
+            PolyhedralModelConfig polyhedralModelConfig)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
-        this.smallBodyConfig = smallBodyConfig;
+        this.polyhedralModelConfig = polyhedralModelConfig;
     }
 
     protected void addTab(String name, JComponent component)
@@ -187,7 +187,7 @@ public abstract class View extends JPanel
                 showDefaultTabSelectionPopup(e);
             }
         });
-        int tabIndex=FavoriteTabsFile.getInstance().getFavoriteTab(smallBodyConfig.getUniqueName());
+        int tabIndex=FavoriteTabsFile.getInstance().getFavoriteTab(polyhedralModelConfig.getUniqueName());
         controlPanel.setSelectedIndex(tabIndex);    // load default tab (which is 0 if not specified in favorite tabs file)
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -252,7 +252,7 @@ public abstract class View extends JPanel
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    FavoriteTabsFile.getInstance().setFavoriteTab(smallBodyConfig.getUniqueName(), controlPanel.getSelectedIndex());
+                    FavoriteTabsFile.getInstance().setFavoriteTab(polyhedralModelConfig.getUniqueName(), controlPanel.getSelectedIndex());
                 }
             });
             tabMenu.add(menuItem);
@@ -302,7 +302,7 @@ public abstract class View extends JPanel
      */
     public String getUniqueName()
     {
-        return smallBodyConfig.getUniqueName();
+        return polyhedralModelConfig.getUniqueName();
     }
 
 
@@ -315,7 +315,7 @@ public abstract class View extends JPanel
 
     public PolyhedralModelConfig getPolyhedralModelConfig()
     {
-        return smallBodyConfig;
+        return polyhedralModelConfig;
     }
 
     //

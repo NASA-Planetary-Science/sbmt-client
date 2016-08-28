@@ -67,7 +67,7 @@ public class LidarSearchDataCollection extends AbstractModel
         OLA_LEVEL_2
     };
 
-    private PolyhedralModelConfig smallBodyConfig;
+    private PolyhedralModelConfig polyhedralModelConfig;
     private PolyhedralModel smallBodyModel;
     private vtkPolyData polydata;   // target points
     private vtkPolyData selectedPointPolydata;
@@ -191,7 +191,7 @@ public class LidarSearchDataCollection extends AbstractModel
     public LidarSearchDataCollection(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.smallBodyConfig = smallBodyModel.getSmallBodyConfig();
+        this.polyhedralModelConfig = smallBodyModel.getPolyhedralModelConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();
@@ -248,19 +248,19 @@ public class LidarSearchDataCollection extends AbstractModel
 
     public double getOffsetScale()
     {
-        if (smallBodyConfig.lidarOffsetScale <= 0.0)
+        if (polyhedralModelConfig.lidarOffsetScale <= 0.0)
         {
             return smallBodyModel.getBoundingBoxDiagonalLength()/1546.4224133453388;
         }
         else
         {
-            return smallBodyConfig.lidarOffsetScale;
+            return polyhedralModelConfig.lidarOffsetScale;
         }
     }
 
     public Map<String, String> getLidarDataSourceMap()
     {
-        return smallBodyConfig.lidarSearchDataSourceMap;
+        return polyhedralModelConfig.lidarSearchDataSourceMap;
     }
 
 

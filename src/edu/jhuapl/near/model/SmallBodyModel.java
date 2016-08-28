@@ -12,6 +12,11 @@ import vtk.vtkPolyData;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
+    public PolyhedralModelConfig getSmallBodyConfig()
+    {
+        return getPolyhedralModelConfig();
+    }
+
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
      */

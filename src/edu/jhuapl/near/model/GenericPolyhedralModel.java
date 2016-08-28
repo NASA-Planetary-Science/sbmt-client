@@ -271,11 +271,6 @@ public class GenericPolyhedralModel extends PolyhedralModel
         lowResPointLocator = pointLocator;
     }
 
-    public PolyhedralModelConfig getSmallBodyConfig()
-    {
-        return getPolyhedralModelConfig();
-    }
-
     public boolean isBuiltIn()
     {
         return true;
@@ -314,7 +309,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         String imagesDir = null;
         if (isBuiltIn())
         {
-            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getSmallBodyConfig().getUniqueName();
+            imagesDir = Configuration.getCustomDataFolderForBuiltInViews() + File.separator + getPolyhedralModelConfig().getUniqueName();
         }
         else
         {
@@ -501,7 +496,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         // Load in custom plate data
         try
         {
-            if (!getSmallBodyConfig().customTemporary)
+            if (!getPolyhedralModelConfig().customTemporary)
             {
                 loadCustomColoringInfo();
                 loadCustomLidarDatasourceInfo();
@@ -630,10 +625,10 @@ public class GenericPolyhedralModel extends PolyhedralModel
         {
             // Compute bounding box diagonal length of lowest res shape model
             double cubeSize;
-            if(getSmallBodyConfig().hasCustomBodyCubeSize)
+            if(getPolyhedralModelConfig().hasCustomBodyCubeSize)
             {
                 // Custom specified cube size
-                cubeSize = getSmallBodyConfig().customBodyCubeSize;
+                cubeSize = getPolyhedralModelConfig().customBodyCubeSize;
             }
             else
             {
@@ -2268,7 +2263,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
                     totalArea += area;
                 }
 
-                if (getSmallBodyConfig().useMinimumReferencePotential)
+                if (getPolyhedralModelConfig().useMinimumReferencePotential)
                 {
                     return minRefPot;
                 }

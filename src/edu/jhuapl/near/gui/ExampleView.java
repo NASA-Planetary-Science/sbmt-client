@@ -35,9 +35,9 @@ public class ExampleView extends View
      * this function should be called prior to first time the View is
      * shown in order to cause it
      */
-    public ExampleView(StatusBar statusBar, PolyhedralModelConfig smallBodyConfig)
+    public ExampleView(StatusBar statusBar, PolyhedralModelConfig polyhedralModelConfig)
     {
-        super(statusBar, smallBodyConfig);
+        super(statusBar, polyhedralModelConfig);
     }
 
     public String getDisplayName()
@@ -65,7 +65,7 @@ public class ExampleView extends View
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.GRATICULE, graticule);
 
-//        if (getSmallBodyConfig().hasLidarData)
+//        if (getPolyhedralModelConfig().hasLidarData)
 //        {
 //            allModels.putAll(ModelFactory.createLidarModels(smallBodyModel));
 //        }
@@ -86,7 +86,7 @@ public class ExampleView extends View
     {
         setPopupManager(new PopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
 
-//        if (getSmallBodyConfig().hasLidarData)
+//        if (getPolyhedralModelConfig().hasLidarData)
 //        {
 //            LidarSearchDataCollection lidarSearch = (LidarSearchDataCollection)getModel(ModelNames.LIDAR_SEARCH);
 //            PopupMenu popupMenu = new LidarPopupMenu(lidarSearch, getRenderer());
@@ -98,19 +98,19 @@ public class ExampleView extends View
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-//        if (getSmallBodyConfig().hasLidarData)
+//        if (getPolyhedralModelConfig().hasLidarData)
 //        {
-//            JComponent component = new LidarPanel(getSmallBodyConfig(), getModelManager(), getPickManager(), getRenderer());
-//            addTab(getSmallBodyConfig().lidarInstrumentName.toString(), component);
+//            JComponent component = new LidarPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer());
+//            addTab(getPolyhedralModelConfig().lidarInstrumentName.toString(), component);
 //        }
 
 
         addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
 
-//        if (!getSmallBodyConfig().customTemporary)
+//        if (!getPolyhedralModelConfig().customTemporary)
 //        {
 //            ImagingInstrument instrument = null;
-//            for (ImagingInstrument i : getSmallBodyConfig().imagingInstruments)
+//            for (ImagingInstrument i : getPolyhedralModelConfig().imagingInstruments)
 //            {
 //                instrument = i;
 //                break;
@@ -120,7 +120,7 @@ public class ExampleView extends View
 //        }
 //
 
-//        addTab("Tracks", new TrackPanel(getSmallBodyConfig(), getModelManager(), getPickManager(), getRenderer()));
+//        addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
 
     }
 }

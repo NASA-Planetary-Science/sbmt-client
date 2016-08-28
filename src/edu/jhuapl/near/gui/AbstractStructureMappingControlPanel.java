@@ -48,7 +48,7 @@ import net.miginfocom.swing.MigLayout;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.StructureModel;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
@@ -381,7 +381,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
         {
             // Only add profile plots for line structures
             ProfilePlot profilePlot = new ProfilePlot((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES),
-                    (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY));
+                    (PolyhedralModel)modelManager.getModel(ModelNames.SMALL_BODY));
 
             // Create a new frame/window with profile
             profileWindow = new JFrame();

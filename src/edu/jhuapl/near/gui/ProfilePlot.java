@@ -25,7 +25,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.Line;
 import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.util.Properties;
 
 
@@ -34,13 +34,13 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
     private XYDataset valueDistanceDataset;
     private LineModel lineModel;
     private ChartPanel chartPanel;
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private int coloringIndex;
     private int defaultColoringIndex;
 
     private int numberOfProfilesCreated = 0;
 
-    public ProfilePlot(LineModel lineModel, SmallBodyModel smallBodyModel)
+    public ProfilePlot(LineModel lineModel, PolyhedralModel smallBodyModel)
     {
         this.lineModel = lineModel;
         this.smallBodyModel = smallBodyModel;
