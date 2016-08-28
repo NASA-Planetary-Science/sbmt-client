@@ -13,11 +13,9 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
 
-public class ViewManager extends JPanel
+public abstract class ViewManager extends JPanel
 {
     private ArrayList<View> builtInViews = new ArrayList<View>();
     private ArrayList<View> customViews = new ArrayList<View>();
@@ -243,14 +241,7 @@ public class ViewManager extends JPanel
         return null;
     }
 
-    public View createCustomView(StatusBar statusBar, String name, boolean temporary)
-    {
-        SmallBodyConfig config = new SmallBodyConfig();
-        config.customName = name;
-        config.customTemporary = temporary;
-        config.author = ShapeModelAuthor.CUSTOM;
-        return new View(statusBar, config);
-    }
+    public abstract View createCustomView(StatusBar statusBar, String name, boolean temporary);
 
     public View getCustomView(String name)
     {

@@ -320,7 +320,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
                 smallBodyModel.setShowSmallBody(true);
-                if (gridCheckBox.isSelected())
+                if (graticule != null && gridCheckBox.isSelected())
                     graticule.setShowGraticule(true);
                 if (imageMapCheckBox.isSelected())
                     showImageMap(true);
@@ -328,7 +328,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             else
             {
                 smallBodyModel.setShowSmallBody(false);
-                if (gridCheckBox.isSelected())
+                if (graticule != null && gridCheckBox.isSelected())
                     graticule.setShowGraticule(false);
                 if (imageMapCheckBox.isSelected())
                     showImageMap(false);
@@ -337,10 +337,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         else if (e.getItemSelectable() == this.gridCheckBox)
         {
             Graticule graticule = (Graticule)modelManager.getModel(ModelNames.GRATICULE);
-            if (e.getStateChange() == ItemEvent.SELECTED)
-                graticule.setShowGraticule(true);
-            else
-                graticule.setShowGraticule(false);
+            if (graticule != null)
+            {
+                if (e.getStateChange() == ItemEvent.SELECTED)
+                    graticule.setShowGraticule(true);
+                else
+                    graticule.setShowGraticule(false);
+            }
         }
         else if (e.getItemSelectable() == this.imageMapCheckBox)
         {

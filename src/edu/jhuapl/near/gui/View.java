@@ -17,47 +17,15 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.near.gui.eros.LineamentControlPanel;
-import edu.jhuapl.near.gui.eros.NISSearchPanel;
-import edu.jhuapl.near.model.AbstractModelManager;
-import edu.jhuapl.near.model.CircleModel;
-import edu.jhuapl.near.model.CircleSelectionModel;
-import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.DEMBoundaryCollection;
-import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.EllipseModel;
-import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.Image.SpectralMode;
-import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.ImageCubeCollection;
-import edu.jhuapl.near.model.ImagingInstrument;
-import edu.jhuapl.near.model.Instrument;
-import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.NISStatisticsCollection;
 import edu.jhuapl.near.pick.ImagePickManager;
 import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
-import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
-import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.popupmenus.LidarPopupMenu;
-import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
-import edu.jhuapl.near.popupmenus.eros.LineamentPopupMenu;
-import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
-import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.Preferences;
 
 
@@ -68,7 +36,7 @@ import edu.jhuapl.near.util.Preferences;
  * All the configuration details of all the built-in and custom views
  * are contained in this class.
  */
-public class View extends JPanel
+public abstract class View extends JPanel
 {
     private JSplitPane splitPane;
     private Renderer renderer;
@@ -174,102 +142,7 @@ public class View extends JPanel
         controlPanel.addTab(name, component);
     }
 
-    protected void setupTabs()
-    {
-        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
-        {
-            if (instrument.spectralMode == SpectralMode.MONO)
-            {
-                // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
-                if (smallBodyConfig.body == ShapeModelBody.EROS)
-                {
-                    JComponent component = new CubicalImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init();
-                    addTab(instrument.instrumentName.toString(), component);
-                }
-                else if (Configuration.isAPLVersion() || (smallBodyConfig.body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == smallBodyConfig.author))
-                {
-                    JComponent component = new ImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init();
-                    addTab(instrument.instrumentName.toString(), component);
-                }
-            }
-
-            else if (instrument.spectralMode == SpectralMode.MULTI)
-            {
-                if (Configuration.isAPLVersion())
-                {
-                    JComponent component = new QuadraspectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init();
-                    addTab(instrument.instrumentName.toString(), component);
-                }
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                if (Configuration.isAPLVersion())
-                {
-                    JComponent component = new HyperspectralImagingSearchPanel(smallBodyConfig, modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument, SmallBodyConfig.LEISA_NBANDS).init();
-                    addTab(instrument.instrumentName.toString(), component);
-                }
-            }
-        }
-
-        if (smallBodyConfig.hasSpectralData)
-        {
-            JComponent component = new NISSearchPanel(modelManager, infoPanelManager, pickManager, renderer);
-            addTab(Instrument.NIS.toString(), component);
-        }
-
-        if (smallBodyConfig.hasLidarData)
-        {
-            JComponent component = new LidarPanel(smallBodyConfig, modelManager, pickManager, renderer);
-            addTab(smallBodyConfig.lidarInstrumentName.toString(), component);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            if (smallBodyConfig.hasLineamentData)
-            {
-                JComponent component = new LineamentControlPanel(modelManager);
-                addTab("Lineament", component);
-            }
-
-            addTab("Structures", new StructuresControlPanel(modelManager, pickManager));
-            if (!smallBodyConfig.customTemporary)
-            {
-                ImagingInstrument instrument = null;
-                for (ImagingInstrument i : smallBodyConfig.imagingInstruments)
-                {
-                    instrument = i;
-                    break;
-                }
-
-                addTab("Images", new CustomImagesPanel(modelManager, infoPanelManager, spectrumPanelManager, pickManager, renderer, instrument).init());
-            }
-
-            addTab("Tracks", new TrackPanel(smallBodyConfig, modelManager, pickManager, renderer));
-
-            /*if (smallBodyConfig.hasMapmaker)
-            {
-                JComponent component = new MapmakerPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/mapmaker.zip");
-                addTab("Mapmaker", component);
-            }
-
-            if (smallBodyConfig.hasBigmap)
-            {
-                JComponent component = new BigmapPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer + "/bigmap.zip");
-                addTab("Bigmap", component);
-            }*/
-
-            /*if(smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
-            {
-                JComponent component = new DEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
-                        smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
-                addTab("DEMs", component);
-            }*/
-
-            JComponent component = new CustomDEMPanel(modelManager, pickManager, smallBodyConfig.rootDirOnServer,
-                    smallBodyConfig.hasMapmaker, smallBodyConfig.hasBigmap);
-            addTab("DEMs", component);
-        }
-    }
+    protected abstract void setupTabs();
 
     public void initialize()
     {
@@ -290,7 +163,6 @@ public class View extends JPanel
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
 
         setupTabs();
 
@@ -464,147 +336,9 @@ public class View extends JPanel
     //  Setup
     //
 
-    protected void setupModelManager()
-    {
-        setModelManager(new AbstractModelManager());
+    protected abstract void setupModelManager();
 
-        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
-        Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
-
-        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-        allModels.put(ModelNames.GRATICULE, graticule);
-        allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
-
-        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
-        {
-            if (instrument.spectralMode == SpectralMode.MONO)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, modelManager));
-                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, modelManager));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
-
-            else if (instrument.spectralMode == SpectralMode.MULTI)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, modelManager));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, modelManager));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
-        }
-
-        if (smallBodyConfig.hasSpectralData)
-        {
-            allModels.put(ModelNames.SPECTRA, ModelFactory.createSpectralModel(smallBodyModel));
-            if (smallBodyConfig.body == ShapeModelBody.EROS)
-                allModels.put(ModelNames.STATISTICS, new NISStatisticsCollection());
-        }
-
-        if (smallBodyConfig.hasLidarData)
-        {
-            allModels.putAll(ModelFactory.createLidarModels(smallBodyModel));
-        }
-
-        if (smallBodyConfig.hasLineamentData)
-        {
-            allModels.put(ModelNames.LINEAMENT, ModelFactory.createLineament());
-        }
-
-        allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
-        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
-        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
-        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
-        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
-        allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
-        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, modelManager));
-        allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, modelManager));
-
-        setModels(allModels);
-    }
-
-    protected void setupPopupManager()
-    {
-        setPopupManager(new PopupManager(modelManager, infoPanelManager, spectrumPanelManager, renderer));
-
-        for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)
-        {
-            if (instrument.spectralMode == SpectralMode.MONO)
-            {
-                ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-                ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(ModelNames.CUBE_IMAGES);
-
-                PopupMenu popupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
-                registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
-                registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
-
-                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
-                registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
-            }
-
-            else if (instrument.spectralMode == SpectralMode.MULTI)
-            {
-                ImageCollection images = (ImageCollection)getModel(ModelNames.IMAGES);
-                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                ColorImageCollection colorImages = (ColorImageCollection)getModel(ModelNames.COLOR_IMAGES);
-
-                PopupMenu popupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
-                registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
-                registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                ImageCollection images = (ImageCollection)getModel(ModelNames.IMAGES);
-                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
-                ColorImageCollection colorImages = (ColorImageCollection)getModel(ModelNames.COLOR_IMAGES);
-                ImageCubeCollection imageCubes = (ImageCubeCollection)getModel(ModelNames.CUBE_IMAGES);
-
-                PopupMenu popupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
-                registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
-
-                popupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, renderer);
-                registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
-
-                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
-                registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
-            }
-            }
-
-        if (smallBodyConfig.hasSpectralData)
-        {
-            PopupMenu popupMenu = new NISPopupMenu(modelManager, infoPanelManager);
-            registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
-        }
-
-        if (smallBodyConfig.hasLidarData)
-        {
-            LidarSearchDataCollection lidarSearch = (LidarSearchDataCollection)getModel(ModelNames.LIDAR_SEARCH);
-            PopupMenu popupMenu = new LidarPopupMenu(lidarSearch, renderer);
-            registerPopup(lidarSearch, popupMenu);
-        }
-
-        if (smallBodyConfig.hasLineamentData)
-        {
-            PopupMenu popupMenu = new LineamentPopupMenu(modelManager);
-            registerPopup(getModel(ModelNames.LINEAMENT), popupMenu);
-        }
-
-        if (smallBodyConfig.hasMapmaker || smallBodyConfig.hasBigmap)
-        {
-            PopupMenu popupMenu = new MapletBoundaryPopupMenu(modelManager, renderer);
-            registerPopup(getModel(ModelNames.DEM_BOUNDARY), popupMenu);
-        }
-    }
+    protected abstract void setupPopupManager();
 
     protected void setupInfoPanelManager()
     {

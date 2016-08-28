@@ -2,6 +2,10 @@ package edu.jhuapl.near.gui;
 
 import java.util.HashMap;
 
+import javax.swing.JComponent;
+
+import edu.jhuapl.near.gui.eros.LineamentControlPanel;
+import edu.jhuapl.near.gui.eros.NISSearchPanel;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -13,6 +17,7 @@ import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCubeCollection;
 import edu.jhuapl.near.model.ImagingInstrument;
+import edu.jhuapl.near.model.Instrument;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LineModel;
 import edu.jhuapl.near.model.Model;
@@ -22,6 +27,7 @@ import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.SbmtModelManager;
+import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
@@ -35,6 +41,7 @@ import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.popupmenus.eros.LineamentPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
+import edu.jhuapl.near.util.Configuration;
 
 
 /**
@@ -200,5 +207,103 @@ public class SbmtView extends View
         }
     }
 
+    protected void setupTabs()
+    {
+        addTab(getSmallBodyConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getSmallBodyConfig().getShapeModelName()));
+
+        for (ImagingInstrument instrument : getSmallBodyConfig().imagingInstruments)
+        {
+            if (instrument.spectralMode == SpectralMode.MONO)
+            {
+                // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
+                if (getSmallBodyConfig().body == ShapeModelBody.EROS)
+                {
+                    JComponent component = new CubicalImagingSearchPanel(getSmallBodyConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+                else if (Configuration.isAPLVersion() || (getSmallBodyConfig().body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == getSmallBodyConfig().author))
+                {
+                    JComponent component = new ImagingSearchPanel(getSmallBodyConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+            }
+
+            else if (instrument.spectralMode == SpectralMode.MULTI)
+            {
+                if (Configuration.isAPLVersion())
+                {
+                    JComponent component = new QuadraspectralImagingSearchPanel(getSmallBodyConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
+                if (Configuration.isAPLVersion())
+                {
+                    JComponent component = new HyperspectralImagingSearchPanel(getSmallBodyConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyConfig.LEISA_NBANDS).init();
+                    addTab(instrument.instrumentName.toString(), component);
+                }
+            }
+        }
+
+        if (getSmallBodyConfig().hasSpectralData)
+        {
+            JComponent component = new NISSearchPanel(getModelManager(), getInfoPanelManager(), getPickManager(), getRenderer());
+            addTab(Instrument.NIS.toString(), component);
+        }
+
+        if (getSmallBodyConfig().hasLidarData)
+        {
+            JComponent component = new LidarPanel(getSmallBodyConfig(), getModelManager(), getPickManager(), getRenderer());
+            addTab(getSmallBodyConfig().lidarInstrumentName.toString(), component);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            if (getSmallBodyConfig().hasLineamentData)
+            {
+                JComponent component = new LineamentControlPanel(getModelManager());
+                addTab("Lineament", component);
+            }
+
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+            if (!getSmallBodyConfig().customTemporary)
+            {
+                ImagingInstrument instrument = null;
+                for (ImagingInstrument i : getSmallBodyConfig().imagingInstruments)
+                {
+                    instrument = i;
+                    break;
+                }
+
+                addTab("Images", new CustomImagesPanel(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+            }
+
+            addTab("Tracks", new TrackPanel(getSmallBodyConfig(), getModelManager(), getPickManager(), getRenderer()));
+
+            /*if (getSmallBodyConfig().hasMapmaker)
+            {
+                JComponent component = new MapmakerPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/mapmaker.zip");
+                addTab("Mapmaker", component);
+            }
+
+            if (getSmallBodyConfig().hasBigmap)
+            {
+                JComponent component = new BigmapPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/bigmap.zip");
+                addTab("Bigmap", component);
+            }*/
+
+            /*if(getSmallBodyConfig().hasMapmaker || getSmallBodyConfig().hasBigmap)
+            {
+                JComponent component = new DEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
+                        getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
+                addTab("DEMs", component);
+            }*/
+
+            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
+                    getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
+            addTab("DEMs", component);
+        }
+    }
 
 }

@@ -13,7 +13,7 @@ import javax.swing.JSeparator;
  * This class sets up the top level window and instantiates all the "managers" used
  * through out the program.
  */
-public class MainWindow extends JFrame
+public abstract class MainWindow extends JFrame
 {
     private StatusBar statusBar;
     private FileMenu fileMenu;
@@ -61,10 +61,7 @@ public class MainWindow extends JFrame
         return new ImageIcon("data/yin-yang.gif");
     }
 
-    protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
-    {
-        return new ViewManager(statusBar, this, tempCustomShapeModelPath);
-    }
+    protected abstract ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath);
 
     protected FileMenu createFileMenu(ViewManager rootPanel)
     {
