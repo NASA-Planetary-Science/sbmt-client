@@ -84,7 +84,7 @@ public class ExampleView extends View
 
     protected void setupPopupManager()
     {
-        setPopupManager(new StructuresPopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
+        setPopupManager(new StructuresPopupManager(getModelManager(), getInfoPanelManager(), getRenderer()));
 
 //        if (getPolyhedralModelConfig().hasLidarData)
 //        {
