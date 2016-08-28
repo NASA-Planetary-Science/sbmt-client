@@ -130,4 +130,13 @@ public class ExampleView extends View
       setPickManager(new StructuresPickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
     }
 
+
+    protected void setupInfoPanelManager()
+    {
+    }
+
+    protected void setupSpectrumPanelManager()
+    {
+    }
+
 }

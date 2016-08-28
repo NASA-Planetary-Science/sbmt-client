@@ -42,8 +42,8 @@ public abstract class View extends JPanel
     private ModelManager modelManager;
     private PickManager pickManager;
     private PopupManager popupManager;
-    private ModelInfoWindowManager infoPanelManager;
-    private ModelSpectrumWindowManager spectrumPanelManager;
+    private WindowManager infoPanelManager;
+    private WindowManager spectrumPanelManager;
     private StatusBar statusBar;
     private boolean initialized = false;
     private PolyhedralModelConfig polyhedralModelConfig;
@@ -71,23 +71,23 @@ public abstract class View extends JPanel
         this.popupManager = popupManager;
     }
 
-    public ModelInfoWindowManager getInfoPanelManager()
+    public WindowManager getInfoPanelManager()
     {
         return infoPanelManager;
     }
 
-    public void setInfoPanelManager(ModelInfoWindowManager infoPanelManager)
+    public void setInfoPanelManager(WindowManager infoPanelManager)
     {
         this.infoPanelManager = infoPanelManager;
     }
 
-    public ModelSpectrumWindowManager getSpectrumPanelManager()
+    public WindowManager getSpectrumPanelManager()
     {
         return spectrumPanelManager;
     }
 
     public void setSpectrumPanelManager(
-            ModelSpectrumWindowManager spectrumPanelManager)
+            WindowManager spectrumPanelManager)
     {
         this.spectrumPanelManager = spectrumPanelManager;
     }
@@ -325,15 +325,9 @@ public abstract class View extends JPanel
 
     protected abstract void setupPopupManager();
 
-    protected void setupInfoPanelManager()
-    {
-        setInfoPanelManager(new ModelInfoWindowManager(getModelManager()));
-    }
+    protected abstract void setupInfoPanelManager();
 
-    protected void setupSpectrumPanelManager()
-    {
-        setSpectrumPanelManager(new ModelSpectrumWindowManager(getModelManager()));
-    }
+    protected abstract void setupSpectrumPanelManager();
 
     protected void setupRenderer()
     {

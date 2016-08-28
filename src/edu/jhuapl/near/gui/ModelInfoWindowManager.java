@@ -20,7 +20,7 @@ import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NISStatistics;
 import edu.jhuapl.near.util.Properties;
 
-public class ModelInfoWindowManager implements PropertyChangeListener
+public class ModelInfoWindowManager implements WindowManager, PropertyChangeListener
 {
     HashMap<Model, ModelInfoWindow> infoPanels =
         new HashMap<Model, ModelInfoWindow>();

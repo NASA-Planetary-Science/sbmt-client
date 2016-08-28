@@ -11,7 +11,7 @@ import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.util.Properties;
 
-public class ModelSpectrumWindowManager implements PropertyChangeListener
+public class ModelSpectrumWindowManager implements WindowManager, PropertyChangeListener
 {
     HashMap<Model, ModelInfoWindow> spectrumPanels = new HashMap<Model, ModelInfoWindow>();
 

@@ -152,7 +152,7 @@ public class SbmtView extends View
 
     protected void setupPopupManager()
     {
-        setPopupManager(new ImagePopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
+        setPopupManager(new ImagePopupManager(getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer()));
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
@@ -163,13 +163,13 @@ public class SbmtView extends View
                 ColorImageCollection colorImages = (ColorImageCollection)getModelManager().getModel(ModelNames.COLOR_IMAGES);
                 ImageCubeCollection imageCubes = (ImageCubeCollection)getModelManager().getModel(ModelNames.CUBE_IMAGES);
 
-                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, getInfoPanelManager(), getSpectrumPanelManager(), getRenderer(), getRenderer());
+                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
                 registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, getInfoPanelManager(), getModelManager(), getRenderer());
+                popupMenu = new ColorImagePopupMenu(colorImages, (ModelInfoWindowManager)getInfoPanelManager(), getModelManager(), getRenderer());
                 registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
-                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, getInfoPanelManager(), getSpectrumPanelManager(), getRenderer(), getRenderer());
+                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
                 registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
             }
 
@@ -179,10 +179,10 @@ public class SbmtView extends View
                 PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
                 ColorImageCollection colorImages = (ColorImageCollection)getModel(ModelNames.COLOR_IMAGES);
 
-                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, getInfoPanelManager(), getSpectrumPanelManager(), getRenderer(), getRenderer());
+                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
                 registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, getInfoPanelManager(), getModelManager(), getRenderer());
+                popupMenu = new ColorImagePopupMenu(colorImages, (ModelInfoWindowManager)getInfoPanelManager(), getModelManager(), getRenderer());
                 registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
             }
             else if (instrument.spectralMode == SpectralMode.HYPER)
@@ -192,20 +192,20 @@ public class SbmtView extends View
                 ColorImageCollection colorImages = (ColorImageCollection)getModel(ModelNames.COLOR_IMAGES);
                 ImageCubeCollection imageCubes = (ImageCubeCollection)getModel(ModelNames.CUBE_IMAGES);
 
-                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, getInfoPanelManager(), getSpectrumPanelManager(), getRenderer(), getRenderer());
+                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
                 registerPopup(getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES), popupMenu);
 
-                popupMenu = new ColorImagePopupMenu(colorImages, getInfoPanelManager(), getModelManager(), getRenderer());
+                popupMenu = new ColorImagePopupMenu(colorImages, (ModelInfoWindowManager)getInfoPanelManager(), getModelManager(), getRenderer());
                 registerPopup(getModel(ModelNames.COLOR_IMAGES), popupMenu);
 
-                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, getInfoPanelManager(), getSpectrumPanelManager(), getRenderer(), getRenderer());
+                popupMenu = new ImageCubePopupMenu(imageCubes, boundaries, (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
                 registerPopup(getModel(ModelNames.CUBE_IMAGES), popupMenu);
             }
             }
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            PopupMenu popupMenu = new NISPopupMenu(getModelManager(), getInfoPanelManager());
+            PopupMenu popupMenu = new NISPopupMenu(getModelManager(), (ModelInfoWindowManager)getInfoPanelManager());
             registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
         }
 
@@ -240,12 +240,12 @@ public class SbmtView extends View
                 // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
-                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (ModelInfoWindowManager)(ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)(ModelSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == getPolyhedralModelConfig().author))
                 {
-                    JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
             }
@@ -254,7 +254,7 @@ public class SbmtView extends View
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
             }
@@ -262,7 +262,7 @@ public class SbmtView extends View
             {
                 if (Configuration.isAPLVersion())
                 {
-                    JComponent component = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyConfig.LEISA_NBANDS).init();
+                    JComponent component = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyConfig.LEISA_NBANDS).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
             }
@@ -270,7 +270,7 @@ public class SbmtView extends View
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            JComponent component = new NISSearchPanel(getModelManager(), getInfoPanelManager(), getPickManager(), getRenderer());
+            JComponent component = new NISSearchPanel(getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer());
             addTab(Instrument.NIS.toString(), component);
         }
 
@@ -298,7 +298,7 @@ public class SbmtView extends View
                     break;
                 }
 
-                addTab("Images", new CustomImagesPanel(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+                addTab("Images", new CustomImagesPanel(getModelManager(), (ModelInfoWindowManager)getInfoPanelManager(), (ModelSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
             addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
@@ -332,4 +332,15 @@ public class SbmtView extends View
     {
       setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
     }
+
+    protected void setupInfoPanelManager()
+    {
+        setInfoPanelManager(new ModelInfoWindowManager(getModelManager()));
+    }
+
+    protected void setupSpectrumPanelManager()
+    {
+        setSpectrumPanelManager(new ModelSpectrumWindowManager(getModelManager()));
+    }
+
 }
