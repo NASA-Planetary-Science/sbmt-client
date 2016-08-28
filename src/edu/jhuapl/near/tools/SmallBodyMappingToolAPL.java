@@ -16,6 +16,8 @@ public class SmallBodyMappingToolAPL
 {
     public static void main(String[] args)
     {
+        Configuration.setAppName("neartool");
+        Configuration.setCacheVersion("2");
         Configuration.setAPLVersion(true);
 
         String username = null;

@@ -8,9 +8,10 @@ public class Configuration
     static private String rootURL = webURL + "/sbmt";
     static private String helpURL = webURL;
 
+    static private String appName = "saavtk";
     static private String appDir = null;
     static private String cacheDir = null;
-    static private String cacheVersion = "2";
+    static private String cacheVersion = "";
     static private String mapMaperDir = null;
 
     // Flag indicating if this version of the tool is APL in-house only ("private")
@@ -52,7 +53,7 @@ public class Configuration
     {
         if (appDir == null)
         {
-            appDir = System.getProperty("user.home") + File.separator + ".neartool";
+            appDir = System.getProperty("user.home") + File.separator + "." + appName;
 
             // if the directory does not exist, create it
             File dir = new File(appDir);
@@ -142,6 +143,16 @@ public class Configuration
     static public boolean isWindows()
     {
         return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
+
+    static public void setAppName(String name)
+    {
+        appName = name;
+    }
+
+    static public void setCacheVersion(String cv)
+    {
+        cacheVersion = cv;
     }
 
     static public void setAPLVersion(boolean b)

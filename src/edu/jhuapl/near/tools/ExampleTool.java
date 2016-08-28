@@ -71,6 +71,8 @@ public class ExampleTool
 
     public static void main(final String[] args)
     {
+        Configuration.setAppName("exampletool");
+
         // The following line appears to be needed on some systems to prevent server redirect errors.
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
