@@ -15,7 +15,6 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
 import edu.jhuapl.near.util.Properties;
 
 public class ImageCollection extends AbstractModel implements PropertyChangeListener

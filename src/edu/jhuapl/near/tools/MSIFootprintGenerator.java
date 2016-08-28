@@ -11,7 +11,7 @@ import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -26,7 +26,7 @@ public class MSIFootprintGenerator
     private static SmallBodyModel erosModel;
     private static int resolutionLevel = 0;
 
-    private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
+    private static boolean checkIfMsiFilesExist(String line, ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -57,7 +57,7 @@ public class MSIFootprintGenerator
     }
 
     private static void generateMSIFootprints(
-            ArrayList<String> msiFiles, MSIImage.ImageSource msiSource) throws IOException, FitsException
+            ArrayList<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
     {
         int count = 0;
         for (String filename : msiFiles)

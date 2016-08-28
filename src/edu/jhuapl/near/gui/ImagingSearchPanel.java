@@ -62,12 +62,11 @@ import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCube;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -76,6 +75,7 @@ import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.SpectralMode;
 import edu.jhuapl.near.pick.PickEvent;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
@@ -107,7 +107,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagingInstrument instrument = new ImagingInstrument();
 
     // The source of the images of the most recently executed query
-    private PerspectiveImage.ImageSource sourceOfLastQuery = PerspectiveImage.ImageSource.SPICE;
+    private ImageSource sourceOfLastQuery = ImageSource.SPICE;
 
     private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
     private ImagePopupMenu imagePopupMenu;
@@ -2519,7 +2519,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == PerspectiveImage.ImageSource.SPICE ? PerspectiveImage.ImageSource.GASKELL : PerspectiveImage.ImageSource.SPICE,
+                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL : ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();

@@ -1,7 +1,5 @@
 package edu.jhuapl.near.model;
 
-import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.query.QueryBase;
 
 public class ImagingInstrument

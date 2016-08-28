@@ -21,7 +21,7 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.model.ModelFactory;

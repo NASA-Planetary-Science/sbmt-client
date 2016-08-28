@@ -13,7 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import vtk.vtkDebugLeaks;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.Instrument;
 import edu.jhuapl.near.model.ModelFactory;

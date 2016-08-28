@@ -8,7 +8,7 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;

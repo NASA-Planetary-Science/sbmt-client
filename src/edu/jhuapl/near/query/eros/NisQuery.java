@@ -6,8 +6,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.query.QueryBase;
 
 
@@ -92,7 +91,7 @@ public class NisQuery extends QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            PerspectiveImage.ImageSource msiSource,
+            ImageSource msiSource,
             int limbType)
     {
         System.err.println("Error: Not implemented. Do not call.");
@@ -118,7 +117,7 @@ public class NisQuery extends QueryBase
             double fromPhase,
             double toPhase,
             TreeSet<Integer> cubeList,
-            MSIImage.ImageSource msiSource,
+            ImageSource msiSource,
             int limbType)
     {
         ArrayList<String> matchedImages = new ArrayList<String>();

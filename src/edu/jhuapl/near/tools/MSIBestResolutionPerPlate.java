@@ -15,7 +15,7 @@ import vtk.vtkPolyData;
 import vtk.vtkTriangle;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -73,7 +73,7 @@ public class MSIBestResolutionPerPlate
     private static ArrayList<PlateStatistics> statisticsPerPlate = new ArrayList<PlateStatistics>();
     private static ArrayList<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
 
-    private static boolean checkIfMsiFilesExist(String line, MSIImage.ImageSource source)
+    private static boolean checkIfMsiFilesExist(String line, ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -110,7 +110,7 @@ public class MSIBestResolutionPerPlate
     }
 
     private static void computeBestResolutionPerPlate(
-            ArrayList<String> msiFiles, MSIImage.ImageSource msiSource) throws IOException, FitsException
+            ArrayList<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
     {
         int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)

@@ -15,9 +15,8 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.ShapeModelAuthor;
@@ -137,7 +136,7 @@ public class DatabaseGeneratorSql
             ArrayList<String> imageFiles,
             String tableName,
             String cubesTableName,
-            PerspectiveImage.ImageSource imageSource) throws IOException, SQLException, FitsException
+            ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
         SmallBodyConfig config = (SmallBodyConfig)smallBodyModel.getSmallBodyConfig();
@@ -316,7 +315,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    boolean checkIfAllFilesExist(PerspectiveImage image, PerspectiveImage.ImageSource source)
+    boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
     {
         File fitfile = new File(image.getFitFileFullPath());
         System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
@@ -425,11 +424,11 @@ public class DatabaseGeneratorSql
         {
             if (mode == 1 || mode == 0)
             {
-                populateTables(files, imagesGaskellTable, cubesGaskellTable, Image.ImageSource.GASKELL);
+                populateTables(files, imagesGaskellTable, cubesGaskellTable, ImageSource.GASKELL);
             }
             if (mode == 2 || mode == 0)
             {
-                populateTables(files, imagesPdsTable, cubesPdsTable, Image.ImageSource.SPICE);
+                populateTables(files, imagesPdsTable, cubesPdsTable, ImageSource.SPICE);
             }
         }
         catch (Exception e1) {

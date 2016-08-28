@@ -19,13 +19,12 @@ import javax.imageio.ImageIO;
 import vtk.vtkObject;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.near.util.FileUtil;
@@ -69,7 +68,7 @@ public class AmicaBackplanesGenerator
         in.close();
     }
 
-    private static boolean checkIfAmicaFilesExist(String line, MSIImage.ImageSource source)
+    private static boolean checkIfAmicaFilesExist(String line, ImageSource source)
     {
         File file = new File(line);
         if (!file.exists())
@@ -205,7 +204,7 @@ public class AmicaBackplanesGenerator
     }
     */
 
-    private static void generateBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
+    private static void generateBackplanes(ArrayList<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
     {
         // First compute the optimal resolution of all images using the highest
         // resolution shape model

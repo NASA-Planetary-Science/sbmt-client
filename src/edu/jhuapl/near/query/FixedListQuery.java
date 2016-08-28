@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.Image.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 
 /**
  * A query which simply returns a fixed list of images. No actual search is done.

@@ -7,8 +7,6 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.Image.ImageSource;
-import edu.jhuapl.near.model.Image.SpectralMode;
 import edu.jhuapl.near.model.bennu.Bennu;
 import edu.jhuapl.near.model.bennu.MapCamImage;
 import edu.jhuapl.near.model.bennu.PolyCamImage;
