@@ -70,6 +70,7 @@ public class HelpMenu extends JMenu
         String versionString = "\n";
         try
         {
+            // note: currently this seems to be broken, perhaps because this file isn't being generated anymore by the release process -turnerj1
             InputStream is = this.getClass().getResourceAsStream("/svn.version");
             byte[] data = new byte[256];
             is.read(data, 0, data.length);
@@ -81,7 +82,7 @@ public class HelpMenu extends JMenu
         }
         catch (Exception e)
         {
-            System.out.println("exception = " + e.toString());
+//            System.out.println("exception = " + e.toString());
         }
 
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),

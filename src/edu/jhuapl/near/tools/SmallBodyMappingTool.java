@@ -3,23 +3,16 @@ package edu.jhuapl.near.tools;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
-import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 import com.jgoodies.looks.LookUtils;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.OSXAdapter;
-import edu.jhuapl.near.gui.SbmtMainWindow;
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.NativeLibraryLoader;
 
 /**
  * This class contains the "main" function called at the start of the program.
@@ -53,6 +46,9 @@ public class SmallBodyMappingTool
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
+            else
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
         }
         catch (Exception e)
         {
@@ -74,52 +70,14 @@ public class SmallBodyMappingTool
         Configuration.setAppName("neartool");
         Configuration.setCacheVersion("2");
 
+        setupLookAndFeel();
+
         // The following line appears to be needed on some systems to prevent server redirect errors.
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
         try
         {
-            javax.swing.SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    SmallBodyConfig.initialize();
-
-                    // Parse options that come first
-                    int i = 0;
-                    for (; i < args.length; ++i) {
-                        if (args[i].equals("--beta")) {
-                            SmallBodyConfig.betaMode = true;
-                        }else {
-                            // We've encountered something that is not an option, must be at the args
-                            break;
-                        }
-                    }
-
-                    // After options comes the args
-                    String tempShapeModelPath = null;
-                    if (Configuration.isAPLVersion() && args.length - i >= 1){
-                        tempShapeModelPath = args[i++];
-                    }
-
-                    NativeLibraryLoader.loadVtkLibraries();
-
-                    garbageCollector = new vtkJavaGarbageCollector();
-                    //garbageCollector.SetDebug(true);
-                    garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
-                    garbageCollector.SetAutoGarbageCollection(true);
-
-                    setupLookAndFeel();
-
-                    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-                    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-                    ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
-
-                    MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-//                    MainWindow frame = new MainWindow("data/Torso.stl");
-                    frame.setVisible(true);
-                }
-            });
+            javax.swing.SwingUtilities.invokeLater(new SbmtRunnable(args));
         }
         catch (Exception e)
         {
