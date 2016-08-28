@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -22,7 +21,7 @@ public class StructuresPopupManager extends PopupManager
         new HashMap<Model, PopupMenu>();
 
 
-    public StructuresPopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, Renderer renderer)
+    public StructuresPopupManager(ModelManager modelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
 
@@ -49,15 +48,6 @@ public class StructuresPopupManager extends PopupManager
     {
         return modelToPopupMap.get(model);
     }
-
-//    public PopupMenu getPopup(String name)
-//    {
-//        Model model = modelManager.getModel(name);
-//        if (model != null)
-//            return modelToPopupMap.get(model);
-//        else
-//            return null;
-//    }
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
     {
