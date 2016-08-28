@@ -6,7 +6,6 @@ import java.util.HashMap;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
 import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
@@ -23,7 +22,7 @@ public class StructuresPopupManager extends PopupManager
         new HashMap<Model, PopupMenu>();
 
 
-    public StructuresPopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, ModelSpectrumWindowManager spectrumPanelManager, Renderer renderer)
+    public StructuresPopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
 
