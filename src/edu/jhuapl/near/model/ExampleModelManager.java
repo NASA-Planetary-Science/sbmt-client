@@ -8,11 +8,4 @@ public class ExampleModelManager extends AbstractModelManager implements Propert
     {
         super();
     }
-
-    public SmallBodyModel getPolyhedralModel()
-    {
-        return (SmallBodyModel)super.getPolyhedralModel();
-    }
-
-
 }

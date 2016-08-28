@@ -26,7 +26,7 @@ import edu.jhuapl.near.util.Properties;
 
 public class Graticule extends AbstractModel implements PropertyChangeListener
 {
-    private SmallBodyModel smallBodyModel;
+    private PolyhedralModel smallBodyModel;
     private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkActor actor;
     private boolean generated = false;
@@ -41,12 +41,12 @@ public class Graticule extends AbstractModel implements PropertyChangeListener
     private String[] gridFiles;
     private double shiftFactor = 7.0;
 
-    public Graticule(SmallBodyModel smallBodyModel)
+    public Graticule(PolyhedralModel smallBodyModel)
     {
         this(smallBodyModel, null);
     }
 
-    public Graticule(SmallBodyModel smallBodyModel, String[] gridFiles)
+    public Graticule(PolyhedralModel smallBodyModel, String[] gridFiles)
     {
         if (smallBodyModel != null)
         {

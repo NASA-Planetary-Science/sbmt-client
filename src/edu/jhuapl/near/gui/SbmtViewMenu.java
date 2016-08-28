@@ -22,13 +22,13 @@ public class SbmtViewMenu extends ViewMenu
     {
         for (int i=0; i < getRootPanel().getNumberOfBuiltInViews(); ++i)
         {
-            View view = getRootPanel().getBuiltInView(i);
+            SbmtView view = (SbmtView)getRootPanel().getBuiltInView(i);
             JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
             mi.setText(view.getDisplayName());
             if (i==0)
                 mi.setSelected(true);
 
-            SmallBodyConfig smallBodyConfig = view.getSmallBodyConfig();
+            SmallBodyConfig smallBodyConfig = view.getPolyhedralModelConfig();
 
             addMenuItem(mi, smallBodyConfig);
         }

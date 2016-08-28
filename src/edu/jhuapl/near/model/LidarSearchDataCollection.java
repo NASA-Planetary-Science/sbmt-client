@@ -188,7 +188,7 @@ public class LidarSearchDataCollection extends AbstractModel
 
     }
 
-    public LidarSearchDataCollection(SmallBodyModel smallBodyModel)
+    public LidarSearchDataCollection(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
         this.smallBodyConfig = smallBodyModel.getSmallBodyConfig();

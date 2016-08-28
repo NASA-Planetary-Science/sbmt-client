@@ -77,7 +77,7 @@ public abstract class ViewManager extends JPanel
         {
             int idxToShow=0;
             for (int i=0; i<getBuiltInViews().size(); i++)
-                if (getBuiltInViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                if (getBuiltInViews().get(i).getPolyhedralModelConfig().getUniqueName().equals(getDefaultBodyToLoad()))
                     idxToShow=i;
             setCurrentView(getBuiltInViews().get(idxToShow));
         }
@@ -85,7 +85,7 @@ public abstract class ViewManager extends JPanel
         {
             int idxToShow=0;
             for (int i=0; i<getCustomViews().size(); i++)
-                if (getCustomViews().get(i).getSmallBodyConfig().getUniqueName().equals(getDefaultBodyToLoad()))
+                if (getCustomViews().get(i).getPolyhedralModelConfig().getUniqueName().equals(getDefaultBodyToLoad()))
                     idxToShow=i;
             setCurrentView(getCustomViews().get(idxToShow));
         }
@@ -190,7 +190,7 @@ public abstract class ViewManager extends JPanel
 
         currentView = view;
 
-        frame.setTitle(currentView.getSmallBodyConfig().getPathRepresentation());
+        frame.setTitle(currentView.getPolyhedralModelConfig().getPathRepresentation());
     }
 
     public View getBuiltInView(int i)
@@ -230,7 +230,7 @@ public abstract class ViewManager extends JPanel
     {
         for (View view : customViews)
         {
-            if (view.getSmallBodyConfig().getShapeModelName().equals(name))
+            if (view.getPolyhedralModelConfig().getShapeModelName().equals(name))
             {
                 customViews.remove(view);
                 remove(view);

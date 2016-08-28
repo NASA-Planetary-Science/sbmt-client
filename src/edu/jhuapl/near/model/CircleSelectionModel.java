@@ -6,7 +6,7 @@ package edu.jhuapl.near.model;
  */
 public class CircleSelectionModel extends AbstractEllipsePolygonModel
 {
-    public CircleSelectionModel(SmallBodyModel smallBodyModel)
+    public CircleSelectionModel(PolyhedralModel smallBodyModel)
     {
         super(smallBodyModel, 20, Mode.CIRCLE_MODE, "Selection");
         //setInteriorOpacity(1.0);

@@ -20,8 +20,7 @@ import javax.swing.JTabbedPane;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.pick.ImagePickManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.popupmenus.PopupManager;
@@ -48,7 +47,7 @@ public abstract class View extends JPanel
     private ModelSpectrumWindowManager spectrumPanelManager;
     private StatusBar statusBar;
     private boolean initialized = false;
-    private SmallBodyConfig smallBodyConfig;
+    private PolyhedralModelConfig smallBodyConfig;
     static private boolean initializedPanelSizing = false;
 
     // accessor methods
@@ -130,7 +129,7 @@ public abstract class View extends JPanel
      */
     public View(
             StatusBar statusBar,
-            SmallBodyConfig smallBodyConfig)
+            PolyhedralModelConfig smallBodyConfig)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
@@ -312,28 +311,15 @@ public abstract class View extends JPanel
      * This name need not be unique among all views.
      * @return
      */
-    public String getDisplayName()
-    {
-        if (smallBodyConfig.author == ShapeModelAuthor.CUSTOM)
-            return smallBodyConfig.customName;
-        else if (smallBodyConfig.author == null)
-            return smallBodyConfig.body.toString();
-        else
-        {
-            String version = "";
-            if (smallBodyConfig.version != null)
-                version += " (" + smallBodyConfig.version + ")";
-            return smallBodyConfig.author.toString() + version;
-        }
-    }
+    public abstract String getDisplayName();
 
-    public SmallBodyConfig getSmallBodyConfig()
+    public PolyhedralModelConfig getPolyhedralModelConfig()
     {
         return smallBodyConfig;
     }
 
     //
-    //  Setup
+    //  Setup methods, to be defined by subclasses
     //
 
     protected abstract void setupModelManager();
