@@ -56,6 +56,7 @@ import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.pick.PickManager;
 import edu.jhuapl.near.pick.PickManager.PickMode;
+import edu.jhuapl.near.popupmenus.ImagePopupManager;
 import edu.jhuapl.near.popupmenus.MapmakerLinesPopupMenu;
 import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
@@ -130,7 +131,7 @@ public class DEMView extends JFrame implements WindowListener
 
         renderer = new Renderer(modelManager);
 
-        PopupManager popupManager = new PopupManager(modelManager, null, null, renderer);
+        PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);

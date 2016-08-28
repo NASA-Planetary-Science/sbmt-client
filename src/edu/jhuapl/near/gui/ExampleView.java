@@ -16,7 +16,7 @@ import edu.jhuapl.near.model.PolygonModel;
 import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.popupmenus.PopupManager;
+import edu.jhuapl.near.popupmenus.StructuresPopupManager;
 
 
 /**
@@ -84,7 +84,7 @@ public class ExampleView extends View
 
     protected void setupPopupManager()
     {
-        setPopupManager(new PopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
+        setPopupManager(new StructuresPopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
 
 //        if (getPolyhedralModelConfig().hasLidarData)
 //        {

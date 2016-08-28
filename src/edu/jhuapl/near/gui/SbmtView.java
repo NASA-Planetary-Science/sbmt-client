@@ -34,10 +34,10 @@ import edu.jhuapl.near.model.SpectralMode;
 import edu.jhuapl.near.model.eros.NISStatisticsCollection;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
+import edu.jhuapl.near.popupmenus.ImagePopupManager;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
 import edu.jhuapl.near.popupmenus.LidarPopupMenu;
 import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
-import edu.jhuapl.near.popupmenus.PopupManager;
 import edu.jhuapl.near.popupmenus.PopupMenu;
 import edu.jhuapl.near.popupmenus.eros.LineamentPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
@@ -151,7 +151,7 @@ public class SbmtView extends View
 
     protected void setupPopupManager()
     {
-        setPopupManager(new PopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
+        setPopupManager(new ImagePopupManager(getModelManager(), getInfoPanelManager(), getSpectrumPanelManager(), getRenderer()));
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
