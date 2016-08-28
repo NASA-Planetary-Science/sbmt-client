@@ -10,15 +10,13 @@ import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.Properties;
 
-public abstract class AbstractModelManager extends DefaultDatasourceModel implements ModelManager, PropertyChangeListener
+public class AbstractModelManager extends DefaultDatasourceModel implements ModelManager, PropertyChangeListener
 {
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     private HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
     private boolean mode2D = false;
-
-
 
     @Override
     public void updateScaleBarValue(double pixelSizeInKm)
@@ -38,7 +36,7 @@ public abstract class AbstractModelManager extends DefaultDatasourceModel implem
 
     public boolean isBuiltIn()
     {
-        return getSmallBodyModel().isBuiltIn();
+        return getPolyhedralModel().isBuiltIn();
     }
 
     public void setModels(HashMap<ModelNames, Model> models)
@@ -78,7 +76,39 @@ public abstract class AbstractModelManager extends DefaultDatasourceModel implem
         }
     }
 
-    protected abstract void updateProps();
+    public void updateProps()
+    {
+        props.clear();
+        propsExceptSmallBody.clear();
+        propToModelMap.clear();
+
+        for (ModelNames modelName : allModels.keySet())
+        {
+            Model model = allModels.get(modelName);
+            if (model.isVisible())
+            {
+                props.addAll(model.getProps());
+
+                for (vtkProp prop : model.getProps())
+                    propToModelMap.put(prop, model);
+
+                if (!(model instanceof PolyhedralModel))
+                    propsExceptSmallBody.addAll(model.getProps());
+            }
+        }
+    }
+
+    public PolyhedralModel getPolyhedralModel()
+    {
+        for (ModelNames modelName : allModels.keySet())
+        {
+            Model model = allModels.get(modelName);
+            if (model instanceof PolyhedralModel)
+                return (PolyhedralModel)model;
+        }
+
+        return null;
+    }
 
     public Model getModel(vtkProp prop)
     {
@@ -89,8 +119,6 @@ public abstract class AbstractModelManager extends DefaultDatasourceModel implem
     {
         return allModels.get(modelName);
     }
-
-    abstract public PolyhedralModel getSmallBodyModel();
 
     public void deleteAllModels()
     {

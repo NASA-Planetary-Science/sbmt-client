@@ -103,7 +103,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
         JLabel resolutionLabel = new JLabel("Resolution");
 
-        final PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        final PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         int numberResolutionLevels = smallBodyModel.getNumberResolutionLevels();
         String[] labels = smallBodyModel.getSmallBodyConfig().smallBodyLabelPerResolutionLevel;
@@ -287,7 +287,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             }
         }
 
-        if (modelManager.getSmallBodyModel().isImageMapAvailable())
+        if (modelManager.getPolyhedralModel().isImageMapAvailable())
         {
             panel.add(imageMapCheckBox, "wrap");
             panel.add(opacityLabel, "gapleft 25, split 2");
@@ -310,7 +310,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         Picker.setPickingEnabled(false);
 
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         if (e.getItemSelectable() == this.modelCheckBox)
         {
@@ -426,7 +426,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     private void setColoring()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         try
         {
@@ -450,14 +450,14 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     private ImageKey createImageMapKey()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         String name = smallBodyModel.getImageMapNames()[0];
         return new ImageKey(name, ImageSource.IMAGE_MAP);
     }
 
     private void showImageMap(boolean show)
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
         try
@@ -497,7 +497,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     private void updateColoringComboBoxes()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         coloringComboBox.removeItemListener(this);
         customColorRedComboBox.removeItemListener(this);
@@ -541,7 +541,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     private void setStatisticsLabel()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         BoundingBox bb = smallBodyModel.getBoundingBox();
 
@@ -580,7 +580,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
 
     private void addAdditionalStatisticsToLabel()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         Double refPotential = smallBodyModel.getReferencePotential();
         PolyDataStatistics stat = PolyDataUtil2.getPolyDataStatistics(smallBodyModel.getSmallBodyPolyData());
         String refPotentialString = refPotential != Double.MAX_VALUE ? String.valueOf(refPotential) : "(not available)";
@@ -642,7 +642,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(SmallBodyControlPanel.this));
             dialog.setVisible(true);
 
-            PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+            PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
             standardColoringButton.setEnabled(smallBodyModel.getNumberOfColors() > 0);
             rgbColoringButton.setEnabled(smallBodyModel.getNumberOfColors() > 0);
 
@@ -657,7 +657,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         public void actionPerformed(ActionEvent actionEvent)
         {
-            PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+            PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
             Frame invoker = JOptionPane.getFrameForComponent(SmallBodyControlPanel.this);
             String name = "platedata.csv";
             File file = CustomFileChooser.showSaveDialog(invoker, "Export Plate Data", name);

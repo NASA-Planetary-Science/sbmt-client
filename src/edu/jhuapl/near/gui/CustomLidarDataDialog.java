@@ -48,19 +48,19 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)lidarDatasourceList.getModel()).clear();
-        ArrayList<LidarDatasourceInfo> list = modelManager.getSmallBodyModel().getLidarDasourceInfoList();
+        ArrayList<LidarDatasourceInfo> list = modelManager.getPolyhedralModel().getLidarDasourceInfoList();
         for (LidarDatasourceInfo info : list)
             ((DefaultListModel)lidarDatasourceList.getModel()).addElement(info);
     }
 
     private String getCustomDataFolder()
     {
-        return modelManager.getSmallBodyModel().getCustomDataFolder();
+        return modelManager.getPolyhedralModel().getCustomDataFolder();
     }
 
     private String getConfigFilename()
     {
-        return modelManager.getSmallBodyModel().getConfigFilename();
+        return modelManager.getPolyhedralModel().getConfigFilename();
     }
 
     private void updateConfigFile()
@@ -124,7 +124,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
 //            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
 //            String filename = getCustomDataFolder() + File.separator + lidarDatasourceInfo.path;
 //            new File(filename).delete();
-            modelManager.getSmallBodyModel().removeCustomLidarDatasource(index);
+            modelManager.getPolyhedralModel().removeCustomLidarDatasource(index);
             ((DefaultListModel)lidarDatasourceList.getModel()).remove(index);
             updateConfigFile();
         }
@@ -245,7 +245,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         {
             LidarDatasourceInfo lidarDatasourceInfo = new LidarDatasourceInfo();
             CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
-            dialog.setLidarDatasourceInfo(lidarDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+            dialog.setLidarDatasourceInfo(lidarDatasourceInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
@@ -254,7 +254,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
             {
                 lidarDatasourceInfo = dialog.getLidarDatasourceInfo();
                 saveLidarDatasourceData(((DefaultListModel)lidarDatasourceList.getModel()).getSize(), null, lidarDatasourceInfo);
-                modelManager.getSmallBodyModel().addCustomLidarDatasource(lidarDatasourceInfo);
+                modelManager.getPolyhedralModel().addCustomLidarDatasource(lidarDatasourceInfo);
             }
         }
         catch (IOException e)
@@ -281,7 +281,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
                 LidarDatasourceInfo oldLidarDatasourceInfo = (LidarDatasourceInfo)cellDataListModel.get(selectedItem);
 
                 CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), true);
-                dialog.setLidarDatasourceInfo(oldLidarDatasourceInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+                dialog.setLidarDatasourceInfo(oldLidarDatasourceInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
                 dialog.setLocationRelativeTo(this);
                 dialog.setVisible(true);
 
@@ -290,7 +290,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
                 {
                     LidarDatasourceInfo cellDataInfo = dialog.getLidarDatasourceInfo();
                     saveLidarDatasourceData(selectedItem, oldLidarDatasourceInfo, cellDataInfo);
-                    modelManager.getSmallBodyModel().setCustomLidarDatasource(selectedItem, cellDataInfo);
+                    modelManager.getPolyhedralModel().setCustomLidarDatasource(selectedItem, cellDataInfo);
                 }
             }
         }

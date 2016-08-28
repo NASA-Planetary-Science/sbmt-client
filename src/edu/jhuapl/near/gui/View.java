@@ -19,6 +19,7 @@ import javax.swing.JTabbedPane;
 
 import edu.jhuapl.near.gui.eros.LineamentControlPanel;
 import edu.jhuapl.near.gui.eros.NISSearchPanel;
+import edu.jhuapl.near.model.AbstractModelManager;
 import edu.jhuapl.near.model.CircleModel;
 import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -40,7 +41,6 @@ import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.PointModel;
 import edu.jhuapl.near.model.PolygonModel;
-import edu.jhuapl.near.model.SbmtModelManager;
 import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
@@ -167,30 +167,6 @@ public class View extends JPanel
         super(new BorderLayout());
         this.statusBar = statusBar;
         this.smallBodyConfig = smallBodyConfig;
-    }
-
-    protected void setupInfoPanelManager()
-    {
-        setInfoPanelManager(new ModelInfoWindowManager(getModelManager()));
-    }
-
-    protected void setupSpectrumPanelManager()
-    {
-        setSpectrumPanelManager(new ModelSpectrumWindowManager(getModelManager()));
-    }
-
-    protected void setupRenderer()
-    {
-        //renderer = new Renderer(modelManager);
-        setRenderer(new Renderer(getModelManager(), getStatusBar()));
-    }
-
-
-    protected void setupPickManager()
-    {
-//      pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
-//      pickManager = new LidarPickManager(renderer, statusBar, modelManager, popupManager);
-      setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
     }
 
     protected void addTab(String name, JComponent component)
@@ -434,9 +410,63 @@ public class View extends JPanel
         modelManager.setModels(models);
     }
 
-    private void setupModelManager()
+    protected void registerPopup(Model model, PopupMenu menu)
     {
-        setModelManager(new SbmtModelManager());
+        popupManager.registerPopup(model, menu);
+    }
+
+    protected Model getModel(ModelNames name)
+    {
+        return modelManager.getModel(name);
+    }
+
+    /**
+     * Return a unique name for this view. No other view may have this
+     * name. Note that only applies within built-in views or custom views
+     * but a custom view can share the name of a built-in one or vice versa.
+     * By default simply return the author concatenated with the
+     * name if the author is not null or just the name if the author
+     * is null.
+     * @return
+     */
+    public String getUniqueName()
+    {
+        return smallBodyConfig.getUniqueName();
+    }
+
+
+    /**
+     * Return the display name for this view (the name to be shown in the menu).
+     * This name need not be unique among all views.
+     * @return
+     */
+    public String getDisplayName()
+    {
+        if (smallBodyConfig.author == ShapeModelAuthor.CUSTOM)
+            return smallBodyConfig.customName;
+        else if (smallBodyConfig.author == null)
+            return smallBodyConfig.body.toString();
+        else
+        {
+            String version = "";
+            if (smallBodyConfig.version != null)
+                version += " (" + smallBodyConfig.version + ")";
+            return smallBodyConfig.author.toString() + version;
+        }
+    }
+
+    public SmallBodyConfig getSmallBodyConfig()
+    {
+        return smallBodyConfig;
+    }
+
+    //
+    //  Setup
+    //
+
+    protected void setupModelManager()
+    {
+        setModelManager(new AbstractModelManager());
 
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
         Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
@@ -497,17 +527,7 @@ public class View extends JPanel
         setModels(allModels);
     }
 
-    protected void registerPopup(Model model, PopupMenu menu)
-    {
-        popupManager.registerPopup(model, menu);
-    }
-
-    protected Model getModel(ModelNames name)
-    {
-        return modelManager.getModel(name);
-    }
-
-    private void setupPopupManager()
+    protected void setupPopupManager()
     {
         setPopupManager(new PopupManager(modelManager, infoPanelManager, spectrumPanelManager, renderer));
 
@@ -586,44 +606,26 @@ public class View extends JPanel
         }
     }
 
-    /**
-     * Return a unique name for this view. No other view may have this
-     * name. Note that only applies within built-in views or custom views
-     * but a custom view can share the name of a built-in one or vice versa.
-     * By default simply return the author concatenated with the
-     * name if the author is not null or just the name if the author
-     * is null.
-     * @return
-     */
-    public String getUniqueName()
+    protected void setupInfoPanelManager()
     {
-        return smallBodyConfig.getUniqueName();
+        setInfoPanelManager(new ModelInfoWindowManager(getModelManager()));
     }
 
-
-    /**
-     * Return the display name for this view (the name to be shown in the menu).
-     * This name need not be unique among all views.
-     * @return
-     */
-    public String getDisplayName()
+    protected void setupSpectrumPanelManager()
     {
-        if (smallBodyConfig.author == ShapeModelAuthor.CUSTOM)
-            return smallBodyConfig.customName;
-        else if (smallBodyConfig.author == null)
-            return smallBodyConfig.body.toString();
-        else
-        {
-            String version = "";
-            if (smallBodyConfig.version != null)
-                version += " (" + smallBodyConfig.version + ")";
-            return smallBodyConfig.author.toString() + version;
-        }
+        setSpectrumPanelManager(new ModelSpectrumWindowManager(getModelManager()));
     }
 
-    public SmallBodyConfig getSmallBodyConfig()
+    protected void setupRenderer()
     {
-        return smallBodyConfig;
+        //renderer = new Renderer(modelManager);
+        setRenderer(new Renderer(getModelManager(), getStatusBar()));
     }
 
+    protected void setupPickManager()
+    {
+//      pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
+//      pickManager = new LidarPickManager(renderer, statusBar, modelManager, popupManager);
+      setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
+    }
 }

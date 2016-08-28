@@ -255,7 +255,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (selectionRegionCenter==null || selectionRegionRadius<=0)// do time-only search
                 checker=null;
             else
-                checker=new PointInCylinderChecker(modelManager.getSmallBodyModel(), selectionRegionCenter, selectionRegionRadius);
+                checker=new PointInCylinderChecker(modelManager.getPolyhedralModel(), selectionRegionCenter, selectionRegionRadius);
             //
             lidarModel.setLidarData(
                     sourceComboBox.getSelectedItem().toString(),
@@ -348,7 +348,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     @Override
     public void itemStateChanged(ItemEvent e)
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         JComboBox lidarDatasourceComboBox = (JComboBox)e.getSource();
         int index = lidarDatasourceComboBox.getSelectedIndex() - 1;
         smallBodyModel.setLidarDatasourceIndex(index);
@@ -411,7 +411,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     protected void updateLidarDatasourceComboBox()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 //        if (smallBodyModel.getLidarDatasourceIndex() < 0)
 //            smallBodyModel.setLidarDatasourceIndex(0);
 
@@ -924,7 +924,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     protected void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
@@ -1069,7 +1069,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         dialog.setVisible(true);
 
         // update the panel to reflect changes to the lidar datasources
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         if (smallBodyModel.getNumberOfLidarDatasources()>0)
             smallBodyModel.loadCustomLidarDatasourceInfo();
         updateLidarDatasourceComboBox();

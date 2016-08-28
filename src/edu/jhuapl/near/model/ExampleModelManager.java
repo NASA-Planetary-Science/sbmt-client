@@ -2,9 +2,9 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeListener;
 
-public class SbmtModelManager extends AbstractModelManager implements PropertyChangeListener
+public class ExampleModelManager extends AbstractModelManager implements PropertyChangeListener
 {
-    public SbmtModelManager()
+    public ExampleModelManager()
     {
         super();
     }
@@ -13,5 +13,6 @@ public class SbmtModelManager extends AbstractModelManager implements PropertyCh
     {
         return (SmallBodyModel)super.getPolyhedralModel();
     }
+
 
 }

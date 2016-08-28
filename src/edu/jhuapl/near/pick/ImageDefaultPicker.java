@@ -66,7 +66,7 @@ public class ImageDefaultPicker extends DefaultPicker
 
         modelManager.addPropertyChangeListener(this);
 
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
 
         // See comment in the propertyChange function below as to why
         // we use a custom pick list for these pickers.
@@ -415,13 +415,13 @@ public class ImageDefaultPicker extends DefaultPicker
     private void updateScaleBarValue()
     {
         double sizeOfPixel = computeSizeOfPixel();
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarValue(sizeOfPixel);
     }
 
     public void updateScaleBarPosition()
     {
-        PolyhedralModel smallBodyModel = modelManager.getSmallBodyModel();
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
     }
 

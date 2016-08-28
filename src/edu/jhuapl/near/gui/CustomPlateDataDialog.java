@@ -51,19 +51,19 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)cellDataList.getModel()).clear();
-        ArrayList<ColoringInfo> list = modelManager.getSmallBodyModel().getColoringInfoList();
+        ArrayList<ColoringInfo> list = modelManager.getPolyhedralModel().getColoringInfoList();
         for (ColoringInfo info : list)
             ((DefaultListModel)cellDataList.getModel()).addElement(info);
     }
 
     private String getCustomDataFolder()
     {
-        return modelManager.getSmallBodyModel().getCustomDataFolder();
+        return modelManager.getPolyhedralModel().getCustomDataFolder();
     }
 
     private String getConfigFilename()
     {
-        return modelManager.getSmallBodyModel().getConfigFilename();
+        return modelManager.getPolyhedralModel().getConfigFilename();
     }
 
     private void updateConfigFile()
@@ -90,7 +90,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
             String[] cellDataHasNullsArr = configMap.get(SmallBodyModel.CELL_DATA_HAS_NULLS).split(",", -1);
             String[] cellDataResolutionLevelsArr = configMap.get(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL).split(",", -1);
 
-            int resolution = modelManager.getSmallBodyModel().getModelResolution();
+            int resolution = modelManager.getPolyhedralModel().getModelResolution();
             for (int i=0; i<cellDataFilenamesArr.length; ++i)
             {
                 if (!cellDataResolutionLevelsArr[i].trim().isEmpty() &&
@@ -102,7 +102,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                     cellDataHasNulls += cellDataHasNullsArr[i];
                     cellDataResolutionLevels += cellDataResolutionLevelsArr[i];
 
-                    if (i < cellDataFilenamesArr.length-1 || modelManager.getSmallBodyModel().getNumberOfCustomColors() > 0)
+                    if (i < cellDataFilenamesArr.length-1 || modelManager.getPolyhedralModel().getNumberOfCustomColors() > 0)
                     {
                         cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
                         cellDataNames += CustomShapeModel.LIST_SEPARATOR;
@@ -199,7 +199,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
             String filename = getCustomDataFolder() + File.separator + cellDataInfo.coloringFile;
             new File(filename).delete();
 
-            modelManager.getSmallBodyModel().removeCustomPlateData(index);
+            modelManager.getPolyhedralModel().removeCustomPlateData(index);
             ((DefaultListModel)cellDataList.getModel()).remove(index);
             updateConfigFile();
         }
@@ -320,7 +320,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
         {
             ColoringInfo cellDataInfo = new ColoringInfo();
             CustomPlateDataImporterDialog dialog = new CustomPlateDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
-            dialog.setCellDataInfo(cellDataInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+            dialog.setCellDataInfo(cellDataInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
@@ -331,7 +331,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                 if (cellDataInfo.coloringFile.toLowerCase().endsWith(".fit") || cellDataInfo.coloringFile.toLowerCase().endsWith(".fits"))
                     cellDataInfo.format = Format.FIT;
                 saveCellData(((DefaultListModel)cellDataList.getModel()).getSize(), null, cellDataInfo);
-                modelManager.getSmallBodyModel().addCustomPlateData(cellDataInfo);
+                modelManager.getPolyhedralModel().addCustomPlateData(cellDataInfo);
             }
         }
         catch (IOException e)
@@ -358,7 +358,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                 ColoringInfo oldCellDataInfo = (ColoringInfo)cellDataListModel.get(selectedItem);
 
                 CustomPlateDataImporterDialog dialog = new CustomPlateDataImporterDialog(JOptionPane.getFrameForComponent(this), true);
-                dialog.setCellDataInfo(oldCellDataInfo, modelManager.getSmallBodyModel().getSmallBodyPolyData().GetNumberOfCells());
+                dialog.setCellDataInfo(oldCellDataInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
                 dialog.setLocationRelativeTo(this);
                 dialog.setVisible(true);
 
@@ -367,7 +367,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
                 {
                     ColoringInfo cellDataInfo = dialog.getCellDataInfo();
                     saveCellData(selectedItem, oldCellDataInfo, cellDataInfo);
-                    modelManager.getSmallBodyModel().setCustomPlateData(selectedItem, cellDataInfo);
+                    modelManager.getPolyhedralModel().setCustomPlateData(selectedItem, cellDataInfo);
                 }
             }
         }

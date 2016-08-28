@@ -148,7 +148,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
 
         // Construct popup menu (right click action)
-        demPopupMenu = new DEMPopupMenu(modelManager.getSmallBodyModel(), dems, boundaries, renderer, this);
+        demPopupMenu = new DEMPopupMenu(modelManager.getPolyhedralModel(), dems, boundaries, renderer, this);
 
         // ???
         addComponentListener(new ComponentAdapter()
@@ -324,17 +324,17 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
     private String getCustomDataFolder()
     {
-        return modelManager.getSmallBodyModel().getCustomDataFolder();
+        return modelManager.getPolyhedralModel().getCustomDataFolder();
     }
 
     private String getCustomDataRootFolder()
     {
-        return modelManager.getSmallBodyModel().getCustomDataRootFolder();
+        return modelManager.getPolyhedralModel().getCustomDataRootFolder();
     }
 
     private String getDEMConfigFilename()
     {
-        return modelManager.getSmallBodyModel().getDEMConfigFilename();
+        return modelManager.getPolyhedralModel().getDEMConfigFilename();
     }
 
     // Initializes the DEM list from config
@@ -1075,7 +1075,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         bigmapWorker.setTempFolder(tempFolder);
         bigmapWorker.setOutputFolder(outputFolder);
 
-        bigmapWorker.setSmallBodyModel(modelManager.getSmallBodyModel());
+        bigmapWorker.setSmallBodyModel(modelManager.getPolyhedralModel());
 
         bigmapWorker.executeDialog();
 

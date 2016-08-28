@@ -185,7 +185,7 @@ public class NISPopupMenu extends PopupMenu
                 vtkPolyData footPrint=spectrum.getShiftedFootprint();
 
                 vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
-                selectionFilter.SetInputData(modelManager.getSmallBodyModel().getSmallBodyPolyData());
+                selectionFilter.SetInputData(modelManager.getPolyhedralModel().getSmallBodyPolyData());
                 selectionFilter.SetLoop(footPrint.GetPoints());
                 selectionFilter.Update();
 

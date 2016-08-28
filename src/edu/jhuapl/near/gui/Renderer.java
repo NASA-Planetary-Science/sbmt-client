@@ -278,7 +278,7 @@ public class Renderer extends JPanel implements
                 setLighting(getLighting());
                 //
                 mirrorFrame=new JFrame();
-                mirrorFrame.setTitle(modelManager.getSmallBodyModel().getPolyhedralModelConfig().getUniqueName());
+                mirrorFrame.setTitle(modelManager.getPolyhedralModel().getPolyhedralModelConfig().getUniqueName());
                 mirrorFrame.setSize(preferredSize);
                 mirrorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 mirrorFrame.getContentPane().add(mirrorCanvas.getComponent());
@@ -680,7 +680,7 @@ public class Renderer extends JPanel implements
 
         mainCanvas.getVTKLock().lock();
 
-        double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
+        double[] bounds = modelManager.getPolyhedralModel().getBoundingBox().getBounds();
         double xSize = Math.abs(bounds[1] - bounds[0]);
         double ySize = Math.abs(bounds[3] - bounds[2]);
         double zSize = Math.abs(bounds[5] - bounds[4]);
@@ -753,7 +753,7 @@ public class Renderer extends JPanel implements
         result.file = file;
         result.delay = delayMilliseconds;
 
-        double[] bounds = modelManager.getSmallBodyModel().getBoundingBox().getBounds();
+        double[] bounds = modelManager.getPolyhedralModel().getBoundingBox().getBounds();
         double xSize = Math.abs(bounds[1] - bounds[0]);
         double ySize = Math.abs(bounds[3] - bounds[2]);
         double zSize = Math.abs(bounds[5] - bounds[4]);
@@ -1163,7 +1163,7 @@ public class Renderer extends JPanel implements
     {
         dir = dir.clone();
         MathUtil.vhat(dir, dir);
-        double bbd = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
+        double bbd = modelManager.getPolyhedralModel().getBoundingBoxDiagonalLength();
         dir[0] *= (1.0e5 * bbd);
         dir[1] *= (1.0e5 * bbd);
         dir[2] *= (1.0e5 * bbd);

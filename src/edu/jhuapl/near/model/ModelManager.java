@@ -25,7 +25,7 @@ public interface ModelManager extends Model, PropertyChangeListener
 
     public Model getModel(ModelNames modelName);
 
-    public PolyhedralModel getSmallBodyModel();
+    public PolyhedralModel getPolyhedralModel();
 
     public void deleteAllModels();
 

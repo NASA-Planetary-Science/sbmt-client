@@ -9,6 +9,6 @@ public class PolygonsPopupMenu extends StructuresPopupMenu
 {
     public PolygonsPopupMenu(ModelManager modelManager, Renderer renderer)
     {
-        super((PolygonModel)modelManager.getModel(ModelNames.POLYGON_STRUCTURES), modelManager.getSmallBodyModel(), renderer, false, true, true);
+        super((PolygonModel)modelManager.getModel(ModelNames.POLYGON_STRUCTURES), modelManager.getPolyhedralModel(), renderer, false, true, true);
     }
 }

@@ -70,7 +70,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
                 trackballRadioButton.setSelected(true);
 
             PolyhedralModel smallBodyModel =
-                    viewManager.getCurrentView().getModelManager().getSmallBodyModel();
+                    viewManager.getCurrentView().getModelManager().getPolyhedralModel();
             showScaleBarCheckBox.setSelected(smallBodyModel.getShowScaleBar());
 
             PickManager pickManager = viewManager.getCurrentView().getPickManager();
@@ -157,7 +157,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
             else
                 renderer.setDefaultInteractorStyleType(InteractorStyleType.TRACKBALL_CAMERA);
 
-            PolyhedralModel smallBodyModel = v.getModelManager().getSmallBodyModel();
+            PolyhedralModel smallBodyModel = v.getModelManager().getPolyhedralModel();
             smallBodyModel.setShowScaleBar(showScaleBarCheckBox.isSelected());
 
             PickManager pickManager = v.getPickManager();

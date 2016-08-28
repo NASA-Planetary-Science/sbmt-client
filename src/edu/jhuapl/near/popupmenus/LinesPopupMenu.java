@@ -21,7 +21,7 @@ public class LinesPopupMenu extends StructuresPopupMenu
 
     public LinesPopupMenu(ModelManager modelManager, Renderer renderer)
     {
-        super((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES), modelManager.getSmallBodyModel(), renderer, false, false, false);
+        super((LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES), modelManager.getPolyhedralModel(), renderer, false, false, false);
 
         this.model = (LineModel)modelManager.getModel(ModelNames.LINE_STRUCTURES);
 

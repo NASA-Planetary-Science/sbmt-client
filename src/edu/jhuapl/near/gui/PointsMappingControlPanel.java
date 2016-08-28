@@ -45,7 +45,7 @@ public class PointsMappingControlPanel extends
         JLabel radiusLabel = new JLabel("Diameter");
         panel.add(radiusLabel);
 
-        double bbLength = modelManager.getSmallBodyModel().getBoundingBoxDiagonalLength();
+        double bbLength = modelManager.getPolyhedralModel().getBoundingBoxDiagonalLength();
         double max = 10.0 * bbLength;
         double step = bbLength / 400.0;
 

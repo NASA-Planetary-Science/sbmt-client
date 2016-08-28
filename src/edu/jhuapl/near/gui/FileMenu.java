@@ -131,7 +131,7 @@ public class FileMenu extends JMenu
             try
             {
                 if (file != null)
-                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsPLT(file);
+                    rootPanel.getCurrentView().getModelManager().getPolyhedralModel().saveAsPLT(file);
             }
             catch (Exception e1)
             {
@@ -159,7 +159,7 @@ public class FileMenu extends JMenu
             try
             {
                 if (file != null)
-                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsOBJ(file);
+                    rootPanel.getCurrentView().getModelManager().getPolyhedralModel().saveAsOBJ(file);
             }
             catch (Exception e1)
             {
@@ -187,7 +187,7 @@ public class FileMenu extends JMenu
             try
             {
                 if (file != null)
-                    rootPanel.getCurrentView().getModelManager().getSmallBodyModel().saveAsSTL(file);
+                    rootPanel.getCurrentView().getModelManager().getPolyhedralModel().saveAsSTL(file);
             }
             catch (Exception e1)
             {

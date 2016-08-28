@@ -40,7 +40,7 @@ public class CircleSelectionPicker extends Picker
         smallBodyPicker = new vtkCellPicker();
         smallBodyPicker.PickFromListOn();
         smallBodyPicker.InitializePickList();
-        smallBodyModel = (PolyhedralModel)modelManager.getSmallBodyModel();
+        smallBodyModel = (PolyhedralModel)modelManager.getPolyhedralModel();
         List<vtkProp> actors = smallBodyModel.getProps();
         vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
         smallBodyPickList.RemoveAllItems();

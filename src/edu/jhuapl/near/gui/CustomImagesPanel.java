@@ -285,12 +285,12 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private String getCustomDataFolder()
     {
-        return modelManager.getSmallBodyModel().getCustomDataFolder();
+        return modelManager.getPolyhedralModel().getCustomDataFolder();
     }
 
     private String getConfigFilename()
     {
-        return modelManager.getSmallBodyModel().getConfigFilename();
+        return modelManager.getPolyhedralModel().getConfigFilename();
     }
 
     private void initializeImageList() throws IOException
@@ -887,7 +887,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         ImageInfo imageInfo = new ImageInfo();
         CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument);
-        dialog.setImageInfo(imageInfo, modelManager.getSmallBodyModel().isEllipsoid());
+        dialog.setImageInfo(imageInfo, modelManager.getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
@@ -899,7 +899,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             System.out.println("Image Type: " + imageInfo.imageType);
             System.out.println("Image Rotate: " + imageInfo.rotation);
             System.out.println("Image Flip: " + imageInfo.flip);
-            PolyhedralModel body = modelManager.getSmallBodyModel();
+            PolyhedralModel body = modelManager.getPolyhedralModel();
 
             try
             {
@@ -930,7 +930,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             ImageInfo oldImageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedItem);
 
             CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, instrument);
-            dialog.setImageInfo(oldImageInfo, modelManager.getSmallBodyModel().isEllipsoid());
+            dialog.setImageInfo(oldImageInfo, modelManager.getPolyhedralModel().isEllipsoid());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
