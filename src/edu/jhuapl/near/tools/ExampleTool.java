@@ -28,7 +28,7 @@ public class ExampleTool
         if (Configuration.isMac())
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon("data/vetruvian-3D.png");
+            ImageIcon erosIcon = new ImageIcon("data/black-sphere.png");
             OSXAdapter.setDockIconImage(erosIcon.getImage());
         }
     }
