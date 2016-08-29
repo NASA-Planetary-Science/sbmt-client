@@ -664,7 +664,7 @@ public class Renderer extends JPanel implements
         {
             File f = sixFiles[i];
             AxisType at = sixAxes[i];
-            CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 1000);
+            CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 2000);
             cameraFrameQueue.add(frame);
         }
 
