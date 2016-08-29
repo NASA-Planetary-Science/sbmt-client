@@ -22,9 +22,9 @@ import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.model.ColoringInfo;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.PolyhedralModel.Format;
-import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.custom.CustomShapeModel;
+import edu.jhuapl.near.model.ShapeModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 
@@ -78,17 +78,17 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
         String cellDataResolutionLevels = "";
 
         // We need to make sure to save out data from other resolutions without modification.
-        if (configMap.containsKey(SmallBodyModel.CELL_DATA_FILENAMES) &&
-                configMap.containsKey(SmallBodyModel.CELL_DATA_NAMES) &&
-                configMap.containsKey(SmallBodyModel.CELL_DATA_UNITS) &&
-                configMap.containsKey(SmallBodyModel.CELL_DATA_HAS_NULLS) &&
-                configMap.containsKey(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL))
+        if (configMap.containsKey(PolyhedralModel.CELL_DATA_FILENAMES) &&
+                configMap.containsKey(PolyhedralModel.CELL_DATA_NAMES) &&
+                configMap.containsKey(PolyhedralModel.CELL_DATA_UNITS) &&
+                configMap.containsKey(PolyhedralModel.CELL_DATA_HAS_NULLS) &&
+                configMap.containsKey(PolyhedralModel.CELL_DATA_RESOLUTION_LEVEL))
         {
-            String[] cellDataFilenamesArr = configMap.get(SmallBodyModel.CELL_DATA_FILENAMES).split(",", -1);
-            String[] cellDataNamesArr = configMap.get(SmallBodyModel.CELL_DATA_NAMES).split(",", -1);
-            String[] cellDataUnitsArr = configMap.get(SmallBodyModel.CELL_DATA_UNITS).split(",", -1);
-            String[] cellDataHasNullsArr = configMap.get(SmallBodyModel.CELL_DATA_HAS_NULLS).split(",", -1);
-            String[] cellDataResolutionLevelsArr = configMap.get(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL).split(",", -1);
+            String[] cellDataFilenamesArr = configMap.get(PolyhedralModel.CELL_DATA_FILENAMES).split(",", -1);
+            String[] cellDataNamesArr = configMap.get(PolyhedralModel.CELL_DATA_NAMES).split(",", -1);
+            String[] cellDataUnitsArr = configMap.get(PolyhedralModel.CELL_DATA_UNITS).split(",", -1);
+            String[] cellDataHasNullsArr = configMap.get(PolyhedralModel.CELL_DATA_HAS_NULLS).split(",", -1);
+            String[] cellDataResolutionLevelsArr = configMap.get(PolyhedralModel.CELL_DATA_RESOLUTION_LEVEL).split(",", -1);
 
             int resolution = modelManager.getPolyhedralModel().getModelResolution();
             for (int i=0; i<cellDataFilenamesArr.length; ++i)
@@ -104,11 +104,11 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
 
                     if (i < cellDataFilenamesArr.length-1 || modelManager.getPolyhedralModel().getNumberOfCustomColors() > 0)
                     {
-                        cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
-                        cellDataNames += CustomShapeModel.LIST_SEPARATOR;
-                        cellDataUnits += CustomShapeModel.LIST_SEPARATOR;
-                        cellDataHasNulls += CustomShapeModel.LIST_SEPARATOR;
-                        cellDataResolutionLevels += CustomShapeModel.LIST_SEPARATOR;
+                        cellDataFilenames += PolyhedralModel.LIST_SEPARATOR;
+                        cellDataNames += PolyhedralModel.LIST_SEPARATOR;
+                        cellDataUnits += PolyhedralModel.LIST_SEPARATOR;
+                        cellDataHasNulls += PolyhedralModel.LIST_SEPARATOR;
+                        cellDataResolutionLevels += PolyhedralModel.LIST_SEPARATOR;
                     }
                 }
             }
@@ -131,21 +131,21 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
 
             if (i < cellDataListModel.size()-1)
             {
-                cellDataFilenames += CustomShapeModel.LIST_SEPARATOR;
-                cellDataNames += CustomShapeModel.LIST_SEPARATOR;
-                cellDataUnits += CustomShapeModel.LIST_SEPARATOR;
-                cellDataHasNulls += CustomShapeModel.LIST_SEPARATOR;
-                cellDataResolutionLevels += CustomShapeModel.LIST_SEPARATOR;
+                cellDataFilenames += PolyhedralModel.LIST_SEPARATOR;
+                cellDataNames += PolyhedralModel.LIST_SEPARATOR;
+                cellDataUnits += PolyhedralModel.LIST_SEPARATOR;
+                cellDataHasNulls += PolyhedralModel.LIST_SEPARATOR;
+                cellDataResolutionLevels += PolyhedralModel.LIST_SEPARATOR;
             }
         }
 
         Map<String, String> newMap = new LinkedHashMap<String, String>();
 
-        newMap.put(SmallBodyModel.CELL_DATA_FILENAMES, cellDataFilenames);
-        newMap.put(SmallBodyModel.CELL_DATA_NAMES, cellDataNames);
-        newMap.put(SmallBodyModel.CELL_DATA_UNITS, cellDataUnits);
-        newMap.put(SmallBodyModel.CELL_DATA_HAS_NULLS, cellDataHasNulls);
-        newMap.put(SmallBodyModel.CELL_DATA_RESOLUTION_LEVEL, cellDataResolutionLevels);
+        newMap.put(PolyhedralModel.CELL_DATA_FILENAMES, cellDataFilenames);
+        newMap.put(PolyhedralModel.CELL_DATA_NAMES, cellDataNames);
+        newMap.put(PolyhedralModel.CELL_DATA_UNITS, cellDataUnits);
+        newMap.put(PolyhedralModel.CELL_DATA_HAS_NULLS, cellDataHasNulls);
+        newMap.put(PolyhedralModel.CELL_DATA_RESOLUTION_LEVEL, cellDataResolutionLevels);
 
         configMap.put(newMap);
     }
