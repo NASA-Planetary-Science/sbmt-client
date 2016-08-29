@@ -39,7 +39,8 @@ public abstract class ModelInfoWindow extends JFrame implements PropertyChangeLi
             // Note that on some displays, such as a retina display, the height used by
             // OpenGL is different than the height used by Java. Therefore we need
             // scale the mouse coordinates to get the right position for OpenGL.
-            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+//            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double openGlHeight = renWin.getComponent().getHeight();
             double javaHeight = renWin.getComponent().getHeight();
             double scale = openGlHeight / javaHeight;
             pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());

@@ -9,7 +9,6 @@ import vtk.vtkJavaGarbageCollector;
 
 import edu.jhuapl.near.gui.ExampleMainWindow;
 import edu.jhuapl.near.gui.MainWindow;
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.util.NativeLibraryLoader;
 
 public class ExampleRunnable implements Runnable
@@ -22,8 +21,6 @@ public class ExampleRunnable implements Runnable
 
     public void run()
     {
-        SmallBodyConfig.initialize();
-
         String tempShapeModelPath = null;
         // Parse options that come first
         int nargs = args.length;

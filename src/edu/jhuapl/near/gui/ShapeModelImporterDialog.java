@@ -17,7 +17,7 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.gui.ShapeModelImporter.ShapeModelType;
-import edu.jhuapl.near.model.custom.CustomShapeModel;
+import edu.jhuapl.near.model.ShapeModel;
 import edu.jhuapl.near.util.MapUtil;
 
 
@@ -60,22 +60,22 @@ public class ShapeModelImporterDialog extends javax.swing.JDialog
     public void loadConfig(String configFilename) throws IOException
     {
         MapUtil configMap = new MapUtil(configFilename);
-        nameTextField.setText(configMap.get(CustomShapeModel.NAME));
-        boolean isEllipsoid = CustomShapeModel.ELLIPSOID.equals(configMap.get(CustomShapeModel.TYPE));
+        nameTextField.setText(configMap.get(ShapeModel.NAME));
+        boolean isEllipsoid = ShapeModel.ELLIPSOID.equals(configMap.get(ShapeModel.TYPE));
         ellipsoidRadioButton.setSelected(isEllipsoid);
         customShapeModelRadioButton.setSelected(!isEllipsoid);
 
         if (isEllipsoid)
         {
-            equatorialRadiusXFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS_X));
-            equatorialRadiusYFormattedTextField.setText(configMap.get(CustomShapeModel.EQUATORIAL_RADIUS_Y));
-            polarRadiusFormattedTextField1.setText(configMap.get(CustomShapeModel.POLAR_RADIUS));
-            resolutionFormattedTextField.setText(configMap.get(CustomShapeModel.RESOLUTION));
+            equatorialRadiusXFormattedTextField.setText(configMap.get(ShapeModel.EQUATORIAL_RADIUS_X));
+            equatorialRadiusYFormattedTextField.setText(configMap.get(ShapeModel.EQUATORIAL_RADIUS_Y));
+            polarRadiusFormattedTextField1.setText(configMap.get(ShapeModel.POLAR_RADIUS));
+            resolutionFormattedTextField.setText(configMap.get(ShapeModel.RESOLUTION));
         }
         else
         {
-            shapeModelPathTextField.setText(configMap.get(CustomShapeModel.CUSTOM_SHAPE_MODEL_PATH));
-            String format = configMap.get(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT);
+            shapeModelPathTextField.setText(configMap.get(ShapeModel.CUSTOM_SHAPE_MODEL_PATH));
+            String format = configMap.get(ShapeModel.CUSTOM_SHAPE_MODEL_FORMAT);
             shapeModelFormatComboBox.setSelectedItem(format);
         }
 

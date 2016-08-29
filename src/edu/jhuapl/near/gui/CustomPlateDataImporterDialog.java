@@ -24,10 +24,9 @@ import javax.swing.JOptionPane;
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-
 import edu.jhuapl.near.model.ColoringInfo;
-import edu.jhuapl.near.model.GenericPolyhedralModel.Format;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.near.model.PolyhedralModel.Format;
 
 
 public class CustomPlateDataImporterDialog extends javax.swing.JDialog
@@ -194,7 +193,7 @@ public class CustomPlateDataImporterDialog extends javax.swing.JDialog
                 {
                     AsciiTableHDU athdu = (AsciiTableHDU)hdu;
                     int ncols = athdu.getNCols();
-                    if (ncols <= SmallBodyModel.FITS_SCALAR_COLUMN_INDEX)
+                    if (ncols <= PolyhedralModel.FITS_SCALAR_COLUMN_INDEX)
                         return "FITS Ancillary File Has Insufficient Columns";
 
 //                    for (int k=0; k<ncols; k++)

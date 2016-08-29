@@ -9,13 +9,49 @@ import java.util.TreeSet;
 import vtk.vtkDataArray;
 import vtk.vtkPolyData;
 import vtk.vtksbCellLocator;
-
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.LatLon;
 
 
 public abstract class PolyhedralModel extends AbstractModel
 {
+    public static final String LIST_SEPARATOR = ",";
+    public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
+    public static final String CELL_DATA_FILENAMES = "CellDataFilenames";
+    public static final String CELL_DATA_NAMES = "CellDataNames";
+    public static final String CELL_DATA_UNITS = "CellDataUnits";
+    public static final String CELL_DATA_HAS_NULLS = "CellDataHasNulls";
+    public static final String CELL_DATA_RESOLUTION_LEVEL = "CellDataResolutionLevel";
+
+    public static final String LIDAR_DATASOURCE_PATHS = "LidarDatasourcePaths";
+    public static final String LIDAR_DATASOURCE_NAMES = "LidarDatasourceNames";
+
+    public static final int FITS_SCALAR_COLUMN_INDEX = 4;
+
+    public enum ColoringValueType {
+        POINT_DATA,
+        CELLDATA
+    }
+
+    public enum ShadingType {
+        FLAT,
+        SMOOTH,
+    }
+
+    public enum Format {
+        TXT,
+        FIT,
+    }
+
+    static public final String SlopeStr = "Slope";
+    static public final String ElevStr = "Elevation";
+    static public final String GravAccStr = "Gravitational Acceleration";
+    static public final String GravPotStr = "Gravitational Potential";
+    static public final String SlopeUnitsStr = "deg";
+    static public final String ElevUnitsStr = "m";
+    static public final String GravAccUnitsStr = "m/s^2";
+    static public final String GravPotUnitsStr = "J/kg";
+
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
 

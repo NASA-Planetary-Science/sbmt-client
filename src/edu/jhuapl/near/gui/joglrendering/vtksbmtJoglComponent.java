@@ -54,7 +54,10 @@ class vtksbmtJoglComponent<T extends java.awt.Component> extends vtkAbstractComp
         vtksbmtJoglComponent.this.glRenderWindow.SetMapped(1);
         vtksbmtJoglComponent.this.glRenderWindow.SetPosition(0, 0);
         vtksbmtJoglComponent.this.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+
+//        vtksbmtJoglComponent.this.setSize(drawable.getHeight(),drawable.getWidth());
         vtksbmtJoglComponent.this.glRenderWindow.OpenGLInit();
+
       }
 
       public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {

@@ -12,7 +12,7 @@ import vtk.vtkTransform;
 import vtk.vtkTransformPolyDataFilter;
 
 import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.custom.CustomShapeModel;
+import edu.jhuapl.near.model.ShapeModel;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.MapUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
@@ -64,7 +64,7 @@ public class ShapeModelImporter
 
         LinkedHashMap<String, String> configMap = new LinkedHashMap<String, String>();
 
-        configMap.put(CustomShapeModel.NAME, name);
+        configMap.put(ShapeModel.NAME, name);
 
         vtkPolyData shapePoly = null;
 
@@ -96,11 +96,11 @@ public class ShapeModelImporter
                 shapePoly = filter.GetOutput();
             }
 
-            configMap.put(CustomShapeModel.TYPE, CustomShapeModel.ELLIPSOID);
-            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS_X, String.valueOf(equatorialRadiusX));
-            configMap.put(CustomShapeModel.EQUATORIAL_RADIUS_Y, String.valueOf(equatorialRadiusY));
-            configMap.put(CustomShapeModel.POLAR_RADIUS, String.valueOf(polarRadius));
-            configMap.put(CustomShapeModel.RESOLUTION, String.valueOf(resolution));
+            configMap.put(ShapeModel.TYPE, ShapeModel.ELLIPSOID);
+            configMap.put(ShapeModel.EQUATORIAL_RADIUS_X, String.valueOf(equatorialRadiusX));
+            configMap.put(ShapeModel.EQUATORIAL_RADIUS_Y, String.valueOf(equatorialRadiusY));
+            configMap.put(ShapeModel.POLAR_RADIUS, String.valueOf(polarRadius));
+            configMap.put(ShapeModel.RESOLUTION, String.valueOf(resolution));
         }
         else if (shapeModelType == ShapeModelType.POLYDATA)
         {
@@ -109,8 +109,8 @@ public class ShapeModelImporter
         }
         else
         {
-            configMap.put(CustomShapeModel.TYPE, CustomShapeModel.CUSTOM);
-            configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_PATH, modelPath);
+            configMap.put(ShapeModel.TYPE, ShapeModel.CUSTOM);
+            configMap.put(ShapeModel.CUSTOM_SHAPE_MODEL_PATH, modelPath);
 
             if (format == FormatType.PDS)
             {
@@ -124,7 +124,7 @@ public class ShapeModelImporter
                     return false;
                 }
 
-                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.PDS_FORMAT);
+                configMap.put(ShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, ShapeModel.PDS_FORMAT);
             }
             else if (format == FormatType.OBJ)
             {
@@ -138,7 +138,7 @@ public class ShapeModelImporter
                     return false;
                 }
 
-                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.OBJ_FORMAT);
+                configMap.put(ShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, ShapeModel.OBJ_FORMAT);
             }
             else if (format == FormatType.VTK)
             {
@@ -152,7 +152,7 @@ public class ShapeModelImporter
                     return false;
                 }
 
-                configMap.put(CustomShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, CustomShapeModel.VTK_FORMAT);
+                configMap.put(ShapeModel.CUSTOM_SHAPE_MODEL_FORMAT, ShapeModel.VTK_FORMAT);
             }
         }
 

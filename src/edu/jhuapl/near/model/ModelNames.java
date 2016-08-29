@@ -2,6 +2,8 @@ package edu.jhuapl.near.model;
 
 public enum ModelNames
 {
+    TORSO,
+    SCENARIO_COLLECTION,
     SMALL_BODY,
     LINE_STRUCTURES,
     POLYGON_STRUCTURES,

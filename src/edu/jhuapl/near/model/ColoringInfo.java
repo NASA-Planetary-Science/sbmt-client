@@ -2,7 +2,7 @@ package edu.jhuapl.near.model;
 
 import vtk.vtkFloatArray;
 
-import edu.jhuapl.near.model.GenericPolyhedralModel.Format;
+import edu.jhuapl.near.model.PolyhedralModel.Format;
 
 // Class storing info related to plate data used to color shape model
 public class ColoringInfo

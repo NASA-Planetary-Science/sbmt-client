@@ -21,8 +21,8 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.near.model.ColoringInfo;
-import edu.jhuapl.near.model.GenericPolyhedralModel.Format;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.PolyhedralModel.Format;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
 import edu.jhuapl.near.util.FileUtil;

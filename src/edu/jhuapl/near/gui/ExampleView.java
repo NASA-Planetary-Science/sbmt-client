@@ -97,7 +97,7 @@ public class ExampleView extends View
 
     protected void setupTabs()
     {
-        addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+        addTab(getPolyhedralModelConfig().getShapeModelName(), new PolyhedralModelControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
 //        if (getPolyhedralModelConfig().hasLidarData)
 //        {

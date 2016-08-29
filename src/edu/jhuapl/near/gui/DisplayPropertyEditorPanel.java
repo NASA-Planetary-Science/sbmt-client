@@ -17,7 +17,6 @@ import javax.swing.event.ChangeListener;
 import net.miginfocom.swing.MigLayout;
 
 import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.model.SmallBodyModel;
 
 /**
  * Swing panel for editing a vtkProperty
@@ -66,13 +65,13 @@ public class DisplayPropertyEditorPanel extends JPanel implements ChangeListener
 
         JLabel shadingLabel = new JLabel("Shading");
 
-        flatShadingButton = new JRadioButton(SmallBodyModel.FlatShadingStr);
-        flatShadingButton.setActionCommand(SmallBodyModel.FlatShadingStr);
+        flatShadingButton = new JRadioButton(PolyhedralModel.FlatShadingStr);
+        flatShadingButton.setActionCommand(PolyhedralModel.FlatShadingStr);
         flatShadingButton.addItemListener(this);
         flatShadingButton.setEnabled(true);
 
-        smoothShadingButton = new JRadioButton(SmallBodyModel.SmoothShadingStr);
-        smoothShadingButton.setActionCommand(SmallBodyModel.SmoothShadingStr);
+        smoothShadingButton = new JRadioButton(PolyhedralModel.SmoothShadingStr);
+        smoothShadingButton.setActionCommand(PolyhedralModel.SmoothShadingStr);
         smoothShadingButton.addItemListener(this);
         smoothShadingButton.setEnabled(true);
 
