@@ -79,7 +79,9 @@ abstract public class StructuresPopupMenu extends PopupMenu
 
         labelProperties= new JMenu();
         labelProperties.setText("Edit Label Properties...");
-        this.add(labelProperties);
+
+// disable for now until bugs are fixed -turnerj1
+//        this.add(labelProperties);
 
         changeFontButton= new JMenuItem(new changeFontSizeAction());
         changeFontButton.setText("Change Font Size");

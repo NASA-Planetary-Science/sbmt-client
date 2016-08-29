@@ -111,8 +111,8 @@ public class Line extends StructureModel.Structure
         linEle.setAttribute(ID, String.valueOf(id));
         linEle.setAttribute(NAME, name);
         linEle.setAttribute(LABEL, label);
-        String labelcolorStr=labelcolor[0] + "," + labelcolor[1] + "," + labelcolor[2];
-        linEle.setAttribute(LABELCOLOR, labelcolorStr);
+//        String labelcolorStr=labelcolor[0] + "," + labelcolor[1] + "," + labelcolor[2];
+//        linEle.setAttribute(LABELCOLOR, labelcolorStr);
         linEle.setAttribute(LENGTH, String.valueOf(getPathLength()));
 
         String colorStr = color[0] + "," + color[1] + "," + color[2];
@@ -199,10 +199,10 @@ public class Line extends StructureModel.Structure
         color[1] = Integer.parseInt(tokens[1]);
         color[2] = Integer.parseInt(tokens[2]);
 
-        String[] labelColors=element.getAttribute(LABELCOLOR).split(",");
-        labelcolor[0] = Double.parseDouble(labelColors[0]);
-        labelcolor[1] = Double.parseDouble(labelColors[1]);
-        labelcolor[2] = Double.parseDouble(labelColors[2]);
+//        String[] labelColors=element.getAttribute(LABELCOLOR).split(",");
+//        labelcolor[0] = Double.parseDouble(labelColors[0]);
+//        labelcolor[1] = Double.parseDouble(labelColors[1]);
+//        labelcolor[2] = Double.parseDouble(labelColors[2]);
 
     }
 

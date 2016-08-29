@@ -858,17 +858,29 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 pol.label=words[words.length-2].substring(2);
                 labels.add(pol.label);
             }
-
-            if(words[words.length-1].substring(0, 3).equals("lc:"))
+            // new format means no color
+            else if (words[words.length-1].startsWith("\""))  // labels in quotations
             {
-                double[] labelcoloradd = {1.0,1.0,1.0};
-                String[] labelColors=words[words.length-1].substring(3).split(",");
-                labelcoloradd[0] = Double.parseDouble(labelColors[0]);
-                labelcoloradd[1] = Double.parseDouble(labelColors[1]);
-                labelcoloradd[2] = Double.parseDouble(labelColors[2]);
-                pol.labelcolor=labelcoloradd;
-                colors.add(labelcoloradd);
+                pol.label = words[words.length-1];
+                pol.label = pol.label.substring(1, pol.label.length()-1);
+                labels.add(pol.label);
             }
+//            else
+//            {
+//                pol.label = words[words.length-1];
+//                labels.add(pol.label);
+//            }
+
+//            if(words[words.length-1].substring(0, 3).equals("lc:"))
+//            {
+//                double[] labelcoloradd = {1.0,1.0,1.0};
+//                String[] labelColors=words[words.length-1].substring(3).split(",");
+//                labelcoloradd[0] = Double.parseDouble(labelColors[0]);
+//                labelcoloradd[1] = Double.parseDouble(labelColors[1]);
+//                labelcoloradd[2] = Double.parseDouble(labelColors[2]);
+//                pol.labelcolor=labelcoloradd;
+//                colors.add(labelcoloradd);
+//            }
         }
 
         // Only if we reach here and no exception is thrown do we modify this class
@@ -882,10 +894,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 if(polygons.get(i).label!=null)
                 {
                     setStructureLabel(i, labels.get(i-init));
-                    if(polygons.get(i).labelcolor!=null)
-                    {
-                        colorLabel(i,colors.get((i-init)));
-                    }
+//                    if(polygons.get(i).labelcolor!=null)
+//                    {
+//                        colorLabel(i,colors.get((i-init)));
+//                    }
                 }
             }
         }
@@ -897,10 +909,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                 if(polygons.get(i).label!=null)
                 {
                     setStructureLabel(i, labels.get(i));
-                    if(polygons.get(i).labelcolor!=null)
-                    {
-                        colorLabel(i,colors.get(i));
-                    }
+//                    if(polygons.get(i).labelcolor!=null)
+//                    {
+//                        colorLabel(i,colors.get(i));
+//                    }
                 }
             }
         }
@@ -972,10 +984,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
                      str += "\t" + "NA";
              }
 
-            str+="\tl:"+pol.label;
+            str+="\t" + "\"" + pol.label + "\"";
 
-            String labelcolorStr="\tlc:"+pol.labelcolor[0] + "," + pol.labelcolor[1] + "," + pol.labelcolor[2];
-            str+=labelcolorStr;
+//            String labelcolorStr="\tlc:"+pol.labelcolor[0] + "," + pol.labelcolor[1] + "," + pol.labelcolor[2];
+//            str+=labelcolorStr;
 
             str += "\n";
 

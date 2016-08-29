@@ -268,7 +268,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.setVisible(false);
             }
         });
-        add(hideAllButton, "w 100!");
+        add(hideAllButton, "w 120!");
 
         showAllButton = new JButton("Show All");
         showAllButton.addActionListener(new ActionListener()
@@ -278,9 +278,9 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.setVisible(true);
             }
         });
-        add(showAllButton, "w 100!");
+        add(showAllButton, "w 120!, wrap");
 
-        hideAllLabelsButton = new JButton("Hide All Labels");
+        hideAllLabelsButton = new JButton("Hide Labels");
         hideAllLabelsButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -288,9 +288,9 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.setLabelsVisible(false);
             }
         });
-        add(hideAllLabelsButton, "w 100!");
+        add(hideAllLabelsButton, "w 120!");
 
-        showAllLabelsButton = new JButton("Show All Labels");
+        showAllLabelsButton = new JButton("Show Labels");
         showAllLabelsButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -298,7 +298,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.setLabelsVisible(true);
             }
         });
-        add(showAllLabelsButton, "w 100!");
+        add(showAllLabelsButton, "w 120!, wrap");
 
 
         JButton deleteAllButton = new JButton("Delete All");
@@ -324,7 +324,7 @@ public abstract class AbstractStructureMappingControlPanel extends JPanel implem
                 structureModel.activateStructure(-1);
             }
         });
-        add(deleteAllButton, "w 100!, wrap");
+        add(deleteAllButton, "w 120!, wrap");
 
         JButton changeOffsetButton = new JButton("Change Normal Offset...");
         changeOffsetButton.addActionListener(new ActionListener()
