@@ -4,10 +4,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
-
 import edu.jhuapl.near.util.Properties;
 
 public class AbstractModelManager extends DefaultDatasourceModel implements ModelManager, PropertyChangeListener
@@ -17,6 +17,11 @@ public class AbstractModelManager extends DefaultDatasourceModel implements Mode
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     private HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
     private boolean mode2D = false;
+
+    protected void addProp(vtkProp prop, Model model)
+    {
+        propToModelMap.put(prop, model);
+    }
 
     @Override
     public void updateScaleBarValue(double pixelSizeInKm)
@@ -76,11 +81,16 @@ public class AbstractModelManager extends DefaultDatasourceModel implements Mode
         }
     }
 
-    public void updateProps()
+    protected void clearProps()
     {
         props.clear();
         propsExceptSmallBody.clear();
         propToModelMap.clear();
+    }
+
+    public void updateProps()
+    {
+        clearProps();
 
         for (ModelNames modelName : allModels.keySet())
         {
@@ -118,6 +128,11 @@ public class AbstractModelManager extends DefaultDatasourceModel implements Mode
     public Model getModel(ModelNames modelName)
     {
         return allModels.get(modelName);
+    }
+
+    public Map<ModelNames, Model> getAllModels()
+    {
+        return allModels;
     }
 
     public void deleteAllModels()

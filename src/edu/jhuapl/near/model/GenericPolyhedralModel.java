@@ -91,6 +91,11 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkGenericCell genericCell;
     private String[] modelNames;
     private String[] modelFiles;
+    public String[] getModelFiles()
+    {
+        return modelFiles;
+    }
+
     private String[] imageMapNames = null;
     private BoundingBox boundingBox = null;
     private vtkIdList idList; // to avoid repeated allocations
@@ -168,6 +173,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         super(config);
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
+        setDefaultModelFileName(this.modelFiles[0]);
         this.imageMapNames = imageMapNames;
         this.coloringValueType = coloringValueType;
         if (coloringNames != null)
@@ -202,6 +208,18 @@ public class GenericPolyhedralModel extends PolyhedralModel
         initialize(defaultModelFile);
     }
 
+    public List<vtkPolyData> getSmallBodyPolyDatas()
+    {
+        return null;
+    }
+
+    public void setDefaultModelFileName(String defaultModelFileName)
+    {
+        this.defaultModelFileName = defaultModelFileName;
+        defaultModelFile = new File(defaultModelFileName);
+    }
+
+
     public void setSmallBodyPolyData(vtkPolyData polydata,
             vtkFloatArray[] coloringValues,
             String[] coloringNames,
@@ -230,6 +248,11 @@ public class GenericPolyhedralModel extends PolyhedralModel
 
         lowResSmallBodyPolyData = smallBodyPolyData;
         lowResPointLocator = pointLocator;
+    }
+
+    public GenericPolyhedralModelConfig getDefaultModelConfig()
+    {
+        return (GenericPolyhedralModelConfig)getPolyhedralModelConfig();
     }
 
     public boolean isBuiltIn()
@@ -514,7 +537,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
 
 
 
-    private void initializeLocators()
+    protected void initializeLocators()
     {
         if (cellLocator == null)
         {
@@ -856,6 +879,13 @@ public class GenericPolyhedralModel extends PolyhedralModel
         return smallBodyPolyData.GetPoint(id).clone();
     }
 
+    public long findClosestVertexId(double[] pt)
+    {
+        return pointLocator.FindClosestPoint(pt);
+    }
+
+
+
     /**
      * This returns the index of the closest cell in the model to pt.
      * The closest point within the cell is returned in closestPoint
@@ -1157,7 +1187,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         return largestSmallestMean;
     }
 
-    private void computeShapeModelStatistics()
+    protected void computeShapeModelStatistics()
     {
         vtkMassProperties massProp = new vtkMassProperties();
         massProp.SetInputData(smallBodyPolyData);
@@ -1261,10 +1291,13 @@ public class GenericPolyhedralModel extends PolyhedralModel
         boundingBox = null;
 
         File smallBodyFile = defaultModelFile;
-        if (resolutionLevel > 0)
+//        if (resolutionLevel > 0)
         {
             smallBodyFile = FileCache.getFileFromServer(modelFiles[resolutionLevel]);
+            defaultModelFile = smallBodyFile;
         }
+
+        this.initializeDefaultModel();
 
         this.initialize(smallBodyFile);
 

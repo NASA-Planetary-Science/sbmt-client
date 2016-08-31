@@ -40,6 +40,7 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkRegularPolygonSource;
+import vtk.vtkSTLReader;
 import vtk.vtkSTLWriter;
 import vtk.vtkSphere;
 import vtk.vtkTransform;
@@ -3081,6 +3082,24 @@ public class PolyDataUtil
         return shapeModel;
     }
 
+    static public vtkPolyData loadSTLShapeModel(String filename) throws Exception
+    {
+        vtkSTLReader smallBodyReader = new vtkSTLReader();
+        smallBodyReader.SetFileName(filename);
+        smallBodyReader.Update();
+
+        vtkPolyData output = smallBodyReader.GetOutput();
+
+        vtkPolyData shapeModel = new vtkPolyData();
+        shapeModel.ShallowCopy(output);
+
+        smallBodyReader.Delete();
+
+        addPointNormalsToShapeModel(shapeModel);
+
+        return shapeModel;
+    }
+
     /**
      * This function loads a shape model in a variety of formats. It looks
      * at its file extension to determine it format. It supports these formats:
@@ -3139,6 +3158,10 @@ public class PolyDataUtil
         else if (filename.toLowerCase().endsWith(".ply"))
         {
             shapeModel = loadPLYShapeModel(filename);
+        }
+        else if (filename.toLowerCase().endsWith(".stl"))
+        {
+            shapeModel = loadSTLShapeModel(filename);
         }
         else
         {
