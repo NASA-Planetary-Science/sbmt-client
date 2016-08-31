@@ -24,7 +24,6 @@ import edu.jhuapl.near.model.ColoringInfo;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.PolyhedralModel.Format;
-import edu.jhuapl.near.model.ShapeModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 
@@ -35,7 +34,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
 
     /** Creates new form CustomImageLoaderPanel */
     public CustomPlateDataDialog(
-            final ModelManager modelManager)
+            ModelManager modelManager)
     {
         this.modelManager = modelManager;
 
@@ -315,11 +314,16 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
         getContentPane().add(closeButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
+    protected CustomPlateDataImporterDialog getPlateImporterDialog()
+    {
+        return new CustomPlateDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
+    }
+
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         try
         {
             ColoringInfo cellDataInfo = new ColoringInfo();
-            CustomPlateDataImporterDialog dialog = new CustomPlateDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
+            CustomPlateDataImporterDialog dialog = getPlateImporterDialog();
             dialog.setCellDataInfo(cellDataInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);

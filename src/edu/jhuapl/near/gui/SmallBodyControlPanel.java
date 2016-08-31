@@ -25,7 +25,7 @@ import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.PolyDataUtil2.PolyDataStatistics;
 
 
-public class SmallBodyControlPanel extends PolyhedralModelControlPanel
+public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {

@@ -663,12 +663,16 @@ public class PolyhedralModelControlPanel extends JPanel implements ItemListener,
 
     public void stateChanged(ChangeEvent e) {}
 
+    protected CustomPlateDataDialog getPlateDataDialog(ModelManager modelManager)
+    {
+        return new CustomPlateDataDialog(modelManager);
+    }
 
     private class CustomizePlateDataAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
-            CustomPlateDataDialog dialog = new CustomPlateDataDialog(modelManager);
+            CustomPlateDataDialog dialog = getPlateDataDialog(modelManager);
             dialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(PolyhedralModelControlPanel.this));
             dialog.setVisible(true);
 
