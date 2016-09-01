@@ -23,7 +23,7 @@ import vtk.vtkQuadricClustering;
  *
  */
 
-public class SbmtLODActor extends vtkActor
+public class SaavtkLODActor extends vtkActor
 {
 
     // Keeps track of the actor's mappers
@@ -32,7 +32,7 @@ public class SbmtLODActor extends vtkActor
     /**
      * Constructor
      */
-    public SbmtLODActor()
+    public SaavtkLODActor()
     {
         super();
 

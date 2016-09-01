@@ -24,6 +24,7 @@ import edu.jhuapl.near.model.ColoringInfo;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.PolyhedralModel.Format;
+import edu.jhuapl.near.model.ShapeModel;
 import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.MapUtil;
 

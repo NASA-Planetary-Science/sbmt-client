@@ -54,7 +54,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SbmtLODActor;
+import edu.jhuapl.near.util.SaavtkLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.near.util.gravity.Gravity;
 
@@ -216,16 +216,16 @@ public class LidarSearchDataCollection extends AbstractModel
         selectedPointMapper = new vtkPolyDataMapper();
         selectedPointMapper.SetInputData(selectedPointPolydata);
 
-        actor = new SbmtLODActor();
+        actor = new SaavtkLODActor();
         actor.SetMapper(pointsMapper);
-        ((SbmtLODActor)actor).addQuadricDecimatedLODMapper(polydata);
+        ((SaavtkLODActor)actor).addQuadricDecimatedLODMapper(polydata);
         actor.GetProperty().SetPointSize(2.0);
 
         actors.add(actor);
 
-        selectedPointActor = new SbmtLODActor();
+        selectedPointActor = new SaavtkLODActor();
         selectedPointActor.SetMapper(selectedPointMapper);
-        ((SbmtLODActor)selectedPointActor).addQuadricDecimatedLODMapper(selectedPointPolydata);
+        ((SaavtkLODActor)selectedPointActor).addQuadricDecimatedLODMapper(selectedPointPolydata);
         selectedPointActor.GetProperty().SetColor(0.1, 0.1, 1.0);
         selectedPointActor.GetProperty().SetPointSize(7.0);
 

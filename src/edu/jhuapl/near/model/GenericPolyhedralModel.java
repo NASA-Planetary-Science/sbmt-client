@@ -51,7 +51,7 @@ import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.PolyDataUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SbmtLODActor;
+import edu.jhuapl.near.util.SaavtkLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
 public class GenericPolyhedralModel extends PolyhedralModel
@@ -1009,11 +1009,11 @@ public class GenericPolyhedralModel extends PolyhedralModel
             smallBodyMapper.UseLookupTableScalarRangeOn();
 
             //smallBodyActor = new vtkActor();
-            smallBodyActor = new SbmtLODActor();
+            smallBodyActor = new SaavtkLODActor();
             smallBodyActor.SetMapper(smallBodyMapper);
 
             vtkPolyDataMapper decimatedMapper =
-                    ((SbmtLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
+                    ((SaavtkLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
             decimatedMapper.SetLookupTable(lookupTable);
             decimatedMapper.UseLookupTableScalarRangeOn();
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();

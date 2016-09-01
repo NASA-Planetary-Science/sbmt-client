@@ -30,7 +30,7 @@ import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SbmtLODActor;
+import edu.jhuapl.near.util.SaavtkLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 
 public class LidarDataPerUnit extends AbstractModel
@@ -318,18 +318,18 @@ public class LidarDataPerUnit extends AbstractModel
         pointsMapper.SetScalarModeToUseCellData();
         pointsMapper.SetInputConnection(geometryFilter.GetOutputPort());
 
-        vtkActor actor = new SbmtLODActor();
+        vtkActor actor = new SaavtkLODActor();
         actor.SetMapper(pointsMapper);
-        vtkPolyDataMapper lodMapper = ((SbmtLODActor)actor).addQuadricDecimatedLODMapper(geometryFilter.GetOutputPort());
+        vtkPolyDataMapper lodMapper = ((SaavtkLODActor)actor).addQuadricDecimatedLODMapper(geometryFilter.GetOutputPort());
 
         actor.GetProperty().SetPointSize(2.0);
 
         vtkPolyDataMapper pointsMapperSc = new vtkPolyDataMapper();
         pointsMapperSc.SetInputConnection(geometryFilterSc.GetOutputPort());
 
-        actorSpacecraft = new SbmtLODActor();
+        actorSpacecraft = new SaavtkLODActor();
         actorSpacecraft.SetMapper(pointsMapperSc);
-        ((SbmtLODActor)actorSpacecraft).addQuadricDecimatedLODMapper(geometryFilterSc.GetOutputPort());
+        ((SaavtkLODActor)actorSpacecraft).addQuadricDecimatedLODMapper(geometryFilterSc.GetOutputPort());
         actorSpacecraft.GetProperty().SetColor(0.0, 1.0, 0.0);
         // for Itokawa optimized lidar data, show in different color.
         if (path.contains("_v2"))

@@ -56,7 +56,7 @@ import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Preferences;
 import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SbmtLODActor;
+import edu.jhuapl.near.util.SaavtkLODActor;
 
 public class Renderer extends JPanel implements
             PropertyChangeListener, ActionListener
@@ -513,9 +513,9 @@ public class Renderer extends JPanel implements
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)
             {
-                if(prop instanceof SbmtLODActor)
+                if(prop instanceof SaavtkLODActor)
                 {
-                    ((SbmtLODActor)prop).selectMapper(Integer.MIN_VALUE);
+                    ((SaavtkLODActor)prop).selectMapper(Integer.MIN_VALUE);
                 }
             }
         }
@@ -530,9 +530,9 @@ public class Renderer extends JPanel implements
             List<vtkProp> props = modelManager.getProps();
             for(vtkProp prop : props)
             {
-                if(prop instanceof SbmtLODActor)
+                if(prop instanceof SaavtkLODActor)
                 {
-                    ((SbmtLODActor)prop).selectMapper(Integer.MAX_VALUE);
+                    ((SaavtkLODActor)prop).selectMapper(Integer.MAX_VALUE);
                 }
             }
         }
