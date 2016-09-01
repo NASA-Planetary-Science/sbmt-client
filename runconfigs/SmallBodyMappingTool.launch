@@ -16,5 +16,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.near.tools.SmallBodyMappingTool"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=lib/mac64  -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/mac64   -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
 </launchConfiguration>
