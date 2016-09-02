@@ -277,7 +277,7 @@ public class FileCache
             path = path.substring(0, path.length()-3);
 
         // While we are downloading the file, the file should be named on disk
-        // with a ".part_sbmt" suffix so that if the user forcibly kills the program
+        // with a ".saavtk" suffix so that if the user forcibly kills the program
         // during a download, the file will not be used when the program is restarted.
         // After the download is successful, rename the file to the correct name.
         String realFilename = Configuration.getCacheDir() + File.separator + path;

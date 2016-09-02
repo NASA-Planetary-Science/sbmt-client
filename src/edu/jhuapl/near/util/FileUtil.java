@@ -331,7 +331,7 @@ public class FileUtil
 
     static public String getTemporarySuffix()
     {
-        return ".sbmt_tool";
+        return ".saavtk";
     }
 
     /**

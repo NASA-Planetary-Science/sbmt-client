@@ -61,7 +61,7 @@ public class FileMenu extends JMenu
             try
             {
                 OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("showPreferences", (Class[])null));
-                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("exitSBMT", (Class[])null));
+                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("exitTool", (Class[])null));
             }
             catch (SecurityException e)
             {
@@ -86,7 +86,7 @@ public class FileMenu extends JMenu
         preferencesDialog.setVisible(true);
     }
 
-    public void exitSBMT()
+    public void exitTool()
     {
         System.exit(0);
     }
@@ -293,7 +293,7 @@ public class FileMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            exitSBMT();
+            exitTool();
         }
     }
 }

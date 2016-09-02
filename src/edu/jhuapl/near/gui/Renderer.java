@@ -506,7 +506,7 @@ public class Renderer extends JPanel implements
 
     public void showLODs()
     {
-        // LOD switching control for SbmtLODActor
+        // LOD switching control for SaavtkLODActor
         if(enableLODs && modelManager != null)
         {
             showingLODs=true;

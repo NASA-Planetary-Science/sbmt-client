@@ -17,7 +17,7 @@ import vtk.vtkQuadricClustering;
  *
  * For Paraview-like LOD switching, add observers to the render window
  * interactor for StartInteractionEvent and EndInteractionEvent that
- * searches for SbmtLODActors in the scene and calls set methods on them
+ * searches for SaavtkLODActors in the scene and calls set methods on them
  *
  * @author twupy1
  *
