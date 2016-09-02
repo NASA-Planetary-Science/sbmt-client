@@ -1,13 +1,10 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.jhuapl.near.util.Configuration;
@@ -16,6 +13,11 @@ import edu.jhuapl.near.util.Configuration;
 public class HelpMenu extends JMenu
 {
     private JPanel rootPanel;
+
+    protected JPanel getRootPanel()
+    {
+        return rootPanel;
+    }
 
     public HelpMenu(JPanel rootPanel)
     {
@@ -64,32 +66,22 @@ public class HelpMenu extends JMenu
 
     public void showAbout()
     {
-        final String COPYRIGHT  = "\u00a9";
+    }
 
+    protected void showHelp()
+    {
+    }
 
-        String versionString = "\n";
-        try
-        {
-            // note: currently this seems to be broken, perhaps because this file isn't being generated anymore by the release process -turnerj1
-            InputStream is = this.getClass().getResourceAsStream("/svn.version");
-            byte[] data = new byte[256];
-            is.read(data, 0, data.length);
-            String[] tmp = (new String(data)).trim().split("\\s+");
-            // Don't want to make the assumption that release names contain only dates.
-            // Release names can now be anything. So, display it exactly as it is.
-            //tmp[3] = tmp[3].replace('-', '.');
-           versionString = "Version: " + tmp[3] + "\n\n";
-        }
-        catch (Exception e)
-        {
-//            System.out.println("exception = " + e.toString());
-        }
+    protected void showDataSources()
+    {
+    }
 
-        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(rootPanel),
-                "Small Body Mapping Tool\n" + versionString +
-                COPYRIGHT + " 2016 The Johns Hopkins University Applied Physics Laboratory\n",
-                "About Small Body Mapping Tool",
-                JOptionPane.PLAIN_MESSAGE);
+    protected void showRecentChanges()
+    {
+    }
+
+    protected void showTutorial()
+    {
     }
 
     private class ShowHelpContentsAction extends AbstractAction
@@ -101,15 +93,7 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            String helpRootUrl = Configuration.getHelpRootURL();
-            try
-            {
-                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "helpcontents.html"));
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            showHelp();
         }
     }
 
@@ -122,15 +106,7 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            String helpRootUrl = Configuration.getHelpRootURL();
-            try
-            {
-                java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "references.html"));
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            showDataSources();
         }
     }
 
@@ -143,15 +119,7 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            String helpRootUrl = Configuration.getHelpRootURL();
-            try
-            {
-               java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "recentchanges.html"));
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            showRecentChanges();
         }
     }
 
@@ -164,15 +132,7 @@ public class HelpMenu extends JMenu
 
         public void actionPerformed(ActionEvent actionEvent)
         {
-            String helpRootUrl = Configuration.getHelpRootURL();
-            try
-            {
-               java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "SBMT_tutorial_STM.pdf"));
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            showTutorial();
         }
     }
 
@@ -180,7 +140,7 @@ public class HelpMenu extends JMenu
     {
         public AboutAction()
         {
-            super("About Small Body Mapping Tool");
+            super("About...");
         }
 
         public void actionPerformed(ActionEvent actionEvent)

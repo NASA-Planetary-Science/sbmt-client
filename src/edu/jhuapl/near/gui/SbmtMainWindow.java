@@ -31,4 +31,8 @@ public class SbmtMainWindow extends MainWindow
         return new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
     }
 
+    protected HelpMenu createHelpMenu(ViewManager rootPanel)
+    {
+        return new ExampleHelpMenu(rootPanel);
+    }
 }
