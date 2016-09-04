@@ -4,9 +4,9 @@ import java.beans.PropertyChangeListener;
 
 public class SbmtModelManager extends AbstractModelManager implements PropertyChangeListener
 {
-    public SbmtModelManager()
+    public SbmtModelManager(PolyhedralModel mainModel)
     {
-        super();
+        super(mainModel);
     }
 
     public SmallBodyModel getPolyhedralModel()

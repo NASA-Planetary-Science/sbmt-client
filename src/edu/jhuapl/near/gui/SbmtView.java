@@ -89,9 +89,9 @@ public class SbmtView extends View
 
     protected void setupModelManager()
     {
-        setModelManager(new SbmtModelManager());
-
         SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+        setModelManager(new SbmtModelManager(smallBodyModel));
+
         Graticule graticule = ModelFactory.createGraticule(smallBodyModel);
 
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();

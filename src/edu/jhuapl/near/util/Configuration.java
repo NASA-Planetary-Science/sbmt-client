@@ -12,6 +12,7 @@ public class Configuration
     static private String appDir = null;
     static private String cacheDir = null;
     static private String cacheVersion = "";
+    static private boolean useFileCache = true;
     static private String mapMaperDir = null;
 
     // Flag indicating if this version of the tool is APL in-house only ("private")
@@ -170,6 +171,13 @@ public class Configuration
             }
         }
     }
+
+    static public void setUseFileCache(boolean use)
+    {
+        useFileCache = use;
+    }
+
+    static public boolean useFileCache() { return useFileCache; }
 
     static public boolean isAPLVersion()
     {

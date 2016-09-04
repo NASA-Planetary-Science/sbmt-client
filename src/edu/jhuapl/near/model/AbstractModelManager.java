@@ -12,11 +12,18 @@ import edu.jhuapl.near.util.Properties;
 
 public class AbstractModelManager extends DefaultDatasourceModel implements ModelManager, PropertyChangeListener
 {
+    private PolyhedralModel mainModel;
     private ArrayList<vtkProp> props = new ArrayList<vtkProp>();
     private ArrayList<vtkProp> propsExceptSmallBody = new ArrayList<vtkProp>();
     private HashMap<vtkProp, Model> propToModelMap = new HashMap<vtkProp, Model>();
     private HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
     private boolean mode2D = false;
+
+    public AbstractModelManager(PolyhedralModel mainModel)
+    {
+        super();
+        this.mainModel = mainModel;
+    }
 
     protected void addProp(vtkProp prop, Model model)
     {
@@ -110,14 +117,16 @@ public class AbstractModelManager extends DefaultDatasourceModel implements Mode
 
     public PolyhedralModel getPolyhedralModel()
     {
-        for (ModelNames modelName : allModels.keySet())
-        {
-            Model model = allModels.get(modelName);
-            if (model instanceof PolyhedralModel)
-                return (PolyhedralModel)model;
-        }
+        return mainModel;
 
-        return null;
+//        for (ModelNames modelName : allModels.keySet())
+//        {
+//            Model model = allModels.get(modelName);
+//            if (model instanceof PolyhedralModel)
+//                return (PolyhedralModel)model;
+//        }
+//
+//        return null;
     }
 
     public Model getModel(vtkProp prop)

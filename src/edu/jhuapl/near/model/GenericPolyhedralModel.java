@@ -57,7 +57,7 @@ import edu.jhuapl.near.util.SmallBodyCubes;
 public class GenericPolyhedralModel extends PolyhedralModel
 {
 
-    ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
+    private ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
 
     private ColoringValueType coloringValueType;
     public ColoringValueType getColoringValueType() { return coloringValueType; }
@@ -72,7 +72,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
 
-    ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
+    private ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
     private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
@@ -197,13 +197,21 @@ public class GenericPolyhedralModel extends PolyhedralModel
         genericCell = new vtkGenericCell();
         idList = new vtkIdList();
 
-        if (lowestResolutionModelStoredInResource)
-            defaultModelFile = ConvertResourceToFile.convertResourceToRealFile(
+        if (Configuration.useFileCache())
+        {
+            if (lowestResolutionModelStoredInResource)
+                defaultModelFile = ConvertResourceToFile.convertResourceToRealFile(
                     this,
                     modelFiles[0],
                     Configuration.getApplicationDataDir());
+            else
+                defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
+        }
         else
-            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
+        {
+            defaultModelFile = new File(modelFiles[0]);
+        }
+
 
         initialize(defaultModelFile);
     }

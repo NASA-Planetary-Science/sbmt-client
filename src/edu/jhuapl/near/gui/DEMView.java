@@ -113,10 +113,11 @@ public class DEMView extends JFrame implements WindowListener
 
         // Create an entirely new DEM object to go with this model manager
         // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
-        final ModelManager modelManager = new SbmtModelManager();
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
         dem.setColoringIndex(macroDEM.getColoringIndex());
+
+        final ModelManager modelManager = new SbmtModelManager(dem);
 
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);

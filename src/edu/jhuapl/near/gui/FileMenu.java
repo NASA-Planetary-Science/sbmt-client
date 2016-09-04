@@ -40,10 +40,13 @@ public class FileMenu extends JMenu
         this.add(mi);
         mi = new JMenuItem(new CopyToClipboardAction());
         //this.add(mi);
-        mi = new JCheckBoxMenuItem(new ShowSimpleCylindricalProjectionAction());
-        //this.add(mi);
-        mi= new JMenuItem(new ClearCacheAction());
-        this.add(mi);
+//        mi = new JCheckBoxMenuItem(new ShowSimpleCylindricalProjectionAction());
+//        this.add(mi);
+        if (Configuration.useFileCache())
+        {
+            mi= new JMenuItem(new ClearCacheAction());
+            this.add(mi);
+        }
 
         // On macs the exit action is in the Application menu not the file menu
         if (!Configuration.isMac())
