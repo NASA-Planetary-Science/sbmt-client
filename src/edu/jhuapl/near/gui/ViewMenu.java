@@ -17,9 +17,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
+import edu.jhuapl.near.model.Config;
 import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.util.Properties;
 
 public class ViewMenu extends JMenu implements PropertyChangeListener
@@ -83,7 +85,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
         for (int i=0; i < rootPanel.getNumberOfCustomViews(); ++i)
         {
             View view = rootPanel.getCustomView(i);
-            mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
+            mi = new JMenuItem(new ShowBodyAction(view));
             mi.setText(view.getDisplayName());
             if (i==0)
                 mi.setSelected(true);
@@ -91,7 +93,25 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             customImageMenu.add(mi);
 //            }
         }
-}
+
+        for (int i=0; i < getRootPanel().getNumberOfBuiltInViews(); ++i)
+        {
+            View view = getRootPanel().getBuiltInView(i);
+            mi = new JMenuItem(new ShowBodyAction(view));
+            mi.setText(view.getDisplayName());
+            if (i==0)
+                mi.setSelected(true);
+
+                PolyhedralModelConfig smallBodyConfig = view.getPolyhedralModelConfig();
+
+                addMenuItem(mi, smallBodyConfig);
+        }
+    }
+
+    protected void addMenuItem(JMenuItem mi, Config config)
+    {
+         add(mi);
+    }
 
     private void sortCustomMenuItems()
     {

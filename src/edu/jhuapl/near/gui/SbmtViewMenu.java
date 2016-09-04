@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 
+import edu.jhuapl.near.model.Config;
 import edu.jhuapl.near.model.SmallBodyConfig;
 
 public class SbmtViewMenu extends ViewMenu
@@ -18,27 +18,9 @@ public class SbmtViewMenu extends ViewMenu
         super(rootPanel, viewed);
     }
 
-    protected void initialize()
+    protected void addMenuItem(JMenuItem mi, Config config)
     {
-        for (int i=0; i < getRootPanel().getNumberOfBuiltInViews(); ++i)
-        {
-            SbmtView view = (SbmtView)getRootPanel().getBuiltInView(i);
-            JMenuItem mi = new JRadioButtonMenuItem(new ShowBodyAction(view));
-            mi.setText(view.getDisplayName());
-            if (i==0)
-                mi.setSelected(true);
-
-            SmallBodyConfig smallBodyConfig = view.getPolyhedralModelConfig();
-
-            addMenuItem(mi, smallBodyConfig);
-        }
-
-        super.initialize();
-
-    }
-
-    private void addMenuItem(JMenuItem mi, SmallBodyConfig smallBodyConfig)
-    {
+        SmallBodyConfig smallBodyConfig = (SmallBodyConfig)config;
         ArrayList<String> tree = new ArrayList<String>();
         if (smallBodyConfig.type != null)
             tree.add(smallBodyConfig.type.toString());
