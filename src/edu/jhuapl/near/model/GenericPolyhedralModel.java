@@ -79,7 +79,10 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkPolyData lowResSmallBodyPolyData;
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
+
     private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
+    public ArrayList<vtkProp> getSmallBodyActors() { return smallBodyActors; }
+
     private vtksbCellLocator cellLocator;
     private vtkPointLocator pointLocator;
     private vtkPointLocator lowResPointLocator;
@@ -592,6 +595,16 @@ public class GenericPolyhedralModel extends PolyhedralModel
     public vtkPolyData getSmallBodyPolyData()
     {
         return smallBodyPolyData;
+    }
+
+    public vtkActor getSmallBodyActor()
+    {
+        return smallBodyActor;
+    }
+
+    public vtkPolyDataMapper getSmallBodyMapper()
+    {
+        return smallBodyMapper;
     }
 
     public vtkPolyData getLowResSmallBodyPolyData()
