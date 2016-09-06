@@ -195,7 +195,7 @@ public class LidarSearchDataCollection extends AbstractModel
     public LidarSearchDataCollection(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.polyhedralModelConfig = smallBodyModel.getPolyhedralModelConfig();
+        this.polyhedralModelConfig = (PolyhedralModelConfig)smallBodyModel.getPolyhedralModelConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();

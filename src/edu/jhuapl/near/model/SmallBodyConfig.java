@@ -32,12 +32,12 @@ public class SmallBodyConfig extends PolyhedralModelConfig
 {
     static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
-        return (SmallBodyConfig)getPolyhedralModelConfig(name, author, null);
+        return (SmallBodyConfig)getConfig(name, author, null);
     }
 
     static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
     {
-        return (SmallBodyConfig)getPolyhedralModelConfig(name, author, version);
+        return (SmallBodyConfig)getConfig(name, author, version);
     }
 
     public static void initialize()

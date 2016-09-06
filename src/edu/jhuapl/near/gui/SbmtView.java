@@ -72,7 +72,7 @@ public class SbmtView extends View
 
     public SmallBodyConfig getPolyhedralModelConfig()
     {
-        return (SmallBodyConfig)super.getPolyhedralModelConfig();
+        return (SmallBodyConfig)super.getConfig();
     }
 
     public String getDisplayName()

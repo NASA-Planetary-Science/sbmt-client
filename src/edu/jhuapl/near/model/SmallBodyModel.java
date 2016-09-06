@@ -16,9 +16,9 @@ import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
-    public PolyhedralModelConfig getSmallBodyConfig()
+    public SmallBodyConfig getSmallBodyConfig()
     {
-        return getPolyhedralModelConfig();
+        return (SmallBodyConfig)getConfig();
     }
 
     /**
