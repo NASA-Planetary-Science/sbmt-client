@@ -47,8 +47,9 @@ public class SmallBodyMappingTool
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
-            else
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+// uncomment for cross-platform LAF
+//            else
+//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
         }
         catch (Exception e)
