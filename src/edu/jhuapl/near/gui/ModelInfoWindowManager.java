@@ -12,13 +12,15 @@ import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImageCollection;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NISStatistics;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.WindowManager;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class ModelInfoWindowManager implements WindowManager, PropertyChangeListener
 {

@@ -34,21 +34,21 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
-import edu.jhuapl.near.pick.PickEvent;
-import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.near.query.eros.NisQuery;
-import edu.jhuapl.near.util.IdPair;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.util.Properties;
 
 
 public class NISSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener

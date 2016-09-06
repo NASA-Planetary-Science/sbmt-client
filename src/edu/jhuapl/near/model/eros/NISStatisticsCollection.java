@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.AbstractModel;
+import edu.jhuapl.saavtk.model.AbstractModel;
 
 public class NISStatisticsCollection extends AbstractModel implements PropertyChangeListener
 {

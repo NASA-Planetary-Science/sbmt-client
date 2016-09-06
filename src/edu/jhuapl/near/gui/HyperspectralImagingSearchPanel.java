@@ -32,12 +32,13 @@ import nom.tam.fits.FitsException;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.ImageType;
-import edu.jhuapl.near.model.ImagingInstrument;
-import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.ImageType;
+import edu.jhuapl.saavtk.model.ImagingInstrument;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.pick.PickManager;
 
 
 public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener, ChangeListener

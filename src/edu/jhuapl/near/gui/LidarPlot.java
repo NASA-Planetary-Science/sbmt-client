@@ -34,6 +34,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.util.TimeUtil;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
 
 
 public class LidarPlot extends JFrame implements ChartMouseListener

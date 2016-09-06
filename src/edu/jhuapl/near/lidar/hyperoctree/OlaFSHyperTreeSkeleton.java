@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache;
 
 public class OlaFSHyperTreeSkeleton
 {

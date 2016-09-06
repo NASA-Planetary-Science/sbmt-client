@@ -17,8 +17,11 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class DEMBoundaryCollection extends AbstractModel implements PropertyChangeListener
 {

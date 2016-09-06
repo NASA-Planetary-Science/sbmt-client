@@ -2,7 +2,9 @@ package edu.jhuapl.near.gui;
 
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.saavtk.gui.CustomPlateDataDialog;
+import edu.jhuapl.saavtk.gui.CustomPlateDataImporterDialog;
+import edu.jhuapl.saavtk.model.ModelManager;
 
 public class CustomFitsPlateDataDialog extends CustomPlateDataDialog
 {

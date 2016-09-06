@@ -7,6 +7,7 @@ import nom.tam.fits.FitsException;
 import vtk.vtkImageData;
 
 import edu.jhuapl.near.util.ImageDataUtil;
+import edu.jhuapl.saavtk.model.ImageSource;
 
 public class CustomPerspectiveImage extends PerspectiveImage
 {

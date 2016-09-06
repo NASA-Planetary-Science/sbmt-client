@@ -16,13 +16,14 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
-import edu.jhuapl.near.gui.OpacityChanger;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.saavtk.gui.NormalOffsetChangerDialog;
+import edu.jhuapl.saavtk.gui.OpacityChanger;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
 
 
 public class ColorImagePopupMenu extends PopupMenu

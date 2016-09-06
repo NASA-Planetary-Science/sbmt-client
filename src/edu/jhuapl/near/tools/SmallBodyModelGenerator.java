@@ -13,8 +13,8 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkPolyDataReader;
 import vtk.vtkPolyDataWriter;
 
-import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.model.Graticule;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class SmallBodyModelGenerator
 {

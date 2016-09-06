@@ -16,13 +16,14 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ColorChooser;
-import edu.jhuapl.near.gui.CustomFileChooser;
-import edu.jhuapl.near.gui.DirectoryChooser;
 import edu.jhuapl.near.gui.LidarPlot;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.DirectoryChooser;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.Configuration;
 
 public class LidarPopupMenu extends PopupMenu
 {

@@ -7,7 +7,19 @@ import java.util.LinkedHashMap;
 import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ImageType;
+import edu.jhuapl.saavtk.model.ImagingInstrument;
+import edu.jhuapl.saavtk.model.Instrument;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelDataUsed;
+import edu.jhuapl.saavtk.model.ShapeModelPopulation;
+import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.model.SpectralMode;
+import edu.jhuapl.saavtk.util.Configuration;
 
 /**
  * A SmallBodyConfig is a class for storing all which models should be instantiated

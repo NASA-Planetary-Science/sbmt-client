@@ -7,7 +7,7 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache;
 
 public class MSIMathildeImage extends MSIImage
 {

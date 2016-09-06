@@ -30,13 +30,14 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.Chromatism;
 import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.near.util.IntensityRange;
+import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.util.IntensityRange;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener

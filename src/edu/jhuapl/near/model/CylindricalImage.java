@@ -26,14 +26,15 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.IntensityRange;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MapUtil;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.VtkENVIReader;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class CylindricalImage extends Image
 {

@@ -20,15 +20,15 @@ import vtk.vtkPointLocator;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.near.model.Line;
-import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Point3D;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.gravity.ParallelGrid.GridFunction;
 import edu.jhuapl.near.util.gravity.ParallelLoop.LoopFunction;
+import edu.jhuapl.saavtk.model.Line;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Point3D;
 
 /**
  * Gravity program. This the abstract base class for computing gravity values

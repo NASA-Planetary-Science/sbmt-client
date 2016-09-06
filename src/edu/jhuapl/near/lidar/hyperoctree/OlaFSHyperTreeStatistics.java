@@ -21,9 +21,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class OlaFSHyperTreeStatistics implements Dimensioned
 {

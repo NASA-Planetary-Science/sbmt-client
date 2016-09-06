@@ -13,8 +13,9 @@ import altwg.tools.Maplet2FITS;
 
 import com.google.common.io.Files;
 
-import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.tools.BigmapDistributedGravity;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.Configuration;
 
 public class Bigmap
 {

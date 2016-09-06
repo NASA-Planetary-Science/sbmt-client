@@ -16,11 +16,11 @@ import vtk.vtkImageMathematics;
 import vtk.vtkImageReslice;
 import vtk.vtkImageTranslateExtent;
 
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.VtkDataTypes;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.VtkDataTypes;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;

@@ -2,6 +2,9 @@ package edu.jhuapl.near.util;
 
 import java.io.File;
 
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.ConvertResourceToFile;
+
 import spice.basic.CSPICE;
 import spice.basic.SpiceErrorException;
 

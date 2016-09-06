@@ -17,6 +17,12 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+
 import altwg.util.FitsUtil;
 
 /**

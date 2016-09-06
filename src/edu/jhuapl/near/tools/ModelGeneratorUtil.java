@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 
 public class ModelGeneratorUtil
 {

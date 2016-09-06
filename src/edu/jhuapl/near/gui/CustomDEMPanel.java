@@ -48,22 +48,25 @@ import net.miginfocom.swing.MigLayout;
 
 import vtk.vtkActor;
 
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.custom.CustomShapeModel;
-import edu.jhuapl.near.pick.PickEvent;
-import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.DEMPopupMenu;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.MapUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.JTextFieldDoubleVerifier;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {

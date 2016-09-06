@@ -2,6 +2,9 @@ package edu.jhuapl.near.model;
 
 import java.beans.PropertyChangeListener;
 
+import edu.jhuapl.saavtk.model.AbstractModelManager;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+
 public class SbmtModelManager extends AbstractModelManager implements PropertyChangeListener
 {
     public SbmtModelManager(PolyhedralModel mainModel)

@@ -16,16 +16,16 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class DatabaseGeneratorSql
 {

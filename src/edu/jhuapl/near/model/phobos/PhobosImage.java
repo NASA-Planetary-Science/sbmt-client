@@ -5,11 +5,11 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 public class PhobosImage extends PerspectiveImage
 {

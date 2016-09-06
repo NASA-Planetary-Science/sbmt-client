@@ -5,8 +5,8 @@ import java.io.IOException;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.near.util.NativeLibraryLoader;
-import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 
 public class ConvertMaplet
 {

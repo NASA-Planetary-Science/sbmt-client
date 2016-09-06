@@ -7,13 +7,21 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
-import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.popupmenus.CirclesPopupMenu;
+import edu.jhuapl.saavtk.popupmenus.EllipsesPopupMenu;
+import edu.jhuapl.saavtk.popupmenus.GraticulePopupMenu;
+import edu.jhuapl.saavtk.popupmenus.LinesPopupMenu;
+import edu.jhuapl.saavtk.popupmenus.PointsPopupMenu;
+import edu.jhuapl.saavtk.popupmenus.PolygonsPopupMenu;
+import edu.jhuapl.saavtk.popupmenus.PopupManager;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
 
 /**
  * This class is responsible for the creation of popups and for the routing

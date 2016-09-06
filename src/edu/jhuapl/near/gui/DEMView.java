@@ -38,30 +38,33 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
-import edu.jhuapl.near.model.CircleModel;
-import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.EllipseModel;
-import edu.jhuapl.near.model.Line;
-import edu.jhuapl.near.model.LineModel;
 //import edu.jhuapl.near.model.DEMBoundaryCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PointModel;
-import edu.jhuapl.near.model.PolygonModel;
-import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.model.SbmtModelManager;
-import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ImagePopupManager;
 import edu.jhuapl.near.popupmenus.MapmakerLinesPopupMenu;
-import edu.jhuapl.near.popupmenus.PopupManager;
-import edu.jhuapl.near.popupmenus.PopupMenu;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.model.CircleModel;
+import edu.jhuapl.saavtk.model.CircleSelectionModel;
+import edu.jhuapl.saavtk.model.EllipseModel;
+import edu.jhuapl.saavtk.model.Line;
+import edu.jhuapl.saavtk.model.LineModel;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PointModel;
+import edu.jhuapl.saavtk.model.PolygonModel;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.popupmenus.PopupManager;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 
 public class DEMView extends JFrame implements WindowListener
 {

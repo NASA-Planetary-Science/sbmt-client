@@ -24,10 +24,10 @@ import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Point3D;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Point3D;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class DEM extends SmallBodyModel implements PropertyChangeListener
 {

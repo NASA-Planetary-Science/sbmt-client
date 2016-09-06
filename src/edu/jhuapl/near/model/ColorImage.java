@@ -20,13 +20,16 @@ import vtk.vtkProperty;
 import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.util.Frustum;
 import edu.jhuapl.near.util.ImageDataUtil;
-import edu.jhuapl.near.util.IntensityRange;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.VtkDataTypes;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.Frustum;
+import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.VtkDataTypes;
 
 import nom.tam.fits.FitsException;
 

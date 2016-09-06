@@ -7,8 +7,13 @@ import java.util.LinkedHashMap;
 
 import vtk.vtkTexture;
 
-import edu.jhuapl.near.util.IntensityRange;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ImageType;
+import edu.jhuapl.saavtk.model.ImagingInstrument;
+import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.saavtk.util.Properties;
 
 
 public abstract class Image extends AbstractModel implements PropertyChangeListener

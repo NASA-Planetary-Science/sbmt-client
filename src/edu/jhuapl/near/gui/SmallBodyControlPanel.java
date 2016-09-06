@@ -13,16 +13,16 @@ import javax.swing.text.html.HTMLEditorKit;
 import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.CylindricalImage;
-import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.pick.Picker;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.PolyDataUtil2.PolyDataStatistics;
+import edu.jhuapl.saavtk.model.Graticule;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.pick.Picker;
 
 
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel

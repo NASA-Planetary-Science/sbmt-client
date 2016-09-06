@@ -24,9 +24,11 @@ import javax.swing.JOptionPane;
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
-import edu.jhuapl.near.model.ColoringInfo;
-import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.model.PolyhedralModel.Format;
+
+import edu.jhuapl.saavtk.gui.CustomPlateDataImporterDialog;
+import edu.jhuapl.saavtk.model.ColoringInfo;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.model.PolyhedralModel.Format;
 
 
 public class CustomFitsPlateDataImporterDialog extends CustomPlateDataImporterDialog

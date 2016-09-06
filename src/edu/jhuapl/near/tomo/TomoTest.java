@@ -7,7 +7,7 @@ import vtk.vtkPlaneSource;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class TomoTest
 {

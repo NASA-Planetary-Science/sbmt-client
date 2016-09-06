@@ -4,12 +4,12 @@ import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.NativeLibraryLoader;
-import edu.jhuapl.near.util.VtkDataTypes;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.VtkDataTypes;
 
 public class ColoringImageMapGenerator
 {

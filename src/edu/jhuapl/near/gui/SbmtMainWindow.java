@@ -2,6 +2,13 @@ package edu.jhuapl.near.gui;
 
 import javax.swing.ImageIcon;
 
+import edu.jhuapl.saavtk.gui.HelpMenu;
+import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.gui.RecentlyViewed;
+import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.ViewManager;
+import edu.jhuapl.saavtk.gui.ViewMenu;
+
 
 
 /**
@@ -33,6 +40,6 @@ public class SbmtMainWindow extends MainWindow
 
     protected HelpMenu createHelpMenu(ViewManager rootPanel)
     {
-        return new ExampleHelpMenu(rootPanel);
+        return new SbmtHelpMenu(rootPanel);
     }
 }

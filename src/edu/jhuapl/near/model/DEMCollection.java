@@ -16,7 +16,10 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class DEMCollection extends AbstractModel implements PropertyChangeListener
 {

@@ -3,8 +3,8 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 
 /**

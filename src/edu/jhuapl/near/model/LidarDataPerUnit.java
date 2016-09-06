@@ -24,14 +24,16 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.DoublePair;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SaavtkLODActor;
 import edu.jhuapl.near.util.TimeUtil;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.DoublePair;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SaavtkLODActor;
 
 public class LidarDataPerUnit extends AbstractModel
 {

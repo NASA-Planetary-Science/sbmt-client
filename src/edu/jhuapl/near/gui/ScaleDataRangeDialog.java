@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 
 public class ScaleDataRangeDialog extends JDialog implements ActionListener
 {

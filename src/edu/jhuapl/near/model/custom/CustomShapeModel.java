@@ -4,8 +4,8 @@ import java.io.File;
 
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
 
 public class CustomShapeModel extends SmallBodyModel
 {

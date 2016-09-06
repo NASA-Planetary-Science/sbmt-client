@@ -13,11 +13,12 @@ import javax.swing.SpinnerNumberModel;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ColorChooser;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
+import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
 
 public class MapletBoundaryPopupMenu extends PopupMenu
 {

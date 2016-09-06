@@ -5,12 +5,12 @@ import java.io.File;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 /**
  * This program takes a lidar track, fits a plane through it and reorients the track into

@@ -11,8 +11,8 @@ import com.jgoodies.looks.LookUtils;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.near.gui.OSXAdapter;
-import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.saavtk.gui.OSXAdapter;
+import edu.jhuapl.saavtk.util.Configuration;
 
 /**
  * This class contains the "main" function called at the start of the program.

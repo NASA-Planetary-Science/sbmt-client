@@ -18,8 +18,8 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkUnsignedCharArray;
 
-import edu.jhuapl.near.model.AbstractModel;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class LineamentModel extends AbstractModel
 {

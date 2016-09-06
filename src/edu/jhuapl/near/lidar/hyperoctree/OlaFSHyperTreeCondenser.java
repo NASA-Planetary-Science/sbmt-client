@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import com.google.common.base.Stopwatch;
 
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class OlaFSHyperTreeCondenser implements Dimensioned
 {

@@ -15,7 +15,8 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class PerspectiveImageBoundaryCollection extends AbstractModel implements PropertyChangeListener
 {

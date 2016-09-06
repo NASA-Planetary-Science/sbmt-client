@@ -8,22 +8,22 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.near.util.BatchSubmission;
 import edu.jhuapl.near.util.BatchSubmission.BatchType;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.NativeLibraryLoader;
-import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 
 
 /**

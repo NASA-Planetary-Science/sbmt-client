@@ -1,5 +1,7 @@
 package edu.jhuapl.near.model;
 
+import edu.jhuapl.saavtk.model.PointInRegionChecker;
+
 public class PointInDEMChecker extends PointInRegionChecker
 {
     private DEM dem;

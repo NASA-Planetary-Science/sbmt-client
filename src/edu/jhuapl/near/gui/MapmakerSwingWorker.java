@@ -4,10 +4,11 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.Mapmaker;
-import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 
 public class MapmakerSwingWorker extends FileDownloadSwingWorker
 {

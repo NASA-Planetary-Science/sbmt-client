@@ -3,21 +3,21 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 import java.util.TreeSet;
 
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel.EllipsePolygon;
-import edu.jhuapl.near.model.CircleSelectionModel;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PointInDEMChecker;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.BoundingBox;
-import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.TimeUtil;
+import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.CircleSelectionModel;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel.EllipsePolygon;
+import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class SearchLidarDataInsideMaplet
 {

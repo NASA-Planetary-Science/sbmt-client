@@ -2,9 +2,12 @@ package edu.jhuapl.near.gui;
 
 import java.awt.Frame;
 
-import edu.jhuapl.near.model.Config;
-import edu.jhuapl.near.model.ShapeModelAuthor;
 import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.View;
+import edu.jhuapl.saavtk.gui.ViewManager;
+import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 
 public class SbmtViewManager extends ViewManager
 {

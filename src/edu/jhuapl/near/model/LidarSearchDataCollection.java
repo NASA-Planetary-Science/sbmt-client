@@ -47,16 +47,20 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.lidar.test.BasicLidarPoint;
 import edu.jhuapl.near.lidar.test.LidarPoint;
-import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Point3D;
-import edu.jhuapl.near.util.Properties;
-import edu.jhuapl.near.util.SaavtkLODActor;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.near.util.gravity.Gravity;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.PointInRegionChecker;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Point3D;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SaavtkLODActor;
 
 public class LidarSearchDataCollection extends AbstractModel
 {

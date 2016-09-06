@@ -11,8 +11,8 @@ import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
 
-import edu.jhuapl.near.util.FileUtil;
 import edu.jhuapl.near.util.Mapmaker;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 public class ConvertCUBToFITS
 {

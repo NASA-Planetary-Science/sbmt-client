@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import edu.jhuapl.near.util.BoundingBox;
+import edu.jhuapl.saavtk.util.BoundingBox;
 
 class FileSystemOctreeNode extends BoundingBox {
     final Path selfPath;

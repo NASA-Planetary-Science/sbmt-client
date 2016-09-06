@@ -19,20 +19,22 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
 
-import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.Renderer.AxisType;
-import edu.jhuapl.near.gui.StatusBar;
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.popupmenus.PopupManager;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.Renderer.AxisType;
+import edu.jhuapl.saavtk.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.pick.DefaultPicker;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.popupmenus.PopupManager;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 /**
  * This is the picker normally in use by default.

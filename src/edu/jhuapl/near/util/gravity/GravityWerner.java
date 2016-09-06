@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import vtk.vtkIdList;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.saavtk.util.MathUtil;
 
 /**
  * This class computes gravitation potential and acceleration of a

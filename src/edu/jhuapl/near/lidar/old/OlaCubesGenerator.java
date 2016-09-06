@@ -13,16 +13,16 @@ import java.util.TreeSet;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.bennu.Bennu;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.TimeUtil;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 /**
  * This divides an OLA L2 file into cubes and saves each cube

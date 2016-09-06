@@ -37,14 +37,17 @@ import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
-import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.util.IntensityRange;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.util.IntensityRange;
 
 
 public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener //, KeyListener

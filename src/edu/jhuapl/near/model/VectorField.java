@@ -17,7 +17,9 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkTriangle;
 
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.Properties;
 
 /**
  * Model for showing gravity vector field. Currently only used for testing,

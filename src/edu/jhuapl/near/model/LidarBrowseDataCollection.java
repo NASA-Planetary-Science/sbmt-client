@@ -16,8 +16,10 @@ import java.util.List;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class LidarBrowseDataCollection extends AbstractModel implements PropertyChangeListener
 {

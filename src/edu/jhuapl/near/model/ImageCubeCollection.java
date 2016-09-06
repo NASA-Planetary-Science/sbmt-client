@@ -14,7 +14,9 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class ImageCubeCollection extends AbstractModel implements PropertyChangeListener
 {

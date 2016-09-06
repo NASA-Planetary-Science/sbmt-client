@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import edu.jhuapl.saavtk.util.FileUtil;
+
 import altwg.util.BatchSubmit;
 import altwg.util.BatchType;
 

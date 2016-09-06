@@ -21,8 +21,8 @@ import edu.jhuapl.near.util.BackPlanesXml;
 import edu.jhuapl.near.util.BackPlanesXmlMeta;
 import edu.jhuapl.near.util.BackPlanesXmlMeta.BPMetaBuilder;
 import edu.jhuapl.near.util.BackPlanesXmlMeta.MetaField;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;

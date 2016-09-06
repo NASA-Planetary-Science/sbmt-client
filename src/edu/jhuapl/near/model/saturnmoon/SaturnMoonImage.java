@@ -7,7 +7,7 @@ import nom.tam.fits.FitsException;
 
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache;
 
 public class SaturnMoonImage extends PerspectiveImage
 {

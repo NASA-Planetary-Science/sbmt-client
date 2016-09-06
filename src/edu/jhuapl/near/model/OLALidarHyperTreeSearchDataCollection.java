@@ -24,13 +24,14 @@ import com.google.common.collect.Lists;
 import vtk.vtkCellArray;
 import vtk.vtkPoints;
 
-import edu.jhuapl.near.gui.ProgressBarSwingWorker;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperPoint;
 import edu.jhuapl.near.lidar.hyperoctree.OlaFSHyperTreeSkeleton;
 import edu.jhuapl.near.lidar.test.LidarPoint;
-import edu.jhuapl.near.util.BoundingBox;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.ProgressBarSwingWorker;
+import edu.jhuapl.saavtk.model.PointInRegionChecker;
+import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class OLALidarHyperTreeSearchDataCollection extends LidarSearchDataCollection    // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {

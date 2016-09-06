@@ -2,11 +2,11 @@ package edu.jhuapl.near.lidar.old;
 
 import java.io.IOException;
 
-import edu.jhuapl.near.model.ShapeModelAuthor;
-import edu.jhuapl.near.model.ShapeModelBody;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.Itokawa;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
 
 /**
  * This program goes through all the NLR data and divides all the data

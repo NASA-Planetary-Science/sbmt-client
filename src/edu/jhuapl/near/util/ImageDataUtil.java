@@ -8,6 +8,8 @@ import vtk.vtkPointData;
 import vtk.vtkTransform;
 import vtk.vtkUnsignedCharArray;
 
+import edu.jhuapl.saavtk.util.VtkDataTypes;
+
 public class ImageDataUtil
 {
     /**

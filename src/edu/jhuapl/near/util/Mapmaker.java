@@ -9,6 +9,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileUtil;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;

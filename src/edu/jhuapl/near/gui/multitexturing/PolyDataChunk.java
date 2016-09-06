@@ -4,7 +4,7 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPolyData;
 import vtk.vtkSphereSource;
 
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class PolyDataChunk extends vtkPolyData
 {

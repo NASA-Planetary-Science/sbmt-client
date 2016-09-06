@@ -7,11 +7,11 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.near.gui.MainWindow;
 import edu.jhuapl.near.gui.SbmtMainWindow;
 import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 public class SbmtRunnable implements Runnable
 {

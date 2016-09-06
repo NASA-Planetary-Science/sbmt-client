@@ -1,9 +1,10 @@
 package edu.jhuapl.near.gui;
 
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
-import edu.jhuapl.near.model.PolyhedralModelConfig;
-import edu.jhuapl.near.pick.PickManager;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+import edu.jhuapl.saavtk.pick.PickManager;
 
 /**
  * Panel used for showing custom tracks. It is essentially the LidarSearchPanel but with the search

@@ -24,9 +24,9 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.near.model.Line;
-import edu.jhuapl.near.model.LineModel;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.Line;
+import edu.jhuapl.saavtk.model.LineModel;
+import edu.jhuapl.saavtk.util.Properties;
 
 
 public class DEMPlot implements ChartMouseListener, PropertyChangeListener

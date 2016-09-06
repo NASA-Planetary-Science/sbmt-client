@@ -16,11 +16,11 @@ import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.NativeLibraryLoader;
 import edu.jhuapl.near.util.TimeUtil;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 
 /**
  * This program goes through all the lidar data and divides all the data

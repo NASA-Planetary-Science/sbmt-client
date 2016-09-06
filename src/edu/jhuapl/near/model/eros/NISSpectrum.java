@@ -26,15 +26,15 @@ import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 import vtk.vtkProperty;
 
-import edu.jhuapl.near.model.AbstractModel;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Preferences;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Preferences;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class NISSpectrum extends AbstractModel implements PropertyChangeListener
 {

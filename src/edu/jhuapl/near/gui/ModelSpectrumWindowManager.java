@@ -6,10 +6,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.WindowManager;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class ModelSpectrumWindowManager implements WindowManager, PropertyChangeListener
 {

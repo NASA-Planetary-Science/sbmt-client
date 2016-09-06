@@ -20,21 +20,22 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ColorChooser;
-import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.DEMView;
-import edu.jhuapl.near.gui.OpacityChanger;
-import edu.jhuapl.near.gui.Renderer;
 import edu.jhuapl.near.model.DEM;
 import edu.jhuapl.near.model.DEM.DEMKey;
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.near.model.DEMCollection;
-import edu.jhuapl.near.model.PolyhedralModel;
+import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.OpacityChanger;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
-import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 
 public class DEMPopupMenu extends PopupMenu

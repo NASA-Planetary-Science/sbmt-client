@@ -2,10 +2,10 @@ package edu.jhuapl.near.model.custom;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.Graticule;
-import edu.jhuapl.near.model.PolyhedralModel;
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileCache;
+import edu.jhuapl.saavtk.model.Graticule;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
 
 public class CustomGraticule extends Graticule
 {

@@ -56,7 +56,6 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkActor;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.AbstractEllipsePolygonModel;
 import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImageCollection;
@@ -66,25 +65,28 @@ import edu.jhuapl.near.model.ImageCollection;
 import edu.jhuapl.near.model.ImageCube;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ImagingInstrument;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.model.SpectralMode;
-import edu.jhuapl.near.pick.PickEvent;
-import edu.jhuapl.near.pick.PickManager;
-import edu.jhuapl.near.pick.PickManager.PickMode;
 import edu.jhuapl.near.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.near.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.near.popupmenus.ImagePopupMenu;
-import edu.jhuapl.near.util.FileUtil;
-import edu.jhuapl.near.util.IdPair;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.model.ImagingInstrument;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.SpectralMode;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.util.Properties;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener

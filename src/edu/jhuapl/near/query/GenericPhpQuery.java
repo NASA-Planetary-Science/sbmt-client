@@ -6,8 +6,9 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.query.QueryBase;
 
 public class GenericPhpQuery extends QueryBase
 {

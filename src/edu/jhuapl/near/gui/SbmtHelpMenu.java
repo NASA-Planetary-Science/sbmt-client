@@ -6,7 +6,8 @@ import java.io.InputStream;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.saavtk.gui.HelpMenu;
+import edu.jhuapl.saavtk.util.Configuration;
 
 
 public class SbmtHelpMenu extends HelpMenu

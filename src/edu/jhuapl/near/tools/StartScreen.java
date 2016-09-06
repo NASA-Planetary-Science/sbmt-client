@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
-import edu.jhuapl.near.util.Configuration;
+import edu.jhuapl.saavtk.util.Configuration;
 
 class StartScreen extends JWindow
 {

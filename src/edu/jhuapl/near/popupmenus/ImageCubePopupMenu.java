@@ -21,26 +21,27 @@ import javax.swing.JOptionPane;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ColorChooser;
-import edu.jhuapl.near.gui.CustomFileChooser;
 import edu.jhuapl.near.gui.ModelInfoWindowManager;
 import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
-import edu.jhuapl.near.gui.NormalOffsetChangerDialog;
-import edu.jhuapl.near.gui.OpacityChanger;
-import edu.jhuapl.near.gui.Renderer;
-import edu.jhuapl.near.gui.Renderer.LightingType;
 import edu.jhuapl.near.model.Image;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
-import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.PerspectiveImageBoundary;
 import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.near.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
-import edu.jhuapl.near.util.ColorUtil;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.NormalOffsetChangerDialog;
+import edu.jhuapl.saavtk.gui.OpacityChanger;
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.util.ColorUtil;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 import nom.tam.fits.FitsException;
 

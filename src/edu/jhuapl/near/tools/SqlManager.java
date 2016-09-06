@@ -41,8 +41,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import edu.jhuapl.near.util.Configuration;
-import edu.jhuapl.near.util.FileUtil;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileUtil;
 
 
 /**

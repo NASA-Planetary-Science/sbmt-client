@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.jhuapl.near.model.PolyhedralModel;
 import edu.jhuapl.near.util.Bigmap;
-import edu.jhuapl.near.util.FileCache;
-import edu.jhuapl.near.util.LatLon;
-import edu.jhuapl.near.util.MathUtil;
+import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 
 public class BigmapSwingWorker extends FileDownloadSwingWorker
 {

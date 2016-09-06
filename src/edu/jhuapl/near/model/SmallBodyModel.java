@@ -10,6 +10,10 @@ import nom.tam.fits.Fits;
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.saavtk.model.ColoringInfo;
+import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
+
 public class SmallBodyModel extends GenericPolyhedralModel
 {
     public PolyhedralModelConfig getSmallBodyConfig()

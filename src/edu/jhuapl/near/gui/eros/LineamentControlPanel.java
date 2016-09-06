@@ -14,10 +14,10 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import edu.jhuapl.near.gui.RadialOffsetChanger;
-import edu.jhuapl.near.model.ModelManager;
-import edu.jhuapl.near.model.ModelNames;
 import edu.jhuapl.near.model.eros.LineamentModel;
+import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
 
 public class LineamentControlPanel extends JPanel implements ItemListener, ChangeListener
 {

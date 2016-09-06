@@ -14,7 +14,9 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class ColorImageCollection extends AbstractModel implements PropertyChangeListener
 {

@@ -18,11 +18,12 @@ import vtk.vtkProp;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.util.BoundingBox;
-import edu.jhuapl.near.util.Frustum;
-import edu.jhuapl.near.util.MathUtil;
-import edu.jhuapl.near.util.PolyDataUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.AbstractModel;
+import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.Frustum;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class PerspectiveImageBoundary extends AbstractModel implements PropertyChangeListener
 {

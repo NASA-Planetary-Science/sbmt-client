@@ -20,11 +20,11 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.statistics.HistogramDataset;
 
-import edu.jhuapl.near.gui.ModelInfoWindow;
-import edu.jhuapl.near.model.Model;
-import edu.jhuapl.near.model.ModelManager;
 import edu.jhuapl.near.model.eros.NISStatistics;
 import edu.jhuapl.near.util.MomentCalculator;
+import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 
 public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {

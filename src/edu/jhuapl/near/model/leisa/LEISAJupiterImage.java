@@ -9,12 +9,12 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageData;
 
-import edu.jhuapl.near.model.FileType;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.near.util.FileCache;
 import edu.jhuapl.near.util.ImageDataUtil;
-import edu.jhuapl.near.util.Properties;
+import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class LEISAJupiterImage extends PerspectiveImage
 {

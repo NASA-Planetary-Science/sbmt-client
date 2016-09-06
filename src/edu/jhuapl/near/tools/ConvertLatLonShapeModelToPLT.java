@@ -2,8 +2,8 @@ package edu.jhuapl.near.tools;
 
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.util.NativeLibraryLoader;
-import edu.jhuapl.near.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
 
 /**
  * This program converts a shape model in lat, lon, radius format
