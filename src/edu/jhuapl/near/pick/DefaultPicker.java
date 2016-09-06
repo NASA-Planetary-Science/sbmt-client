@@ -199,12 +199,21 @@ public class DefaultPicker extends Picker
         if (e.getClickCount() == 1 &&
                 (e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK)
         {
+            // need to shut off LODs to make sure pick is done on correct geometry
+            boolean wasShowingLODs=renderer.showingLODs;
+            renderer.hideLODs();
+
             int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
+
+            // show LODs again if they were shown before picking; view-menu enabling of LODs is handled by the renderer so we don't need to worry about it here
+            if (wasShowingLODs)
+                renderer.showLODs();
 
             if (pickSucceeded == 1)
             {
                 double[] p = smallBodyCellPicker.GetPickPosition();
 //                System.out.println(p[0] + " " + p[1] + " " + p[2]);
+                System.out.println(p[0] + " " + p[1] + " " + p[2]);
             }
         }
     }

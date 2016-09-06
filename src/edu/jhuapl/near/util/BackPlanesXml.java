@@ -25,6 +25,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import edu.jhuapl.near.util.BackPlanesXmlMeta.MetaField;
+
 import altwg.Fits.HduTags;
 import altwg.XML.XmlDoc;
 import altwg.XML.XmlDocFactory;
@@ -104,20 +106,27 @@ public class BackPlanesXml
          * POPULATE THE FIELDS THAT ARE STANDARD IN EVERY PDS4 XML LABEL that
          * describes a FITS file.
          */
-        // start_date_time
-        NodeList myElemList = docElem.getElementsByTagName("start_date_time");
+        //logical identifier
+        NodeList myElemList = docElem.getElementsByTagName("logical_identifier");
         Node myElem = myElemList.item(0);
-        myElem.setTextContent(metaData.startDateTime);
+        myElem.setTextContent(metaData.metaStrings.get(MetaField.LOGICALID));
+
+        // start_date_time
+        myElemList = docElem.getElementsByTagName("start_date_time");
+        myElem = myElemList.item(0);
+        String pdsTime = metaData.metaStrings.get(MetaField.STARTDATETIME) + "Z";
+        myElem.setTextContent(pdsTime);
 
         // stop_date_time
         myElemList = docElem.getElementsByTagName("stop_date_time");
         myElem = myElemList.item(0);
-        myElem.setTextContent(metaData.stopDateTime);
+        pdsTime = metaData.metaStrings.get(MetaField.STOPDATETIME) + "Z";
+        myElem.setTextContent(pdsTime);
 
         // file_name
         myElemList = docElem.getElementsByTagName("file_name");
         myElem = myElemList.item(0);
-        myElem.setTextContent(metaData.productFileName);
+        myElem.setTextContent(metaData.metaStrings.get(MetaField.PRODUCTFILENAME));
 
         // number of lines in FITS image (assumed the same among multiple
         // planes)
@@ -393,6 +402,52 @@ public class BackPlanesXml
         }
         return node;
     }
+
+    /**
+     * Add an <External Reference> to a parent Node. The description text is optional and <description> tag will not be created if it is empty.
+     * Example <External_Reference>:
+     *
+     * <External_Reference>
+     *   <description>This is another external reference</description>
+     *   <reference_text>This is the main text of the reference</reference_text>
+     * </External_Reference>
+     * @param parentNode
+     * @param desc
+     * @param refText
+     */
+    public void addExternalRef(XmlDoc xmlDoc, Node parentNode, String desc, String refText) {
+
+        Document doc = xmlDoc.doc;
+
+//        Element dataTag = doc.getDocumentElement();
+//        Element parentTag =  (Element) dataTag.getElementsByTagName("people").item(0);
+//
+//        Element newPerson = doc.createElement("person");
+//
+//        Element firstName = doc.createElement("firstName");
+//        firstName.setTextContent("Tom");
+//
+//        Element lastName = doc.createElement("lastName");
+//        lastName.setTextContent("Hanks");
+
+//        newPerson.appendChild(firstName);
+//        newPerson.appendChild(lastName);
+//
+//        peopleTag.appendChild(newPerson);
+
+        Element newRef = doc.createElement("External_Reference");
+        if (desc.length() > 0) {
+            Element descTag = doc.createElement("description");
+            descTag.setTextContent(desc);
+            newRef.appendChild(descTag);
+        }
+        Element refTag = doc.createElement("reference_text");
+        refTag.setTextContent(refText);
+        newRef.appendChild(refTag);
+        parentNode.appendChild(newRef);
+
+    }
+
 
     /**
      * Parse the plane name to determine whether it matches any of the

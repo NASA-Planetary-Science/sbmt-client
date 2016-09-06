@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### August 29, 2016
+
+-   Image properties dialog now displaying for all images
+-   Viking Phobos images now being returned from database searches
+-   Console once again prints out coordinates when clicking on the surface
+-   "Hide Labels" and "Show Labels" buttons added to Structures tabs
+
 ### August 17, 2016
 
 -   Recents menu is now updating properly

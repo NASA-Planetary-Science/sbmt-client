@@ -26,6 +26,7 @@ import edu.jhuapl.near.util.Configuration;
 public class SmallBodyMappingTool
 {
     private static vtkJavaGarbageCollector garbageCollector;
+    private static boolean startPopup = false;
 
     static
     {
@@ -72,6 +73,11 @@ public class SmallBodyMappingTool
 
         setupLookAndFeel();
 
+        /*if(!startPopup)   INITIALIZES THE START SCREEN
+        {
+            startPopup=true;
+            new StartScreen();
+        }*/
         // The following line appears to be needed on some systems to prevent server redirect errors.
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 

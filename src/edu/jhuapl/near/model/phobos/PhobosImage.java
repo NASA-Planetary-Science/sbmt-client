@@ -18,6 +18,10 @@ public class PhobosImage extends PerspectiveImage
             boolean loadPointingOnly) throws FitsException, IOException
     {
         super(key, smallBodyModel, loadPointingOnly);
+
+        // Label files are still used for determining Viking image
+        // camera and filter names to display in image properties window
+        setLabelFileFullPath(initializeLabelFileFullPath());
     }
 
     /**
@@ -158,15 +162,19 @@ public class PhobosImage extends PerspectiveImage
         }
         else // is Viking
         {
-            try
+            String labelFileFullPath = getLabelFileFullPath();
+            if(labelFileFullPath != null)
             {
-                String filterLine = FileUtil.getFirstLineStartingWith(getLabelFileFullPath(), "FILTER_NAME");
-                String[] words = filterLine.trim().split("\\s+");
-                return getVikingFilterNumberFromName(words[2]);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
+                try
+                {
+                    String filterLine = FileUtil.getFirstLineStartingWith(getLabelFileFullPath(), "FILTER_NAME");
+                    String[] words = filterLine.trim().split("\\s+");
+                    return getVikingFilterNumberFromName(words[2]);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
             return -1;
         }
@@ -286,28 +294,32 @@ public class PhobosImage extends PerspectiveImage
         }
         else // is Viking
         {
-            try
+            String labelFileFullPath = getLabelFileFullPath();
+            if(labelFileFullPath != null)
             {
-                String filterLine = FileUtil.getFirstLineStartingWith(getLabelFileFullPath(), "SPACECRAFT_NAME");
-                String[] words = filterLine.trim().split("\\s+");
-                if (words[2].equals("VIKING_ORBITER_1"))
+                try
                 {
-                    if (filename.toLowerCase().contains("a"))
-                        return 2;
+                    String filterLine = FileUtil.getFirstLineStartingWith(labelFileFullPath, "SPACECRAFT_NAME");
+                    String[] words = filterLine.trim().split("\\s+");
+                    if (words[2].equals("VIKING_ORBITER_1"))
+                    {
+                        if (filename.toLowerCase().contains("a"))
+                            return 2;
+                        else
+                            return 3;
+                    }
                     else
-                        return 3;
+                    {
+                        if (filename.toLowerCase().contains("a"))
+                            return 4;
+                        else
+                            return 5;
+                    }
                 }
-                else
+                catch (IOException e)
                 {
-                    if (filename.toLowerCase().contains("a"))
-                        return 4;
-                    else
-                        return 5;
+                    e.printStackTrace();
                 }
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
             }
             return -1;
         }
