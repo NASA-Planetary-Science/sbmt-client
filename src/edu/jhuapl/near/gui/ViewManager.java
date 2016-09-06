@@ -64,17 +64,22 @@ public abstract class ViewManager extends JPanel
 
     protected void setupViews()
     {
+        // add in any built-in views
         addBuiltInViews(statusBar);
 
+        // add built-in views to the top-level JPanel
         for (View view : getBuiltInViews())
             add(view, view.getUniqueName());
 
+        // load in any custom views specified on the command line or in the configuration directory
         loadCustomViews(getTempCustomShapeModelPath(), statusBar);
 
+        // add custom views to the top-level JPanel
         for (View view : getCustomViews())
             add(view, view.getUniqueName());
 
-
+        // if no view was specified on the command line, search the built-in views for the default body to load,
+        // or the first built-in view if no default body has been specified
         if (getTempCustomShapeModelPath() == null)
         {
             int idxToShow=0;
@@ -83,6 +88,7 @@ public abstract class ViewManager extends JPanel
                     idxToShow=i;
             setCurrentView(getBuiltInViews().get(idxToShow));
         }
+        // if a custom view was specified on the command line, set that as the current view
         else
         {
             int idxToShow=0;

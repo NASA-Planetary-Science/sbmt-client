@@ -95,7 +95,7 @@ public class FileCache
         FileInfo fi = new FileInfo();
 
         // If root URL starts with "file://", return file directly without caching it
-        if (Configuration.getDataRootURL().startsWith(FILE_PREFIX))
+        if (!Configuration.useFileCache() || Configuration.getDataRootURL().startsWith(FILE_PREFIX))
         {
             // If the file is gzipped, you will need to manually gunzip (in the same folder)
             // it in order for the following to work. Remember to leave the gzipped version
@@ -237,17 +237,24 @@ public class FileCache
      */
     static public File getFileFromServer(String path)
     {
-        if (path.startsWith(FILE_PREFIX))
+        if (!Configuration.useFileCache())
         {
-            return new File(path.substring(FILE_PREFIX.length()));
+            return new File(path);
         }
         else
         {
-            FileInfo fi = getFileInfoFromServer(path, true);
-            if (fi != null)
-                return fi.file;
+            if (path.startsWith(FILE_PREFIX))
+            {
+                return new File(path.substring(FILE_PREFIX.length()));
+            }
             else
-                return null;
+            {
+                FileInfo fi = getFileInfoFromServer(path, true);
+                if (fi != null)
+                    return fi.file;
+                else
+                    return null;
+            }
         }
     }
 
