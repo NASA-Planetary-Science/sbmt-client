@@ -261,9 +261,9 @@ public class GenericPolyhedralModel extends PolyhedralModel
         lowResPointLocator = pointLocator;
     }
 
-    public GenericPolyhedralModelConfig getDefaultModelConfig()
+    public Config getDefaultModelConfig()
     {
-        return (GenericPolyhedralModelConfig)getConfig();
+        return getConfig();
     }
 
     public boolean isBuiltIn()

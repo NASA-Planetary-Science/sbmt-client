@@ -1,9 +1,9 @@
 package edu.jhuapl.near.gui;
 
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.pick.PickManager;
 
 /**

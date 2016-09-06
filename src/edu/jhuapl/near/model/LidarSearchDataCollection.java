@@ -52,7 +52,6 @@ import edu.jhuapl.near.util.gravity.Gravity;
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.model.PointInRegionChecker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -195,7 +194,7 @@ public class LidarSearchDataCollection extends AbstractModel
     public LidarSearchDataCollection(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.polyhedralModelConfig = (PolyhedralModelConfig)smallBodyModel.getPolyhedralModelConfig();
+        this.polyhedralModelConfig = (PolyhedralModelConfig)smallBodyModel.getConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();

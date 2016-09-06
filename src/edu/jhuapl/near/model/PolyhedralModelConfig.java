@@ -1,8 +1,16 @@
-package edu.jhuapl.saavtk.model;
+package edu.jhuapl.near.model;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ImagingInstrument;
+import edu.jhuapl.saavtk.model.Instrument;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelDataUsed;
+import edu.jhuapl.saavtk.model.ShapeModelPopulation;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 
 
 

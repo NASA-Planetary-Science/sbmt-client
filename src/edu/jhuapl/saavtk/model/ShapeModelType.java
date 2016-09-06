@@ -7,7 +7,7 @@ public enum ShapeModelType
     PLANETS_AND_SATELLITES("Planets and Satellites"),
     COMETS("Comets");
 
-    final String str;
+    final public String str;
     private ShapeModelType(String str)
     {
         this.str = str;

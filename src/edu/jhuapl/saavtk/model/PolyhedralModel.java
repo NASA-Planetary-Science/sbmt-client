@@ -57,9 +57,9 @@ public abstract class PolyhedralModel extends AbstractModel
     static public final String SmoothShadingStr = "Smooth";
 
     private Config config;
-    public PolyhedralModel(Config polyhedralModelConfig)
+    public PolyhedralModel(Config config)
     {
-        this.config = polyhedralModelConfig;
+        this.config = config;
     }
 
     public abstract void updateScaleBarValue(double pixelSizeInKm);
@@ -179,12 +179,6 @@ public abstract class PolyhedralModel extends AbstractModel
     {
         return config;
     }
-
-    public PolyhedralModelConfig getPolyhedralModelConfig()
-    {
-        return (PolyhedralModelConfig)config;
-    }
-
 
     public void setOpacity(double opacity)
     {

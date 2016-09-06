@@ -17,7 +17,6 @@ import vtk.vtkActor;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 

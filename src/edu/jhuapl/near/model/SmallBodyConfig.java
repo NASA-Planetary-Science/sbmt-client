@@ -12,7 +12,6 @@ import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.model.ImageType;
 import edu.jhuapl.saavtk.model.ImagingInstrument;
 import edu.jhuapl.saavtk.model.Instrument;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelDataUsed;

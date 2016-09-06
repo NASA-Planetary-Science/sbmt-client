@@ -53,6 +53,7 @@ import com.google.common.collect.Lists;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.PolyhedralModelConfig;
 import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
@@ -65,7 +66,6 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PointInCylinderChecker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.Picker;

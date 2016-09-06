@@ -26,7 +26,6 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.saavtk.model.AbstractModel;
-import edu.jhuapl.saavtk.model.PolyhedralModelConfig;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.DoublePair;
 import edu.jhuapl.saavtk.util.FileCache;
