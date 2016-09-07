@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/sbmt/src/edu/jhuapl/near/tools/SmallBodyMappingTool.java"/>
+<listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/SmallBodyMappingTool.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -14,7 +14,7 @@
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.near.tools.SmallBodyMappingTool"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.SmallBodyMappingTool"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--beta"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/mac64   -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
