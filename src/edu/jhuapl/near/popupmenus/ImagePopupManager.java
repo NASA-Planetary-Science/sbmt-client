@@ -14,14 +14,14 @@ import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.popupmenus.CirclesPopupMenu;
-import edu.jhuapl.saavtk.popupmenus.EllipsesPopupMenu;
-import edu.jhuapl.saavtk.popupmenus.GraticulePopupMenu;
-import edu.jhuapl.saavtk.popupmenus.LinesPopupMenu;
-import edu.jhuapl.saavtk.popupmenus.PointsPopupMenu;
-import edu.jhuapl.saavtk.popupmenus.PolygonsPopupMenu;
-import edu.jhuapl.saavtk.popupmenus.PopupManager;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.popup.CirclesPopupMenu;
+import edu.jhuapl.saavtk.popup.EllipsesPopupMenu;
+import edu.jhuapl.saavtk.popup.GraticulePopupMenu;
+import edu.jhuapl.saavtk.popup.LinesPopupMenu;
+import edu.jhuapl.saavtk.popup.PointsPopupMenu;
+import edu.jhuapl.saavtk.popup.PolygonsPopupMenu;
+import edu.jhuapl.saavtk.popup.PopupManager;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 
 /**
  * This class is responsible for the creation of popups and for the routing

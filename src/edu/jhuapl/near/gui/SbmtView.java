@@ -31,20 +31,20 @@ import edu.jhuapl.near.popupmenus.MapletBoundaryPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.LineamentPopupMenu;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
 import edu.jhuapl.saavtk.gui.StatusBar;
-import edu.jhuapl.saavtk.gui.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.model.CircleModel;
-import edu.jhuapl.saavtk.model.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.EllipseModel;
+import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.model.Graticule;
-import edu.jhuapl.saavtk.model.LineModel;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PointModel;
-import edu.jhuapl.saavtk.model.PolygonModel;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.model.structure.CircleModel;
+import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
+import edu.jhuapl.saavtk.model.structure.EllipseModel;
+import edu.jhuapl.saavtk.model.structure.LineModel;
+import edu.jhuapl.saavtk.model.structure.PointModel;
+import edu.jhuapl.saavtk.model.structure.PolygonModel;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 
 

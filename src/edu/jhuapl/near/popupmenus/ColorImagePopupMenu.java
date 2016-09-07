@@ -20,10 +20,10 @@ import edu.jhuapl.near.model.ColorImage;
 import edu.jhuapl.near.model.ColorImage.ColorImageKey;
 import edu.jhuapl.near.model.ColorImage.NoOverlapException;
 import edu.jhuapl.near.model.ColorImageCollection;
-import edu.jhuapl.saavtk.gui.NormalOffsetChangerDialog;
-import edu.jhuapl.saavtk.gui.OpacityChanger;
+import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
+import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 
 
 public class ColorImagePopupMenu extends PopupMenu

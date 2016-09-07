@@ -11,7 +11,7 @@ import vtk.vtkPropCollection;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.joglrendering.vtksbmtJoglCanvas;
+import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;

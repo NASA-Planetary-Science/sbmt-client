@@ -7,10 +7,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
-import edu.jhuapl.saavtk.model.ViewConfig;
 
 public class SbmtViewMenu extends ViewMenu
 {

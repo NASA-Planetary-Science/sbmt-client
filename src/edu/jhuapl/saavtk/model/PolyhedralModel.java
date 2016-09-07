@@ -10,6 +10,7 @@ import vtk.vtkDataArray;
 import vtk.vtkPolyData;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.LatLon;
 

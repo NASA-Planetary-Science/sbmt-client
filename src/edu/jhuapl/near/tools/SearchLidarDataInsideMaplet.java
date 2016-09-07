@@ -10,12 +10,12 @@ import edu.jhuapl.near.model.PointInDEMChecker;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.TimeUtil;
-import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.CircleSelectionModel;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.model.AbstractEllipsePolygonModel.EllipsePolygon;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel.EllipsePolygon;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 

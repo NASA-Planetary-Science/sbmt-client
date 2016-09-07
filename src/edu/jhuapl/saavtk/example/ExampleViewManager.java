@@ -2,10 +2,10 @@ package edu.jhuapl.saavtk.example;
 
 import java.awt.Frame;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 
 public class ExampleViewManager extends ViewManager

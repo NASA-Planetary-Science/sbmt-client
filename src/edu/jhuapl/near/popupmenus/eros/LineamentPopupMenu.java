@@ -11,10 +11,10 @@ import javax.swing.JMenuItem;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.model.eros.LineamentModel;
-import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 
 public class LineamentPopupMenu extends PopupMenu
 {

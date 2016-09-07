@@ -14,7 +14,7 @@ import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.model.ViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.util.Configuration;
 
 public abstract class ViewManager extends JPanel

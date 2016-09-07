@@ -24,8 +24,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.saavtk.model.Line;
-import edu.jhuapl.saavtk.model.LineModel;
+import edu.jhuapl.saavtk.model.structure.Line;
+import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.util.Properties;
 
 

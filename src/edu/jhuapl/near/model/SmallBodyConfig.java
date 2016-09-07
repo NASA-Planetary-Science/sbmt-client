@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.saavtk.model.ViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;

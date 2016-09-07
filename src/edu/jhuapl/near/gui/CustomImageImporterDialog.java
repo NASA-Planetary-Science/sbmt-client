@@ -23,7 +23,7 @@ import vtk.vtkImageReader2Factory;
 import edu.jhuapl.near.model.ImageType;
 import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.util.VtkENVIReader;
-import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 
 
 public class CustomImageImporterDialog extends javax.swing.JDialog

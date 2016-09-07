@@ -18,10 +18,10 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.gui.LidarPlot;
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.saavtk.gui.ColorChooser;
-import edu.jhuapl.saavtk.gui.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.DirectoryChooser;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.Configuration;
 

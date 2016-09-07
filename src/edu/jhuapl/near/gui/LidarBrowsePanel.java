@@ -31,8 +31,8 @@ import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.near.model.LidarBrowseDataCollection;
 import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
-import edu.jhuapl.saavtk.gui.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;

@@ -5,7 +5,7 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.DefaultPicker;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.saavtk.popupmenus.PopupManager;
+import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.util.Preferences;
 
 public class ImagePickManager extends LidarPickManager

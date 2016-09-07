@@ -15,10 +15,10 @@ import vtk.vtkProp;
 
 import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
-import edu.jhuapl.saavtk.gui.ColorChooser;
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 
 public class MapletBoundaryPopupMenu extends PopupMenu
 {

@@ -2,24 +2,24 @@ package edu.jhuapl.saavtk.example;
 
 import java.util.HashMap;
 
-import edu.jhuapl.saavtk.gui.PolyhedralModelControlPanel;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
-import edu.jhuapl.saavtk.gui.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.model.CircleModel;
-import edu.jhuapl.saavtk.model.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.ViewConfig;
-import edu.jhuapl.saavtk.model.EllipseModel;
+import edu.jhuapl.saavtk.gui.panel.PolyhedralModelControlPanel;
+import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.model.Graticule;
-import edu.jhuapl.saavtk.model.LineModel;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PointModel;
-import edu.jhuapl.saavtk.model.PolygonModel;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.structure.CircleModel;
+import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
+import edu.jhuapl.saavtk.model.structure.EllipseModel;
+import edu.jhuapl.saavtk.model.structure.LineModel;
+import edu.jhuapl.saavtk.model.structure.PointModel;
+import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.StructuresPickManager;
-import edu.jhuapl.saavtk.popupmenus.StructuresPopupManager;
+import edu.jhuapl.saavtk.popup.StructuresPopupManager;
 
 
 /**

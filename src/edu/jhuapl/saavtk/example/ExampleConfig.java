@@ -2,7 +2,7 @@ package edu.jhuapl.saavtk.example;
 
 import java.util.ArrayList;
 
-import edu.jhuapl.saavtk.model.ViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 

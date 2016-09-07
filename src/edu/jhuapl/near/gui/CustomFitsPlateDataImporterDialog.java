@@ -25,7 +25,7 @@ import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 
-import edu.jhuapl.saavtk.gui.CustomPlateDataImporterDialog;
+import edu.jhuapl.saavtk.gui.dialog.CustomPlateDataImporterDialog;
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.PolyhedralModel.Format;

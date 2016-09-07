@@ -6,7 +6,7 @@ import java.io.InputStream;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.gui.HelpMenu;
+import edu.jhuapl.saavtk.gui.menu.HelpMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 
 

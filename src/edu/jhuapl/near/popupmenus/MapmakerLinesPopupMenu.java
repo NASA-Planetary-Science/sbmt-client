@@ -11,14 +11,14 @@ import javax.swing.JOptionPane;
 import vtk.vtkProp;
 
 import edu.jhuapl.near.util.gravity.Gravity;
-import edu.jhuapl.saavtk.gui.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.model.Line;
-import edu.jhuapl.saavtk.model.LineModel;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.popupmenus.PopupMenu;
+import edu.jhuapl.saavtk.model.structure.Line;
+import edu.jhuapl.saavtk.model.structure.LineModel;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 
 /**
  * Popup menu used by the mapmaker view for profiles. It is meant to replace LinesPopupMenu

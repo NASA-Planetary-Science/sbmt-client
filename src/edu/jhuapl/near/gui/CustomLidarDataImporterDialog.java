@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.saavtk.gui.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 
 

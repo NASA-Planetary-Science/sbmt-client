@@ -1,6 +1,6 @@
 package edu.jhuapl.saavtk.example;
 
-import edu.jhuapl.saavtk.model.ViewConfig;
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 
 public class ExamplePolyhedralModel extends GenericPolyhedralModel
