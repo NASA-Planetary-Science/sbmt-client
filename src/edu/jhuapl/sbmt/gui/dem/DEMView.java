@@ -38,6 +38,9 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
+
+
+
 //import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
@@ -59,13 +62,12 @@ import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.app.SbmtModelManager;
+import edu.jhuapl.sbmt.client.SbmtModelManager;
+import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-import edu.jhuapl.sbmt.popupmenus.ImagePopupManager;
-import edu.jhuapl.sbmt.popupmenus.MapmakerLinesPopupMenu;
 
 public class DEMView extends JFrame implements WindowListener
 {

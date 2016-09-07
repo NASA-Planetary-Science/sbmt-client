@@ -4,7 +4,7 @@ import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.app.BodyViewConfig;
+import edu.jhuapl.sbmt.client.BodyViewConfig;
 
 /**
  * Panel used for showing custom tracks. It is essentially the LidarSearchPanel but with the search

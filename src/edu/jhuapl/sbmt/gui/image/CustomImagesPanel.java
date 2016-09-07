@@ -64,8 +64,8 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.app.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.app.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -79,7 +79,6 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.popupmenus.ImagePopupMenu;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 

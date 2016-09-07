@@ -17,11 +17,10 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.BoundingBox;
-import edu.jhuapl.sbmt.app.SmallBodyModel;
-import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.OLALidarHyperTreeSearchDataCollection;
-import edu.jhuapl.sbmt.popupmenus.LidarPopupMenu;
 
 public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {

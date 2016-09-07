@@ -47,7 +47,6 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.popupmenus.ImagePopupMenu;
 
 
 public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, MouseMotionListener, PropertyChangeListener //, KeyListener

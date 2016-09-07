@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
 import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.MapUtil;
-import edu.jhuapl.sbmt.app.SmallBodyModel;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 
 

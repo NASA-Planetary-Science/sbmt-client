@@ -10,8 +10,8 @@ import vtk.vtkJavaGarbageCollector;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.app.SbmtMainWindow;
-import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.SbmtMainWindow;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
 {
