@@ -1,4 +1,4 @@
-package edu.jhuapl.saavtk.model;
+package edu.jhuapl.near.model;
 
 // Names of instruments
 public enum Instrument

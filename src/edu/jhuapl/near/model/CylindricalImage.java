@@ -27,7 +27,6 @@ import vtk.vtkTexture;
 import vtk.vtkTransform;
 
 import edu.jhuapl.near.util.VtkENVIReader;
-import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.LatLon;

@@ -21,7 +21,6 @@ import vtk.vtkTexture;
 import vtk.vtksbCellLocator;
 
 import edu.jhuapl.near.util.ImageDataUtil;
-import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.Frustum;

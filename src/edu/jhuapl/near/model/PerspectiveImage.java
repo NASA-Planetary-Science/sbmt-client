@@ -60,7 +60,6 @@ import edu.jhuapl.near.util.BackPlanesXmlMeta.BPMetaBuilder;
 import edu.jhuapl.near.util.BackplaneInfo;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.near.util.VtkENVIReader;
-import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.DateTimeUtil;

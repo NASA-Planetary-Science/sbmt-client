@@ -1,4 +1,4 @@
-package edu.jhuapl.saavtk.model;
+package edu.jhuapl.near.model;
 
 // Types of bodies
 public enum ShapeModelType

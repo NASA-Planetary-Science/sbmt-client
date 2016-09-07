@@ -31,10 +31,10 @@ import edu.jhuapl.near.model.Image.ImageKey;
 import edu.jhuapl.near.model.ImageCube;
 import edu.jhuapl.near.model.ImageCube.ImageCubeKey;
 import edu.jhuapl.near.model.ImageCubeCollection;
+import edu.jhuapl.near.model.ImagingInstrument;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.model.ImagingInstrument;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 

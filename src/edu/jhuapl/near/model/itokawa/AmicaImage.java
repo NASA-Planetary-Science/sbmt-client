@@ -16,9 +16,9 @@ import vtk.vtkImageMathematics;
 import vtk.vtkImageReslice;
 import vtk.vtkImageTranslateExtent;
 
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyModel;
-import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.VtkDataTypes;
 

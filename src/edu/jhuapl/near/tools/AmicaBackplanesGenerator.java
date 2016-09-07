@@ -19,12 +19,12 @@ import javax.imageio.ImageIO;
 import vtk.vtkObject;
 
 import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.near.model.PerspectiveImage;
 import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.itokawa.AmicaImage;
 import edu.jhuapl.near.model.itokawa.Itokawa;
-import edu.jhuapl.saavtk.model.ImageSource;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.FileUtil;

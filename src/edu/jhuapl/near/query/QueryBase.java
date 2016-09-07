@@ -1,4 +1,4 @@
-package edu.jhuapl.saavtk.query;
+package edu.jhuapl.near.query;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import edu.jhuapl.saavtk.model.ImageSource;
+import edu.jhuapl.near.model.ImageSource;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;

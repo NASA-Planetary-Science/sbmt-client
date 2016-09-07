@@ -36,13 +36,10 @@ import edu.jhuapl.near.model.simple.SimpleSmallBody;
 import edu.jhuapl.near.model.vesta.FcImage;
 import edu.jhuapl.near.model.vesta_old.VestaOld;
 import edu.jhuapl.saavtk.model.Graticule;
-import edu.jhuapl.saavtk.model.ImageSource;
-import edu.jhuapl.saavtk.model.ImageType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.model.SpectralMode;
 
 public class ModelFactory
 {

@@ -1,4 +1,4 @@
-package edu.jhuapl.saavtk.model;
+package edu.jhuapl.near.model;
 
 // Data used to construct shape model (either images, radar, lidar, or enhanced)
 public enum ShapeModelDataUsed
