@@ -1,6 +1,6 @@
 package edu.jhuapl.saavtk.example;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -20,7 +20,7 @@ public class ExampleViewConfig extends ViewConfig
 
     public static void initialize()
     {
-        ArrayList<ViewConfig> configArray = getBuiltInConfigs();
+        List<ViewConfig> configArray = getBuiltInConfigs();
 
         ExampleViewConfig config = new ExampleViewConfig();
         config.customName = "data/brain.obj";

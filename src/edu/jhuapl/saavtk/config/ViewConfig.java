@@ -1,6 +1,7 @@
 package edu.jhuapl.saavtk.config;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -101,8 +102,8 @@ public class ViewConfig implements Cloneable
          }
      }
 
-     static private ArrayList<ViewConfig> builtInConfigs = new ArrayList<ViewConfig>();
-     static public ArrayList<ViewConfig> getBuiltInConfigs() { return builtInConfigs; }
+     static private List<ViewConfig> builtInConfigs = new ArrayList<ViewConfig>();
+     static public List<ViewConfig> getBuiltInConfigs() { return builtInConfigs; }
 
      /**
       * Get a Config of a specific name and author.

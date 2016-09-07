@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.app;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 
@@ -37,7 +37,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
     public static void initialize()
     {
-        ArrayList<ViewConfig> configArray = getBuiltInConfigs();
+        List<ViewConfig> configArray = getBuiltInConfigs();
 
         // Gaskell Eros
         SmallBodyViewConfig c = new SmallBodyViewConfig();

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
@@ -106,7 +106,7 @@ public class NisDatabaseGeneratorSql
         }
     }
 
-    private static void populateNISTables(ArrayList<String> nisFiles) throws SQLException, IOException
+    private static void populateNISTables(List<String> nisFiles) throws SQLException, IOException
     {
         int count = 0;
         for (String filename : nisFiles)
@@ -173,7 +173,7 @@ public class NisDatabaseGeneratorSql
         }
     }
 
-    private static void populateNISTablesCubes(ArrayList<String> nisFiles) throws SQLException, IOException
+    private static void populateNISTablesCubes(List<String> nisFiles) throws SQLException, IOException
     {
         int count = 0;
         int filecount = 0;
@@ -302,7 +302,7 @@ public class NisDatabaseGeneratorSql
         String nisFileList=args[0];
         int mode = Integer.parseInt(args[1]);
 
-        ArrayList<String> nisFiles = null;
+        List<String> nisFiles = null;
         try {
             nisFiles = FileUtil.getFileLinesAsStringList(nisFileList);
         } catch (IOException e2) {

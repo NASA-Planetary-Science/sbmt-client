@@ -43,7 +43,6 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.StructureModel;
-import edu.jhuapl.saavtk.model.StructureModel.Structure;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Point3D;
@@ -61,13 +60,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         CLOSED
     }
 
-    private ArrayList<Line> lines = new ArrayList<Line>();
-    public ArrayList<Line> getLines() { return lines; }
+    private List<Line> lines = new ArrayList<Line>();
+    public List<Line> getLines() { return lines; }
 
     private vtkPolyData linesPolyData;
     private vtkPolyData activationPolyData;
 
-    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private List<vtkProp> actors = new ArrayList<vtkProp>();
     private vtkPolyDataMapper lineMapper;
     private vtkPolyDataMapper lineActivationMapper;
     private vtkActor lineActor;
@@ -968,8 +967,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         return offset;
     }
 
-    public void generateProfile(ArrayList<Point3D> xyzPointList, ArrayList<Double> profileValues,
-            ArrayList<Double> profileDistances, int coloringIndex) throws Exception
+    public void generateProfile(List<Point3D> xyzPointList, List<Double> profileValues,
+            List<Double> profileDistances, int coloringIndex) throws Exception
     {
         profileValues.clear();
         profileDistances.clear();
@@ -1055,7 +1054,7 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         out.write(lineSeparator);
 
 
-        ArrayList<Point3D> xyzPointList = lin.xyzPointList;
+        List<Point3D> xyzPointList = lin.xyzPointList;
 
         // For each point in xyzPointList, find the cell containing that
         // point and then, using barycentric coordinates find the value

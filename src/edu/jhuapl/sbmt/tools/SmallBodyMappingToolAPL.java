@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -38,7 +38,7 @@ public class SmallBodyMappingToolAPL
             {
                 if (new File(passwordFile).exists())
                 {
-                    ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
+                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
                     if (credentials.size() >= 2)
                     {
                         String user = credentials.get(0);

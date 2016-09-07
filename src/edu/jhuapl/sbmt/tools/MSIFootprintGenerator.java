@@ -2,7 +2,7 @@ package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.FitsException;
 
@@ -57,7 +57,7 @@ public class MSIFootprintGenerator
     }
 
     private static void generateMSIFootprints(
-            ArrayList<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
+            List<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
     {
         int count = 0;
         for (String filename : msiFiles)
@@ -166,7 +166,7 @@ public class MSIFootprintGenerator
 
         MSIImage.setGenerateFootprint(true);
 
-        ArrayList<String> msiFiles = null;
+        List<String> msiFiles = null;
         try {
             msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
         } catch (IOException e2) {

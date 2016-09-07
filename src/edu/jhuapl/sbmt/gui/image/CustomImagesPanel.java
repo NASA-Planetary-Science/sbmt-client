@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -71,13 +72,13 @@ import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.popupmenus.ImagePopupMenu;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
@@ -669,7 +670,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 }
 
                 int[] selectedIndices = imageList.getSelectedIndices();
-                ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                List<ImageKey> imageKeys = new ArrayList<ImageKey>();
                 for (int selectedIndex : selectedIndices)
                 {
                     ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);

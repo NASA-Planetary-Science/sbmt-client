@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -46,7 +46,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
     private LidarBrowseDataCollection lidarModel;
     private JList resultList;
     private DefaultListModel lidarResultListModel;
-    //private ArrayList<LidarDataSpec> lidarRawResults = new ArrayList<LidarDataSpec>();
+    //private List<LidarDataSpec> lidarRawResults = new ArrayList<LidarDataSpec>();
     private JLabel resultsLabel;
     private JButton showHideButton;
     private JButton removeAllButton;
@@ -97,7 +97,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 
         lidarResultListModel = new DefaultListModel();
 
-        ArrayList<LidarDataFileSpec> lidarPaths;
+        List<LidarDataFileSpec> lidarPaths;
         try
         {
             lidarPaths = lidarModel.getAllLidarPaths();

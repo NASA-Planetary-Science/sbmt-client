@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -21,11 +22,11 @@ import edu.jhuapl.sbmt.app.SbmtModelFactory;
 import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.util.BackplanesFile;
 import edu.jhuapl.sbmt.util.FitsBackplanesFile;
 import edu.jhuapl.sbmt.util.ImgBackplanesFile;
@@ -51,7 +52,7 @@ public class BackplanesGenerator
 {
     private SmallBodyModel smallBodyModel;
 
-    private ArrayList<String> filesProcessed = new ArrayList<String>();
+    private List<String> filesProcessed = new ArrayList<String>();
 
     /**
      * Generates backplanes for each file in an input image list.
@@ -63,7 +64,7 @@ public class BackplanesGenerator
      * @throws IOException
      */
     private void generateBackplanes(
-            ArrayList<String> imageFiles,
+            List<String> imageFiles,
             Instrument instr,
             String outputFolder,
             BackplanesFileFormat fmt,
@@ -335,7 +336,7 @@ public class BackplanesGenerator
             {
                 if (new File(passwordFile).exists())
                 {
-                    ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
+                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
                     if (credentials.size() >= 2)
                     {
                         String user = credentials.get(0);
@@ -379,7 +380,7 @@ public class BackplanesGenerator
      */
     public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt) throws Exception
     {
-        ArrayList<String> image = new ArrayList<>();
+        List<String> image = new ArrayList<>();
         image.add(imageFile);
         this.smallBodyModel = model;
         generateBackplanes(image, instr, outputFolder, fmt, ImageSource.GASKELL);
@@ -564,7 +565,7 @@ public class BackplanesGenerator
 
         // Read image file list and process image backplanes.
         PerspectiveImage.setGenerateFootprint(true);
-        ArrayList<String> imageFiles = null;
+        List<String> imageFiles = null;
         try {
             imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
         } catch (IOException e2) {

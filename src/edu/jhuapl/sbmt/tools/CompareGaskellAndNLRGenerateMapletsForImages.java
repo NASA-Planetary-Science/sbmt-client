@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
@@ -20,8 +21,8 @@ import edu.jhuapl.sbmt.app.SbmtModelFactory;
 import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.util.BatchSubmission;
 import edu.jhuapl.sbmt.util.BatchSubmission.BatchType;
 
@@ -56,7 +57,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
     }
 
     static void doComparison(
-            ArrayList<String> msiFiles,
+            List<String> msiFiles,
             SmallBodyModel smallBodyModel,
             int sampleOffset,
             int lineOffset
@@ -64,8 +65,8 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
     {
         String mapmakerFolder = Configuration.getCacheDir() + "/GASKELL/EROS/mapmaker";
         String outputFolder = mapmakerFolder+"/OUTPUT/";
-        ArrayList<String> mapmakerCommands = new ArrayList<String>();
-        ArrayList<String> convertCommands = new ArrayList<String>();
+        List<String> mapmakerCommands = new ArrayList<String>();
+        List<String> convertCommands = new ArrayList<String>();
 
         int count = 1;
         for (String keyName : msiFiles)
@@ -127,7 +128,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
 
         // Get list of gaskell files
         String msiFileList=args[0];
-        ArrayList<String> msiFiles = null;
+        List<String> msiFiles = null;
         try {
             msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
         } catch (IOException e) {

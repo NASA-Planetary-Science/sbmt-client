@@ -19,7 +19,6 @@ import vtk.vtkUnsignedCharArray;
 
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.StructureModel;
-import edu.jhuapl.saavtk.model.StructureModel.Structure;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 import edu.jhuapl.saavtk.util.Properties;
@@ -146,7 +145,7 @@ public class PolygonModel extends LineModel
 
     public List<vtkProp> getProps()
     {
-        ArrayList<vtkProp> allActors = new ArrayList<vtkProp>(actors);
+        List<vtkProp> allActors = new ArrayList<vtkProp>(actors);
         allActors.addAll(super.getProps());
         return allActors;
     }

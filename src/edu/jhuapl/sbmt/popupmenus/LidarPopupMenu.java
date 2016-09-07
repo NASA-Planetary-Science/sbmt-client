@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -31,7 +32,7 @@ public class LidarPopupMenu extends PopupMenu
     private JMenu colorMenu;
     private JMenu saveMenu;
     private JMenu saveAllMenu;
-    private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+    private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customTrackColorMenuItem;
     private JMenuItem saveTrackOriginalMenuItem;
     private JMenuItem saveTrackModifiedMenuItem;
@@ -299,11 +300,11 @@ public class LidarPopupMenu extends PopupMenu
         {
             try
             {
-                ArrayList<Double> potential = new ArrayList<Double>();
-                ArrayList<Double> acceleration = new ArrayList<Double>();
-                ArrayList<Double> elevation = new ArrayList<Double>();
-                ArrayList<Double> distance = new ArrayList<Double>();
-                ArrayList<Double> time = new ArrayList<Double>();
+                List<Double> potential = new ArrayList<Double>();
+                List<Double> acceleration = new ArrayList<Double>();
+                List<Double> elevation = new ArrayList<Double>();
+                List<Double> distance = new ArrayList<Double>();
+                List<Double> time = new ArrayList<Double>();
 
                 lidarModel.getGravityDataForTrack(currentTrack, potential, acceleration, elevation, distance, time);
 

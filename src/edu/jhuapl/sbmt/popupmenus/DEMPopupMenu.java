@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -32,10 +33,10 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.gui.dem.DEMView;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
-import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
+import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection.DEMBoundary;
+import edu.jhuapl.sbmt.model.dem.DEMCollection;
 
 
 public class DEMPopupMenu extends PopupMenu
@@ -44,7 +45,7 @@ public class DEMPopupMenu extends PopupMenu
     private PolyhedralModel smallBodyModel;
     private DEMCollection demCollection;
     private DEMBoundaryCollection demBoundaryCollection;
-    private ArrayList<DEMKey> demKeys = new ArrayList<DEMKey>();
+    private List<DEMKey> demKeys = new ArrayList<DEMKey>();
     private JMenuItem mapDEMMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showDEMInfoMenuItem;
@@ -52,7 +53,7 @@ public class DEMPopupMenu extends PopupMenu
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideDEMMenuItem;
     private JMenu colorMenu;
-    private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+    private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
     private Renderer renderer;
 
@@ -124,7 +125,7 @@ public class DEMPopupMenu extends PopupMenu
         updateMenuItems();
     }
 
-    public void setCurrentDEMs(ArrayList<DEMKey> keys)
+    public void setCurrentDEMs(List<DEMKey> keys)
     {
         demKeys.clear();
         demKeys.addAll(keys);

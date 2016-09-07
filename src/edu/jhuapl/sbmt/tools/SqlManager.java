@@ -40,6 +40,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -84,7 +85,7 @@ public class SqlManager
             return;
         }
 
-       ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(
+       List<String> credentials = FileUtil.getFileLinesAsStringList(
                Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
        String username = credentials.get(0);
        String password = credentials.get(1);
@@ -123,7 +124,7 @@ public class SqlManager
     }
 
 //use for SQL command SELECT
-    public synchronized ArrayList<ArrayList<Object>> query(String expression) throws SQLException
+    public synchronized List<List<Object>> query(String expression) throws SQLException
     {
 
         Statement st = null;
@@ -136,7 +137,7 @@ public class SqlManager
         rs = st.executeQuery(expression);    // run the query
 
         // do something with the result set.
-        ArrayList<ArrayList<Object>> results = dump(rs);
+        List<List<Object>> results = dump(rs);
         st.close();    // NOTE!! if you close a statement the associated ResultSet is
 
         // closed too
@@ -172,10 +173,10 @@ public class SqlManager
     }
 
 
-    public static ArrayList<ArrayList<Object>> dump(ResultSet rs) throws SQLException
+    public static List<List<Object>> dump(ResultSet rs) throws SQLException
     {
 
-        ArrayList<ArrayList<Object>> results = new ArrayList<ArrayList<Object>>();
+        List<List<Object>> results = new ArrayList<List<Object>>();
 
         // the order of the rows in a cursor
         // are implementation dependent unless you use the SQL ORDER statement
@@ -191,7 +192,7 @@ public class SqlManager
         // or false if there is no next row, which breaks the loop
         for (; rs.next(); )
         {
-            ArrayList<Object> nextRow = new ArrayList<Object>();
+            List<Object> nextRow = new ArrayList<Object>();
             for (i = 0; i < colmax; ++i)
             {
                 o = rs.getObject(i + 1);    // Is SQL the first column is indexed with 1 not 0

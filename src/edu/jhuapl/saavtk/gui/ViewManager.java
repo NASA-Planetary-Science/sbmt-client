@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -19,8 +20,8 @@ import edu.jhuapl.saavtk.util.Configuration;
 
 public abstract class ViewManager extends JPanel
 {
-    private ArrayList<View> builtInViews = new ArrayList<View>();
-    private ArrayList<View> customViews = new ArrayList<View>();
+    private List<View> builtInViews = new ArrayList<View>();
+    private List<View> customViews = new ArrayList<View>();
     private View currentView;
     private final StatusBar statusBar;
     private final Frame frame;
@@ -174,22 +175,22 @@ public abstract class ViewManager extends JPanel
         addCustomView(createCustomView(statusBar, shapeModelPath, true));
     }
 
-    public ArrayList<View> getBuiltInViews()
+    public List<View> getBuiltInViews()
     {
         return builtInViews;
     }
 
-    public void setBuiltInViews(ArrayList<View> builtInViews)
+    public void setBuiltInViews(List<View> builtInViews)
     {
         this.builtInViews = builtInViews;
     }
 
-    public ArrayList<View> getCustomViews()
+    public List<View> getCustomViews()
     {
         return customViews;
     }
 
-    public void setCustomViews(ArrayList<View> customViews)
+    public void setCustomViews(List<View> customViews)
     {
         this.customViews = customViews;
     }
@@ -282,9 +283,9 @@ public abstract class ViewManager extends JPanel
         return null;
     }
 
-    public ArrayList<View> getAllViews()
+    public List<View> getAllViews()
     {
-        ArrayList<View> allViews = new ArrayList<View>();
+        List<View> allViews = new ArrayList<View>();
         allViews.addAll(builtInViews);
         allViews.addAll(customViews);
         return allViews;

@@ -11,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -64,7 +65,7 @@ public class PolyhedralModelControlPanel extends JPanel implements ItemListener,
     private JLabel customColorRedLabel;
     private JLabel customColorGreenLabel;
     private JLabel customColorBlueLabel;
-    private ArrayList<JRadioButton> resModelButtons = new ArrayList<JRadioButton>();
+    private List<JRadioButton> resModelButtons = new ArrayList<JRadioButton>();
     private ButtonGroup resolutionButtonGroup;
     private JCheckBox gridCheckBox;
     private JCheckBox axesCheckBox;
@@ -171,7 +172,7 @@ public class PolyhedralModelControlPanel extends JPanel implements ItemListener,
         return customColorBlueLabel;
     }
 
-    public ArrayList<JRadioButton> getResModelButtons()
+    public List<JRadioButton> getResModelButtons()
     {
         return resModelButtons;
     }

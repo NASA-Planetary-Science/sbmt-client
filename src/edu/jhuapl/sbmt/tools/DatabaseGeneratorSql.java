@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 import nom.tam.fits.FitsException;
@@ -133,7 +133,7 @@ public class DatabaseGeneratorSql
     }
 
     private void populateTables(
-            ArrayList<String> imageFiles,
+            List<String> imageFiles,
             String tableName,
             String cubesTableName,
             ImageSource imageSource) throws IOException, SQLException, FitsException
@@ -151,7 +151,7 @@ public class DatabaseGeneratorSql
         int cubeTablePrimaryKey = 0;
 
         // If appending, search table for next consecutive key to use, if no entries exist then start at 0
-        ArrayList<ArrayList<Object>> queryResult;
+        List<List<Object>> queryResult;
         if(appendTables){
             queryResult = db.query("SELECT MAX(id) FROM `" + tableName + "`");
             if(queryResult != null && !queryResult.isEmpty() &&
@@ -387,7 +387,7 @@ public class DatabaseGeneratorSql
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
-        ArrayList<String> files = null;
+        List<String> files = null;
         try {
             files = FileUtil.getFileLinesAsStringList(fileList);
         } catch (IOException e2) {
@@ -560,7 +560,7 @@ public class DatabaseGeneratorSql
             {
                 if (new File(passwordFile).exists())
                 {
-                    ArrayList<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
+                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
                     if (credentials.size() >= 2)
                     {
                         String user = credentials.get(0);

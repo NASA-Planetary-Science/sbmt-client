@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JComboBox;
@@ -59,7 +60,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
 
     private NISPopupMenu nisPopupMenu;
-    private ArrayList<String> nisRawResults = new ArrayList<String>();
+    private List<String> nisRawResults = new ArrayList<String>();
     private String nisResultsLabelText = " ";
     private IdPair resultIntervalCurrentlyShown = null;
     private boolean currentlyEditingUserDefinedFunction = false;
@@ -136,7 +137,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         }
     }
 
-    private void setNISResults(ArrayList<String> results)
+    private void setNISResults(List<String> results)
     {
         nisResultsLabelText = results.size() + " spectra matched";
         resultsLabel.setText(nisResultsLabelText);
@@ -1343,7 +1344,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
-            ArrayList<Integer> polygonTypesChecked = new ArrayList<Integer>();
+            List<Integer> polygonTypesChecked = new ArrayList<Integer>();
 
             if (polygonType0CheckBox.isSelected())
                 polygonTypesChecked.add(0);
@@ -1399,7 +1400,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
                 }
             }
 
-            ArrayList<String> results = NisQuery.getInstance().runQueryNIS(
+            List<String> results = NisQuery.getInstance().runQueryNIS(
                     startDateJoda,
                     endDateJoda,
                     null,

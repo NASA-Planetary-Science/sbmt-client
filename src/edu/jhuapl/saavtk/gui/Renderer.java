@@ -49,8 +49,8 @@ import vtk.vtkWindowToImageFilter;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.jogl.StereoCapableMirrorCanvas;
-import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.gui.jogl.StereoCapableMirrorCanvas.StereoMode;
+import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -555,7 +555,7 @@ public class Renderer extends JPanel implements
         }
     }
 
-    private void addActors(ArrayList<vtkActor> actors)
+    private void addActors(List<vtkActor> actors)
     {
         boolean actorWasAdded = false;
         for (vtkActor act : actors)
@@ -580,7 +580,7 @@ public class Renderer extends JPanel implements
         }
     }
 
-    public void removeActors(ArrayList<vtkActor> actors)
+    public void removeActors(List<vtkActor> actors)
     {
         boolean actorWasRemoved = false;
         for (vtkActor act : actors)

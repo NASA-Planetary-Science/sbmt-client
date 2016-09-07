@@ -11,7 +11,7 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +48,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)lidarDatasourceList.getModel()).clear();
-        ArrayList<LidarDatasourceInfo> list = modelManager.getPolyhedralModel().getLidarDasourceInfoList();
+        List<LidarDatasourceInfo> list = modelManager.getPolyhedralModel().getLidarDasourceInfoList();
         for (LidarDatasourceInfo info : list)
             ((DefaultListModel)lidarDatasourceList.getModel()).addElement(info);
     }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import nom.tam.fits.FitsException;
 
@@ -25,8 +26,8 @@ import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 
 public class MSIBestResolutionPerPlate
 {
@@ -70,8 +71,8 @@ public class MSIBestResolutionPerPlate
         }
     }
 
-    private static ArrayList<PlateStatistics> statisticsPerPlate = new ArrayList<PlateStatistics>();
-    private static ArrayList<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
+    private static List<PlateStatistics> statisticsPerPlate = new ArrayList<PlateStatistics>();
+    private static List<String> msiFilesWithAtLeastOneGoodPlate = new ArrayList<String>();
 
     private static boolean checkIfMsiFilesExist(String line, ImageSource source)
     {
@@ -110,7 +111,7 @@ public class MSIBestResolutionPerPlate
     }
 
     private static void computeBestResolutionPerPlate(
-            ArrayList<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
+            List<String> msiFiles, ImageSource msiSource) throws IOException, FitsException
     {
         int numPlatesInSmallBodyModel = erosModel.getSmallBodyPolyData().GetNumberOfCells();
         for (int i=0; i<numPlatesInSmallBodyModel; ++i)
@@ -255,7 +256,7 @@ public class MSIBestResolutionPerPlate
         saveSingleDataArray("./eros-best-resolutions-per-plate.txt", statisticsPerPlate);
     }
 
-    private static void saveSingleDataArray(String filename, ArrayList dataarray) throws IOException
+    private static void saveSingleDataArray(String filename, List dataarray) throws IOException
     {
         FileWriter fstream = new FileWriter(filename);
         BufferedWriter out = new BufferedWriter(fstream);
@@ -291,7 +292,7 @@ public class MSIBestResolutionPerPlate
 
         MSIImage.setGenerateFootprint(true);
 
-        ArrayList<String> msiFiles = null;
+        List<String> msiFiles = null;
         try {
             msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
         } catch (IOException e2) {

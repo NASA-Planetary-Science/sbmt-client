@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -117,7 +118,7 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
     {
         // First create a list of the custom menu items and remove them
         // from the menu.
-        ArrayList<JMenuItem> customMenuItems = new ArrayList<JMenuItem>();
+        List<JMenuItem> customMenuItems = new ArrayList<JMenuItem>();
         int numberItems = customImageMenu.getItemCount();
         for (int i=numberItems-1; i>=0; --i)
         {

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -100,8 +101,8 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
             return;
 
         Line line = (Line)lineModel.getStructure(lineId);
-        ArrayList<Double> value= new ArrayList<Double>();
-        ArrayList<Double> distance = new ArrayList<Double>();
+        List<Double> value= new ArrayList<Double>();
+        List<Double> distance = new ArrayList<Double>();
         demModel.generateProfile(line.xyzPointList, value, distance, coloringIndex);
 
         XYSeries series = ((XYSeriesCollection)valueDistanceDataset).getSeries(lineId);

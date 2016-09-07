@@ -74,18 +74,18 @@ import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.app.SpectralMode;
 import edu.jhuapl.sbmt.model.image.ColorImage;
+import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
+import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
-import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.popupmenus.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.popupmenus.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.popupmenus.ImagePopupMenu;
@@ -113,7 +113,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     // The source of the images of the most recently executed query
     private ImageSource sourceOfLastQuery = ImageSource.SPICE;
 
-    private ArrayList<ArrayList<String>> imageRawResults = new ArrayList<ArrayList<String>>();
+    private List<List<String>> imageRawResults = new ArrayList<List<String>>();
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
     private ImageCubePopupMenu imageCubePopupMenu;
@@ -438,7 +438,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
 
                 int[] selectedIndices = resultList.getSelectedRows();
-                ArrayList<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                List<ImageKey> imageKeys = new ArrayList<ImageKey>();
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
@@ -485,7 +485,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    private void setImageResults(ArrayList<ArrayList<String>> results)
+    private void setImageResults(List<List<String>> results)
     {
         resultsLabel.setText(results.size() + " images matched");
         imageRawResults = results;
@@ -505,7 +505,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // add the results to the list
         ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
         int i=0;
-        for (ArrayList<String> str : results)
+        for (List<String> str : results)
         {
             Date dt = new Date(Long.parseLong(str.get(1)));
 
@@ -2359,7 +2359,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
-            ArrayList<Boolean> filtersChecked = new ArrayList<Boolean>();
+            List<Boolean> filtersChecked = new ArrayList<Boolean>();
             int numberOfFilters = getNumberOfFiltersActuallyUsed();
             for (int i=0; i<numberOfFilters; ++i)
             {
@@ -2417,14 +2417,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
 
-            ArrayList<Boolean> userDefinedChecked = new ArrayList<Boolean>();
+            List<Boolean> userDefinedChecked = new ArrayList<Boolean>();
             int numberOfUserDefined = getNumberOfUserDefinedCheckBoxesActuallyUsed();
             for (int i=0; i<numberOfUserDefined; ++i)
             {
                 userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
             }
 
-            ArrayList<ArrayList<String>> results = null;
+            List<List<String>> results = null;
 
             if (instrument.spectralMode == SpectralMode.MULTI)
             {
@@ -2504,7 +2504,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             // an additional search.
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
-                ArrayList<ArrayList<String>> resultsOtherSource = instrument.searchQuery.runQuery(
+                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
                         "",
                         startDateJoda,
                         endDateJoda,
@@ -2552,7 +2552,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }//GEN-LAST:event_submitButtonActionPerformed
 
-    protected ArrayList<ArrayList<String>> processResults(ArrayList<ArrayList<String>> input)
+    protected List<List<String>> processResults(List<List<String>> input)
     {
         return input;
     }
@@ -2624,12 +2624,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
-                ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
                 for (int i=0; i<lines.size(); ++i)
                 {
                     String[] words = lines.get(i).trim().split("\\s+");
-                    ArrayList<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<String>();
                     String name = instrument.searchQuery.getImagesPath() + "/" + words[0];
                     result.add(name);
                     Date dt = sdf.parse(words[1]);

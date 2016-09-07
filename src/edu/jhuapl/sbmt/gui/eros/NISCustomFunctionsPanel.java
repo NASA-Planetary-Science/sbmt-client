@@ -11,7 +11,7 @@
 package edu.jhuapl.sbmt.gui.eros;
 
 import java.awt.Dialog;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
@@ -49,7 +49,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
 
     private void updateFunctionList()
     {
-        ArrayList<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
+        List<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
 
         ((DefaultListModel)functionList.getModel()).clear();
 
@@ -179,7 +179,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
         int selectedItem = functionList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            ArrayList<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
+            List<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
 
             NISNewFunctionDialog newFunctionDialog =
                     new NISNewFunctionDialog(

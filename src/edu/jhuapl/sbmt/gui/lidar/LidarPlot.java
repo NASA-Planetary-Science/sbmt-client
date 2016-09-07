@@ -7,7 +7,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -46,15 +46,15 @@ public class LidarPlot extends JFrame implements ChartMouseListener
     private XYSeries timeDataSeries;
     private XYSeries distanceSelectionSeries;
     private XYSeries timeSelectionSeries;
-    private ArrayList<Double> data;
-    private ArrayList<Double> distance;
-    private ArrayList<Double> time;
+    private List<Double> data;
+    private List<Double> distance;
+    private List<Double> time;
     private String name;
 
     public LidarPlot(LidarSearchDataCollection lidarModel,
-            ArrayList<Double> data,
-            ArrayList<Double> distance,
-            ArrayList<Double> time,
+            List<Double> data,
+            List<Double> distance,
+            List<Double> time,
             String name,
             String units)
     {

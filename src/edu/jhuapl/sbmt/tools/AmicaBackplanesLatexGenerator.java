@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class AmicaBackplanesLatexGenerator
 {
-    private static void generateLatex(String name, ArrayList<File> files) throws IOException
+    private static void generateLatex(String name, List<File> files) throws IOException
     {
         String dir = files.get(0).getParentFile().getAbsolutePath();
         FileWriter fstream = new FileWriter(dir + "/" + name);
@@ -106,9 +107,9 @@ public class AmicaBackplanesLatexGenerator
         return "";
     }
 
-    private static ArrayList<File> getAllDdrFiles(File imageDir)
+    private static List<File> getAllDdrFiles(File imageDir)
     {
-        ArrayList<File> ddrfiles = new ArrayList<File>();
+        List<File> ddrfiles = new ArrayList<File>();
         File[] files = imageDir.listFiles();
         Arrays.sort(files);
         for (File f : files)
@@ -122,7 +123,7 @@ public class AmicaBackplanesLatexGenerator
         return ddrfiles;
     }
 
-    private static void saveFileList(String name, ArrayList<File> files) throws IOException
+    private static void saveFileList(String name, List<File> files) throws IOException
     {
         String dir = files.get(0).getParentFile().getAbsolutePath();
         FileWriter fstream = new FileWriter(dir + "/" + name);
@@ -171,13 +172,13 @@ public class AmicaBackplanesLatexGenerator
             e2.printStackTrace();
         }
 
-        ArrayList<File> ddrfiles = getAllDdrFiles(amicaImagesDir);
+        List<File> ddrfiles = getAllDdrFiles(amicaImagesDir);
 
         // partition the list of ddr files into gaskell and pds files. If the file
         // is listed in the INERTIAL.TXT file, then it is a gaskell image. Otherwise
         // it is not.
-        ArrayList<File> gaskellfiles = new ArrayList<File>();
-        ArrayList<File> pdsfiles = new ArrayList<File>();
+        List<File> gaskellfiles = new ArrayList<File>();
+        List<File> pdsfiles = new ArrayList<File>();
         for (File f : ddrfiles)
         {
             String amicaId = f.getName().substring(3, 13);

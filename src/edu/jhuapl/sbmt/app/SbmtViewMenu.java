@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.app;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
@@ -23,7 +24,7 @@ public class SbmtViewMenu extends ViewMenu
     protected void addMenuItem(JMenuItem mi, ViewConfig config)
     {
         SmallBodyViewConfig smallBodyConfig = (SmallBodyViewConfig)config;
-        ArrayList<String> tree = new ArrayList<String>();
+        List<String> tree = new ArrayList<String>();
         if (smallBodyConfig.type != null)
             tree.add(smallBodyConfig.type.toString());
         if (smallBodyConfig.population != null)

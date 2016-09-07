@@ -13,8 +13,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
+
+import nom.tam.fits.FitsException;
 
 import vtk.vtkObject;
 
@@ -24,24 +27,22 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
-
-import nom.tam.fits.FitsException;
 
 public class AmicaBackplanesGenerator
 {
     private static SmallBodyModel itokawaModel;
 
     // Files listed in Gaskell's INERTIAL.TXT file. Only these are processed.
-    static ArrayList<String> inertialFileList = new ArrayList<String>();
+    static List<String> inertialFileList = new ArrayList<String>();
 
     private static double[] meanPlateSizes;
 
-    private static ArrayList<String> filesProcessed = new ArrayList<String>();
+    private static List<String> filesProcessed = new ArrayList<String>();
 
     private static int currentCroppedWidth = -1;
     private static int currentCroppedHeight = -1;
@@ -111,7 +112,7 @@ public class AmicaBackplanesGenerator
      * by PDS for archiving the backplanes. Future calls to generateBackplanes should produce cropped
      * backplanes, so if regenerating the backplanes from scratch, then this function should not be
      * needed.
-    private static void cropGeneratedBackplanes(ArrayList<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
+    private static void cropGeneratedBackplanes(List<String> amicaFiles, AmicaImage.ImageSource amicaSource) throws FitsException, IOException
     {
         int count = 0;
         for (String filename : amicaFiles)
@@ -204,7 +205,7 @@ public class AmicaBackplanesGenerator
     }
     */
 
-    private static void generateBackplanes(ArrayList<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
+    private static void generateBackplanes(List<String> amicaFiles, ImageSource amicaSource) throws FitsException, IOException
     {
         // First compute the optimal resolution of all images using the highest
         // resolution shape model
@@ -503,7 +504,7 @@ public class AmicaBackplanesGenerator
 
         AmicaImage.setGenerateFootprint(true);
 
-        ArrayList<String> amicaFiles = null;
+        List<String> amicaFiles = null;
         try {
             amicaFiles = FileUtil.getFileLinesAsStringList(amicaFileList);
             loadInertialFile(inertialFilename);

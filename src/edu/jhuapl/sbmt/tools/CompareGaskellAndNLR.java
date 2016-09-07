@@ -33,8 +33,8 @@ import edu.jhuapl.sbmt.app.SbmtModelFactory;
 import edu.jhuapl.sbmt.app.SmallBodyModel;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
@@ -300,9 +300,9 @@ public class CompareGaskellAndNLR
 
     static class PlateStatistics
     {
-        ArrayList<Double> rangeDiffs = new ArrayList<Double>();
-        ArrayList<Double> incidences = new ArrayList<Double>();
-        ArrayList<Double> emissions = new ArrayList<Double>();
+        List<Double> rangeDiffs = new ArrayList<Double>();
+        List<Double> incidences = new ArrayList<Double>();
+        List<Double> emissions = new ArrayList<Double>();
     }
 
     static void writePlateStatisticsMap(HashMap<Integer, PlateStatistics> plateMap,
@@ -344,7 +344,7 @@ public class CompareGaskellAndNLR
 
     // This does the comparison with the global high res shape model
     static void doComparisonGlobalShapeModel(
-            ArrayList<String> msiFiles,
+            List<String> msiFiles,
             SmallBodyModel smallBodyModel,
             String resultsFilename,
             int sampleOffset,
@@ -423,7 +423,7 @@ public class CompareGaskellAndNLR
     // CompareGaskellAndNLRGenerateMapletsForImages must be run first to generate the
     // maplets and covert them to vtk format.
     static void doComparisonMaplets(
-            ArrayList<String> msiFiles,
+            List<String> msiFiles,
             String mapletDir,
             String resultsFilename,
             int sampleOffset,
@@ -560,7 +560,7 @@ public class CompareGaskellAndNLR
         LidarBrowseDataCollection lidarModel = (LidarBrowseDataCollection) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_BROWSE);
 
-        ArrayList<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();
+        List<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();
         int count = 1;
         for (LidarDataFileSpec spec : lidarPaths)
         {
@@ -572,7 +572,7 @@ public class CompareGaskellAndNLR
 
         // Get list of gaskell files
         String msiFileList=args[0];
-        ArrayList<String> msiFiles = null;
+        List<String> msiFiles = null;
         try {
             msiFiles = FileUtil.getFileLinesAsStringList(msiFileList);
         } catch (IOException e) {

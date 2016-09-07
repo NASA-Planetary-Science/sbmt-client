@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,9 +64,9 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.dem.DEM;
+import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.popupmenus.DEMPopupMenu;
 
 public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
@@ -506,7 +507,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
                 }
 
                 int[] selectedIndices = imageList.getSelectedIndices();
-                ArrayList<DEMKey> demKeys = new ArrayList<DEMKey>();
+                List<DEMKey> demKeys = new ArrayList<DEMKey>();
                 for (int selectedIndex : selectedIndices)
                 {
                     DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);

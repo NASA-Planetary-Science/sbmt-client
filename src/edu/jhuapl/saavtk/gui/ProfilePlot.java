@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -122,8 +123,8 @@ public class ProfilePlot implements ChartMouseListener, PropertyChangeListener
             return;
 
         Line line = (Line)lineModel.getStructure(lineId);
-        ArrayList<Double> value = new ArrayList<Double>();
-        ArrayList<Double> distance = new ArrayList<Double>();
+        List<Double> value = new ArrayList<Double>();
+        List<Double> distance = new ArrayList<Double>();
         try
         {
             if(!line.hidden && line.controlPoints.size() == 2 && coloringIndex >= 0 &&

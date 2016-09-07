@@ -12,7 +12,7 @@ package edu.jhuapl.saavtk.gui.dialog;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +51,7 @@ public class CustomPlateDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)cellDataList.getModel()).clear();
-        ArrayList<ColoringInfo> list = modelManager.getPolyhedralModel().getColoringInfoList();
+        List<ColoringInfo> list = modelManager.getPolyhedralModel().getColoringInfoList();
         for (ColoringInfo info : list)
             ((DefaultListModel)cellDataList.getModel()).addElement(info);
     }

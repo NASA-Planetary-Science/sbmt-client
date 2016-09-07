@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,11 +38,11 @@ import edu.jhuapl.sbmt.app.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.app.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.app.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 
 
 public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener
@@ -113,12 +114,12 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
     }
 
     @Override
-    protected ArrayList<ArrayList<String>> processResults(ArrayList<ArrayList<String>> input)
+    protected List<List<String>> processResults(List<List<String>> input)
     {
-        ArrayList<ArrayList<String>> results = new ArrayList<ArrayList<String>>();
+        List<List<String>> results = new ArrayList<List<String>>();
         Set<String> fileSuffixes = new HashSet<String>();
 
-        for (ArrayList<String> item : input)
+        for (List<String> item : input)
         {
             String path = item.get(0);
             String time = item.get(1);
@@ -133,7 +134,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
                 for (int i=0; i<size-1; i++)
                     resultPath += pathArray[i] + "/";
                 resultPath += fileSuffix;
-                ArrayList<String> newItem = new ArrayList<String>();
+                List<String> newItem = new ArrayList<String>();
                 newItem.add(resultPath);
                 newItem.add(time);
 

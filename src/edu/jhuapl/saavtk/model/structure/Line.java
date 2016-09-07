@@ -2,6 +2,7 @@ package edu.jhuapl.saavtk.model.structure;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,7 +13,6 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.StructureModel;
-import edu.jhuapl.saavtk.model.StructureModel.Structure;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Point3D;
@@ -24,12 +24,12 @@ public class Line extends StructureModel.Structure
     public int id;
 
     // Note that controlPoints is what gets stored in the saved file.
-    public ArrayList<LatLon> controlPoints = new ArrayList<LatLon>();
+    public List<LatLon> controlPoints = new ArrayList<LatLon>();
 
     // Note xyzPointList is what's displayed. There will usually be more of these points than
     // controlPoints in order to ensure the line is right above the surface of the asteroid.
-    public ArrayList<Point3D> xyzPointList = new ArrayList<Point3D>();
-    public ArrayList<Integer> controlPointIds = new ArrayList<Integer>();
+    public List<Point3D> xyzPointList = new ArrayList<Point3D>();
+    public List<Integer> controlPointIds = new ArrayList<Integer>();
     public int[] color;
     public double[] labelcolor={1,1,1};
     public boolean hidden = false;

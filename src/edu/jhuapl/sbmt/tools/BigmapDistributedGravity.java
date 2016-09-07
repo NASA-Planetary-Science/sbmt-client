@@ -440,13 +440,13 @@ public class BigmapDistributedGravity {
 
     private static List<GravityValues> readGravityResults(File accFile, File potFile) throws IOException {
 
-        ArrayList<double[]> accelerationVector = new ArrayList<double[]>();
-        ArrayList<Double> potential = new ArrayList<Double>();
+        List<double[]> accelerationVector = new ArrayList<double[]>();
+        List<Double> potential = new ArrayList<Double>();
 
         accelerationVector.addAll(FileUtil.loadPointArray(accFile.getAbsolutePath()));
         potential.addAll(FileUtil.getFileLinesAsDoubleList(potFile.getAbsolutePath()));
 
-        ArrayList<GravityValues> results = new ArrayList<GravityValues>();
+        List<GravityValues> results = new ArrayList<GravityValues>();
 
         int numLines = potential.size();
         for (int i = 0; i < numLines; ++i) {
@@ -464,7 +464,7 @@ public class BigmapDistributedGravity {
     private static List<GravityValues> getGravityAtLocations() throws InterruptedException, ExecutionException,
             IOException {
 
-        ArrayList<String> commandList = new ArrayList<String>();
+        List<String> commandList = new ArrayList<String>();
 
         long size = 0;
         String howToEvaluateSwitch = "";
@@ -505,7 +505,7 @@ public class BigmapDistributedGravity {
         DistributedGravityBatchSubmission.runBatchSubmitPrograms(commandList, rootDir, BatchType.LOCAL_PARALLEL);
 
         // Now read in all results
-        ArrayList<GravityValues> results = new ArrayList<GravityValues>();
+        List<GravityValues> results = new ArrayList<GravityValues>();
         for (int i = 0; i < numCores; i++) {
             String basename = new File(objfile).getName();
             File accFile = new File(outputFolder + File.separator + basename + "-acceleration.txt" + outfilename + i);
@@ -531,7 +531,7 @@ public class BigmapDistributedGravity {
     // This function reads the reference potential from a file. It is assumed
     // the reference potential is the only word in the file.
     private static double getRefPotential(String filename) throws IOException {
-        ArrayList<String> words = FileUtil.getFileWordsAsStringList(filename);
+        List<String> words = FileUtil.getFileWordsAsStringList(filename);
         return Double.parseDouble(words.get(0));
     }
 

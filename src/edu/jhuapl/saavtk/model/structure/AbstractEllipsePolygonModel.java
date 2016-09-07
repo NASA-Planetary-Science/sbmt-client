@@ -30,7 +30,6 @@ import vtk.vtkUnsignedCharArray;
 import edu.jhuapl.saavtk.model.CommonData;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.StructureModel;
-import edu.jhuapl.saavtk.model.StructureModel.Structure;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -44,8 +43,8 @@ import edu.jhuapl.saavtk.util.Properties;
 
 abstract public class AbstractEllipsePolygonModel extends StructureModel implements PropertyChangeListener
 {
-    private ArrayList<EllipsePolygon> polygons = new ArrayList<EllipsePolygon>();
-    private ArrayList<vtkProp> actors = new ArrayList<vtkProp>();
+    private List<EllipsePolygon> polygons = new ArrayList<EllipsePolygon>();
+    private List<vtkProp> actors = new ArrayList<vtkProp>();
 
     private vtkPolyData boundaryPolyData;
     private vtkAppendPolyData boundaryAppendFilter;
@@ -780,10 +779,10 @@ abstract public class AbstractEllipsePolygonModel extends StructureModel impleme
 
     public void loadModel(File file, boolean append) throws IOException
     {
-        ArrayList<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-        ArrayList<String> labels= new ArrayList<String>();
-        ArrayList<double[]> colors= new ArrayList<double[]>();
-        ArrayList<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
+        List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+        List<String> labels= new ArrayList<String>();
+        List<double[]> colors= new ArrayList<double[]>();
+        List<EllipsePolygon> newPolygons = new ArrayList<EllipsePolygon>();
         for (int i=0; i<lines.size(); ++i)
         {
             EllipsePolygon pol = new EllipsePolygon(numberOfSides, type, defaultColor, mode, ++maxPolygonId, "");

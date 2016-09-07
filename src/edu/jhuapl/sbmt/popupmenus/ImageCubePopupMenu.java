@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+
+import nom.tam.fits.FitsException;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -34,16 +37,14 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.app.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.app.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
-
-import nom.tam.fits.FitsException;
 
 
 public class ImageCubePopupMenu extends PopupMenu
@@ -51,7 +52,7 @@ public class ImageCubePopupMenu extends PopupMenu
     private Component invoker;
     private ImageCubeCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
-    private ArrayList<ImageCubeKey> imageKeys = new ArrayList<ImageCubeKey>();
+    private List<ImageCubeKey> imageKeys = new ArrayList<ImageCubeKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -67,7 +68,7 @@ public class ImageCubePopupMenu extends PopupMenu
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
     private JMenu colorMenu;
-    private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+    private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
     private SbmtInfoWindowManager infoPanelManager;
     private SbmtSpectrumWindowManager spectrumPanelManager;
@@ -187,7 +188,7 @@ public class ImageCubePopupMenu extends PopupMenu
         updateMenuItems();
     }
 
-    public void setCurrentImages(ArrayList<ImageCubeKey> keys)
+    public void setCurrentImages(List<ImageCubeKey> keys)
     {
         imageKeys.clear();
         imageKeys.addAll(keys);

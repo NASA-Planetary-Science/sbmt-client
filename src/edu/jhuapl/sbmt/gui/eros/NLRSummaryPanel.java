@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,7 +26,7 @@ public class NLRSummaryPanel extends JPanel
 {
     private NLRDataEverything nlrModel;
     private JList resultList;
-    private ArrayList<String> nlrRawResults = new ArrayList<String>();
+    private List<String> nlrRawResults = new ArrayList<String>();
     private JCheckBox showHideButton;
     private JButton saveButton;
     //private RadialOffsetChanger radialOffsetChanger;

@@ -2,7 +2,7 @@ package edu.jhuapl.saavtk.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -86,7 +86,7 @@ public abstract class PolyhedralModel extends AbstractModel
 
     public abstract vtkDataArray getGravityVectorData();
 
-    public abstract ArrayList<LidarDatasourceInfo> getLidarDasourceInfoList();
+    public abstract List<LidarDatasourceInfo> getLidarDasourceInfoList();
 
     public abstract int getLidarDatasourceIndex();
 
@@ -119,7 +119,7 @@ public abstract class PolyhedralModel extends AbstractModel
 
     public abstract void removeCustomPlateData(int index) throws IOException;
 
-    public abstract ArrayList<ColoringInfo> getColoringInfoList();
+    public abstract List<ColoringInfo> getColoringInfoList();
 
     public abstract int getNumberOfCustomColors();
 
@@ -287,7 +287,7 @@ public abstract class PolyhedralModel extends AbstractModel
     public abstract double[] getClosestNormal(double[] point);
 
     public abstract void drawPolygon(
-            ArrayList<LatLon> controlPoints,
+            List<LatLon> controlPoints,
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary);
 

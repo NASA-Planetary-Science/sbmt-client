@@ -11,7 +11,7 @@
 package edu.jhuapl.saavtk.gui.dialog;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 
 import javax.swing.JLabel;
@@ -1017,7 +1017,7 @@ public class PreferencesDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_applyToCurrentButtonActionPerformed
 
     private void applyToAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyToAllButtonActionPerformed
-        ArrayList<View> views = viewManager.getAllViews();
+        List<View> views = viewManager.getAllViews();
         for (View v : views)
         {
             applyToView(v);

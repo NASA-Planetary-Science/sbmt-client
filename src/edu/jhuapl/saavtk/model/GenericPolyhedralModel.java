@@ -58,7 +58,7 @@ import edu.jhuapl.saavtk.util.SmallBodyCubes;
 public class GenericPolyhedralModel extends PolyhedralModel
 {
 
-    private ArrayList<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
+    private List<ColoringInfo> coloringInfo = new ArrayList<ColoringInfo>();
 
     private ColoringValueType coloringValueType;
     public ColoringValueType getColoringValueType() { return coloringValueType; }
@@ -73,7 +73,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkUnsignedCharArray colorData;
     private vtkUnsignedCharArray falseColorArray;
 
-    private ArrayList<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
+    private List<LidarDatasourceInfo> lidarDatasourceInfo = new ArrayList<LidarDatasourceInfo>();
     private int lidarDatasourceIndex = -1;
 
     private vtkPolyData smallBodyPolyData;
@@ -81,8 +81,8 @@ public class GenericPolyhedralModel extends PolyhedralModel
     private vtkActor smallBodyActor;
     private vtkPolyDataMapper smallBodyMapper;
 
-    private ArrayList<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
-    public ArrayList<vtkProp> getSmallBodyActors() { return smallBodyActors; }
+    private List<vtkProp> smallBodyActors = new ArrayList<vtkProp>();
+    public List<vtkProp> getSmallBodyActors() { return smallBodyActors; }
 
     private vtksbCellLocator cellLocator;
     private vtkPointLocator pointLocator;
@@ -732,7 +732,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         return PolyDataUtil.computeFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, origin, ul, ur, lr, ll);
     }
 
-    public vtkPolyData computeMultipleFrustumIntersection(ArrayList<Frustum> frustums)
+    public vtkPolyData computeMultipleFrustumIntersection(List<Frustum> frustums)
     {
         return PolyDataUtil.computeMultipleFrustumIntersection(smallBodyPolyData, cellLocator, pointLocator, frustums);
     }
@@ -753,7 +753,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
     }
 
     public void drawPolygon(
-            ArrayList<LatLon> controlPoints,
+            List<LatLon> controlPoints,
             vtkPolyData outputInterior,
             vtkPolyData outputBoundary)
     {
@@ -2588,7 +2588,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         loadColoringData();
     }
 
-    public ArrayList<ColoringInfo> getColoringInfoList()
+    public List<ColoringInfo> getColoringInfoList()
     {
         return coloringInfo;
     }
@@ -2628,7 +2628,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         loadLidarDatasourceData();
     }
 
-    public ArrayList<LidarDatasourceInfo> getLidarDasourceInfoList()
+    public List<LidarDatasourceInfo> getLidarDasourceInfoList()
     {
         return lidarDatasourceInfo;
     }
