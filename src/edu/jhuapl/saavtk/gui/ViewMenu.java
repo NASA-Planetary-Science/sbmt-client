@@ -17,7 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -101,13 +101,13 @@ public class ViewMenu extends JMenu implements PropertyChangeListener
             if (i==0)
                 mi.setSelected(true);
 
-                Config smallBodyConfig = view.getConfig();
+                ViewConfig smallBodyConfig = view.getConfig();
 
                 addMenuItem(mi, smallBodyConfig);
         }
     }
 
-    protected void addMenuItem(JMenuItem mi, Config config)
+    protected void addMenuItem(JMenuItem mi, ViewConfig config)
     {
          add(mi);
     }

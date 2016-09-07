@@ -14,7 +14,7 @@ import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.util.Configuration;
 
 public abstract class ViewManager extends JPanel
@@ -123,7 +123,7 @@ public abstract class ViewManager extends JPanel
         try
         {
             if (!defaultModelFile.toFile().exists())
-                return Config.getBuiltInConfigs().get(0).getUniqueName();
+                return ViewConfig.getBuiltInConfigs().get(0).getUniqueName();
             //
             Scanner scanner=new Scanner(ViewManager.defaultModelFile.toFile());
             if (scanner.hasNextLine())

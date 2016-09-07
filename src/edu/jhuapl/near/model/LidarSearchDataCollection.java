@@ -70,7 +70,7 @@ public class LidarSearchDataCollection extends AbstractModel
         OLA_LEVEL_2
     };
 
-    private PolyhedralModelConfig polyhedralModelConfig;
+    private BodyViewConfig polyhedralModelConfig;
     private PolyhedralModel smallBodyModel;
     private vtkPolyData polydata;   // target points
     private vtkPolyData selectedPointPolydata;
@@ -194,7 +194,7 @@ public class LidarSearchDataCollection extends AbstractModel
     public LidarSearchDataCollection(PolyhedralModel smallBodyModel)
     {
         this.smallBodyModel = smallBodyModel;
-        this.polyhedralModelConfig = (PolyhedralModelConfig)smallBodyModel.getConfig();
+        this.polyhedralModelConfig = (BodyViewConfig)smallBodyModel.getConfig();
 
         // Initialize an empty polydata for resetting
         emptyPolyData = new vtkPolyData();

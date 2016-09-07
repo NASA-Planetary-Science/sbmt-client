@@ -132,7 +132,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         idList = new vtkIdList();
     }
 
-    public GenericPolyhedralModel(Config config)
+    public GenericPolyhedralModel(ViewConfig config)
     {
         super(config);
         smallBodyPolyData = new vtkPolyData();
@@ -162,7 +162,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
      * for each resolution level.
      */
     public GenericPolyhedralModel(
-            Config config,
+            ViewConfig config,
             String[] modelNames,
             String[] modelFiles,
             String[] coloringFiles,
@@ -261,7 +261,7 @@ public class GenericPolyhedralModel extends PolyhedralModel
         lowResPointLocator = pointLocator;
     }
 
-    public Config getDefaultModelConfig()
+    public ViewConfig getDefaultModelConfig()
     {
         return getConfig();
     }

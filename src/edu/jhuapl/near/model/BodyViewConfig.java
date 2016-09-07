@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 
 
@@ -15,7 +15,7 @@ import edu.jhuapl.saavtk.model.ShapeModelAuthor;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public class PolyhedralModelConfig extends Config
+public class BodyViewConfig extends ViewConfig
 {
     public String rootDirOnServer;
     public double density = 0.0; // in units g/cm^3
@@ -164,10 +164,10 @@ public class PolyhedralModelConfig extends Config
     // Clone operation
     //
 
-    public PolyhedralModelConfig clone() // throws CloneNotSupportedException
+    public BodyViewConfig clone() // throws CloneNotSupportedException
     {
 //      PolyhedralModelConfig c = new PolyhedralModelConfig();
-        PolyhedralModelConfig c = (PolyhedralModelConfig)super.clone();
+        BodyViewConfig c = (BodyViewConfig)super.clone();
 
         c.rootDirOnServer = this.rootDirOnServer;
         c.hasColoringData = this.hasColoringData;

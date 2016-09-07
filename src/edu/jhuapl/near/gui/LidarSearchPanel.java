@@ -53,7 +53,7 @@ import com.google.common.collect.Lists;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.PolyhedralModelConfig;
+import edu.jhuapl.near.model.BodyViewConfig;
 import edu.jhuapl.near.model.LidarSearchDataCollection.Track;
 import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
@@ -87,7 +87,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
 
     /** Creates new form LidarSearchPanel */
-    public LidarSearchPanel(PolyhedralModelConfig smallBodyConfig,
+    public LidarSearchPanel(BodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             final PickManager pickManager,
             Renderer renderer)

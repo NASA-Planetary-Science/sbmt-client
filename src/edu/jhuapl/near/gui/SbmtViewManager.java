@@ -6,7 +6,7 @@ import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 
 public class SbmtViewManager extends ViewManager
@@ -18,7 +18,7 @@ public class SbmtViewManager extends ViewManager
 
     protected void addBuiltInViews(StatusBar statusBar)
     {
-        for (Config config: SmallBodyConfig.getBuiltInConfigs())
+        for (ViewConfig config: SmallBodyConfig.getBuiltInConfigs())
         {
             addBuiltInView(new SbmtView(statusBar, (SmallBodyConfig)config));
         }

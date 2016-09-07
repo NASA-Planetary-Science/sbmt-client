@@ -2,11 +2,11 @@ package edu.jhuapl.saavtk.example;
 
 import java.util.ArrayList;
 
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 
-public class ExampleConfig extends Config
+public class ExampleConfig extends ViewConfig
 {
     static public ExampleConfig getExampleConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
@@ -20,7 +20,7 @@ public class ExampleConfig extends Config
 
     public static void initialize()
     {
-        ArrayList<Config> configArray = getBuiltInConfigs();
+        ArrayList<ViewConfig> configArray = getBuiltInConfigs();
 
         ExampleConfig config = new ExampleConfig();
         config.customName = "data/brain.obj";

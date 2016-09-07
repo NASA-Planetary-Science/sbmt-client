@@ -56,8 +56,8 @@ public abstract class PolyhedralModel extends AbstractModel
     static public final String FlatShadingStr = "Flat";
     static public final String SmoothShadingStr = "Smooth";
 
-    private Config config;
-    public PolyhedralModel(Config config)
+    private ViewConfig config;
+    public PolyhedralModel(ViewConfig config)
     {
         this.config = config;
     }
@@ -175,7 +175,7 @@ public abstract class PolyhedralModel extends AbstractModel
 
     public abstract void reloadShapeModel() throws IOException;
 
-    public Config getConfig()
+    public ViewConfig getConfig()
     {
         return config;
     }

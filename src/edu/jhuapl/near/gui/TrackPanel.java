@@ -1,6 +1,6 @@
 package edu.jhuapl.near.gui;
 
-import edu.jhuapl.near.model.PolyhedralModelConfig;
+import edu.jhuapl.near.model.BodyViewConfig;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -13,7 +13,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 public class TrackPanel extends LidarSearchPanel
 {
 
-    public TrackPanel(PolyhedralModelConfig polyhedralModelConfig,
+    public TrackPanel(BodyViewConfig polyhedralModelConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {

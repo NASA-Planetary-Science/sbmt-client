@@ -8,7 +8,7 @@ import edu.jhuapl.saavtk.gui.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.model.CircleModel;
 import edu.jhuapl.saavtk.model.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.EllipseModel;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.LineModel;
@@ -38,7 +38,7 @@ public class ExampleView extends View
      * this function should be called prior to first time the View is
      * shown in order to cause it
      */
-    public ExampleView(StatusBar statusBar, Config config)
+    public ExampleView(StatusBar statusBar, ViewConfig config)
     {
         super(statusBar, config);
     }

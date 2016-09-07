@@ -17,7 +17,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -46,7 +46,7 @@ public abstract class View extends JPanel
     private WindowManager spectrumPanelManager;
     private StatusBar statusBar;
     private boolean initialized = false;
-    private Config config;
+    private ViewConfig config;
     static private boolean initializedPanelSizing = false;
 
     // accessor methods
@@ -128,7 +128,7 @@ public abstract class View extends JPanel
      */
     public View(
             StatusBar statusBar,
-            Config config)
+            ViewConfig config)
     {
         super(new BorderLayout());
         this.statusBar = statusBar;
@@ -312,7 +312,7 @@ public abstract class View extends JPanel
      */
     public abstract String getDisplayName();
 
-    public Config getConfig()
+    public ViewConfig getConfig()
     {
         return config;
     }

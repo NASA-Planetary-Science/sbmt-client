@@ -10,7 +10,7 @@ import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 
 public class SbmtViewMenu extends ViewMenu
 {
@@ -21,7 +21,7 @@ public class SbmtViewMenu extends ViewMenu
         super(rootPanel, viewed);
     }
 
-    protected void addMenuItem(JMenuItem mi, Config config)
+    protected void addMenuItem(JMenuItem mi, ViewConfig config)
     {
         SmallBodyConfig smallBodyConfig = (SmallBodyConfig)config;
         ArrayList<String> tree = new ArrayList<String>();

@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public class Config implements Cloneable
+public class ViewConfig implements Cloneable
 {
     public String customName;
     public boolean customTemporary = false;
@@ -27,11 +27,11 @@ public class Config implements Cloneable
 
 
 
-    public Config clone() // throws CloneNotSupportedException
+    public ViewConfig clone() // throws CloneNotSupportedException
     {
-        Config c = null;
+        ViewConfig c = null;
         try {
-            c = (Config)super.clone();
+            c = (ViewConfig)super.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,8 +98,8 @@ public class Config implements Cloneable
          }
      }
 
-     static private ArrayList<Config> builtInConfigs = new ArrayList<Config>();
-     static public ArrayList<Config> getBuiltInConfigs() { return builtInConfigs; }
+     static private ArrayList<ViewConfig> builtInConfigs = new ArrayList<ViewConfig>();
+     static public ArrayList<ViewConfig> getBuiltInConfigs() { return builtInConfigs; }
 
      /**
       * Get a Config of a specific name and author.
@@ -112,7 +112,7 @@ public class Config implements Cloneable
       * @param author
       * @return
       */
-     static public Config getConfig(ShapeModelBody name, ShapeModelAuthor author)
+     static public ViewConfig getConfig(ShapeModelBody name, ShapeModelAuthor author)
      {
          return getConfig(name, author, null);
      }
@@ -127,14 +127,14 @@ public class Config implements Cloneable
       * @param version
       * @return
       */
-     static public Config getConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
+     static public ViewConfig getConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
      {
-         for (Config config : getBuiltInConfigs())
+         for (ViewConfig config : getBuiltInConfigs())
          {
-             if (((Config)config).body == name && config.author == author &&
+             if (((ViewConfig)config).body == name && config.author == author &&
                      ((config.version == null && version == null) || (version != null && version.equals(config.version)))
                      )
-                 return (Config)config;
+                 return (ViewConfig)config;
          }
 
          System.err.println("Error: Cannot find Config with name " + name +

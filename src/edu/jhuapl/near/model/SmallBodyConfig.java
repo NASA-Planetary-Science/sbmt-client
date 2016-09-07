@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import edu.jhuapl.near.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.near.query.FixedListQuery;
 import edu.jhuapl.near.query.GenericPhpQuery;
-import edu.jhuapl.saavtk.model.Config;
+import edu.jhuapl.saavtk.model.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -19,7 +19,7 @@ import edu.jhuapl.saavtk.util.Configuration;
  * imaging data. This class is also used when creating (to know which tabs
  * to create).
  */
-public class SmallBodyConfig extends PolyhedralModelConfig
+public class SmallBodyConfig extends BodyViewConfig
 {
     static public SmallBodyConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
     {
@@ -33,7 +33,7 @@ public class SmallBodyConfig extends PolyhedralModelConfig
 
     public static void initialize()
     {
-        ArrayList<Config> configArray = getBuiltInConfigs();
+        ArrayList<ViewConfig> configArray = getBuiltInConfigs();
 
         // Gaskell Eros
         SmallBodyConfig c = new SmallBodyConfig();

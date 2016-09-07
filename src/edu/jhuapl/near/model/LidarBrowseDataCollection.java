@@ -38,7 +38,7 @@ public class LidarBrowseDataCollection extends AbstractModel implements Property
         }
     }
 
-    private PolyhedralModelConfig polyhedralModelConfig;
+    private BodyViewConfig polyhedralModelConfig;
     private ArrayList<vtkProp> lidarPerUnitActors = new ArrayList<vtkProp>();
 
     private HashMap<String, LidarDataPerUnit> fileToLidarPerUnitMap = new HashMap<String, LidarDataPerUnit>();
