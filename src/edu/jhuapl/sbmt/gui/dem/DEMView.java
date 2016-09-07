@@ -62,8 +62,8 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.app.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
+import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.popupmenus.ImagePopupManager;
 import edu.jhuapl.sbmt.popupmenus.MapmakerLinesPopupMenu;
 
@@ -104,7 +104,7 @@ public class DEMView extends JFrame implements WindowListener
         // Don't sync coloring by default
         syncColoring = false;
 
-        ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/eros.png"));
+        ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
         setIconImage(erosIcon.getImage());
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

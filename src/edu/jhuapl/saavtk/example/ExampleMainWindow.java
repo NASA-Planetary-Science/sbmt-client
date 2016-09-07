@@ -35,7 +35,7 @@ public class ExampleMainWindow extends MainWindow
 
     protected ImageIcon createImageIcon()
     {
-//        return new ImageIcon(getClass().getResource("/edu/jhuapl/near/data/black-sphere.png"));
+//        return new ImageIcon(getClass().getResource("/edu/jhuapl/saavtk/data/black-sphere.png"));
         return new ImageIcon("black-sphere.png");
     }
 
