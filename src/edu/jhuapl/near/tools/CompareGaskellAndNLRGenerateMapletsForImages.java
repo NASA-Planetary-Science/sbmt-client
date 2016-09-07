@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtModelFactory;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 import edu.jhuapl.near.util.BatchSubmission;
 import edu.jhuapl.near.util.BatchSubmission.BatchType;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -119,8 +119,8 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
     {
         NativeLibraryLoader.loadVtkLibrariesHeadless();
 
-        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
-        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 
         FileCache.setOfflineMode(true, Configuration.getCacheDir());

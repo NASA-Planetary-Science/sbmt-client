@@ -23,7 +23,7 @@ import vtk.vtkStringArray;
 import vtk.vtkUnstructuredGrid;
 import vtk.vtkUnstructuredGridWriter;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.bennu.Bennu;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -222,7 +222,7 @@ public class FileSystemOctreeGenerator
         ShapeModelBody body=ShapeModelBody.RQ36;
         ShapeModelAuthor author=ShapeModelAuthor.GASKELL;
         String version="V3 Image";
-        Bennu bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(body,author,version));
+        Bennu bennu = new Bennu(SmallBodyViewConfig.getSmallBodyConfig(body,author,version));
         BoundingBox bbox=new BoundingBox(bennu.getBoundingBox().getBounds());
         System.out.println("Shape model info:");
         System.out.println("  Body = "+body);

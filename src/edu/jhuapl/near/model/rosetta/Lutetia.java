@@ -1,7 +1,7 @@
 package edu.jhuapl.near.model.rosetta;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 
 public class Lutetia extends SmallBodyModel
 {
@@ -50,7 +50,7 @@ public class Lutetia extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Lutetia(SmallBodyConfig config)
+    public Lutetia(SmallBodyViewConfig config)
     {
         super(config,
                 modelNames,

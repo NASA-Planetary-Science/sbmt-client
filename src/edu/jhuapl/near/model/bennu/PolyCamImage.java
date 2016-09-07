@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
 
 
 public class PolyCamImage extends MapCamImage

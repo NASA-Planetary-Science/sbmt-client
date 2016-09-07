@@ -12,15 +12,15 @@ import org.apache.commons.io.FilenameUtils;
 
 import vtk.vtkDebugLeaks;
 
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ImagingInstrument;
-import edu.jhuapl.near.model.Instrument;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtModelFactory;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.ImagingInstrument;
+import edu.jhuapl.near.model.image.Instrument;
+import edu.jhuapl.near.model.image.PerspectiveImage;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 import edu.jhuapl.near.util.BackplanesFile;
 import edu.jhuapl.near.util.FitsBackplanesFile;
 import edu.jhuapl.near.util.ImgBackplanesFile;
@@ -104,11 +104,11 @@ public class BackplanesGenerator
             ImageKey key = null;
 
             ImagingInstrument imager = null;
-            for (int i = 0; i < ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments.length; i++)
+            for (int i = 0; i < ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments.length; i++)
             {
-                if (instr.equals(((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i].instrumentName))
+                if (instr.equals(((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i].instrumentName))
                 {
-                    imager = ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i];
+                    imager = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[i];
                 }
             }
 
@@ -119,7 +119,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ptg, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -139,7 +139,7 @@ public class BackplanesGenerator
                     key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
                     System.setOut(noop);
                     System.setErr(noop);
-                    image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                 }
                 catch (Exception e)
                 {
@@ -150,7 +150,7 @@ public class BackplanesGenerator
                         key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED, imager);
                         System.setOut(noop);
                         System.setErr(noop);
-                        image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                     }
                     catch (Exception e1)
                     {
@@ -161,7 +161,7 @@ public class BackplanesGenerator
                             key = new ImageKey(filename.replace("." + ext, ""), ImageSource.SPICE, imager);
                             System.setOut(noop);
                             System.setErr(noop);
-                            image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                            image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                         }
                         catch (Exception e2)
                         {
@@ -172,7 +172,7 @@ public class BackplanesGenerator
                                 key = new ImageKey(filename.replace("." + ext, ""), ImageSource.CORRECTED_SPICE, imager);
                                 System.setOut(noop);
                                 System.setErr(noop);
-                                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                             }
                             catch (Exception e3)
                             {
@@ -546,10 +546,10 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
-        smallBodyModel = ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
         if (instr == null)
         {
-            instr = ((SmallBodyConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;
+            instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;
         }
 
         // Information for user.

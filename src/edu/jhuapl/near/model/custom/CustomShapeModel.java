@@ -2,14 +2,14 @@ package edu.jhuapl.near.model.custom;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 
 public class CustomShapeModel extends SmallBodyModel
 {
-    public CustomShapeModel(SmallBodyConfig config)
+    public CustomShapeModel(SmallBodyViewConfig config)
     {
         super(config,
                 new String[] { config.customName },
@@ -28,7 +28,7 @@ public class CustomShapeModel extends SmallBodyModel
         return false;
     }
 
-    private static String getModelFilename(SmallBodyConfig config)
+    private static String getModelFilename(SmallBodyViewConfig config)
     {
         if (config.customTemporary)
         {

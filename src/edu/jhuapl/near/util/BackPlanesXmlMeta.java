@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.jhuapl.near.model.Image.ImageKey;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 
 import nom.tam.fits.HeaderCard;
 

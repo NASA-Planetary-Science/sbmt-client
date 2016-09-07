@@ -14,7 +14,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import edu.jhuapl.near.model.ImageSource;
+import edu.jhuapl.near.model.image.ImageSource;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;

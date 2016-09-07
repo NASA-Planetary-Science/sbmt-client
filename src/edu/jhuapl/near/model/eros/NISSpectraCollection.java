@@ -16,7 +16,7 @@ import vtk.vtkFeatureEdges;
 import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 

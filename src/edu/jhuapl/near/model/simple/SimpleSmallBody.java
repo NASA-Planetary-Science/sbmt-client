@@ -2,8 +2,8 @@ package edu.jhuapl.near.model.simple;
 
 import java.io.File;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 
 public class SimpleSmallBody extends SmallBodyModel
 {
@@ -17,7 +17,7 @@ public class SimpleSmallBody extends SmallBodyModel
         };
     }
 
-    static private String[] getImageMap(SmallBodyConfig config)
+    static private String[] getImageMap(SmallBodyViewConfig config)
     {
         System.out.println((new File(config.rootDirOnServer)).getParent() + "/image_map.png");
         return new String[] {(new File(config.rootDirOnServer)).getParent() + "/image_map.png"};
@@ -32,7 +32,7 @@ public class SimpleSmallBody extends SmallBodyModel
     };
 
     public SimpleSmallBody(
-            SmallBodyConfig config,
+            SmallBodyViewConfig config,
             String[] modelNames,
             String[] paths)
     {
@@ -48,7 +48,7 @@ public class SimpleSmallBody extends SmallBodyModel
                 false);
     }
 
-    public SimpleSmallBody(SmallBodyConfig config)
+    public SimpleSmallBody(SmallBodyViewConfig config)
     {
         super(config,
                 new String[] {config.body.toString()},

@@ -20,12 +20,12 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.DEMView;
-import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.near.model.DEM.DEMKey;
-import edu.jhuapl.near.model.DEMBoundaryCollection;
-import edu.jhuapl.near.model.DEMBoundaryCollection.DEMBoundary;
-import edu.jhuapl.near.model.DEMCollection;
+import edu.jhuapl.near.gui.dem.DEMView;
+import edu.jhuapl.near.model.dem.DEM;
+import edu.jhuapl.near.model.dem.DEMBoundaryCollection;
+import edu.jhuapl.near.model.dem.DEMCollection;
+import edu.jhuapl.near.model.dem.DEM.DEMKey;
+import edu.jhuapl.near.model.dem.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;

@@ -10,12 +10,12 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -155,7 +155,7 @@ public class MSIFootprintGenerator
 
         String msiFileList=args[0];
 
-        erosModel = new Eros(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+        erosModel = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

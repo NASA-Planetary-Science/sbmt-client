@@ -20,7 +20,7 @@ import vtk.vtkPointLocator;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.gravity.ParallelGrid.GridFunction;
 import edu.jhuapl.near.util.gravity.ParallelLoop.LoopFunction;

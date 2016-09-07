@@ -6,8 +6,8 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
+import edu.jhuapl.near.model.image.ImageSource;
 
 public class GenericPhpQuery extends QueryBase
 {
@@ -92,7 +92,7 @@ public class GenericPhpQuery extends QueryBase
             cubesDatabase = tablePrefix + "cubes_pds";
         }
 
-        String tablePostfix = SmallBodyConfig.betaMode ? "_beta" : "";
+        String tablePostfix = SmallBodyViewConfig.betaMode ? "_beta" : "";
         imagesDatabase += tablePostfix;
         cubesDatabase += tablePostfix;
 

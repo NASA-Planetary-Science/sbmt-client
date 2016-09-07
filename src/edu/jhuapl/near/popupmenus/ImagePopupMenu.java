@@ -23,15 +23,15 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.PerspectiveImageBoundary;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.app.SbmtInfoWindowManager;
+import edu.jhuapl.near.app.SbmtSpectrumWindowManager;
+import edu.jhuapl.near.model.image.Image;
+import edu.jhuapl.near.model.image.ImageCollection;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.PerspectiveImage;
+import edu.jhuapl.near.model.image.PerspectiveImageBoundary;
+import edu.jhuapl.near.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 import edu.jhuapl.near.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.near.model.mvic.MVICQuadJupiterImage;
 import edu.jhuapl.saavtk.gui.Renderer;
@@ -72,8 +72,8 @@ public class ImagePopupMenu extends PopupMenu
     private JMenu colorMenu;
     private ArrayList<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
-    private ModelInfoWindowManager infoPanelManager;
-    private ModelSpectrumWindowManager spectrumPanelManager;
+    private SbmtInfoWindowManager infoPanelManager;
+    private SbmtSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
     private ModelManager modelManager;
 
@@ -88,8 +88,8 @@ public class ImagePopupMenu extends PopupMenu
             ModelManager modelManager,
             ImageCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
-            ModelInfoWindowManager infoPanelManager,
-            ModelSpectrumWindowManager spectrumPanelManager,
+            SbmtInfoWindowManager infoPanelManager,
+            SbmtSpectrumWindowManager spectrumPanelManager,
             Renderer renderer,
             Component invoker)
     {

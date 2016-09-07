@@ -16,8 +16,8 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.LidarPlot;
-import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.gui.lidar.LidarPlot;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;

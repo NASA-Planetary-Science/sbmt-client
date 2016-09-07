@@ -33,8 +33,8 @@ import vtk.vtkActor;
 import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtInfoWindowManager;
+import edu.jhuapl.near.app.SmallBodyModel;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.popupmenus.eros.NISPopupMenu;
@@ -66,7 +66,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
 
     /** Creates new form NISSearchPanel */
     public NISSearchPanel(final ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
+            SbmtInfoWindowManager infoPanelManager,
             final PickManager pickManager, final Renderer renderer)
     {
         this.modelManager = modelManager;

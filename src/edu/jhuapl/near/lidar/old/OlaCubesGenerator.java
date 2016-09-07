@@ -12,10 +12,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.jhuapl.near.model.LidarSearchDataCollection.TrackFileType;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.bennu.Bennu;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection.TrackFileType;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -60,7 +60,7 @@ public class OlaCubesGenerator //extends LidarCubesGenerator
     {
         if (bennu == null)
         {
-            bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"));
+            bennu = new Bennu(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"));
         }
 
         return bennu;

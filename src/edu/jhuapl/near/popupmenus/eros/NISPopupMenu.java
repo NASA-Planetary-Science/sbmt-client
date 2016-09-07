@@ -21,7 +21,7 @@ import vtk.vtkProp;
 import vtk.vtkSelectPolyData;
 import vtk.vtkTriangle;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
+import edu.jhuapl.near.app.SbmtInfoWindowManager;
 import edu.jhuapl.near.model.eros.NISSpectraCollection;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.near.model.eros.NISStatistics;
@@ -40,7 +40,7 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem centerSpectrumMenuItem;
     private JMenuItem showFrustumMenuItem;
     private JMenuItem saveSpectrumMenuItem;
-    private ModelInfoWindowManager infoPanelManager;
+    private SbmtInfoWindowManager infoPanelManager;
     //private SmallBodyModel erosModel;
 
     private JMenuItem showStatisticsMenuItem;
@@ -54,7 +54,7 @@ public class NISPopupMenu extends PopupMenu
      */
     public NISPopupMenu(
             ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager)
+            SbmtInfoWindowManager infoPanelManager)
     {
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;

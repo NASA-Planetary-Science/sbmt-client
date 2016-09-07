@@ -1,7 +1,7 @@
 package edu.jhuapl.near.model.bennu;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 
 public class Bennu extends SmallBodyModel
 {
@@ -25,7 +25,7 @@ public class Bennu extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 
-    public Bennu(SmallBodyConfig config)
+    public Bennu(SmallBodyViewConfig config)
     {
         super(config,
                 modelNames,
@@ -39,7 +39,7 @@ public class Bennu extends SmallBodyModel
                 false);
     }
 
-    private static final String[] getModelFiles(SmallBodyConfig config)
+    private static final String[] getModelFiles(SmallBodyViewConfig config)
     {
         String[] paths = {
                 config.rootDirOnServer + "/ver64q.vtk.gz",

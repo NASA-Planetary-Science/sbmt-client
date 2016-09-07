@@ -20,15 +20,15 @@ public class ExampleViewManager extends ViewManager
 
     protected void addBuiltInViews(StatusBar statusBar)
     {
-        for (ViewConfig config: ExampleConfig.getBuiltInConfigs())
+        for (ViewConfig config: ExampleViewConfig.getBuiltInConfigs())
         {
-            addBuiltInView(new ExampleView(statusBar, (ExampleConfig)config));
+            addBuiltInView(new ExampleView(statusBar, (ExampleViewConfig)config));
         }
     }
 
     public View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        ViewConfig config = new ExampleConfig();
+        ViewConfig config = new ExampleViewConfig();
         config.customName = name;
         config.customTemporary = temporary;
         config.author = ShapeModelAuthor.CUSTOM;

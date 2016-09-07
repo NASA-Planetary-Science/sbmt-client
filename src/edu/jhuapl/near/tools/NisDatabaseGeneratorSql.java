@@ -13,8 +13,8 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.near.model.eros.NISSpectrum;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -295,7 +295,7 @@ public class NisDatabaseGeneratorSql
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-        erosModel = new Eros(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+        erosModel = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
 
 //        computeMeanPlateSizeAtAllResolutions();
 

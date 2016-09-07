@@ -9,8 +9,8 @@ import vtk.vtkImageConstantPad;
 import vtk.vtkImageData;
 import vtk.vtkImageTranslateExtent;
 
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.model.image.PerspectiveImage;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 

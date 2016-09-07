@@ -15,11 +15,11 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.model.ColorImage;
-import edu.jhuapl.near.model.ColorImage.ColorImageKey;
-import edu.jhuapl.near.model.ColorImage.NoOverlapException;
-import edu.jhuapl.near.model.ColorImageCollection;
+import edu.jhuapl.near.app.SbmtInfoWindowManager;
+import edu.jhuapl.near.model.image.ColorImage;
+import edu.jhuapl.near.model.image.ColorImageCollection;
+import edu.jhuapl.near.model.image.ColorImage.ColorImageKey;
+import edu.jhuapl.near.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -37,7 +37,7 @@ public class ColorImagePopupMenu extends PopupMenu
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideImageMenuItem;
-    private ModelInfoWindowManager infoPanelManager;
+    private SbmtInfoWindowManager infoPanelManager;
 
     /**
      *
@@ -48,7 +48,7 @@ public class ColorImagePopupMenu extends PopupMenu
      */
     public ColorImagePopupMenu(
             ColorImageCollection imageCollection,
-            ModelInfoWindowManager infoPanelManager,
+            SbmtInfoWindowManager infoPanelManager,
             ModelManager modelManager,
             Component invoker)
     {

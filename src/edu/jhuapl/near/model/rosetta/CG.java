@@ -1,7 +1,7 @@
 package edu.jhuapl.near.model.rosetta;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 
 public class CG extends SmallBodyModel
 {
@@ -38,7 +38,7 @@ public class CG extends SmallBodyModel
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
 */
-    public CG(SmallBodyConfig config)
+    public CG(SmallBodyViewConfig config)
     {
         super(config,
                 modelNames,

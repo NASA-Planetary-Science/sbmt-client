@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.DEM;
+import edu.jhuapl.near.model.dem.DEM;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
 

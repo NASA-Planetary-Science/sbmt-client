@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.LatLon;

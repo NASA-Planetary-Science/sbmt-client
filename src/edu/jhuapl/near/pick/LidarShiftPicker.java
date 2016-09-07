@@ -9,7 +9,7 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
-import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;

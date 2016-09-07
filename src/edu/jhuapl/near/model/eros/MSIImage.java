@@ -15,8 +15,8 @@ import org.w3c.dom.NodeList;
 import vtk.vtkImageData;
 import vtk.vtkImageReslice;
 
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.model.image.PerspectiveImage;
 import edu.jhuapl.near.util.BackPlanesXml;
 import edu.jhuapl.near.util.BackPlanesXmlMeta;
 import edu.jhuapl.near.util.BackPlanesXmlMeta.BPMetaBuilder;

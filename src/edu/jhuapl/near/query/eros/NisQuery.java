@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.near.model.ImageSource;
+import edu.jhuapl.near.model.image.ImageSource;
 import edu.jhuapl.near.query.QueryBase;
 
 

@@ -7,8 +7,8 @@ import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
 
-import edu.jhuapl.near.gui.SbmtMainWindow;
-import edu.jhuapl.near.model.SmallBodyConfig;
+import edu.jhuapl.near.app.SbmtMainWindow;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -23,13 +23,13 @@ public class SbmtRunnable implements Runnable
 
     public void run()
     {
-        SmallBodyConfig.initialize();
+        SmallBodyViewConfig.initialize();
 
         // Parse options that come first
         int i = 0;
         for (; i < args.length; ++i) {
             if (args[i].equals("--beta")) {
-                SmallBodyConfig.betaMode = true;
+                SmallBodyViewConfig.betaMode = true;
             }else {
                 // We've encountered something that is not an option, must be at the args
                 break;

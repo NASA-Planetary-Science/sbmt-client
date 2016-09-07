@@ -2,8 +2,8 @@ package edu.jhuapl.near.lidar.old;
 
 import java.io.IOException;
 
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.itokawa.Itokawa;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -38,7 +38,7 @@ public class HayLidarCubesGenerator extends LidarCubesGenerator
     {
         if (itokawa == null)
         {
-            itokawa = new Itokawa(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
+            itokawa = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
 
             try
             {

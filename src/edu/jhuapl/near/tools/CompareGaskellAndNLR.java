@@ -20,14 +20,14 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.LidarBrowseDataCollection;
-import edu.jhuapl.near.model.LidarBrowseDataCollection.LidarDataFileSpec;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtModelFactory;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.model.eros.MSIImage;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.Image.ImageKey;
+import edu.jhuapl.near.model.lidar.LidarBrowseDataCollection;
+import edu.jhuapl.near.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -115,7 +115,7 @@ public class CompareGaskellAndNLR
     static List<LidarPoint> points = new ArrayList<LidarPoint>();
 
 
-    static void loadPoints(String path, SmallBodyConfig smallBodyConfig) throws IOException
+    static void loadPoints(String path, SmallBodyViewConfig smallBodyConfig) throws IOException
     {
         // Uncomment to save out all lidar data to a single file
         //FileWriter fstream = new FileWriter("/tmp/nlr-all.txt", true);
@@ -430,8 +430,8 @@ public class CompareGaskellAndNLR
             int lineOffset
             ) throws Exception
     {
-        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
-        SmallBodyModel lowResSmallBodyModel = ModelFactory.createSmallBodyModel(config);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         lowResSmallBodyModel.setModelResolution(0);
 
         HashMap<Integer, PlateStatistics> plateMap = new LinkedHashMap<Integer, PlateStatistics>();
@@ -552,12 +552,12 @@ public class CompareGaskellAndNLR
         NativeLibraryLoader.loadVtkLibraries();
 
 
-        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
-        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 
         // Load lidar data
-        LidarBrowseDataCollection lidarModel = (LidarBrowseDataCollection) ModelFactory.
+        LidarBrowseDataCollection lidarModel = (LidarBrowseDataCollection) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_BROWSE);
 
         ArrayList<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();

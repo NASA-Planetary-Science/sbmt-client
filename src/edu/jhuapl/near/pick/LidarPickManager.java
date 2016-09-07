@@ -1,6 +1,6 @@
 package edu.jhuapl.near.pick;
 
-import edu.jhuapl.near.model.LidarSearchDataCollection;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.model.ModelManager;

@@ -5,11 +5,11 @@ import java.util.HashMap;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.near.gui.ModelInfoWindowManager;
-import edu.jhuapl.near.gui.ModelSpectrumWindowManager;
-import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.app.SbmtInfoWindowManager;
+import edu.jhuapl.near.app.SbmtSpectrumWindowManager;
+import edu.jhuapl.near.model.image.ImageCollection;
+import edu.jhuapl.near.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -34,7 +34,7 @@ public class ImagePopupManager extends PopupManager
         new HashMap<Model, PopupMenu>();
 
 
-    public ImagePopupManager(ModelManager modelManager, ModelInfoWindowManager infoPanelManager, ModelSpectrumWindowManager spectrumPanelManager, Renderer renderer)
+    public ImagePopupManager(ModelManager modelManager, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
 

@@ -3,12 +3,12 @@ package edu.jhuapl.near.tools;
 import java.io.File;
 import java.util.TreeSet;
 
-import edu.jhuapl.near.model.DEM;
-import edu.jhuapl.near.model.LidarSearchDataCollection;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.PointInDEMChecker;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtModelFactory;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
+import edu.jhuapl.near.model.dem.DEM;
+import edu.jhuapl.near.model.dem.PointInDEMChecker;
+import edu.jhuapl.near.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.near.util.TimeUtil;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -102,9 +102,9 @@ public class SearchLidarDataInsideMaplet
             System.exit(1);
         }
 
-        SmallBodyConfig config = SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
-        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(config);
-        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) ModelFactory.
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
         AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(smallBodyModel);
 

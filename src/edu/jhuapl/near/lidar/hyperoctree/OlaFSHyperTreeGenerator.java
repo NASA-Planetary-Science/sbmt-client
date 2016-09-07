@@ -32,11 +32,11 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkVertex;
 
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.lidar.test.DataOutputStreamPool;
 import edu.jhuapl.near.lidar.test.LidarPoint;
-import edu.jhuapl.near.model.OLALidarHyperTreeSearchDataCollection;
-import edu.jhuapl.near.model.SmallBodyConfig;
 import edu.jhuapl.near.model.bennu.Bennu;
+import edu.jhuapl.near.model.lidar.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.BoundingBox;
@@ -248,7 +248,7 @@ public class OlaFSHyperTreeGenerator
         ShapeModelBody body=ShapeModelBody.RQ36;
         ShapeModelAuthor author=ShapeModelAuthor.GASKELL;
         String version="V3 Image";
-        Bennu bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(body,author,version));
+        Bennu bennu = new Bennu(SmallBodyViewConfig.getSmallBodyConfig(body,author,version));
         BoundingBox bbox=new BoundingBox(bennu.getBoundingBox().getBounds());
         HyperBox hbox=new HyperBox(new double[]{bbox.xmin, bbox.ymin, bbox.zmin, tmin}, new double[]{bbox.xmax, bbox.ymax, bbox.zmax, tmax});
         OlaFSHyperTreeGenerator generator=new OlaFSHyperTreeGenerator(outputDirectory, maxPointsPerLeaf, hbox, maxNumOpenOutputFiles,pool);
@@ -349,7 +349,7 @@ public class OlaFSHyperTreeGenerator
         ShapeModelBody body=ShapeModelBody.RQ36;
         ShapeModelAuthor author=ShapeModelAuthor.GASKELL;
         String version="V3 Image";
-        Bennu bennu = new Bennu(SmallBodyConfig.getSmallBodyConfig(body,author,version));
+        Bennu bennu = new Bennu(SmallBodyViewConfig.getSmallBodyConfig(body,author,version));
         BoundingBox bbox=new BoundingBox(bennu.getBoundingBox().getBounds());
         System.out.println("Shape model info:");
         System.out.println("  Body = "+body);

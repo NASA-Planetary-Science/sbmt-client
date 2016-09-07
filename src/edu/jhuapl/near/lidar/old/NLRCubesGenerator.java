@@ -1,8 +1,8 @@
 package edu.jhuapl.near.lidar.old;
 
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
 import edu.jhuapl.near.lidar.old.LidarCubesGenerator.LidarDataType;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.model.eros.Eros;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -28,7 +28,7 @@ public class NLRCubesGenerator extends LidarCubesGenerator
     {
         if (eros == null)
         {
-            eros = new Eros(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+            eros = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
         }
 
         return eros;

@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.PerspectiveImage;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 

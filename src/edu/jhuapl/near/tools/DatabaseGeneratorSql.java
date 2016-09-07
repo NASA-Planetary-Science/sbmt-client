@@ -15,12 +15,12 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.near.model.Image.ImageKey;
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.ModelFactory;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyConfig;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SbmtModelFactory;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyViewConfig;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.PerspectiveImage;
+import edu.jhuapl.near.model.image.Image.ImageKey;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -31,14 +31,14 @@ public class DatabaseGeneratorSql
 {
     private SqlManager db = null;
     private SmallBodyModel smallBodyModel;
-    private SmallBodyConfig smallBodyConfig;
+    private SmallBodyViewConfig smallBodyConfig;
     private String betaSuffix = "_beta";
     private String databasePrefix;
     private boolean appendTables;
     private boolean modifyMain;
 
 
-    public DatabaseGeneratorSql(SmallBodyConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain)
+    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
@@ -139,7 +139,7 @@ public class DatabaseGeneratorSql
             ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        SmallBodyConfig config = (SmallBodyConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -196,7 +196,7 @@ public class DatabaseGeneratorSql
 
             try
             {
-                image = (PerspectiveImage)ModelFactory.createImage(key, smallBodyModel, false);
+                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                 boolean filesExist = checkIfAllFilesExist(image, imageSource);
                 if (filesExist == false)
                 {
@@ -385,7 +385,7 @@ public class DatabaseGeneratorSql
 
     public void run(String fileList, int mode) throws IOException
     {
-        smallBodyModel = ModelFactory.createSmallBodyModel(smallBodyConfig);
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
         ArrayList<String> files = null;
         try {
@@ -446,61 +446,61 @@ public class DatabaseGeneratorSql
 
     private enum RunInfo
     {
-        EROS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL),
+        EROS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt"),
-        ITOKAWA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
+        ITOKAWA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
-        VESTA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
+        VESTA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
-        CERES(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CERES, ShapeModelAuthor.GASKELL),
+        CERES(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CERES, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
-        DEIMOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
+        DEIMOSEXPERIMENTAL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS),
                 "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
-        PHOBOS(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
+        PHOBOS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt"),
-        PHOBOSEXPERIMENTAL(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
+        PHOBOSEXPERIMENTAL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelAuthor.EXPERIMENTAL),
                 "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
-        _67P(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "SHAP5 V0.3"),
+        _67P(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "SHAP5 V0.3"),
                 "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
-        _67P_DLR(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.DLR, "SHAP4S"),
+        _67P_DLR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.DLR, "SHAP4S"),
                 "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
-        _67P_V2(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "V2"),
+        _67P_V2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "V2"),
                 "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
-        _67P_V3(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "V3"),
+        _67P_V3(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelAuthor.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
-        JUPITER(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
+        JUPITER(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
                 "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
-        CALLISTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
+        CALLISTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
-        EUROPA(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null),
+        EUROPA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null),
                 "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
-        GANYMEDE(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
+        GANYMEDE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
                 "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
-        IO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
+        IO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
                 "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
-        RQ36_MAP(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"),
+        RQ36_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
-        RQ36_POLY(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"),
+        RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V3 Image"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
 //        RQ36V4_MAP(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
 //               "/project/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
 //        RQ36V4_POLY(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
 //                "/project/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
-        PLUTO(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
+        PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt");
 
-        public final SmallBodyConfig config;
+        public final SmallBodyViewConfig config;
         public final String pathToFileList;
         public final String databasePrefix;
 
-        private RunInfo(SmallBodyConfig config, String pathToFileList)
+        private RunInfo(SmallBodyViewConfig config, String pathToFileList)
         {
             this.config = config;
             this.pathToFileList = pathToFileList;
             this.databasePrefix = config.body.toString().toLowerCase();
         }
 
-        private RunInfo(SmallBodyConfig config, String pathToFileList, String databasePrefix)
+        private RunInfo(SmallBodyViewConfig config, String pathToFileList, String databasePrefix)
         {
             this.config = config;
             this.pathToFileList = pathToFileList;

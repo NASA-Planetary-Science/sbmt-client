@@ -19,9 +19,9 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
 
-import edu.jhuapl.near.model.Image;
-import edu.jhuapl.near.model.ImageCollection;
-import edu.jhuapl.near.model.PerspectiveImage;
+import edu.jhuapl.near.model.image.Image;
+import edu.jhuapl.near.model.image.ImageCollection;
+import edu.jhuapl.near.model.image.PerspectiveImage;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.Renderer.AxisType;

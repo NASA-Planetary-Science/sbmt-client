@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
 import edu.jhuapl.near.model.eros.MSIImage;
 import edu.jhuapl.saavtk.util.FileCache;
 

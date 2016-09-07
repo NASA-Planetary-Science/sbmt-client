@@ -7,9 +7,9 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkImageData;
 
-import edu.jhuapl.near.model.ImageSource;
-import edu.jhuapl.near.model.PerspectiveImage;
-import edu.jhuapl.near.model.SmallBodyModel;
+import edu.jhuapl.near.app.SmallBodyModel;
+import edu.jhuapl.near.model.image.ImageSource;
+import edu.jhuapl.near.model.image.PerspectiveImage;
 import edu.jhuapl.near.util.ImageDataUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 
