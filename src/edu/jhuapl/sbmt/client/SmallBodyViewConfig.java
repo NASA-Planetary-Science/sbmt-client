@@ -1,8 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
-import java.util.List;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -225,6 +225,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
         c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
+        c.hasLidarData = true;
+        c.lidarSearchDefaultStartDate = new GregorianCalendar(1900, 1, 28, 0, 0, 0).getTime();
+        c.lidarSearchDefaultEndDate = new GregorianCalendar(2100, 1, 13, 0, 0, 0).getTime();
+        c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+        //c.lidarSearchDataSourceMap.put("Default", "/MOLA/cubes");
+        c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+        c.lidarBrowseIsLidarInSphericalCoordinates = true;
+        c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+        c.lidarBrowseIsTimeInET = true;
+        c.lidarBrowseTimeIndex = 5;
+        c.lidarBrowseNoiseIndex = -1;
+        c.lidarBrowseIsRangeExplicitInData = true;
+        c.lidarBrowseRangeIndex = 3;
+        c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
+        c.lidarBrowseNumberHeaderLines = 1;
+        c.lidarBrowseIsInMeters = true;
+        c.lidarOffsetScale = 0.025;
+        c.lidarInstrumentName = Instrument.MOLA;
         configArray.add(c);
 
         // Thomas Phobos

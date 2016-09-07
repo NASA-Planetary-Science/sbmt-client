@@ -46,8 +46,12 @@ public class BodyViewConfig extends ViewConfig
     public int[] lidarBrowseSpacecraftIndices;
     public int lidarBrowseOutgoingIntensityIndex;
     public int lidarBrowseReceivedIntensityIndex;
+    public int lidarBrowseRangeIndex;
+    public boolean lidarBrowseIsRangeExplicitInData = false;
     public boolean lidarBrowseIntensityEnabled = false;
-    public boolean lidarBrowseIsSpacecraftInSphericalCoordinates;
+    public boolean lidarBrowseIsLidarInSphericalCoordinates = false;
+    public boolean lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+    public boolean lidarBrowseIsTimeInET = false;
     public int lidarBrowseTimeIndex;
     public int lidarBrowseNoiseIndex;
     public String lidarBrowseFileListResourcePath;
@@ -218,11 +222,14 @@ public class BodyViewConfig extends ViewConfig
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>(this.lidarSearchDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
+            c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
             c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
             c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
             c.lidarBrowseOutgoingIntensityIndex = this.lidarBrowseOutgoingIntensityIndex;
             c.lidarBrowseReceivedIntensityIndex = this.lidarBrowseReceivedIntensityIndex;
+            c.lidarBrowseRangeIndex = this.lidarBrowseRangeIndex;
+            c.lidarBrowseIsRangeExplicitInData = this.lidarBrowseIsRangeExplicitInData;
             c.lidarBrowseIntensityEnabled = this.lidarBrowseIntensityEnabled;
             c.lidarBrowseFileListResourcePath = this.lidarBrowseFileListResourcePath;
             c.lidarBrowseNumberHeaderLines = this.lidarBrowseNumberHeaderLines;
