@@ -224,6 +224,7 @@ public class BodyViewConfig extends ViewConfig
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = this.lidarBrowseIsSpacecraftInSphericalCoordinates;
+            c.lidarBrowseIsTimeInET = this.lidarBrowseIsTimeInET;
             c.lidarBrowseTimeIndex = this.lidarBrowseTimeIndex;
             c.lidarBrowseNoiseIndex = this.lidarBrowseNoiseIndex;
             c.lidarBrowseOutgoingIntensityIndex = this.lidarBrowseOutgoingIntensityIndex;
