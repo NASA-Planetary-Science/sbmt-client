@@ -229,7 +229,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarSearchDefaultStartDate = new GregorianCalendar(1900, 1, 28, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(2100, 1, 13, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-        //c.lidarSearchDataSourceMap.put("Default", "/MOLA/cubes");
+        //c.lidarSearchDataSourceMap.put("Default", "/cubes");
         c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
         c.lidarBrowseIsLidarInSphericalCoordinates = true;
         c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
@@ -243,7 +243,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarBrowseIsInMeters = true;
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.MOLA;
+
+        c.hasHypertreeBasedLidarSearch=true;
+        c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+        c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
+
         configArray.add(c);
+
+
 
         // Thomas Phobos
         c = new SmallBodyViewConfig();
@@ -304,6 +311,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+
             configArray.add(c);
         }
 

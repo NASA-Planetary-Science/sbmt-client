@@ -3,8 +3,6 @@ package edu.jhuapl.sbmt.client;
 import java.io.IOException;
 import java.util.HashMap;
 
-import nom.tam.fits.FitsException;
-
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -29,14 +27,16 @@ import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.MOLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lorri.LorriImage;
 import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
@@ -49,6 +49,8 @@ import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
+
+import nom.tam.fits.FitsException;
 
 public class SbmtModelFactory
 {
@@ -272,7 +274,10 @@ public class SbmtModelFactory
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OLALidarHyperTreeSearchDataCollection(smallBodyModel));
+            if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.MOLA))
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MOLALidarHyperTreeSearchDataCollection(smallBodyModel));
+            else if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.OLA))
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OLALidarHyperTreeSearchDataCollection(smallBodyModel));
         }
 
         return models;
