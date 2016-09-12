@@ -24,6 +24,10 @@ public abstract class StructureModel extends Model
         public abstract void setColor(int[] color);
         public abstract void setLabel(String label);
         public abstract String getLabel();
+        public abstract boolean getHidden();
+        public abstract boolean getLabelHidden();
+        public abstract void setHidden(boolean b);
+        public abstract void setLabelHidden(boolean b);
     }
 
     public abstract List<vtkProp> getProps();
@@ -64,9 +68,21 @@ public abstract class StructureModel extends Model
 
     public abstract void setLineWidth(double width);
 
-    public abstract void setStructuresHidden(int[] indices, boolean hidden);
+    public abstract void setStructuresHidden(int[] indices, boolean hidden, boolean labelHidden);
 
     public abstract boolean isStructureHidden(int id);
+
+    public abstract void colorLabel(int[] colors);
+
+    public abstract void setLabelsVisible(boolean b);
+
+    public abstract boolean isLabelHidden(int id);
+
+    public abstract void showBorders();
+
+    public abstract void changeFont(int font_size, int structure);
+
+    public abstract void changeFontType(int structure);
 
     public void savePlateDataInsideStructure(int idx, File file) throws IOException
     {

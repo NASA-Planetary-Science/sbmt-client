@@ -193,6 +193,8 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
                 lin.fromXmlDomElement(el, shapeModelName, append);
 
                 this.lines.add(lin);
+                setStructureLabel(lines.size()-1, lines.get(lines.size()-1).label);
+                colorLabel(lines.size()-1,lines.get(lines.size()-1).labelcolor);
             }
         }
 
@@ -568,9 +570,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void removeStructure(int cellId)
     {
-        int id =lines.get(cellId).labelId;
-        if(id!=-1)
-            actors.remove(id);
+        if(lines.get(cellId).caption!=null) lines.get(cellId).caption.VisibilityOff();
+        lines.get(cellId).labelId=(-1);
+        lines.get(cellId).caption=null;
 
         lines.remove(cellId);
 
@@ -595,9 +597,9 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         Arrays.sort(indices);
         for (int i=indices.length-1; i>=0; --i)
         {
-            int id =lines.get(indices[i]).labelId;
-            if(id!=-1)
-                actors.remove(id);
+            if(lines.get(indices[i]).caption!=null) lines.get(indices[i]).caption.VisibilityOff();
+            lines.get(indices[i]).labelId=(-1);
+            lines.get(indices[i]).caption=null;
             lines.remove(indices[i]);
             this.pcs.firePropertyChange(Properties.STRUCTURE_REMOVED, null, indices[i]);
         }
@@ -615,17 +617,13 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void removeAllStructures()
     {
-        lines.clear();
-
-        for(int i =0;i<actors.size();i++)
+        for(int i =0;i<lines.size();i++)
         {
-            if(actors.get(i) instanceof vtkCaptionActor2D)
-            {
-                actors.remove(i);
-                i--;
-            }
-
+            if(lines.get(i).caption!=null) lines.get(i).caption.VisibilityOff();
+            lines.get(i).labelId=(-1);
+            lines.get(i).caption=null;
         }
+        lines.clear();
 
         updatePolyData();
 
@@ -1262,8 +1260,16 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
         {
             if (line.hidden == b)
             {
-                actors.get(line.labelId).VisibilityOn();
                 line.hidden = !b;
+                if(line.caption!=null&&line.hidden==true)
+                    line.caption.VisibilityOff();
+                else if(line.caption!=null&&line.hidden==false)
+                {
+                    if(line.labelHidden)
+                        line.caption.VisibilityOff();
+                    else
+                        line.caption.VisibilityOn();
+                }
                 needToUpdate = true;
             }
         }
@@ -1272,21 +1278,52 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             updatePolyData();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
         }
+    }
 
-        lineActor.SetVisibility(b ? 1 : 0);
-        lineActivationActor.SetVisibility(b ? 1 : 0);
-        super.setVisible(b);
+    public void setLabelsVisible(boolean b)
+    {
+        for (Line lin : lines)
+        {
+            lin.labelHidden=!b;
+            if(lin.caption!=null&&!lin.getHidden())
+            {
+                lin.caption.SetVisibility(b ? 1 : 0);
+            }
+        }
+
+        updatePolyData();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
     @Override
-    public void setStructuresHidden(int[] lineIds, boolean hidden)
+    public void setStructuresHidden(int[] lineIds, boolean hidden, boolean labelHidden)
     {
         for (int i=0; i<lineIds.length; ++i)
         {
-            vtkProp a = actors.get(lines.get(i).labelId);
-            a.SetVisibility(1-a.GetVisibility());
             Line line = lines.get(lineIds[i]);
+            if (line.hidden != hidden&&line!=null)
+            {
+                if(line.caption!=null)
+                {
+                    if(!hidden&&!labelHidden)
+                        line.caption.VisibilityOn();
+                    else
+                    {
+                        line.caption.VisibilityOff();
+                    }
+                }
+                line.hidden = hidden;
+            }
+            /*Line line = lines.get(lineIds[i]);
             line.hidden = hidden;
+            if(line.caption!=null)
+            {
+                if(!hidden&&!labelHidden)
+                    line.caption.VisibilityOn();
+                else
+                    line.caption.VisibilityOff();
+            }*/
+
         }
 
         updatePolyData();
@@ -1326,22 +1363,30 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
     @Override
     public boolean setStructureLabel(int idx, String label)
     {
-        if(lines.get(idx).xyzPointList.isEmpty())
-            return false;
         lines.get(idx).setLabel(label);
-        int numLetters = label.length();
         if(lines.get(idx).editingLabel)
         {
             if(label==null||label.equals(""))
             {
-                actors.get(lines.get(idx).labelId).VisibilityOff();
+                lines.get(idx).caption.VisibilityOff();
+                for(int i=0; i<actors.size();i++)
+                {
+                    if(lines.get(idx).caption==actors.get(i))
+                    {
+                        actors.remove(i);
+                        i--;
+                    }
+                }
+                lines.get(idx).editingLabel=false;
+                lines.get(idx).labelId=(-1);
+                lines.get(idx).caption=null;
             }
             else
             {
-                int l=lines.get(idx).labelId;
-                vtkProp prop = actors.get(l);
-                ((vtkCaptionActor2D)prop).SetCaption(label);
-                ((vtkCaptionActor2D)prop).SetPosition2(0.04, numLetters*0.02);
+                int numLetters = label.length();
+                lines.get(idx).caption.SetCaption(label);
+                lines.get(idx).caption.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
+                lines.get(idx).caption.GetCaptionTextProperty().Modified();
             }
         }
         else
@@ -1350,24 +1395,25 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
             {
                 return true;
             }
+            int numLetters = label.length();
             vtkCaptionActor2D v = new vtkCaptionActor2D();
             v.GetCaptionTextProperty().SetColor(1.0, 1.0, 1.0);
             v.GetCaptionTextProperty().SetJustificationToCentered();
             v.GetCaptionTextProperty().BoldOn();
+
             v.VisibilityOn();
             v.BorderOff();
-            v.GetCaptionTextProperty().SetFontSize(-100);
             v.ThreeDimensionalLeaderOn();
-            for (int index : selectedStructures)
-            {
-                v.SetAttachmentPoint(lines.get(index).getCentroid());
-                v.SetPosition(0, 0);
-                v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.0025+0.02);
-                v.SetCaption(lines.get(index).getLabel());
-                actors.add(v);
-                lines.get(index).labelId=(actors.size()-1);
-                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
-            }
+            v.SetAttachmentPoint(lines.get(idx).getCentroid());
+            v.SetPosition(0, 0);
+            v.SetPosition2(numLetters*0.0025+0.03, numLetters*0.001+0.02);
+            v.SetCaption(lines.get(idx).getLabel());
+
+            lines.get(idx).labelId=(actors.size()-1);
+            lines.get(idx).caption=v;
+            actors.add(lines.get(idx).caption);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, idx);
+
             lines.get(idx).editingLabel=true;
         }
         updatePolyData();
@@ -1377,17 +1423,74 @@ public class LineModel extends ControlPointsStructureModel implements PropertyCh
 
     public void showLabel(int index)
     {
-        if(lines.get(index).getLabel().equals(""))
+        if(lines.get(index).caption==null||lines.get(index).caption.GetCaption().equals(""))
         {
-            JOptionPane.showMessageDialog(null, "Please name the structure!");
-            return;
+            setStructureLabel(index, " ");
         }
-        int l=lines.get(index).labelId;
-        vtkProp prop = actors.get(l);
-        prop.SetVisibility(1-prop.GetVisibility());
+
+        if(!lines.get(index).getHidden())
+            lines.get(index).caption.SetVisibility(1-lines.get(index).caption.GetVisibility());
+        boolean b = (lines.get(index).caption.GetVisibility() == 0);
+        lines.get(index).labelHidden=b;
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, index);
+    }
 
+    public boolean isLabelHidden(int id)
+    {
+        return lines.get(id).labelHidden;
+    }
 
+    public void colorLabel(int[] colors)
+    {
+        for (int index : selectedStructures)
+        {
+            vtkCaptionActor2D v =lines.get(index).caption;
+            v.GetCaptionTextProperty().SetColor(colors[0]/256.0, colors[1]/256.0, colors[2]/256.0);
+            double color[] = {colors[0]/256.0, colors[1]/256.0, colors[2]/256.0};
+            lines.get(index).labelcolor=color;
+        }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    private void colorLabel(int loc, double[]colors)
+    {
+        vtkCaptionActor2D v =lines.get(loc).caption;
+        if(v==null)
+            return;
+        v.GetCaptionTextProperty().SetColor(colors);
+    }
+
+    public void showBorders()
+    {
+        for (int index : selectedStructures)
+        {
+            vtkCaptionActor2D v =lines.get(index).caption;
+            v.SetBorder(1-v.GetBorder());
+        }
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+
+    public void changeFont(int font_size, int structure)
+    {
+        int len = (lines.get(structure).caption.GetCaption().length());
+        lines.get(structure).caption.SetPosition2((len*0.0025+0.03)*(font_size/12.0), (len*0.001+0.02)*(font_size/12.0));
+        lines.get(structure).caption.GetCaptionTextProperty().Modified();
+        lines.get(structure).caption.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }
+    public void changeFontType(int structure)
+    {
+        vtkCaptionActor2D v =lines.get(structure).caption;
+        Object[] options = { "Times", "Arial", "Courier" };
+        int option = JOptionPane.showOptionDialog(null, "Pick the font you wish to use", "Choose", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if(option==0)
+            v.GetCaptionTextProperty().SetFontFamilyToTimes();
+        else if(option==1)
+            v.GetCaptionTextProperty().SetFontFamilyToArial();
+        else
+            v.GetCaptionTextProperty().SetFontFamilyToCourier();
+        v.GetCaptionTextProperty().Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 }

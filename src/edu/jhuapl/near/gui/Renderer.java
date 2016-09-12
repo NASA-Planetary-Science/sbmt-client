@@ -662,6 +662,7 @@ public class Renderer extends JPanel implements
         {
             File f = sixFiles[i];
             AxisType at = sixAxes[i];
+<<<<<<< HEAD
             CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 1000);
             //cameraFrameQueue.add(frame);
             setCameraFrame(frame);
@@ -669,6 +670,10 @@ public class Renderer extends JPanel implements
             mainCanvas.getRenderWindowInteractor().InvokeEvent("RenderEvent");
             mainCanvas.getVTKLock().unlock();
             saveToFile(frame.file, mainCanvas);
+=======
+            CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 2000);
+            cameraFrameQueue.add(frame);
+>>>>>>> branch 'master' of http://zimmemi1@hardin:8080/scm/git/sbmt
         }
 
 

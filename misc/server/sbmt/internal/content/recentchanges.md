@@ -4,6 +4,20 @@
 
 # Recent Changes
 
+### August 29, 2016
+
+-   Image properties dialog now displaying for all images
+-   Viking Phobos images now being returned from database searches
+-   Console once again prints out coordinates when clicking on the surface
+-   "Hide Labels" and "Show Labels" buttons added to Structures tabs
+
+### August 17, 2016
+
+-   Recents menu is now updating properly
+-   Added text labels to all structures
+-   OLA tracks are no longer divided into 10 second chunks	
+-   Bigmaps now makes all DistributedGravity results available
+
 ### August 5, 2016
 
 -   DEMs with .fits, .FITS, .fit, and .FIT file extensions can now be loaded

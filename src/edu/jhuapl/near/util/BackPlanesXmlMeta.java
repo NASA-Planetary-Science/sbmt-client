@@ -1,7 +1,9 @@
 package edu.jhuapl.near.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.jhuapl.near.model.Image.ImageKey;
 
@@ -17,24 +19,56 @@ import nom.tam.fits.HeaderCard;
 public class BackPlanesXmlMeta
 {
 
+    /**
+     * String metadata fields are accessed via Map<enum, String> which allows for quicker and easier scaling for adding future metadata string fields.
+     * @author espirrc1
+     *
+     */
+    public enum MetaField {
+
+        //lid_vid
+        LOGICALID,
+
+        //start, stop time window in UTC
+        STARTDATETIME,
+        STOPDATETIME,
+
+        //name of XML label
+        XMLFILENAME,
+
+        //product filename to which XML label is associated
+        PRODUCTFILENAME,
+
+        //source filename from which product was created. Used for External Reference.
+        SRCFILENAME,
+
+        //create datetime of product.
+        CREATIONDATETIME,
+
+        //datasetID of source. Used to External Reference.
+        DATASETID;
+    }
+
     /*
      * These fields are common to all XML labels
      */
     public final ImageKey imageKey;
-    public final String logicalId;
-    public final String startDateTime;
-    public final String stopDateTime;
+
+    public final Map<MetaField, String> metaStrings;
+//    public final String logicalId;
+//    public final String startDateTime;
+//    public final String stopDateTime;
 
     //name of XML label
-    public final String xmlFileName;
+//    public final String xmlFileName;
 
     //product filename to which XML label is associated
-    public final String productFileName;
+//    public final String productFileName;
 
     //source filename from which product was created. Used for lidvid_reference.
-    public final String srcFileName;
+//    public final String srcFileName;
 
-    public final String creationDateTime;
+//    public final String creationDateTime;
 
     /*
      * These fields are common to XML describing FITS data (image or table). Set
@@ -54,13 +88,14 @@ public class BackPlanesXmlMeta
 
     private BackPlanesXmlMeta(BPMetaBuilder b) {
         this.imageKey = b.imageKey;
-        this.logicalId = b.logicalId;
-        this.startDateTime = b.startDateTime;
-        this.stopDateTime = b.stopDateTime;
-        this.xmlFileName = b.xmlFileName;
-        this.productFileName = b.productFileName;
-        this.srcFileName = b.srcFileName;
-        this.creationDateTime = b.creationDateTime;
+//        this.logicalId = b.logicalId;
+//        this.startDateTime = b.startDateTime;
+//        this.stopDateTime = b.stopDateTime;
+//        this.xmlFileName = b.xmlFileName;
+//        this.productFileName = b.productFileName;
+//        this.srcFileName = b.srcFileName;
+//        this.creationDateTime = b.creationDateTime;
+        this.metaStrings = b.metaStrings;
         this.lines = b.lines;
         this.samples = b.samples;
         this.headerSize = b.headerSize;
@@ -77,13 +112,14 @@ public class BackPlanesXmlMeta
      */
     public static class BPMetaBuilder {
         private ImageKey imageKey = null;
-        private String logicalId = "";
-        private String startDateTime = "";
-        private String stopDateTime = "";
-        private String xmlFileName = "";
-        private String productFileName = "";
-        private String srcFileName = "";
-        private String creationDateTime = "";
+//        private String logicalId = "";
+//        private String startDateTime = "";
+//        private String stopDateTime = "";
+//        private String xmlFileName = "";
+//        private String productFileName = "";
+//        private String srcFileName = "";
+//        private String creationDateTime = "";
+        private Map<MetaField, String> metaStrings;
         private long fileSize = 0;
         private long numRecords1 = 0;
         private long numRecords2 = 0;
@@ -102,8 +138,8 @@ public class BackPlanesXmlMeta
          */
         public BPMetaBuilder(String fileName) {
 
-            this.xmlFileName = fileName;
-
+            metaStrings = new HashMap<MetaField, String>();
+            metaStrings.put(MetaField.XMLFILENAME, fileName);
         }
 
         /**
@@ -118,28 +154,14 @@ public class BackPlanesXmlMeta
             return this;
         }
 
-        public BPMetaBuilder startDate(String startDate) {
-            this.startDateTime = startDate;
-            return this;
-        }
-
-        public BPMetaBuilder stopDate(String stopDate) {
-            this.stopDateTime = stopDate;
-            return this;
-        }
-
-        public BPMetaBuilder creationDate(String createDate) {
-            this.creationDateTime = createDate;
-            return this;
-        }
-
-        public BPMetaBuilder setProduct(String productName) {
-            this.productFileName = productName;
-            return this;
-        }
-
-        public BPMetaBuilder setSource(String sourceName) {
-            this.srcFileName = sourceName;
+        /**
+         * Use this method to set string values for MetaField enumerations. Adding more string fields just requires adding another enum.
+         * @param fieldEnum
+         * @param stringVal
+         * @return
+         */
+        public BPMetaBuilder setMetaField(MetaField fieldEnum, String stringVal) {
+            metaStrings.put(fieldEnum, stringVal);
             return this;
         }
 

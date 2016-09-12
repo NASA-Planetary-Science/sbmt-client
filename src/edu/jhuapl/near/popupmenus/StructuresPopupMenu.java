@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -37,7 +38,11 @@ abstract public class StructuresPopupMenu extends PopupMenu
     private JMenuItem displayInteriorMenuItem;
     private JMenuItem setLabelButton;
     private JCheckBoxMenuItem showLabelButton;
-
+    private JMenu labelProperties;
+    private JMenuItem changeFontButton;
+    private JMenuItem changeFontTypeButton;
+    private JMenuItem changeLabelColorButton;
+    private JCheckBoxMenuItem setLabelBorder;
     private JCheckBoxMenuItem hideMenuItem;
 
     public StructuresPopupMenu(
@@ -69,8 +74,31 @@ abstract public class StructuresPopupMenu extends PopupMenu
         this.add(setLabelButton);
 
         showLabelButton = new JCheckBoxMenuItem(new ShowLabelAction());
-        showLabelButton.setText("Show Label");
+        showLabelButton.setText("Hide Label");
         this.add(showLabelButton);
+
+        labelProperties= new JMenu();
+        labelProperties.setText("Edit Label Properties...");
+
+// disable for now until bugs are fixed -turnerj1
+//        this.add(labelProperties);
+
+        changeFontButton= new JMenuItem(new changeFontSizeAction());
+        changeFontButton.setText("Change Font Size");
+        labelProperties.add(changeFontButton);
+
+        changeFontTypeButton = new JMenuItem(new changeFontTypeAction());
+        changeFontButton.setText("Change Font");
+        labelProperties.add(changeFontTypeButton);
+
+        changeLabelColorButton= new JMenuItem(new changeLabelColorAction());
+        changeLabelColorButton.setText("Change Label Color");
+        labelProperties.add(changeLabelColorButton);
+
+        setLabelBorder = new JCheckBoxMenuItem(new showLabelBorderAction());
+        setLabelBorder.setText("Show the label border");
+        labelProperties.add(setLabelBorder);
+
 
         JMenuItem deleteAction = new JMenuItem(new DeleteAction());
         deleteAction.setText("Delete");
@@ -136,6 +164,16 @@ abstract public class StructuresPopupMenu extends PopupMenu
             if (!model.isStructureHidden(selectedStructures[i]))
             {
                 hideMenuItem.setSelected(false);
+                break;
+            }
+        }
+
+        showLabelButton.setSelected(true);
+        for (int i=0; i<selectedStructures.length; ++i)
+        {
+            if (!model.isLabelHidden(selectedStructures[i]))
+            {
+                showLabelButton.setSelected(false);
                 break;
             }
         }
@@ -207,7 +245,7 @@ abstract public class StructuresPopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent e)
         {
             int[] selectedStructures = model.getSelectedStructures();
-            model.setStructuresHidden(selectedStructures, hideMenuItem.isSelected());
+            model.setStructuresHidden(selectedStructures, hideMenuItem.isSelected(), showLabelButton.isSelected());
         }
     }
 
@@ -352,7 +390,72 @@ abstract public class StructuresPopupMenu extends PopupMenu
             int[] selectedStructures = model.getSelectedStructures();
             for (int idx : selectedStructures)
                 model.showLabel(idx);
-            //showLabelButton.
+        }
+    }
+
+    protected class changeFontSizeAction extends AbstractAction
+    {
+        public changeFontSizeAction()
+        {
+            super("Change Font Size");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            String option = JOptionPane.showInputDialog("Enter font size. Font is 12 by default.");
+            int op = Integer.parseInt(option);
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+            {
+                return;
+            }
+            model.changeFont(op, selectedStructures[0]);
+        }
+    }
+
+    protected class changeFontTypeAction extends AbstractAction
+    {
+        public changeFontTypeAction()
+        {
+            super("Change Font Type");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+            {
+                return;
+            }
+            model.changeFontType(selectedStructures[0]);
+        }
+    }
+
+    protected class changeLabelColorAction extends AbstractAction
+    {
+        public changeLabelColorAction()
+        {
+            super("Change Label Color");
+        }
+        public void actionPerformed(ActionEvent e)
+        {
+            int[] selectedStructures = model.getSelectedStructures();
+            if (selectedStructures.length == 0)
+                return;
+
+            // Use the color of the first item as the default to show
+            Color color = ColorChooser.showColorChooser(
+                    getInvoker(),
+                    model.getStructure(selectedStructures[0]).getColor());
+
+            if (color == null)
+                return;
+
+            int[] c = new int[4];
+            c[0] = color.getRed();
+            c[1] = color.getGreen();
+            c[2] = color.getBlue();
+            c[3] = color.getAlpha();
+            model.colorLabel(c);
+            model.setStructureColor(selectedStructures[0], c);
         }
     }
 
@@ -363,6 +466,14 @@ abstract public class StructuresPopupMenu extends PopupMenu
         {
             int[] selectedStructures = model.getSelectedStructures();
             model.setShowStructuresInterior(selectedStructures, displayInteriorMenuItem.isSelected());
+        }
+    }
+
+    protected class showLabelBorderAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            model.showBorders();
         }
     }
 }
