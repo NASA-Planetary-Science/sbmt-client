@@ -14,13 +14,11 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import com.google.common.collect.Lists;
 
@@ -658,18 +656,24 @@ public class Renderer extends JPanel implements
             }
         }
 
-        cameraFrameQueue = new LinkedBlockingQueue<CameraFrame>();
+        //cameraFrameQueue = new LinkedBlockingQueue<CameraFrame>();
 
         for (int i=0; i<6; i++)
         {
             File f = sixFiles[i];
             AxisType at = sixAxes[i];
             CameraFrame frame = createCameraFrameInDirectionOfAxis(at, true, f, 1000);
-            cameraFrameQueue.add(frame);
+            //cameraFrameQueue.add(frame);
+            setCameraFrame(frame);
+            mainCanvas.getVTKLock().lock();
+            mainCanvas.getRenderWindowInteractor().InvokeEvent("RenderEvent");
+            mainCanvas.getVTKLock().unlock();
+            saveToFile(frame.file, mainCanvas);
         }
 
+
         // start off the timer
-        this.actionPerformed(null);
+        //this.actionPerformed(null);
 
     }
 
@@ -820,14 +824,14 @@ public class Renderer extends JPanel implements
         if (ren.VisibleActorCount() == 0)
             return;
 
-        mainCanvas.getVTKLock().lock();
+//        mainCanvas.getVTKLock().lock();
 
         vtkCamera cam = ren.GetActiveCamera();
         cam.SetFocalPoint(frame.focalPoint[0], frame.focalPoint[1], frame.focalPoint[2]);
         cam.SetPosition(frame.position[0], frame.position[1], frame.position[2]);
         cam.SetViewUp(frame.upDirection[0], frame.upDirection[1], frame.upDirection[2]);
 
-        mainCanvas.getVTKLock().unlock();
+//        mainCanvas.getVTKLock().unlock();
 
         mainCanvas.resetCameraClippingRange();
         mainCanvas.Render();
@@ -1493,7 +1497,7 @@ public class Renderer extends JPanel implements
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        CameraFrame frame = cameraFrameQueue.peek();
+/*        CameraFrame frame = cameraFrameQueue.peek();
         if (frame != null)
         {
             if (frame.staged && frame.file != null)
@@ -1504,6 +1508,9 @@ public class Renderer extends JPanel implements
             else
             {
                 setCameraFrame(frame);
+                //
+
+                //
                 frame.staged = true;
             }
 
@@ -1511,7 +1518,7 @@ public class Renderer extends JPanel implements
             timer.setRepeats(false);
             timer.start();
         }
-
+*/
     }
 
 
