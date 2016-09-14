@@ -346,7 +346,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           double[] p = imagePicker.GetPickPosition();
           // Note we reverse x and y so that the pixel is in the form the camera
           // position/orientation program expects.
-          //System.out.println(p[1] + " " + p[0]);
+          System.out.println(p[1] + " " + p[0]);
       }
 
     }
