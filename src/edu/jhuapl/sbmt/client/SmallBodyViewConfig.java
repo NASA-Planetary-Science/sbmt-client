@@ -195,6 +195,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
+        c.density = 1.876;
+        c.rotationRate = 0.00022803304110600688;
         c.rootDirOnServer = "/GASKELL/PHOBOS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -228,8 +230,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.hasLidarData = true;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
-        c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-        //c.lidarSearchDataSourceMap.put("Default", "/cubes");
         c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
         c.lidarBrowseIsLidarInSphericalCoordinates = true;
         c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
