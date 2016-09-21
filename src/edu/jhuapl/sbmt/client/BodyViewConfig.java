@@ -42,6 +42,8 @@ public class BodyViewConfig extends ViewConfig
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap;
+    public Map<String, String> lidarBrowseDataSourceMap;    // overrides lidarBrowseFileListResourcePath for OLA
+
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;
     public int lidarBrowseOutgoingIntensityIndex;
@@ -220,6 +222,7 @@ public class BodyViewConfig extends ViewConfig
             c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
             c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>(this.lidarSearchDataSourceMap);
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>(this.lidarBrowseDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;

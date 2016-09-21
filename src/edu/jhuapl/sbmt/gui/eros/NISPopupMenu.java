@@ -19,16 +19,18 @@ import vtk.vtkActor;
 import vtk.vtkPolyData;
 import vtk.vtkProp;
 import vtk.vtkSelectPolyData;
-import vtk.vtkTriangle;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.NISStatistics;
+import edu.jhuapl.sbmt.model.eros.NISStatistics.Sample;
+import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
 
 
 public class NISPopupMenu extends PopupMenu
@@ -71,14 +73,12 @@ public class NISPopupMenu extends PopupMenu
             this.add(showSpectrumInfoMenuItem);
         }
 
-    /*    if (this.infoPanelManager != null)
+        if (this.infoPanelManager != null)
         {
             showStatisticsMenuItem=new JMenuItem(new ShowStatisticsAction());
             showStatisticsMenuItem.setText("Statistics...");
             this.add(showStatisticsMenuItem);
-        }*/
-        // XXX: IN-PROGRESS NIS STATISTICS FUNCTIONALITY IS TEMPORARILY DISABLED FOR RELEASE OF OLA BUGFIXES - SEE nisStats BRANCH
-
+        }
         centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
         centerSpectrumMenuItem.setText("Center in Window");
         //this.add(centerImageMenuItem);
@@ -177,26 +177,20 @@ public class NISPopupMenu extends PopupMenu
             if (spectra.size()==0)
                 spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
             //
-            List<Double> th=Lists.newArrayList();   // TODO: should keep references to spectra, too
+            List<Sample> emergenceAngle=Lists.newArrayList();
             for (NISSpectrum spectrum : spectra)
             {
                 Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
-                Vector3D frustCenter=new Vector3D(spectrum.getFrustumCenter());
-                vtkPolyData footPrint=spectrum.getShiftedFootprint();
+                vtkPolyData footprint=spectrum.getUnshiftedFootprint();
 
                 vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
                 selectionFilter.SetInputData(modelManager.getPolyhedralModel().getSmallBodyPolyData());
-                selectionFilter.SetLoop(footPrint.GetPoints());
+                selectionFilter.SetLoop(footprint.GetPoints());
                 selectionFilter.Update();
-
                 vtkPolyData selectedFaces=selectionFilter.GetOutput();
-                for (int c=0; c<selectedFaces.GetNumberOfCells(); c++)
-                {
-                    vtkTriangle tri=(vtkTriangle)selectedFaces.GetCell(c);
-                    double[] nml=new double[3];
-                    new vtkTriangle().ComputeNormal(tri.GetPoints().GetPoint(0), tri.GetPoints().GetPoint(1), tri.GetPoints().GetPoint(2), nml);
-                    th.add(Math.acos(new Vector3D(nml).normalize().dotProduct(frustCenter.subtract(scpos).normalize())));
-                }
+
+                Frustum frustum=new Frustum(scpos.toArray(), spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1), spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
+                emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum,selectedFaces, frustum));
             }
 
             int cnt=0;
@@ -207,12 +201,9 @@ public class NISPopupMenu extends PopupMenu
             }
 
 
-            double[] thArray=new double[th.size()];
-            for (int i=0; i<thArray.length; i++)
-                thArray[i]=th.get(i);
-            NISStatistics stats=new NISStatistics(thArray, spectra);
-            //NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
-            //statsModel.addStatistics(stats);
+            NISStatistics stats=new NISStatistics(emergenceAngle, spectra);
+            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+            statsModel.addStatistics(stats);
 
             try
             {

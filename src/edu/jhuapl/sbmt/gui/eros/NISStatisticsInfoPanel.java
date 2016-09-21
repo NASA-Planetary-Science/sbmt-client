@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -24,7 +25,7 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.model.eros.NISStatistics;
-import edu.jhuapl.sbmt.util.MomentCalculator;
+import edu.jhuapl.sbmt.model.eros.NISStatistics.Sample;
 
 public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
@@ -43,11 +44,14 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
 
 //        SimpleHistogramDataset dataset=new SimpleHistogramDataset("cos(theta)");
         HistogramDataset dataset=new HistogramDataset();
-        double[] th=stats.getTheta();
-        double minth=stats.getMinTheta();
-        double maxth=stats.getMaxTheta();
+
+        List<Sample> emergenceAngle=stats.sampleEmergenceAngle();
+        double[] ange=NISStatistics.getValuesAsArray(emergenceAngle);
+        double mine=NISStatistics.getMin(emergenceAngle);
+        double maxe=NISStatistics.getMax(emergenceAngle);
+
         int nBins=Math.max(10, (int)((double)Math.ceil(stats.getNumberOfFaces())/3.));
-        dataset.addSeries("Frustum-face incidence angle",th, nBins, minth, maxth);
+        dataset.addSeries("Frustum-face incidence angle", ange, nBins, mine, maxe);
         //
         JFreeChart chart=ChartFactory.createHistogram("Incidence histogram", "Theta", "# Faces", dataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel=new ChartPanel(chart);
@@ -62,11 +66,10 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         data[1][0]="Standard Deviation";
         data[2][0]="Skewness";
         data[3][0]="Kurtosis";
-        MomentCalculator calculator=new MomentCalculator(th);
-        data[0][1]=calculator.getMean();
-        data[1][1]=Math.sqrt(calculator.getVariance());
-        data[2][1]=calculator.getSkewness();
-        data[3][1]=calculator.getKurtosis();
+        data[0][1]=NISStatistics.getWeightedMean(emergenceAngle);
+        data[1][1]=Math.sqrt(NISStatistics.getWeightedVariance(emergenceAngle));
+        data[2][1]=NISStatistics.getWeightedSkewness(emergenceAngle);
+        data[3][1]=NISStatistics.getWeightedKurtosis(emergenceAngle);
         String[] columns=new String[]{"Property","Value"};
 
         JTable table=new JTable(data, columns)

@@ -82,6 +82,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
         c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+        c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
         c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
         c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
         c.lidarBrowseSpacecraftIndices = new int[]{8, 9, 10};
@@ -1202,7 +1203,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasLidarData = true;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -1212,7 +1212,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseOutgoingIntensityIndex = 98;
             c.lidarBrowseReceivedIntensityIndex = 106;
             c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/allOlaFiles.txt"; // TODO: not sure if this is used anymore (Mike Z, Jul 12 2016)
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
@@ -1221,9 +1221,15 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/hypertree.1/dataSource.lidar");
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/all/hypertree/dataSource.lidar");
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
+            // default ideal data
+            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
+            // noisy data
+            c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
         }
 
         if (Configuration.isAPLVersion())

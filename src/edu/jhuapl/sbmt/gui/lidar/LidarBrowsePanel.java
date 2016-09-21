@@ -43,17 +43,17 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 {
     private final String LIDAR_REMOVE_ALL_BUTTON_TEXT = "Remove All Lidar Data";
 
-    private LidarBrowseDataCollection lidarModel;
-    private JList resultList;
-    private DefaultListModel lidarResultListModel;
+    protected LidarBrowseDataCollection lidarModel;
+    protected JList resultList;
+    protected DefaultListModel lidarResultListModel;
     //private List<LidarDataSpec> lidarRawResults = new ArrayList<LidarDataSpec>();
-    private JLabel resultsLabel;
+    protected JLabel resultsLabel;
     private JButton showHideButton;
     private JButton removeAllButton;
     private JButton saveButton;
     private LidarTimeIntervalChanger timeIntervalChanger;
     private RadialOffsetChanger radialOffsetChanger;
-
+    protected JScrollPane listScrollPane;
 
     public class LidarTimeIntervalChanger extends JPanel implements ChangeListener
     {
@@ -116,7 +116,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
         resultList = new JList(lidarResultListModel);
         resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         resultList.addListSelectionListener(this);
-        JScrollPane listScrollPane = new JScrollPane(resultList);
+        listScrollPane = new JScrollPane(resultList);
 
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
         resultsPanel.add(listScrollPane, BorderLayout.CENTER);
@@ -263,6 +263,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
         {
             if (index >= 0 && resultList.isSelectedIndex(index))
             {
+
                 showHideButton.setEnabled(true);
                 saveButton.setEnabled(true);
 
@@ -283,4 +284,6 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
             }
         }
     }
+
+
 }
