@@ -1,9 +1,11 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree;
+package edu.jhuapl.sbmt.lidar.hyperoctree.ola;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeNode;
+import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.lidar.test.DataOutputStreamPool;
 
@@ -19,7 +21,7 @@ public class OlaFSHyperTreeNode extends FSHyperTreeNode<OlaFSHyperPoint>
     }
 
     @Override
-    protected OlaFSHyperTreeNode createNewChild(int i)
+    public OlaFSHyperTreeNode createNewChild(int i)
     {
         try
         {
@@ -33,7 +35,7 @@ public class OlaFSHyperTreeNode extends FSHyperTreeNode<OlaFSHyperPoint>
     }
 
     @Override
-    protected OlaFSHyperPoint createNewPoint(DataInputStream stream)
+    public OlaFSHyperPoint createNewPoint(DataInputStream stream)
     {
         try
         {
@@ -47,7 +49,7 @@ public class OlaFSHyperTreeNode extends FSHyperTreeNode<OlaFSHyperPoint>
     }
 
     @Override
-    protected long getNumberOfPoints()
+    public long getNumberOfPoints()
     {
         return getDataFilePath().toFile().length()/bytesPerPoint;
     }

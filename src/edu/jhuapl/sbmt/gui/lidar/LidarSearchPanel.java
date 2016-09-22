@@ -69,7 +69,6 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.Track;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.TrackFileType;
-import edu.jhuapl.sbmt.model.lidar.OLALidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 
@@ -83,7 +82,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected LidarPopupMenu lidarPopupMenu;
     private LidarTrackTranslationDialog translateDialog;
     protected edu.jhuapl.saavtk.gui.RadialOffsetChanger radialOffsetChanger;
-
+    protected BodyViewConfig smallBodyConfig;
 
     /** Creates new form LidarSearchPanel */
     public LidarSearchPanel(BodyViewConfig smallBodyConfig,
@@ -103,6 +102,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
+        this.smallBodyConfig=smallBodyConfig;
         this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
@@ -353,10 +353,6 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         JComboBox lidarDatasourceComboBox = (JComboBox)e.getSource();
         int index = lidarDatasourceComboBox.getSelectedIndex() - 1;
         smallBodyModel.setLidarDatasourceIndex(index);
-        System.out.println("Lidar Datasource Changed: " + index);
-        OLALidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (OLALidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
-        String datasourceName = smallBodyModel.getLidarDatasourceName(index);
-        lidarHyperTreeSearchDataCollection.setCurrentDatasourceSkeleton(datasourceName);
     }
 
     @Override
@@ -1106,7 +1102,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     protected javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JPanel selectRegionPanel;
     private javax.swing.JButton showAllButton;
-    private javax.swing.JComboBox sourceComboBox;
+    protected javax.swing.JComboBox sourceComboBox;
     private javax.swing.JLabel sourceLabel;
     private javax.swing.JCheckBox spacecraftPositionCheckbox;
     private javax.swing.JLabel startLabel;

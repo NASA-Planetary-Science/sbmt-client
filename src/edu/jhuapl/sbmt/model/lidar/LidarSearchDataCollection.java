@@ -727,7 +727,7 @@ public class LidarSearchDataCollection extends AbstractModel
 
             if (currentTime - prevTime >= timeSeparationBetweenTracks)
             {
-                System.out.println(currentTime-prevTime);
+              //  System.out.println(currentTime-prevTime);
                 track.stopId = i-1;
                 double t0 = originalPoints.get(track.startId).getTime();
                 double t1 = originalPoints.get(track.stopId).getTime();
@@ -741,6 +741,7 @@ public class LidarSearchDataCollection extends AbstractModel
 
             prevTime = currentTime;
         }
+        tracks.remove(tracks.size()-1); // last one is always empty so remove it
 
         track.stopId = size-1;
         /*double t0 = originalPoints.get(track.startId).getTime();
@@ -1151,14 +1152,15 @@ public class LidarSearchDataCollection extends AbstractModel
         {
             cellId = displayedPointToOriginalPointMap.get(cellId);
             double et = originalPoints.get(cellId).getTime();
-            double[] target = originalPoints.get(cellId).getTargetPosition().toArray();
+            /*double[] target = originalPoints.get(cellId).getTargetPosition().toArray();
             double[] scpos = originalPoints.get(cellId).getSourcePosition().toArray();
             double range_m = Math.sqrt(
                     (target[0]-scpos[0])*(target[0]-scpos[0]) +
                     (target[1]-scpos[1])*(target[1]-scpos[1]) +
-                    (target[2]-scpos[2])*(target[2]-scpos[2]))*1000;
+                    (target[2]-scpos[2])*(target[2]-scpos[2]))*1000;*/
+            double range=originalPoints.get(cellId).getRange()*1000;    // m
             return String.format("Lidar point acquired at " + TimeUtil.et2str(et) +
-                    ", ET = %f, unmodified range = %f m", et, range_m);
+                    ", ET = %f, unmodified range = %f m", et, range);
         }
 
         return "";

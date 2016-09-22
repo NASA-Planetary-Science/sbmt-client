@@ -14,19 +14,19 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.OLALidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
 
-public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class MolaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
 
-    public OLALidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
+    public MolaLidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
@@ -45,7 +45,7 @@ public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         super.updateLidarDatasourceComboBox();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        OLALidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (OLALidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        MolaLidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (MolaLidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
         this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
 
         // clear the skeletons instances (should we try to keep these around to avoid having to load them again? -turnerj1)
@@ -89,7 +89,7 @@ public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
         // read in the skeleton, if it hasn't been read in already
-        ((OLALidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        ((MolaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
 
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -126,7 +126,7 @@ public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         String selectedSourceName = null; // (String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
         System.out.println("Selected lidar source name: "+selectedSourceName);
 //        if (lidarDatasourceName.equals("Default"))
-            lidarModel=(OLALidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
+            lidarModel=(MolaLidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
 //        else
 //            lidarModel=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(lidarDatasourcePath));
         // lidarModel is by default equal to the source given in the super's constructor
@@ -148,13 +148,13 @@ public class OLALidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
 
         Stopwatch sw=new Stopwatch();
         sw.start();
-        TreeSet<Integer> cubeList=((OLALidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
+        TreeSet<Integer> cubeList=((MolaLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
         Picker.setPickingEnabled(false);
 
-        ((OLALidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(this);
+        ((MolaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(this);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
 
