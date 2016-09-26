@@ -93,6 +93,7 @@ public class NISPopupMenu extends PopupMenu
     }
 
 
+
     public void setCurrentSpectrum(String name)
     {
         currentSpectrum = name;
@@ -172,49 +173,46 @@ public class NISPopupMenu extends PopupMenu
         @Override
         public void actionPerformed(ActionEvent e)
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            List<NISSpectrum> spectra=model.getSelectedSpectra();
-            if (spectra.size()==0)
-                spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
-            //
-            List<Sample> emergenceAngle=Lists.newArrayList();
-            for (NISSpectrum spectrum : spectra)
-            {
-                Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
-                vtkPolyData footprint=spectrum.getUnshiftedFootprint();
+            showStatisticsWindow();
+        }
 
-                vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
-                selectionFilter.SetInputData(modelManager.getPolyhedralModel().getSmallBodyPolyData());
-                selectionFilter.SetLoop(footprint.GetPoints());
-                selectionFilter.Update();
-                vtkPolyData selectedFaces=selectionFilter.GetOutput();
+    }
 
-                Frustum frustum=new Frustum(scpos.toArray(), spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1), spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
-                emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum,selectedFaces, frustum));
-            }
+    public void showStatisticsWindow()
+    {
+        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        List<NISSpectrum> spectra=model.getSelectedSpectra();
+        if (spectra.size()==0)
+            spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
+        //
+        List<Sample> emergenceAngle=Lists.newArrayList();
+        for (NISSpectrum spectrum : spectra)
+        {
+            Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
+            vtkPolyData footprint=spectrum.getUnshiftedFootprint();
 
-            int cnt=0;
-            for (NISSpectrum spectrum : spectra)
-            {
-                model.setOrdinal(spectrum, cnt);
-                cnt++;
-            }
+            vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
+            selectionFilter.SetInputData(modelManager.getPolyhedralModel().getSmallBodyPolyData());
+            selectionFilter.SetLoop(footprint.GetPoints());
+            selectionFilter.Update();
+            vtkPolyData selectedFaces=selectionFilter.GetOutput();
 
+            Frustum frustum=new Frustum(scpos.toArray(), spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1), spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
+            emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum,selectedFaces, frustum));
+        }
 
-            NISStatistics stats=new NISStatistics(emergenceAngle, spectra);
-            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
-            statsModel.addStatistics(stats);
+        NISStatistics stats=new NISStatistics(emergenceAngle, spectra);
+        NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+        statsModel.addStatistics(stats);
 
-            try
-            {
-                infoPanelManager.addData(stats);
-            }
-            catch (Exception e1)
-            {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-
+        try
+        {
+            infoPanelManager.addData(stats);
+        }
+        catch (Exception e1)
+        {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
 
     }
