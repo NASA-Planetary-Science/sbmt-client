@@ -49,6 +49,5 @@ title: Image Galleries
 - [DIONE](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/DIONE/IMAGING/gallery/index.html)
 - [67P_V3](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/67P_V3/IMAGING/gallery/index.html)
 - [MIMAS](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/MIMAS/IMAGING/gallery/index.html)
-- [EROS MSI](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/EROS/MSI/gallery/index.html)
 - [HYPERION](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/HYPERION/IMAGING/gallery/index.html)
 - [LUTETIA](http://sbmt.jhuapl.edu/internal/sbmt/data/GASKELL/LUTETIA/IMAGING/gallery/index.html)
