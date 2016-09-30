@@ -4,9 +4,9 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="lib" path="lib/altwg-java-tools.jar"/>
-	<classpathentry kind="lib" path="lib/nom-tam-fits-1.13.1m0.jar"/>
 	<classpathentry kind="lib" path="lib/jide-oss-3.6.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="/saavtk/lib/nom-tam-fits-1.13.1m0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
