@@ -39,9 +39,9 @@ import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.vtkRenderWindowPanel;
 
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -50,6 +50,8 @@ import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.gui.europa.SimulationRunImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.europa.AreaCalculation;
@@ -101,13 +103,14 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
     private javax.swing.JButton removeAllButton;
 
     private Renderer renderer;
-    private vtkRenderWindowPanel renWin;
+//    private vtkRenderWindowPanel renWin;
+    private vtksbmtJoglCanvas renWin;
     private vtkCellPicker smallBodyCellPicker; // only includes small body prop
 
     /** Creates new form CustomImageLoaderPanel */
     public SimulationRunsPanel(
             final ModelManager modelManager,
-            ModelInfoWindowManager infoPanelManager,
+            SbmtInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer)
     {
@@ -162,8 +165,8 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
         // listener on the renderer panel as well to listen explicitly to resize events.
         // Note also that this functionality is in this class since picking is required
         // to compute the value of the scale bar.
-        renWin.GetRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
-        renWin.addComponentListener(new ComponentAdapter()
+        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
+        renWin.getComponent().addComponentListener(new ComponentAdapter()
         {
             @Override
             public void componentResized(ComponentEvent e)
@@ -186,8 +189,8 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
     {
         // Do a pick at each of the 4 corners of the renderer
         long currentTime = System.currentTimeMillis();
-        int width = renWin.getWidth();
-        int height = renWin.getHeight();
+        int width = renWin.getComponent().getWidth();
+        int height = renWin.getComponent().getHeight();
 
         int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
         double[][] points = new double[4][3];
@@ -244,7 +247,7 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
         SimulationRunCollection runs = (SimulationRunCollection)modelManager.getModel(ModelNames.SIMULATION_RUN_COLLECTION);
         SimulationRun currentRun = runs.getCurrentRun();
         if (currentRun != null)
-            currentRun.updateTimeBarPosition(renWin.getWidth(), renWin.getHeight());
+            currentRun.updateTimeBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
     }
 
     private static volatile boolean pickingEnabled = true;
@@ -253,12 +256,12 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
 
     private double pickTolerance = DEFAULT_PICK_TOLERANCE;
 
-    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
     {
         return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
     }
 
-    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
     {
         if (pickingEnabled == false)
             return 0;
@@ -270,15 +273,36 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
         if (currentTime - when > 333)
             return 0;
 
-        renWin.lock();
+//        renWin.getVTKLock().lock();
+//        picker.SetTolerance(pickTolerance);
+//        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
+//        renWin.getVTKLock().unlock();
+//        return pickSucceeded;
 
-        picker.SetTolerance(pickTolerance);
-
-        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
-
-        renWin.unlock();
+        int pickSucceeded = 0;
+        try
+        {
+            renWin.getComponent().getContext().makeCurrent();
+            renWin.getVTKLock().lock();
+            // Note that on some displays, such as a retina display, the height used by
+            // OpenGL is different than the height used by Java. Therefore we need
+            // scale the mouse coordinates to get the right position for OpenGL.
+//            double openGlHeight = renWin.getComponent().getSurfaceHeight();
+            double openGlHeight = renWin.getComponent().getHeight();
+            double javaHeight = renWin.getComponent().getHeight();
+            double scale = openGlHeight / javaHeight;
+//            pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
+            pickSucceeded = picker.Pick(scale*x, scale*(javaHeight-y-1), 0.0, renWin.getRenderer());
+            renWin.getVTKLock().unlock();
+        }
+        finally
+        {
+            renWin.getComponent().getContext().release();
+        }
 
         return pickSucceeded;
+
+
     }
 
 
@@ -875,7 +899,7 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         RunInfo runInfo = new RunInfo();
         SimulationRunImporterDialog dialog = new SimulationRunImporterDialog(null, false);
-        dialog.setRunInfo(runInfo, modelManager.getSmallBodyModel().isEllipsoid());
+        dialog.setRunInfo(runInfo, modelManager.getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
@@ -912,7 +936,7 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
             RunInfo oldRunInfo = (RunInfo)((DefaultListModel)simulationRunList.getModel()).get(selectedItem);
 
             SimulationRunImporterDialog dialog = new SimulationRunImporterDialog(null, true);
-            dialog.setRunInfo(oldRunInfo, modelManager.getSmallBodyModel().isEllipsoid());
+            dialog.setRunInfo(oldRunInfo, modelManager.getPolyhedralModel().isEllipsoid());
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 

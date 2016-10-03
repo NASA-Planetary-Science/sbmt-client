@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -14,6 +15,7 @@ import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.model.europa.SimulationRun;
 import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunKey;
 import edu.jhuapl.sbmt.model.europa.SimulationRunCollection;
@@ -26,7 +28,7 @@ public class SimulationRunPopupMenu extends PopupMenu
     private JMenuItem mapRunMenuItem;
     private JMenuItem showRunInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
-    private ModelInfoWindowManager infoPanelManager;
+    private SbmtInfoWindowManager infoPanelManager;
 
     /**
      *
@@ -37,7 +39,7 @@ public class SimulationRunPopupMenu extends PopupMenu
      */
     public SimulationRunPopupMenu(
             SimulationRunCollection runCollection,
-            ModelInfoWindowManager infoPanelManager,
+            SbmtInfoWindowManager infoPanelManager,
             Renderer renderer,
             Component invoker)
     {

@@ -26,6 +26,7 @@ import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
+import edu.jhuapl.sbmt.gui.europa.SimulationRunsPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.CustomImagesPanel;
@@ -238,6 +239,11 @@ public class SbmtView extends View
     protected void setupTabs()
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+
+      if (getConfig().hasFlybyData)
+      {
+          addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+      }
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {

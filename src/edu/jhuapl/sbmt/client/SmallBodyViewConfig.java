@@ -392,6 +392,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = null;
             c.rootDirOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
+            c.hasFlybyData = true;
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
