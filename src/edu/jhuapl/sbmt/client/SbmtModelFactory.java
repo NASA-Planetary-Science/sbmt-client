@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.client;
 import java.io.IOException;
 import java.util.HashMap;
 
+import nom.tam.fits.FitsException;
+
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -22,6 +24,8 @@ import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
+import edu.jhuapl.sbmt.model.europa.SimulationRun;
+import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunKey;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
@@ -50,10 +54,17 @@ import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
-import nom.tam.fits.FitsException;
-
 public class SbmtModelFactory
 {
+    static public SimulationRun createSimulationRun(
+            SimulationRunKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly) throws FitsException, IOException
+    {
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        return new SimulationRun(key, smallBodyModel);
+    }
+
     static public Image createImage(
             ImageKey key,
             SmallBodyModel smallBodyModel,

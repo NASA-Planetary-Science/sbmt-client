@@ -1,0 +1,1218 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * CustomImageLoaderPanel.java
+ *
+ * Created on Jun 5, 2012, 3:56:56 PM
+ */
+package edu.jhuapl.sbmt.gui.europa;
+
+import java.awt.FlowLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionListener;
+
+import nom.tam.fits.FitsException;
+
+import vtk.vtkActor;
+import vtk.vtkCellPicker;
+import vtk.vtkProp;
+import vtk.vtkPropCollection;
+import vtk.vtkRenderWindowPanel;
+
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.sbmt.gui.europa.SimulationRunImporterDialog.RunInfo;
+import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
+import edu.jhuapl.sbmt.model.europa.AreaCalculation;
+import edu.jhuapl.sbmt.model.europa.AreaCalculationCollection;
+import edu.jhuapl.sbmt.model.europa.SimulationRun;
+import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunKey;
+import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunSource;
+import edu.jhuapl.sbmt.model.europa.SimulationRunCollection;
+import edu.jhuapl.sbmt.model.europa.SurfacePatch;
+import edu.jhuapl.sbmt.model.europa.Trajectory;
+
+
+public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyChangeListener
+{
+
+    private ModelManager modelManager;
+    private SimulationRunPopupMenu runPopupMenu;
+    private boolean initialized = false;
+    private SimulationRunCollection runs;
+
+    private javax.swing.JScrollPane simulationRunScrollPane;
+    private javax.swing.JList simulationRunList;
+
+    private javax.swing.JScrollPane trajectoryScrollPane;
+    private javax.swing.JList trajectoryList;
+
+    private javax.swing.JScrollPane areaCalculationScrollPane;
+    private javax.swing.JList areaCalculationList;
+
+    private javax.swing.JScrollPane surfacePatchPane;
+    private javax.swing.JList surfacePatchList;
+
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton editButton;
+
+    private javax.swing.JLabel simulationRunLabel;
+    private javax.swing.JLabel trajectoryLabel;
+    private javax.swing.JLabel areaCalculationLabel;
+    private javax.swing.JLabel surfacePatchLabel;
+
+    private SurfaceDataPane surfaceDataPane;
+
+    private javax.swing.JPanel simulationRunButtonPanel;
+//    private javax.swing.JPanel jPanel2;
+
+    private javax.swing.JButton moveDownButton;
+    private javax.swing.JButton moveUpButton;
+    private javax.swing.JButton newButton;
+    private javax.swing.JButton removeAllButton;
+
+    private Renderer renderer;
+    private vtkRenderWindowPanel renWin;
+    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
+
+    /** Creates new form CustomImageLoaderPanel */
+    public SimulationRunsPanel(
+            final ModelManager modelManager,
+            ModelInfoWindowManager infoPanelManager,
+            final PickManager pickManager,
+            Renderer renderer)
+    {
+        this.modelManager = modelManager;
+        this.renderer = renderer;
+        this.renWin = renderer.getRenderWindowPanel();
+
+        initComponents();
+
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+        simulationRunList.setModel(new DefaultListModel());
+
+        runs = (SimulationRunCollection)modelManager.getModel(ModelNames.SIMULATION_RUN_COLLECTION);
+        runPopupMenu = new SimulationRunPopupMenu(runs, infoPanelManager, renderer, this);
+
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
+        smallBodyCellPicker = new vtkCellPicker();
+        smallBodyCellPicker.PickFromListOn();
+        smallBodyCellPicker.InitializePickList();
+        List<vtkProp> actors = smallBodyModel.getProps();
+        vtkPropCollection smallBodyPickList = smallBodyCellPicker.GetPickList();
+        smallBodyPickList.RemoveAllItems();
+        for (vtkProp act : actors)
+        {
+            smallBodyCellPicker.AddPickList(act);
+        }
+        smallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
+
+        addComponentListener(new ComponentAdapter()
+        {
+            @Override
+            public void componentShown(ComponentEvent e)
+            {
+                try
+                {
+                    initializeRunList();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+
+        // We need to update the scale bar whenever there is a render or whenever
+        // the window gets resized. Although resizing a window results in a render,
+        // we still need to listen to a resize event since only listening to render
+        // results in the scale bar not being positioned correctly when during the
+        // resize for some reason. Thus we need to register a component
+        // listener on the renderer panel as well to listen explicitly to resize events.
+        // Note also that this functionality is in this class since picking is required
+        // to compute the value of the scale bar.
+        renWin.GetRenderWindow().AddObserver("EndEvent", this, "updateTimeBarPosition");
+        renWin.addComponentListener(new ComponentAdapter()
+        {
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                updateTimeBarValue();
+                updateTimeBarPosition();
+            }
+        });
+
+    }
+
+    /**
+     * Computes the size of a pixel in body fixed coordinates. This is only meaningful
+     * when the user is zoomed in a lot. To compute a result all 4 corners of the
+     * view window must intersect the asteroid.
+     *
+     * @return
+     */
+    private double computeSizeOfPixel()
+    {
+        // Do a pick at each of the 4 corners of the renderer
+        long currentTime = System.currentTimeMillis();
+        int width = renWin.getWidth();
+        int height = renWin.getHeight();
+
+        int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
+        double[][] points = new double[4][3];
+        for (int i=0; i<4; ++i)
+        {
+            int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
+
+            if (pickSucceeded == 1)
+            {
+                points[i] = smallBodyCellPicker.GetPickPosition();
+            }
+            else
+            {
+                return -1.0;
+            }
+        }
+
+        // Compute the scale if all 4 points intersect by averaging the distance of all 4 sides
+        double bottom = MathUtil.distanceBetweenFast(points[0], points[1]);
+        double right  = MathUtil.distanceBetweenFast(points[1], points[2]);
+        double top    = MathUtil.distanceBetweenFast(points[2], points[3]);
+        double left   = MathUtil.distanceBetweenFast(points[3], points[0]);
+
+        double sizeOfPixel =
+                ( bottom / (double)(width-1)  +
+                  right  / (double)(height-1) +
+                  top    / (double)(width-1)  +
+                  left   / (double)(height-1) ) / 4.0;
+
+        return sizeOfPixel;
+    }
+
+    private void updateTimeBarValue()
+    {
+        SimulationRun currentRun = runs.getCurrentRun();
+        if (currentRun != null)
+        {
+            Double time = currentRun.getTime();
+            currentRun.updateTimeBarValue(time);
+        }
+    }
+
+    private void updateScalarBar()
+    {
+        SimulationRun currentRun = runs.getCurrentRun();
+        if (currentRun != null)
+        {
+            currentRun.updateScalarBar();
+        }
+    }
+
+    public void updateTimeBarPosition()
+    {
+        SimulationRunCollection runs = (SimulationRunCollection)modelManager.getModel(ModelNames.SIMULATION_RUN_COLLECTION);
+        SimulationRun currentRun = runs.getCurrentRun();
+        if (currentRun != null)
+            currentRun.updateTimeBarPosition(renWin.getWidth(), renWin.getHeight());
+    }
+
+    private static volatile boolean pickingEnabled = true;
+
+    public static final double DEFAULT_PICK_TOLERANCE = 0.002;
+
+    private double pickTolerance = DEFAULT_PICK_TOLERANCE;
+
+    protected int doPick(MouseEvent e, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    {
+        return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
+    }
+
+    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtkRenderWindowPanel renWin)
+    {
+        if (pickingEnabled == false)
+            return 0;
+
+        // Don't do a pick if the event is more than a third of a second old
+        final long currentTime = System.currentTimeMillis();
+
+        //System.err.println("elapsed time " + (currentTime - when));
+        if (currentTime - when > 333)
+            return 0;
+
+        renWin.lock();
+
+        picker.SetTolerance(pickTolerance);
+
+        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
+
+        renWin.unlock();
+
+        return pickSucceeded;
+    }
+
+
+
+    private String getCustomDataFolder()
+    {
+        return modelManager.getPolyhedralModel().getCustomDataFolder();
+    }
+
+    private String getConfigFilename()
+    {
+        return modelManager.getPolyhedralModel().getConfigFilename();
+    }
+
+    private void initializeRunList() throws IOException
+    {
+        if (initialized)
+            return;
+
+        MapUtil configMap = new MapUtil(getConfigFilename());
+
+        boolean needToUpgradeConfigFile = false;
+        String[] runNames = configMap.getAsArray(SimulationRun.RUN_NAMES);
+        String[] runFilenames = configMap.getAsArray(SimulationRun.RUN_FILENAMES);
+        if (runFilenames == null)
+        {
+            // Mark that we need to upgrade config file to latest version
+            // which we'll do at end of function.
+            needToUpgradeConfigFile = true;
+            initialized = true;
+            return;
+        }
+
+        int numRuns = runFilenames.length;
+        for (int i=0; i<numRuns; ++i)
+        {
+            RunInfo runInfo = new RunInfo();
+            runInfo.name = runNames[i];
+            runInfo.runfilename = runFilenames[i];
+
+            ((DefaultListModel)simulationRunList.getModel()).addElement(runInfo);
+        }
+
+        if (needToUpgradeConfigFile)
+            updateConfigFile();
+
+        initialized = true;
+    }
+
+    private void saveSimulationRun(int index, RunInfo oldRunInfo, RunInfo newRunInfo) throws IOException
+    {
+        String uuid = UUID.randomUUID().toString();
+
+            // If newRunInfo.runfilename is null, that means we are in edit mode
+            // and should continue to use the existing run
+            if (newRunInfo.runfilename == null)
+            {
+                newRunInfo.runfilename = oldRunInfo.runfilename;
+            }
+            else
+            {
+                System.out.println("Added new simulation run: " + newRunInfo.runfilename);
+            }
+
+        DefaultListModel model = (DefaultListModel)simulationRunList.getModel();
+        if (index >= model.getSize())
+        {
+            model.addElement(newRunInfo);
+        }
+        else
+        {
+            model.set(index, newRunInfo);
+        }
+
+        updateConfigFile();
+    }
+
+    private RunInfo getRunInfo(int index)
+    {
+        return (RunInfo)((DefaultListModel)simulationRunList.getModel()).get(index);
+    }
+
+    private String getFileName(RunInfo runInfo)
+    {
+//        return getCustomDataFolder() + File.separator + runInfo.runfilename;
+        return runInfo.runfilename;
+    }
+
+    private String getFileName(int index)
+    {
+        return getFileName(getRunInfo(index));
+    }
+
+    private SimulationRunKey getRunKey(String filename)
+    {
+        return new SimulationRunKey(filename, SimulationRunSource.CLIPPER);
+    }
+
+    private SimulationRunKey getRunKey(int i)
+    {
+        return getRunKey(getFileName(getRunInfo(i)));
+    }
+
+    /**
+     * This function unmaps the run from the renderer and maps it again,
+     * if it is currently shown.
+     * @throws IOException
+     * @throws FitsException
+     */
+    private void remapRunToRenderer(int index) throws FitsException, IOException
+    {
+//        RunInfo runInfo = (RunInfo)((DefaultListModel)runList.getModel()).get(index);
+//        String filename = getCustomDataFolder() + File.separator + runInfo.runfilename;
+//        SimulationRunKey runKey = new SimulationRunKey(filename, SimulationRunSource.CLIPPER);
+        SimulationRunKey runKey = getRunKey(index);
+
+        // Remap the run on the renderer
+        if (runs.containsRun(runKey))
+        {
+            runs.removeRun(runKey);
+            runs.addRun(runKey);
+        }
+    }
+
+    private void removeAllRunsFromRenderer()
+    {
+        runs.removeRuns(SimulationRunSource.CLIPPER);
+    }
+
+    private void removeRun(int index)
+    {
+        SimulationRunKey runKey = getRunKey(index);
+        runs.removeRun(runKey);
+
+        ((DefaultListModel)simulationRunList.getModel()).remove(index);
+    }
+
+    private void moveDown(int i)
+    {
+        DefaultListModel model = (DefaultListModel)simulationRunList.getModel();
+
+        if (i >= model.getSize())
+            return;
+
+        Object o = model.get(i);
+
+        model.remove(i);
+        model.add(i+1, o);
+    }
+
+    private void updateConfigFile()
+    {
+        MapUtil configMap = new MapUtil(getConfigFilename());
+
+        String runNames = "";
+        String runFilenames = "";
+
+        DefaultListModel runListModel = (DefaultListModel)simulationRunList.getModel();
+        for (int i=0; i<runListModel.size(); ++i)
+        {
+            RunInfo runInfo = (RunInfo)runListModel.get(i);
+
+            runFilenames += runInfo.runfilename;
+            runNames += runInfo.name;
+
+            if (i < runListModel.size()-1)
+            {
+                runNames += CustomShapeModel.LIST_SEPARATOR;
+                runFilenames += CustomShapeModel.LIST_SEPARATOR;
+            }
+        }
+
+        Map<String, String> newMap = new LinkedHashMap<String, String>();
+
+        newMap.put(SimulationRun.RUN_NAMES, runNames);
+        newMap.put(SimulationRun.RUN_FILENAMES, runFilenames);
+
+        configMap.put(newMap);
+    }
+
+    private void runListMaybeShowPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            int index = simulationRunList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && simulationRunList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                // If the item right-clicked on is not selected, then deselect all the
+                // other items and select the item right-clicked on.
+                if (!simulationRunList.isSelectedIndex(index))
+                {
+                    simulationRunList.clearSelection();
+                    simulationRunList.setSelectedIndex(index);
+                }
+
+                int[] selectedIndices = simulationRunList.getSelectedIndices();
+                ArrayList<SimulationRunKey> runKeys = new ArrayList<SimulationRunKey>();
+                for (int selectedIndex : selectedIndices)
+                {
+                    SimulationRunKey runKey = getRunKey(selectedIndex);
+                    runKeys.add(runKey);
+                }
+                runPopupMenu.setCurrentRuns(runKeys);
+                runPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            PickEvent e = (PickEvent)evt.getNewValue();
+            Model model = modelManager.getModel(e.getPickedProp());
+            if (model instanceof SimulationRunCollection)
+            {
+                String name = null;
+
+                SimulationRunKey runKey = ((SimulationRunCollection)model).getRun((vtkActor)e.getPickedProp()).getKey();
+                name = runKey.name;
+//                System.out.println("Picked " + runKey.name);
+                SimulationRun run = runs.getRun(runKey);
+                int cellId = e.getPickedCellId();
+                vtkProp prop = e.getPickedProp();
+
+//                Trajectory traj = run.getTrajectoryByCellId(cellId);
+                Trajectory traj = run.getTrajectory(prop);
+                if (traj != null)
+                {
+                    String trajectoryName = traj.getName();
+
+                    int idx = -1;
+                    int size = trajectoryList.getModel().getSize();
+                    for (int i=0; i<size; ++i)
+                    {
+                        String trajname = (String)((ListModel)trajectoryList.getModel()).getElementAt(i);
+                        if (trajname.equals(trajectoryName))
+                        {
+                            idx = i;
+                            System.out.println(", " + idx +  " trajectory: " + name);
+                            break;
+                        }
+                    }
+
+                    SimulationRun currentRun = runs.getCurrentRun();
+                    if (currentRun != null)
+                    {
+                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(idx);
+                        System.out.println("Selected Trajectory " + selectedTrajectory.getName());
+                        currentRun.setCurrentTrajectoryIndex(idx);
+                        currentRun.setShowSpacecraft(true);
+                        currentRun.setTimeFraction(0.0);
+                    }
+                }
+//                if (idx >= 0)
+//                {
+//                    passList.setSelectionInterval(idx, idx);
+//                    Rectangle cellBounds = runList.getCellBounds(idx, idx);
+//                    if (cellBounds != null)
+//                        runList.scrollRectToVisible(cellBounds);
+//                }
+            }
+        }
+    }
+
+    private void initComponents() {
+
+        setLayout(new java.awt.GridBagLayout());
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        //
+        // Simulation Run list
+        //
+
+        // simulation run list label
+        simulationRunLabel = new JLabel();
+        simulationRunLabel.setText("Simulation Runs");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(simulationRunLabel, gridBagConstraints);
+
+        // run JList
+        simulationRunScrollPane = new javax.swing.JScrollPane();
+
+        simulationRunList = new javax.swing.JList();
+        simulationRunList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                runListMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                runListMouseReleased(evt);
+            }
+        });
+        simulationRunList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                simulationRunListValueChanged(evt);
+            }
+        });
+
+        simulationRunScrollPane.setViewportView(simulationRunList);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(simulationRunScrollPane, gridBagConstraints);
+
+        //
+        // Trajectories list
+        //
+
+        // trajectory list label
+        trajectoryLabel = new JLabel();
+        trajectoryLabel.setText("Passes");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(trajectoryLabel, gridBagConstraints);
+
+        // trajectory list JList
+        trajectoryScrollPane = new javax.swing.JScrollPane();
+
+        trajectoryList = new javax.swing.JList();
+        trajectoryList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                trajectoryListValueChanged(evt);
+            }
+        });
+        trajectoryList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+              trajectoryList = (JList) mouseEvent.getSource();
+              if (mouseEvent.getClickCount() == 2) {
+                  trajectoryListDoubleClicked(mouseEvent);
+              }
+            }
+          });
+
+        trajectoryScrollPane.setViewportView(trajectoryList);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(trajectoryScrollPane, gridBagConstraints);
+
+        //
+        // run list buttons
+        //
+
+        // create the button panel
+        simulationRunButtonPanel = new javax.swing.JPanel();
+        simulationRunButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
+
+//        jPanel2 = new javax.swing.JPanel();
+//        jPanel2.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
+
+        // create the buttons
+        newButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton();
+        moveUpButton = new javax.swing.JButton();
+        moveDownButton = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
+        removeAllButton = new javax.swing.JButton();
+
+        // new
+        newButton.setText("New...");
+        newButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newButtonActionPerformed(evt);
+            }
+        });
+        simulationRunButtonPanel.add(newButton);
+
+        // edit
+        editButton.setText("Edit...");
+        editButton.setEnabled(false);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+        simulationRunButtonPanel.add(editButton);
+
+//        // move up
+//        moveUpButton.setText("Move Up");
+//        moveUpButton.setEnabled(false);
+//        moveUpButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                moveUpButtonActionPerformed(evt);
+//            }
+//        });
+//        jPanel1.add(moveUpButton);
+//
+//        // move down
+//        moveDownButton.setText("Move Down");
+//        moveDownButton.setEnabled(false);
+//        moveDownButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                moveDownButtonActionPerformed(evt);
+//            }
+//        });
+//        jPanel1.add(moveDownButton);
+//
+        // delete from list
+        deleteButton.setText("Remove");
+        deleteButton.setEnabled(false);
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
+
+        simulationRunButtonPanel.add(deleteButton);
+
+        // add the button panel 1
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(simulationRunButtonPanel, gridBagConstraints);
+
+        //
+        // Area Calculation List
+        //
+
+        // area calculation label
+        areaCalculationLabel = new JLabel();
+        areaCalculationLabel.setText("Area Calculation");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(areaCalculationLabel, gridBagConstraints);
+
+        // Area Calculation scroll pane and list
+        areaCalculationScrollPane = new javax.swing.JScrollPane();
+
+        // create JList and bind to model
+        areaCalculationList = new javax.swing.JList();
+//        TorsoBodyModel torsoBodyModel = (TorsoBodyModel)modelManager.getSmallBodyModel();
+//        torsoBodyModel.getProps();
+//        organList.setModel(torsoBodyModel);
+
+        // add listeners
+        areaCalculationList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                areaCalculationListValueChanged(evt);
+            }
+        });
+
+        areaCalculationList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+                areaCalculationList = (JList) mouseEvent.getSource();
+              if (mouseEvent.getClickCount() == 2) {
+                  areaCalculationListDoubleClicked(mouseEvent);
+              }
+            }
+          });
+
+        areaCalculationScrollPane.setViewportView(areaCalculationList);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(areaCalculationScrollPane, gridBagConstraints);
+
+        //
+        // SurfacePatch List
+        //
+
+        // label
+        surfacePatchLabel = new JLabel();
+        surfacePatchLabel.setText("Images");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(surfacePatchLabel, gridBagConstraints);
+
+        // scroll pane and list
+        surfacePatchPane = new javax.swing.JScrollPane();
+
+        // create JList and bind to model
+        surfacePatchList = new javax.swing.JList();
+
+        // add listeners
+        surfacePatchList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                surfacePatchListValueChanged(evt);
+            }
+        });
+
+        surfacePatchList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+                surfacePatchList = (JList) mouseEvent.getSource();
+              if (mouseEvent.getClickCount() == 2) {
+                  surfacePatchListDoubleClicked(mouseEvent);
+              }
+            }
+          });
+
+        surfacePatchPane.setViewportView(surfacePatchList);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(surfacePatchPane, gridBagConstraints);
+
+        //
+        // surface data pane
+        //
+        surfaceDataPane = new SurfaceDataPane(modelManager);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(surfaceDataPane, gridBagConstraints);
+
+        //
+        // offset pane
+        //
+        SurfacePatchOffsetPane surfaceOffsetPane = new SurfacePatchOffsetPane(modelManager);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(surfaceOffsetPane, gridBagConstraints);
+
+        //
+        // passes pane
+        //
+        TimeControlPane timeControlPane = new TimeControlPane(modelManager);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(timeControlPane, gridBagConstraints);
+
+
+
+//        // remove all from view
+//        removeAllButton.setText("Remove All From View");
+//        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                removeAllButtonActionPerformed(evt);
+//            }
+//        });
+//        jPanel2.add(removeAllButton);
+//
+//        // add the button panel 2
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 8;
+//        gridBagConstraints.gridwidth = 2;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        add(jPanel2, gridBagConstraints);
+    }
+
+    //
+    // Operations
+    //
+
+    private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
+        RunInfo runInfo = new RunInfo();
+        SimulationRunImporterDialog dialog = new SimulationRunImporterDialog(null, false);
+        dialog.setRunInfo(runInfo, modelManager.getSmallBodyModel().isEllipsoid());
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+
+        // If user clicks okay add to list
+        if (dialog.getOkayPressed())
+        {
+            runInfo = dialog.getSimulationRunInfo();
+            try
+            {
+                saveSimulationRun(((DefaultListModel)simulationRunList.getModel()).getSize(), null, runInfo);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int[] selectedIndices = simulationRunList.getSelectedIndices();
+        Arrays.sort(selectedIndices);
+        for (int i=selectedIndices.length-1; i>=0; --i)
+        {
+            removeRun(selectedIndices[i]);
+        }
+
+        updateConfigFile();
+    }
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        int selectedItem = simulationRunList.getSelectedIndex();
+        if (selectedItem >= 0)
+        {
+            RunInfo oldRunInfo = (RunInfo)((DefaultListModel)simulationRunList.getModel()).get(selectedItem);
+
+            SimulationRunImporterDialog dialog = new SimulationRunImporterDialog(null, true);
+            dialog.setRunInfo(oldRunInfo, modelManager.getSmallBodyModel().isEllipsoid());
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+
+            // If user clicks okay replace item in list
+            if (dialog.getOkayPressed())
+            {
+                RunInfo newRunInfo = dialog.getSimulationRunInfo();
+                try
+                {
+                    saveSimulationRun(selectedItem, oldRunInfo, newRunInfo);
+                    remapRunToRenderer(selectedItem);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                catch (FitsException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void runListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runListMousePressed
+        runListMaybeShowPopup(evt);
+    }
+
+    private void runListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runListMouseReleased
+        runListMaybeShowPopup(evt);
+    }
+
+    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
+        removeAllRunsFromRenderer();
+    }
+
+    private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
+        int minSelectedItem = simulationRunList.getMinSelectionIndex();
+        if (minSelectedItem > 0)
+        {
+            int[] selectedIndices = simulationRunList.getSelectedIndices();
+            Arrays.sort(selectedIndices);
+            for (int i=0; i<selectedIndices.length; ++i)
+            {
+                --selectedIndices[i];
+                moveDown(selectedIndices[i]);
+            }
+
+            simulationRunList.clearSelection();
+            simulationRunList.setSelectedIndices(selectedIndices);
+            simulationRunList.scrollRectToVisible(simulationRunList.getCellBounds(minSelectedItem-1, minSelectedItem-1));
+
+            updateConfigFile();
+        }
+    }
+
+    private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
+        int maxSelectedItem = simulationRunList.getMaxSelectionIndex();
+        if (maxSelectedItem >= 0 && maxSelectedItem < simulationRunList.getModel().getSize()-1)
+        {
+            int[] selectedIndices = simulationRunList.getSelectedIndices();
+            Arrays.sort(selectedIndices);
+            for (int i=selectedIndices.length-1; i>=0; --i)
+            {
+                moveDown(selectedIndices[i]);
+                ++selectedIndices[i];
+            }
+
+            simulationRunList.clearSelection();
+            simulationRunList.setSelectedIndices(selectedIndices);
+            simulationRunList.scrollRectToVisible(simulationRunList.getCellBounds(maxSelectedItem+1, maxSelectedItem+1));
+
+            updateConfigFile();
+        }
+    }
+
+    private void simulationRunListValueChanged(javax.swing.event.ListSelectionEvent evt)
+    {
+        int[] indices = simulationRunList.getSelectedIndices();
+        if (indices == null || indices.length == 0)
+        {
+            editButton.setEnabled(false);
+            moveUpButton.setEnabled(false);
+            moveDownButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
+        else
+        {
+            editButton.setEnabled(indices.length == 1);
+            deleteButton.setEnabled(true);
+            int minSelectedItem = simulationRunList.getMinSelectionIndex();
+            int maxSelectedItem = simulationRunList.getMaxSelectionIndex();
+            moveUpButton.setEnabled(minSelectedItem > 0);
+            moveDownButton.setEnabled(maxSelectedItem < simulationRunList.getModel().getSize()-1);
+
+            if (indices.length == 1 && !evt.getValueIsAdjusting())
+            {
+                int index = indices[0];
+                RunInfo runInfo = getRunInfo(index);
+                System.out.println("Selected " + runInfo.name + ", " + runInfo.runfilename);
+
+                SimulationRunKey runKey = getRunKey(index);
+
+                // load in the new dataset
+                runs.addRun(runKey);
+
+                // set the current run
+                SimulationRun currentRun = runs.getCurrentRun();
+
+                if (currentRun != null)
+                {
+                    trajectoryList.setModel(currentRun);
+                    areaCalculationList.setModel(currentRun.getAreaCalculationCollection());
+                    updateTimeBarPosition();
+                }
+
+            }
+        }
+    }
+
+    private void trajectoryListDoubleClicked(MouseEvent mouseEvent)
+    {
+        int index = trajectoryList.locationToIndex(mouseEvent.getPoint());
+        if (index >= 0) {
+          Object o = trajectoryList.getModel().getElementAt(index);
+          System.out.println("Double-clicked on: " + o.toString());
+          SimulationRun currentRun = runs.getCurrentRun();
+          if (currentRun != null)
+          {
+              Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
+              String currentTrajectoryName = selectedTrajectory.getName();
+              System.out.println("Select Current Trajectory " + currentTrajectoryName);
+              currentRun.setCurrentTrajectoryIndex(index);
+              currentRun.setShowSpacecraft(true);
+              currentRun.setTimeFraction(0.0);
+
+              // tell the AreaCalculation about the new current trajectory
+              AreaCalculationCollection areaCalculationList = runs.getCurrentRun().getAreaCalculationCollection();
+              currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
+              areaCalculationList.setCurrentTrajectory(currentTrajectoryName);
+              AreaCalculation selectedAreaCalculation = areaCalculationList.getCurrentValue();
+              if (selectedAreaCalculation != null)
+              {
+                  this.surfacePatchList.setModel(selectedAreaCalculation);
+                  this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
+              }
+          }
+        }
+    }
+
+
+    private void trajectoryListValueChanged(javax.swing.event.ListSelectionEvent evt)
+    {
+        int[] indices = trajectoryList.getSelectedIndices();
+//        int minSelectedItem = passList.getMinSelectionIndex();
+//        int maxSelectedItem = passList.getMaxSelectionIndex();
+
+        if (indices.length >= 1 && !evt.getValueIsAdjusting())
+        {
+            SimulationRun currentRun = runs.getCurrentRun();
+
+            if (currentRun != null)
+            {
+                // remove currently displayed patches
+                currentRun.setShowPatches(new HashSet<String>());
+
+                Set<String> trajectoryNames = new HashSet<String>();
+                for (int i=0; i <indices.length; i++)
+                {
+                    int index = indices[i];
+                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
+                    System.out.println("Show Trajectory " + selectedTrajectory.getName());
+                    trajectoryNames.add(selectedTrajectory.getName());
+                }
+
+                if (currentRun != null)
+                {
+                    currentRun.setShowSpacecraft(false);
+                    currentRun.setShowTrajectories(trajectoryNames);
+                }
+
+                // if only one item is selected, set the AreaCalculation target
+                if (indices.length == 1)
+                {
+                    int selectedTrajectoryIndex = indices[0];
+    //                currentRun.markPatchesOutOfDate();
+
+                    // tell the AreaCalculation about the new current trajectory
+                    AreaCalculationCollection areaCalculationCollection = currentRun.getAreaCalculationCollection();
+    //                String currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
+                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(selectedTrajectoryIndex);
+                    String selectedTrajectoryName = selectedTrajectory.getName();
+
+                    areaCalculationCollection.setCurrentTrajectory(selectedTrajectoryName);
+                    AreaCalculation selectedAreaCalculation = areaCalculationCollection.getCurrentValue();
+                    Integer selectedAreaCalculationIndex = areaCalculationCollection.getCurrentIndex();
+                    areaCalculationCollection.setCurrentIndex(selectedAreaCalculationIndex);
+
+                    if (selectedAreaCalculation != null)
+                    {
+                        selectedAreaCalculation.markPatchesOutOfDate();
+                        // for some reason, we need to change the list model to force it to update -turner1
+                        this.surfacePatchList.setModel(new DefaultListModel());
+                        this.surfacePatchList.setModel(selectedAreaCalculation);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void areaCalculationListDoubleClicked(MouseEvent mouseEvent)
+    {
+        int index = areaCalculationList.locationToIndex(mouseEvent.getPoint());
+        if (index >= 0) {
+          Object o = areaCalculationList.getModel().getElementAt(index);
+          System.out.println("Double-clicked on: " + o.toString());
+//          Scenario currentScenario = scenarios.getCurrentScenario();
+//          if (currentScenario != null)
+//          {
+//              System.out.println("Select Organ " + o);
+//          }
+        }
+    }
+
+
+    private void areaCalculationListValueChanged(javax.swing.event.ListSelectionEvent evt)
+    {
+        int[] indices = areaCalculationList.getSelectedIndices();
+
+        if (indices.length == 1 && !evt.getValueIsAdjusting())
+        {
+            SimulationRun currentRun = runs.getCurrentRun();
+            // remove currently displayed patches
+            currentRun.setShowPatches(new HashSet<String>());
+
+            int index = indices[0];
+            AreaCalculation selectedAreaCalculation = (AreaCalculation)areaCalculationList.getModel().getElementAt(index);
+            System.out.println("Select Area Calculation: " + selectedAreaCalculation);
+            AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
+            areaCalculationCollection.setCurrentIndex(index);
+            AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
+            if (currentAreaCalculation != null)
+            {
+                runs.getCurrentRun().setAreaCalculation(selectedAreaCalculation);
+                this.surfacePatchList.setModel(selectedAreaCalculation);
+                this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
+//                this.invalidate();
+//                this.validate();
+//                this.repaint();
+            }
+        }
+    }
+    private void surfacePatchListDoubleClicked(MouseEvent mouseEvent)
+    {
+//        int index = surfacePatchList.locationToIndex(mouseEvent.getPoint());
+//        if (index >= 0) {
+//          SurfacePatch selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
+//          System.out.println("Double-clicked on surface patch: " + selectedSurfacePatch.toString());
+//          AreaCalculation areaCalculation = runs.getCurrentRun().getAreaCalculation();
+//          if (areaCalculation != null)
+//          {
+//              areaCalculation.setCurrentPatchIndex(index);
+//              updateScalarBar();
+//          }
+//        }
+    }
+
+    private Set<String> visiblePatches = new HashSet<String>();
+    private SurfacePatch selectedSurfacePatch = null;
+
+    private void surfacePatchListValueChanged(javax.swing.event.ListSelectionEvent evt)
+    {
+        int[] indices = surfacePatchList.getSelectedIndices();
+        AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
+        AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
+
+        if (indices.length >= 1 && !evt.getValueIsAdjusting())
+        {
+            visiblePatches.clear();
+            for (int i=0; i <indices.length; i++)
+            {
+                int index = indices[i];
+                selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
+                visiblePatches.add(selectedSurfacePatch.getName());
+                System.out.println("Select Surface Patch: " + selectedSurfacePatch);
+
+                // use the first of the selected surface patches as the model for the surface pane
+                if (i == 0)
+                {
+                    this.surfaceDataPane.setModel(selectedSurfacePatch);
+                    if (currentAreaCalculation != null)
+                    {
+                        currentAreaCalculation.setCurrentPatch(selectedSurfacePatch);
+                    }
+                }
+
+            }
+            runs.getCurrentRun().setShowPatches(visiblePatches);
+            updateScalarBar();
+        }
+    }
+}
