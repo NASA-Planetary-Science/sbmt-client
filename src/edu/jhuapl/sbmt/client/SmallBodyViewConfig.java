@@ -189,6 +189,737 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
         configArray.add(c);
 
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.RQ36;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.NOLAN;
+        c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        configArray.add(c);
+
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = ShapeModelType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.ENHANCED;
+//            c.author = ShapeModelAuthor.GASKELL;
+//            c.version = "V2";
+//            c.rootDirOnServer = "/GASKELL/RQ36";
+//            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+//            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+//            c.hasLidarData = true;
+//            c.hasMapmaker = true;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+//            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
+//            c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
+//            c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 18;
+//            c.lidarBrowseNoiseIndex = -1;
+//            c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/OlaLidarFiles.txt";
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 168;
+//            c.lidarOffsetScale = 0.0005;
+//            c.lidarInstrumentName = Instrument.OLA;
+//            configArray.add(c);
+//        }
+
+        //PolyCam, MapCam
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V3 Image";
+            c.rootDirOnServer = "/GASKELL/RQ36_V3";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.hasMapmaker = true;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
+                            //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
+                            ImageType.POLYCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
+                            //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
+                            ImageType.MAPCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
+            c.density = 1.0;
+            c.useMinimumReferencePotential = false;
+            c.rotationRate = 0.000407026411379;
+            c.hasLidarData = true;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+            c.lidarInstrumentName = Instrument.OLA;
+            configArray.add(c);
+
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
+            // default ideal data
+            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
+            // noisy data
+            c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.version = "V4 Image";
+            c.rootDirOnServer = "/GASKELL/RQ36_V4";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY"),
+                            ImageType.POLYCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP"),
+                            ImageType.MAPCAM_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
+            c.density = 1.26;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.0004061303295118512;
+            configArray.add(c);
+        }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.BETULIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.GEOGRAPHOS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.BACCHUS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.RASHALOM;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.TOUTATIS_LOW_RES;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.TOUTATIS_HIGH_RES;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.MITHRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.NEREUS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.CASTALIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.GOLEVKA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.HW1;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.SK;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/SK/sk.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody._1950DAPROGRADE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody._1950DARETROGRADE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.WT24;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/WT24/wt24.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody._52760_1998_ML14;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.YORP;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/YORP/yorp.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.KW4A;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.KW4B;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.CCALPHA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.CE26;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/CE26/ce26.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.EV5;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.KY26;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.NEO;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
+        configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.CERES;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.MAIN_BELT;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/GASKELL/CERES";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasMapmaker = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres"),
+                            ImageType.FCCERES_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.FC
+                    )
+            };
+
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "Filter 1 (735 nm)",
+                    "Filter 2 (548 nm)",
+                    "Filter 3 (749 nm)",
+                    "Filter 4 (918 nm)",
+                    "Filter 5 (978 nm)",
+                    "Filter 6 (829 nm)",
+                    "Filter 7 (650 nm)",
+                    "Filter 8 (428 nm)"
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            configArray.add(c);
+        }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.PALLAS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.VESTA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
+        c.rootDirOnServer = "/GASKELL/VESTA";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasMapmaker = true;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC"),
+                        ImageType.FC_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                        Instrument.FC
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{
+                "Filter 1 (735 nm)",
+                "Filter 2 (548 nm)",
+                "Filter 3 (749 nm)",
+                "Filter 4 (918 nm)",
+                "Filter 5 (978 nm)",
+                "Filter 6 (829 nm)",
+                "Filter 7 (650 nm)",
+                "Filter 8 (428 nm)"
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.VESTA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/VESTA_OLD";
+        configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.LUTETIA;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.MAIN_BELT;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/GASKELL/LUTETIA";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING"),
+                            ImageType.OSIRIS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.OSIRIS
+                            )
+            };
+
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+            c.imageSearchDefaultMaxResolution = 4000.0;
+            configArray.add(c);
+        }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.LUTETIA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.JORDA;
+        c.rootDirOnServer = "/JORDA/LUTETIA";
+        c.smallBodyLabelPerResolutionLevel = new String[]{
+                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
+                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
+                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
+        };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                2962, 5824, 11954, 24526, 47784, 98280, 189724,
+                244128, 382620, 784510, 1586194, 3145728
+        };
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.DAPHNE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.HERMIONE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.CARRY;
+        c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.KLEOPATRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+        c.author = ShapeModelAuthor.HUDSON;
+        c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.IDA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
+        c.hasImageMap = true;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/IDA/SSI"),
+                        ImageType.SSI_IDA_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.SSI
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.IDA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
+        c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
+        c.hasImageMap = true;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.MATHILDE;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
+        c.hasImageMap = true;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/MATHILDE/MSI"),
+                        ImageType.MSI_MATHILDE_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.MSI
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{
+                "Filter 1 (550 nm)",
+                "Filter 2 (450 nm)",
+                "Filter 3 (760 nm)",
+                "Filter 4 (950 nm)",
+                "Filter 5 (900 nm)",
+                "Filter 6 (1000 nm)",
+                "Filter 7 (1050 nm)"
+        };
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.GASPRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
+        c.hasImageMap = true;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/THOMAS/GASPRA/SSI"),
+                        ImageType.SSI_GASPRA_IMAGE,
+                        new ImageSource[]{ImageSource.CORRECTED},
+                        Instrument.SSI
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.GASPRA;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
+        c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
+        c.hasImageMap = true;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.STEINS;
+        c.type = ShapeModelType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.JORDA;
+        c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.HALLEY;
+        c.type = ShapeModelType.COMETS;
+        c.population = null;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
+        c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.DEIMOS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.MARS;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
+        c.hasImageMap = true;
+        configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.EXPERIMENTAL;
+            c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
+            c.hasImageMap = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS"),
+                            ImageType.DEIMOS_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
+                            Instrument.IMAGING_DATA
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+            c.imageSearchDefaultMaxResolution = 800.0;
+            configArray.add(c);
+
+        }
+
         // Gaskell Phobos
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOBOS;
@@ -363,6 +1094,15 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
 
             c = c.clone();
+            c.body = ShapeModelBody.AMALTHEA;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.JUPITER;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.STOOKE;
+            c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
+            configArray.add(c);
+
+            c = c.clone();
             c.body = ShapeModelBody.CALLISTO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
@@ -494,12 +1234,90 @@ public class SmallBodyViewConfig extends BodyViewConfig
         }
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.AMALTHEA;
+        c.body = ShapeModelBody.DIONE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.JUPITER;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
+        c.rootDirOnServer = "/GASKELL/DIONE";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/DIONE/IMAGING"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
+        c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.EPIMETHEUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
+        configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.HYPERION;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/GASKELL/HYPERION";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            configArray.add(c);
+        }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.HYPERION;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.JANUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
+        configArray.add(c);
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.JANUS;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
+        c.rootDirOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -531,6 +1349,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.PANDORA;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.STOOKE;
+        c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
+        configArray.add(c);
+
+
+        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOEBE;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -557,294 +1385,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.CERES;
-            c.type = ShapeModelType.ASTEROID;
-            c.population = ShapeModelPopulation.MAIN_BELT;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.rootDirOnServer = "/GASKELL/CERES";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasMapmaker = true;
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres"),
-                            ImageType.FCCERES_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.FC
-                    )
-            };
-
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
-                    "Filter 1 (735 nm)",
-                    "Filter 2 (548 nm)",
-                    "Filter 3 (749 nm)",
-                    "Filter 4 (918 nm)",
-                    "Filter 5 (978 nm)",
-                    "Filter 6 (829 nm)",
-                    "Filter 7 (650 nm)",
-                    "Filter 8 (428 nm)"
-            };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
-            configArray.add(c);
-        }
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.VESTA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
-        c.rootDirOnServer = "/GASKELL/VESTA";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        c.hasMapmaker = true;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC"),
-                        ImageType.FC_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                        Instrument.FC
-                        )
-        };
-
-        c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
-                "Filter 1 (735 nm)",
-                "Filter 2 (548 nm)",
-                "Filter 3 (749 nm)",
-                "Filter 4 (918 nm)",
-                "Filter 5 (978 nm)",
-                "Filter 6 (829 nm)",
-                "Filter 7 (650 nm)",
-                "Filter 8 (428 nm)"
-        };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.VESTA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/VESTA_OLD";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.IDA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
-        c.hasImageMap = true;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/IDA/SSI"),
-                        ImageType.SSI_IDA_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.SSI
-                        )
-        };
-
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.IDA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
-        c.hasImageMap = true;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.GASPRA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
-        c.hasImageMap = true;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/GASPRA/SSI"),
-                        ImageType.SSI_GASPRA_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.SSI
-                        )
-        };
-
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.GASPRA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
-        c.hasImageMap = true;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.MATHILDE;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
-        c.hasImageMap = true;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/MATHILDE/MSI"),
-                        ImageType.MSI_MATHILDE_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.MSI
-                        )
-        };
-
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
-                "Filter 1 (550 nm)",
-                "Filter 2 (450 nm)",
-                "Filter 3 (760 nm)",
-                "Filter 4 (950 nm)",
-                "Filter 5 (900 nm)",
-                "Filter 6 (1000 nm)",
-                "Filter 7 (1050 nm)"
-        };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.DEIMOS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.MARS;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
-        c.hasImageMap = true;
-        configArray.add(c);
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.DEIMOS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.MARS;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.EXPERIMENTAL;
-            c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
-            c.hasImageMap = true;
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS"),
-                            ImageType.DEIMOS_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
-                            Instrument.IMAGING_DATA
-                            )
-            };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
-                    "VIS, Blue",
-                    "VIS, Minus Blue",
-                    "VIS, Violet",
-                    "VIS, Clear",
-                    "VIS, Green",
-                    "VIS, Red",
-            };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
-            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
-            c.imageSearchDefaultMaxResolution = 800.0;
-            configArray.add(c);
-
-        }
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.JANUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.JANUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.HALLEY;
-        c.type = ShapeModelType.COMETS;
-        c.population = null;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -874,519 +1414,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.PANDORA;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.GEOGRAPHOS;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.KY26;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.BACCHUS;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.KLEOPATRA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS_LOW_RES;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS_HIGH_RES;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.CASTALIA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody._52760_1998_ML14;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.GOLEVKA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.YORP;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/YORP/yorp.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.WT24;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/WT24/wt24.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.SK;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/SK/sk.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.RASHALOM;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.NEREUS;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.MITHRA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.KW4A;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.KW4B;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.HW1;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.EV5;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.CE26;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/CE26/ce26.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.CCALPHA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.BETULIA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody._1950DAPROGRADE;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody._1950DARETROGRADE;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
-        c.rootDirOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
-        c.hasColoringData = false;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.RQ36;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.NOLAN;
-        c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
-        configArray.add(c);
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = ShapeModelType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.ENHANCED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.version = "V2";
-            c.rootDirOnServer = "/GASKELL/RQ36";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.hasLidarData = true;
-            c.hasMapmaker = true;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36/OLA/cubes");
-            c.lidarBrowseXYZIndices = new int[]{96, 104, 112};
-            c.lidarBrowseSpacecraftIndices = new int[]{144, 152, 160};
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 18;
-            c.lidarBrowseNoiseIndex = -1;
-            c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/OlaLidarFiles.txt";
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 168;
-            c.lidarOffsetScale = 0.0005;
-            c.lidarInstrumentName = Instrument.OLA;
-            configArray.add(c);
-        }
-
-        //PolyCam, MapCam
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = ShapeModelType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.version = "V3 Image";
-            c.rootDirOnServer = "/GASKELL/RQ36_V3";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.hasMapmaker = true;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
-                            //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
-                            ImageType.POLYCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
-                            //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
-                            ImageType.MAPCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-            c.density = 1.0;
-            c.useMinimumReferencePotential = false;
-            c.rotationRate = 0.000407026411379;
-            c.hasLidarData = true;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-            c.lidarInstrumentName = Instrument.OLA;
-            configArray.add(c);
-
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
-            // default ideal data
-            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
-            // noisy data
-            c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = ShapeModelType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.version = "V4 Image";
-            c.rootDirOnServer = "/GASKELL/RQ36_V4";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY"),
-                            ImageType.POLYCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP"),
-                            ImageType.MAPCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-            c.density = 1.26;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.0004061303295118512;
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.LUTETIA;
-            c.type = ShapeModelType.ASTEROID;
-            c.population = ShapeModelPopulation.MAIN_BELT;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.rootDirOnServer = "/GASKELL/LUTETIA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING"),
-                            ImageType.OSIRIS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.OSIRIS
-                            )
-            };
-
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-            c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-            c.imageSearchDefaultMaxResolution = 4000.0;
-            configArray.add(c);
-        }
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.LUTETIA;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.JORDA;
-        c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.smallBodyLabelPerResolutionLevel = new String[]{
-                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
-                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
-                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-        };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
-                2962, 5824, 11954, 24526, 47784, 98280, 189724,
-                244128, 382620, 784510, 1586194, 3145728
-        };
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.STEINS;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.JORDA;
-        c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.DIONE;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
-        c.rootDirOnServer = "/GASKELL/DIONE";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
-        c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/DIONE/IMAGING"),
-                        ImageType.SATURN_MOON_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL},
-                        Instrument.IMAGING_DATA
-                        )
-        };
-
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
-        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
-        c.imageSearchDefaultMaxResolution = 4000.0;
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TETHYS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
-        c.rootDirOnServer = "/GASKELL/TETHYS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-        configArray.add(c);
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.HYPERION;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.SATURN;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
-            c.rootDirOnServer = "/GASKELL/HYPERION";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            configArray.add(c);
-        }
-
         if (Configuration.isAPLVersion())
         {
             c = new SmallBodyViewConfig();
@@ -1402,12 +1429,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         }
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.HYPERION;
+        c.body = ShapeModelBody.TETHYS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        c.author = ShapeModelAuthor.GASKELL;
+        c.rootDirOnServer = "/GASKELL/TETHYS";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1620,32 +1649,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.PALLAS;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
-        c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.DAPHNE;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
-        c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.HERMIONE;
-        c.type = ShapeModelType.ASTEROID;
-        c.population = ShapeModelPopulation.MAIN_BELT;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
-        c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
-        configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
@@ -1694,6 +1697,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 1.0e6;
             configArray.add(c);
 
+
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
@@ -1732,6 +1736,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             configArray.add(c);
 
+            SmallBodyViewConfig hydra = new SmallBodyViewConfig();
+
             c = c.clone();
             c.body = ShapeModelBody.HYDRA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
@@ -1766,9 +1772,21 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.LEISA
                             )
             };
+            hydra = c.clone();
             configArray.add(c);
 
-            c = c.clone();
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.KERBEROS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.PLUTO;
+            c.dataUsed = null;
+            c.author = null;
+            c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
+            c.hasColoringData = false;
+            configArray.add(c);
+
+            c = hydra;
             c.body = ShapeModelBody.NIX;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.PLUTO;
@@ -1802,16 +1820,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.LEISA
                             )
             };
-            configArray.add(c);
-
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.KERBEROS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-            c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
-            c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
-            c.hasColoringData = false;
             configArray.add(c);
 
             c = new SmallBodyViewConfig();
