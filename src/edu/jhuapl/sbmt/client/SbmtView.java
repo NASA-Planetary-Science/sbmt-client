@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
+import edu.jhuapl.sbmt.model.europa.SimulationRunCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
@@ -142,6 +143,12 @@ public class SbmtView extends View
         if (getPolyhedralModelConfig().hasLineamentData)
         {
             allModels.put(ModelNames.LINEAMENT, SbmtModelFactory.createLineament());
+        }
+
+        if (getPolyhedralModelConfig().hasFlybyData)
+        {
+//            allModels.put(ModelNames.FLYBY, ModelFactory.createFlyby(smallBodyModel));
+            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
         }
 
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
