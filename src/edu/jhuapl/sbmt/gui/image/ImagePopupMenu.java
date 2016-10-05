@@ -880,8 +880,10 @@ public class ImagePopupMenu extends PopupMenu
             }
 
             if (e.isShiftDown())
+            {
                 showImageInfoMenuItem.doClick();
-            setVisible(false);
+                setVisible(false);
+            }
         }
     }
 

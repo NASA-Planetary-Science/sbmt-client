@@ -86,6 +86,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         renWin.setInteractorStyle(style);
 
+
+
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
 
         // Only allow contrast changing for images with exactly 1 channel
