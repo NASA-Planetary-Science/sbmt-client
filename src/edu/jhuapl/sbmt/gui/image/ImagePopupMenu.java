@@ -19,8 +19,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -48,6 +46,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagePopupMenu extends PopupMenu
@@ -878,6 +878,10 @@ public class ImagePopupMenu extends PopupMenu
                 setCurrentImage(image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
+
+            if (e.isShiftDown())
+                showImageInfoMenuItem.doClick();
+            setVisible(false);
         }
     }
 
