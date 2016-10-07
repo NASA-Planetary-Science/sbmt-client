@@ -24,6 +24,7 @@ import vtk.vtkTexture;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.util.ImageDataUtil;
@@ -231,6 +232,8 @@ public class OsirisImage extends PerspectiveImage
     }
 
     vtkPolyData offLimbPlane=null;
+    vtkActor offLimbActor;
+    vtkTexture offLimbTexture;
 
     public void loadOffLimbPlane()
     {
@@ -326,39 +329,73 @@ public class OsirisImage extends PerspectiveImage
 
         offLimbPlane=imagePolyData;
         PolyDataUtil.generateTextureCoordinates(getFrustum(), getImageWidth(), getImageHeight(), offLimbPlane);
+
+        if (getDisplayedImage()!=null)
+        {
+            //        for (int i=image.GetExtent()[0]; i<=image.GetExtent()[1]; i++)
+            //            for (int j=image.GetExtent()[2]; j<=image.GetExtent()[3]; j++)
+            //                image.SetScalarComponentFromDouble(i, j, 0, 3, 0.7*255);    // set alpha manually per pixel; is there a faster way to do this?
+            offLimbTexture = new vtkTexture();
+            offLimbTexture.InterpolateOn();
+            offLimbTexture.RepeatOff();
+            offLimbTexture.EdgeClampOn();
+            //offLimbTexture.SetBlendingMode(3);
+            this.setDisplayedImageRange(super.getDisplayedRange());
+
+            vtkPolyDataMapper offLimbMapper=new vtkPolyDataMapper();
+            offLimbMapper.SetInputData(offLimbPlane);
+
+            offLimbActor=new vtkActor();
+            offLimbActor.SetMapper(offLimbMapper);
+            offLimbActor.SetTexture(offLimbTexture);
+        }
+
     }
 
     @Override
     public List<vtkProp> getProps()
     {
-        List<vtkProp> props=super.getProps();
-
-        if (offLimbPlane==null)
+        if (offLimbActor==null)
             loadOffLimbPlane();
 
-        // XXX: Mike Z's default intensity range for testing plume visibility
-        setDisplayedImageRange(new IntensityRange(getDisplayedRange().min, getDisplayedRange().max/50));
+        List<vtkProp> props=super.getProps();
+        if (props.contains(offLimbActor))
+            props.remove(offLimbActor);
+        props.add(offLimbActor);
+        return props;
+    }
 
+    public boolean offLimbFootprintIsVisible()
+    {
+        if (offLimbActor==null)
+            return true;    // philosophically, it's not "hidden" if it doesn't exist
+        else
+            return offLimbActor.GetVisibility()==1;
+    }
+
+    public void setOffLimbFootprintVisibility(boolean visible)
+    {
+        if (offLimbActor!=null)
+        {
+            if (visible)
+                offLimbActor.VisibilityOn();
+            else
+                offLimbActor.VisibilityOff();
+        }
+        pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
+    }
+
+    @Override
+    public void setDisplayedImageRange(IntensityRange range)
+    {
+        super.setDisplayedImageRange(range);
+        if (offLimbTexture==null)
+            offLimbTexture=new vtkTexture();
         vtkImageData image=new vtkImageData();
         image.DeepCopy(getDisplayedImage());
-        for (int i=image.GetExtent()[0]; i<=image.GetExtent()[1]; i++)
-            for (int j=image.GetExtent()[2]; j<=image.GetExtent()[3]; j++)
-                image.SetScalarComponentFromDouble(i, j, 0, 3, 0.7*255);
-        vtkTexture offLimbTexture = new vtkTexture();
-        offLimbTexture.InterpolateOn();
-        offLimbTexture.RepeatOff();
-        offLimbTexture.EdgeClampOn();
-        //offLimbTexture.SetBlendingMode(3);
         offLimbTexture.SetInputData(image);
+        offLimbTexture.Modified();
 
-        vtkPolyDataMapper mapper=new vtkPolyDataMapper();
-        mapper.SetInputData(offLimbPlane);
-
-        vtkActor actor=new vtkActor();
-        actor.SetMapper(mapper);
-        actor.SetTexture(offLimbTexture);
-        props.add(actor);
-
-        return props;
     }
 }

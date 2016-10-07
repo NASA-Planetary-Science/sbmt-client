@@ -82,10 +82,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         vtkInteractorStyleImage style =
             new vtkInteractorStyleImage();
-
-
         renWin.setInteractorStyle(style);
 
+        renWin.getRenderWindow().GetInteractor().GetInteractorStyle().AddObserver("WindowLevelEvent",this,"levelsChanged");
 
 
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
@@ -258,6 +257,29 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 renWin.Render();
             }
         });
+    }
+
+    int[] previousLevels=null;
+
+    private void levelsChanged()
+    {
+        // don't do anything for now; this seems to disable the auto-contrast functionality
+
+/*        vtkInteractorStyleImage style=(vtkInteractorStyleImage)renWin.getRenderWindowInteractor().GetInteractorStyle();
+        int[] currentLevels=style.GetWindowLevelCurrentPosition();
+        if (previousLevels==null)
+            previousLevels=currentLevels;
+        int dBrightness=currentLevels[1]-previousLevels[1];
+        int dContrast=currentLevels[0]-previousLevels[0];
+        int sliderChange=(int)((double)(slider.getMaximum()-slider.getMinimum())*(double)dContrast/(double)renWin.getComponent().getWidth());
+        System.out.println(dContrast+" "+sliderChange);
+        slider.setHighValue(slider.getHighValue()+sliderChange);
+        //
+        int lowVal = slider.getLowValue();
+        int highVal = slider.getHighValue();
+        if (image != null)
+            image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
+        previousLevels=currentLevels;*/
     }
 
     private void createMenus()
