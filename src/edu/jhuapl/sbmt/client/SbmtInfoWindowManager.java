@@ -23,6 +23,8 @@ import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
 
 public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListener
 {
@@ -98,6 +100,8 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
+            if (model instanceof OsirisImage)
+                return new OsirisImageInfoPanel((Image)model, images, boundaries);
             return new ImageInfoPanel((Image)model, images, boundaries);
         }
         else if (model instanceof NISSpectrum)

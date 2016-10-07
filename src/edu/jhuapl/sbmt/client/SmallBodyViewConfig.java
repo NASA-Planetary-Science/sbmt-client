@@ -1231,6 +1231,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+            // noisy data with nav error
+            c.lidarSearchDataSourceMap.put("Noise Nav Error","/GASKELL/RQ36_V3/OLA/trees/noise_navError/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise Nav Error","/GASKELL/RQ36_V3/OLA/browse/noise_navError/fileList.txt");
+            // noisy data with attitude error
+            c.lidarSearchDataSourceMap.put("Noise Attitude Error Unconstrained","/GASKELL/RQ36_V3/OLA/trees/noise_attitudeError_Unconstrained/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise Attitude Error Unconstrained","/GASKELL/RQ36_V3/OLA/browse/noise_attitudeError_Unconstrained/fileList.txt");
+            //
+            c.lidarSearchDataSourceMap.put("Noise Nav Error Attitude Error Unconstrained","/GASKELL/RQ36_V3/OLA/trees/noise_navError_attitudeError_Unconstrained/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise Nav Error Attitude Error Unconstrained","/GASKELL/RQ36_V3/OLA/browse/noise_navError_attitudeError_Unconstrained/fileList.txt");
+
         }
 
         if (Configuration.isAPLVersion())

@@ -48,8 +48,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -87,30 +85,32 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
+import nom.tam.fits.FitsException;
+
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private SmallBodyViewConfig smallBodyConfig;
-    private final ModelManager modelManager;
+    protected final ModelManager modelManager;
     private final SbmtInfoWindowManager infoPanelManager;
     private final SbmtSpectrumWindowManager spectrumPanelManager;
     private final PickManager pickManager;
-    private final Renderer renderer;
+    protected final Renderer renderer;
     private java.util.Date startDate = null;
     private java.util.Date endDate = null;
-    private IdPair resultIntervalCurrentlyShown = null;
+    protected IdPair resultIntervalCurrentlyShown = null;
     private ImageKey selectedRedKey;
     private ImageKey selectedGreenKey;
     private ImageKey selectedBlueKey;
     private JCheckBox[] filterCheckBoxes;
     private JCheckBox[] userDefinedCheckBoxes;
 
-    private ImagingInstrument instrument = new ImagingInstrument();
+    protected ImagingInstrument instrument = new ImagingInstrument();
 
     // The source of the images of the most recently executed query
-    private ImageSource sourceOfLastQuery = ImageSource.SPICE;
+    protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
 
-    private List<List<String>> imageRawResults = new ArrayList<List<String>>();
+    protected List<List<String>> imageRawResults = new ArrayList<List<String>>();
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
     private ImageCubePopupMenu imageCubePopupMenu;
@@ -118,6 +118,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     public int getCurrentSlice() { return 0; }
 
     public String getCurrentBand() { return "0"; }
+
+    protected int mapColumnIndex,hideFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
+
 
     protected ModelManager getModelManager()
     {
@@ -169,6 +172,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         imageCubesDisplayedList.addListSelectionListener(this);
 
+//        // XXX: Mike Z's defaults for testing off-limb plane generation
+        searchByFilenameCheckBox.setSelected(true);
+//        searchByNumberTextField.setText("N46055787522");
+        searchByNumberTextField.setText("W46990353518");
+
         return this;
     }
 
@@ -205,7 +213,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return ModelNames.IMAGES;
     }
 
-    private ModelNames getImageBoundaryCollectionModelName()
+    protected ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
@@ -220,7 +228,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return ModelNames.CUBE_IMAGES;
     }
 
-    private void postInitComponents(ImagingInstrument instrument)
+    protected void postInitComponents(ImagingInstrument instrument)
     {
         excludeGaskellCheckBox.setVisible(false);
 
@@ -233,19 +241,28 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 "Filename",
                 "Date"
         };
+        mapColumnIndex=0;
+        hideFootprintColumnIndex=1;
+        frusColumnIndex=2;
+        bndrColumnIndex=3;
+        idColumnIndex=4;
+        filenameColumnIndex=5;
+        dateColumnIndex=6;
+
+
         Object[][] data = new Object[0][7];
         resultList.setModel(new StructuresTableModel(data, columnNames));
         resultList.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resultList.setDefaultRenderer(String.class, new StringRenderer());
-        resultList.getColumnModel().getColumn(0).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(1).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(2).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(3).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(0).setResizable(false);
-        resultList.getColumnModel().getColumn(1).setResizable(false);
-        resultList.getColumnModel().getColumn(2).setResizable(false);
-        resultList.getColumnModel().getColumn(3).setResizable(false);
+        resultList.getColumnModel().getColumn(mapColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(hideFootprintColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(mapColumnIndex).setResizable(false);
+        resultList.getColumnModel().getColumn(hideFootprintColumnIndex).setResizable(false);
+        resultList.getColumnModel().getColumn(frusColumnIndex).setResizable(false);
+        resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(false);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
 
@@ -418,7 +435,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return null;
     }
 
-    private void resultsListMaybeShowPopup(MouseEvent e)
+    protected void resultsListMaybeShowPopup(MouseEvent e)
     {
         if (e.isPopupTrigger())
         {
@@ -482,7 +499,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    private void setImageResults(List<List<String>> results)
+    protected void setImageResults(List<List<String>> results)
     {
         resultsLabel.setText(results.size() + " images matched");
         imageRawResults = results;
@@ -497,7 +514,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         images.removePropertyChangeListener(this);
         boundaries.removePropertyChangeListener(this);
 
-        int[] widths = new int[7];
+        int[] widths = new int[resultList.getColumnCount()];
+        int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
 
         // add the results to the list
         ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
@@ -511,29 +529,29 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (images.containsImage(key))
             {
-                resultList.setValueAt(true, i, 0);
+                resultList.setValueAt(true, i, mapColumnIndex);
                 PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                resultList.setValueAt(!image.isVisible(), i, 1);
-                resultList.setValueAt(!image.isFrustumShowing(), i, 2);
+                resultList.setValueAt(!image.isVisible(), i, hideFootprintColumnIndex);
+                resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
             }
             else
             {
-                resultList.setValueAt(false, i, 0);
-                resultList.setValueAt(false, i, 1);
-                resultList.setValueAt(false, i, 2);
+                resultList.setValueAt(false, i, mapColumnIndex);
+                resultList.setValueAt(false, i, hideFootprintColumnIndex);
+                resultList.setValueAt(false, i, frusColumnIndex);
             }
 
 
             if (boundaries.containsBoundary(key))
-                resultList.setValueAt(true, i, 3);
+                resultList.setValueAt(true, i, bndrColumnIndex);
             else
-                resultList.setValueAt(false, i, 3);
+                resultList.setValueAt(false, i, bndrColumnIndex);
 
-            resultList.setValueAt(i+1, i, 4);
-            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, 5);
-            resultList.setValueAt(sdf.format(dt), i, 6);
+            resultList.setValueAt(i+1, i, idColumnIndex);
+            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+            resultList.setValueAt(sdf.format(dt), i, dateColumnIndex);
 
-            for (int j=4; j<7; ++j)
+            for (int j : columnsNeedingARenderer)
             {
                 TableCellRenderer renderer = resultList.getCellRenderer(i, j);
                 Component comp = resultList.prepareRenderer(renderer, i, j);
@@ -543,7 +561,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ++i;
         }
 
-        for (int j=4; j<7; ++j)
+        for (int j : columnsNeedingARenderer)
             resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
 
         resultList.getModel().addTableModelListener(this);
@@ -570,7 +588,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         return new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
     }
 
-    private void showImageBoundaries(IdPair idPair)
+    protected void showImageBoundaries(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
@@ -851,21 +869,21 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
-                    resultList.setValueAt(true, i, 0);
+                    resultList.setValueAt(true, i, mapColumnIndex);
                     PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                    resultList.setValueAt(!image.isVisible(), i, 1);
-                    resultList.setValueAt(image.isFrustumShowing(), i, 2);
+                    resultList.setValueAt(!image.isVisible(), i, hideFootprintColumnIndex);
+                    resultList.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
                 }
                 else
                 {
-                    resultList.setValueAt(false, i, 0);
-                    resultList.setValueAt(false, i, 1);
-                    resultList.setValueAt(false, i, 2);
+                    resultList.setValueAt(false, i, mapColumnIndex);
+                    resultList.setValueAt(false, i, hideFootprintColumnIndex);
+                    resultList.setValueAt(false, i, frusColumnIndex);
                 }
                 if (boundaries.containsBoundary(key))
-                    resultList.setValueAt(true, i, 3);
+                    resultList.setValueAt(true, i, bndrColumnIndex);
                 else
-                    resultList.setValueAt(false, i, 3);
+                    resultList.setValueAt(false, i, bndrColumnIndex);
             }
             resultList.getModel().addTableModelListener(this);
             // Repaint the list in case the boundary colors has changed
@@ -2365,7 +2383,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
-                searchField = searchByNumberTextField.getText();
+                searchField = searchByNumberTextField.getText().trim();
 
             GregorianCalendar startDateGreg = new GregorianCalendar();
             GregorianCalendar endDateGreg = new GregorianCalendar();
@@ -2771,7 +2789,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (images.containsImage(key))
             {
                 Image image = images.getImage(key);
-                image.setVisible(visible);;
+                image.setVisible(visible);
             }
         }
     }
@@ -2779,25 +2797,25 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     @Override
     public void tableChanged(TableModelEvent e)
     {
-        if (e.getColumn() == 0)
+        if (e.getColumn() == mapColumnIndex)
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
             String namePrefix = name.substring(0, name.length()-4);
-            if ((Boolean)resultList.getValueAt(row, 0))
+            if ((Boolean)resultList.getValueAt(row, mapColumnIndex))
                 loadImages(namePrefix);
             else
                 unloadImages(namePrefix);
         }
-        else if (e.getColumn() == 1)
+        else if (e.getColumn() == hideFootprintColumnIndex)
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
             String namePrefix = name.substring(0, name.length()-4);
-            boolean visible = !(Boolean)resultList.getValueAt(row, 1);
+            boolean visible = !(Boolean)resultList.getValueAt(row, hideFootprintColumnIndex);
             setImageVisibility(namePrefix, visible);
         }
-        else if (e.getColumn() == 2)
+        else if (e.getColumn() == frusColumnIndex)
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
@@ -2809,7 +2827,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 image.setShowFrustum(!image.isFrustumShowing());
             }
         }
-        else if (e.getColumn() == 3)
+        else if (e.getColumn() == bndrColumnIndex)
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
@@ -2833,7 +2851,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    class StringRenderer extends DefaultTableCellRenderer
+    public class StringRenderer extends DefaultTableCellRenderer
     {
         PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
@@ -2879,7 +2897,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    class StructuresTableModel extends DefaultTableModel
+    public class StructuresTableModel extends DefaultTableModel
     {
         public StructuresTableModel(Object[][] data, String[] columnNames)
         {
@@ -2889,7 +2907,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == 1 || column == 2)
+            if (column == hideFootprintColumnIndex || column == frusColumnIndex)
             {
                 String name = imageRawResults.get(row).get(0);
 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
@@ -2899,13 +2917,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
             else
             {
-                return column == 0 || column == 3;
+                return column == mapColumnIndex || column == bndrColumnIndex;
             }
         }
 
         public Class<?> getColumnClass(int columnIndex)
         {
-            if (columnIndex <= 3)
+            if (columnIndex <= bndrColumnIndex)
                 return Boolean.class;
             else
                 return String.class;
@@ -3034,7 +3052,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton loadImageListButton;
     private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton nextButton;
-    private javax.swing.JComboBox numberOfBoundariesComboBox;
+    protected javax.swing.JComboBox numberOfBoundariesComboBox;
     private javax.swing.JButton prevButton;
     private javax.swing.JButton redButton;
     private javax.swing.JComboBox redComboBox;
@@ -3043,7 +3061,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeAllImagesButton;
     private javax.swing.JButton removeColorImageButton;
     private javax.swing.JButton removeImageCubeButton;
-    private javax.swing.JTable resultList;
+    protected javax.swing.JTable resultList;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JButton saveImageListButton;
     private javax.swing.JButton saveSelectedImageListButton;
