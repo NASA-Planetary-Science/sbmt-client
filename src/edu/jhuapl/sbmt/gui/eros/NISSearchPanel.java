@@ -214,6 +214,20 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             model.toggleSelectAll();
         }
+        else if (e.getKeyChar()=='s')
+        {
+            nisPopupMenu.showStatisticsWindow();
+        }
+        else if (e.getKeyChar()=='h')
+        {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            model.decreaseFootprintSeparation(0.001);
+        }
+        else if (e.getKeyChar()=='H')
+        {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            model.increaseFootprintSeparation(0.001);
+        }
 
     }
 

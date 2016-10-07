@@ -562,11 +562,12 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 name = getCustomDataFolder() + File.separator + imageInfo.infofilename;
                 new File(name).delete();
             }
+
+            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+            boundaries.removeBoundary(imageKey);
         }
 
         ((DefaultListModel)imageList.getModel()).remove(index);
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        boundaries.removeBoundary(imageKey);
     }
 
     private void moveDown(int i)

@@ -310,10 +310,12 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         ((DefaultTableModel)jTable1.getModel()).setRowCount(0);
         jTable1.revalidate();
         for (int i=0; i<numberOfTracks; i++)
+        {
             if (i<hidden.length)
                 ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i),i,hidden[i]);
             else
                 ((LidarTableModel)jTable1.getModel()).addTrack(lidarModel.getTrack(i),i);
+        }
 
         refreshTrackList();
     }
@@ -1082,7 +1084,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JToggleButton dragTracksToggleButton;
     private javax.swing.JLabel endLabel;
     private javax.swing.JSpinner endSpinner;
-    private javax.swing.JComboBox fileTypeComboBox;
+    protected javax.swing.JComboBox fileTypeComboBox;
     private javax.swing.JLabel fileTypeLabel;
     private javax.swing.JButton hideAllButton;
     private javax.swing.JLabel jLabel5;

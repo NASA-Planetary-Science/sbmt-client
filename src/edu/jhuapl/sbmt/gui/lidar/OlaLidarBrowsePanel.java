@@ -40,7 +40,7 @@ public class OlaLidarBrowsePanel extends LidarBrowsePanel
                 spec.path=filename;
                 spec.name=Paths.get(filename).getFileName().toString();
                 spec.comment=TimeUtil.et2str(startTime)+" - "+TimeUtil.et2str(endTime);
-                System.out.println(spec.comment);
+                //System.out.println(spec.comment);
                 lidarResultListModel.addElement(spec);
                 //System.out.println(filename);
             }

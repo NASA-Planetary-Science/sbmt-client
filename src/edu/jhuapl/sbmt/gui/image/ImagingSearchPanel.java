@@ -48,8 +48,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -86,6 +84,8 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -168,6 +168,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
         imageCubesDisplayedList.addListSelectionListener(this);
+
+//        // XXX: Mike Z's defaults for testing off-limb plane generation
+//        searchByFilenameCheckBox.setSelected(true);
+//        searchByNumberTextField.setText("N46055787522");
+//        searchByNumberTextField.setText("W46990353518");
 
         return this;
     }
@@ -2365,7 +2370,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
-                searchField = searchByNumberTextField.getText();
+                searchField = searchByNumberTextField.getText().trim();
 
             GregorianCalendar startDateGreg = new GregorianCalendar();
             GregorianCalendar endDateGreg = new GregorianCalendar();
