@@ -30,27 +30,20 @@ import java.util.UUID;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListModel;
 import javax.swing.event.ListSelectionListener;
 
-import nom.tam.fits.FitsException;
-
-import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
-import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.gui.europa.SimulationRunImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -62,6 +55,8 @@ import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunSource;
 import edu.jhuapl.sbmt.model.europa.SimulationRunCollection;
 import edu.jhuapl.sbmt.model.europa.SurfacePatch;
 import edu.jhuapl.sbmt.model.europa.Trajectory;
+
+import nom.tam.fits.FitsException;
 
 
 public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyChangeListener
@@ -514,50 +509,51 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
 
     public void propertyChange(PropertyChangeEvent evt)
     {
-        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-        {
-            PickEvent e = (PickEvent)evt.getNewValue();
-            Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof SimulationRunCollection)
-            {
-                String name = null;
-
-                SimulationRunKey runKey = ((SimulationRunCollection)model).getRun((vtkActor)e.getPickedProp()).getKey();
-                name = runKey.name;
-//                System.out.println("Picked " + runKey.name);
-                SimulationRun run = runs.getRun(runKey);
-                int cellId = e.getPickedCellId();
-                vtkProp prop = e.getPickedProp();
-
-//                Trajectory traj = run.getTrajectoryByCellId(cellId);
-                Trajectory traj = run.getTrajectory(prop);
-                if (traj != null)
-                {
-                    String trajectoryName = traj.getName();
-
-                    int idx = -1;
-                    int size = trajectoryList.getModel().getSize();
-                    for (int i=0; i<size; ++i)
-                    {
-                        String trajname = (String)((ListModel)trajectoryList.getModel()).getElementAt(i);
-                        if (trajname.equals(trajectoryName))
-                        {
-                            idx = i;
-                            System.out.println(", " + idx +  " trajectory: " + name);
-                            break;
-                        }
-                    }
-
-                    SimulationRun currentRun = runs.getCurrentRun();
-                    if (currentRun != null)
-                    {
-                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(idx);
-                        System.out.println("Selected Trajectory " + selectedTrajectory.getName());
-                        currentRun.setCurrentTrajectoryIndex(idx);
-                        currentRun.setShowSpacecraft(true);
-                        currentRun.setTimeFraction(0.0);
-                    }
-                }
+//        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+//        {
+//            PickEvent e = (PickEvent)evt.getNewValue();
+//            Model model = modelManager.getModel(e.getPickedProp());
+//            if (model instanceof SimulationRunCollection)
+//            {
+//                String name = null;
+//                System.out.println("Model Picked: " + evt.getPropertyName());
+//
+//                SimulationRunKey runKey = ((SimulationRunCollection)model).getRun((vtkActor)e.getPickedProp()).getKey();
+//                name = runKey.name;
+////                System.out.println("Picked " + runKey.name);
+//                SimulationRun run = runs.getRun(runKey);
+//                int cellId = e.getPickedCellId();
+//                vtkProp prop = e.getPickedProp();
+//
+////                Trajectory traj = run.getTrajectoryByCellId(cellId);
+//                Trajectory traj = run.getTrajectory(prop);
+//                if (traj != null)
+//                {
+//                    String trajectoryName = traj.getName();
+//
+//                    int idx = -1;
+//                    int size = trajectoryList.getModel().getSize();
+//                    for (int i=0; i<size; ++i)
+//                    {
+//                        String trajname = (String)((ListModel)trajectoryList.getModel()).getElementAt(i);
+//                        if (trajname.equals(trajectoryName))
+//                        {
+//                            idx = i;
+//                            System.out.println(", " + idx +  " trajectory: " + name);
+//                            break;
+//                        }
+//                    }
+//
+//                    SimulationRun currentRun = runs.getCurrentRun();
+//                    if (currentRun != null)
+//                    {
+//                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(idx);
+//                        System.out.println("Selected Trajectory " + selectedTrajectory.getName());
+//                        currentRun.setCurrentTrajectoryIndex(idx);
+//                        currentRun.setShowSpacecraft(true);
+//                        currentRun.setTimeFraction(0.0);
+//                    }
+//                }
 //                if (idx >= 0)
 //                {
 //                    passList.setSelectionInterval(idx, idx);
@@ -565,8 +561,8 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
 //                    if (cellBounds != null)
 //                        runList.scrollRectToVisible(cellBounds);
 //                }
-            }
-        }
+//            }
+//        }
     }
 
     private void initComponents() {
@@ -1062,7 +1058,7 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
         int index = trajectoryList.locationToIndex(mouseEvent.getPoint());
         if (index >= 0) {
           Object o = trajectoryList.getModel().getElementAt(index);
-          System.out.println("Double-clicked on: " + o.toString());
+          System.out.println("Trajectory List Double-clicked: " + o.toString());
           SimulationRun currentRun = runs.getCurrentRun();
           if (currentRun != null)
           {
@@ -1097,6 +1093,7 @@ public class SimulationRunsPanel extends javax.swing.JPanel implements PropertyC
         if (indices.length >= 1 && !evt.getValueIsAdjusting())
         {
             SimulationRun currentRun = runs.getCurrentRun();
+            System.out.println("Trajectory List Value Changed: " + evt.toString());
 
             if (currentRun != null)
             {
