@@ -40,6 +40,7 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
+import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
@@ -52,6 +53,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
+import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
 /**
@@ -152,6 +154,11 @@ public class SbmtView extends View
             allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
         }
 
+        if (getPolyhedralModelConfig().hasStateHistory)
+        {
+            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
+        }
+
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
         allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(smallBodyModel));
@@ -248,10 +255,15 @@ public class SbmtView extends View
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
 
-      if (getConfig().hasFlybyData)
-      {
-          addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
-      }
+        if (getConfig().hasFlybyData)
+        {
+            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+        }
+
+        if (getConfig().hasStateHistory)
+        {
+            addTab("Time", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+        }
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {

@@ -3,8 +3,6 @@ package edu.jhuapl.sbmt.client;
 import java.io.IOException;
 import java.util.HashMap;
 
-import nom.tam.fits.FitsException;
-
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -51,8 +49,12 @@ import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
+import edu.jhuapl.sbmt.model.time.StateHistory;
+import edu.jhuapl.sbmt.model.time.StateHistory.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
+
+import nom.tam.fits.FitsException;
 
 public class SbmtModelFactory
 {
@@ -63,6 +65,15 @@ public class SbmtModelFactory
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
         return new SimulationRun(key, smallBodyModel);
+    }
+
+    static public StateHistory createStateHistory(
+            StateHistoryKey key,
+            SmallBodyModel smallBodyModel,
+            boolean loadPointingOnly) throws FitsException, IOException
+    {
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        return new StateHistory(key, smallBodyModel);
     }
 
     static public Image createImage(
