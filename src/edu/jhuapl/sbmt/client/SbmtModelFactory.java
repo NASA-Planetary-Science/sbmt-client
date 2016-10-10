@@ -49,8 +49,8 @@ import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.time.StateHistory;
-import edu.jhuapl.sbmt.model.time.StateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
 
@@ -67,13 +67,13 @@ public class SbmtModelFactory
         return new SimulationRun(key, smallBodyModel);
     }
 
-    static public StateHistory createStateHistory(
+    static public StateHistoryModel createStateHistory(
             StateHistoryKey key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        return new StateHistory(key, smallBodyModel);
+        return new StateHistoryModel(key, smallBodyModel);
     }
 
     static public Image createImage(

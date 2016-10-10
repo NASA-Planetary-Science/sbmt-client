@@ -49,9 +49,9 @@ import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.time.AreaCalculation;
 import edu.jhuapl.sbmt.model.time.AreaCalculationCollection;
-import edu.jhuapl.sbmt.model.time.StateHistory;
-import edu.jhuapl.sbmt.model.time.StateHistory.StateHistoryKey;
-import edu.jhuapl.sbmt.model.time.StateHistory.StateHistorySource;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistorySource;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.SurfacePatch;
 import edu.jhuapl.sbmt.model.time.Trajectory;
@@ -222,7 +222,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
     {
         if (runs != null)
         {
-            StateHistory currentRun = runs.getCurrentRun();
+            StateHistoryModel currentRun = runs.getCurrentRun();
             if (currentRun != null)
             {
                 Double time = currentRun.getTime();
@@ -233,7 +233,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
     private void updateScalarBar()
     {
-        StateHistory currentRun = runs.getCurrentRun();
+        StateHistoryModel currentRun = runs.getCurrentRun();
         if (currentRun != null)
         {
             currentRun.updateScalarBar();
@@ -245,7 +245,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         if (runs != null)
         {
             StateHistoryCollection runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-            StateHistory currentRun = runs.getCurrentRun();
+            StateHistoryModel currentRun = runs.getCurrentRun();
             if (currentRun != null)
                 currentRun.updateTimeBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
         }
@@ -326,8 +326,8 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         MapUtil configMap = new MapUtil(getConfigFilename());
 
         boolean needToUpgradeConfigFile = false;
-        String[] runNames = configMap.getAsArray(StateHistory.RUN_NAMES);
-        String[] runFilenames = configMap.getAsArray(StateHistory.RUN_FILENAMES);
+        String[] runNames = configMap.getAsArray(StateHistoryModel.RUN_NAMES);
+        String[] runFilenames = configMap.getAsArray(StateHistoryModel.RUN_FILENAMES);
         if (runFilenames == null)
         {
             // Mark that we need to upgrade config file to latest version
@@ -478,8 +478,8 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
         Map<String, String> newMap = new LinkedHashMap<String, String>();
 
-        newMap.put(StateHistory.RUN_NAMES, runNames);
-        newMap.put(StateHistory.RUN_FILENAMES, runFilenames);
+        newMap.put(StateHistoryModel.RUN_NAMES, runNames);
+        newMap.put(StateHistoryModel.RUN_FILENAMES, runFilenames);
 
         configMap.put(newMap);
     }
@@ -1046,7 +1046,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                 runs.addRun(runKey);
 
                 // set the current run
-                StateHistory currentRun = runs.getCurrentRun();
+                StateHistoryModel currentRun = runs.getCurrentRun();
 
                 if (currentRun != null)
                 {
@@ -1065,7 +1065,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         if (index >= 0) {
           Object o = trajectoryList.getModel().getElementAt(index);
           System.out.println("Trajectory List Double-clicked: " + o.toString());
-          StateHistory currentRun = runs.getCurrentRun();
+          StateHistoryModel currentRun = runs.getCurrentRun();
           if (currentRun != null)
           {
               Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
@@ -1098,7 +1098,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
         if (indices.length >= 1 && !evt.getValueIsAdjusting())
         {
-            StateHistory currentRun = runs.getCurrentRun();
+            StateHistoryModel currentRun = runs.getCurrentRun();
             System.out.println("Trajectory List Value Changed: " + evt.toString());
 
             if (currentRun != null)
@@ -1172,7 +1172,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
         if (indices.length == 1 && !evt.getValueIsAdjusting())
         {
-            StateHistory currentRun = runs.getCurrentRun();
+            StateHistoryModel currentRun = runs.getCurrentRun();
             // remove currently displayed patches
             currentRun.setShowPatches(new HashSet<String>());
 

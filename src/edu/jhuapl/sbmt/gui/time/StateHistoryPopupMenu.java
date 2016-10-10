@@ -16,8 +16,8 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.model.time.StateHistory;
-import edu.jhuapl.sbmt.model.time.StateHistory.StateHistoryKey;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel;
+import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
@@ -109,7 +109,7 @@ public class StateHistoryPopupMenu extends PopupMenu
 
             if (containsRun)
             {
-                StateHistory image = simulationRunCollection.getRun(imageKey);
+                StateHistoryModel image = simulationRunCollection.getRun(imageKey);
                 if (image.isVisible())
                     selectHideRun = false;
             }
@@ -161,7 +161,7 @@ public class StateHistoryPopupMenu extends PopupMenu
 
             if (selectedRunKey != null)
             {
-                StateHistory selectedRun = simulationRunCollection.getRun(selectedRunKey);
+                StateHistoryModel selectedRun = simulationRunCollection.getRun(selectedRunKey);
                 try
                 {
                     System.out.println("Property panel not implemented yet.");
@@ -193,7 +193,7 @@ public class StateHistoryPopupMenu extends PopupMenu
 
             if (selectedRunKey != null)
             {
-                StateHistory selectedRun = simulationRunCollection.getRun(selectedRunKey);
+                StateHistoryModel selectedRun = simulationRunCollection.getRun(selectedRunKey);
                 System.out.println("Save to file not implemented yet.");
 
 //                File file = null;
@@ -224,7 +224,7 @@ public class StateHistoryPopupMenu extends PopupMenu
         {
             if (simulationRunCollection.getRun((vtkActor)pickedProp) != null)
             {
-                StateHistory run = simulationRunCollection.getRun((vtkActor)pickedProp);
+                StateHistoryModel run = simulationRunCollection.getRun((vtkActor)pickedProp);
                 setCurrentRun(run.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
