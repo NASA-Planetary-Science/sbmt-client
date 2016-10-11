@@ -16,14 +16,15 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
-import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
 public class StateHistoryPopupMenu extends PopupMenu
 {
     private StateHistoryCollection simulationRunCollection;
+    private Renderer renderer;
     private ArrayList<StateHistoryKey> runKeys = new ArrayList<StateHistoryKey>();
     private JMenuItem mapRunMenuItem;
     private JMenuItem showRunInfoMenuItem;
@@ -44,6 +45,7 @@ public class StateHistoryPopupMenu extends PopupMenu
             Component invoker)
     {
         this.simulationRunCollection = runCollection;
+        this.renderer = renderer;
         this.infoPanelManager = infoPanelManager;
 
         mapRunMenuItem = new JCheckBoxMenuItem(new MapRunAction());
@@ -136,7 +138,7 @@ public class StateHistoryPopupMenu extends PopupMenu
             for (StateHistoryKey runKey : runKeys)
             {
                 if (mapRunMenuItem.isSelected())
-                    simulationRunCollection.addRun(runKey);
+                    simulationRunCollection.addRun(runKey, renderer);
                 else
                     simulationRunCollection.removeRun(runKey);
             }

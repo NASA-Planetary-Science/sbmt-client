@@ -37,6 +37,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -49,10 +50,10 @@ import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.time.AreaCalculation;
 import edu.jhuapl.sbmt.model.time.AreaCalculationCollection;
+import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistorySource;
-import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.SurfacePatch;
 import edu.jhuapl.sbmt.model.time.Trajectory;
 
@@ -424,7 +425,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         if (runs.containsRun(runKey))
         {
             runs.removeRun(runKey);
-            runs.addRun(runKey);
+            runs.addRun(runKey, renderer);
         }
     }
 
@@ -1043,7 +1044,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                 StateHistoryKey runKey = getRunKey(index);
 
                 // load in the new dataset
-                runs.addRun(runKey);
+                runs.addRun(runKey, renderer);
 
                 // set the current run
                 StateHistoryModel currentRun = runs.getCurrentRun();
@@ -1074,6 +1075,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
               currentRun.setCurrentTrajectoryIndex(index);
               currentRun.setShowSpacecraft(true);
               currentRun.setTimeFraction(0.0);
+
+              double[] sunDirection = currentRun.getSunDirection();
+              renderer.setFixedLightDirection(sunDirection);
+              renderer.setLighting(LightingType.FIXEDLIGHT);
+
 
               // tell the AreaCalculation about the new current trajectory
               AreaCalculationCollection areaCalculationList = runs.getCurrentRun().getAreaCalculationCollection();
