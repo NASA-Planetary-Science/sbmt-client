@@ -49,7 +49,7 @@ int main(int nargs, char** argv)
 	    fprintf(stderr, "       startEt               - SPICE string representation of end time of history\n");
 	    fprintf(stderr, "       spinRate (optional)   - body rotation period in days per revolution\n");
 	    fprintf(stderr, "example:\n");
-	    fprintf(stderr, "       timeHistory EROS NEAR kernelsEros.tm \"2000-105::05:12:04.273 UTC\" \"2000-105::06:00:00 UTC\" 60\n\n");
+	    fprintf(stderr, "       timeHistory EROS NEAR kernelsEros.tm \"2000-105::05:12:04.273 UTC\" \"2000-105::20:00:00 UTC\" .2194\n\n");
 	    exit(1);
 	}
 	if (nargs < 7)
@@ -141,10 +141,10 @@ int main(int nargs, char** argv)
 		/* time in YYY-MM-DD format.            */
 		/*--------------------------------------*/
 
-//	    et2utc_c(et, "ISOC", 3, 25, utc);
-		timout_c ( et, "YYYY-DOYTHR:MN:SC.### ::UTC", 32, utc );
+	    et2utc_c(et, "ISOC", 3, 25, utc);
+//		timout_c ( et, "YYYY-DOYTHR:MN:SC.### ::UTC", 32, utc );
 
-		fprintf(fp, "%s, %2.10e, %2.10e, %2.10e, %2.10e, %2.10e, %2.10e, %2.7e, %2.7e, %2.7e \n", utc, sunpos[0], sunpos[1], sunpos[2], earthpos[0], earthpos[1], earthpos[2], scposb[0], scposb[1], scposb[2]);
+		fprintf(fp, "%s, %2.8e, %2.8e, %2.8e, %2.8e, %2.8e, %2.8e, %2.8e, %2.8e, %2.8e \n", utc, sunpos[0], sunpos[1], sunpos[2], earthpos[0], earthpos[1], earthpos[2], scposb[0], scposb[1], scposb[2]);
 
 		et = et + stepSize;
 	}
