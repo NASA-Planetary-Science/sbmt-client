@@ -97,7 +97,7 @@ public class SurfaceDataPane extends JPanel implements ItemListener
                 currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
                 currentAreaCalculation.redraw();
                 simulationRunCollection.getCurrentRun().updateActorVisibility();
-                simulationRunCollection.getCurrentRun().updateScalarBar();
+//                simulationRunCollection.getCurrentRun().updateScalarBar();
             }
             else if (e.getSource() == scalarRangeType)
             {
@@ -106,7 +106,7 @@ public class SurfaceDataPane extends JPanel implements ItemListener
                 currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
                 currentAreaCalculation.redraw();
                 simulationRunCollection.getCurrentRun().updateActorVisibility();
-                simulationRunCollection.getCurrentRun().updateScalarBar();
+//                simulationRunCollection.getCurrentRun().updateScalarBar();
             }
         }
     }
