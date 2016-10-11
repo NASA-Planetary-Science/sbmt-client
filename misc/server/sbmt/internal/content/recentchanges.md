@@ -4,6 +4,10 @@
 
 # Recent Changes
 
+### September 14, 2016
+
+-   Re-enabled output of pixel coordinates when clicking on image in properties window
+
 ### August 29, 2016
 
 -   Image properties dialog now displaying for all images
