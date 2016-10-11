@@ -74,21 +74,21 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
     private javax.swing.JScrollPane trajectoryScrollPane;
     private javax.swing.JList trajectoryList;
 
-    private javax.swing.JScrollPane areaCalculationScrollPane;
-    private javax.swing.JList areaCalculationList;
-
-    private javax.swing.JScrollPane surfacePatchPane;
-    private javax.swing.JList surfacePatchList;
+//    private javax.swing.JScrollPane areaCalculationScrollPane;
+//    private javax.swing.JList areaCalculationList;
+//
+//    private javax.swing.JScrollPane surfacePatchPane;
+//    private javax.swing.JList surfacePatchList;
 
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
 
     private javax.swing.JLabel simulationRunLabel;
     private javax.swing.JLabel trajectoryLabel;
-    private javax.swing.JLabel areaCalculationLabel;
-    private javax.swing.JLabel surfacePatchLabel;
+//    private javax.swing.JLabel areaCalculationLabel;
+//    private javax.swing.JLabel surfacePatchLabel;
 
-    private SurfaceDataPane surfaceDataPane;
+//    private SurfaceDataPane surfaceDataPane;
 
     private javax.swing.JPanel simulationRunButtonPanel;
 //    private javax.swing.JPanel jPanel2;
@@ -744,123 +744,123 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         //
 
         // area calculation label
-        areaCalculationLabel = new JLabel();
-        areaCalculationLabel.setText("Area Calculation");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(areaCalculationLabel, gridBagConstraints);
-
-        // Area Calculation scroll pane and list
-        areaCalculationScrollPane = new javax.swing.JScrollPane();
-
-        // create JList and bind to model
-        areaCalculationList = new javax.swing.JList();
-//        TorsoBodyModel torsoBodyModel = (TorsoBodyModel)modelManager.getSmallBodyModel();
-//        torsoBodyModel.getProps();
-//        organList.setModel(torsoBodyModel);
-
-        // add listeners
-        areaCalculationList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                areaCalculationListValueChanged(evt);
-            }
-        });
-
-        areaCalculationList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-                areaCalculationList = (JList) mouseEvent.getSource();
-              if (mouseEvent.getClickCount() == 2) {
-                  areaCalculationListDoubleClicked(mouseEvent);
-              }
-            }
-          });
-
-        areaCalculationScrollPane.setViewportView(areaCalculationList);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(areaCalculationScrollPane, gridBagConstraints);
-
-        //
-        // SurfacePatch List
-        //
-
-        // label
-        surfacePatchLabel = new JLabel();
-        surfacePatchLabel.setText("Images");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(surfacePatchLabel, gridBagConstraints);
-
-        // scroll pane and list
-        surfacePatchPane = new javax.swing.JScrollPane();
-
-        // create JList and bind to model
-        surfacePatchList = new javax.swing.JList();
-
-        // add listeners
-        surfacePatchList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                surfacePatchListValueChanged(evt);
-            }
-        });
-
-        surfacePatchList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-                surfacePatchList = (JList) mouseEvent.getSource();
-              if (mouseEvent.getClickCount() == 2) {
-                  surfacePatchListDoubleClicked(mouseEvent);
-              }
-            }
-          });
-
-        surfacePatchPane.setViewportView(surfacePatchList);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(surfacePatchPane, gridBagConstraints);
-
-        //
-        // surface data pane
-        //
-        surfaceDataPane = new SurfaceDataPane(modelManager);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(surfaceDataPane, gridBagConstraints);
-
-        //
-        // offset pane
-        //
-        SurfacePatchOffsetPane surfaceOffsetPane = new SurfacePatchOffsetPane(modelManager);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(surfaceOffsetPane, gridBagConstraints);
+//        areaCalculationLabel = new JLabel();
+//        areaCalculationLabel.setText("Area Calculation");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 5;
+//        gridBagConstraints.gridwidth = 1;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        add(areaCalculationLabel, gridBagConstraints);
+//
+//        // Area Calculation scroll pane and list
+//        areaCalculationScrollPane = new javax.swing.JScrollPane();
+//
+//        // create JList and bind to model
+//        areaCalculationList = new javax.swing.JList();
+////        TorsoBodyModel torsoBodyModel = (TorsoBodyModel)modelManager.getSmallBodyModel();
+////        torsoBodyModel.getProps();
+////        organList.setModel(torsoBodyModel);
+//
+//        // add listeners
+//        areaCalculationList.addListSelectionListener(new ListSelectionListener() {
+//            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+//                areaCalculationListValueChanged(evt);
+//            }
+//        });
+//
+//        areaCalculationList.addMouseListener(new MouseAdapter() {
+//            public void mouseClicked(MouseEvent mouseEvent) {
+//                areaCalculationList = (JList) mouseEvent.getSource();
+//              if (mouseEvent.getClickCount() == 2) {
+//                  areaCalculationListDoubleClicked(mouseEvent);
+//              }
+//            }
+//          });
+//
+//        areaCalculationScrollPane.setViewportView(areaCalculationList);
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 6;
+//        gridBagConstraints.gridwidth = 1;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.weightx = 1.0;
+//        gridBagConstraints.weighty = 1.0;
+//        add(areaCalculationScrollPane, gridBagConstraints);
+//
+//        //
+//        // SurfacePatch List
+//        //
+//
+//        // label
+//        surfacePatchLabel = new JLabel();
+//        surfacePatchLabel.setText("Images");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 5;
+//        gridBagConstraints.gridwidth = 1;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        add(surfacePatchLabel, gridBagConstraints);
+//
+//        // scroll pane and list
+//        surfacePatchPane = new javax.swing.JScrollPane();
+//
+//        // create JList and bind to model
+//        surfacePatchList = new javax.swing.JList();
+//
+//        // add listeners
+//        surfacePatchList.addListSelectionListener(new ListSelectionListener() {
+//            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+//                surfacePatchListValueChanged(evt);
+//            }
+//        });
+//
+//        surfacePatchList.addMouseListener(new MouseAdapter() {
+//            public void mouseClicked(MouseEvent mouseEvent) {
+//                surfacePatchList = (JList) mouseEvent.getSource();
+//              if (mouseEvent.getClickCount() == 2) {
+//                  surfacePatchListDoubleClicked(mouseEvent);
+//              }
+//            }
+//          });
+//
+//        surfacePatchPane.setViewportView(surfacePatchList);
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 6;
+//        gridBagConstraints.gridwidth = 1;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.weightx = 1.0;
+//        gridBagConstraints.weighty = 1.0;
+//        add(surfacePatchPane, gridBagConstraints);
+//
+//        //
+//        // surface data pane
+//        //
+//        surfaceDataPane = new SurfaceDataPane(modelManager);
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 7;
+//        gridBagConstraints.gridwidth = 2;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        add(surfaceDataPane, gridBagConstraints);
+//
+//        //
+//        // offset pane
+//        //
+//        SurfacePatchOffsetPane surfaceOffsetPane = new SurfacePatchOffsetPane(modelManager);
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 8;
+//        gridBagConstraints.gridwidth = 2;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        add(surfaceOffsetPane, gridBagConstraints);
 
         //
         // passes pane
@@ -1052,7 +1052,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                 if (currentRun != null)
                 {
                     trajectoryList.setModel(currentRun);
-                    areaCalculationList.setModel(currentRun.getAreaCalculationCollection());
+//                    areaCalculationList.setModel(currentRun.getAreaCalculationCollection());
                     updateTimeBarPosition();
                 }
 
@@ -1086,11 +1086,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
               currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
               areaCalculationList.setCurrentTrajectory(currentTrajectoryName);
               AreaCalculation selectedAreaCalculation = areaCalculationList.getCurrentValue();
-              if (selectedAreaCalculation != null)
-              {
-                  this.surfacePatchList.setModel(selectedAreaCalculation);
-                  this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
-              }
+//              if (selectedAreaCalculation != null)
+//              {
+//                  this.surfacePatchList.setModel(selectedAreaCalculation);
+//                  this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
+//              }
           }
         }
     }
@@ -1144,13 +1144,13 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                     Integer selectedAreaCalculationIndex = areaCalculationCollection.getCurrentIndex();
                     areaCalculationCollection.setCurrentIndex(selectedAreaCalculationIndex);
 
-                    if (selectedAreaCalculation != null)
-                    {
-                        selectedAreaCalculation.markPatchesOutOfDate();
-                        // for some reason, we need to change the list model to force it to update -turner1
-                        this.surfacePatchList.setModel(new DefaultListModel());
-                        this.surfacePatchList.setModel(selectedAreaCalculation);
-                    }
+//                    if (selectedAreaCalculation != null)
+//                    {
+//                        selectedAreaCalculation.markPatchesOutOfDate();
+//                        // for some reason, we need to change the list model to force it to update -turner1
+//                        this.surfacePatchList.setModel(new DefaultListModel());
+//                        this.surfacePatchList.setModel(selectedAreaCalculation);
+//                    }
                 }
             }
         }
@@ -1159,45 +1159,45 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
     private void areaCalculationListDoubleClicked(MouseEvent mouseEvent)
     {
-        int index = areaCalculationList.locationToIndex(mouseEvent.getPoint());
-        if (index >= 0) {
-          Object o = areaCalculationList.getModel().getElementAt(index);
-          System.out.println("Double-clicked on: " + o.toString());
-//          Scenario currentScenario = scenarios.getCurrentScenario();
-//          if (currentScenario != null)
-//          {
-//              System.out.println("Select Organ " + o);
-//          }
-        }
+//        int index = areaCalculationList.locationToIndex(mouseEvent.getPoint());
+//        if (index >= 0) {
+//          Object o = areaCalculationList.getModel().getElementAt(index);
+//          System.out.println("Double-clicked on: " + o.toString());
+////          Scenario currentScenario = scenarios.getCurrentScenario();
+////          if (currentScenario != null)
+////          {
+////              System.out.println("Select Organ " + o);
+////          }
+//        }
     }
 
 
     private void areaCalculationListValueChanged(javax.swing.event.ListSelectionEvent evt)
     {
-        int[] indices = areaCalculationList.getSelectedIndices();
-
-        if (indices.length == 1 && !evt.getValueIsAdjusting())
-        {
-            StateHistoryModel currentRun = runs.getCurrentRun();
-            // remove currently displayed patches
-            currentRun.setShowPatches(new HashSet<String>());
-
-            int index = indices[0];
-            AreaCalculation selectedAreaCalculation = (AreaCalculation)areaCalculationList.getModel().getElementAt(index);
-            System.out.println("Select Area Calculation: " + selectedAreaCalculation);
-            AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
-            areaCalculationCollection.setCurrentIndex(index);
-            AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
-            if (currentAreaCalculation != null)
-            {
-                runs.getCurrentRun().setAreaCalculation(selectedAreaCalculation);
-                this.surfacePatchList.setModel(selectedAreaCalculation);
-                this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
-//                this.invalidate();
-//                this.validate();
-//                this.repaint();
-            }
-        }
+//        int[] indices = areaCalculationList.getSelectedIndices();
+//
+//        if (indices.length == 1 && !evt.getValueIsAdjusting())
+//        {
+//            StateHistoryModel currentRun = runs.getCurrentRun();
+//            // remove currently displayed patches
+//            currentRun.setShowPatches(new HashSet<String>());
+//
+//            int index = indices[0];
+//            AreaCalculation selectedAreaCalculation = (AreaCalculation)areaCalculationList.getModel().getElementAt(index);
+//            System.out.println("Select Area Calculation: " + selectedAreaCalculation);
+//            AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
+//            areaCalculationCollection.setCurrentIndex(index);
+//            AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
+//            if (currentAreaCalculation != null)
+//            {
+//                runs.getCurrentRun().setAreaCalculation(selectedAreaCalculation);
+//                this.surfacePatchList.setModel(selectedAreaCalculation);
+//                this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
+////                this.invalidate();
+////                this.validate();
+////                this.repaint();
+//            }
+//        }
     }
     private void surfacePatchListDoubleClicked(MouseEvent mouseEvent)
     {
@@ -1219,33 +1219,33 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
     private void surfacePatchListValueChanged(javax.swing.event.ListSelectionEvent evt)
     {
-        int[] indices = surfacePatchList.getSelectedIndices();
-        AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
-        AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
-
-        if (indices.length >= 1 && !evt.getValueIsAdjusting())
-        {
-            visiblePatches.clear();
-            for (int i=0; i <indices.length; i++)
-            {
-                int index = indices[i];
-                selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
-                visiblePatches.add(selectedSurfacePatch.getName());
-                System.out.println("Select Surface Patch: " + selectedSurfacePatch);
-
-                // use the first of the selected surface patches as the model for the surface pane
-                if (i == 0)
-                {
-                    this.surfaceDataPane.setModel(selectedSurfacePatch);
-                    if (currentAreaCalculation != null)
-                    {
-                        currentAreaCalculation.setCurrentPatch(selectedSurfacePatch);
-                    }
-                }
-
-            }
-            runs.getCurrentRun().setShowPatches(visiblePatches);
-            updateScalarBar();
-        }
+//        int[] indices = surfacePatchList.getSelectedIndices();
+//        AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
+//        AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
+//
+//        if (indices.length >= 1 && !evt.getValueIsAdjusting())
+//        {
+//            visiblePatches.clear();
+//            for (int i=0; i <indices.length; i++)
+//            {
+//                int index = indices[i];
+//                selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
+//                visiblePatches.add(selectedSurfacePatch.getName());
+//                System.out.println("Select Surface Patch: " + selectedSurfacePatch);
+//
+//                // use the first of the selected surface patches as the model for the surface pane
+//                if (i == 0)
+//                {
+//                    this.surfaceDataPane.setModel(selectedSurfacePatch);
+//                    if (currentAreaCalculation != null)
+//                    {
+//                        currentAreaCalculation.setCurrentPatch(selectedSurfacePatch);
+//                    }
+//                }
+//
+//            }
+//            runs.getCurrentRun().setShowPatches(visiblePatches);
+//            updateScalarBar();
+//        }
     }
 }
