@@ -4,7 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -21,11 +24,16 @@ import vtk.vtkProp;
 import vtk.vtkSelectPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.illum.IlluminationField;
+import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
+import edu.jhuapl.saavtk.illum.UniformIlluminationField;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.NISStatistics;
@@ -178,6 +186,53 @@ public class NISPopupMenu extends PopupMenu
 
     }
 
+    public Vector3D getToSunUnitVector(String fileName)    // file name is taken relative to /project/nearsdc/data/NIS/2000
+    {
+        Vector3D sunPosition=null;
+        File f=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
+        try
+        {
+            Scanner scanner=new Scanner(f);
+            boolean found=false;
+            while (scanner.hasNextLine() && !found)
+            {
+                String line=scanner.nextLine();
+                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
+                String file=tokens[0];
+                if (file.equals(fileName))
+                    continue;
+                else
+                {
+                    double x=Double.valueOf(tokens[1]);
+                    double y=Double.valueOf(tokens[2]);
+                    double z=Double.valueOf(tokens[3]);
+                    sunPosition=new Vector3D(x,y,z);
+                    found=true;
+                }
+            }
+            scanner.close();
+            //
+            if (!found)
+                throw new Exception("No sun position found in "+f.getName()+" for file "+fileName);
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return sunPosition.normalize();
+    }
+
+    public double[] simulateLighting(Vector3D toSunUnitVector)
+    {
+        IlluminationField illumField=new UniformIlluminationField(toSunUnitVector.negate());
+        SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+        PolyhedralModelIlluminator illuminator=new PolyhedralModelIlluminator(smallBodyModel);
+        illuminator.illuminate(illumField);
+        return illuminator.getIlluminationFactorArray();
+    }
+
     public void showStatisticsWindow()
     {
         NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
@@ -185,9 +240,16 @@ public class NISPopupMenu extends PopupMenu
         if (spectra.size()==0)
             spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
         //
+
+        //
+        // compute statistics
         List<Sample> emergenceAngle=Lists.newArrayList();
         for (NISSpectrum spectrum : spectra)
         {
+            Path fullPath=Paths.get(spectrum.getFullPath());
+            Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
+            double[] illumFacs=simulateLighting(getToSunUnitVector(relativePath.toString()));
+
             Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
             vtkPolyData footprint=spectrum.getUnshiftedFootprint();
 
