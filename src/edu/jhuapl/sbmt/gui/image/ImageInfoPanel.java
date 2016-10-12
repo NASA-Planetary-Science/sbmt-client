@@ -1061,7 +1061,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JSpinner rightSpinner;
     private javax.swing.JButton rotateLeftButton;
     private javax.swing.JButton rotateRightButton;
-    private com.jidesoft.swing.RangeSlider slider;
+    protected com.jidesoft.swing.RangeSlider slider;
     private javax.swing.JTable table;
     private javax.swing.JSpinner topSpinner;
     private javax.swing.JButton upButton;
