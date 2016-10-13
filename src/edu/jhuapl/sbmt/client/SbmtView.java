@@ -212,7 +212,7 @@ public class SbmtView extends View
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            PopupMenu popupMenu = new NISPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager());
+            PopupMenu popupMenu = new NISPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getRenderer());
             registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
         }
 

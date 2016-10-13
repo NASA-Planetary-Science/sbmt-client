@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -23,6 +22,8 @@ import vtk.vtkPolyData;
 import vtk.vtkProp;
 import vtk.vtkSelectPolyData;
 
+import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.illum.IlluminationField;
 import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
@@ -30,7 +31,6 @@ import edu.jhuapl.saavtk.illum.UniformIlluminationField;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -51,9 +51,13 @@ public class NISPopupMenu extends PopupMenu
     private JMenuItem showFrustumMenuItem;
     private JMenuItem saveSpectrumMenuItem;
     private SbmtInfoWindowManager infoPanelManager;
+    private JMenuItem showToSunVectorMenuItem;
+    private JMenuItem setIlluminationMenuItem;
+    private JMenuItem showOutlineMenuItem;
     //private SmallBodyModel erosModel;
 
     private JMenuItem showStatisticsMenuItem;
+    private Renderer renderer;
 
     /**
      *
@@ -64,10 +68,11 @@ public class NISPopupMenu extends PopupMenu
      */
     public NISPopupMenu(
             ModelManager modelManager,
-            SbmtInfoWindowManager infoPanelManager)
+            SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;
+        this.renderer=renderer;
         //this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 
         showRemoveSpectrumIn3DMenuItem = new JCheckBoxMenuItem(new ShowRemoveIn3DAction());
@@ -89,11 +94,25 @@ public class NISPopupMenu extends PopupMenu
         }
         centerSpectrumMenuItem = new JMenuItem(new CenterImageAction());
         centerSpectrumMenuItem.setText("Center in Window");
-        //this.add(centerImageMenuItem);
+        if (renderer!=null)
+            this.add(centerSpectrumMenuItem);
 
         showFrustumMenuItem = new JCheckBoxMenuItem(new ShowFrustumAction());
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
+
+        showOutlineMenuItem = new JCheckBoxMenuItem(new ShowOutlineAction());
+        showOutlineMenuItem.setText("Show Outline");
+        this.add(showOutlineMenuItem);
+
+        showToSunVectorMenuItem = new JCheckBoxMenuItem(new ShowToSunVectorAction());
+        showToSunVectorMenuItem.setText("Show Sunward Vector");
+        this.add(showToSunVectorMenuItem);
+
+        setIlluminationMenuItem = new JMenuItem(new SetIlluminationAction());
+        setIlluminationMenuItem.setText("Set Illumination");
+        if (renderer!=null)
+            this.add(setIlluminationMenuItem);
 
         saveSpectrumMenuItem = new JMenuItem(new SaveSpectrumAction());
         saveSpectrumMenuItem.setText("Save Spectrum...");
@@ -126,13 +145,27 @@ public class NISPopupMenu extends PopupMenu
             NISSpectrum image = model.getSpectrum(currentSpectrum);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
+            showOutlineMenuItem.setSelected(image.isOutlineShowing());
+            showOutlineMenuItem.setEnabled(true);
+            centerSpectrumMenuItem.setEnabled(true);
+            showToSunVectorMenuItem.setSelected(image.isToSunVectorShowing());
+            showToSunVectorMenuItem.setEnabled(true);
+            setIlluminationMenuItem.setEnabled(true);
         }
         else
         {
             showFrustumMenuItem.setSelected(false);
             showFrustumMenuItem.setEnabled(false);
+            showOutlineMenuItem.setSelected(false);
+            showOutlineMenuItem.setEnabled(false);
+            centerSpectrumMenuItem.setEnabled(false);
+            showToSunVectorMenuItem.setSelected(false);
+            showToSunVectorMenuItem.setEnabled(false);
+            setIlluminationMenuItem.setEnabled(false);
         }
     }
+
+
 
 
     private class ShowRemoveIn3DAction extends AbstractAction
@@ -186,44 +219,6 @@ public class NISPopupMenu extends PopupMenu
 
     }
 
-    public Vector3D getToSunUnitVector(String fileName)    // file name is taken relative to /project/nearsdc/data/NIS/2000
-    {
-        Vector3D sunPosition=null;
-        File f=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
-        try
-        {
-            Scanner scanner=new Scanner(f);
-            boolean found=false;
-            while (scanner.hasNextLine() && !found)
-            {
-                String line=scanner.nextLine();
-                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
-                String file=tokens[0];
-                if (file.equals(fileName))
-                    continue;
-                else
-                {
-                    double x=Double.valueOf(tokens[1]);
-                    double y=Double.valueOf(tokens[2]);
-                    double z=Double.valueOf(tokens[3]);
-                    sunPosition=new Vector3D(x,y,z);
-                    found=true;
-                }
-            }
-            scanner.close();
-            //
-            if (!found)
-                throw new Exception("No sun position found in "+f.getName()+" for file "+fileName);
-        }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return sunPosition.normalize();
-    }
-
     public double[] simulateLighting(Vector3D toSunUnitVector)
     {
         IlluminationField illumField=new UniformIlluminationField(toSunUnitVector.negate());
@@ -248,7 +243,8 @@ public class NISPopupMenu extends PopupMenu
         {
             Path fullPath=Paths.get(spectrum.getFullPath());
             Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-            double[] illumFacs=simulateLighting(getToSunUnitVector(relativePath.toString()));
+            Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
+//            double[] illumFacs=simulateLighting(toSunVector);
 
             Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
             vtkPolyData footprint=spectrum.getUnshiftedFootprint();
@@ -283,6 +279,10 @@ public class NISPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+            double[] up=new Vector3D(spectrum.getFrustumCorner(1)).subtract(new Vector3D(spectrum.getFrustumCorner(0))).toArray();
+            renderer.setCameraOrientation(spectrum.getFrustumOrigin(), spectrum.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
         }
     }
 
@@ -297,6 +297,79 @@ public class NISPopupMenu extends PopupMenu
                 NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
+
+                updateMenuItems();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+
+    private class ShowOutlineAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                model.addSpectrum(currentSpectrum);
+                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+
+                spectrum.setShowOutline(showOutlineMenuItem.isSelected());
+
+                updateMenuItems();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+    private class ShowToSunVectorAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                model.addSpectrum(currentSpectrum);
+                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+
+                spectrum.setShowToSunVector(showToSunVectorMenuItem.isSelected());
+
+                updateMenuItems();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+    private class SetIlluminationAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            try
+            {
+                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                model.addSpectrum(currentSpectrum);
+                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+
+                renderer.setLighting(LightingType.FIXEDLIGHT);
+                Path fullPath=Paths.get(spectrum.getFullPath());
+                Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
+                Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
+                renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
+
+                System.out.println("!");
 
                 updateMenuItems();
             }
