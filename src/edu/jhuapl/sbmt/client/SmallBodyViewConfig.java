@@ -17,12 +17,12 @@ import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
 
 /**
- * A SmallBodyConfig is a class for storing all which models should be instantiated
- * together with a particular small body. For example some models like Eros
- * have imaging, spectral, and lidar data whereas other models may only have
- * imaging data. This class is also used when creating (to know which tabs
- * to create).
- */
+* A SmallBodyConfig is a class for storing all which models should be instantiated
+* together with a particular small body. For example some models like Eros
+* have imaging, spectral, and lidar data whereas other models may only have
+* imaging data. This class is also used when creating (to know which tabs
+* to create).
+*/
 public class SmallBodyViewConfig extends BodyViewConfig
 {
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
@@ -180,7 +180,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         configArray.add(c);
 
         // Ostro Itokawa
-        c = new SmallBodyViewConfig();
+       c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.ITOKAWA;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -765,7 +765,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         )
         };
 
-        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
+       c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
@@ -1842,3 +1842,4 @@ public class SmallBodyViewConfig extends BodyViewConfig
     }
 
 }
+
