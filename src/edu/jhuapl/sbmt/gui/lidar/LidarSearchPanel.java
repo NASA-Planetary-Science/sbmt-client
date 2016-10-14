@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
@@ -47,8 +46,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
-import com.google.common.collect.Lists;
 
 import vtk.vtkPolyData;
 
@@ -167,7 +164,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 maybeShowPopup(e);
             }
         });
-        jTable1.removeColumn(jTable1.getColumnModel().getColumn(5));
+        jTable1.removeColumn(jTable1.getColumnModel().getColumn(6));
 
 
         JPanel showSpacecraftPanel = new JPanel(new GridLayout());
@@ -463,7 +460,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         public Color getColor(int row)
         {
-            int[] rgb=(int[])getValueAt(row, 5);
+            int[] rgb=(int[])getValueAt(row, 6);
             return new Color(rgb[0],rgb[1],rgb[2]);
         }
 
@@ -497,7 +494,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         @Override
         public int getColumnCount()
         {
-            return 6;
+            return 7;
         }
 
         public void addTrack(Track track, int id)
@@ -507,12 +504,17 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         public void addTrack(Track track, int id, boolean hidden)
         {
-            List<String> sourceFiles=Lists.newArrayList();
+            String sourceFiles="";
             for (int i=0; i<track.getNumberOfSourceFiles(); i++)
-                sourceFiles.add(track.getSourceFileName(i));
+            {
+                sourceFiles+=track.getSourceFileName(i);
+                if (i<track.getNumberOfSourceFiles()-1)
+                    sourceFiles+=" | ";
+            }
             addRow(new Object[]{
                     hidden,
-                    "Track "+id,
+                    "Trk "+id,
+                    track.getNumberOfPoints(),
                     track.timeRange[0],
                     track.timeRange[1],
                     sourceFiles,
@@ -530,10 +532,12 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             case 1:
                 return "Track";
             case 2:
-                return "Start Time";
+                return "# pts";
             case 3:
-                return "End Time";
+                return "Start Time";
             case 4:
+                return "End Time";
+            case 5:
                 return "Data Source";
             default:
                 return null;
@@ -547,7 +551,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             {
             case 0:
                 return Boolean.class;
-            case 5:
+            case 6:
                 return int[].class;
             default:
                 return String.class;
