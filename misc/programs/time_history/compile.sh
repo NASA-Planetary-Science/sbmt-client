@@ -4,4 +4,4 @@
 # installation! Must be at least SPICE version N0064.
 SPICE_DIR=/project/nearsdc/software/spice/cspice/
 
-g++ -Wall getTargetBodyPosition.c timeHistory.c -I $SPICE_DIR/include $SPICE_DIR/lib/cspice.a -o timeHistory
+g++ -Wall getTargetState.c getSpacecraftState.c timeHistory.c -I $SPICE_DIR/include $SPICE_DIR/lib/cspice.a -o timeHistory
