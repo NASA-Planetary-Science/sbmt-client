@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree.ola.footprints;
+package edu.jhuapl.sbmt.model.lidar;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -31,7 +31,12 @@ public class OLAL2File
         this.id=id;
     }
 
-    public List<OlaFSHyperPoint> read() // the fileNum field of the OLA point is set to -1 here
+    public List<OlaFSHyperPoint> read()
+    {
+        return read(1);
+    }
+
+    public List<OlaFSHyperPoint> read(double scale) // the fileNum field of the OLA point is set to -1 here
     {
         List<OlaFSHyperPoint> points=Lists.newArrayList();
         DataInputStream in=null;
@@ -60,7 +65,7 @@ public class OLAL2File
                 //
                 boolean noise = ((flagStatus == 0 || flagStatus == 1) ? false : true);
                 if (!noise)
-                    points.add(new OlaFSHyperPoint(tgPos[0], tgPos[1], tgPos[2], time, scPos[0], scPos[1], scPos[2], 0, id));
+                    points.add(new OlaFSHyperPoint(tgPos[0]*scale, tgPos[1]*scale, tgPos[2]*scale, time, scPos[0]*scale, scPos[1]*scale, scPos[2]*scale, 0, id));
             }
 
         }
