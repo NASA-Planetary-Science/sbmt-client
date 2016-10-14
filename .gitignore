@@ -13,3 +13,5 @@ misc/server/sbmt/public/tmp
 misc/server/sbmt/public/output
 log
 /favorites
+*.vtk
+/eros_sunVectors.txt

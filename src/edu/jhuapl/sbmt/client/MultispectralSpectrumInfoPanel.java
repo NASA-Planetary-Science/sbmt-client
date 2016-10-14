@@ -174,7 +174,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
     private void createMenus()
     {
         NISPopupMenu msiImagesPopupMenu =
-        new NISPopupMenu(modelManager, null);
+        new NISPopupMenu(modelManager, null, null);
 
 //        msiImagesPopupMenu.setCurrentSpectrum(perspectiveImage.getServerPath());
 //        msiImagesPopupMenu.setCurrentSpectrum("<file path>");

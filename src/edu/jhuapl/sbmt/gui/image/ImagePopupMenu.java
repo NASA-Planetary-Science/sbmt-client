@@ -583,10 +583,10 @@ public class ImagePopupMenu extends PopupMenu
                     File imgName = file;
                     String lblName = file.getAbsolutePath();
                     lblName = lblName.substring(0, lblName.length()-4);
-                    if (file.getAbsolutePath().endsWith("img"))
-                        lblName += ".lbl";
-                    else
-                        lblName += ".LBL";
+//                    if (file.getAbsolutePath().endsWith("img"))
+//                        lblName += ".lbl";
+//                    else
+//                        lblName += ".LBL";
 
                     File lblFile = new File(lblName);
 

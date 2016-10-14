@@ -16,10 +16,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeSet;
 
 import javax.swing.JComboBox;
@@ -27,14 +32,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import com.google.common.collect.Maps;
 
 import vtk.vtkActor;
 import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
+import vtk.vtkPolyDataNormals;
 
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -42,6 +52,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -49,6 +60,8 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.query.eros.NisQuery;
+
+import altwg.util.PolyDataUtil;
 
 
 public class NISSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
@@ -64,6 +77,10 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     private IdPair resultIntervalCurrentlyShown = null;
     private boolean currentlyEditingUserDefinedFunction = false;
 
+    Renderer renderer;
+    Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
+    static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
+
     /** Creates new form NISSearchPanel */
     public NISSearchPanel(final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
@@ -72,7 +89,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         this.modelManager = modelManager;
         this.pickManager = pickManager;
 
-        nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager);
+        nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renderer);
 
         initComponents();
 
@@ -80,7 +97,60 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         renderer.addKeyListener(this);
+        this.renderer=renderer;
 
+        File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
+        try
+        {
+            Scanner scanner=new Scanner(nisTimesFile);
+            boolean found=false;
+            while (scanner.hasNextLine() && !found)
+            {
+                String line=scanner.nextLine();
+                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
+                String file=tokens[0];
+                String time=tokens[1];
+                nisFileToObservationTimeMap.put(file,time);
+            }
+            scanner.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    static
+    {
+        File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
+        try
+        {
+            Scanner scanner=new Scanner(nisSunFile);
+            boolean found=false;
+            while (scanner.hasNextLine() && !found)
+            {
+                String line=scanner.nextLine();
+                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
+                String file=tokens[0];
+                String x=tokens[1];
+                String y=tokens[2];
+                String z=tokens[3];
+                nisFileToSunPositionMap.put(file,new Vector3D(Double.valueOf(x),Double.valueOf(y),Double.valueOf(z)).normalize());
+            }
+            scanner.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static Vector3D getToSunUnitVector(String fileName)    // file name is taken relative to /project/nearsdc/data/NIS/2000
+    {
+        return nisFileToSunPositionMap.get(fileName);
     }
 
 // TODO make this class abstract with these abstract functions. Subclasses will
@@ -147,9 +217,12 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         int i=0;
         for (String str : results)
         {
+            String fileNum=str.substring(16,25);
+            String strippedFileName=str.replace("/NIS/2000/", "");
+            String detailedTime=nisFileToObservationTimeMap.get(strippedFileName);
             formattedResults[i] = new String(
-                    str.substring(16, 25)
-                    + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)
+                    fileNum
+                    + ", day: " + str.substring(10, 13) + "/" + str.substring(5, 9)+" ("+detailedTime+")"
                     );
 
             ++i;
@@ -157,10 +230,13 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
 
         resultList.setListData(formattedResults);
 
+
         // Show the first set of footprints
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem()));
         this.showNISFootprints(resultIntervalCurrentlyShown);
     }
+
+
 
     public void mouseClicked(MouseEvent e)
     {
@@ -218,6 +294,41 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         {
             nisPopupMenu.showStatisticsWindow();
         }
+        else if (e.getKeyChar()=='i' || e.getKeyChar()=='v')    // 'i' sets the lighting direction based on time of a single NIS spectrum, and 'v' looks from just above the footprint toward the sun
+        {
+            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            List<NISSpectrum> selection=model.getSelectedSpectra();
+            if (selection.size()!=1)
+            {
+                JOptionPane.showMessageDialog(this, "Please select only one spectrum to specify lighting or viewpoint");
+                return;
+            }
+            NISSpectrum spectrum=selection.get(0);
+            renderer.setLighting(LightingType.FIXEDLIGHT);
+            Path fullPath=Paths.get(spectrum.getFullPath());
+            Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
+            Vector3D toSunVector=getToSunUnitVector(relativePath.toString());
+            renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
+            if (e.getKeyChar()=='v')
+            {
+                Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
+                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                //
+                vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+                normalsFilter.SetInputData(spectrum.getUnshiftedFootprint());
+                normalsFilter.SetComputeCellNormals(0);
+                normalsFilter.SetComputePointNormals(1);
+                normalsFilter.SplittingOff();
+                normalsFilter.Update();
+                Vector3D upVector=new Vector3D(PolyDataUtil.computePolyDataNormal(normalsFilter.GetOutput())).normalize();  // TODO: fix this for degenerate cases, i.e. normal parallel to to-sun direction
+                double viewHeight=0.01; // km
+                Vector3D cameraPosition=footprintCenter.add(upVector.scalarMultiply(viewHeight));
+                double lookLength=footprintCenter.subtract(cameraPosition).getNorm();
+                Vector3D focalPoint=cameraPosition.add(toSunVector.normalize().scalarMultiply(lookLength));
+                //
+                renderer.setCameraOrientation(cameraPosition.toArray(), focalPoint.toArray(), renderer.getRenderWindowPanel().getActiveCamera().GetViewUp(), renderer.getCameraViewAngle());
+            }
+        }
         else if (e.getKeyChar()=='h')
         {
             NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
@@ -264,6 +375,8 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             }
         }
     }
+
+
 
     private void checkValidMinMax(int channel, boolean minimunStateChange)
     {
