@@ -138,7 +138,7 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/EROS/MSI/gallery"),
+                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"),
                         ImageType.AMICA_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED},
                         Instrument.AMICA

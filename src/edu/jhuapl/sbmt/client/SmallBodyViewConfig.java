@@ -277,7 +277,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP"),
+                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/hrscgallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.IMAGING_DATA
@@ -331,7 +331,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/images/gallery"),
+                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
