@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.gui.eros;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,15 +14,16 @@ import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.google.common.collect.Lists;
+import com.jidesoft.utils.SwingWorker;
 
 import vtk.vtkActor;
-import vtk.vtkPolyData;
+import vtk.vtkIdTypeArray;
 import vtk.vtkProp;
-import vtk.vtkSelectPolyData;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.Renderer.LightingType;
@@ -28,10 +31,10 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.illum.IlluminationField;
 import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
 import edu.jhuapl.saavtk.illum.UniformIlluminationField;
+import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
@@ -41,7 +44,7 @@ import edu.jhuapl.sbmt.model.eros.NISStatistics.Sample;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
 
 
-public class NISPopupMenu extends PopupMenu
+public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
 {
     private ModelManager modelManager;
     private String currentSpectrum;
@@ -58,6 +61,10 @@ public class NISPopupMenu extends PopupMenu
 
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
+
+
+    ComputeStatisticsTask task;
+    JProgressBar statisticsProgressBar=new JProgressBar(0,100);
 
     /**
      *
@@ -219,17 +226,17 @@ public class NISPopupMenu extends PopupMenu
 
     }
 
-    public double[] simulateLighting(Vector3D toSunUnitVector)
+    public double[] simulateLighting(Vector3D toSunUnitVector, List<Integer> faces)
     {
         IlluminationField illumField=new UniformIlluminationField(toSunUnitVector.negate());
         SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         PolyhedralModelIlluminator illuminator=new PolyhedralModelIlluminator(smallBodyModel);
-        illuminator.illuminate(illumField);
-        return illuminator.getIlluminationFactorArray();
+        return illuminator.illuminate(illumField, faces);
     }
 
     public void showStatisticsWindow()
     {
+        SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         List<NISSpectrum> spectra=model.getSelectedSpectra();
         if (spectra.size()==0)
@@ -238,39 +245,72 @@ public class NISPopupMenu extends PopupMenu
 
         //
         // compute statistics
+        task=new ComputeStatisticsTask(spectra);
+        task.addPropertyChangeListener(this);
+        task.execute();
+
+    }
+
+    class ComputeStatisticsTask extends SwingWorker<Void, Void>
+    {
         List<Sample> emergenceAngle=Lists.newArrayList();
-        for (NISSpectrum spectrum : spectra)
+        List<Sample> incidenceAngle=Lists.newArrayList();   // this has nan for faces that are occluded
+        List<Sample> irradiation=Lists.newArrayList();
+        List<Sample> phaseAngle=Lists.newArrayList();   // this can have a different number of items than the other lists due to occluded faces
+        List<NISSpectrum> spectra;
+
+        public ComputeStatisticsTask(List<NISSpectrum> spectra)
         {
-            Path fullPath=Paths.get(spectrum.getFullPath());
-            Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-            Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
-//            double[] illumFacs=simulateLighting(toSunVector);
-
-            Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
-            vtkPolyData footprint=spectrum.getUnshiftedFootprint();
-
-            vtkSelectPolyData selectionFilter=new vtkSelectPolyData();
-            selectionFilter.SetInputData(modelManager.getPolyhedralModel().getSmallBodyPolyData());
-            selectionFilter.SetLoop(footprint.GetPoints());
-            selectionFilter.Update();
-            vtkPolyData selectedFaces=selectionFilter.GetOutput();
-
-            Frustum frustum=new Frustum(scpos.toArray(), spectrum.getFrustumCorner(0), spectrum.getFrustumCorner(1), spectrum.getFrustumCorner(2), spectrum.getFrustumCorner(3));
-            emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum,selectedFaces, frustum));
+            this.spectra=spectra;
         }
 
-        NISStatistics stats=new NISStatistics(emergenceAngle, spectra);
-        NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
-        statsModel.addStatistics(stats);
+        @Override
+        protected Void doInBackground() throws Exception
+        {
+            for (int i=0; i<spectra.size(); i++)
+            {
+                setProgress((int)(100*(double)i/(double)spectra.size()));
 
-        try
-        {
-            infoPanelManager.addData(stats);
+                NISSpectrum spectrum=spectra.get(i);
+                Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
+
+                vtkIdTypeArray ids=(vtkIdTypeArray)spectrum.getUnshiftedFootprint().GetCellData().GetArray(GenericPolyhedralModel.cellIdsArrayName);
+                List<Integer> selectedIds=Lists.newArrayList();
+                for (int m=0; m<ids.GetNumberOfTuples(); m++)
+                    selectedIds.add(ids.GetValue(m));
+
+                Path fullPath=Paths.get(spectrum.getFullPath());
+                Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
+                Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
+                double[] illumFacs=simulateLighting(toSunVector,selectedIds);
+
+                emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum, scpos));
+                // XXX: incidence angle currently ignores occlusion
+                incidenceAngle.addAll(NISStatistics.sampleIncidenceAngle(spectrum, toSunVector));
+                phaseAngle.addAll(NISStatistics.samplePhaseAngle(incidenceAngle, emergenceAngle));
+                irradiation.addAll(NISStatistics.sampleIrradiance(spectrum, illumFacs));
+            }
+
+            return null;
         }
-        catch (Exception e1)
+
+        @Override
+        protected void done()
         {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+
+            NISStatistics stats=new NISStatistics(emergenceAngle, incidenceAngle, phaseAngle, irradiation, spectra);
+            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+            statsModel.addStatistics(stats);
+
+            try
+            {
+                infoPanelManager.addData(stats);
+            }
+            catch (Exception e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
 
     }
@@ -369,8 +409,6 @@ public class NISPopupMenu extends PopupMenu
                 Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
                 renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
-                System.out.println("!");
-
                 updateMenuItems();
             }
             catch (Exception ex)
@@ -424,6 +462,22 @@ public class NISPopupMenu extends PopupMenu
             setCurrentSpectrum(name);
             show(e.getComponent(), e.getX(), e.getY());
         }
+    }
+
+
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getSource()==task)
+        {
+            if (task.isDone())
+                statisticsProgressBar.setVisible(false);
+            else
+                statisticsProgressBar.setVisible(true);
+            statisticsProgressBar.setValue(task.getProgress());
+        }
+
     }
 
 }

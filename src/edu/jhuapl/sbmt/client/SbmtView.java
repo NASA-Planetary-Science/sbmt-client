@@ -359,4 +359,7 @@ public class SbmtView extends View
         setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
     }
 
+
+
+
 }
