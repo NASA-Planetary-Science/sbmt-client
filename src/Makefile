@@ -8,13 +8,16 @@ include ${SBMTROOT}/config/Makefiles/Variables
 
 PUBLIC_VERSION := public
 INTERNAL_VERSION := internal
+VTK_VERSION := vtk6.3
 PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
 INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 
 MYCLASSPATH = ${CLASSPATH}
 
 top_level_dir = ${SBMTROOT}
-vtk_dir = /project/nearsdc/software/vtk_all_platforms
+vtk_dir = ${SAAVTKROOT}/lib/${VTK_VERSION}
+jogl_dir = ${SAAVTKROOT}/lib/jogl
+jre_dir = /project/nearsdc/software/vtk_all_platforms
 
 # Environment variables needed for 'ant' to run 
 # setenv ANT_HOME /project/nearsdc/software/apache-ant/latest
@@ -91,11 +94,7 @@ ${most_supported_targets} :
 all : ${NEARJAR} ${NEARAPLJAR}
 
 install : ${NEARAPLJAR} tools
-		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar"
-		cp ${NEARAPLJAR} ${LIBROOT}/near.jar
-		rsync -av /project/nearsdc/software/vtk_all_platforms/mac64/ ${LIBROOT}
-		rsync -av /project/nearsdc/software/vtk_all_platforms/linux64/ ${LIBROOT}
- 
+		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
 
 release: install ${int_zips} ${pub_zips}
 
@@ -142,9 +141,12 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_mac_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-mac64 ${int_mac_sbmt_dir}
+		cp -R ${jre_dir}/jre-mac64 ${int_mac_sbmt_dir}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/jre-mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_mac_sbmt_lib_dir}
@@ -157,9 +159,12 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_linux_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-linux64 ${int_linux_sbmt_dir}
+		cp -R ${jre_dir}/jre-linux64 ${int_linux_sbmt_dir}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/jre-linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_linux_sbmt_lib_dir}
@@ -171,9 +176,12 @@ ${int_win_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_win_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_win_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-win64 ${int_win_sbmt_dir}
+		cp -R ${jre_dir}/jre-win64 ${int_win_sbmt_dir}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/jre-win64 ${int_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_win_sbmt_lib_dir}
@@ -188,9 +196,12 @@ ${pub_mac_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_mac_sbmt_lib_dir}
 		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-mac64 ${pub_mac_sbmt_dir}
+		cp -R ${jre_dir}/jre-mac64 ${pub_mac_sbmt_dir}
 		rm -rf ${pub_mac_sbmt_dir}/jre
 		mv ${pub_mac_sbmt_dir}/jre-mac64 ${pub_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_mac_sbmt_lib_dir}
@@ -203,9 +214,12 @@ ${pub_linux_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_linux_sbmt_lib_dir}
 		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-linux64 ${pub_linux_sbmt_dir}
+		cp -R ${jre_dir}/jre-linux64 ${pub_linux_sbmt_dir}
 		rm -rf ${pub_linux_sbmt_dir}/jre
 		mv ${pub_linux_sbmt_dir}/jre-linux64 ${pub_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_linux_sbmt_lib_dir}
@@ -217,9 +231,12 @@ ${pub_win_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_win_sbmt_lib_dir}
 		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-win64 ${pub_win_sbmt_dir}
+		cp -R ${jre_dir}/jre-win64 ${pub_win_sbmt_dir}
 		rm -rf ${pub_win_sbmt_dir}/jre
 		mv ${pub_win_sbmt_dir}/jre-win64 ${pub_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_win_sbmt_lib_dir}
