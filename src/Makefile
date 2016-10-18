@@ -84,7 +84,7 @@ pub_win_zip   :=  ${pub_win_dir}/${win_zip}
 int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_win_zip}
 pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
 
-all_java_files := ${SBMTROOT}/src/edu/jhuapl/near/*/*.java
+all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
 
 
 .SUFFIXES: .jar .zip
@@ -149,7 +149,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		cp -R ${jre_dir}/jre-mac64 ${int_mac_sbmt_dir}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/jre-mac64 ${int_mac_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_mac_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
 		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} sbmt)
 
@@ -167,7 +167,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		cp -R ${jre_dir}/jre-linux64 ${int_linux_sbmt_dir}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/jre-linux64 ${int_linux_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_linux_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
 		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} sbmt)
 
@@ -184,7 +184,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp -R ${jre_dir}/jre-win64 ${int_win_sbmt_dir}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/jre-win64 ${int_win_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_win_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
 		cp ${vtk_dir}/runsbmt.exe ${int_win_sbmt_dir}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} sbmt)
@@ -204,7 +204,7 @@ ${pub_mac_zip} : ${NEARJAR}
 		cp -R ${jre_dir}/jre-mac64 ${pub_mac_sbmt_dir}
 		rm -rf ${pub_mac_sbmt_dir}/jre
 		mv ${pub_mac_sbmt_dir}/jre-mac64 ${pub_mac_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_mac_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR} ${PUBLIC_VERSION}
 		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} sbmt)
 
@@ -222,7 +222,7 @@ ${pub_linux_zip} : ${NEARJAR}
 		cp -R ${jre_dir}/jre-linux64 ${pub_linux_sbmt_dir}
 		rm -rf ${pub_linux_sbmt_dir}/jre
 		mv ${pub_linux_sbmt_dir}/jre-linux64 ${pub_linux_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_linux_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR} ${PUBLIC_VERSION}
 		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} sbmt)
 
@@ -239,7 +239,7 @@ ${pub_win_zip} : ${NEARJAR}
 		cp -R ${jre_dir}/jre-win64 ${pub_win_sbmt_dir}
 		rm -rf ${pub_win_sbmt_dir}/jre
 		mv ${pub_win_sbmt_dir}/jre-win64 ${pub_win_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_win_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
 		cp ${vtk_dir}/runsbmt.exe ${pub_win_sbmt_dir}
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
 		(cd ${pub_win_dir} ; zip -q -r ${win_zip} sbmt)
