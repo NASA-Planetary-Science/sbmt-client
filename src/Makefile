@@ -15,8 +15,9 @@ INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 MYCLASSPATH = ${CLASSPATH}
 
 top_level_dir = ${SBMTROOT}
-vtk_dir = ${SAAVTKROOT}/lib/${VTK_VERSION}
-jogl_dir = ${SAAVTKROOT}/lib/jogl
+saavtk_lib_dir = ${SAAVTKROOT}/lib
+vtk_dir = ${saavtk_lib_dir}/${VTK_VERSION}
+jogl_dir = ${saavtk_lib_dir}/jogl
 jre_dir = /project/nearsdc/software/vtk_all_platforms
 
 # Environment variables needed for 'ant' to run 
@@ -28,6 +29,7 @@ build_dir     := ${SBMTROOT}/build
 BUILD_JAR_DIR := ${build_dir}/jar
 NEARJAR       := ${BUILD_JAR_DIR}/near.jar
 NEARAPLJAR    := ${BUILD_JAR_DIR}/near-apl.jar
+SAAVTKJAR    := ${saavtk_lib_dir}/saavtk.jar
 
 int_dist_dir := ${SBMTROOT}/build/dist/internal
 pub_dist_dir := ${SBMTROOT}/build/dist/public
@@ -144,6 +146,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		cp ${vtk_dir}/*.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_mac_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_mac_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-mac64 ${int_mac_sbmt_dir}
@@ -162,6 +165,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		cp ${vtk_dir}/*.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_linux_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_linux_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-linux64 ${int_linux_sbmt_dir}
@@ -179,6 +183,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${vtk_dir}/*.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_win_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_win_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-win64 ${int_win_sbmt_dir}
@@ -199,6 +204,7 @@ ${pub_mac_zip} : ${NEARJAR}
 		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_mac_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_mac_sbmt_lib_dir}
 		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-mac64 ${pub_mac_sbmt_dir}
@@ -217,6 +223,7 @@ ${pub_linux_zip} : ${NEARJAR}
 		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_linux_sbmt_lib_dir}
 		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-linux64 ${pub_linux_sbmt_dir}
@@ -234,6 +241,7 @@ ${pub_win_zip} : ${NEARJAR}
 		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_win_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_win_sbmt_lib_dir}
 		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
 		cp -R ${jre_dir}/jre-win64 ${pub_win_sbmt_dir}
