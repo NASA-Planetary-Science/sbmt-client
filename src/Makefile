@@ -147,7 +147,9 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		cp ${saavtk_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-macosx-universal.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-macosx-universal.jar ${int_mac_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${int_mac_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
@@ -167,7 +169,9 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		cp ${saavtk_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${int_linux_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${int_linux_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
