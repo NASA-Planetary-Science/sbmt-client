@@ -29,7 +29,7 @@ build_dir     := ${SBMTROOT}/build
 BUILD_JAR_DIR := ${build_dir}/jar
 NEARJAR       := ${BUILD_JAR_DIR}/near.jar
 NEARAPLJAR    := ${BUILD_JAR_DIR}/near-apl.jar
-SAAVTKJAR    := ${saavtk_lib_dir}/saavtk.jar
+SAAVTKJAR    := ${SAAVTKROOT}/build/lib/saavtk.jar
 
 int_dist_dir := ${SBMTROOT}/build/dist/internal
 pub_dist_dir := ${SBMTROOT}/build/dist/public
