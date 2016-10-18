@@ -248,7 +248,7 @@ ${pub_win_zip} : ${NEARJAR}
 		rm -rf ${pub_win_sbmt_dir}/jre
 		mv ${pub_win_sbmt_dir}/jre-win64 ${pub_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
-		cp ${vtk_dir}/runsbmt.exe ${pub_win_sbmt_dir}
+		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
 		(cd ${pub_win_dir} ; zip -q -r ${win_zip} sbmt)
 
