@@ -30,7 +30,12 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
+import org.jfree.util.ShapeUtilities;
+
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
@@ -58,7 +63,25 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         this.modelManager=modelManager;
         this.stats=stats;
 
-        tabbedPane.add("Incidence Angle (deg)",setupHistogramPanel(stats.sampleEmergenceAngle(), "Angle (deg)", "# faces"));
+        //List<Sample> goodIncidenceSamples=NISStatistics.removeNans(stats.getIncidenceAngleSamples());
+        tabbedPane.add("Incidence Angle (deg)",setupHistogramPanel(stats.getIncidenceAngleSamples(), "Angle (deg)", "# faces"));
+        tabbedPane.add("Emergence Angle (deg)",setupHistogramPanel(stats.getEmergenceAngleSamples(), "Angle (deg)", "# faces"));
+
+        List<Sample> irradianceSamples=stats.getIrradianceSamples();
+        List<Sample> phaseAngleSamples=stats.getPhaseAngleSamples();
+        List<Sample> phaseAngleSamplesNoZeroIrrad=Lists.newArrayList();
+        List<Sample> irradianceSamplesNoZeros=Lists.newArrayList();
+        for (int i=0; i<irradianceSamples.size(); i++)
+            if (irradianceSamples.get(i).value>0)
+            {
+                phaseAngleSamplesNoZeroIrrad.add(phaseAngleSamples.get(i));
+                irradianceSamplesNoZeros.add(irradianceSamples.get(i));
+            }
+
+        tabbedPane.add("Relative Irradiance (No Zeros)",setupHistogramPanel(irradianceSamplesNoZeros, "Irradiance Level (dimensionless)", "# faces"));
+        tabbedPane.add("Phase Angle (deg)",setupHistogramPanel(phaseAngleSamples, "Angle (deg)", "# faces"));
+        tabbedPane.add("Reconstructed BRDF", setupBdrfPanel(phaseAngleSamplesNoZeroIrrad, irradianceSamplesNoZeros));
+
 
         this.add(tabbedPane);
         pack();
@@ -71,6 +94,7 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         HistogramDataset dataset=new HistogramDataset();
 
         double[] ange=NISStatistics.getValuesAsArray(samples);
+
         double mine=NISStatistics.getMin(samples);
         double maxe=NISStatistics.getMax(samples);
 
@@ -127,7 +151,7 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
 
         JPanel controlPanel=new JPanel();
         JButton restackButton=new JButton("Stack by <e>");
-        controlPanel.add(restackButton);
+       // controlPanel.add(restackButton);
 
         restackButton.addActionListener(new ActionListener()
         {
@@ -152,6 +176,29 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         panel.add(controlPanel,BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    private JPanel setupBdrfPanel(List<Sample> phaseAngles, List<Sample> irradiance)
+    {
+        XYSeriesCollection dataset=new XYSeriesCollection();
+        XYSeries series=new XYSeries("Reconstructed BRDF");
+        for (int i=0; i<phaseAngles.size(); i++)
+        {
+            double alpha=phaseAngles.get(i).value;
+            double irrad=irradiance.get(i).value;
+            series.add(alpha,irrad);
+        }
+        dataset.addSeries(series);
+
+        JFreeChart chart=ChartFactory.createScatterPlot("BRDF", "Phase angle", "Irradiance", dataset, PlotOrientation.VERTICAL, false, false, false);
+        ChartPanel chartPanel=new ChartPanel(chart);
+        chartPanel.setMouseWheelEnabled(true);
+        XYPlot plot=(XYPlot)chart.getPlot();
+        plot.setDomainPannable(true);
+        plot.setRangePannable(true);
+        plot.getRenderer().setSeriesPaint(0, Color.BLACK);
+        plot.getRenderer().setSeriesShape(0, ShapeUtilities.createDiagonalCross(0.5f, 0.5f));
+        return chartPanel;
     }
 
     @Override

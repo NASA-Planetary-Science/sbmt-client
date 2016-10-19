@@ -55,7 +55,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS"),
+                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                         Instrument.MSI
@@ -139,7 +139,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA"),
+                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"),
                         ImageType.AMICA_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED},
                         Instrument.AMICA
@@ -278,7 +278,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP"),
+                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/hrscgallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.IMAGING_DATA
@@ -332,7 +332,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER"),
+                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
@@ -376,7 +376,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO"),
+                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
@@ -399,7 +399,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA"),
+                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
@@ -437,7 +437,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE"),
+                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
@@ -473,7 +473,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO"),
+                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"),
                             ImageType.LORRI_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.LORRI
@@ -517,7 +517,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/MIMAS/IMAGING"),
+                        new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
                         Instrument.IMAGING_DATA
@@ -546,7 +546,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING"),
+                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
                         Instrument.IMAGING_DATA
@@ -577,7 +577,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres"),
+                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"),
                             ImageType.FCCERES_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.FC
@@ -616,7 +616,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC"),
+                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"),
                         ImageType.FC_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                         Instrument.FC
@@ -661,7 +661,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/IDA/SSI"),
+                        new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"),
                         ImageType.SSI_IDA_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
                         Instrument.SSI
@@ -698,7 +698,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/GASPRA/SSI"),
+                        new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"),
                         ImageType.SSI_GASPRA_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
                         Instrument.SSI
@@ -735,7 +735,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/MATHILDE/MSI"),
+                        new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"),
                         ImageType.MSI_MATHILDE_IMAGE,
                         new ImageSource[]{ImageSource.CORRECTED},
                         Instrument.MSI
@@ -1303,7 +1303,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING"),
+                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.OSIRIS
@@ -1359,7 +1359,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/DIONE/IMAGING"),
+                        new FixedListQuery("/GASKELL/DIONE/IMAGING","/GASKELL/DIONE/IMAGING/gallery"),
                         ImageType.SATURN_MOON_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL},
                         Instrument.IMAGING_DATA
@@ -1477,7 +1477,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P"),
+                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.OSIRIS
@@ -1509,7 +1509,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelAuthor.DLR;
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
-            c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR");
+            c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
             c.smallBodyLabelPerResolutionLevel = new String[]{
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
@@ -1592,7 +1592,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3"),
+                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3","/GASKELL/67P_V3/IMAGING/gallery"),
                             //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},

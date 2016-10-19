@@ -1,4 +1,4 @@
-<project default="compile">
+<project default="jar">
 
 <!--
   <fail message="Unsupported Java version: ${ant.java.version}. Make sure that the Java version is 1.8.">
@@ -11,29 +11,66 @@
 -->
 
   <property name="rootdir" location="${basedir}"/>
-  <property name="vtkrootdir" location="/home/kahneg1/src/near/vtk_all_platforms"/>
+  <property name="rootSAAVTKdir" location="${basedir}/../saavtk/"/>
+  <property name="vtkrootdir" location="/project/nearsdc/software/vtk_all_platforms"/>
+  <property name="vtkVersion" value="6.3"/>
+  <property name="libDir" location="${rootSAAVTKdir}/lib"/>
 
+ <target name="compileSAAVTK">
+    <echo>$${rootSAAVTKdir/lib}=${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar</echo>
+    <mkdir dir="${rootSAAVTKdir}/build/data"/>
+ 	<mkdir dir="${rootSAAVTKdir}/build/classes"/>
+
+ 	<copy todir="${rootSAAVTKdir}/build/classes/edu/jhuapl/saavtk/data">
+ 	      <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/data"/>
+ 	</copy>
+ 	
+    <javac srcdir="${rootSAAVTKdir}/src"
+           destdir="${rootSAAVTKdir}/build/classes"
+           debug="off" >
+      <classpath>
+        <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/fits-1.04.0.jar"/>
+        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/Jama-1.0.2.jar"/>
+        <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
+        <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
+        <pathelement location="${libDir}/jgoodies-common-1.1.1.jar"/>
+        <pathelement location="${libDir}/jgoodies-looks-2.4.0.jar"/>
+        <pathelement location="${libDir}/joda-time-1.6.jar"/>
+        <pathelement location="${libDir}/miglayout-3.7.1-swing.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
+        <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
+        <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
+        <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+      </classpath>
+    </javac>
+  </target>
+	
+	
   <target name="compile">
     <echo>$${rootdir}=${rootdir}</echo>
     <echo>RELEASE=${RELEASE}</echo>
+    <mkdir dir="${rootdir}/build/resources"/>
+    <mkdir dir="${rootdir}/build/data"/>
+    <mkdir dir="${rootdir}/build/data/shapes"/>
+    <mkdir dir="${rootdir}/build/data/shapes/organs"/>
+    <mkdir dir="${rootdir}/build/data/shapes/armor"/>
     <mkdir dir="${rootdir}/build/classes"/>
     <mkdir dir="${rootdir}/build/classes/edu"/>
     <mkdir dir="${rootdir}/build/classes/edu/jhuapl"/>
-    <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near"/>
-    <mkdir dir="${rootdir}/build/classes/edu/jhuapl/near/data"/>
+    <mkdir dir="${rootdir}/build/classes/edu/jhuapl/sbmt"/>
+    <mkdir dir="${rootdir}/build/classes/edu/jhuapl/sbmt/data"/>
     <exec executable="sh" output="build/classes/svn.version" failifexecutionfails="false">
       <arg value="-c"/>
       <!-- <arg value="svn info | grep -i 'Last Changed Date'"/> -->
-      <!-- <arg value="echo Last Changed Date: `date +%F`"/> -->
-      <!-- Changed the version string to use the release name assigned
-           when the release is made rather than hard code the use of
-           the current date as the release name. Changed the string so
-           that the version name is the 4th token in the string. This is
-           because the java code prints the 4th token in the "About" box. -->
-      <arg value="echo New Release Name: ${RELEASE} Created On `date +%F`"/>
+      <arg value="echo Last Changed Date: `date +%F`"/>
     </exec>
-    <copy todir="${rootdir}/build/classes/edu/jhuapl/near/data">
-      <fileset dir="${rootdir}/src/edu/jhuapl/near/data"/>
+    <copy todir="${rootdir}/build/classes/edu/jhuapl/sbmt/data">
+      <fileset dir="${rootdir}/src/edu/jhuapl/sbmt/data"/>
     </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
@@ -42,61 +79,148 @@
         <fileset dir="${rootdir}/lib">
           <include name="**/*.jar" />
         </fileset>
+        <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/fits-1.04.0.jar"/>
+        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/Jama-1.0.2.jar"/>
+        <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
+        <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
+        <pathelement location="${libDir}/jgoodies-common-1.1.1.jar"/>
+        <pathelement location="${libDir}/jgoodies-looks-2.4.0.jar"/>
+        <pathelement location="${libDir}/joda-time-1.6.jar"/>
+        <pathelement location="${libDir}/miglayout-3.7.1-swing.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
+        <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
+        <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
+        <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+        <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
       </classpath>
     </javac>
   </target>
 
-  <target name="jarapl" depends="compile">
+  <target name="jarapl" depends="jarSAAVTK, compile">
     <mkdir dir="${rootdir}/build/jar"/>
-    <path id="build-classpath">
-      <fileset dir="${rootdir}/lib">
-        <include name="**/*.jar" />
-      </fileset>
-    </path>
-    <pathconvert property="manifest.classpath" pathsep=" ">
-      <path refid="build-classpath"/>
-      <mapper>
-        <flattenmapper/>
-      </mapper>
-    </pathconvert>
     <jar destfile="${rootdir}/build/jar/near-apl.jar" basedir="${rootdir}/build/classes">
+    
+      <fileset dir="${rootdir}/build/classes">
+        <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
+        <exclude name="edu/jhuapl/sbmt/tools/**"/>
+      </fileset>
+      <fileset dir="${rootdir}/build/classes">
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool$*.class"/>
+      </fileset>
+
       <manifest>
-        <attribute name="Class-Path" value="${manifest.classpath}"/>
-        <attribute name="Main-Class" value="edu.jhuapl.near.tools.SmallBodyMappingToolAPL"/>
+        <attribute name="Class-Path" value="commons-io-2.0.jar
+            commons-math3-3.2.jar
+            fits-1.04.0.jar
+            guava-13.0.1.jar
+            Jama-1.0.2.jar
+            jcommon-1.0.16.jar
+            jfreechart-1.0.13.jar
+            jgoodies-common-1.1.1.jar
+            jgoodies-looks-2.4.0.jar
+            joda-time-1.6.jar                                            
+            miglayout-3.7.1-swing.jar
+            quaqua-7.3.4-filechooser-only.jar
+            quaqua-7.3.4.jar
+            RelativeLayout-v1.0.jar                                            
+            vtk-${vtkVersion}.jar
+            jogl-all.jar
+            gluegen-rt.jar
+            saavtk.jar
+            altwg-java-tools.jar
+            jide-oss-3.6.9.jar
+            mysql-connector-java-5.1.10-bin.jar
+            spice-N0065.jar
+            "/>
+
+        <attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
+        
       </manifest>
     </jar>
   </target>
 
-  <target name="jar" depends="compile">
+  <target name="jar" depends="jarSAAVTK, compile">
     <mkdir dir="${rootdir}/build/jar"/>
-    <path id="build-classpath">
-      <fileset dir="${rootdir}/lib">
-        <include name="**/*.jar" />
-      </fileset>
-    </path>
-    <pathconvert property="manifest.classpath" pathsep=" ">
-      <path refid="build-classpath"/>
-      <mapper>
-        <flattenmapper/>
-      </mapper>
-    </pathconvert>
-    <jar destfile="${rootdir}/build/jar/near.jar">
+    
+    <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
+    
       <fileset dir="${rootdir}/build/classes">
-        <exclude name="edu/jhuapl/near/data/LinearFeatures.txt"/>
-        <exclude name="edu/jhuapl/near/tools/**"/>
+        <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
+        <exclude name="edu/jhuapl/sbmt/tools/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
-        <include name="edu/jhuapl/near/tools/SmallBodyMappingTool.class"/>
-        <include name="edu/jhuapl/near/tools/SmallBodyMappingTool$*.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool$*.class"/>
       </fileset>
+    
       <manifest>
-        <attribute name="Class-Path" value="${manifest.classpath}"/>
-        <attribute name="Main-Class" value="edu.jhuapl.near.tools.SmallBodyMappingTool"/>
+        <attribute name="Class-Path" value="commons-io-2.0.jar
+            commons-math3-3.2.jar
+            fits-1.04.0.jar
+            guava-13.0.1.jar
+            Jama-1.0.2.jar
+            jcommon-1.0.16.jar
+            jfreechart-1.0.13.jar
+            jgoodies-common-1.1.1.jar
+            jgoodies-looks-2.4.0.jar
+            joda-time-1.6.jar                                            
+            miglayout-3.7.1-swing.jar
+            quaqua-7.3.4-filechooser-only.jar
+            quaqua-7.3.4.jar
+            RelativeLayout-v1.0.jar                                            
+            vtk-${vtkVersion}.jar
+            jogl-all.jar
+            gluegen-rt.jar
+            saavtk.jar
+            altwg-java-tools.jar
+            jide-oss-3.6.9.jar
+            mysql-connector-java-5.1.10-bin.jar
+            spice-N0065.jar
+            "/>
+
+      	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingTool"/>
       </manifest>
     </jar>
   </target>
 
-<!-- Not using this target anymore. Using makefiles instead.
+  <target name="jarSAAVTK" depends="compileSAAVTK">
+    <mkdir dir="${rootSAAVTKdir}/build/jar"/>
+    <jar destfile="${rootSAAVTKdir}/build/jar/saavtk.jar" basedir="${rootSAAVTKdir}/build/classes">
+      <manifest>
+        <attribute name="Class-Path" value="commons-io-2.0.jar
+                                            commons-math3-3.2.jar
+                                            fits-1.04.0.jar
+                                            guava-13.0.1.jar
+                                            Jama-1.0.2.jar
+                                            jcommon-1.0.16.jar
+                                            jfreechart-1.0.13.jar
+                                            jgoodies-common-1.1.1.jar
+                                            jgoodies-looks-2.4.0.jar
+                                            joda-time-1.6.jar                                            
+                                            miglayout-3.7.1-swing.jar
+                                            quaqua-7.3.4-filechooser-only.jar
+                                            quaqua-7.3.4.jar
+                                            RelativeLayout-v1.0.jar                                            
+                                            vtk-${vtkVersion}.jar
+                                            jogl-all.jar
+                                            gluegen-rt.jar
+                                            "/>
+        <attribute name="Main-Class" value="edu.jhuapl.saavtk.example.ExampleTool"/>
+      </manifest>
+    </jar>
+  </target>
+	
+
+
+
+
+<!-- Not using this target anymore. Using makefiles instead. 
   <target name="generatezip" depends="jar,jarapl">
     <mkdir dir="${rootdir}/build/dist"/>
     <mkdir dir="${rootdir}/build/dist/internal"/>
@@ -115,14 +239,17 @@
 -->
 
   <target name="runjarapl" depends="jarapl">
-    <java classname="edu.jhuapl.near.tools.SmallBodyMappingToolAPL" fork="true"
-          maxmemory="512m">
+    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL" fork="true" maxmemory="4096M">
+<!--
       <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms/current"/>
       <jvmarg value="-Dsun.java2d.noddraw=true"/>
+-->
+    	
+      <jvmarg value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64"/>
       <jvmarg value="-Dcom.apple.mrj.application.apple.menu.about.name=Small Body Mapping Tool"/>
       <classpath>
         <fileset dir="${rootdir}/lib">
-          <include name="**/*.jar" />
+          <include name="${rootdir}/build/jar/near-apl.jar" />
         </fileset>
       </classpath>
     </java>
@@ -131,5 +258,64 @@
   <target name="clean">
     <delete dir="${rootdir}/build"/>
   </target>
+	
+	
+  <target name="runjar" depends="jar">
+    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingTool" fork="true" maxmemory="1024m">
+      <!--
+        <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms"/>
+      -->
+      <jvmarg value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64"/>
+      <jvmarg value="-Dsun.java2d.noddraw=true"/>
+      <jvmarg value="-Dcom.apple.mrj.application.apple.menu.about.name=SBMT Test"/>
+      <classpath>
+<!--
+        <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/fits-1.04.0.jar"/>
+        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/Jama-1.0.2.jar"/>
+        <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
+        <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
+        <pathelement location="${libDir}/jgoodies-common-1.1.1.jar"/>
+        <pathelement location="${libDir}/jgoodies-looks-2.4.0.jar"/>
+        <pathelement location="${libDir}/joda-time-1.6.jar"/>
+        <pathelement location="${libDir}/miglayout-3.7.1-swing.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
+        <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
+        <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
+        <pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+        <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+        <pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
+        <pathelement location="${rootdir}/build/jar/near.jar"/>
+        <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
+-->
+      	
+        <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-math3-3.2.jar"/>
+        <pathelement location="${libDir}/fits-1.04.0.jar"/>
+        <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/Jama-1.0.2.jar"/>
+        <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
+        <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
+        <pathelement location="${libDir}/jgoodies-common-1.1.1.jar"/>
+        <pathelement location="${libDir}/jgoodies-looks-2.4.0.jar"/>
+        <pathelement location="${libDir}/joda-time-1.6.jar"/>
+        <pathelement location="${libDir}/miglayout-3.7.1-swing.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
+        <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
+        <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
+        <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
+        <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+        <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
+        <pathelement location="${rootdir}/build/jar/near.jar"/>
+
+      </classpath>
+    </java>
+  </target>
+
 
 </project>

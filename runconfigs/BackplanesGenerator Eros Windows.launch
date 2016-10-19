@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="PATH" value="..\saavtk\lib\win64"/>
+<mapEntry key="PATH" value="..\saavtk\lib\vtk6.3\win64"/>
 </mapAttribute>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
@@ -17,5 +17,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.BackplanesGenerator"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-c msi -r 3  -f -p gaskell eros misc\programs\msi_pds\msiTestImageList.txt misc\programs\msi_pds\MSIBackplanes"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=..\saavtk\lib\win64  -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/win64  -Xmx4096M -Dcom.apple.mrj.application.apple.menu.about.name=&quot;Small Body Mapping Tool&quot;"/>
 </launchConfiguration>

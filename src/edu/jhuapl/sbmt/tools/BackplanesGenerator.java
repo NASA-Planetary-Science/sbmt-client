@@ -15,22 +15,17 @@ import vtk.vtkDebugLeaks;
 
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.util.BackplanesFile;
-import edu.jhuapl.sbmt.util.FitsBackplanesFile;
-import edu.jhuapl.sbmt.util.ImgBackplanesFile;
+import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
 
 /**
@@ -65,7 +60,7 @@ public class BackplanesGenerator
      * @throws IOException
      */
     private void generateBackplanes(
-            List<String> imageFiles,
+    		List<String> imageFiles,
             Instrument instr,
             String outputFolder,
             BackplanesFileFormat fmt,
@@ -204,33 +199,24 @@ public class BackplanesGenerator
                 continue;
             }
 
-            // Generate the backplanes binary file
+            // Generate the backplanes binary data
             float[] backplanes = image.generateBackplanes();
 
-            // Save out the backplanes
+            // Prepare folders for output backplanes files and labels
             new File(outputFolder).mkdirs();
 
-            //determine output ddr filename
-            String ddrFilename = getddrFilename(image, key, resolutionLevel, fmt, outputFolder);
+            // Backplanes file name
+            String baseFilename = getBaseFilename(image, key, resolutionLevel, fmt, outputFolder);
+            String ddrFilename = baseFilename + fmt.getExtension();
 
-            //Write data to the appropriate format (FITS or IMG)
-
+            // Write backplanes data to the appropriate format (FITS or IMG)
             fmt.getFile().write(backplanes, new File(filename).getName(), ddrFilename, image.getImageWidth(), image.getImageHeight(), image.getNumBackplanes());
 
-            if (image instanceof MSIImage) {
-                System.out.println("This is an MSI Image");
-            }
-
-            //determine output ddr labelFilename
-            String ddrLabelFilename = getddrLblname(image, key, resolutionLevel, fmt, outputFolder);
-
-            // Generate the label
-//          String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-//          image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
-            generateLabel(image, key, new File(ddrFilename), new File(ddrLabelFilename));
+            // Write the backplanes file label.
+            image.generateBackplanesLabel(new File(ddrFilename), new File(baseFilename));
 
             filesProcessed.add(ddrFilename);
-            System.out.println("   Wrote backplanes to " + ddrFilename);
+            System.out.println("Wrote backplanes to " + new File(ddrFilename).getAbsolutePath());
 
             image.Delete();
             System.gc();
@@ -244,7 +230,7 @@ public class BackplanesGenerator
     }
 
     /**
-     * Generate ddr filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
+     * Generate base ddr filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
      * different filenaming conventions based on which PerspectiveImage subclass is being processed.
      *
      * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
@@ -252,121 +238,14 @@ public class BackplanesGenerator
      * @param resolutionLevel - resolution level
      * @param fmt - output file format
      * @param outputFolder - destination folder for output file
-     * @return
+     * @return base name of ddr backplanes file, no extension
      */
-    private String getddrFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder) {
-
-        //key class is initialized with base filename (i.e. no ".extension")
-        String fname = new File(key.name).getName();
-
-//        String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
-        String ddrFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
-
-        return ddrFilename;
-
-    }
-
-    /**
-     * Generate ddr label filename given the parameters. Currently there are two file naming conventions, one for PDS3 labels, and one for
-     * PDS4 xml labels. The naming convention is based on the PerspectiveImage subclass being processed.
-     * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
-     * @param key - base filename.
-     * @param resolutionLevel - resolution level
-     * @param fmt - output file format
-     * @param outputFolder - destination folder for output file
-     * @return
-     */
-    private String getddrLblname(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder) {
-
-        //key class is initialized with base filename (i.e. no ".extension")
-        String fname = new File(key.name).getName();
-
-//        String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr." + fmt.getExtension();
-//      String ddrLabelFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-
-        String ddrLabelFilename = "";
-        if (image instanceof MSIImage) {
-            System.out.println("This is an MSI Image");
-             ddrLabelFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.xml";
-        } else {
-             ddrLabelFilename = outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr.lbl";
-        }
-
-        return ddrLabelFilename;
-
-    }
-
-
-    /**
-     * Generate the label file. Allows for different, potentially more complicated methods to be called depending on PerspectiveImage subclass
-     * @param image
-     * @param key
-     * @param ddrFilename - full path to the DDR file.
-     * @param ddrLabelFilename - full path to the DDR label file.
-     * @throws IOException
-     */
-    private void generateLabel(PerspectiveImage image, ImageKey key, File ddrFilename, File ddrLabelFilename) throws IOException {
-
-//        if (image instanceof MSIImage) {
-//
-//        } else {
-            image.generateBackplanesLabel(ddrFilename, ddrLabelFilename);
-//        }
-    }
-
-
-    private void authenticate()
+    private String getBaseFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder)
     {
-        Configuration.setAPLVersion(true);
+        //key class is initialized with base filename (i.e. no ".extension")
+        String fname = new File(key.name).getName();
 
-        String username = null;
-        String password = null;
-
-        try
-        {
-            // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
-            // containing the runsbmt script.
-            String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String parent = new File(jarLocation).getParentFile().getParent();
-            String[] passwordFilesToTry = {
-                    Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    parent + File.separator + "password.txt"
-            };
-
-            for (String passwordFile : passwordFilesToTry)
-            {
-                if (new File(passwordFile).exists())
-                {
-                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
-                    if (credentials.size() >= 2)
-                    {
-                        String user = credentials.get(0);
-                        String pass = credentials.get(1);
-
-                        if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
-                            pass != null && pass.trim().length() > 0)
-                        {
-                            username = user.trim();
-                            password = pass.trim();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-        }
-
-        if (username != null && password != null)
-        {
-            Configuration.setupPasswordAuthentication(username, password);
-        }
-        else
-        {
-            System.out.println("Warning: no correctly formatted password file found. "
-                    + "Continuing without password. Certain functionality may not work.");
-        }
+        return outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr";
     }
 
     /**
@@ -381,7 +260,7 @@ public class BackplanesGenerator
      */
     public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt) throws Exception
     {
-        List<String> image = new ArrayList<>();
+    	List<String> image = new ArrayList<>();
         image.add(imageFile);
         this.smallBodyModel = model;
         generateBackplanes(image, instr, outputFolder, fmt, ImageSource.GASKELL);
@@ -389,13 +268,13 @@ public class BackplanesGenerator
 
     private void printUsage()
     {
-        String o = "This program generates blackplanes for a list of image files. A separate\n"
-                + "backplane for each resolution level is generated.\n\n"
+        String o = "This program generates blackplanes for a single image or a list of image files.\n"
+                + "A separate backplane file for each shape model resolution level is generated.\n\n"
                 + "Usage: BackplanesGenerator [options] <body> <image-list> <output-folder>\n\n"
                 + "Where:\n"
                 + "  <body>                   The name of the body. If not recognized, the program\n"
                 + "                           will list the possible bodies.\n"
-                + "  <image-list>             Path to to file listing the images to use. Images are\n"
+                + "  <image-list>             Path to file listing the images to use. Images are\n"
                 + "                           specified relative to the /project/nearsdc/data folder.\n"
                 + "                           (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)\n"
                 + "  <output-folder>          Path to folder which where to place generated backplanes.\n\n"
@@ -424,30 +303,6 @@ public class BackplanesGenerator
         System.exit(1);
     }
 
-    public enum BackplanesFileFormat
-    {
-        FITS(new FitsBackplanesFile(), "fit"), IMG(new ImgBackplanesFile(), "img");
-
-        private BackplanesFile file;
-        private String extension;
-
-        private BackplanesFileFormat(BackplanesFile file, String extension)
-        {
-            this.file = file;
-            this.extension = extension;
-        }
-
-        public BackplanesFile getFile()
-        {
-            return file;
-        }
-
-        public String getExtension()
-        {
-            return extension;
-        }
-    }
-
     public void doMain(String[] args) throws IOException
     {
         String bodyStr;
@@ -460,6 +315,7 @@ public class BackplanesGenerator
         Instrument instr = null;
         BackplanesFileFormat fmt = BackplanesFileFormat.IMG;
         ImageSource ptg = null;
+        boolean singleImage = false;
 
         int i;
         for (i = 0; i < args.length; ++i)
@@ -483,6 +339,10 @@ public class BackplanesGenerator
             else if (args[i].equals("-p"))
             {
                 ptg = ImageSource.valueOf(args[++i].toUpperCase());
+            }
+            else if (args[i].equals("-s"))
+            {
+                singleImage = true;
             }
             else
             {
@@ -512,7 +372,7 @@ public class BackplanesGenerator
         // VTK and authentication
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
-        authenticate();
+        Authenticator.authenticate();
 
         // Parse parameters to create SBMT classes.
         try
@@ -558,7 +418,14 @@ public class BackplanesGenerator
         System.out.println("Body " + body.name());
         System.out.println("Version " + version);
         System.out.println("Imager " + instr);
-        System.out.println("Image file list " + imageFileList);
+        if (singleImage)
+        {
+            System.out.println("Image file " + imageFileList);
+        }
+        else
+        {
+            System.out.println("Image file list " + imageFileList);
+        }
         System.out.println("Pointing type " + ptg);
         System.out.println("Output format " + fmt.name());
         System.out.println("Output folder " + outputFolder);
@@ -567,11 +434,19 @@ public class BackplanesGenerator
         // Read image file list and process image backplanes.
         PerspectiveImage.setGenerateFootprint(true);
         List<String> imageFiles = null;
-        try {
-            imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
-        } catch (IOException e2) {
-            System.out.println("Error reading image file list, " + imageFileList);
-            e2.printStackTrace();
+        if (singleImage)
+        {
+            imageFiles = new ArrayList<>();
+            imageFiles.add(imageFileList);
+        }
+        else
+        {
+            try {
+                imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
+            } catch (IOException e2) {
+                System.out.println("Error reading image file list, " + imageFileList);
+                e2.printStackTrace();
+            }
         }
 
         try
