@@ -116,24 +116,28 @@
 
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
-                                            commons-math3-3.2.jar
-                                            fits-1.04.0.jar
-                                            guava-13.0.1.jar
-                                            Jama-1.0.2.jar
-                                            jcommon-1.0.16.jar
-                                            jfreechart-1.0.13.jar
-                                            jgoodies-common-1.1.1.jar
-                                            jgoodies-looks-2.4.0.jar
-                                            joda-time-1.6.jar                                            
-                                            miglayout-3.7.1-swing.jar
-                                            quaqua-7.3.4-filechooser-only.jar
-                                            quaqua-7.3.4.jar
-                                            RelativeLayout-v1.0.jar                                            
-                                            vtk-${vtkVersion}.jar
-                                            jogl-all.jar
-                                            gluegen-rt.jar
-                                            saavtk.jar
-                                            "/>
+            commons-math3-3.2.jar
+            fits-1.04.0.jar
+            guava-13.0.1.jar
+            Jama-1.0.2.jar
+            jcommon-1.0.16.jar
+            jfreechart-1.0.13.jar
+            jgoodies-common-1.1.1.jar
+            jgoodies-looks-2.4.0.jar
+            joda-time-1.6.jar                                            
+            miglayout-3.7.1-swing.jar
+            quaqua-7.3.4-filechooser-only.jar
+            quaqua-7.3.4.jar
+            RelativeLayout-v1.0.jar                                            
+            vtk-${vtkVersion}.jar
+            jogl-all.jar
+            gluegen-rt.jar
+            saavtk.jar
+            altwg-java-tools.jar
+            jide-oss-3.6.9.jar
+            mysql-connector-java-5.1.10-bin.jar
+            spice-N0065.jar
+            "/>
 
         <attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
         
@@ -157,24 +161,28 @@
     
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
-                                            commons-math3-3.2.jar
-                                            fits-1.04.0.jar
-                                            guava-13.0.1.jar
-        	                                Jama-1.0.2.jar
-        	                                jcommon-1.0.16.jar
-        	                                jfreechart-1.0.13.jar
-        	                                jgoodies-common-1.1.1.jar
-        	                                jgoodies-looks-2.4.0.jar
-                                            joda-time-1.6.jar                                            
-                                            miglayout-3.7.1-swing.jar
-        	                                quaqua-7.3.4-filechooser-only.jar
-        	                                quaqua-7.3.4.jar
-                                            RelativeLayout-v1.0.jar                                            
-                                            vtk-${vtkVersion}.jar
-                                            jogl-all.jar
-                                            gluegen-rt.jar
-                                            saavtk.jar
-                                            "/>
+            commons-math3-3.2.jar
+            fits-1.04.0.jar
+            guava-13.0.1.jar
+            Jama-1.0.2.jar
+            jcommon-1.0.16.jar
+            jfreechart-1.0.13.jar
+            jgoodies-common-1.1.1.jar
+            jgoodies-looks-2.4.0.jar
+            joda-time-1.6.jar                                            
+            miglayout-3.7.1-swing.jar
+            quaqua-7.3.4-filechooser-only.jar
+            quaqua-7.3.4.jar
+            RelativeLayout-v1.0.jar                                            
+            vtk-${vtkVersion}.jar
+            jogl-all.jar
+            gluegen-rt.jar
+            saavtk.jar
+            altwg-java-tools.jar
+            jide-oss-3.6.9.jar
+            mysql-connector-java-5.1.10-bin.jar
+            spice-N0065.jar
+            "/>
 
       	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingTool"/>
       </manifest>
