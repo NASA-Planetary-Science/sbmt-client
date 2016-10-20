@@ -20,6 +20,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1071,24 +1072,6 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
               currentRun.setCurrentTrajectoryIndex(index);
               currentRun.setTimeFraction(0.0);
               currentRun.setShowSpacecraft(true);
-
-//              renderer.setLighting(LightingType.LIGHT_KIT);
-
-//              double[] sunDirection = currentRun.getSunDirection();
-//              renderer.setFixedLightDirection(sunDirection);
-//              renderer.setLighting(LightingType.FIXEDLIGHT);
-
-
-              // tell the AreaCalculation about the new current trajectory
-//              AreaCalculationCollection areaCalculationList = runs.getCurrentRun().getAreaCalculationCollection();
-//              currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
-//              areaCalculationList.setCurrentTrajectory(currentTrajectoryName);
-//              AreaCalculation selectedAreaCalculation = areaCalculationList.getCurrentValue();
-//              if (selectedAreaCalculation != null)
-//              {
-//                  this.surfacePatchList.setModel(selectedAreaCalculation);
-//                  this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
-//              }
           }
         }
     }
@@ -1097,19 +1080,14 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
     private void trajectoryListValueChanged(javax.swing.event.ListSelectionEvent evt)
     {
         int[] indices = trajectoryList.getSelectedIndices();
-//        int minSelectedItem = passList.getMinSelectionIndex();
-//        int maxSelectedItem = passList.getMaxSelectionIndex();
+        StateHistoryModel currentRun = runs.getCurrentRun();
 
         if (indices.length >= 1 && !evt.getValueIsAdjusting())
         {
-            StateHistoryModel currentRun = runs.getCurrentRun();
             System.out.println("Time Interval List Value Changed: " + evt.toString());
 
             if (currentRun != null)
             {
-                // remove currently displayed patches
-//                currentRun.setShowPatches(new HashSet<String>());
-
                 Set<String> trajectoryNames = new HashSet<String>();
                 for (int i=0; i <indices.length; i++)
                 {
@@ -1125,31 +1103,36 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                     currentRun.setShowTrajectories(trajectoryNames);
                 }
 
-                // if only one item is selected, set the AreaCalculation target
+                // if only one item is selected, show the spacecraft and sub points
                 if (indices.length == 1)
                 {
-//                    int selectedTrajectoryIndex = indices[0];
-//    //                currentRun.markPatchesOutOfDate();
-//
-//                    // tell the AreaCalculation about the new current trajectory
-//                    AreaCalculationCollection areaCalculationCollection = currentRun.getAreaCalculationCollection();
-//    //                String currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
-//                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(selectedTrajectoryIndex);
-//                    String selectedTrajectoryName = selectedTrajectory.getName();
-//
-//                    areaCalculationCollection.setCurrentTrajectory(selectedTrajectoryName);
-//                    AreaCalculation selectedAreaCalculation = areaCalculationCollection.getCurrentValue();
-//                    Integer selectedAreaCalculationIndex = areaCalculationCollection.getCurrentIndex();
-//                    areaCalculationCollection.setCurrentIndex(selectedAreaCalculationIndex);
-
-//                    if (selectedAreaCalculation != null)
-//                    {
-//                        selectedAreaCalculation.markPatchesOutOfDate();
-//                        // for some reason, we need to change the list model to force it to update -turner1
-//                        this.surfacePatchList.setModel(new DefaultListModel());
-//                        this.surfacePatchList.setModel(selectedAreaCalculation);
-//                    }
+                    int index = indices[0];
+                    Object o = trajectoryList.getModel().getElementAt(index);
+                    if (currentRun != null)
+                    {
+                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
+                        String currentTrajectoryName = selectedTrajectory.getName();
+                        System.out.println("Select Current Time Interval " + currentTrajectoryName);
+                        currentRun.setCurrentTrajectoryIndex(index);
+                        currentRun.setTimeFraction(0.0);
+                        currentRun.setShowSpacecraft(true);
+                    }
                 }
+            }
+        }
+        else
+        {
+            System.out.println("Remove display of trajectories");
+            if (currentRun != null)
+            {
+                currentRun.setCurrentTrajectory(null);
+                if (currentRun != null)
+                {
+                    currentRun.setShowSpacecraft(false);
+                    currentRun.setShowTrajectories(Collections.EMPTY_SET);
+                }
+                currentRun.setTimeFraction(0.0);
+                currentRun.setShowSpacecraft(false);
             }
         }
     }

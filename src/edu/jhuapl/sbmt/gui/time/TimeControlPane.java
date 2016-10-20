@@ -24,11 +24,11 @@ public class TimeControlPane extends JPanel implements ItemListener
         TimeChanger radialChanger = new TimeChanger();
         radialChanger.setModel(stateHistoryCollection);
 
-        flybyCheckBox = new JCheckBox();
+//        flybyCheckBox = new JCheckBox();
 //        flybyCheckBox.setText("Show Trajectory");
 //        flybyCheckBox.setSelected(false);
 //        flybyCheckBox.addItemListener(this);
-//
+
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
 //        add(Box.createVerticalStrut(10));
