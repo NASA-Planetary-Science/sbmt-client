@@ -366,7 +366,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
             }
             else
             {
-                System.out.println("Added new simulation run: " + newRunInfo.runfilename);
+                System.out.println("Added new time interval run: " + newRunInfo.runfilename);
             }
 
         DefaultListModel model = (DefaultListModel)simulationRunList.getModel();
@@ -583,7 +583,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
         // simulation run list label
         simulationRunLabel = new JLabel();
-        simulationRunLabel.setText("Simulation Runs");
+        simulationRunLabel.setText("History");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -625,7 +625,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
         // trajectory list label
         trajectoryLabel = new JLabel();
-        trajectoryLabel.setText("Passes");
+        trajectoryLabel.setText("Time Interval");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -1065,13 +1065,13 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         int index = trajectoryList.locationToIndex(mouseEvent.getPoint());
         if (index >= 0) {
           Object o = trajectoryList.getModel().getElementAt(index);
-          System.out.println("Trajectory List Double-clicked: " + o.toString());
+          System.out.println("Time Interval Double-clicked: " + o.toString());
           StateHistoryModel currentRun = runs.getCurrentRun();
           if (currentRun != null)
           {
               Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
               String currentTrajectoryName = selectedTrajectory.getName();
-              System.out.println("Select Current Trajectory " + currentTrajectoryName);
+              System.out.println("Select Current Current Time Interval " + currentTrajectoryName);
               currentRun.setCurrentTrajectoryIndex(index);
               currentRun.setShowSpacecraft(true);
               currentRun.setTimeFraction(0.0);
@@ -1105,7 +1105,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         if (indices.length >= 1 && !evt.getValueIsAdjusting())
         {
             StateHistoryModel currentRun = runs.getCurrentRun();
-            System.out.println("Trajectory List Value Changed: " + evt.toString());
+            System.out.println("Time Interval List Value Changed: " + evt.toString());
 
             if (currentRun != null)
             {
@@ -1117,7 +1117,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                 {
                     int index = indices[i];
                     Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
-                    System.out.println("Show Trajectory " + selectedTrajectory.getName());
+                    System.out.println("Show Time Interval " + selectedTrajectory.getName());
                     trajectoryNames.add(selectedTrajectory.getName());
                 }
 

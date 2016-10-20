@@ -37,7 +37,7 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
     /** Creates new form ShapeModelImporterDialog */
     public StateHistoryImporterDialog(java.awt.Window parent, boolean isEditMode)
     {
-        super(parent, "Import New Simulation Run", Dialog.ModalityType.APPLICATION_MODAL);
+        super(parent, "Add Time History", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
         this.isEditMode = isEditMode;
     }
@@ -74,21 +74,21 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
         if (!isEditMode || (!runPath.isEmpty() && !runPath.equals(LEAVE_UNMODIFIED)))
         {
             if (runPath.isEmpty())
-                return "Please enter the path to an simulation run (.mission) file.";
+                return "Please enter the path to a history (.history) file.";
 
             File file = new File(runPath);
             if (!file.exists() || !file.canRead() || !file.isFile())
                 return runPath + " does not exist or is not readable.";
 
             if (runPath.contains(","))
-                return "Simulation run (.mission) file may not contain commas.";
+                return "History name may not contain commas.";
         }
 
         String runName = simRunsNameTextField.getText();
         if (runName == null)
             runName = "";
         if (runName.trim().isEmpty())
-            return "Please enter a name for the simulation run (.mission) file.";
+            return "Please enter a name for the time history.";
         if (runName.contains(","))
             return "Name may not contain commas.";
 
@@ -120,7 +120,7 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
         setMinimumSize(new java.awt.Dimension(600, 167));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        runPathLabel.setText("Simulation Run (.mission) File");
+        runPathLabel.setText("History (.history) File");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -186,7 +186,7 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
         getContentPane().add(jPanel1, gridBagConstraints);
 
         simRunsLabel.setText("Name");
-        simRunsLabel.setToolTipText("A name describing the simulation run that will be displayed in the run list.");
+        simRunsLabel.setToolTipText("A name describing the time history.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -194,7 +194,7 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(simRunsLabel, gridBagConstraints);
 
-        simRunsNameTextField.setToolTipText("A name describing the simulation run that will be displayed in the run list.");
+        simRunsNameTextField.setToolTipText("A name describing the time history that will be displayed in the time interval list.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -209,7 +209,7 @@ public class StateHistoryImporterDialog extends javax.swing.JDialog
 
     private void browseRunButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseRunButtonActionPerformed
     {
-        File file = StateHistoryFileChooser.showOpenDialog(this, "Select Simulation Run (.mission) File", "mission");
+        File file = StateHistoryFileChooser.showOpenDialog(this, "Select Time History (.history) File", "history");
         if (file == null)
         {
             return;

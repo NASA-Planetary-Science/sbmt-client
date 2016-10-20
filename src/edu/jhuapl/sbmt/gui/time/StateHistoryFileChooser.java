@@ -53,7 +53,7 @@ public class StateHistoryFileChooser extends FileChooserBase
         public String getDescription()
         {
             if (extension == null || extension.isEmpty())
-                return "Mission Files";
+                return "Time History Files";
             else
                 return extension.toUpperCase() + " Files";
         }
