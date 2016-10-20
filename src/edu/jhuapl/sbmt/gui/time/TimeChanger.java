@@ -20,7 +20,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
-import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.sbmt.model.time.HasTime;
 
 
@@ -28,7 +27,7 @@ public class TimeChanger extends javax.swing.JPanel
 
     implements ItemListener, ActionListener
 {
-    private Model model;
+    private HasTime model;
     private double offsetScale = 1.0; // 0.025;
     private int defaultValue = 0; // 15;
     private int sliderMin = 0;
@@ -44,7 +43,7 @@ public class TimeChanger extends javax.swing.JPanel
         rewind();
     }
 
-    public void setModel(Model model)
+    public void setModel(HasTime model)
     {
         this.model = model;
     }
@@ -54,7 +53,7 @@ public class TimeChanger extends javax.swing.JPanel
         slider.setValue(defaultValue);
         currentOffsetTime = 0.0;
         if (model != null)
-            ((HasTime)model).setTimeFraction(currentOffsetTime);
+            model.setTimeFraction(currentOffsetTime);
         System.out.println("Current Offset Time: " + currentOffsetTime);
     }
 
@@ -75,7 +74,7 @@ public class TimeChanger extends javax.swing.JPanel
         playCheckBox.setSelected(false);
         playCheckBox.addItemListener(this);
 
-        rateTextField = new JTextField("10.0");
+        rateTextField = new JTextField("60.0");
 
         slider.setMinimum(sliderMin);
         slider.setMaximum(sliderMax);
@@ -190,21 +189,28 @@ public class TimeChanger extends javax.swing.JPanel
 //        timer.start();
     }
 
-    public static final double flybyInterval = 1800.0;
+//    public static final double flybyInterval = 1800.0;
     public static final int timerInterval = 100;
 
     public void actionPerformed(ActionEvent e)
     {
+       double period = model.getPeriod();
        double deltaRealTime = timer.getDelay() / 1000.0;
-       double playRate = Double.parseDouble(rateTextField.getText());
+       double playRate = 1.0;
+       try {
+          playRate = Double.parseDouble(rateTextField.getText());
+       } catch (Exception ex) { playRate = 1.0; }
+
        double deltaSimulationTime = deltaRealTime * playRate;
-       double deltaOffsetTime = deltaSimulationTime / flybyInterval;
+       double deltaOffsetTime = deltaSimulationTime / period;
+//       System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
+
        currentOffsetTime += deltaOffsetTime;
        // time looping
        if (currentOffsetTime > 1.0)
            currentOffsetTime = 0.0;
 
-       ((HasTime)model).setTimeFraction(currentOffsetTime);
+       model.setTimeFraction(currentOffsetTime);
 
        int max = slider.getMaximum();
        int min = slider.getMinimum();
