@@ -6,10 +6,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
+import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
@@ -42,7 +42,9 @@ public class SbmtRunnable implements Runnable
             tempShapeModelPath = args[i++];
         }
 
-        NativeLibraryLoader.loadVtkLibraries();
+      //  NativeLibraryLoader.loadVtkLibraries();
+
+        vtkNativeLibrary.LoadAllNativeLibraries();
 
         vtkJavaGarbageCollector garbageCollector = new vtkJavaGarbageCollector();
         //garbageCollector.SetDebug(true);

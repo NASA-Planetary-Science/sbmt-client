@@ -8,13 +8,18 @@ include ${SBMTROOT}/config/Makefiles/Variables
 
 PUBLIC_VERSION := public
 INTERNAL_VERSION := internal
+VTK_VERSION := vtk6.3
 PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
 INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 
 MYCLASSPATH = ${CLASSPATH}
 
 top_level_dir = ${SBMTROOT}
-vtk_dir = /project/nearsdc/software/vtk_all_platforms
+saavtk_dir = ${SAAVTKROOT}
+saavtk_lib_dir = ${SAAVTKROOT}/lib
+vtk_dir = ${saavtk_lib_dir}/${VTK_VERSION}
+jogl_dir = ${saavtk_lib_dir}/jogl
+jre_dir = /project/nearsdc/software/vtk_all_platforms
 
 # Environment variables needed for 'ant' to run 
 # setenv ANT_HOME /project/nearsdc/software/apache-ant/latest
@@ -25,6 +30,7 @@ build_dir     := ${SBMTROOT}/build
 BUILD_JAR_DIR := ${build_dir}/jar
 NEARJAR       := ${BUILD_JAR_DIR}/near.jar
 NEARAPLJAR    := ${BUILD_JAR_DIR}/near-apl.jar
+SAAVTKJAR    := ${SAAVTKROOT}/build/jar/saavtk.jar
 
 int_dist_dir := ${SBMTROOT}/build/dist/internal
 pub_dist_dir := ${SBMTROOT}/build/dist/public
@@ -81,7 +87,7 @@ pub_win_zip   :=  ${pub_win_dir}/${win_zip}
 int_zips      := ${int_mac_zip} ${int_linux_zip} ${int_win_zip}
 pub_zips      := ${pub_mac_zip} ${pub_linux_zip} ${pub_win_zip}
 
-all_java_files := ${SBMTROOT}/src/edu/jhuapl/near/*/*.java
+all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
 
 
 .SUFFIXES: .jar .zip
@@ -91,11 +97,7 @@ ${most_supported_targets} :
 all : ${NEARJAR} ${NEARAPLJAR}
 
 install : ${NEARAPLJAR} tools
-		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar"
-		cp ${NEARAPLJAR} ${LIBROOT}/near.jar
-		rsync -av /project/nearsdc/software/vtk_all_platforms/mac64/ ${LIBROOT}
-		rsync -av /project/nearsdc/software/vtk_all_platforms/linux64/ ${LIBROOT}
- 
+		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
 
 release: install ${int_zips} ${pub_zips}
 
@@ -142,12 +144,19 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-macosx-universal.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-macosx-universal.jar ${int_mac_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_mac_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_mac_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/mac64 ${int_mac_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-mac64 ${int_mac_sbmt_dir}
+		cp -R ${jre_dir}/jre-mac64 ${int_mac_sbmt_dir}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/jre-mac64 ${int_mac_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_mac_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
 		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} sbmt)
 
@@ -157,12 +166,19 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${int_linux_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_linux_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_linux_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/linux64 ${int_linux_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-linux64 ${int_linux_sbmt_dir}
+		cp -R ${jre_dir}/jre-linux64 ${int_linux_sbmt_dir}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/jre-linux64 ${int_linux_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_linux_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
 		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} sbmt)
 
@@ -171,13 +187,18 @@ ${int_win_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_win_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${int_win_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${int_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${int_win_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${int_win_sbmt_lib_dir}
 		cp ${NEARAPLJAR} ${int_win_sbmt_lib_dir}/near.jar
 		cp -R ${vtk_dir}/win64 ${int_win_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-win64 ${int_win_sbmt_dir}
+		cp -R ${jre_dir}/jre-win64 ${int_win_sbmt_dir}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/jre-win64 ${int_win_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${int_win_sbmt_lib_dir}
-		cp ${vtk_dir}/runsbmt.exe ${int_win_sbmt_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
+		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} sbmt)
 
@@ -188,12 +209,17 @@ ${pub_mac_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_mac_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_mac_sbmt_lib_dir}
 		cp -R ${vtk_dir}/mac64 ${pub_mac_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-mac64 ${pub_mac_sbmt_dir}
+		cp -R ${jre_dir}/jre-mac64 ${pub_mac_sbmt_dir}
 		rm -rf ${pub_mac_sbmt_dir}/jre
 		mv ${pub_mac_sbmt_dir}/jre-mac64 ${pub_mac_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_mac_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR} ${PUBLIC_VERSION}
 		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} sbmt)
 
@@ -203,12 +229,17 @@ ${pub_linux_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_linux_sbmt_lib_dir}
 		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-linux64 ${pub_linux_sbmt_dir}
+		cp -R ${jre_dir}/jre-linux64 ${pub_linux_sbmt_dir}
 		rm -rf ${pub_linux_sbmt_dir}/jre
 		mv ${pub_linux_sbmt_dir}/jre-linux64 ${pub_linux_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_linux_sbmt_lib_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR} ${PUBLIC_VERSION}
 		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} sbmt)
 
@@ -217,13 +248,18 @@ ${pub_win_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all.jar ${pub_win_sbmt_lib_dir}
+		cp ${SAAVTKJAR} ${pub_win_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_win_sbmt_lib_dir}
 		cp -R ${vtk_dir}/win64 ${pub_win_sbmt_lib_dir}
-		cp -R ${vtk_dir}/jre-win64 ${pub_win_sbmt_dir}
+		cp -R ${jre_dir}/jre-win64 ${pub_win_sbmt_dir}
 		rm -rf ${pub_win_sbmt_dir}/jre
 		mv ${pub_win_sbmt_dir}/jre-win64 ${pub_win_sbmt_dir}/jre
-		cp ${top_level_dir}/src/edu/jhuapl/near/data/license.txt ${pub_win_sbmt_lib_dir}
-		cp ${vtk_dir}/runsbmt.exe ${pub_win_sbmt_dir}
+		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
+		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
 		(cd ${pub_win_dir} ; zip -q -r ${win_zip} sbmt)
 

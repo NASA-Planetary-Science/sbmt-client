@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -48,6 +49,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -63,6 +66,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
@@ -84,8 +88,8 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-
-import nom.tam.fits.FitsException;
+import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
+import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -172,10 +176,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         imageCubesDisplayedList.addListSelectionListener(this);
 
+        // Hide gallery if not APL internal mode
+        if (!Configuration.isAPLVersion())
+        {
+            viewResultsGalleryButton.setVisible(false);
+        }
+
 //        // XXX: Mike Z's defaults for testing off-limb plane generation
-        searchByFilenameCheckBox.setSelected(true);
+        //searchByFilenameCheckBox.setSelected(true);
 //        searchByNumberTextField.setText("N46055787522");
-        searchByNumberTextField.setText("W46990353518");
+        //searchByNumberTextField.setText("W46990353518");
 
         return this;
     }
@@ -571,6 +581,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
         this.showImageBoundaries(resultIntervalCurrentlyShown);
+
+        // Enable or disable the image gallery button
+        viewResultsGalleryButton.setEnabled(!results.isEmpty());
     }
 
 
@@ -1011,6 +1024,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         saveImageListButton = new javax.swing.JButton();
         saveSelectedImageListButton = new javax.swing.JButton();
         loadImageListButton = new javax.swing.JButton();
+        jPanel16 = new javax.swing.JPanel();
+        viewResultsGalleryButton = new javax.swing.JButton();
         jPanel17 = new javax.swing.JPanel();
         jPanel18 = new javax.swing.JPanel();
         removeColorImageButton = new javax.swing.JButton();
@@ -1770,7 +1785,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel9, gridBagConstraints);
@@ -1855,7 +1870,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 19;
+        gridBagConstraints.gridy = 21;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
@@ -1876,7 +1891,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 21;
+        gridBagConstraints.gridy = 23;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane3, gridBagConstraints);
 
@@ -2049,9 +2064,24 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
         jPanel8.add(jPanel15, gridBagConstraints);
+
+        jPanel16.setLayout(new java.awt.GridBagLayout());
+
+        viewResultsGalleryButton.setText("View Search Results as Image Gallery");
+        viewResultsGalleryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewResultsGalleryButtonActionPerformed(evt);
+            }
+        });
+        jPanel16.add(viewResultsGalleryButton, new java.awt.GridBagConstraints());
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 21;
+        gridBagConstraints.gridy = 13;
+        jPanel8.add(jPanel16, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 23;
         jPanel8.add(jPanel17, gridBagConstraints);
 
         removeColorImageButton.setText("Remove Color Image");
@@ -2072,7 +2102,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 22;
         jPanel8.add(jPanel18, gridBagConstraints);
 
         jPanel20.setLayout(new java.awt.GridBagLayout());
@@ -2092,7 +2122,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridy = 16;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel20, gridBagConstraints);
@@ -2115,7 +2145,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridy = 17;
         jPanel8.add(jPanel19, gridBagConstraints);
 
         jScrollPane5.setPreferredSize(new java.awt.Dimension(300, 100));
@@ -2133,12 +2163,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridy = 18;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridy = 19;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(monochromePanel, gridBagConstraints);
@@ -2649,6 +2679,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     result.add(name);
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
+                    if(instrument.searchQuery.getGalleryPath() == null)
+                    {
+                        result.add(null);
+                    }
+                    else
+                    {
+                        result.add(instrument.searchQuery.getGalleryPath() + "/" + words[0]);
+                    }
                     results.add(result);
                 }
 
@@ -2723,6 +2761,50 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void imageCubesDisplayedListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageCubesDisplayedListMouseReleased
         imageCubesDisplayedListMaybeShowPopup(evt);
     }//GEN-LAST:event_imageCubesDisplayedListMouseReleased
+
+    private void viewResultsGalleryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultsGalleryButtonActionPerformed
+        // Check if image search results are valid and nonempty
+        if(imageRawResults != null)
+        {
+            // Create list of gallery and preview image names based on results
+            List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
+            for(List<String> res : imageRawResults)
+            {
+                // Third entry of result is the gallery path (or null if gallery does not exist)
+                String s = res.get(2);
+                if(s != null)
+                {
+                    // Create entry for image gallery
+                    galleryEntries.add(new ImageGalleryEntry(
+                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
+                        s+".jpeg", s+"-small.jpeg"));
+                }
+            }
+
+            // Don't bother creating a gallery if empty
+            if(galleryEntries.isEmpty())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Unable to generate gallery.  Gallery images corresponding to search results are not registered.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Create preview gallery based on search results
+            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
+
+            // Show gallery preview in browser
+            try
+            {
+                java.awt.Desktop.getDesktop().browse(new File(galleryURL).toURI());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_viewResultsGalleryButtonActionPerformed
 
 
 //    protected boolean imageVisible(ImageKey key)
@@ -3031,6 +3113,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
@@ -3091,5 +3174,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JCheckBox userDefined6CheckBox;
     private javax.swing.JCheckBox userDefined7CheckBox;
     private javax.swing.JCheckBox userDefined8CheckBox;
+    private javax.swing.JButton viewResultsGalleryButton;
     // End of variables declaration//GEN-END:variables
 }
