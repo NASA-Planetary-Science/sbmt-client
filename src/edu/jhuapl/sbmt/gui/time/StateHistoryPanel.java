@@ -37,19 +37,15 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 
 import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.MapUtil;
-import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
-import edu.jhuapl.sbmt.model.time.AreaCalculation;
-import edu.jhuapl.sbmt.model.time.AreaCalculationCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
@@ -181,43 +177,43 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
      *
      * @return
      */
-    private double computeSizeOfPixel()
-    {
-        // Do a pick at each of the 4 corners of the renderer
-        long currentTime = System.currentTimeMillis();
-        int width = renWin.getComponent().getWidth();
-        int height = renWin.getComponent().getHeight();
-
-        int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
-        double[][] points = new double[4][3];
-        for (int i=0; i<4; ++i)
-        {
-            int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
-
-            if (pickSucceeded == 1)
-            {
-                points[i] = smallBodyCellPicker.GetPickPosition();
-            }
-            else
-            {
-                return -1.0;
-            }
-        }
-
-        // Compute the scale if all 4 points intersect by averaging the distance of all 4 sides
-        double bottom = MathUtil.distanceBetweenFast(points[0], points[1]);
-        double right  = MathUtil.distanceBetweenFast(points[1], points[2]);
-        double top    = MathUtil.distanceBetweenFast(points[2], points[3]);
-        double left   = MathUtil.distanceBetweenFast(points[3], points[0]);
-
-        double sizeOfPixel =
-                ( bottom / (double)(width-1)  +
-                  right  / (double)(height-1) +
-                  top    / (double)(width-1)  +
-                  left   / (double)(height-1) ) / 4.0;
-
-        return sizeOfPixel;
-    }
+//    private double computeSizeOfPixel()
+//    {
+//        // Do a pick at each of the 4 corners of the renderer
+//        long currentTime = System.currentTimeMillis();
+//        int width = renWin.getComponent().getWidth();
+//        int height = renWin.getComponent().getHeight();
+//
+//        int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
+//        double[][] points = new double[4][3];
+//        for (int i=0; i<4; ++i)
+//        {
+//            int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
+//
+//            if (pickSucceeded == 1)
+//            {
+//                points[i] = smallBodyCellPicker.GetPickPosition();
+//            }
+//            else
+//            {
+//                return -1.0;
+//            }
+//        }
+//
+//        // Compute the scale if all 4 points intersect by averaging the distance of all 4 sides
+//        double bottom = MathUtil.distanceBetweenFast(points[0], points[1]);
+//        double right  = MathUtil.distanceBetweenFast(points[1], points[2]);
+//        double top    = MathUtil.distanceBetweenFast(points[2], points[3]);
+//        double left   = MathUtil.distanceBetweenFast(points[3], points[0]);
+//
+//        double sizeOfPixel =
+//                ( bottom / (double)(width-1)  +
+//                  right  / (double)(height-1) +
+//                  top    / (double)(width-1)  +
+//                  left   / (double)(height-1) ) / 4.0;
+//
+//        return sizeOfPixel;
+//    }
 
     private void updateTimeBarValue()
     {
@@ -1071,21 +1067,23 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
           {
               Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
               String currentTrajectoryName = selectedTrajectory.getName();
-              System.out.println("Select Current Current Time Interval " + currentTrajectoryName);
+              System.out.println("Select Current Time Interval " + currentTrajectoryName);
               currentRun.setCurrentTrajectoryIndex(index);
-              currentRun.setShowSpacecraft(true);
               currentRun.setTimeFraction(0.0);
+              currentRun.setShowSpacecraft(true);
 
-              double[] sunDirection = currentRun.getSunDirection();
-              renderer.setFixedLightDirection(sunDirection);
-              renderer.setLighting(LightingType.FIXEDLIGHT);
+//              renderer.setLighting(LightingType.LIGHT_KIT);
+
+//              double[] sunDirection = currentRun.getSunDirection();
+//              renderer.setFixedLightDirection(sunDirection);
+//              renderer.setLighting(LightingType.FIXEDLIGHT);
 
 
               // tell the AreaCalculation about the new current trajectory
-              AreaCalculationCollection areaCalculationList = runs.getCurrentRun().getAreaCalculationCollection();
-              currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
-              areaCalculationList.setCurrentTrajectory(currentTrajectoryName);
-              AreaCalculation selectedAreaCalculation = areaCalculationList.getCurrentValue();
+//              AreaCalculationCollection areaCalculationList = runs.getCurrentRun().getAreaCalculationCollection();
+//              currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
+//              areaCalculationList.setCurrentTrajectory(currentTrajectoryName);
+//              AreaCalculation selectedAreaCalculation = areaCalculationList.getCurrentValue();
 //              if (selectedAreaCalculation != null)
 //              {
 //                  this.surfacePatchList.setModel(selectedAreaCalculation);
@@ -1110,7 +1108,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
             if (currentRun != null)
             {
                 // remove currently displayed patches
-                currentRun.setShowPatches(new HashSet<String>());
+//                currentRun.setShowPatches(new HashSet<String>());
 
                 Set<String> trajectoryNames = new HashSet<String>();
                 for (int i=0; i <indices.length; i++)
@@ -1130,19 +1128,19 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
                 // if only one item is selected, set the AreaCalculation target
                 if (indices.length == 1)
                 {
-                    int selectedTrajectoryIndex = indices[0];
-    //                currentRun.markPatchesOutOfDate();
-
-                    // tell the AreaCalculation about the new current trajectory
-                    AreaCalculationCollection areaCalculationCollection = currentRun.getAreaCalculationCollection();
-    //                String currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
-                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(selectedTrajectoryIndex);
-                    String selectedTrajectoryName = selectedTrajectory.getName();
-
-                    areaCalculationCollection.setCurrentTrajectory(selectedTrajectoryName);
-                    AreaCalculation selectedAreaCalculation = areaCalculationCollection.getCurrentValue();
-                    Integer selectedAreaCalculationIndex = areaCalculationCollection.getCurrentIndex();
-                    areaCalculationCollection.setCurrentIndex(selectedAreaCalculationIndex);
+//                    int selectedTrajectoryIndex = indices[0];
+//    //                currentRun.markPatchesOutOfDate();
+//
+//                    // tell the AreaCalculation about the new current trajectory
+//                    AreaCalculationCollection areaCalculationCollection = currentRun.getAreaCalculationCollection();
+//    //                String currentTrajectoryName = runs.getCurrentRun().getCurrentTrajectoryName();
+//                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(selectedTrajectoryIndex);
+//                    String selectedTrajectoryName = selectedTrajectory.getName();
+//
+//                    areaCalculationCollection.setCurrentTrajectory(selectedTrajectoryName);
+//                    AreaCalculation selectedAreaCalculation = areaCalculationCollection.getCurrentValue();
+//                    Integer selectedAreaCalculationIndex = areaCalculationCollection.getCurrentIndex();
+//                    areaCalculationCollection.setCurrentIndex(selectedAreaCalculationIndex);
 
 //                    if (selectedAreaCalculation != null)
 //                    {

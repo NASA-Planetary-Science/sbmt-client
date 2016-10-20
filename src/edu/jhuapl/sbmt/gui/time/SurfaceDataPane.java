@@ -13,7 +13,6 @@ import javax.swing.JSeparator;
 
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.model.time.AreaCalculation;
 import edu.jhuapl.sbmt.model.time.ScalarRange;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.SurfacePatch;
@@ -87,27 +86,27 @@ public class SurfaceDataPane extends JPanel implements ItemListener
 
     public void itemStateChanged(ItemEvent e)
     {
-        if (e.getStateChange() == ItemEvent.SELECTED)
-        {
-            if (e.getSource() == surfaceDataType)
-            {
-                System.out.println("Data type has changed");
-                AreaCalculation currentAreaCalculation = simulationRunCollection.getCurrentRun().getAreaCalculationCollection().getCurrentValue();
-                currentAreaCalculation.setCurrentDataField((String)e.getItem());
-                currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
-                currentAreaCalculation.redraw();
-                simulationRunCollection.getCurrentRun().updateActorVisibility();
-//                simulationRunCollection.getCurrentRun().updateScalarBar();
-            }
-            else if (e.getSource() == scalarRangeType)
-            {
-                System.out.println("Range type has changed");
-                AreaCalculation currentAreaCalculation = simulationRunCollection.getCurrentRun().getAreaCalculationCollection().getCurrentValue();
-                currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
-                currentAreaCalculation.redraw();
-                simulationRunCollection.getCurrentRun().updateActorVisibility();
-//                simulationRunCollection.getCurrentRun().updateScalarBar();
-            }
-        }
+//        if (e.getStateChange() == ItemEvent.SELECTED)
+//        {
+//            if (e.getSource() == surfaceDataType)
+//            {
+//                System.out.println("Data type has changed");
+//                AreaCalculation currentAreaCalculation = simulationRunCollection.getCurrentRun().getAreaCalculationCollection().getCurrentValue();
+//                currentAreaCalculation.setCurrentDataField((String)e.getItem());
+//                currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
+//                currentAreaCalculation.redraw();
+//                simulationRunCollection.getCurrentRun().updateActorVisibility();
+////                simulationRunCollection.getCurrentRun().updateScalarBar();
+//            }
+//            else if (e.getSource() == scalarRangeType)
+//            {
+//                System.out.println("Range type has changed");
+//                AreaCalculation currentAreaCalculation = simulationRunCollection.getCurrentRun().getAreaCalculationCollection().getCurrentValue();
+//                currentAreaCalculation.setCurrentPatch(currentAreaCalculation.getCurrentPatch());
+//                currentAreaCalculation.redraw();
+//                simulationRunCollection.getCurrentRun().updateActorVisibility();
+////                simulationRunCollection.getCurrentRun().updateScalarBar();
+//            }
+//        }
     }
 }
