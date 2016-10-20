@@ -11,12 +11,16 @@
 
 package edu.jhuapl.sbmt.gui.time;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
@@ -74,7 +78,7 @@ public class TimeChanger extends javax.swing.JPanel
         playCheckBox.setSelected(false);
         playCheckBox.addItemListener(this);
 
-        rateTextField = new JTextField("60.0");
+        rateTextField = new JTextField("60.0    ");
 
         slider.setMinimum(sliderMin);
         slider.setMaximum(sliderMax);
@@ -91,57 +95,75 @@ public class TimeChanger extends javax.swing.JPanel
 
         jLabel1.setText("Time");
 
-        rewindButton.setText("<<");
+        rewindButton.setText("Rewind");
         rewindButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(rateTextField)
-                            .addComponent(playCheckBox)
-                            .addComponent(rewindButton))
-                    .addGroup(layout.createSequentialGroup()
-                            .addComponent(slider, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(6, 6, 6)
-                            .addComponent(slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(rateTextField))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(3, 3, 3)
-                            .addComponent(playCheckBox))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(3, 3, 3)
-                            .addComponent(rewindButton)))
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
+        setLayout(new BorderLayout());
+
+//        JPanel separator = new JPanel();
+//        separator.setLayout(new FlowLayout(FlowLayout.TRAILING));
+//        separator.add(jLabel1);
+//        separator.add(jSeparator1);
+//        add(separator, BorderLayout.NORTH);
+
+        JPanel controls = new JPanel();
+        controls.setLayout(new FlowLayout());
+        controls.add(new JLabel("Rate:"));
+        controls.add(rateTextField);
+        controls.add(playCheckBox);
+        controls.add(rewindButton);
+        add(controls, BorderLayout.NORTH);
+
+        add(slider, BorderLayout.SOUTH);
+
+//        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+//        this.setLayout(layout);
+//        layout.setHorizontalGroup(
+//            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGroup(layout.createSequentialGroup()
+//                .addContainerGap()
+//                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+//                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+//                            .addComponent(rateTextField)
+//                            .addComponent(playCheckBox)
+//                            .addComponent(rewindButton))
+//                    .addGroup(layout.createSequentialGroup()
+//                            .addComponent(slider, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+//                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+//                    .addGroup(layout.createSequentialGroup()
+//                        .addComponent(jLabel1)
+//                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+//                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)))
+//                .addContainerGap())
+//        );
+//        layout.setVerticalGroup(
+//            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGroup(layout.createSequentialGroup()
+//                .addGap(15, 15, 15)
+//                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+//                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addGroup(layout.createSequentialGroup()
+//                            .addGap(6, 6, 6)
+//                            .addComponent(slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+//                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addGroup(layout.createSequentialGroup()
+//                                .addGap(3, 3, 3)
+//                                .addComponent(rateTextField))
+//                        .addGroup(layout.createSequentialGroup()
+//                            .addGap(3, 3, 3)
+//                            .addComponent(playCheckBox))
+//                        .addGroup(layout.createSequentialGroup()
+//                            .addGap(3, 3, 3)
+//                            .addComponent(rewindButton)))
+//                .addContainerGap(16, Short.MAX_VALUE))
+//        );
     }// </editor-fold>//GEN-END:initComponents
 
     private void sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderStateChanged
