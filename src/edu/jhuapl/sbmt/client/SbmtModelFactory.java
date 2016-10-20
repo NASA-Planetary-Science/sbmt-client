@@ -23,8 +23,6 @@ import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
-import edu.jhuapl.sbmt.model.europa.SimulationRun;
-import edu.jhuapl.sbmt.model.europa.SimulationRun.SimulationRunKey;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
@@ -59,14 +57,14 @@ import nom.tam.fits.FitsException;
 
 public class SbmtModelFactory
 {
-    static public SimulationRun createSimulationRun(
-            SimulationRunKey key,
-            SmallBodyModel smallBodyModel,
-            boolean loadPointingOnly) throws FitsException, IOException
-    {
-        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        return new SimulationRun(key, smallBodyModel);
-    }
+//    static public SimulationRun createSimulationRun(
+//            SimulationRunKey key,
+//            SmallBodyModel smallBodyModel,
+//            boolean loadPointingOnly) throws FitsException, IOException
+//    {
+//        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+//        return new SimulationRun(key, smallBodyModel);
+//    }
 
     static public StateHistoryModel createStateHistory(
             StateHistoryKey key,

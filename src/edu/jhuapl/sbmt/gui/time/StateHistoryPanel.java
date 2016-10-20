@@ -51,7 +51,6 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistorySource;
-import edu.jhuapl.sbmt.model.time.SurfacePatch;
 import edu.jhuapl.sbmt.model.time.Trajectory;
 
 import nom.tam.fits.FitsException;
@@ -1195,8 +1194,8 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 //        }
     }
 
-    private Set<String> visiblePatches = new HashSet<String>();
-    private SurfacePatch selectedSurfacePatch = null;
+//    private Set<String> visiblePatches = new HashSet<String>();
+//    private SurfacePatch selectedSurfacePatch = null;
 
     private void surfacePatchListValueChanged(javax.swing.event.ListSelectionEvent evt)
     {

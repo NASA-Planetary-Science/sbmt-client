@@ -26,7 +26,6 @@ import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
-import edu.jhuapl.sbmt.gui.europa.SimulationRunsPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.CustomImagesPanel;
@@ -44,7 +43,6 @@ import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
-import edu.jhuapl.sbmt.model.europa.SimulationRunCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
@@ -151,7 +149,7 @@ public class SbmtView extends View
         if (getPolyhedralModelConfig().hasFlybyData)
         {
 //            allModels.put(ModelNames.FLYBY, ModelFactory.createFlyby(smallBodyModel));
-            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
+//            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
         }
 
         if (getPolyhedralModelConfig().hasStateHistory)
@@ -257,7 +255,7 @@ public class SbmtView extends View
 
         if (getConfig().hasFlybyData)
         {
-            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
         }
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
