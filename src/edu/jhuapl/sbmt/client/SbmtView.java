@@ -260,11 +260,6 @@ public class SbmtView extends View
             addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
         }
 
-        if (getConfig().hasStateHistory)
-        {
-            addTab("Time", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
-        }
-
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
             if (instrument.spectralMode == SpectralMode.MONO)
@@ -366,6 +361,11 @@ public class SbmtView extends View
             JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
                     getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap);
             addTab("DEMs", component);
+
+            if (getConfig().hasStateHistory)
+            {
+                addTab("Time", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+            }
         }
     }
 
