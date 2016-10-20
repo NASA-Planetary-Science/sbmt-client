@@ -50,6 +50,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
+        c.hasStateHistory = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -392,6 +393,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = null;
             c.rootDirOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
+            c.hasFlybyData = true;
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {

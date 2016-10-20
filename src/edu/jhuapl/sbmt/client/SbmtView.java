@@ -39,6 +39,7 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
+import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
@@ -50,6 +51,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
+import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
 /**
@@ -142,6 +144,17 @@ public class SbmtView extends View
         if (getPolyhedralModelConfig().hasLineamentData)
         {
             allModels.put(ModelNames.LINEAMENT, SbmtModelFactory.createLineament());
+        }
+
+        if (getPolyhedralModelConfig().hasFlybyData)
+        {
+//            allModels.put(ModelNames.FLYBY, ModelFactory.createFlyby(smallBodyModel));
+//            allModels.put(ModelNames.SIMULATION_RUN_COLLECTION, new SimulationRunCollection(smallBodyModel));
+        }
+
+        if (getPolyhedralModelConfig().hasStateHistory)
+        {
+            allModels.put(ModelNames.STATE_HISTORY_COLLECTION, new StateHistoryCollection(smallBodyModel));
         }
 
         allModels.put(ModelNames.LINE_STRUCTURES, new LineModel(smallBodyModel));
@@ -239,6 +252,11 @@ public class SbmtView extends View
     protected void setupTabs()
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
+
+        if (getConfig().hasFlybyData)
+        {
+//            addTab("Runs", new SimulationRunsPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+        }
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
@@ -341,6 +359,11 @@ public class SbmtView extends View
             JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
                     getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap);
             addTab("DEMs", component);
+
+            if (getConfig().hasStateHistory)
+            {
+                addTab("Time", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+            }
         }
     }
 
