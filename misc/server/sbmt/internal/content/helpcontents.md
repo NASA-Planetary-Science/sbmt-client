@@ -146,10 +146,6 @@ properties about the image, as well as a slider to modify the contrast.
 For multispectral images, brings up a dialog window that displays the spectrum
 associated with an individual pixel.
 
-##### Statistics...
-
-For multispectral images, brings up a dialog window that displays statistics on solar incidence angle, emergence angle, phase angle, and irradiance for all faces covered by an individual pixel.
-
 ##### Save Original FITS Image...
 
 Saves out the original FITS image file to the local file system.
@@ -204,7 +200,7 @@ Export the image's pointing information in the SBMT's native INFO file format.
 Adjusts the distance the image footprint is displayed above the body's surface. This
 is used to adjust the visibility of multiple overlapping images.
 
-##### Simulate Lighting (or Set Illumination... for NIS images)
+##### Simulate Lighting
 
 Change the lighting parameters to simulate the lighting at the time the image
 was taken.
@@ -310,6 +306,8 @@ of the filters for each camera, wheel, and position are listed below:
 | WAC    | 2     | 8        | VIS610      | 612.6           | 9.8            |
 +--------+-------+----------+-------------+-----------------+----------------+
 
+OSIRIS images also include an off-limb footprint that is automatically shown in addition to the on-body footprint. Sliders are available in the search tab to change the opacity and contrast of the mapped image and the depth in the camera frustum at which the off-limb image is displayed. There are checkboxes in the search results list that allow hiding/showing both the on-body and off-limb footprints.
+
 ### NIS tab (Eros only)
 
 The NIS tab provides an interface for searching, displaying, and
@@ -318,6 +316,19 @@ which measured several hundred thousand spectra of the asteroid between
 January and May 2000. Each spectrum consists of 64 separate channels
 between 812 nm and 2708 nm. The NIS tab is very similar to the MSI tab
 and much of the information described there applies here as well.
+
+##### Statistics...
+
+For multispectral images, brings up a dialog window that displays statistics on solar incidence angle, emergence angle, phase angle, and irradiance for all faces covered by an individual pixel.
+
+##### Set Illumination
+
+Change the lighting parameters to simulate the lighting at the time the first selected image
+was taken.
+
+##### Show Sunward Vector
+
+Display a line showing the direction to the sun at the time the first selected image was taken.
 
 ### Lidar data tab (NLR for Eros, LIDAR for Itokawa, OLA for Bennu)
 
