@@ -146,6 +146,10 @@ properties about the image, as well as a slider to modify the contrast.
 For multispectral images, brings up a dialog window that displays the spectrum
 associated with an individual pixel.
 
+##### Statistics...
+
+For multispectral images, brings up a dialog window that displays statistics on solar incidence angle, emergence angle, phase angle, and irradiance for all faces covered by an individual pixel.
+
 ##### Save Original FITS Image...
 
 Saves out the original FITS image file to the local file system.
@@ -200,7 +204,7 @@ Export the image's pointing information in the SBMT's native INFO file format.
 Adjusts the distance the image footprint is displayed above the body's surface. This
 is used to adjust the visibility of multiple overlapping images.
 
-##### Simulate Lighting
+##### Simulate Lighting (or Set Illumination... for NIS images)
 
 Change the lighting parameters to simulate the lighting at the time the image
 was taken.

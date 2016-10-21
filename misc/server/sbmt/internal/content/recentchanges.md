@@ -4,6 +4,12 @@
 
 # Recent Changes
 
+### October 21, 2016
+
+-	Added capability to view off-limb portions of 67P Rosetta/OSIRIS images.
+-	Implemented Eros NIS irradiance and phase angle statistics.
+-	Fixed bugs in Bennu OLA search, browse, and track panels, and added several new generated datasets.
+
 ### September 14, 2016
 
 -   Re-enabled output of pixel coordinates when clicking on image in properties window
