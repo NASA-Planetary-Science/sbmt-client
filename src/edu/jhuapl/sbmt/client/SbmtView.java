@@ -374,7 +374,7 @@ public class SbmtView extends View
 
     protected void setupInfoPanelManager()
     {
-        setInfoPanelManager(new SbmtInfoWindowManager(getModelManager()));
+        setInfoPanelManager(new SbmtInfoWindowManager(getModelManager(), getStatusBar()));
     }
 
     protected void setupSpectrumPanelManager()

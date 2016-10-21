@@ -39,6 +39,7 @@ import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
@@ -63,19 +64,22 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
+    private StatusBar statusBar;
 //    private double adjustFactor = 1.0;
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
             final Image image,
             ImageCollection imageCollection,
-            PerspectiveImageBoundaryCollection imageBoundaryCollection)
+            PerspectiveImageBoundaryCollection imageBoundaryCollection,
+            StatusBar statusBar)
     {
         initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
+        this.statusBar = statusBar;
 
         renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
@@ -373,10 +377,32 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           // Note we reverse x and y so that the pixel is in the form the camera
           // position/orientation program expects.
           System.out.println(p[1] + " " + p[0]);
+
+          // Display pixel coordinate and raw value on the status bar
+          int p0 = (int)Math.round(p[0]);
+          int p1 = (int)Math.round(p[1]);
+          float[] pixelValues = image.getRawPixelValue(p0, p1);
+          String statusStr = "Pixel Coord. = (" + p1 + ", " + p0 + "), Raw Value = ";
+          if(pixelValues == null)
+          {
+              statusStr += "Unavailable";
+          }
+          else if(pixelValues.length == 1)
+          {
+              statusStr += pixelValues[0];
+          }
+          else
+          {
+              statusStr += "(" + pixelValues[0];
+              for(int i=1; i<pixelValues.length; i++)
+              {
+                  statusStr += ", " + pixelValues[i];
+              }
+              statusStr += ")";
+          }
+          statusBar.setLeftText(statusStr);
       }
     }
-
-
 
     @Override
     public void mouseEntered(MouseEvent e)

@@ -31,13 +31,14 @@ import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.ColorImage;
+import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -51,6 +52,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
+    private StatusBar statusBar;
 
     private class MouseListener extends MouseAdapter
     {
@@ -64,18 +66,44 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
                 // Note we reverse x and y so that the pixel is in the form the camera
                 // position/orientation program expects.
                 System.out.println(p[1] + " " + p[0]);
+
+                // Display pixel coordinate and raw value on the status bar
+                int p0 = (int)Math.round(p[0]);
+                int p1 = (int)Math.round(p[1]);
+                float[] pixelValues = image.getRawPixelValue(p0, p1);
+                String statusStr = "Pixel Coord. = (" + p1 + ", " + p0 + "), Raw Value = ";
+                if(pixelValues == null)
+                {
+                    statusStr += "Unavailable";
+                }
+                else if(pixelValues.length == 1)
+                {
+                    statusStr += pixelValues[0];
+                }
+                else
+                {
+                    statusStr += "(" + pixelValues[0];
+                    for(int i=1; i<pixelValues.length; i++)
+                    {
+                        statusStr += ", " + pixelValues[i];
+                    }
+                    statusStr += ")";
+                }
+                statusBar.setLeftText(statusStr);
             }
         }
     }
     /** Creates new form ImageInfoPanel2 */
     public ColorImageInfoPanel(
             final ColorImage image,
-            ColorImageCollection imageCollection)
+            ColorImageCollection imageCollection,
+            StatusBar statusBar)
     {
         initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
+        this.statusBar = statusBar;
 
         renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
