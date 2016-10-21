@@ -4,9 +4,9 @@
 
 # Recent Changes
 
-### October 21, 2016
+### October 21, 2016 (Beta)
 
--   Moved to VTK (Visualization Toolkit) version 6.3 libraries (
+-   Moved to VTK (Visualization Toolkit) version 6.3 libraries (Linux version not working yet)
 -   Display of spacecraft trajectories, animation of spacecraft, sub-solar and sub-earth surface points (Beta version)
 -   Loading of ALTWG DEM FIT files as custom shape models
 -   Off-limb image rendering (Beta)
@@ -18,8 +18,8 @@
 -   Added pick tolerance slider to View menu.
 -   Added button to custom-generate image gallery HTML page based on image search results (Beta)
 -   Now showing image pixel value in status bar when clicked in image property view
--   Implement shadowing calculations for NIS images
--   Revised Names
+-   Implemented shadowing calculations for NIS images
+-   Revised Names of asteroids and comets
 
 ### September 14, 2016
 
