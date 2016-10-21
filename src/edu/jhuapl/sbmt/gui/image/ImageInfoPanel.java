@@ -368,11 +368,12 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
       if (pickSucceeded == 1)
       {
           double[] p = imagePicker.GetPickPosition();
+
+          // Display selected pixel coordinates in console output
           // Note we reverse x and y so that the pixel is in the form the camera
           // position/orientation program expects.
           System.out.println(p[1] + " " + p[0]);
       }
-
     }
 
 
@@ -401,8 +402,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     @Override
     public void mouseReleased(MouseEvent e)
     {
-
-        if (!e.isAltDown())
+        if (centerFrustumMode && !e.isAltDown())
         {
             ((PerspectiveImage)image).calculateFrustum();
             ((PerspectiveImage)image).firePropertyChange();
