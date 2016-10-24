@@ -39,8 +39,8 @@ int main(int nargs, char** argv)
 	if (nargs < 6)
 	{
 	    fprintf(stderr, "\nThis program outputs a time history of the spacecraft, Sun, and Earth positions.\n");
-	    fprintf(stderr, "\nTime sampling step size is determined based on the optional parameter spinRate.\n");
-	    fprintf(stderr, "\nIf not provided, a default time sampling step size of 10 minutes is used.\n");
+	    fprintf(stderr, "Time sampling step size is determined based on the optional parameter spinRate.\n");
+	    fprintf(stderr, "If not provided, a default time sampling step size of 10 minutes is used.\n");
 	    fprintf(stderr, "usage: timeHistory <body> <spacecraft> <metaKernel> <startTime> <endTime> <spinRate>\n");
 	    fprintf(stderr, "       body                  - IAU name of body in uppercase\n");
 	    fprintf(stderr, "       spacecraft            - SPICE name of spacecraft\n");
