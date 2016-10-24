@@ -55,48 +55,4 @@ void getSpacecraftState(double et, const char* observerBody, const char* spacecr
     velocity[0] = -scToBodyState[3];
     velocity[1] = -scToBodyState[4];
     velocity[2] = -scToBodyState[5];
-
-//    /*
-//     *  Get the coordinate transformation from inertial to
-//     *  body-fixed coordinates at ET minus one light time ago.
-//     */
-//    sxform_c(inertframe, bodyFrame.c_str(), et - lt, inert2bf);
-//    if (failed_c()) {
-//        cerr << "Failed pxform" << endl;
-//        return;
-//    }
-//
-//    /*
-//     *  transform target position vector from inertial to body-fixed frame
-//     */
-//    mxvg_c(inert2bf, bodyToTargetStateInertial, 6, 6, bodyToTargetState);
-//
-//    bodyToSc[0] = bodyToTargetState[0];
-//    bodyToSc[1] = bodyToTargetState[1];
-//    bodyToSc[2] = bodyToTargetState[2];
-//    velocity[0] = bodyToTargetState[3];
-//    velocity[1] = bodyToTargetState[4];
-//    velocity[2] = bodyToTargetState[5];
-//
-//
-//    //This is correct
-//    SpiceChar timstr  [ TIMLEN ];
-//    timout_c ( et, TIMFMT, TIMLEN, timstr );
-//    printf("\nTime: %s \n",timstr);
-//    printf("SC position 1: %f %f %f \n",bodyToSc[0], bodyToSc[1], bodyToSc[2]);
-//    printf("SC velocity 1: %f %f %f \n",velocity[0], velocity[1], velocity[2]);
-//
-//    spkezr_c(observerBody, et, bodyFrame.c_str(), abcorr, targetBody, bodyToTargetState, &lt);
-//    bodyToSc[0] = -bodyToTargetState[0];
-//    bodyToSc[1] = -bodyToTargetState[1];
-//    bodyToSc[2] = -bodyToTargetState[2];
-//    velocity[0] = -bodyToTargetState[3];
-//    velocity[1] = -bodyToTargetState[4];
-//    velocity[2] = -bodyToTargetState[5];
-
-    SpiceChar timstr  [ TIMLEN ];
-    timout_c ( et, TIMFMT, TIMLEN, timstr );
-    printf("\nTime: %s \n",timstr);
-    printf("%s position 2: %f %f %f \n",spacecraft,bodyToSc[0], bodyToSc[1], bodyToSc[2]); //this is identical to above method with inertial frame
-    printf("%s velocity 2: %f %f %f \n",spacecraft,velocity[0], velocity[1], velocity[2]);
 }
