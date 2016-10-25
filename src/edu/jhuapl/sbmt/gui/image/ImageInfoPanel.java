@@ -379,9 +379,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           System.out.println(p[1] + " " + p[0]);
 
           // Display status bar message upon being picked
-          int p0 = (int)Math.round(p[0]);
-          int p1 = (int)Math.round(p[1]);
-          statusBar.setLeftText(image.getPickStatusMessage(p0, p1));
+          statusBar.setLeftText(image.getPickStatusMessage(p[0], p[1]));
       }
     }
 
