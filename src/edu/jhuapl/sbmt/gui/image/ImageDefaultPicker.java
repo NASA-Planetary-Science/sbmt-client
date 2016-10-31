@@ -10,7 +10,6 @@ import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.List;
 
 import vtk.vtkActor;
 import vtk.vtkCamera;
@@ -20,8 +19,8 @@ import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
 
 import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.Renderer.AxisType;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -147,8 +146,15 @@ public class ImageDefaultPicker extends DefaultPicker
 //                    System.out.println("Picked image: " + firstImage.getClass().getSimpleName());
                     if (firstImage instanceof PerspectiveImage)
                         setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)firstImage);
-                }
 
+                    // Get the image that was actually picked
+                    Image pickedImage = imageCollection.getImage(pickedActor);
+                    if(pickedImage != null && pickedImage instanceof PerspectiveImage)
+                    {
+                        // Set position on that image
+                        setPositionInfoOnPerspectiveImage(e, (PerspectiveImage)pickedImage);
+                    }
+                }
 
                 int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
                 double[] pickPosition = mousePressNonSmallBodyCellPicker.GetPickPosition();
@@ -352,7 +358,7 @@ public class ImageDefaultPicker extends DefaultPicker
 
     private void setPositionInfoOnPerspectiveImage(MouseEvent e, PerspectiveImage pi)
     {
-//        System.out.println("Setting position on image" + pi.getImageName());
+        //System.out.println("Setting position on image" + pi.getImageName());
 
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;

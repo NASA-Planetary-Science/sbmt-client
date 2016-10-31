@@ -378,29 +378,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           // position/orientation program expects.
           System.out.println(p[1] + " " + p[0]);
 
-          // Display pixel coordinate and raw value on the status bar
-          int p0 = (int)Math.round(p[0]);
-          int p1 = (int)Math.round(p[1]);
-          float[] pixelValues = image.getRawPixelValue(p0, p1);
-          String statusStr = "Pixel Coord. = (" + p1 + ", " + p0 + "), Raw Value = ";
-          if(pixelValues == null)
-          {
-              statusStr += "Unavailable";
-          }
-          else if(pixelValues.length == 1)
-          {
-              statusStr += pixelValues[0];
-          }
-          else
-          {
-              statusStr += "(" + pixelValues[0];
-              for(int i=1; i<pixelValues.length; i++)
-              {
-                  statusStr += ", " + pixelValues[i];
-              }
-              statusStr += ")";
-          }
-          statusBar.setLeftText(statusStr);
+          // Display status bar message upon being picked
+          statusBar.setLeftText(image.getPickStatusMessage(p[0], p[1]));
       }
     }
 
