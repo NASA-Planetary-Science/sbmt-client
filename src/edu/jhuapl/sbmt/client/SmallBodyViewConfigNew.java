@@ -50,6 +50,7 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
+        c.hasStateHistory = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1092,8 +1093,9 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             configArray.add(c);
+            SmallBodyViewConfigNew callisto = c;
 
-            c = c.clone();
+            c = new SmallBodyViewConfigNew();
             c.body = ShapeModelBody.AMALTHEA;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
@@ -1102,7 +1104,7 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
             configArray.add(c);
 
-            c = c.clone();
+            c = callisto;
             c.body = ShapeModelBody.CALLISTO;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
@@ -1132,6 +1134,7 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
             c.author = null;
             c.rootDirOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
             c.hasImageMap = true;
+            c.hasFlybyData = true;
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1469,15 +1472,6 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
         c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
 
-        c = new SmallBodyViewConfigNew();
-        c.body = ShapeModelBody.HARTLEY;
-        c.type = ShapeModelType.COMETS;
-        c.population = null;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
-        c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
-        configArray.add(c);
-
         if (Configuration.isAPLVersion())
         {
             c = new SmallBodyViewConfigNew();
@@ -1648,6 +1642,15 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
         }
+        
+        c = new SmallBodyViewConfigNew();
+        c.body = ShapeModelBody.HARTLEY;
+        c.type = ShapeModelType.COMETS;
+        c.population = null;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.THOMAS;
+        c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        configArray.add(c);
 
 
         if (Configuration.isAPLVersion())
