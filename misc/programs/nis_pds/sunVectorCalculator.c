@@ -7,7 +7,8 @@
 using namespace std;
 #define MAX_LINE_LEN 1000
 
-void getTargetBodyPosition(double et, const char* observerBody, const char* targetBody, double targetpos[3]);
+//void getTargetBodyPosition(double et, const char* observerBody, const char* targetBody, double targetpos[3]);
+void getTargetState(double et, const char* spacecraft, const char* observerBody, const char* targetBody, double targetpos[3], double velocity[3]);
 
 /*
   This program calculates the body to Sun vector at the UTC times in the input file.
@@ -26,8 +27,9 @@ int main(int nargs, char** argv)
     SpiceDouble et;
     FILE *fin;
     FILE *fout;
-    char junk[ MAX_LINE_LEN ];
+    char firstCol[ MAX_LINE_LEN ];
     char time[ MAX_LINE_LEN ];
+    SpiceDouble unused[3];
 
 	if (nargs < 4)
 	{
@@ -35,17 +37,19 @@ int main(int nargs, char** argv)
 	    fprintf(stderr, "\nThe input times file format is space-delimited, first column is \n");
 	    fprintf(stderr, "\nignored, second column is UTC time string.\n");
 	    fprintf(stderr, "usage: sunVectorCalculator <body> <spacecraft> <metaKernel> <timesFile>\n");
-	    fprintf(stderr, "       body       - IAU name of body in uppercase\n");
+	    fprintf(stderr, "       body       - IAU name of body\n");
+	    fprintf(stderr, "       spacecraft - SPICE name of spacecraft\n");
 	    fprintf(stderr, "       metaKernel - file name of SPICE metakernel\n");
 	    fprintf(stderr, "       timesFile  - input times file name\n");
 	    fprintf(stderr, "example:\n");
-	    fprintf(stderr, "       sunVectorCalculator EROS kernelsEros.tm nisTimes.txt\n");
+	    fprintf(stderr, "       sunVectorCalculator eros near kernelsEros.tm nisTimes.txt\n");
 	    exit(1);
 	}
 
 	const char* body = argv[1];
-    const char* metakernel = argv[2];
-    const char* inputFile = argv[3];
+    const char* sc = argv[2];
+    const char* metakernel = argv[3];
+    const char* inputFile = argv[4];
     string fname = body + string("_sunVectors.txt");
 
 	/*--------------------------------------*/
@@ -74,10 +78,10 @@ int main(int nargs, char** argv)
 	/* For each time, calculate sun vector. */
 	/*--------------------------------------*/
 
-	while (fscanf(fin, "%s %s", junk, time) != EOF)
+	while (fscanf(fin, "%s %s", firstCol, time) != EOF)
 	{
 		str2et_c (time, &et);
-		getTargetBodyPosition(et, body, "SUN", sunpos);
+		getTargetState(et, sc, body, "SUN", sunpos, unused);
 	    et2utc_c(et, "ISOC", 3, 25, utc);
 
 		fprintf(fout, "%s, %2.10e, %2.10e, %2.10e\n", utc, sunpos[0], sunpos[1], sunpos[2]);
