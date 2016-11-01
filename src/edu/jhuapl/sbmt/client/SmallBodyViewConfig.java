@@ -898,7 +898,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS"),
+                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"),
                             ImageType.DEIMOS_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
                             Instrument.IMAGING_DATA
@@ -937,7 +937,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS"),
+                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
                         ImageType.PHOBOS_IMAGE,
                         new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                         Instrument.IMAGING_DATA
@@ -1009,7 +1009,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/hrscgallery"),
+                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.IMAGING_DATA
@@ -1547,7 +1547,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2"),
+                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2 has no gallery but images are in V3 gallery
                             //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
                             ImageType.OSIRIS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
