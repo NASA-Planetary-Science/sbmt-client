@@ -408,6 +408,7 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
+        SmallBodyViewConfig.initialize();
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
         if (instr == null)
         {
