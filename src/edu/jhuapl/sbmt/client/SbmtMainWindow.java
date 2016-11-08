@@ -19,7 +19,7 @@ public class SbmtMainWindow extends MainWindow
 {
     public SbmtMainWindow(String tempCustomShapeModelPath)
     {
-        super(tempCustomShapeModelPath);
+        super(tempCustomShapeModelPath, false);
    }
 
     protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
