@@ -39,6 +39,7 @@ import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
@@ -63,19 +64,22 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
     private boolean centerFrustumMode = false;
+    private StatusBar statusBar;
 //    private double adjustFactor = 1.0;
 
     /** Creates new form ImageInfoPanel2 */
     public ImageInfoPanel(
             final Image image,
             ImageCollection imageCollection,
-            PerspectiveImageBoundaryCollection imageBoundaryCollection)
+            PerspectiveImageBoundaryCollection imageBoundaryCollection,
+            StatusBar statusBar)
     {
         initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
+        this.statusBar = statusBar;
 
         renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
@@ -373,10 +377,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
           // Note we reverse x and y so that the pixel is in the form the camera
           // position/orientation program expects.
           System.out.println(p[1] + " " + p[0]);
+
+          // Display status bar message upon being picked
+          statusBar.setLeftText(image.getPickStatusMessage(p[0], p[1]));
       }
     }
-
-
 
     @Override
     public void mouseEntered(MouseEvent e)

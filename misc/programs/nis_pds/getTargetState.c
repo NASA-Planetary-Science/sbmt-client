@@ -65,4 +65,11 @@ void getTargetState(double et, const char* spacecraft, const char* observerBody,
     velocity[0] = bodyToTargetState[3];
     velocity[1] = bodyToTargetState[4];
     velocity[2] = bodyToTargetState[5];
+
+//    SpiceChar timstr  [ TIMLEN ];
+//    timout_c ( et, TIMFMT, TIMLEN, timstr );
+//    printf("\nTime: %s \n",timstr);
+//    printf("%s position 2: %f %f %f \n",targetBody, bodyToTarget[0], bodyToTarget[1], bodyToTarget[2]); //this is identical to above method with inertial frame
+//    printf("%s velocity 2: %f %f %f \n",targetBody, velocity[0], velocity[1], velocity[2]);
+
 }

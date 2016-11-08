@@ -31,13 +31,14 @@ import vtk.vtkPropPicker;
 import vtk.vtkTransform;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.ColorImage;
+import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.image.ColorImage.Chromatism;
 
 
 public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -51,6 +52,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private vtkImageReslice reslice;
     private vtkPropPicker imagePicker;
     private boolean initialized = false;
+    private StatusBar statusBar;
 
     private class MouseListener extends MouseAdapter
     {
@@ -64,18 +66,25 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
                 // Note we reverse x and y so that the pixel is in the form the camera
                 // position/orientation program expects.
                 System.out.println(p[1] + " " + p[0]);
+
+                // Display status bar message upon being picked
+                int p0 = (int)Math.round(p[0]);
+                int p1 = (int)Math.round(p[1]);
+                statusBar.setLeftText(image.getPickStatusMessage(p0, p1));
             }
         }
     }
     /** Creates new form ImageInfoPanel2 */
     public ColorImageInfoPanel(
             final ColorImage image,
-            ColorImageCollection imageCollection)
+            ColorImageCollection imageCollection,
+            StatusBar statusBar)
     {
         initComponents();
 
         this.image = image;
         this.imageCollection = imageCollection;
+        this.statusBar = statusBar;
 
         renWin = new vtksbmtJoglCanvas();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));

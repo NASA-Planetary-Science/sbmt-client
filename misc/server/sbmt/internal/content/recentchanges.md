@@ -4,12 +4,22 @@
 
 # Recent Changes
 
-### October 21, 2016
+### October 21, 2016 (Beta)
 
--	Added capability to view off-limb portions of 67P Rosetta/OSIRIS images.
--	Implemented Eros NIS irradiance and phase angle statistics.
--	Fixed bugs in Bennu OLA search, browse, and track panels, and added several new generated datasets.
--	Added pick tolerance slider to View menu.
+-   Moved to VTK (Visualization Toolkit) version 6.3 libraries (Linux version not working yet)
+-   Display of spacecraft trajectories, animation of spacecraft, sub-solar and sub-earth surface points (Beta version)
+-   Loading of ALTWG DEM FIT files as custom shape models
+-   Off-limb image rendering (Beta)
+-   Added Phobos MOLA tab 
+-   Fixed problem of gallery image preview going off screen
+-   OLA tracks under search tab now show the time range
+-   Automatically set footprint stacking order of NIS spectral footprints using phase angle statistics
+-   Fixed bugs in Bennu OLA search, browse, and track panels, added several new generated datasets
+-   Added pick tolerance slider to View menu.
+-   Added button to custom-generate image gallery HTML page based on image search results (Beta)
+-   Now showing image pixel value in status bar when clicked in image property view
+-   Implemented shadowing calculations for NIS images
+-   Revised Names of asteroids and comets
 
 ### September 14, 2016
 

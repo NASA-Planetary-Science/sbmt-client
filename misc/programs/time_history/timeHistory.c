@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void getTargetState(double , const char* spacecraft, const char* observerBody, const char* targetBody, double targetpos[3], double velocity[3]);
+void getTargetState(double et, const char* spacecraft, const char* observerBody, const char* targetBody, double targetpos[3], double velocity[3]);
 void getSpacecraftState(double et, const char* observerBody, const char* spacecraft, double scPosition[3], double velocity[3]);
 
 /*
@@ -39,8 +39,8 @@ int main(int nargs, char** argv)
 	if (nargs < 6)
 	{
 	    fprintf(stderr, "\nThis program outputs a time history of the spacecraft, Sun, and Earth positions.\n");
-	    fprintf(stderr, "\nTime sampling step size is determined based on the optional parameter spinRate.\n");
-	    fprintf(stderr, "\nIf not provided, a default time sampling step size of 10 minutes is used.\n");
+	    fprintf(stderr, "Time sampling step size is determined based on the optional parameter spinRate.\n");
+	    fprintf(stderr, "If not provided, a default time sampling step size of 10 minutes is used.\n");
 	    fprintf(stderr, "usage: timeHistory <body> <spacecraft> <metaKernel> <startTime> <endTime> <spinRate>\n");
 	    fprintf(stderr, "       body                  - IAU name of body in uppercase\n");
 	    fprintf(stderr, "       spacecraft            - SPICE name of spacecraft\n");
@@ -49,7 +49,8 @@ int main(int nargs, char** argv)
 	    fprintf(stderr, "       startEt               - SPICE string representation of end time of history\n");
 	    fprintf(stderr, "       spinRate (optional)   - body rotation period in days per revolution\n");
 	    fprintf(stderr, "example:\n");
-	    fprintf(stderr, "       timeHistory EROS NEAR kernelsEros.tm \"2000-105::05:12:04.273 UTC\" \"2000-105::20:00:00 UTC\" .2194\n\n");
+	    fprintf(stderr, "       timeHistory EROS NEAR kernelsEros.tm \"2000-105::05:12:04.273 UTC\" \"2000-105::20:00:00 UTC\" .2194\n");
+	    fprintf(stderr, "output file: <SC>_<BODY>_timeHistory.csv\n\n");
 	    exit(1);
 	}
 	if (nargs < 7)
@@ -97,7 +98,7 @@ int main(int nargs, char** argv)
 	/* Prepare output file.                 */
 	/*--------------------------------------*/
 
-	string fname = sc + string("_") + body + string("_timeHistory.txt");
+	string fname = sc + string("_") + body + string("_timeHistory.csv");
 
     if((fp = fopen(fname.c_str(), "wb"))==NULL)
     {
@@ -137,12 +138,8 @@ int main(int nargs, char** argv)
 		/* The light time calcuation derived by */
 		/* Howard Taylor for SBMT NH LORRI data */
 		/* works only for the spacecraft        */
-		/* position. It is incorrect for other  */
-		/* bodies (e.g. Earth, Sun), and it is  */
-		/* also incorrect for velocities. The   */
-		/* functions below contain the correct  */
-		/* calculations for all bodies and for  */
-		/* velocity.                            */
+		/* position. Corrected functions for    */
+		/* non-spacecraft bodies are below.     */
 		/*--------------------------------------*/
 
 		getSpacecraftState(et, body, sc, scposb, scvelb);

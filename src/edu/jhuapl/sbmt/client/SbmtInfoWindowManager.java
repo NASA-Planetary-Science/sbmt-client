@@ -7,6 +7,7 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
+import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.WindowManager;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -32,10 +33,12 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         new HashMap<Model, ModelInfoWindow>();
 
     ModelManager modelManager;
+    StatusBar statusBar;
 
-    public SbmtInfoWindowManager(ModelManager modelManager)
+    public SbmtInfoWindowManager(ModelManager modelManager, StatusBar statusBar)
     {
         this.modelManager = modelManager;
+        this.statusBar = statusBar;
     }
 
     public void addData(final Model model) throws Exception
@@ -94,15 +97,15 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         if (model instanceof ColorImage)
         {
             ColorImageCollection images = (ColorImageCollection)modelManager.getModel(ModelNames.COLOR_IMAGES);
-            return new ColorImageInfoPanel((ColorImage)model, images);
+            return new ColorImageInfoPanel((ColorImage)model, images, statusBar);
         }
         else if (model instanceof Image)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
             PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
             if (model instanceof OsirisImage)
-                return new OsirisImageInfoPanel((Image)model, images, boundaries);
-            return new ImageInfoPanel((Image)model, images, boundaries);
+                return new OsirisImageInfoPanel((Image)model, images, boundaries, statusBar);
+            return new ImageInfoPanel((Image)model, images, boundaries, statusBar);
         }
         else if (model instanceof NISSpectrum)
         {
