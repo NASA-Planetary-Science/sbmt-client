@@ -220,4 +220,8 @@ public abstract class Image extends AbstractModel implements PropertyChangeListe
 
     }
 
+    public void outputToOBJ(String filename)
+    {
+    }
+
 }
