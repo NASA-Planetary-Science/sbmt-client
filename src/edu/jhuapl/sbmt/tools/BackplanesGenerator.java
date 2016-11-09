@@ -15,6 +15,7 @@ import vtk.vtkDebugLeaks;
 
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
@@ -122,7 +123,7 @@ public class BackplanesGenerator
                 {
                     System.setOut(oldOut);
                     System.setErr(oldErr);
-                    System.out.println("   Gaskell pointing not found for " + filename);
+                    System.out.println("   " + ptg.name() + " pointing not found for " + filename);
                     noPtg.write(filename);
                     noPtg.newLine();
                     continue;
@@ -240,16 +241,19 @@ public class BackplanesGenerator
      * @param outputFolder - destination folder for output file
      * @return base name of ddr backplanes file, no extension
      */
-    private String getBaseFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder)
+    public static String getBaseFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder)
     {
         //key class is initialized with base filename (i.e. no ".extension")
         String fname = new File(key.name).getName();
 
-        return outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr";
+//        return outputFolder + File.separator + fname + "_" + key.source.name() + "_res" + resolutionLevel + "_ddr";
+        //PDS requested a simpler naming convention and to remove the obsolete reference to DDR (see email from Carol Neese, 8/26/16 3:41 PM)
+        //Use the suffix "BP" appended to the original image name to indicate that this is a backplanes file.
+        return outputFolder + File.separator + fname + "_BP";
     }
 
     /**
-     * Generates FITS format backplanes for a single image using GASKELL pointing.
+     * Generates FITS format backplanes for a single image.
      *
      * @param imageFile - FITS 2D image
      * @param instr
@@ -258,12 +262,12 @@ public class BackplanesGenerator
      * @param fmt
      * @throws IOException
      */
-    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt) throws Exception
+    public void generateBackplanes(String imageFile, Instrument instr, String outputFolder, SmallBodyModel model, BackplanesFileFormat fmt, ImageSource src) throws Exception
     {
     	List<String> image = new ArrayList<>();
         image.add(imageFile);
         this.smallBodyModel = model;
-        generateBackplanes(image, instr, outputFolder, fmt, ImageSource.GASKELL);
+        generateBackplanes(image, instr, outputFolder, fmt, src);
     }
 
     private void printUsage()
@@ -370,8 +374,12 @@ public class BackplanesGenerator
         }
 
         // VTK and authentication
+        Configuration.setAppName("neartool");
+        Configuration.setCacheVersion("2");
+        Configuration.setAPLVersion(true);
+        SmallBodyViewConfig.initialize();
         System.setProperty("java.awt.headless", "true");
-        NativeLibraryLoader.loadVtkLibraries();
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
         Authenticator.authenticate();
 
         // Parse parameters to create SBMT classes.
@@ -408,7 +416,6 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
-        SmallBodyViewConfig.initialize();
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
         if (instr == null)
         {
