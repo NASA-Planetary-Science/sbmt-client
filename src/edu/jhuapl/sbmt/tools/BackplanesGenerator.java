@@ -304,7 +304,7 @@ public class BackplanesGenerator
                 + "                           images with pointing information.\n"
                 + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
         System.out.println(o);
-        System.exit(1);
+        System.exit(0);
     }
 
     public void doMain(String[] args) throws IOException
@@ -360,7 +360,12 @@ public class BackplanesGenerator
         int numberRequiredArgs = 3;
         if (args.length - i != numberRequiredArgs)
         {
-            System.out.println("Incorrectly formed arguments.\n");
+            String argStr = new String();
+            for (String s : args)
+            {
+                argStr = argStr + " " + s;
+            }
+            System.out.println("Incorrectly formed arguments: " + argStr + "\n");
             printUsage();
         }
 
