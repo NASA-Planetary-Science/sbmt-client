@@ -97,8 +97,9 @@ ${most_supported_targets} :
 all : ${NEARJAR} ${NEARAPLJAR}
 
 install : ${NEARAPLJAR} tools
-		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
-
+		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar"
+		cp ${NEARAPLJAR} ${LIBROOT}/near.jar
+		
 release: install ${int_zips} ${pub_zips}
 
 deploy : ${int_zips} ${pub_zips}
@@ -131,7 +132,6 @@ ${NEARJAR} : ${all_java_files}
 
 ${NEARAPLJAR} : ${all_java_files}
 	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jarapl
-
 
 # Generate Run Scripts
 tools :
@@ -225,7 +225,7 @@ ${pub_mac_zip} : ${NEARJAR}
 
 # Note this uses near.jar, and creating 'runsbmt' is same as mac64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
-${pub_linux_zip} : ${NEARJAR} 
+${pub_linux_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
