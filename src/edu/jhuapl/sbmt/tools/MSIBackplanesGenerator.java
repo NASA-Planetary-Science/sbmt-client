@@ -47,7 +47,6 @@ public class MSIBackplanesGenerator
 
     private void doMain(String[] args) throws IOException, InterruptedException
     {
-        System.err.println("ShapeModelBody.EROS ---- " + BackplanesFileFormat.FITS + "      "  +BackplanesFileFormat.FITS.name());
         int numberRequiredArgs = 3;
         if (args.length != numberRequiredArgs)
         {
@@ -86,6 +85,8 @@ public class MSIBackplanesGenerator
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.
         List<String> imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
+        System.err.println("Number of images to process: " + imageFiles.size());
+
         for (String image : imageFiles)
         {
             //Before generating the backplanes, check to see if a backplanes file already exists. If yes, do not regenerate.
@@ -93,7 +94,7 @@ public class MSIBackplanesGenerator
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera + " -r " + resolution + " -f -s -p " + ptg + " " + body + " %s %s", image, outputFolder);
-                System.out.println("Command:" + command);
+                System.err.println("Command:" + command);
                 commandList.add(command);
             }
         }
