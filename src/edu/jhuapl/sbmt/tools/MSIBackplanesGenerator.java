@@ -47,6 +47,7 @@ public class MSIBackplanesGenerator
 
     private void doMain(String[] args) throws IOException, InterruptedException
     {
+        System.err.println("ShapeModelBody.EROS ---- " + BackplanesFileFormat.FITS + "      "  +BackplanesFileFormat.FITS.name());
         int numberRequiredArgs = 3;
         if (args.length != numberRequiredArgs)
         {
@@ -77,11 +78,10 @@ public class MSIBackplanesGenerator
         ArrayList<String> commandList = new ArrayList<String>();
 
         //Set up the configuration for MSI GASKELL resolution 3
-        BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
         String resolution = "3";
-        Instrument camera = Instrument.MSI;
-        ImageSource ptg = ImageSource.GASKELL;
-        ShapeModelBody body = ShapeModelBody.EROS;
+        String camera = Instrument.MSI.name();
+        String ptg = ImageSource.GASKELL.name();
+        String body = ShapeModelBody.EROS.name();
 
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.
