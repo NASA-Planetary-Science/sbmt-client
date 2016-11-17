@@ -4,20 +4,16 @@ if [ -z "$SBMTROOT" ]; then
     echo "ERROR: SBMTROOT is undefined!"
     exit 1
 fi
+
+echo -e "BackplanesGenerator, SBMTROOT is set to ${SBMTROOT}"
 #DIR=`dirname "$0"`
 #echo "DIR is $DIR"
 
 #export PATH="$DIR:$PATH"
 export DYLD_LIBRARY_PATH="$SBMTROOT/lib:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"
-export HEADLESS=""
-export MEMSIZE=""
-if [ "$(uname)" == "Darwin" ]; then
-    export HEADLESS="-Djava.awt.headless=true"
-    export MEMSIZE=`sysctl hw.memsize | awk '{print int($2/1024)}'`
-elif [ "$(uname)" == "Linux" ]; then
-    export MEMSIZE=`grep MemTotal /proc/meminfo | awk '{print $2}'`
-fi
+HEADLESS="-Djava.awt.headless=true"
+MEMSIZE="$(/bin/grep MemTotal /proc/meminfo | awk '{print $2}')"
 
 echo "BackplanesGenerator dir is $DIR"
 echo "BackplanesGenerator ldlibrarypath is $LD_LIBRARY_PATH"
