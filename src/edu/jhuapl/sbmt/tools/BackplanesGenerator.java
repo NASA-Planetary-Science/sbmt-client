@@ -302,6 +302,8 @@ public class BackplanesGenerator
                 + "                           first, and if not found to traverse the other pointing types in\n"
                 + "                           the order specified above. Backplanes are generated only for\n"
                 + "                           images with pointing information.\n"
+                + "  -s                       Process a single file only. In this case, parameter <image-list>\n"
+                + "                           is the name of a single image file.\n"
                 + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
         System.out.println(o);
         System.exit(0);
