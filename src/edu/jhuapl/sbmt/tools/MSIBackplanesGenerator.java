@@ -51,7 +51,7 @@ public class MSIBackplanesGenerator
         if (args.length != numberRequiredArgs)
         {
             System.out.println("Incorrectly formed arguments.\n");
-            printUsage();
+
             System.exit(0);
         }
 
