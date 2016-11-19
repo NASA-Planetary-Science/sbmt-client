@@ -4,6 +4,17 @@
 
 # Recent Changes
 
+### November 19, 2016 (Beta)
+
+-   Improved accuracy of lidar point selection using mouse pointer
+-   Profile plots show radius if no plate coloring is selected
+-   All structures now support level of detail (LOD) switching
+-   Multiple DEMs can be loaded from file simultaneously in DEMs tab
+-   Plate color scaling can now be synchronized between DEM Properties View and the main window
+-   Fixed synchronization bugs between DEM Properties View and the main window
+-   Descriptive error message now shown if unable to draw structure due to an erroneously formed shape model
+-   Added button to custom-generate image gallery HTML page based on image search results
+
 ### October 21, 2016 (Beta)
 
 -   Moved to VTK (Visualization Toolkit) version 6.3 libraries (Linux version not working yet)
