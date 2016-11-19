@@ -298,34 +298,9 @@ public class DEMView extends JFrame implements WindowListener
         {
             public void actionPerformed(ActionEvent e)
             {
-                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem);
+                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem,demCollection.getDEM(key),syncColoring);
                 scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
                 scaleDataDialog.setVisible(true);
-
-                // Sync with macro DEM if applicable
-                if(syncColoring)
-                {
-                    try
-                    {
-                        // Get the macroDEM
-                        DEM macroDEM = demCollection.getDEM(key);
-
-                        // Synchronize coloring ranges
-                        for(int i=0; i<dem.getNumberOfColors(); i++)
-                        {
-                            macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
-                        }
-                    }
-                    catch (Exception e1)
-                    {
-                        e1.printStackTrace();
-                        JOptionPane.showMessageDialog(null,
-                                "An error occurred synchronizing macro view DEM coloring ranges with micro view.",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
             }
         });
         panel.add(scaleColoringButton);

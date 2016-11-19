@@ -391,7 +391,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     // Removes all DEMs
     private void removeAllDEMsFromRenderer()
     {
-        System.err.println("Not yet implemented");
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        demCollection.removeDEMs();
     }
 
     // Removes a DEM

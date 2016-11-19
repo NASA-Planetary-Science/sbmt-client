@@ -21,6 +21,8 @@ import edu.jhuapl.saavtk.model.PolyhedralModel;
 public class ScaleDataRangeDialog extends JDialog implements ActionListener
 {
     PolyhedralModel smallBodyModel;
+    PolyhedralModel syncSmallBodyModel;
+    private boolean syncModels;
     private JButton applyButton;
     private JButton resetButton;
     private JButton okayButton;
@@ -28,9 +30,11 @@ public class ScaleDataRangeDialog extends JDialog implements ActionListener
     private JFormattedTextField minTextField;
     private JFormattedTextField maxTextField;
 
-    public ScaleDataRangeDialog(PolyhedralModel smallBodyModel)
+    public ScaleDataRangeDialog(PolyhedralModel smallBodyModel, PolyhedralModel syncSmallBodyModel, boolean syncModels)
     {
         this.smallBodyModel = smallBodyModel;
+        this.syncSmallBodyModel = syncSmallBodyModel;
+        this.syncModels = syncModels;
 
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout());
@@ -88,6 +92,10 @@ public class ScaleDataRangeDialog extends JDialog implements ActionListener
                 if (newRange[1] > newRange[0])
                 {
                     smallBodyModel.setCurrentColoringRange(index, newRange);
+                    if(syncModels && syncSmallBodyModel != null)
+                    {
+                        syncSmallBodyModel.setCurrentColoringRange(index, newRange);
+                    }
                 }
 
                 // Reset the text fields in case the requested range scale change was not
@@ -114,6 +122,10 @@ public class ScaleDataRangeDialog extends JDialog implements ActionListener
                 if (defaultRange[1] > defaultRange[0])
                 {
                     smallBodyModel.setCurrentColoringRange(index, defaultRange);
+                    if(syncModels && syncSmallBodyModel != null)
+                    {
+                        syncSmallBodyModel.setCurrentColoringRange(index, defaultRange);
+                    }
                 }
 
                 double[] range = smallBodyModel.getCurrentColoringRange(index);
