@@ -122,9 +122,10 @@ public class DEMPlot implements ChartMouseListener, PropertyChangeListener
 
         if(coloringIndex < 0 || coloringIndex >= numColors)
         {
-            title = "";
-            domainLabel = "";
-            rangeLabel = "";
+            // By default show radius
+            title = "Radius vs. Distance";
+            domainLabel = "Distance (m)";
+            rangeLabel = "Radius (m)";
         }
         else
         {
