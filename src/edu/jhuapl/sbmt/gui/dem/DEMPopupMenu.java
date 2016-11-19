@@ -297,10 +297,17 @@ public class DEMPopupMenu extends PopupMenu
 
             try
             {
-                new DEMView(demKey, demCollection, smallBodyModel);
-                //imageCollection.addImage(demKey);
-                //infoPanelManager.addData(imageCollection.getImage(demKey));
-
+                DEM macroDEM = demCollection.getDEM(demKey);
+                if(macroDEM.hasView())
+                {
+                    // View already exists, just bring it to the front
+                    macroDEM.getView().toFront();
+                }
+                else
+                {
+                    // No view currently exists, create one and associate it to the DEM
+                    macroDEM.setView(new DEMView(demKey, demCollection, smallBodyModel));
+                }
                 updateMenuItems();
             }
             catch (FitsException e1) {

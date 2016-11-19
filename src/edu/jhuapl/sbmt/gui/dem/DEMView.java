@@ -747,6 +747,7 @@ public class DEMView extends JFrame implements WindowListener
     @Override
     public void windowClosed(WindowEvent e)
     {
+        // TODO Auto-generated method stub
 
     }
 
@@ -781,7 +782,14 @@ public class DEMView extends JFrame implements WindowListener
     @Override
     public void windowClosing(WindowEvent e)
     {
-        // TODO Auto-generated method stub
+        // Remove self as the macro DEM's view
+        DEM macroDEM = demCollection.getDEM(key);
+        if(macroDEM != null)
+        {
+            macroDEM.removeView();
+        }
+
+        // Garbage collect
         System.gc();
         vtkObject.JAVA_OBJECT_MANAGER.gc(true);
     }
