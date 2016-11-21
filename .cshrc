@@ -93,4 +93,15 @@ alias xterm 'xterm -ls -sb -sl 1000 -geometry 80x50&'
 alias date 'date -u +"%a %b %e %T %Z %j %Y"'
 alias me 'ps -ef | grep sbmt | grep -v grep | grep -v csh | grep -v xterm | grep -v ps | grep -v sshd'
 
+#
+# Set up the grid engine
+#
+unsetenv SGE_ROOT
+foreach dir (ge-GE2011-11p1 ge-GE2011.11-11p1)
+  if (-e /opt/$dir) then
+    setenv LD_LIBRARY_PATH /usr/lib:/opt/$dir/lib/linux-x64/:$LD_LIBRARY_PATH
+    source /opt/$dir/default/common/settings.csh
+    break
+  endif
+end
 
