@@ -48,6 +48,8 @@ public class MSIBackplanesComparison
     private static double EPS = 1E-7;
     private static String cacheDirectory = "/GASKELL/EROS/MSI/images/";
     private static String workingDir = "C:/Users/nguyel1/Projects/SBMT/DaveBlewettNearMsiPds/backplanesGeneratorTest/";
+    private static SmallBodyModel smallBodyModel;
+
 
     public static void main(String[] args) throws Exception
     {
@@ -60,8 +62,10 @@ public class MSIBackplanesComparison
         NativeLibraryLoader.loadVtkLibrariesHeadless();
         Authenticator.authenticate();
 
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
+
         runComparisonTest(workingDir);
-        dumpLatLonValues(workingDir);
+//        dumpLatLonValues(workingDir);
     }
 
     /**
@@ -77,32 +81,43 @@ public class MSIBackplanesComparison
 
         // Read in the archived .img file that Eli had created in 2013 (http://sbmt.jhuapl.edu/internal/misc/backplanes/, see email from Dave Blewett February 23, 2016 2:50 PM)
 
-        String imgFile = testDirectory + "archivedBackplanes/M0131776147F1_2P_CIF_SPICE_res3_ddr.img";
-        String shapeResolution = parseResolutionLevel(imgFile); //Need not generate all resolutions, just the one that was used to generate the .img file
-        double[][][] archived = readImgFile(imgFile);
+        String archivedImgSpiceBackplanesFilename = "M0131776147F1_2P_CIF_SPICE_res3_ddr.img";
+        String archivedImgSpiceBackplanesFile = testDirectory + "archivedBackplanes/" + archivedImgSpiceBackplanesFilename;
+        int shapeResolution = Integer.valueOf(parseResolutionLevel(archivedImgSpiceBackplanesFile)); //Need not generate all resolutions, just the one that was used to generate the .img file
 
 
         // Generate backplanes from the source FITS image using the current state of the SBMT BackplanesGenerator code.
         // The source images are not located on the SBMT server, I do not know where Eli stored them. I pulled them from PDS.
 
 //        String sourceFile = cacheDirectory + "M0131776147F1_2P_CIF.FIT"; // These files are masked (no black edges), Eli's archived ones are not, so the edge pixels won't agree with Eli's archive if we use these. I also don't think this is the image Eli generated the backplanes for, even though the file names match. The pixel values are very different (which may be why the CIF is much brighter than the CIF DBL).
-//        String sourceFile = cacheDirectory + "M0131776147F1_2P_IOF_DBL.FIT"; // These are not masked (they have black edges) but they are deblurred. The file names in Eli's archive do not have "DBL" in them, so this may be the cause of the remaining very small discrepancy in the pixel values. USE THESE AS INPUT.
-        String sourceFile = cacheDirectory + "M0131776147F1_2P_CIF_DBL.FIT"; // These are not masked (they have black edges) but they are deblurred. The file names in Eli's archive do not have "DBL" in them, so this may be the cause of the remaining very small discrepancy in the pixel values. USE THESE AS INPUT.
+        String sourceFile = cacheDirectory + "M0131776147F1_2P_IOF_DBL.FIT"; // These are not masked (they have black edges) but they are deblurred. The file names in Eli's archive do not have "DBL" in them, so deblurring may be the cause of the remaining very small discrepancy in the pixel values. USE THESE AS INPUT.
         String outputFolder = testDirectory + "backplanesGeneratorOutput";
-        double[][][] generated = createImgFile(sourceFile, outputFolder, shapeResolution);
 
 
-        // Run the comparison between the generated backplanes file and Eli's archived one.
+        // Run a comparison between the linux vs windows generated backplanes files.
 
-        compare(generated, archived);
+        if (sourceFile.toUpperCase().contains("M0131776147F1_2P_CIF_DBL") )
+        {
+            String windows = createBackplanes(sourceFile, outputFolder, ImageSource.GASKELL, BackplanesFileFormat.FITS, shapeResolution);
+            String linux = "C:/Users/nguyel1/Projects/SBMT/DaveBlewettNearMsiPds/backplanesGeneratorTest/backplanesGeneratorOutput/unix/MSIBackplanesSmall/M0131776147F1_2P_CIF_DBL.FIT"; //This file was generated using sumfiles_to_be_delivered (using the Linux hand-modified and compiled MSIImage.initializeSumfileFullPath())
+            System.err.println("Results of comparison (Windows-created vs Linux-created backplanes files)");
+            compare(readFitsFile(linux), readFitsFile(windows));
+        }
 
-        // Additionally generate a FITS backplanes file from the original image FITS file. This is the procedure if we need to create the backplanes from scratch.
+        // Run a comparison between a generated backplanes file and Eli's archived one.
 
-        String backplanesFile = createFitsFile(sourceFile, outputFolder, shapeResolution);
+        double[][][] archivedImgSpice = readImgFile(archivedImgSpiceBackplanesFile);
+        double[][][] generatedImgSpice = readImgFile(createBackplanes(sourceFile, outputFolder, ImageSource.SPICE, BackplanesFileFormat.IMG, shapeResolution));
+        System.err.println("Results of comparison (Eli's archived .img backplanes file v/s newly created .img backplanes file)");
+        compare(generatedImgSpice, archivedImgSpice);
+
+        // Also generate a FITS backplanes file from from scratch from the original image FITS file, output to IMG format. Use SPICE pointing, same as archived file.
+
+        String backplanesFile = createBackplanes(sourceFile, outputFolder, ImageSource.SPICE, BackplanesFileFormat.FITS, shapeResolution); //This will use whichever sumfile is specified in MSIImage.initializeSumfileFullPath(), so either cache's sumfiles/ or sumfiles_to_be_delivered/
 
         // Convert the .img file that Eli had created in 2013 to FITS (for Windows comparison with the file generated from scratch above, use vbindiff).
 
-        createFitsFileFromImg(new File(imgFile).getName(), archived, outputFolder);
+        createFitsFileFromImg(archivedImgSpiceBackplanesFilename, archivedImgSpice, outputFolder);
 
         // RESULTS OF COMPARISON:
         // When I compare the original CIF FITS image against its CIF_DBL counterpart, the backplanes match
@@ -121,63 +136,42 @@ public class MSIBackplanesComparison
         // on the original backplanes, it may be related to that. The BackplanesGenerator uses linear interpolation.
         // As long as we document with PDS about how this is done, then I don't think it's an issue.
         // I suspect it may be some conversion in reading in the fits image - see loadFitsFiles in PerspectiveImage.
+
+
+     // This has both an old and a new sumfile (in sumfiles/ and sumfiles_to_be_delivered). Generate backplanes for both sumfiles and compare them. Also visually check backplanes values in SBMT.
+
+     sourceFile = cacheDirectory + "M0131203683F4_2P_IOF_DBL.FIT";
+
     }
 
-    private static void dumpLatLonValues(String testDirectory) throws Exception
-    {
-        // Generate a FITS backplanes file from the original image FITS file. This is the procedure if we need to create the backplanes from scratch.
-
-        String outputFolder = testDirectory + "backplanesGeneratorOutput";
-        String sourceFile = cacheDirectory + "M0157416268F3_2P_IOF_DBL.FIT"; //this is one of the last images MSI took
-        String backplanesFile = createFitsFile(sourceFile, outputFolder, "3");
-
-        // Dump out the lat/lon backplanes to visually compare with the SBMT lat/lon for the same image
-
-        dumpLatLon(readFitsFile(backplanesFile));
-        System.err.println("To complete this test, run SBMT, map image M0157416268F3_2P_IOF_DBL.FIT, and verify that the Lat Lon shown by the app matches the lat, lon printed above.");
-    }
+//    private static void dumpLatLonValues(String testDirectory) throws Exception
+//    {
+//        // Generate a FITS backplanes file from the original image FITS file. This is the procedure if we need to create the backplanes from scratch.
+//
+//        String outputFolder = testDirectory + "backplanesGeneratorOutput";
+//        String sourceFile = cacheDirectory + "M0157416268F3_2P_IOF_DBL.FIT"; //this is one of the last images MSI took
+//        String backplanesFile = createFitsSpiceFile(sourceFile, outputFolder, "3");
+//
+//        // Dump out the lat/lon backplanes to visually compare with the SBMT lat/lon for the same image
+//
+//        dumpLatLon(readFitsFile(backplanesFile));
+//        System.err.println("To complete this test, run SBMT, map image M0157416268F3_2P_IOF_DBL.FIT, and verify that the Lat Lon shown by the app matches the lat, lon printed above.");
+//    }
 
     /**
-     * Create an IMG backplanes file from a FITS sourceFile, using the shape model resolution level specified
+     * Create a backplanes file from a FITS sourceFile.
      * (0 lowest resolution, 3 highest).
      */
-    private static double[][][] createImgFile(String sourceFile, String outputFolder, String resolutionLevel) throws Exception
+    private static String createBackplanes(String fitsImageFile, String outputFolder, ImageSource pointing, BackplanesFileFormat fmt, int resolutionLevel) throws Exception
     {
-        BackplanesFileFormat fmt = BackplanesFileFormat.IMG;
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
-
-        smallBodyModel.setModelResolution(Integer.valueOf(resolutionLevel));
-        ImageKey key = new ImageKey(sourceFile.replace(".FIT", ""), ImageSource.SPICE, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
-
-        //Write out the IMG file
-        (new BackplanesGenerator()).generateBackplanes(sourceFile, key.instrument.instrumentName, outputFolder, smallBodyModel, BackplanesFileFormat.IMG, ImageSource.SPICE);
-
-        String fname = new File(sourceFile).getName();
-        String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolutionLevel), BackplanesFileFormat.IMG, outputFolder) + fmt.getExtension();
-//        String ddrFilename = outputFolder + File.separator + fname.substring(0, fname.length()-4) + "_" + key.source.name() + "_res" + resolutionLevel + ".img";
-
-        //Read in the IMG file
-        return readImgFile(backplanesFilename);
-    }
-
-    /**
-     * Create a FITS backplanes file from a FITS sourceFile, using the shape model resolution level specified
-     * (0 lowest resolution, 3 highest).
-     */
-    private static String createFitsFile(String fitsImageFile, String outputFolder, String resolutionLevel) throws Exception
-    {
-        BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
-
-        smallBodyModel.setModelResolution(Integer.valueOf(resolutionLevel));
-        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), ImageSource.SPICE, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
+        smallBodyModel.setModelResolution(resolutionLevel);
+        ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
 
         //Write out the FITS file
-        (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.instrumentName, outputFolder, smallBodyModel, BackplanesFileFormat.FITS, ImageSource.SPICE);
-        System.err.println("Testing - done creating FITS file from scratch");
+        (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.instrumentName, outputFolder, smallBodyModel, fmt, pointing);
 
         //Return the fits backplanes file name
-        String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolutionLevel), BackplanesFileFormat.IMG, outputFolder) + fmt.getExtension();
+        String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolutionLevel), fmt, outputFolder) + fmt.getExtension();
         return backplanesFilename;
     }
 
@@ -188,9 +182,6 @@ public class MSIBackplanesComparison
      */
     private static void createFitsFileFromImg(String sourceFileBasename, double[][][] imgData, String outputFolder) throws Exception
     {
-//        SmallBodyModel smallBodyModel = ModelFactory.createSmallBodyModel(SmallBodyConfig.getSmallBodyConfig(SmallBodyConfig.ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
-        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
-
         FitsBackplanesFile fpf = new FitsBackplanesFile();
         String fileName = outputFolder + File.separator + sourceFileBasename + ".fit";
         fpf.write(imgData, sourceFileBasename, fileName, numBands);
@@ -272,21 +263,21 @@ public class MSIBackplanesComparison
         return array3D;
     }
 
-    /**
-     * Dump the latitude/longitude planes, pixel by pixel, from a float data array (e.g. as in a fits backplanes file).
-     */
-    private static void dumpLatLon(float[][][] data)
-    {
-        int latPlane = BackplaneInfo.LAT.ordinal();
-        int lonPlane = BackplaneInfo.LON.ordinal();
-        for (int lines = 0; lines < numLines; lines++)
-        {
-            for (int samples = 0; samples < numSamples; samples++)
-            {
-                System.err.println("lat, lon for pixel [" + lines + "][" + samples + "] = " + data[latPlane][lines][samples] + ", " + data[lonPlane][lines][samples]);
-            }
-        }
-    }
+//    /**
+//     * Dump the latitude/longitude planes, pixel by pixel, from a float data array (e.g. as in a fits backplanes file).
+//     */
+//    private static void dumpLatLon(float[][][] data)
+//    {
+//        int latPlane = BackplaneInfo.LAT.ordinal();
+//        int lonPlane = BackplaneInfo.LON.ordinal();
+//        for (int lines = 0; lines < numLines; lines++)
+//        {
+//            for (int samples = 0; samples < numSamples; samples++)
+//            {
+//                System.err.println("lat, lon for pixel [" + lines + "][" + samples + "] = " + data[latPlane][lines][samples] + ", " + data[lonPlane][lines][samples]);
+//            }
+//        }
+//    }
 
     /**
      * Compare the backplanes data. Output differences greater than EPS to console.
@@ -294,25 +285,21 @@ public class MSIBackplanesComparison
     private static void compare(double[][][] generated, double[][][] archived)
     {
         List<BackplaneInfo> planeList = BackplaneInfo.getPlanes(numBands);
-        double maxDiff = Double.NEGATIVE_INFINITY;
-        double maxPct = Double.NEGATIVE_INFINITY;
+        double maxDiff = 0;
+        double value = 1;
         for (int planes = 0; planes < numBands; planes++)
         {
             for (int lines = 0; lines < numLines; lines++)
             {
                 for (int samples = 0; samples < numSamples; samples++)
                 {
-                    if (Math.abs(archived[planes][lines][samples] - generated[planes][lines][samples]) > EPS)
+                    double diff = Math.abs(archived[planes][lines][samples] - generated[planes][lines][samples]);
+                    if (diff > EPS)
                     {
-                        double diff = Math.abs(archived[planes][lines][samples] - generated[planes][lines][samples]);
                         if (diff > maxDiff)
                         {
                             maxDiff = diff;
-                        }
-                        double pct = 100 * diff/archived[planes][lines][samples];
-                        if (pct > maxPct)
-                        {
-                            maxPct = pct;
+                            value = archived[planes][lines][samples];
                         }
                         System.err.println("   Diff at index " + planes + ", " + lines + ", " + samples + ". Plane is " + planeList.get(planes).toString());
                         System.err.println("        archived  " + archived[planes][lines][samples]);
@@ -321,9 +308,39 @@ public class MSIBackplanesComparison
                 }
             }
         }
-        System.err.println("Results of comparison (Eli's archived .img backplanes file v/s newly created .fit backplanes file)");
         System.err.println("Max diff " + maxDiff);
-        System.err.println("Max percent diff " + maxPct + "%");
+        System.err.println("Max percent diff " + (100.0 * maxDiff/value) + " %");
+    }
+
+    private static void compare(float[][][] generated, float[][][] archived)
+    {
+        EPS = 1E-20;
+        List<BackplaneInfo> planeList = BackplaneInfo.getPlanes(numBands);
+        double maxDiff = 0;
+        double value = 1;
+        for (int planes = 0; planes < numBands; planes++)
+        {
+            for (int lines = 0; lines < numLines; lines++)
+            {
+                for (int samples = 0; samples < numSamples; samples++)
+                {
+                    double diff = Math.abs(archived[planes][lines][samples] - generated[planes][lines][samples]);
+                    if (diff > EPS)
+                    {
+                        if (diff > maxDiff)
+                        {
+                            maxDiff = diff;
+                            value = archived[planes][lines][samples];
+                        }
+                        System.err.println("   Diff at index " + planes + ", " + lines + ", " + samples + ". Plane is " + planeList.get(planes).toString());
+                        System.err.println("        archived  " + archived[planes][lines][samples]);
+                        System.err.println("        generated " + generated[planes][lines][samples]);
+                    }
+                }
+            }
+        }
+        System.err.println("Max diff " + maxDiff);
+        System.err.println("Max percent diff " + (100.0 * maxDiff/value) + "%");
     }
 
     /**
