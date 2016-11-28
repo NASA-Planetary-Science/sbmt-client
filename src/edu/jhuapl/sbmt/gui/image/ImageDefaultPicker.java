@@ -158,8 +158,7 @@ public class ImageDefaultPicker extends DefaultPicker
 
                 int cellId = mousePressNonSmallBodyCellPicker.GetCellId();
                 double[] pickPosition = mousePressNonSmallBodyCellPicker.GetPickPosition();
-                String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
-                statusBar.setLeftText(text);
+                statusBar.setLeftTextSource(model, pickedActor, cellId, pickPosition);
                 pcs.firePropertyChange(
                         Properties.MODEL_PICKED,
                         null,
@@ -182,8 +181,7 @@ public class ImageDefaultPicker extends DefaultPicker
 
                     int cellId = smallBodyCellPicker.GetCellId();
                     double[] pickPosition = smallBodyCellPicker.GetPickPosition();
-                    String text = model.getClickStatusBarText(pickedActor, cellId, pickPosition);
-                    statusBar.setLeftText(text);
+                    statusBar.setLeftTextSource(model, pickedActor, cellId, pickPosition);
                     pcs.firePropertyChange(
                             Properties.MODEL_PICKED,
                             null,
