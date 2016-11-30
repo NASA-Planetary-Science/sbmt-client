@@ -41,7 +41,7 @@ public class MSIBackplanesGenerator
                 + "  <image-list>             Path to file listing the images to use. Images are\n"
                 + "                           specified relative to the /project/nearsdc/data folder.\n"
                 + "                           (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)\n"
-                + "  <output-folder>          Path to folder which where to place generated backplanes.\n\n";
+                + "  <output-folder>          Path to folder in which to place generated backplanes.\n\n";
         System.out.println(o);
     }
 

@@ -94,7 +94,7 @@ public class BackplanesGenerator
             String ext = FilenameUtils.getExtension(filename).trim();
             if (ext.compareToIgnoreCase("fit")!=0 && ext.compareToIgnoreCase("fits")!=0)
             {
-                System.err.println("   Unexpected image format. Expecting FITS image");
+                System.err.println("   BackplanesGenerator.java: Unexpected image format. Expecting FITS image");
                 System.exit(0);
             }
 
@@ -231,7 +231,7 @@ public class BackplanesGenerator
     }
 
     /**
-     * Generate base ddr filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
+     * Generate base backplanes filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
      * different filenaming conventions based on which PerspectiveImage subclass is being processed.
      *
      * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
