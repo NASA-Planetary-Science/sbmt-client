@@ -72,7 +72,7 @@ public class MSIBackplanesGenerator
             System.exit(0);
         }
 
-        int maxJobs = 500;
+        int maxJobs = 100;
         String rootDir = args[0];
         String imageFileList = args[1];
         String outputFolder = args[2];
