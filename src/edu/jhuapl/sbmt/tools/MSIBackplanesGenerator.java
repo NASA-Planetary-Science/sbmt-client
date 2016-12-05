@@ -88,7 +88,7 @@ public class MSIBackplanesGenerator
         else
         {
             System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(1);
+            System.exit(0);
         }
         File moveDir = (new File(finishedFolder));
         if (!moveDir.exists())
@@ -98,7 +98,7 @@ public class MSIBackplanesGenerator
         else
         {
             System.err.println("MSIBackplanesGenerator.java: Directory " + moveDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(1);
+            System.exit(0);
         }
         File qsubDir = (new File(outDir, "qsubLogs"));
         if (!qsubDir.exists())
@@ -108,7 +108,7 @@ public class MSIBackplanesGenerator
         else
         {
             System.err.println("MSIBackplanesGenerator.java: Directory " + qsubDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(1);
+            System.exit(0);
         }
 
         // VTK and authentication
