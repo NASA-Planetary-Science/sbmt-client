@@ -29,7 +29,7 @@ done
 
 for f in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     f=`basename $f .java`
-    shellExt = ".sh"
+    shellExt=.sh
     f=f$shellExt
     echo '#!/bin/bash'                                                                        >  $INSTALL_BIN_DIR/$f
     echo '\n#'                                                                                >  $INSTALL_BIN_DIR/$f
