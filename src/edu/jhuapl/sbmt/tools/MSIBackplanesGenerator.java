@@ -2,6 +2,15 @@ package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,33 +44,71 @@ public class MSIBackplanesGenerator
         String o = "This program generates blackplanes for a list of MSI image files using the"
                 + "Eros V1 shape model at highest resolution and with GASKELL pointing. It also"
                 + "generates PDS version 4 labels for each backplanes file.\n"
-                + "Usage: MSIBackplanesGenerator <root-dir> <image-list> <output-folder>\n\n"
+                + "Usage: MSIBackplanesGenerator <root-dir> <image-list> <output-folder> <finish-folder> [<maxArrayJobs>]\n\n"
                 + "Where:\n"
                 + "  <root-dir>               Path to the scripts that run the SBMT standalone java tools.\n"
                 + "  <image-list>             Path to file listing the images to use. Images are\n"
                 + "                           specified relative to the /project/nearsdc/data folder.\n"
                 + "                           (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)\n"
-                + "  <output-folder>          Path to folder in which to place generated backplanes.\n\n";
+                + "  <output-folder>          Path to folder in which to place generated backplanes.\n"
+                + "  <finish-folder>          Path to folder to which to move finished backplanes.\n"
+                + "  <maxArrayJobs>           Optional maximum number of jobs per qsub call. Each \n"
+                + "                           job processes one MSI image backplane.\n\n"
+                + "Example: \n"
+//        /project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes/older
+                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
+
         System.out.println(o);
     }
 
-    private void doMain(String[] args) throws IOException, InterruptedException
+    private void doMain(String[] args) throws IOException
     {
-        int numberRequiredArgs = 3;
+        int numberRequiredArgs = 4;
         if (args.length != numberRequiredArgs)
         {
-            System.out.println("Incorrectly formed arguments.\n");
+            System.out.println("MSIBackplanes: incorrect number of arguments.\n");
             printUsage();
             System.exit(0);
         }
 
+        int maxJobs = 500;
         String rootDir = args[0];
         String imageFileList = args[1];
         String outputFolder = args[2];
+        String finishedFolder = args[3];
+        if (args.length > 4)
+        {
+            maxJobs = Integer.valueOf(args[4]);
+        }
         File outDir = (new File(outputFolder));
         if (!outDir.exists())
         {
             outDir.mkdirs();
+        }
+        else
+        {
+            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+            System.exit(1);
+        }
+        File moveDir = (new File(finishedFolder));
+        if (!moveDir.exists())
+        {
+            moveDir.mkdirs();
+        }
+        else
+        {
+            System.err.println("MSIBackplanesGenerator.java: Directory " + moveDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+            System.exit(1);
+        }
+        File qsubDir = (new File(outDir, "qsubLogs"));
+        if (!qsubDir.exists())
+        {
+            qsubDir.mkdirs();
+        }
+        else
+        {
+            System.err.println("MSIBackplanesGenerator.java: Directory " + qsubDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+            System.exit(1);
         }
 
         // VTK and authentication
@@ -85,23 +132,124 @@ public class MSIBackplanesGenerator
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.
         List<String> imageFiles = FileUtil.getFileLinesAsStringList(imageFileList);
-        System.err.println("Number of images to process: " + imageFiles.size());
+        System.err.println("MSIBackplanesGenerator.java: Number of images to process: " + imageFiles.size());
 
         for (String image : imageFiles)
         {
-            //Before generating the backplanes, check to see if a backplanes file already exists. If yes, do not regenerate.
-            if (!backplanesFileExists(image, outputFolder))
+            //Before adding the command to generate the backplanes, check to see if a backplanes
+            //file already exists. If yes, do not regenerate.
+            if (!backplanesFileExists(image, finishedFolder))
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera + " -r " + resolution + " -f -s -p " + ptg + " " + body + " %s %s", image, outputFolder);
-                System.err.println("Command:" + command);
+//                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
                 commandList.add(command);
+            }
+
+            if (commandList.size() >= maxJobs)
+            {
+                executeJobs(commandList, outputFolder, finishedFolder, qsubDir);
+
+                //reset for next batch of commands.
+                commandList = new ArrayList<String>();
             }
         }
 
-        BatchSubmit batchSubmit = new BatchSubmit(commandList, BatchType.GRID_ENGINE);
-        batchSubmit.runBatchSubmitinDir(outputFolder);
+        executeJobs(commandList, outputFolder, finishedFolder, qsubDir);
 
+    }
+
+    private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final File qsubDir)
+    {
+        //submit the command list to the grid engine. the qsub is called with sync -y,
+        //so all the jobs will finish before the Java program continues.
+        BatchSubmit batchSubmit = new BatchSubmit(commandList, BatchType.GRID_ENGINE);
+        try
+        {
+            batchSubmit.runBatchSubmitinDir(outputFolder);
+        }
+        catch (Exception e)
+        {
+            System.err.println("BatchSubmit error in MSIBackplanesGenerator.java:");
+            e.printStackTrace();
+            return;
+        }
+//        System.err.println("MSIBackplanesGenerator.java, back from BatchSubmit");
+
+        //Move the finished files before next batch of jobs is qsubbed.
+        moveFinishedBackplanes(outputFolder, finishedFolder);
+        moveFinishedQsubLogs(outputFolder, qsubDir);
+    }
+
+    private void moveFinishedBackplanes(String outputFolder, final String finishedFolder)
+    {
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{fit,xml}");  //need to add path here somewhere
+        try
+        {
+            Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
+            {
+                @Override
+                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
+                {
+                    if (pathMatcher.matches(path))
+                    {
+                        //Move the files here.
+//                        System.err.println("MSIBackplanesGenerator.java, path to found file is " + path);
+//                        System.err.println("MSIBackplanesGenerator.java, path to parent of found file is " + path.getParent().toString());
+//                        System.err.println("MSIBackplanesGenerator.java, name of found file is " + path.getFileName().toString());
+                        Path moveTo = Paths.get(finishedFolder, path.getFileName().toString());
+//                        System.err.println("MSIBackplanesGenerator.java, moving to " + moveTo.toFile().getAbsolutePath());
+                        Files.move(path, moveTo, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+                {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException e)
+        {
+            System.err.println("Backplanes move error in MSIBackplanesGenerator.java:");
+            e.printStackTrace();
+        }
+    }
+
+    private void moveFinishedQsubLogs(String outputFolder, final File qsubDir)
+    {
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{bash.e,bash.o}*");  //need to add path here somewhere
+        try
+        {
+            Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
+            {
+                @Override
+                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
+                {
+                    if (pathMatcher.matches(path))
+                    {
+                        //Move the files here.
+                        Path moveTo = Paths.get(qsubDir.getAbsolutePath(), path.getFileName().toString());
+//                        System.err.println("qsub moving " + path.toFile().getAbsolutePath() + " to " + qsubDir.getAbsolutePath());
+                        Files.move(path, moveTo, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+                {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+        catch (IOException e)
+        {
+            System.err.println("qsubLog move error in MSIBackplanesGenerator.java:");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -124,7 +272,7 @@ public class MSIBackplanesGenerator
         {
             SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
             ImageKey key = new ImageKey(image.replace(".FIT", ""), ptg, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
-            String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolution), BackplanesFileFormat.IMG, outputFolder) + fmt.getExtension();
+            String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolution), BackplanesFileFormat.FITS, outputFolder) + fmt.getExtension();
             File f = new File(backplanesFilename);
             if (f.exists())
             {
