@@ -2,8 +2,9 @@
 
 # This script generates individual scripts to run each of the tools.
 
+THIS=`basename "$0"`
 if [ -z "$SBMTROOT" ]; then
-    echo "ERROR: SBMTROOT is undefined!"
+    echo "ERROR in $THIS: SBMTROOT is undefined!"
     exit 1
 fi
  
@@ -28,26 +29,47 @@ done
 
 for f in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     f=`basename $f .java`
-    echo '#!/bin/bash'                                                        >  $INSTALL_BIN_DIR/$f
-    echo 'if [ -z "$SBMTROOT" ]; then'                                        >> $INSTALL_BIN_DIR/$f
-        echo '    echo "ERROR: SBMTROOT is undefined!"'                       >> $INSTALL_BIN_DIR/$f
-        echo '    exit 1'                                                     >> $INSTALL_BIN_DIR/$f
-    echo 'fi'                                                                 >> $INSTALL_BIN_DIR/$f
-    echo 'DIR=`dirname "$0"`'                                                 >> $INSTALL_BIN_DIR/$f
-    echo 'export PATH="$DIR:$PATH"'                                           >> $INSTALL_BIN_DIR/$f
-    echo 'export DYLD_LIBRARY_PATH="$SBMTROOT/lib:$DYLD_LIBRARY_PATH"'          >> $INSTALL_BIN_DIR/$f
-    echo 'export LD_LIBRARY_PATH="$SBMTROOT/lib:$LD_LIBRARY_PATH"'              >> $INSTALL_BIN_DIR/$f
-    echo 'HEADLESS=""'                                                        >> $INSTALL_BIN_DIR/$f
-    echo 'MEMSIZE=""'                                                         >> $INSTALL_BIN_DIR/$f
-    echo 'if [ "$(uname)" == "Darwin" ]; then'                                >> $INSTALL_BIN_DIR/$f
+    shellExt = ".sh"
+    f=f$shellExt
+    echo '#!/bin/bash'                                                                        >  $INSTALL_BIN_DIR/$f
+    echo '\n#'                                                                                >  $INSTALL_BIN_DIR/$f
+    echo '# This script runs $f.java'                                                         >  $INSTALL_BIN_DIR/$f
+    echo '#\n'                                                                                >  $INSTALL_BIN_DIR/$f
+    echo 'if [ -z "$SBMTROOT" ]; then'                                                        >> $INSTALL_BIN_DIR/$f
+        echo '    echo "ERROR: SBMTROOT is undefined!"'                                       >> $INSTALL_BIN_DIR/$f
+        echo '    exit 1'                                                                     >> $INSTALL_BIN_DIR/$f
+    echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$f
+    echo 'DIR=`dirname "$0"`'                                                                 >> $INSTALL_BIN_DIR/$f
+    echo 'export PATH="$DIR:$PATH"'                                                           >> $INSTALL_BIN_DIR/$f
+    echo 'export DYLD_LIBRARY_PATH="$SBMTROOT/lib:$DYLD_LIBRARY_PATH"'                        >> $INSTALL_BIN_DIR/$f
+    echo 'HEADLESS=""'                                                                        >> $INSTALL_BIN_DIR/$f
+    echo 'MEMSIZE=""'                                                                         >> $INSTALL_BIN_DIR/$f
+    echo 'if [ "$(uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$f
     if [ "$f" != "SmallBodyMappingTool" -a "$f" != "SmallBodyMappingToolAPL" ]; then
-        echo '    HEADLESS="-Djava.awt.headless=true"'                        >> $INSTALL_BIN_DIR/$f
+        echo '    HEADLESS="-Djava.awt.headless=true"'                                        >> $INSTALL_BIN_DIR/$f
     fi
-    echo '    MEMSIZE=`sysctl hw.memsize | awk '\''{print int($2/1024)}'\''`' >> $INSTALL_BIN_DIR/$f
-    echo 'elif [ "$(uname)" == "Linux" ]; then'                               >> $INSTALL_BIN_DIR/$f
-    echo '    MEMSIZE=`grep MemTotal /proc/meminfo | awk '\''{print $2}'\''`' >> $INSTALL_BIN_DIR/$f
-    echo 'fi'                                                                 >> $INSTALL_BIN_DIR/$f
-    echo '/project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$f \$@" >> $INSTALL_BIN_DIR/$f
+    echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/mac64:$LD_LIBRARY_PATH"'    >> $INSTALL_BIN_DIR/$f
+    echo '    MEMSIZE=`sysctl hw.memsize | awk '\''{print int($2/1024)}'\''`'                 >> $INSTALL_BIN_DIR/$f
+    echo 'elif [ "$(uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$f
+    if [ "$f" != "SmallBodyMappingTool" -a "$f" != "SmallBodyMappingToolAPL" ]; then
+        echo '    HEADLESS="-Djava.awt.headless=true"'                                        >> $INSTALL_BIN_DIR/$f
+    fi
+    echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"'  >> $INSTALL_BIN_DIR/$f
+#    echo '    MEMSIZE=`grep MemTotal /proc/meminfo | awk '\''{print $2}'\''`'                >> $INSTALL_BIN_DIR/$f
+    echo '    MEMSIZE="$(grep MemTotal /proc/meminfo | awk '\''{print $2}'\'')"'              >> $INSTALL_BIN_DIR/$f
+    echo 'else'                                                                               >> $INSTALL_BIN_DIR/$f
+    echo '    echo "Unsupported operating system, exiting script $f"'                         >> $INSTALL_BIN_DIR/$f
+    echo '    exit 1'                                                                         >> $INSTALL_BIN_DIR/$f
+    echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$f
+
+
+    echo 'if [ "$(uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$f
+    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$f \$@" >> $INSTALL_BIN_DIR/$f
+    echo 'elif [ "$(uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$f
+    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$f \$@" >> $INSTALL_BIN_DIR/$f
+    echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$f
+
+
     chmod +x $INSTALL_BIN_DIR/$f
 done
 
