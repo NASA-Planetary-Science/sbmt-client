@@ -139,7 +139,7 @@ public class MSIBackplanesGenerator
         {
             //Before adding the command to generate the backplanes, check to see if a backplanes
             //file already exists. If yes, do not regenerate.
-            if (!backplanesFileExists(image, finishedFolder))
+//            if (!backplanesFileExists(image, finishedFolder))
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera + " -r " + resolution + " -f -s -p " + ptg + " " + body + " %s %s", image, outputFolder);
