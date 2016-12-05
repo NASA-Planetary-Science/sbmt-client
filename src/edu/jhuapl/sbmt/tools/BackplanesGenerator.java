@@ -94,7 +94,7 @@ public class BackplanesGenerator
             String ext = FilenameUtils.getExtension(filename).trim();
             if (ext.compareToIgnoreCase("fit")!=0 && ext.compareToIgnoreCase("fits")!=0)
             {
-                System.err.println("   BackplanesGenerator.java: Unexpected image format. Expecting FITS image");
+                System.err.println("   BackplanesGenerator.java: Unexpected image format for file " + filename + ". Expecting FITS image");
                 System.exit(0);
             }
 
