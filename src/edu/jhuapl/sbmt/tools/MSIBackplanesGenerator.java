@@ -12,6 +12,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
@@ -82,12 +83,24 @@ public class MSIBackplanesGenerator
             maxJobs = Integer.valueOf(args[4]);
         }
 
-        createFolder(outputFolder);
-        createFolder(finishedFolder);
-        String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
-        String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
-        createFolder(qsubErr);
-        createFolder(qsubOut);
+        //If running in the cluster disk scratch areas, this must be done either
+        //in the array job itself (in BackplanesGenerator.java), or in a script
+        //that is called ahead of time (e.g. Howie's southpark*.sh script). If
+        //done here, it creates the folders only on the machine that this java
+        //class is called from, and qsub will error out on all other machines
+        //because it can't find the folders.
+        if (!outputFolder.toLowerCase().contains("scratch") || outputFolder.toLowerCase().startsWith("/project"))
+        {
+            createFolder(outputFolder);
+            String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
+            String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
+            createFolder(qsubErr);
+            createFolder(qsubOut);
+        }
+        if (!finishedFolder.toLowerCase().contains("scratch") || finishedFolder.toLowerCase().startsWith("/project"))
+        {
+            createFolder(finishedFolder);
+        }
 
         // VTK and authentication
         Configuration.setAppName("neartool");
@@ -158,6 +171,10 @@ public class MSIBackplanesGenerator
 
     private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final String qsubOut, final String qsubErr)
     {
+        //print the time
+        Date now = new Date();
+        System.out.println("---- Array job assembled. Submitting to grid engine at " + now.toString());
+
         //submit the command list to the grid engine. the qsub is called with sync -y,
         //so all the jobs will finish before the Java program continues.
         BatchSubmit batchSubmit = new BatchSubmit(commandList, BatchType.GRID_ENGINE);
