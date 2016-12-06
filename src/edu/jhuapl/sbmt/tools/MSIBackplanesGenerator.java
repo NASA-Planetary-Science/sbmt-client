@@ -81,51 +81,13 @@ public class MSIBackplanesGenerator
         {
             maxJobs = Integer.valueOf(args[4]);
         }
-        File outDir = (new File(outputFolder));
-        if (!outDir.exists())
-        {
-            outDir.mkdirs();
-            if (!outDir.exists())
-            {
-                System.err.println("MSIBackplanesGenerator.java: Failed to create " + outDir.getAbsolutePath() + ". Exiting.");
-                System.exit(0);
-            }
-        }
-        else
-        {
-            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(0);
-        }
-        File moveDir = (new File(finishedFolder));
-        if (!moveDir.exists())
-        {
-            moveDir.mkdirs();
-            if (!moveDir.exists())
-            {
-                System.err.println("MSIBackplanesGenerator.java: Failed to create " + moveDir.getAbsolutePath() + ". Exiting.");
-                System.exit(0);
-            }
-        }
-        else
-        {
-            System.err.println("MSIBackplanesGenerator.java: Directory " + moveDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(0);
-        }
-        File qsubDir = (new File(outDir, "qsubLogs"));
-        if (!qsubDir.exists())
-        {
-            qsubDir.mkdirs();
-            if (!qsubDir.exists())
-            {
-                System.err.println("MSIBackplanesGenerator.java: Failed to create " + qsubDir.getAbsolutePath() + ". Exiting.");
-                System.exit(0);
-            }
-        }
-        else
-        {
-            System.err.println("MSIBackplanesGenerator.java: Directory " + qsubDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(0);
-        }
+
+        createFolder(outputFolder);
+        createFolder(finishedFolder);
+        String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
+        String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
+        createFolder(qsubErr);
+        createFolder(qsubOut);
 
         // VTK and authentication
         Configuration.setAppName("neartool");
@@ -164,18 +126,37 @@ public class MSIBackplanesGenerator
 
             if (commandList.size() >= maxJobs)
             {
-                executeJobs(commandList, outputFolder, finishedFolder, qsubDir);
+                executeJobs(commandList, outputFolder, finishedFolder, qsubOut, qsubErr);
 
                 //reset for next batch of commands.
                 commandList = new ArrayList<String>();
             }
         }
 
-        executeJobs(commandList, outputFolder, finishedFolder, qsubDir);
+        executeJobs(commandList, outputFolder, finishedFolder, qsubOut, qsubErr);
 
     }
 
-    private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final File qsubDir)
+    private void createFolder(String folder)
+    {
+        File outDir = (new File(folder));
+        if (!outDir.exists())
+        {
+            outDir.mkdirs();
+            if (!outDir.exists())
+            {
+                System.err.println("MSIBackplanesGenerator.java: Failed to create " + outDir.getAbsolutePath() + ". Exiting.");
+                System.exit(0);
+            }
+        }
+        else
+        {
+            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+            System.exit(0);
+        }
+    }
+
+    private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final String qsubOut, final String qsubErr)
     {
         //submit the command list to the grid engine. the qsub is called with sync -y,
         //so all the jobs will finish before the Java program continues.
@@ -194,12 +175,13 @@ public class MSIBackplanesGenerator
 
         //Move the finished files before next batch of jobs is qsubbed.
         moveFinishedBackplanes(outputFolder, finishedFolder);
-        moveFinishedQsubLogs(outputFolder, qsubDir);
+        moveFinishedQsubLogs(outputFolder, "glob:**/*.{bash.o}*", qsubOut);
+        moveFinishedQsubLogs(outputFolder, "glob:**/*.{bash.e}*", qsubErr);
     }
 
     private void moveFinishedBackplanes(String outputFolder, final String finishedFolder)
     {
-        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{fit,xml}");  //need to add path here somewhere
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{fit,xml}");
         try
         {
             Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
@@ -234,9 +216,9 @@ public class MSIBackplanesGenerator
         }
     }
 
-    private void moveFinishedQsubLogs(String outputFolder, final File qsubDir)
+    private void moveFinishedQsubLogs(String outputFolder, String glob, final String qsubDir)
     {
-        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{bash.e,bash.o}*");  //need to add path here somewhere
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
         try
         {
             Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
@@ -247,7 +229,7 @@ public class MSIBackplanesGenerator
                     if (pathMatcher.matches(path))
                     {
                         //Move the files here.
-                        Path moveTo = Paths.get(qsubDir.getAbsolutePath(), path.getFileName().toString());
+                        Path moveTo = Paths.get(qsubDir, path.getFileName().toString());
 //                        System.err.println("qsub moving " + path.toFile().getAbsolutePath() + " to " + qsubDir.getAbsolutePath());
                         Files.move(path, moveTo, StandardCopyOption.REPLACE_EXISTING);
                     }
