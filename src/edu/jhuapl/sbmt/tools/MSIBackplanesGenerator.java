@@ -89,11 +89,11 @@ public class MSIBackplanesGenerator
         //done here, it creates the folders only on the machine that this java
         //class is called from, and qsub will error out on all other machines
         //because it can't find the folders.
+        String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
+        String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
         if (!outputFolder.toLowerCase().contains("scratch") || outputFolder.toLowerCase().startsWith("/project"))
         {
             createFolder(outputFolder);
-            String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
-            String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
             createFolder(qsubErr);
             createFolder(qsubOut);
         }
