@@ -85,10 +85,11 @@ public class MSIBackplanesGenerator
 
         //If running in the cluster disk scratch areas, this must be done either
         //in the array job itself (in BackplanesGenerator.java), or in a script
-        //that is called ahead of time (e.g. Howie's southpark*.sh script). If
+        //that is called ahead of time (e.g. southpark_createDirs.sh script). If
         //done here, it creates the folders only on the machine that this java
         //class is called from, and qsub will error out on all other machines
-        //because it can't find the folders.
+        //because it can't find the folders. Regardless, the folders must be
+        //manually deleted before rerun.
         String qsubErr = new File(outputFolder, "qsubErrorLogs").getAbsolutePath();
         String qsubOut = new File(outputFolder, "qsubOutputLogs").getAbsolutePath();
         if (!outputFolder.toLowerCase().contains("scratch") || outputFolder.toLowerCase().startsWith("/project"))
@@ -97,9 +98,19 @@ public class MSIBackplanesGenerator
             createFolder(qsubErr);
             createFolder(qsubOut);
         }
+        else if (!new File(outputFolder).exists())
+        {
+            System.err.println("MSIBackplanesGenerator.java: Failed to create " + outputFolder + ". Exiting.");
+            System.exit(0);
+        }
         if (!finishedFolder.toLowerCase().contains("scratch") || finishedFolder.toLowerCase().startsWith("/project"))
         {
             createFolder(finishedFolder);
+        }
+        else if (!new File(finishedFolder).exists())
+        {
+            System.err.println("MSIBackplanesGenerator.java: Failed to create " + finishedFolder + ". Exiting.");
+            System.exit(0);
         }
 
         // VTK and authentication
