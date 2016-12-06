@@ -56,7 +56,7 @@ public class MSIBackplanesGenerator
                 + "                           job processes one MSI image backplane.\n\n"
                 + "Example: \n"
 //        /project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes/older
-//                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
+//                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
                 + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 500\n\n";
 
         System.out.println(o);
@@ -85,6 +85,11 @@ public class MSIBackplanesGenerator
         if (!outDir.exists())
         {
             outDir.mkdirs();
+            if (!outDir.exists())
+            {
+                System.err.println("MSIBackplanesGenerator.java: Failed to create " + outDir.getAbsolutePath() + ". Exiting.");
+                System.exit(0);
+            }
         }
         else
         {
@@ -95,6 +100,11 @@ public class MSIBackplanesGenerator
         if (!moveDir.exists())
         {
             moveDir.mkdirs();
+            if (!moveDir.exists())
+            {
+                System.err.println("MSIBackplanesGenerator.java: Failed to create " + moveDir.getAbsolutePath() + ". Exiting.");
+                System.exit(0);
+            }
         }
         else
         {
@@ -105,6 +115,11 @@ public class MSIBackplanesGenerator
         if (!qsubDir.exists())
         {
             qsubDir.mkdirs();
+            if (!qsubDir.exists())
+            {
+                System.err.println("MSIBackplanesGenerator.java: Failed to create " + qsubDir.getAbsolutePath() + ". Exiting.");
+                System.exit(0);
+            }
         }
         else
         {
