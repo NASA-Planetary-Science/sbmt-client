@@ -207,7 +207,7 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             // Backplanes file name
-            String baseFilename = getBaseFilename(image, key, resolutionLevel, fmt, outputFolder);
+            String baseFilename = getBaseFilename(key, outputFolder);
             String ddrFilename = baseFilename + fmt.getExtension();
 
             // Write backplanes data to the appropriate format (FITS or IMG)
@@ -241,7 +241,7 @@ public class BackplanesGenerator
      * @param outputFolder - destination folder for output file
      * @return base name of ddr backplanes file, no extension
      */
-    public static String getBaseFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder)
+    public static String getBaseFilename(ImageKey key, String outputFolder)
     {
         //key class is initialized with base filename (i.e. no ".extension")
         String fname = new File(key.name).getName();

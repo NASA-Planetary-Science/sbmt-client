@@ -23,7 +23,6 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -299,7 +298,7 @@ public class MSIBackplanesGenerator
         {
             SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
             ImageKey key = new ImageKey(image.replace(".FIT", ""), ptg, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
-            String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolution), BackplanesFileFormat.FITS, outputFolder) + fmt.getExtension();
+            String backplanesFilename = BackplanesGenerator.getBaseFilename(key, outputFolder) + fmt.getExtension();
             File f = new File(backplanesFilename);
             if (f.exists())
             {
