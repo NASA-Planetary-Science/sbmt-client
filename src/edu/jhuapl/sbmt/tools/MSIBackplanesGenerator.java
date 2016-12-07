@@ -58,7 +58,7 @@ public class MSIBackplanesGenerator
                 + "Example: \n"
 //        /project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes/older
 //                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
-                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 500\n\n";
+                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 300\n\n";
 
         System.out.println(o);
     }
@@ -100,7 +100,7 @@ public class MSIBackplanesGenerator
         }
         else if (!new File(outputFolder).exists())
         {
-            System.err.println("MSIBackplanesGenerator.java: Failed to create " + outputFolder + ". Exiting.");
+            System.err.println("MSIBackplanesGenerator.java: " + finishedFolder + " must exist on all cluster machines. Exiting.");
             System.exit(0);
         }
         if (!finishedFolder.toLowerCase().contains("scratch") || finishedFolder.toLowerCase().startsWith("/project"))
@@ -109,7 +109,7 @@ public class MSIBackplanesGenerator
         }
         else if (!new File(finishedFolder).exists())
         {
-            System.err.println("MSIBackplanesGenerator.java: Failed to create " + finishedFolder + ". Exiting.");
+            System.err.println("MSIBackplanesGenerator.java: " + finishedFolder + " must exist on all cluster machines. Exiting.");
             System.exit(0);
         }
 
@@ -140,7 +140,7 @@ public class MSIBackplanesGenerator
         {
             //Before adding the command to generate the backplanes, check to see if a backplanes
             //file already exists. If yes, do not regenerate.
-//            if (!backplanesFileExists(image, finishedFolder))
+            if (!backplanesFileExists(image, finishedFolder))
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera + " -r " + resolution + " -f -s -p " + ptg + " " + body + " %s %s", image, outputFolder);
@@ -173,11 +173,12 @@ public class MSIBackplanesGenerator
                 System.exit(0);
             }
         }
-        else
-        {
-            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-            System.exit(0);
-        }
+        //Comment this out if checking whether backplanes file already exists.
+//        else
+//        {
+//            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+//            System.exit(0);
+//        }
     }
 
     private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final String qsubOut, final String qsubErr)
