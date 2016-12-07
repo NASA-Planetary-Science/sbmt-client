@@ -146,7 +146,7 @@ public class MSIBackplanesGenerator
             //file already exists. If yes, do not regenerate. This takes some time to process.
             //If this "if" statement is commented, must add check in createFolder() to exit if
             //output folder already exists.
-            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
+//            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
