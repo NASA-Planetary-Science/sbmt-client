@@ -25,6 +25,7 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.util.BackplanesFileFormat;
 
@@ -126,9 +127,13 @@ public class MSIBackplanesGenerator
 
         //Set up the configuration for MSI GASKELL resolution 3
         String resolution = "3";
-        String camera = Instrument.MSI.name();
-        String ptg = ImageSource.GASKELL.name();
-        String body = ShapeModelBody.EROS.name();
+        Instrument camera = Instrument.MSI;
+        ImageSource ptg = ImageSource.GASKELL;
+        ShapeModelAuthor author = ShapeModelAuthor.GASKELL;
+        ShapeModelBody body = ShapeModelBody.EROS;
+        BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null));
+        ImagingInstrument instr = smallBodyModel.getSmallBodyConfig().imagingInstruments[0];
 
         //Read each line in the input image list and form the command line
         //call to BackplanesGenerator using the image on that line.
@@ -138,11 +143,13 @@ public class MSIBackplanesGenerator
         for (String image : imageFiles)
         {
             //Before adding the command to generate the backplanes, check to see if a backplanes
-            //file already exists. If yes, do not regenerate.
-            if (!backplanesFileExists(image, finishedFolder))
+            //file already exists. If yes, do not regenerate. This takes some time to process.
+            //If this "if" statement is commented, must add check in createFolder() to exit if
+            //output folder already exists.
+            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
             {
                 //Generate the backplanes for this image
-                String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera + " -r " + resolution + " -f -s -p " + ptg + " " + body + " %s %s", image, outputFolder);
+                String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
 //                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
                 commandList.add(command);
             }
@@ -288,16 +295,11 @@ public class MSIBackplanesGenerator
      * @param outputFolder - folder to which the backplanes are written
      * @return true if a backplanes file is already in the output folder
      */
-    private boolean backplanesFileExists(String image, String outputFolder)
+    private boolean backplanesFileExists(String image, String outputFolder, BackplanesFileFormat fmt, ImageSource ptg, ImagingInstrument instr)
     {
-        BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
-        String resolution = "3";
-        ImageSource ptg = ImageSource.GASKELL;
-
         try
         {
-            SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL, null));
-            ImageKey key = new ImageKey(image.replace(".FIT", ""), ptg, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
+            ImageKey key = new ImageKey(image.replace(".FIT", ""), ptg, instr);
             String backplanesFilename = BackplanesGenerator.getBaseFilename(key, outputFolder) + fmt.getExtension();
             File f = new File(backplanesFilename);
             if (f.exists())
