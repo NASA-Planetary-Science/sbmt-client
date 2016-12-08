@@ -171,18 +171,10 @@ public class MSIBackplanesGenerator
         {
             if (!(image.trim().startsWith("#")) && image.trim().length() > 0)
             {
-                //Before adding the command to generate the backplanes, check to see if a backplanes
-                //file already exists. If yes, do not regenerate. If this "if" statement is commented,
-                //must add check in createFolder() to exit if output folder already exists.
-                //This cannot exist here. Once the finishedFolder gets big, the process will hang
-                //trying to find if a file exists.
-    //            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
-                {
-                    //Generate the backplanes for this image
-                    String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
-                    System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
-                    commandList.add(command);
-                }
+                //Generate the backplanes for this image
+                String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
+                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
+                commandList.add(command);
 
                 if (commandList.size() >= maxJobs)
                 {
@@ -195,7 +187,6 @@ public class MSIBackplanesGenerator
         }
 
         executeJobs(commandList, outputFolder, finishedFolder, qsubOut, qsubErr);
-
     }
 
     private void createFolder(String folder)
@@ -210,12 +201,11 @@ public class MSIBackplanesGenerator
                 System.exit(0);
             }
         }
-        //Comment this out if checking whether backplanes file already exists.
-//        else
-//        {
-//            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
-//            System.exit(0);
-//        }
+        else if (!overwrite)
+        {
+            System.err.println("MSIBackplanesGenerator.java: Directory " + outDir.getAbsolutePath() + " exists. Delete or rename then rerun program. Exiting.");
+            System.exit(0);
+        }
     }
 
     private void executeJobs(ArrayList<String> commandList, String outputFolder, final String finishedFolder, final String qsubOut, final String qsubErr)
