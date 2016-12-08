@@ -230,17 +230,24 @@ public class MSIBackplanesGenerator
 //        System.err.println("MSIBackplanesGenerator.java, back from BatchSubmit");
 
         //Move the finished files before next batch of jobs is qsubbed.
-        moveFinishedBackplanes(outputFolder, finishedFolder);
-        moveFinishedQsubLogs(outputFolder, "glob:**/*.{bash.o}*", qsubOut);
-        moveFinishedQsubLogs(outputFolder, "glob:**/*.{bash.e}*", qsubErr);
+        moveFinishedFiles(outputFolder, "glob:**/*.{fit,xml}", finishedFolder);
+        moveFinishedFiles(outputFolder, "glob:**/*.{bash.o}*", qsubOut);
+        moveFinishedFiles(outputFolder, "glob:**/*.{bash.e}*", qsubErr);
     }
 
-    private void moveFinishedBackplanes(final String outputFolder, final String finishedFolder)
+    /**
+     * Move files matching glob pattern from fromFolder to toFolder, NOT traversing subdirectories.
+     *
+     * @param fromFolder
+     * @param glob
+     * @param toFolder
+     */
+    private void moveFinishedFiles(final String fromFolder, String glob, final String toFolder)
     {
-        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{fit,xml}");
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
         try
         {
-            Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
+            Files.walkFileTree(Paths.get(fromFolder), new SimpleFileVisitor<Path>()
             {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
@@ -251,20 +258,21 @@ public class MSIBackplanesGenerator
 //                        System.err.println("MSIBackplanesGenerator.java, path to found file is " + path);
 //                        System.err.println("MSIBackplanesGenerator.java, path to parent of found file is " + path.getParent().toString());
 //                        System.err.println("MSIBackplanesGenerator.java, name of found file is " + path.getFileName().toString());
-                        Path moveTo = Paths.get(finishedFolder, path.getFileName().toString());
+                        Path moveTo = Paths.get(toFolder, path.getFileName().toString());
 //                        System.err.println("MSIBackplanesGenerator.java, moving to " + moveTo.toFile().getAbsolutePath());
                         Files.move(path, moveTo, StandardCopyOption.REPLACE_EXISTING);
                     }
                     return FileVisitResult.CONTINUE;
                 }
 
-                //Need this to prevent it from traversing beyond outputFolder (without this, if finishedFolder
-                //is  subdirectory of outputFolder, then it will find all matching files in both outputFolder
-                //AND finishedFolder, and move them to finishedFolder.
+                //Need this to prevent it from traversing beyond fromFolder (without this, if toFolder
+                //is  subdirectory of fromFolder, then it will find all matching files in both fromFolder
+                //AND toFolder, and move them to toFolder. We don't want to move files in toFolder back
+                //to itself.
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
                 {
-                    if (!Files.isSameFile(dir, Paths.get(new File(outputFolder).getAbsolutePath())))
+                    if (!Files.isSameFile(dir, Paths.get(new File(fromFolder).getAbsolutePath())))
                     {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
@@ -275,40 +283,6 @@ public class MSIBackplanesGenerator
         catch (IOException e)
         {
             System.err.println("Backplanes move error in MSIBackplanesGenerator.java:");
-            e.printStackTrace();
-        }
-    }
-
-    private void moveFinishedQsubLogs(String outputFolder, String glob, final String qsubDir)
-    {
-        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
-        try
-        {
-            Files.walkFileTree(Paths.get(outputFolder), new SimpleFileVisitor<Path>()
-            {
-                @Override
-                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
-                {
-                    if (pathMatcher.matches(path))
-                    {
-                        //Move the files here.
-                        Path moveTo = Paths.get(qsubDir, path.getFileName().toString());
-//                        System.err.println("qsub moving " + path.toFile().getAbsolutePath() + " to " + qsubDir.getAbsolutePath());
-                        Files.move(path, moveTo, StandardCopyOption.REPLACE_EXISTING);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
-                {
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-        catch (IOException e)
-        {
-            System.err.println("qsubLog move error in MSIBackplanesGenerator.java:");
             e.printStackTrace();
         }
     }
