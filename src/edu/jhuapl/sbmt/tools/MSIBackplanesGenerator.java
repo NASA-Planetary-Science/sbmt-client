@@ -40,12 +40,13 @@ import altwg.util.BatchType;
  */
 public class MSIBackplanesGenerator
 {
+    boolean overwrite = false;
     public void printUsage()
     {
         String o = "This program generates blackplanes for a list of MSI image files using the"
                 + "Eros V1 shape model at highest resolution and with GASKELL pointing. It also"
                 + "generates PDS version 4 labels for each backplanes file.\n"
-                + "Usage: MSIBackplanesGenerator <root-dir> <image-list> <output-folder> <finish-folder> [<maxArrayJobs>]\n\n"
+                + "Usage: MSIBackplanesGenerator [options] <root-dir> <image-list> <output-folder> <finish-folder>\n\n"
                 + "Where:\n"
                 + "  <root-dir>               Path to the scripts that run the SBMT standalone java tools.\n"
                 + "  <image-list>             Path to file listing the images to use. Images are\n"
@@ -53,35 +54,61 @@ public class MSIBackplanesGenerator
                 + "                           (e.g. /MSI/2000/116/cifdbl/M0132067419F1_2P_CIF_DBL)\n"
                 + "  <output-folder>          Path to folder in which to place generated backplanes.\n"
                 + "  <finish-folder>          Path to folder to which to move finished backplanes.\n"
-                + "  <maxArrayJobs>           Optional maximum number of jobs per qsub call. Each \n"
-                + "                           job processes one MSI image backplane.\n\n"
+                + "Optional:\n"
+                + "  <-m maxArraySize>        Maximum number of backplanes to process in the array job.\n"
+                + "                           This number should be set to output folder write limits.\n"
+                + "  <-o>                     Overwrite existing files. This is used if a restart is \n"
+                + "                           neccessary and the image-list has been updated to contain\n"
+                + "                           only incomplete backplanes.\n"
                 + "Example: \n"
+                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh -m 300 /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older\n\n";
 //        /project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes/older
 //                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
-                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 300\n\n";
-
+//                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 300\n\n";
+///project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt.todo /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 100
         System.out.println(o);
     }
 
     private void doMain(String[] args) throws IOException
     {
-        int numberRequiredArgs = 4;
-        if (args.length < numberRequiredArgs)
+        int maxJobs = 100;
+        int i;
+        for (i = 0; i < args.length; ++i)
         {
+            if (args[i].equals("-o"))
+            {
+                overwrite = true;
+            }
+            else if (args[i].equals("-m"))
+            {
+                maxJobs = Integer.valueOf(args[++i]);
+            }
+            else
+            {
+                // We've encountered something that is not an option, must be at the args
+                break;
+            }
+        }
+
+        // There must be numRequiredArgs arguments remaining after the options.
+        // Otherwise abort.
+        int numberRequiredArgs = 4;
+        if (args.length - i != numberRequiredArgs)
+        {
+            String argStr = new String();
+            for (String s : args)
+            {
+                argStr = argStr + " " + s;
+            }
             System.out.println("MSIBackplanes: incorrect number of arguments.\n");
             printUsage();
             System.exit(0);
         }
 
-        int maxJobs = 100;
-        String rootDir = args[0];
-        String imageFileList = args[1];
-        String outputFolder = args[2];
-        String finishedFolder = args[3];
-        if (args.length > 4)
-        {
-            maxJobs = Integer.valueOf(args[4]);
-        }
+        String rootDir = args[i++];
+        String imageFileList = args[i++];
+        String outputFolder = args[i++];
+        String finishedFolder = args[i++];
 
         //If running in the cluster disk scratch areas, this must be done either
         //in the array job itself (in BackplanesGenerator.java), or in a script
@@ -142,24 +169,28 @@ public class MSIBackplanesGenerator
 
         for (String image : imageFiles)
         {
-            //Before adding the command to generate the backplanes, check to see if a backplanes
-            //file already exists. If yes, do not regenerate. This takes some time to process.
-            //If this "if" statement is commented, must add check in createFolder() to exit if
-            //output folder already exists.
-//            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
+            if (!(image.trim().startsWith("#")) && image.trim().length() > 0)
             {
-                //Generate the backplanes for this image
-                String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
-//                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
-                commandList.add(command);
-            }
+                //Before adding the command to generate the backplanes, check to see if a backplanes
+                //file already exists. If yes, do not regenerate. If this "if" statement is commented,
+                //must add check in createFolder() to exit if output folder already exists.
+                //This cannot exist here. Once the finishedFolder gets big, the process will hang
+                //trying to find if a file exists.
+    //            if (!backplanesFileExists(image, finishedFolder, fmt, ptg, instr))
+                {
+                    //Generate the backplanes for this image
+                    String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
+                    System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
+                    commandList.add(command);
+                }
 
-            if (commandList.size() >= maxJobs)
-            {
-                executeJobs(commandList, outputFolder, finishedFolder, qsubOut, qsubErr);
+                if (commandList.size() >= maxJobs)
+                {
+                    executeJobs(commandList, outputFolder, finishedFolder, qsubOut, qsubErr);
 
-                //reset for next batch of commands.
-                commandList = new ArrayList<String>();
+                    //reset for next batch of commands.
+                    commandList = new ArrayList<String>();
+                }
             }
         }
 
@@ -214,7 +245,7 @@ public class MSIBackplanesGenerator
         moveFinishedQsubLogs(outputFolder, "glob:**/*.{bash.e}*", qsubErr);
     }
 
-    private void moveFinishedBackplanes(String outputFolder, final String finishedFolder)
+    private void moveFinishedBackplanes(final String outputFolder, final String finishedFolder)
     {
         final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{fit,xml}");
         try
@@ -237,9 +268,16 @@ public class MSIBackplanesGenerator
                     return FileVisitResult.CONTINUE;
                 }
 
+                //Need this to prevent it from traversing beyond outputFolder (without this, if finishedFolder
+                //is  subdirectory of outputFolder, then it will find all matching files in both outputFolder
+                //AND finishedFolder, and move them to finishedFolder.
                 @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
                 {
+                    if (!Files.isSameFile(dir, Paths.get(new File(outputFolder).getAbsolutePath())))
+                    {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             });
