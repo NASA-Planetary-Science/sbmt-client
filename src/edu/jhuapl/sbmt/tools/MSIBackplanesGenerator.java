@@ -173,7 +173,7 @@ public class MSIBackplanesGenerator
             {
                 //Generate the backplanes for this image
                 String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
-                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
+//                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
                 commandList.add(command);
 
                 if (commandList.size() >= maxJobs)
