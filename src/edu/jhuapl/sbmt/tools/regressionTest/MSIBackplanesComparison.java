@@ -171,7 +171,7 @@ public class MSIBackplanesComparison
         (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.instrumentName, outputFolder, smallBodyModel, fmt, pointing);
 
         //Return the fits backplanes file name
-        String backplanesFilename = BackplanesGenerator.getBaseFilename(new MSIImage(key, smallBodyModel, false), key, Integer.valueOf(resolutionLevel), fmt, outputFolder) + fmt.getExtension();
+        String backplanesFilename = BackplanesGenerator.getBaseFilename(key, outputFolder) + fmt.getExtension();
         return backplanesFilename;
     }
 
