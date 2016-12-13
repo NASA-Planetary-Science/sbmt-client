@@ -14,9 +14,9 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.miginfocom.swing.MigLayout;
-
 import edu.jhuapl.near.model.SmallBodyModel;
+
+import net.miginfocom.swing.MigLayout;
 
 public class ScaleDataRangeDialog extends JDialog implements ActionListener
 {

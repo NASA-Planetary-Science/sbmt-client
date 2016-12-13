@@ -1,5 +1,6 @@
 package edu.jhuapl.near.model;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,22 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 import vtk.vtkAbstractPointLocator;
 import vtk.vtkActor;
 import vtk.vtkActor2D;
 import vtk.vtkCell;
 import vtk.vtkCellArray;
 import vtk.vtkCellData;
-import vtk.vtkCoordinate;
 import vtk.vtkDataArray;
 import vtk.vtkFloatArray;
 import vtk.vtkGenericCell;
 import vtk.vtkIdList;
-import vtk.vtkLookupTable;
 import vtk.vtkMassProperties;
 import vtk.vtkPointLocator;
 import vtk.vtkPoints;
@@ -37,13 +32,14 @@ import vtk.vtkPolyDataMapper2D;
 import vtk.vtkPolyDataNormals;
 import vtk.vtkProp;
 import vtk.vtkProperty;
-import vtk.vtkScalarBarActor;
+//import vtk.vtkScalarBarActor;
 import vtk.vtkTextActor;
-import vtk.vtkTextProperty;
 import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
+import edu.jhuapl.near.color.Colormap;
+import edu.jhuapl.near.color.Colormaps;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -58,7 +54,11 @@ import edu.jhuapl.near.util.Properties;
 import edu.jhuapl.near.util.SbmtLODActor;
 import edu.jhuapl.near.util.SmallBodyCubes;
 
-public class SmallBodyModel extends Model
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+
+public class SmallBodyModel extends Model //implements PropertyChangeListener
 {
     public static final String LIST_SEPARATOR = ",";
     public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
@@ -165,7 +165,7 @@ public class SmallBodyModel extends Model
     private vtksbCellLocator cellLocator;
     private vtkPointLocator pointLocator;
     private vtkPointLocator lowResPointLocator;
-    private vtkScalarBarActor scalarBarActor;
+//    private vtkScalarBarActor scalarBarActor;
     private SmallBodyCubes smallBodyCubes;
     private File defaultModelFile;
     private int resolutionLevel = 0;
@@ -195,6 +195,9 @@ public class SmallBodyModel extends Model
     private boolean showScaleBar = true;
 
     private SmallBodyConfig smallBodyConfig;
+
+    private Colormap colormap=Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
+    private boolean colormapInitialized=false;
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
@@ -239,6 +242,7 @@ public class SmallBodyModel extends Model
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
+
         this.smallBodyConfig = config;
         this.modelNames = modelNames;
         this.modelFiles = modelFiles;
@@ -274,6 +278,17 @@ public class SmallBodyModel extends Model
             defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 
         initialize(defaultModelFile);
+    }
+
+    protected void initColormap()
+    {
+        if (!colormapInitialized)
+        {
+            double[] range = getCurrentColoringRange(coloringIndex);
+            colormap.setRangeMin(range[0]);
+            colormap.setRangeMax(range[1]);
+            colormapInitialized=true;
+        }
     }
 
     public void setSmallBodyPolyData(vtkPolyData polydata,
@@ -601,6 +616,26 @@ public class SmallBodyModel extends Model
             lowResPointLocator.BuildLocator();
         }
     }
+
+    public Colormap getColormap()
+    {
+        return colormap;
+    }
+
+    public void setColormap(Colormap cmap)
+    {
+        colormap=cmap;
+        try
+        {
+            paintBody();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
     public vtkPolyData getSmallBodyPolyData()
     {
@@ -1011,11 +1046,12 @@ public class SmallBodyModel extends Model
     {
         if (smallBodyActor == null)
         {
+
             smallBodyMapper = new vtkPolyDataMapper();
             smallBodyMapper.SetInputData(smallBodyPolyData);
-            vtkLookupTable lookupTable = new vtkLookupTable();
-            smallBodyMapper.SetLookupTable(lookupTable);
-            smallBodyMapper.UseLookupTableScalarRangeOn();
+            //vtkLookupTable lookupTable = new vtkLookupTable();
+            //vtkLookupTable lookupTable=BuiltInColormaps.getDefaultColormap().getLookupTable();
+//            smallBodyMapper.UseLookupTableScalarRangeOn();
 
             //smallBodyActor = new vtkActor();
             smallBodyActor = new SbmtLODActor();
@@ -1023,7 +1059,6 @@ public class SmallBodyModel extends Model
 
             vtkPolyDataMapper decimatedMapper =
                     ((SbmtLODActor)smallBodyActor).addQuadricDecimatedLODMapper(smallBodyPolyData);
-            decimatedMapper.SetLookupTable(lookupTable);
             decimatedMapper.UseLookupTableScalarRangeOn();
             vtkProperty smallBodyProperty = smallBodyActor.GetProperty();
             smallBodyProperty.SetInterpolationToGouraud();
@@ -1032,7 +1067,7 @@ public class SmallBodyModel extends Model
 
             smallBodyActors.add(smallBodyActor);
 
-            scalarBarActor = new vtkScalarBarActor();
+  /*          scalarBarActor = new vtkScalarBarActor();
             vtkCoordinate coordinate = scalarBarActor.GetPositionCoordinate();
             coordinate.SetCoordinateSystemToNormalizedViewport();
             coordinate.SetValue(0.2, 0.01);
@@ -1042,9 +1077,15 @@ public class SmallBodyModel extends Model
             vtkTextProperty tp = new vtkTextProperty();
             tp.SetFontSize(10);
             scalarBarActor.SetTitleTextProperty(tp);
-
+*/
             setupScaleBar();
         }
+    }
+
+
+    public boolean isPlateColoringShown()
+    {
+        return coloringIndex >= 0;
     }
 
     public List<vtkProp> getProps()
@@ -1485,7 +1526,7 @@ public class SmallBodyModel extends Model
      */
     private void invertLookupTable()
     {
-        vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
+/*        vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
         vtkUnsignedCharArray table = lookupTable.GetTable();
 
         invertLookupTableCharArray(table);
@@ -1499,7 +1540,7 @@ public class SmallBodyModel extends Model
 //        }
 
         lookupTable.SetTable(table);
-        smallBodyMapper.Modified();
+        smallBodyMapper.Modified();*/
     }
 
     public void setColoringIndex(int index) throws IOException
@@ -1512,6 +1553,8 @@ public class SmallBodyModel extends Model
             paintBody();
         }
     }
+
+
 
     public int getColoringIndex()
     {
@@ -1883,6 +1926,7 @@ public class SmallBodyModel extends Model
 
     private void paintBody() throws IOException
     {
+
         initializeActorsAndMappers();
 
         loadColoringData();
@@ -1896,7 +1940,7 @@ public class SmallBodyModel extends Model
             String title = info.coloringName;
             if (!info.coloringUnits.isEmpty())
                 title += " (" + info.coloringUnits + ")";
-            scalarBarActor.SetTitle(title);
+//            scalarBarActor.SetTitle(title);
         }
         else if (useFalseColoring)
         {
@@ -1906,39 +1950,78 @@ public class SmallBodyModel extends Model
 
         if (coloringIndex < 0)
         {
-            if (smallBodyActors.contains(scalarBarActor))
-                smallBodyActors.remove(scalarBarActor);
+//            if (!smallBodyActors.contains(scalarBarActor))
+//                smallBodyActors.add(scalarBarActor);
         }
         else
         {
-            double[] range = getCurrentColoringRange(coloringIndex);
-            smallBodyMapper.GetLookupTable().SetRange(range);
-            ((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
-            this.invertLookupTable();
+
+            initColormap();
+
+//            scalarBarActor.SetLookupTable(cmap.getLookupTable());
+//            if (!smallBodyActors.contains(scalarBarActor))
+//                smallBodyActors.add(scalarBarActor);
+                //            cmap.getLookupTable().ForceBuild();
+            //((vtkLookupTable)smallBodyMapper.GetLookupTable()).ForceBuild();
+            //this.invertLookupTable();
+
 
             ColoringInfo info = coloringInfo.get(coloringIndex);
+/*            if (colormap.getLog())
+            {
+                double range1=MathUtil.log10clamped(range[0]);
+                double range2=MathUtil.log10clamped(range[1]);
+                colormap.setRangeMin(Math.min(range1, range2));
+                colormap.setRangeMax(Math.max(range1, range2));
+            }*/
+            {
+//                colormap.setRangeMin(range[0]);
+//                colormap.setRangeMax(range[1]);
+            }
+            colorData=new vtkUnsignedCharArray();
+            colorData.SetNumberOfComponents(3);
+            //double nullValue=info.coloringValues.GetRange()[0];
+            for (int i=0; i<info.coloringValues.GetNumberOfTuples(); i++)
+            {
+                double value=info.coloringValues.GetValue(i);
+                Color c;
+              //  if (value==nullValue)
+              //      c=colormap.getNanColor();
+              //  else
+/*                if (colormap.getLog())
+                    value=MathUtil.log10clamped(value);
+*/                c=colormap.getColor(value);
+                colorData.InsertNextTuple3(c.getRed(), c.getGreen(), c.getBlue());
+            }
+            array=colorData;
+
+            smallBodyMapper.SetLookupTable(colormap.getLookupTable());
 
             // If there's missing data (invalid data), we need to set the
             // color data manually rather than using the lookup table of
             // the mapper
-            if (info.coloringHasNulls)
+            //if (info.coloringHasNulls)
             {
-                vtkLookupTable lookupTable = (vtkLookupTable)smallBodyMapper.GetLookupTable();
-                mapScalarsThroughLookupTable(info.coloringValues, lookupTable, colorData);
-                array = colorData;
+                //mapScalarsThroughLookupTable(info.coloringValues, cmap.getLookupTable(), colorData);
+       //         mapScalars(info.coloringValues,colorData);
+               // array = colorData;
+
             }
 
-            if (!smallBodyActors.contains(scalarBarActor))
-                smallBodyActors.add(scalarBarActor);
+            //if (!smallBodyActors.contains(scalarBarActor))
+            //    smallBodyActors.add(scalarBarActor);
 
-            scalarBarActor.SetLookupTable(smallBodyMapper.GetLookupTable());
+
+            //            smallBodyMapper.SetLookupTable(cmap.getLookupTable());
+//            scalarBarActor.SetLookupTable(cmap.getLookupTable());//smallBodyMapper.GetLookupTable());
+//            smallBodyMapper.Modified();
+
         }
 
         if (coloringValueType == ColoringValueType.POINT_DATA)
             this.smallBodyPolyData.GetPointData().SetScalars(array);
         else
             this.smallBodyPolyData.GetCellData().SetScalars(array);
-
 
         if (coloringIndex < 0 && useFalseColoring == false)
         {
@@ -1954,13 +2037,16 @@ public class SmallBodyModel extends Model
                 smallBodyMapper.SetScalarModeToUseCellData();
         }
 
-
-        this.smallBodyPolyData.Modified();
+        smallBodyPolyData.Modified();
+        smallBodyMapper.Modified();
+//        scalarBarActor.SetLookupTable(cmap.getLookupTable());
+//        scalarBarActor.Modified();
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
     }
 
-    private void mapScalarsThroughLookupTable(vtkDataArray scalarData,
+
+/*    private void mapScalarsThroughLookupTable(vtkDataArray scalarData,
             vtkLookupTable lookupTable,
             vtkUnsignedCharArray colorArray)
     {
@@ -1968,6 +2054,7 @@ public class SmallBodyModel extends Model
         int numberValues = scalarData.GetNumberOfTuples();
         colorArray.SetNumberOfComponents(3);
         colorArray.SetNumberOfTuples(numberValues);
+
         double[] rgb = new double[3];
         for (int i=0; i<numberValues; ++i)
         {
@@ -1980,10 +2067,34 @@ public class SmallBodyModel extends Model
             else
             {
                 // Map null values to white
-                colorArray.SetTuple3(i, 255.0, 255.0, 255.0);
+                //colorArray.SetTuple3(i, 255.0, 255.0, 255.0);
+                double[] nanColor=cmap.getLookupTable().GetNanColor();
+                colorArray.SetTuple3(i, nanColor[0], nanColor[1], nanColor[2]);
             }
         }
     }
+*/
+/*    public void mapScalars(vtkDataArray scalarData, vtkUnsignedCharArray colorArray)
+    {
+        int numberValues = scalarData.GetNumberOfTuples();
+        colorArray.SetNumberOfComponents(3);
+        colorArray.SetNumberOfTuples(numberValues);
+        double nullValue = scalarData.GetRange()[0];
+        for (int i=0; i<numberValues; i++)
+        {
+            double v=scalarData.GetTuple1(i);
+            if (v==nullValue)
+            {
+                Color c=cmap.getNanColor();
+                colorArray.SetTuple3(i, c.getRed(), c.getGreen(), c.getBlue());
+            }
+            else
+            {
+                Color c=cmap.getColor(v);
+                colorArray.SetTuple3(i, c.getRed(), c.getGreen(), c.getBlue());
+            }
+        }
+    }*/
 
     public void setOpacity(double opacity)
     {
@@ -2645,4 +2756,14 @@ public class SmallBodyModel extends Model
     {
         return lidarDatasourceInfo;
     }
+
+/*    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        smallBodyActor.GetMapper().SetLookupTable(cmap.getLookupTable());
+        scalarBarActor.SetLookupTable(cmap.getLookupTable());
+        smallBodyActor.Modified();
+        scalarBarActor.Modified();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+    }*/
 }

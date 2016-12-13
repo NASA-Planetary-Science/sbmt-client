@@ -45,11 +45,13 @@ import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
+import edu.jhuapl.near.color.Colorbar;
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
 import edu.jhuapl.near.model.Model;
 import edu.jhuapl.near.model.ModelManager;
+import edu.jhuapl.near.model.SmallBodyModel;
 import edu.jhuapl.near.util.LatLon;
 import edu.jhuapl.near.util.MathUtil;
 import edu.jhuapl.near.util.Preferences;
@@ -125,6 +127,10 @@ public class Renderer extends JPanel implements
     private StereoMode mode=StereoMode.NONE;
 
     private StatusBar statusBar=null;
+
+    private Colorbar smallBodyColorbar;
+//    BuiltInColormapChooser chooser=Colormaps.getNewChooser();
+
 
     void initOrientationAxes()
     {
@@ -383,13 +389,54 @@ public class Renderer extends JPanel implements
         this.statusBar=statusBar;
     }
 
+/*    public void showColorbarChooser(int x, int y)
+    {
+        chooser.setLocation(x, y);
+        chooser.setVisible(true);
+    }*/
+
     public Renderer(final ModelManager modelManager)
     {
 
         setLayout(new BorderLayout());
 
+
+
         mainCanvas = new vtksbmtJoglCanvas();
         mainCanvas.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
+
+        smallBodyColorbar=new Colorbar(this);
+        smallBodyColorbar.setColormap(modelManager.getSmallBodyModel().getColormap());
+
+/*        chooser.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (e.getSource() instanceof LogScaleToggleItem)
+                {
+                    boolean log=smallBodyColorbar.getColormap().getLog();
+                    smallBodyColorbar.getColormap().setLog(!log);
+                    modelManager.getSmallBodyModel().setColormap(smallBodyColorbar.getColormap());
+                }
+                else if (e.getSource() instanceof ColormapMenuItem)
+                {
+                    String cname=((ColormapMenuItem)e.getSource()).getName();
+                    if (cname==null)
+                        return;
+                    Colormap c=Colormaps.getNewInstanceOfBuiltInColormap(cname);
+                    c.setRangeMin(smallBodyColorbar.getColormap().getRangeMin());
+                    c.setRangeMax(smallBodyColorbar.getColormap().getRangeMax());
+                    c.setLog(smallBodyColorbar.getColormap().getLog());
+                    c.setNumberOfLevels(smallBodyColorbar.getColormap().getNumberOfLevels());
+                    smallBodyColorbar.setColormap(c);
+                    modelManager.getSmallBodyModel().setColormap(c);
+                }
+            }
+        });
+
+        this.addKeyListener(chooser);*/
 
         this.modelManager = modelManager;
 
@@ -491,6 +538,7 @@ public class Renderer extends JPanel implements
             }
         }
         //
+
 
         if (renderWindow.getRenderWindow().GetNeverRendered() > 0)
             return;
@@ -1037,6 +1085,19 @@ public class Renderer extends JPanel implements
         if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
         {
             this.setProps(modelManager.getProps());
+
+            SmallBodyModel sbModel=modelManager.getSmallBodyModel();
+            if (sbModel.isPlateColoringShown())
+            {
+                if (!smallBodyColorbar.isVisible())
+                    smallBodyColorbar.setVisible(true);
+                smallBodyColorbar.setColormap(sbModel.getColormap());
+                smallBodyColorbar.setTitle(sbModel.getColoringName(sbModel.getColoringIndex()));
+                if (mainCanvas.getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
+                    mainCanvas.getRenderer().AddActor(smallBodyColorbar.getActor());
+            }
+            else
+                smallBodyColorbar.setVisible(false);
         }
         else
         {

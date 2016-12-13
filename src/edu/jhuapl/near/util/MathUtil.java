@@ -11,6 +11,17 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
  */
 public class MathUtil
 {
+
+    public static double log10clamped(double value)
+    {
+        if (value<0)
+            value=-value;
+        if (value==0)
+            value=Double.MIN_VALUE;
+        value=Math.log10(value);
+        return value;
+    }
+
     /**
      * Convert lat lon to cartesian coordinates.
      * @param latLon

@@ -1,6 +1,8 @@
 package edu.jhuapl.near.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -8,24 +10,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -36,9 +45,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import net.miginfocom.swing.MigLayout;
-import nom.tam.fits.FitsException;
+import com.jidesoft.swing.RangeSlider;
 
+import edu.jhuapl.near.color.Colormap;
+import edu.jhuapl.near.color.Colormaps;
 import edu.jhuapl.near.model.CylindricalImage;
 import edu.jhuapl.near.model.Graticule;
 import edu.jhuapl.near.model.Image.ImageKey;
@@ -52,6 +62,9 @@ import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.PolyDataUtil2;
 import edu.jhuapl.near.util.PolyDataUtil2.PolyDataStatistics;
+
+import net.miginfocom.swing.MigLayout;
+import nom.tam.fits.FitsException;
 
 public class SmallBodyControlPanel extends JPanel implements ItemListener, ChangeListener
 {
@@ -75,12 +88,16 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     private JCheckBox imageMapCheckBox;
     private JLabel opacityLabel;
     private JSpinner imageMapOpacitySpinner;
-    private JButton scaleColoringButton;
     private JButton saveColoringButton;
     private JButton customizeColoringButton;
     private JEditorPane statisticsLabel;
     private JScrollPane scrollPane;
     private JButton additionalStatisticsButton;
+
+    private JComboBox colormapComboBox=new JComboBox<>();
+//    private JButton scaleColoringButton;
+    private RangeSlider colormapRangeSlider=new RangeSlider(RangeSlider.HORIZONTAL);
+    private JCheckBox logScaleCheckbox=new JCheckBox("Log scale");
 
     private static final String NO_COLORING = "None";
     private static final String STANDARD_COLORING = "Standard";
@@ -165,7 +182,65 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         rgbColoringButton.addItemListener(this);
         rgbColoringButton.setEnabled(smallBodyModel.getNumberOfColors() > 0);
 
-        scaleColoringButton = new JButton("Rescale Data Range...");
+        colormapComboBox.setRenderer(new ColormapComboBoxRenderer());
+        for (String str : Colormaps.getAllBuiltInColormapNames())
+        {
+            Colormap cmap=Colormaps.getNewInstanceOfBuiltInColormap(str);
+            colormapComboBox.addItem(cmap);
+            if (cmap.getName().equals(Colormaps.getDefaultColormapName()))
+                colormapComboBox.setSelectedItem(cmap);
+        }
+        colormapComboBox.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String name=((Colormap)colormapComboBox.getSelectedItem()).getName();
+                Colormap cmap=Colormaps.getNewInstanceOfBuiltInColormap(name);
+                cmap.setLog(logScaleCheckbox.isSelected());
+                int min=colormapRangeSlider.getMinimum();
+                int max=colormapRangeSlider.getMaximum();
+                double[] range=smallBodyModel.getCurrentColoringRange(smallBodyModel.getColoringIndex());
+                double lowVal=(double)(colormapRangeSlider.getLowValue()-min)/(double)(max-min)*(range[1]-range[0])+range[0];
+                double highVal=(double)(colormapRangeSlider.getHighValue()-min)/(double)(max-min)*(range[1]-range[0])+range[0];
+                cmap.setRangeMin(lowVal);
+                cmap.setRangeMax(highVal);
+                smallBodyModel.setColormap(cmap);
+            }
+        });
+        logScaleCheckbox.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boolean isSelected=((JCheckBox)e.getSource()).isSelected();
+                smallBodyModel.getColormap().setLog(isSelected);
+                smallBodyModel.setColormap(smallBodyModel.getColormap());   // this forces a repaint of the body
+            }
+        });
+        colormapRangeSlider.addPropertyChangeListener(new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                if (smallBodyModel.getColoringIndex()<0)
+                    return;
+                int min=colormapRangeSlider.getMinimum();
+                int max=colormapRangeSlider.getMaximum();
+                double[] range=smallBodyModel.getCurrentColoringRange(smallBodyModel.getColoringIndex());
+                double lowVal=(double)(colormapRangeSlider.getLowValue()-min)/(double)(max-min)*(range[1]-range[0])+range[0];
+                double highVal=(double)(colormapRangeSlider.getHighValue()-min)/(double)(max-min)*(range[1]-range[0])+range[0];
+                smallBodyModel.getColormap().setRangeMin(lowVal);
+                smallBodyModel.getColormap().setRangeMax(highVal);
+                smallBodyModel.setColormap(smallBodyModel.getColormap());   // this forces a repaint of the body
+            }
+        });
+        colormapRangeSlider.setLowValue(colormapRangeSlider.getMinimum());
+        colormapRangeSlider.setHighValue(colormapRangeSlider.getMaximum());
+
+/*        scaleColoringButton = new JButton("Rescale Data Range...");
         scaleColoringButton.setEnabled(false);
         scaleColoringButton.addActionListener(new ActionListener()
         {
@@ -175,7 +250,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
                 scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
                 scaleDataDialog.setVisible(true);
             }
-        });
+        });*/
 
         customColorRedLabel = new JLabel("Red: ");
         customColorGreenLabel = new JLabel("Green: ");
@@ -211,6 +286,8 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         coloringButtonGroup.add(standardColoringButton);
         coloringButtonGroup.add(rgbColoringButton);
         coloringButtonGroup.setSelected(noColoringButton.getModel(), true);
+
+
 
         setStatisticsLabel();
         updateColoringComboBoxes();
@@ -269,7 +346,13 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
             panel.add(noColoringButton, "wrap, gapleft 25");
             panel.add(standardColoringButton, "split 2, gapleft 25");
             panel.add(coloringComboBox, "width 200!, wrap");
-            panel.add(scaleColoringButton, "wrap, gapleft 75");
+            panel.add(colormapComboBox, "wrap, gapleft 75");
+//            panel.add(scaleColoringButton, "wrap, gapleft 75");
+            JPanel colorRangePanel=new JPanel();
+            colorRangePanel.add(new JLabel("Color range"));
+            colorRangePanel.add(colormapRangeSlider);
+            panel.add(colorRangePanel, "wrap, gapleft 75");
+            panel.add(logScaleCheckbox, "wrap, gapleft 75");
             if (Configuration.isAPLVersion())
             {
                 panel.add(rgbColoringButton, "wrap, gapleft 25");
@@ -304,6 +387,61 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         scrollPane.setViewportView(panel);
 
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+/*    protected class ColormapSelectableItem extends JLabel
+    {
+        private final int cmapW=60;
+        private final int cmapH=30;
+
+        public ColormapSelectableItem(Colormap cmap)
+        {
+            this.setIcon(createIcon(cmap));
+            this.setText(cmap.getName());
+        }
+    }*/
+
+    protected class ColormapComboBoxRenderer extends JLabel implements ListCellRenderer
+    {
+
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus)
+        {
+            if (isSelected)
+            {
+                setBackground(Color.DARK_GRAY);
+                setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+            }
+            else
+            {
+                setBackground(list.getBackground());
+                setBorder(null);
+            }
+
+            setIcon(createIcon((Colormap)value));
+            setText(((Colormap)value).getName());
+            return this;
+        }
+
+    }
+
+
+    private static ImageIcon createIcon(Colormap cmap)
+    {
+        int w=100;
+        int h=30;
+        cmap.setRangeMin(0);
+        cmap.setRangeMax(1);
+        BufferedImage image=new BufferedImage(w, h, java.awt.color.ColorSpace.TYPE_RGB);
+        for (int i=0; i<w; i++)
+        {
+            double val=(double)i/(double)(image.getWidth()-1);
+            for (int j=0; j<h; j++)
+                image.setRGB(i, j, cmap.getColor(val).getRGB());
+        }
+        return new ImageIcon(image);
     }
 
     public void itemStateChanged(ItemEvent e)
@@ -386,6 +524,7 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
         {
             updateColoringControls();
             setColoring();
+
         }
         else if (e.getItemSelectable() == this.rgbColoringButton)
         {
@@ -414,7 +553,11 @@ public class SmallBodyControlPanel extends JPanel implements ItemListener, Chang
     {
         boolean selected = standardColoringButton.isSelected();
         coloringComboBox.setEnabled(selected);
-        scaleColoringButton.setEnabled(selected);
+//        scaleColoringButton.setEnabled(selected);
+        colormapRangeSlider.setEnabled(selected);
+        colormapComboBox.setEnabled(selected);
+        logScaleCheckbox.setEnabled(selected);
+        //
         selected = rgbColoringButton.isSelected();
         customColorRedComboBox.setEnabled(selected);
         customColorGreenComboBox.setEnabled(selected);
