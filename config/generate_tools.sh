@@ -26,7 +26,6 @@ CLASSPATH='$SBMTROOT/lib/near.jar'
 #    CLASSPATH="$CLASSPATH:\$SBMTROOT/lib/$JAR"
 #done
 CLASSPATH="$CLASSPATH:\$SBMTROOT/lib/*.jar"
-echo "class path is ${CLASSPATH}"
 
 for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     JAVA_TOOL=`basename $JAVA_TOOL .java`
