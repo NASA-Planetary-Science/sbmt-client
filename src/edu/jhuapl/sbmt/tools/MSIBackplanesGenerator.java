@@ -62,10 +62,6 @@ public class MSIBackplanesGenerator
                 + "                           only incomplete backplanes.\n"
                 + "Example: \n"
                 + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh -m 300 /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older\n\n";
-//        /project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt.small /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes /project/sbmtpipeline/processed/msiBatchSubmit/MSIBackplanes/older
-//                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh $SBMTROOT/bin msiImageList.txt /disk1/scratch/nguyel1/MSIBackplanes /disk1/scratch/nguyel1/MSIBackplanes/older 500\n\n";
-//                + "/project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 300\n\n";
-///project/sbmtpipeline/sbmt_msiBackplanes/bin/MSIBackplanesGenerator.sh /project/sbmtpipeline/sbmt_msiBackplanes/bin /project/sbmtpipeline/processed/msiBatchSubmit/msiImageList.txt.todo /project/sis/users/nguyel1/MSIBackplanes /project/sis/users/nguyel1/MSIBackplanes/older 100
         System.out.println(o);
     }
 
