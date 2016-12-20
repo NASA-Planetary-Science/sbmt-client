@@ -1,4 +1,7 @@
-package edu.jhuapl.near.color;
+package edu.jhuapl.near.colormap;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import vtk.vtkRenderWindowInteractor;
 import vtk.vtkScalarBarActor;
@@ -6,16 +9,17 @@ import vtk.vtkScalarBarWidget;
 
 import edu.jhuapl.near.gui.Renderer;
 
-public class Colorbar
+public class Colorbar implements PropertyChangeListener
 {
+    // for interaction
 	Renderer renderer;
     vtkRenderWindowInteractor interactor;
 
     vtkScalarBarWidget widget=new vtkScalarBarWidget();
 	vtkScalarBarActor actor=new vtkScalarBarActor();
-	Colormap cmap=Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
 	boolean visible=false;
 	boolean hovering=false;
+	Colormap cmap;
 
 	public Colorbar(Renderer renderer)
 	{
@@ -68,14 +72,15 @@ public class Colorbar
         this.interactor=renderer.getRenderWindowPanel().getRenderWindowInteractor();
         interactor.AddObserver("RenderEvent", this, "synchronizationKludge");
         interactor.AddObserver("MouseMoveEvent", this, "interactionKludge");
-        interactor.AddObserver("RightButtonPressEvent", this, "maybeShowPopup");
         widget.SetInteractor(interactor);
         widget.EnabledOn();
 	}
 
+
+
 	public void synchronizationKludge()
 	{
-		if (actor.GetLookupTable()!=null)
+		if (actor.GetLookupTable()!=null && cmap!=null)
 		{
 	        actor.SetLookupTable(cmap.getLookupTable());
 	        actor.GetLookupTable().SetRange(cmap.getRangeMin(), cmap.getRangeMax());
@@ -100,14 +105,6 @@ public class Colorbar
 		}
 	}
 
-	public void maybeShowPopup()
-	{
-        if (hovering)
-        {
-//        	renderer.showColorbarChooser(interactor.GetLastEventPosition()[0],interactor.GetLastEventPosition()[1]);
-        }
-	}
-
 	public void setTitle(String str)
 	{
 		widget.GetScalarBarActor().SetTitle(str);
@@ -125,8 +122,11 @@ public class Colorbar
 
 	public void setColormap(Colormap cmap)
 	{
+
 		this.cmap=cmap;
+		cmap.addPropertyChangeListener(this);
 		widget.GetScalarBarActor().SetLookupTable(cmap.getLookupTable());
+		widget.GetScalarBarActor().Modified();
 	}
 
 	public boolean isVisible()
@@ -146,14 +146,22 @@ public class Colorbar
 			widget.GetScalarBarActor().SetVisibility(0);
 			visible=false;
 		}
-
 	}
 
-	public Colormap getColormap()
+
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getPropertyName().equals(Colormap.colormapPropertyChanged))
+            widget.GetScalarBarActor().SetLookupTable(cmap.getLookupTable());
+    }
+
+
+	/*public void refresh()
 	{
-		return cmap;
-	}
-
-
+	    this.setVisible(!visible);
+	    this.setVisible(!visible);
+	}*/
 
 }

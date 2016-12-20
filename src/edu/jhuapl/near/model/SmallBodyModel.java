@@ -1,6 +1,8 @@
 package edu.jhuapl.near.model;
 
 import java.awt.Color;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,8 +40,7 @@ import vtk.vtkTriangle;
 import vtk.vtkUnsignedCharArray;
 import vtk.vtksbCellLocator;
 
-import edu.jhuapl.near.color.Colormap;
-import edu.jhuapl.near.color.Colormaps;
+import edu.jhuapl.near.colormap.Colormap;
 import edu.jhuapl.near.util.BoundingBox;
 import edu.jhuapl.near.util.Configuration;
 import edu.jhuapl.near.util.ConvertResourceToFile;
@@ -58,7 +59,7 @@ import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 
-public class SmallBodyModel extends Model //implements PropertyChangeListener
+public class SmallBodyModel extends Model implements PropertyChangeListener
 {
     public static final String LIST_SEPARATOR = ",";
     public static final String CELL_DATA_PATHS = "CellDataPaths"; // for backwards compatibility
@@ -196,7 +197,7 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
 
     private SmallBodyConfig smallBodyConfig;
 
-    private Colormap colormap=Colormaps.getNewInstanceOfBuiltInColormap(Colormaps.getDefaultColormapName());
+    private Colormap colormap=null;
     private boolean colormapInitialized=false;
 
     /**
@@ -282,12 +283,14 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
 
     protected void initColormap()
     {
-        if (!colormapInitialized)
+        if (!colormapInitialized && !(colormap==null))
         {
             double[] range = getCurrentColoringRange(coloringIndex);
+            colormap.removePropertyChangeListener(this);
             colormap.setRangeMin(range[0]);
             colormap.setRangeMax(range[1]);
             colormapInitialized=true;
+            colormap.addPropertyChangeListener(this);
         }
     }
 
@@ -624,7 +627,10 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
 
     public void setColormap(Colormap cmap)
     {
+        if (colormap!=null)
+            colormap.removePropertyChangeListener(this);
         colormap=cmap;
+        colormap.addPropertyChangeListener(this);
         try
         {
             paintBody();
@@ -634,6 +640,22 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getSource().equals(colormap))
+            try
+            {
+                paintBody();
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
     }
 
 
@@ -1924,7 +1946,8 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
     }
 
 
-    private void paintBody() throws IOException
+
+    public void paintBody() throws IOException
     {
 
         initializeActorsAndMappers();
@@ -1990,7 +2013,9 @@ public class SmallBodyModel extends Model //implements PropertyChangeListener
               //  else
 /*                if (colormap.getLog())
                     value=MathUtil.log10clamped(value);
-*/                c=colormap.getColor(value);
+
+*/
+                c=colormap.getColor(value);
                 colorData.InsertNextTuple3(c.getRed(), c.getGreen(), c.getBlue());
             }
             array=colorData;

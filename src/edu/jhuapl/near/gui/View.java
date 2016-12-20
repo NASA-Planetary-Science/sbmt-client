@@ -117,7 +117,7 @@ public class View extends JPanel
 
         controlPanel = new JTabbedPane();
         controlPanel.setBorder(BorderFactory.createEmptyBorder());
-        controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName()));
+        controlPanel.addTab(smallBodyConfig.getShapeModelName(), new SmallBodyControlPanel(modelManager, smallBodyConfig.getShapeModelName(), renderer.getColorbar()));
 
 
         for (ImagingInstrument instrument : smallBodyConfig.imagingInstruments)

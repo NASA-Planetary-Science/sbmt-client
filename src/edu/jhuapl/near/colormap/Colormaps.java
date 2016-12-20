@@ -1,4 +1,4 @@
-package edu.jhuapl.near.color;
+package edu.jhuapl.near.colormap;
 
 import java.awt.Color;
 import java.io.BufferedInputStream;
@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import edu.jhuapl.near.color.RgbColormap.ColorSpace;
+import edu.jhuapl.near.colormap.RgbColormap.ColorSpace;
 
 public class Colormaps
 {
@@ -30,7 +30,7 @@ public class Colormaps
 
 	public static String getDefaultColormapName()
 	{
-	    return "jet";
+	    return "rainbow";
 	}
 
 	public static Set<String> getAllBuiltInColormapNames()
@@ -50,9 +50,7 @@ public class Colormaps
 	private static void initBuiltInColorMaps()
 	{
 		builtInColormaps=Maps.newTreeMap();
-		//loadFromXml("/edu/jhuapl/saavtk/color/data/All_mpl_cmaps.xml");
-		//loadFromXml("/edu/jhuapl/saavtk/color/data/All_idl_cmaps.xml");
-		loadFromXml("/edu/jhuapl/near/color/ColorMaps.xml");
+		loadFromXml("/edu/jhuapl/near/colormap/ColorMaps.xml");
 	}
 
 	private static void loadFromXml(String resourceName)

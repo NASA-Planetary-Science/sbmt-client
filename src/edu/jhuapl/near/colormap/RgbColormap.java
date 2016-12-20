@@ -1,33 +1,41 @@
-package edu.jhuapl.near.color;
+package edu.jhuapl.near.colormap;
 
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 import vtk.vtkColorTransferFunction;
 import vtk.vtkLookupTable;
 
-import edu.jhuapl.near.util.MathUtil;
-
-public class RgbColormap extends ListenableColormap
+public class RgbColormap implements Colormap
 {
+
+    PropertyChangeSupport pcs=new PropertyChangeSupport(this);
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener l)
+    {
+        pcs.addPropertyChangeListener(l);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener l)
+    {
+        pcs.removePropertyChangeListener(l);
+    }
 
 	vtkLookupTable lut=new vtkLookupTable();
 	vtkColorTransferFunction ctf;
 	double dataMin,dataMax;
-	double logDataMin,logDataMax;
+	boolean isLog=false;
 
 	List<Double> interpLevels;
 	List<Color> colors;
-	int nLevels;
+	int nLevels=defaultNumberOfLevels;
 	Color nanColor;
 	ColorSpace colorSpace;
 	String name="";
-	boolean isLog;
-
-	List<PropertyChangeListener> listeners=Lists.newArrayList();
 
 	public enum ColorSpace
 	{
@@ -54,7 +62,6 @@ public class RgbColormap extends ListenableColormap
 		this.nLevels=nLevels;
 		this.nanColor=nanColor;
 		this.colorSpace=colorSpace;
-		isLog=false;
 	}
 
 	private void rebuildLookupTable()
@@ -63,6 +70,10 @@ public class RgbColormap extends ListenableColormap
 			return;
 
 		ctf=new vtkColorTransferFunction();
+        if (isLog)
+            ctf.SetScaleToLog10();
+        else
+            ctf.SetScaleToLinear();
 		switch (colorSpace)
 		{
 		case RGB:
@@ -96,29 +107,34 @@ public class RgbColormap extends ListenableColormap
 			ctf.AddRGBPoint((interpLevels.get(i)-rangeMin)/(rangeMax-rangeMin), comp[0], comp[1], comp[2]);
 		}
 
-		float[] comp=nanColor.getRGBColorComponents(null);
-		lut.SetNanColor(comp[0],comp[1],comp[2],1);
+        if (isLog)
+            lut.SetScaleToLog10();
+        else
+            lut.SetScaleToLinear();
 
-		nLevels=defaultNumberOfLevels;
+        float[] comp=nanColor.getRGBColorComponents(null);
+		lut.SetNanColor(comp[0],comp[1],comp[2],1);
 		lut.SetNumberOfTableValues(nLevels);
 		lut.ForceBuild();
-		if (isLog)
+		/*if (isLog)
 		{
             lut.SetTableRange(logDataMin, logDataMax);
             lut.SetValueRange(logDataMin, logDataMax);
             lut.SetRange(logDataMin, logDataMax);
 		}
 		else
-		{
+		{*/
 		    lut.SetTableRange(dataMin, dataMax);
 		    lut.SetValueRange(dataMin, dataMax);
 		    lut.SetRange(dataMin, dataMax);
-		}
+		//}
 		for (int i=0; i<getNumberOfLevels(); i++)
 		{
 			double val=(double)i/(double)getNumberOfLevels();//*(dataMax-dataMin)+dataMin;
 			lut.SetTableValue(i, ctf.GetColor(val));
 		}
+
+		pcs.firePropertyChange(colormapPropertyChanged, null, null);
 	}
 
 	@Override
@@ -126,7 +142,6 @@ public class RgbColormap extends ListenableColormap
 	{
 		nLevels=n;
 		rebuildLookupTable();
-		firePropertyChangeEvent();
 	}
 
 	@Override
@@ -148,8 +163,13 @@ public class RgbColormap extends ListenableColormap
 			return getNanColor();
 		else
 		{
-		    if (isLog)
-		        val=MathUtil.log10clamped(val);
+/*		    if (isLog)
+		    {
+		        if (val>0)
+		            val=Math.log10(val);
+		        else
+		            return getNanColor();
+		    }*/
 			double[] c=lut.GetColor(val);
 			return new Color((float)c[0],(float)c[1],(float)c[2]);
 		}
@@ -178,38 +198,35 @@ public class RgbColormap extends ListenableColormap
 	public void setRangeMin(double val)
 	{
 		this.dataMin=val;
-		this.logDataMin=MathUtil.log10clamped(val);
+//		this.logDataMin=Math.log10(val);
 		rebuildLookupTable();
-		firePropertyChangeEvent();
 	}
 
 	@Override
 	public void setRangeMax(double val)
 	{
 		this.dataMax=val;
-        this.logDataMax=MathUtil.log10clamped(val);
+//        this.logDataMax=Math.log10(val);
 		rebuildLookupTable();
-		firePropertyChangeEvent();
 	}
 
-	@Override
+/*	@Override
 	public void setLog(boolean flag)
 	{
 	    isLog=flag;
 		rebuildLookupTable();
-		firePropertyChangeEvent();
 	}
 
 	@Override
 	public boolean getLog()
 	{
 		return isLog;
-	}
+	}*/
 
 	public static RgbColormap copy(RgbColormap cmap)
 	{
 		RgbColormap newCmap=new RgbColormap(cmap.interpLevels,cmap.colors,cmap.nLevels,cmap.nanColor,cmap.colorSpace);
-		newCmap.setLog(cmap.getLog());
+	//	newCmap.setLog(cmap.getLog());
 		newCmap.setRangeMin(cmap.getRangeMin());
 		newCmap.setRangeMax(cmap.getRangeMax());
 		newCmap.setName(cmap.getName());
@@ -225,6 +242,18 @@ public class RgbColormap extends ListenableColormap
 	public void setName(String name)
 	{
 		this.name=name;
+	}
+
+	@Override
+	public void setLogScale(boolean flag)
+	{
+	    isLog=flag;
+	}
+
+	@Override
+	public boolean isLogScale()
+	{
+	    return isLog;
 	}
 
 }

@@ -45,7 +45,7 @@ import vtk.vtkTIFFWriter;
 import vtk.vtkTextProperty;
 import vtk.vtkWindowToImageFilter;
 
-import edu.jhuapl.near.color.Colorbar;
+import edu.jhuapl.near.colormap.Colorbar;
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas;
 import edu.jhuapl.near.gui.joglrendering.StereoCapableMirrorCanvas.StereoMode;
 import edu.jhuapl.near.gui.joglrendering.vtksbmtJoglCanvas;
@@ -131,6 +131,11 @@ public class Renderer extends JPanel implements
     private Colorbar smallBodyColorbar;
 //    BuiltInColormapChooser chooser=Colormaps.getNewChooser();
 
+
+    public Colorbar getColorbar()
+    {
+        return smallBodyColorbar;
+    }
 
     void initOrientationAxes()
     {
@@ -406,7 +411,9 @@ public class Renderer extends JPanel implements
         mainCanvas.getRenderWindowInteractor().AddObserver("KeyPressEvent", this, "localKeypressHandler");
 
         smallBodyColorbar=new Colorbar(this);
-        smallBodyColorbar.setColormap(modelManager.getSmallBodyModel().getColormap());
+//        smallBodyColorbar.setColormap(modelManager.getSmallBodyModel().getColormap());
+//        smallBodyColorbar.addPropertyChangeListener(this);
+
 
 /*        chooser.addActionListener(new ActionListener()
         {
@@ -1086,6 +1093,7 @@ public class Renderer extends JPanel implements
         {
             this.setProps(modelManager.getProps());
 
+
             SmallBodyModel sbModel=modelManager.getSmallBodyModel();
             if (sbModel.isPlateColoringShown())
             {
@@ -1098,6 +1106,7 @@ public class Renderer extends JPanel implements
             }
             else
                 smallBodyColorbar.setVisible(false);
+
         }
         else
         {
