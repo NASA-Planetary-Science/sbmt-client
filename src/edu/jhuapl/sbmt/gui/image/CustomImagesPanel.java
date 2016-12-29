@@ -92,6 +92,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     final PickManager pickManager;
     Renderer renderer;
     private ImagingInstrument instrument;
+    int numImagesInCollection = -1;
 
     private boolean initialized = false;
 
@@ -198,7 +199,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
 
 //        boundaries.addPropertyChangeListener(this);
-//        images.addPropertyChangeListener(this);
+        images.addPropertyChangeListener(this);
 //
 //        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
 //        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
@@ -252,13 +253,17 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private void setNumberOfBands(int nbands)
     {
-        this.nbands = nbands;
-        int midband = nbands / 2;
-        String midbandString = Integer.toString(midband);
-        bandValue.setText(midbandString);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
-        monoSlider.setModel(monoBoundedRangeModel);
+        // Select midband by default
+        setNumberOfBands(nbands, nbands/2);
+    }
 
+    private void setNumberOfBands(int nbands, int activeBand)
+    {
+        this.nbands = nbands;
+        String activeBandString = Integer.toString(activeBand);
+        bandValue.setText(activeBandString);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 0, nbands-1);
+        monoSlider.setModel(monoBoundedRangeModel);
     }
 
     private void defaultFrustumActionPerformed(java.awt.event.ActionEvent evt)
@@ -725,6 +730,19 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 }
             }
         }
+        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            // If an image was added/removed, then
+            ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+            int currImagesInCollection = images.getImages().size();
+
+            if(currImagesInCollection != numImagesInCollection)
+            {
+                // Update count of number of images in collection and update slider
+                numImagesInCollection = currImagesInCollection;
+                valueChanged(null);
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -1034,7 +1052,16 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     @Override
     public void stateChanged(ChangeEvent e)
     {
-//        System.out.println("Custom Images Panel Slider Moved");
+        // Custom image slider moved
+        int index = imageList.getSelectedIndex();
+        Object selectedValue = imageList.getSelectedValue();
+        if (selectedValue == null)
+            return;
+
+        String imagestring = selectedValue.toString();
+        String[]tokens = imagestring.split(",");
+        String imagename = tokens[0].trim();
+
         JSlider source = (JSlider)e.getSource();
         currentSlice = (int)source.getValue();
         bandValue.setText(Integer.toString(currentSlice));
@@ -1048,25 +1075,18 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             {
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
-//                ImageType type = key.instrument.type;
                 String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-//                System.out.println(name + ", " + type + ", " + isVisible);
-//                System.out.println(name + ", " + isVisible);
-                if (image.getImageDepth() > 1)
+
+                if (name.equals(imagename))
                 {
-                    if (image.isVisible())
+                    image.setCurrentSlice(currentSlice);
+                    image.setDisplayedImageRange(null);
+                    if (!source.getValueIsAdjusting())
                     {
-                       image.setCurrentSlice(currentSlice);
-//                       image.setDisplayedImageRange(image.getDisplayedRange());
-                       image.setDisplayedImageRange(null);
-                       if (!source.getValueIsAdjusting())
-                       {
-//                            System.out.println("Recalculate footprint...");
-                            image.loadFootprint();
-                            image.firePropertyChange();
-                       }
+                         image.loadFootprint();
+                         image.firePropertyChange();
                     }
+                    return;
                 }
             }
         }
@@ -1074,14 +1094,10 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 //            System.out.println("State changed: " + fps);
     }
 
-
-
-
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-//        System.out.println("Custom Images Panel Item Selected");
-
+        // Custom image list selected row changed
         int index = imageList.getSelectedIndex();
         Object selectedValue = imageList.getSelectedValue();
         if (selectedValue == null)
@@ -1090,7 +1106,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         String imagestring = selectedValue.toString();
         String[]tokens = imagestring.split(",");
         String imagename = tokens[0].trim();
-//        System.out.println("Image: " + index + ", " + imagename);
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
 
@@ -1102,19 +1117,13 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
                 String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-                System.out.println(name + ", " + isVisible);
                 if (name.equals(imagename))
                 {
                     int depth = image.getImageDepth();
-//                    System.out.println("Found image: " + name + ", depth = " + depth);
-                    if (image.isVisible())
-                    {
-                       setNumberOfBands(depth);
-                       image.setCurrentSlice(currentSlice);
-                       image.setDisplayedImageRange(null);
-                       return;
-                    }
+                    currentSlice = image.getCurrentSlice();
+                    setNumberOfBands(depth,currentSlice);
+                    image.setDisplayedImageRange(null);
+                    return;
                 }
             }
         }
