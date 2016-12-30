@@ -36,11 +36,11 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 
 
 public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener, ChangeListener
@@ -89,7 +89,7 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         bandPanel.add(new JLabel("Band:"));
-        int midband = nbands / 2;
+        int midband = (nbands-1) / 2;
         String midbandString = Integer.toString(midband);
         bandValue = new JLabel(midbandString);
         bandPanel.add(bandValue);
@@ -114,6 +114,14 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
     protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
         super.loadImage(key, images);
+
+        // For this panel, we have a global band slider as opposed to per image.  Therefore, have
+        // the image come up with the currently chosen band
+        PerspectiveImage loadedImage = (PerspectiveImage) images.getImage(key);
+        loadedImage.setCurrentSlice(currentSlice);
+        loadedImage.setDisplayedImageRange(null);
+        loadedImage.loadFootprint();
+        loadedImage.firePropertyChange();
     }
 
     protected void unloadImage(ImageKey key, ImageCollection images)
@@ -163,27 +171,16 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
             PerspectiveImage image = (PerspectiveImage)i;
             ImageKey key = image.getKey();
             ImageType type = key.instrument.type;
-//            String name = i.getImageName();
-//            Boolean isVisible = i.isVisible();
-//            System.out.println(name + ", " + type + ", " + isVisible);
             if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
             {
-                if (image.isVisible())
-                {
-                   image.setCurrentSlice(currentSlice);
-//                   image.setDisplayedImageRange(image.getDisplayedRange());
-                   image.setDisplayedImageRange(null);
-                   if (!source.getValueIsAdjusting())
-                   {
-//                        System.out.println("Recalculate footprint...");
-                        image.loadFootprint();
-                        image.firePropertyChange();
-                   }
-                }
+               image.setCurrentSlice(currentSlice);
+               image.setDisplayedImageRange(null);
+               if (!source.getValueIsAdjusting())
+               {
+                   image.loadFootprint();
+                   image.firePropertyChange();
+               }
             }
         }
-
-//            System.out.println("State changed: " + fps);
     }
-
 }

@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Set;
 
@@ -19,7 +20,6 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -30,15 +30,16 @@ import javax.swing.event.ListSelectionListener;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCube;
+import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
-import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 
 
 public class CubicalImagingSearchPanel extends ImagingSearchPanel implements PropertyChangeListener, ChangeListener, ListSelectionListener
@@ -48,10 +49,11 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
     private JSlider monoSlider;
     private JCheckBox defaultFrustum;
     private BoundedRangeModel monoBoundedRangeModel;
-    private javax.swing.JList imageList;
+    private javax.swing.JList imageList = null;
 
     private int nbands = 1;
     private int currentSlice = 0;
+    int numImagesInCollection = -1;
 
     public int getCurrentSlice() { return currentSlice; }
 
@@ -80,7 +82,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         bandPanel.add(new JLabel("Layer:"));
-        int midband = nbands / 2;
+        int midband = (nbands-1) / 2;
         String midbandString = Integer.toString(midband);
         bandValue = new JLabel(midbandString);
         bandPanel.add(bandValue);
@@ -94,18 +96,52 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
 
     private void setNumberOfBands(int nbands)
     {
-        this.nbands = nbands;
-        int midband = nbands / 2;
-        String midbandString = Integer.toString(midband);
-        bandValue.setText(midbandString);
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
-        monoSlider.setModel(monoBoundedRangeModel);
+        // Select midband by default
+        setNumberOfBands(nbands, (nbands-1)/2);
+    }
 
+    private void setNumberOfBands(int nbands, int activeBand)
+    {
+        this.nbands = nbands;
+        String activeBandString = Integer.toString(activeBand);
+        bandValue.setText(activeBandString);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 0, nbands-1);
+        monoSlider.setModel(monoBoundedRangeModel);
+    }
+
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+        {
+            // If an image was added/removed, then
+        	ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
+            int currImagesInCollection = images.getImages().size();
+
+            if(currImagesInCollection != numImagesInCollection)
+            {
+                // Update count of number of images in collection and update slider
+                numImagesInCollection = currImagesInCollection;
+                valueChanged(null);
+            }
+        }
+
+        super.propertyChange(evt);
     }
 
     @Override
     public void stateChanged(ChangeEvent e)
     {
+        imageList = getImageCubesDisplayedList();
+
+        int index = imageList.getSelectedIndex();
+        ImageCubeKey selectedValue = (ImageCubeKey)imageList.getSelectedValue();
+        if (selectedValue == null)
+            return;
+
+        String imagestring = selectedValue.fileNameString();
+        String[]tokens = imagestring.split(",");
+        String imagename = tokens[0].trim();
+
 //        System.out.println("Cubical Images Panel Slider Moved");
         JSlider source = (JSlider)e.getSource();
         currentSlice = (int)source.getValue();
@@ -120,38 +156,27 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
             {
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
-//                ImageType type = key.instrument.type;
                 String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-//                System.out.println(name + ", " + type + ", " + isVisible);
-//                System.out.println(name + ", " + isVisible);
-                if (image.getImageDepth() > 1)
+
+                if(name.equals(imagename))
                 {
-                    if (image.isVisible())
-                    {
-                       image.setCurrentSlice(currentSlice);
-//                       image.setDisplayedImageRange(image.getDisplayedRange());
-                       image.setDisplayedImageRange(null);
-                       if (!source.getValueIsAdjusting())
-                       {
-//                            System.out.println("Recalculate footprint...");
-                            image.loadFootprint();
-                            image.firePropertyChange();
-                       }
-                    }
+                   image.setCurrentSlice(currentSlice);
+                   image.setDisplayedImageRange(null);
+                   if (!source.getValueIsAdjusting())
+                   {
+                        image.loadFootprint();
+                        image.firePropertyChange();
+                   }
+                   return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
                 }
             }
         }
-
-//            System.out.println("State changed: " + fps);
     }
-
 
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-//        System.out.println("Cubical Images Panel Item Selected");
-        JList imageList = (JList)e.getSource();
+        imageList = getImageCubesDisplayedList();
 
         int index = imageList.getSelectedIndex();
         ImageCubeKey selectedValue = (ImageCubeKey)imageList.getSelectedValue();
@@ -173,19 +198,13 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
                 String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-//                System.out.println(name + ", " + isVisible);
                 if (name.equals(imagename))
                 {
                     int depth = image.getImageDepth();
-//                    System.out.println("Found image: " + name + ", depth = " + depth);
-                    if (image.isVisible())
-                    {
-                       setNumberOfBands(depth);
-                       image.setCurrentSlice(currentSlice);
-                       image.setDisplayedImageRange(null);
-                       return;
-                    }
+                    currentSlice = image.getCurrentSlice();
+                    setNumberOfBands(depth,currentSlice);
+                    image.setDisplayedImageRange(null);
+                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
                 }
             }
         }

@@ -186,7 +186,6 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
         int newBandIndex = bandNamesToPrefixes.get(newBandName);
         currentBandIndex = newBandIndex;
-//        System.out.println("ComboBox Value Changed: " + newBandName + "=" + newBandIndex);
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
         Set<Image> imageSet = images.getImages();
@@ -196,21 +195,13 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
             PerspectiveImage image = (PerspectiveImage)i;
             ImageKey key = image.getKey();
             ImageType type = key.instrument.type;
-//            System.out.println(image.getImageName() + ", " + type + ", " + image.isVisible());
             if (type == ImageType.MVIC_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
             {
-                if (image.isVisible())
-                {
-                   image.setCurrentSlice(newBandIndex);
-                   image.setDisplayedImageRange(null);
-//                 image.setDisplayedImageRange(image.getDisplayedRange());
-                   image.loadFootprint();
-                   image.firePropertyChange();
-                }
+                image.setCurrentSlice(newBandIndex);
+                image.setDisplayedImageRange(null);
+                image.loadFootprint();
+                image.firePropertyChange();
             }
         }
-
     }
-
-
 }

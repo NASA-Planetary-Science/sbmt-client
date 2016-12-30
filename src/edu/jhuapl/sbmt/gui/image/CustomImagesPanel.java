@@ -230,7 +230,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         panel.setLayout(new BorderLayout());
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         bandPanel.add(new JLabel("Band:"));
-        int midband = nbands / 2;
+        int midband = (nbands-1) / 2;
         String midbandString = Integer.toString(midband);
         bandValue = new JLabel(midbandString);
         bandPanel.add(bandValue);
@@ -254,7 +254,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     private void setNumberOfBands(int nbands)
     {
         // Select midband by default
-        setNumberOfBands(nbands, nbands/2);
+        setNumberOfBands(nbands, (nbands-1)/2);
     }
 
     private void setNumberOfBands(int nbands, int activeBand)
@@ -1086,7 +1086,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                          image.loadFootprint();
                          image.firePropertyChange();
                     }
-                    return;
+                    return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
                 }
             }
         }
@@ -1123,7 +1123,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                     currentSlice = image.getCurrentSlice();
                     setNumberOfBands(depth,currentSlice);
                     image.setDisplayedImageRange(null);
-                    return;
+                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
                 }
             }
         }
