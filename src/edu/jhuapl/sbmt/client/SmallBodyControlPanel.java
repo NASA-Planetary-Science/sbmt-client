@@ -10,8 +10,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import nom.tam.fits.FitsException;
-
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -24,12 +22,15 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
 
+import nom.tam.fits.FitsException;
+
 
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
         super(modelManager, bodyName);
+        getColoringComboBox().setSelectedIndex(2);
     }
 
     private ImageKey createImageMapKey()
