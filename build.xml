@@ -25,6 +25,8 @@
  	      <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/data"/>
  	</copy>
  	
+ 	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
+ 	
     <javac srcdir="${rootSAAVTKdir}/src"
            destdir="${rootSAAVTKdir}/build/classes"
            debug="off" >
