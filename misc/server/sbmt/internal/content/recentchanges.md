@@ -4,6 +4,13 @@
 
 # Recent Changes
 
+### January 6, 2017 (Beta)
+
+-   Fixed bugs in Bennu OLA search, browse, and track panels (leftover from the October 21, 2016 beta release)
+-	Added colormap specification and control for scalar plate colorings. Contours can be rendered as filled regions or lines.
+-	Fixed structure labels so they are hidden when their footpoint is occluded from view.
+-	Other minor bugfixes.
+
 ### November 19, 2016 (Beta)
 
 -   Improved accuracy of lidar point selection using mouse pointer
