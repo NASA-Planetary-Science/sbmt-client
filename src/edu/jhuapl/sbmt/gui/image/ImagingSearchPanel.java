@@ -174,6 +174,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
+        imageCubes.addPropertyChangeListener(this);
+        
         imageCubesDisplayedList.addListSelectionListener(this);
 
         // Hide gallery if not APL internal mode
@@ -2861,6 +2863,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             unloadImage(key, images);
         }
    }
+
+    public javax.swing.JList getImageCubesDisplayedList()
+    {
+        return imageCubesDisplayedList;
+    }
 
     protected void setImageVisibility(String name, boolean visible)
     {

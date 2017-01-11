@@ -391,7 +391,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     // Removes all DEMs
     private void removeAllDEMsFromRenderer()
     {
-        System.err.println("Not yet implemented");
+        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        demCollection.removeDEMs();
     }
 
     // Removes a DEM
@@ -701,34 +702,35 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     }// </editor-fold>//GEN-END:initComponents
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
-        // User specifies a DEM
-        File file = CustomFileChooser.showOpenDialog(this, "Load DEM",
-                new ArrayList<String>(Arrays.asList("fit","fits")));
+        // User specifies DEM(s)
+        File[] files = CustomFileChooser.showOpenDialog(this, "Load DEM(s)", new ArrayList<String>(Arrays.asList("fit","fits")), true);
 
-        // Check if the file provided is valid
-        if (file == null || !file.exists())
+        for(File file : files)
         {
-            // Not valid, return and do nothing
-            return;
-        }
-        else
-        {
-            // Valid, load it in
-            DEMInfo demInfo = new DEMInfo();
-            demInfo.demfilename = file.getAbsolutePath();
-            demInfo.name = file.getName();
-
-            // Save it to the list of DEMs
-            try
+            // Check if the file provided is valid
+            if (file == null || !file.exists())
             {
-                saveDEM(demInfo);
+                // Not valid, do nothing
+                continue;
             }
-            catch (IOException e)
+            else
             {
-                e.printStackTrace();
+                // Valid, load it in
+                DEMInfo demInfo = new DEMInfo();
+                demInfo.demfilename = file.getAbsolutePath();
+                demInfo.name = file.getName();
+
+                // Save it to the list of DEMs
+                try
+                {
+                    saveDEM(demInfo);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
-
 
         /*
         ImageInfo imageInfo = new ImageInfo();

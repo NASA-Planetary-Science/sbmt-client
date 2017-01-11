@@ -153,6 +153,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         return nisFileToSunPositionMap.get(fileName);
     }
 
+
 // TODO make this class abstract with these abstract functions. Subclasses will
 // need to redefine them
 //    abstract protected java.util.Date getDefaultStartDate();

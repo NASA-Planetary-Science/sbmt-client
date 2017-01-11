@@ -38,9 +38,6 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
-
-
-
 //import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
@@ -121,6 +118,12 @@ public class DEMView extends JFrame implements WindowListener
         // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
+
+        // Set this micro DEM to have the same properties as the macroDEM
+        for(int i=0; i<macroDEM.getNumberOfColors(); i++)
+        {
+            dem.setCurrentColoringRange(i, macroDEM.getCurrentColoringRange(i));
+        }
         dem.setColoringIndex(macroDEM.getColoringIndex());
 
         final ModelManager modelManager = new SbmtModelManager(dem);
@@ -257,7 +260,17 @@ public class DEMView extends JFrame implements WindowListener
                         plot.setColoringIndex(index);
                         if(syncColoring)
                         {
-                            demCollection.getDEM(key).setColoringIndex(index);
+                            // Get the macroDEM
+                            DEM macroDEM = demCollection.getDEM(key);
+
+                            // Synchronize coloring ranges
+                            for(int i=0; i<dem.getNumberOfColors(); i++)
+                            {
+                                macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
+                            }
+
+                            // Synchronize coloring index
+                            macroDEM.setColoringIndex(index);
                         }
                     }
                 }
@@ -271,12 +284,21 @@ public class DEMView extends JFrame implements WindowListener
         panel.add(coloringTypeComboBox);
 
         scaleColoringButton = new JButton("Rescale Data Range");
-        scaleColoringButton.setEnabled(true);
+        if(coloringTypeComboBox.getSelectedIndex() == numColors)
+        {
+            // Initially no coloring selected, scaling does not make sense
+            scaleColoringButton.setEnabled(false);
+        }
+        else
+        {
+            // Initially a valid coloring type, we can scale
+            scaleColoringButton.setEnabled(true);
+        }
         scaleColoringButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem);
+                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem,demCollection.getDEM(key),syncColoring);
                 scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
                 scaleDataDialog.setVisible(true);
             }
@@ -664,7 +686,17 @@ public class DEMView extends JFrame implements WindowListener
             {
                 try
                 {
-                    demCollection.getDEM(key).setColoringIndex(dem.getColoringIndex());
+                    // Get the macroDEM
+                    DEM macroDEM = demCollection.getDEM(key);
+
+                    // Synchronize coloring ranges
+                    for(int i=0; i<dem.getNumberOfColors(); i++)
+                    {
+                        macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
+                    }
+
+                    // Synchronize coloring index
+                    macroDEM.setColoringIndex(dem.getColoringIndex());
                 }
                 catch (Exception e1)
                 {
@@ -690,6 +722,7 @@ public class DEMView extends JFrame implements WindowListener
     @Override
     public void windowClosed(WindowEvent e)
     {
+        // TODO Auto-generated method stub
 
     }
 
@@ -724,7 +757,14 @@ public class DEMView extends JFrame implements WindowListener
     @Override
     public void windowClosing(WindowEvent e)
     {
-        // TODO Auto-generated method stub
+        // Remove self as the macro DEM's view
+        DEM macroDEM = demCollection.getDEM(key);
+        if(macroDEM != null)
+        {
+            macroDEM.removeView();
+        }
+
+        // Garbage collect
         System.gc();
         vtkObject.JAVA_OBJECT_MANAGER.gc(true);
     }
