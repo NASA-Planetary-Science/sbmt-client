@@ -414,7 +414,12 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         sourceComboBox.removeItemListener(this);
         sourceComboBox.removeAllItems();
 
-        sourceComboBox.addItem("Default");
+
+        if (lidarModel.getLidarDataSourceMap().containsKey("Default"))
+            sourceComboBox.addItem("Default");
+
+        for (String source : lidarModel.getLidarDataSourceMap().keySet())
+            sourceComboBox.addItem(source);
 
         for (int i=0; i<smallBodyModel.getNumberOfLidarDatasources(); ++i)
         {

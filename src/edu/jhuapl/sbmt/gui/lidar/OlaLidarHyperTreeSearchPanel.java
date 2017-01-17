@@ -63,6 +63,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         // add the server datasource
         String defaultDatasourceName = "Default";
         String defaultDatasourcePath = lidarModel.getLidarDataSourceMap().get("Default");
+
         lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(defaultDatasourceName, defaultDatasourcePath);
         sourceComboBox.addItem(defaultDatasourceName);
 

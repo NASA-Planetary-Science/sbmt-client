@@ -1642,7 +1642,7 @@ public class SmallBodyViewConfigNew extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
         }
-        
+
         c = new SmallBodyViewConfigNew();
         c.body = ShapeModelBody.HARTLEY;
         c.type = ShapeModelType.COMETS;
