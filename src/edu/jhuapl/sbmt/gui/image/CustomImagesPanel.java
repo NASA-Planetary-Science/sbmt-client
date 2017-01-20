@@ -701,19 +701,17 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             Model model = modelManager.getModel(e.getPickedProp());
             if (model instanceof ImageCollection)// || model instanceof PerspectiveImageBoundaryCollection)
             {
-                String name = null;
-
-                //if (model instanceof ImageCollection)
-                    name = ((ImageCollection)model).getImage((vtkActor)e.getPickedProp()).getKey().name;
-                //else if (model instanceof PerspectiveImageBoundaryCollection)
-                //    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+                // Get the actual filename of the selected image
+                ImageKey key = ((ImageCollection)model).getImage((vtkActor)e.getPickedProp()).getKey();
+                String name = new File(key.name).getName();
 
                 int idx = -1;
                 int size = imageList.getModel().getSize();
                 for (int i=0; i<size; ++i)
                 {
+                    // We want to compare the actual image filename here, not the displayed name which may not be unique
                     ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(i);
-                    String imageFilename = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+                    String imageFilename = imageInfo.imagefilename;
                     if (name.equals(imageFilename))
                     {
                         idx = i;
@@ -1058,24 +1056,23 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         if (selectedValue == null)
             return;
 
-        String imagestring = selectedValue.toString();
-        String[]tokens = imagestring.split(",");
-        String imagename = tokens[0].trim();
+        // Get the actual filename of the selected image
+        String imagename = ((ImageInfo)selectedValue).imagefilename;
 
         JSlider source = (JSlider)e.getSource();
         currentSlice = (int)source.getValue();
         bandValue.setText(Integer.toString(currentSlice));
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)
         {
             if (i instanceof PerspectiveImage)
             {
+                // We want to compare the actual image filename here, not the displayed name which may not be unique
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
-                String name = i.getImageName();
+                String name = new File(key.name).getName();
 
                 if (name.equals(imagename))
                 {
@@ -1103,27 +1100,26 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         if (selectedValue == null)
             return;
 
-        String imagestring = selectedValue.toString();
-        String[]tokens = imagestring.split(",");
-        String imagename = tokens[0].trim();
+        // Get the actual filename of the selected image
+        String imagename = ((ImageInfo)selectedValue).imagefilename;
 
         ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-
         Set<Image> imageSet = images.getImages();
         for (Image i : imageSet)
         {
             if (i instanceof PerspectiveImage)
             {
+                // We want to compare the actual image filename here, not the displayed name which may not be unique
                 PerspectiveImage image = (PerspectiveImage)i;
                 ImageKey key = image.getKey();
-                String name = i.getImageName();
+                String name = new File(key.name).getName();
                 if (name.equals(imagename))
                 {
                     int depth = image.getImageDepth();
                     currentSlice = image.getCurrentSlice();
                     setNumberOfBands(depth,currentSlice);
                     image.setDisplayedImageRange(null);
-                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
+                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
                 }
             }
         }
