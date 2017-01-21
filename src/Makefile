@@ -105,10 +105,10 @@ release: install ${int_zips} ${pub_zips}
 # detect operating system and rsync the correct library path. This pulls the correct saavtk.jar and VTK libraries.
 ifeq ($(OS), Darwin)
 	@echo "Copying mac libraries to lib/."
-	rsync -av ${int_mac_sbmt_lib_dir}/ ${LIBROOT}
+	rsync -av --exclude='*.txt' ${int_mac_sbmt_lib_dir}/ ${LIBROOT}
 else
 	@echo "Copying linux libraries to lib/."
-	rsync -av ${int_linux_sbmt_lib_dir}/ ${LIBROOT}
+	rsync -av --exclude='*.txt' ${int_linux_sbmt_lib_dir}/ ${LIBROOT}
 endif
 
 deploy : ${int_zips} ${pub_zips}
