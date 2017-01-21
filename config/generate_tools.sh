@@ -21,11 +21,8 @@ mkdir -p $INSTALL_LIB_DIR
 
 # Generate Run Scripts
 CLASSPATH='$SBMTROOT/lib/near.jar'
-#for JAR in lib/*.jar ; do
-#    JAR=`basename $JAR`
-#    CLASSPATH="$CLASSPATH:\$SBMTROOT/lib/$JAR"
-#done
-CLASSPATH="$CLASSPATH:\$SBMTROOT/lib/*.jar"
+#Need src path for class resources.
+CLASSPATH="$CLASSPATH:\$SBMTROOT/src:\$SBMTROOT/lib/*.jar"
 
 for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     JAVA_TOOL=`basename $JAVA_TOOL .java`
