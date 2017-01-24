@@ -4,6 +4,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.collect.Maps;
+
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -914,6 +916,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     "VIS, Green",
                     "VIS, Red",
             };
+
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
@@ -991,6 +994,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
+
+        c.lidarSearchDataSourceMap=Maps.newHashMap();   // this must be instantiated, but can be empty
+
         configArray.add(c);
 
         // New Gaskell Phobos (experimental)
@@ -1042,6 +1048,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.lidarSearchDataSourceMap=Maps.newHashMap();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
 
             configArray.add(c);
