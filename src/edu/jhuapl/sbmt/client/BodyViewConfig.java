@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -41,8 +43,8 @@ public class BodyViewConfig extends ViewConfig
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
-    public Map<String, String> lidarSearchDataSourceMap;
-    public Map<String, String> lidarBrowseDataSourceMap;    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
+    public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
 
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;

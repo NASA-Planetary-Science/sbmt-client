@@ -30,7 +30,8 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
         super(modelManager, bodyName);
-        getColoringComboBox().setSelectedIndex(2);
+        if (getColoringComboBox().getItemCount()>0)
+            getColoringComboBox().setSelectedIndex(0);
     }
 
     private ImageKey createImageMapKey()
