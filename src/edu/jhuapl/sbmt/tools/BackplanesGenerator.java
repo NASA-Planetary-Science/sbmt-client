@@ -303,8 +303,11 @@ public class BackplanesGenerator
                 + "                           the order specified above. Backplanes are generated only for\n"
                 + "                           images with pointing information.\n"
                 + "  -s                       Process a single file only. In this case, parameter <image-list>\n"
-                + "                           is the name of a single image file.\n"
-                + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
+                + "                           is the name of a single image file, path is relative to\n"
+                + "                           /project/nearsdc/data/.\n"
+                + "  -f                       Save backplanes as FITS file. Default is IMG.\n"
+                + "Example:\n"
+                + "BackplanesGenerator.sh -r 3 -p GASKELL -f -s eros /GASKELL/EROS/MSI/images/M0126589036F4_2P_IOF_DBL.FIT .\n";
         System.out.println(o);
         System.exit(0);
     }

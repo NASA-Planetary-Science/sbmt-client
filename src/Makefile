@@ -103,11 +103,11 @@ install : ${NEARAPLJAR} tools
 
 release : install ${int_zips} ${pub_zips}
 ifeq ($(OS), Darwin)
-		@echo "Copying mac libraries to lib/."
-		rsync -av --exclude='*.txt' ${int_mac_sbmt_lib_dir}/ ${LIBROOT}
+	@echo "Copying mac libraries to lib/."
+	rsync -av --exclude='*.txt' ${int_mac_sbmt_lib_dir}/ ${LIBROOT}
 else
-		@echo "Copying linux libraries to lib/."
-		rsync -av --exclude='*.txt' ${int_linux_sbmt_lib_dir}/ ${LIBROOT}
+	@echo "Copying linux libraries to lib/."
+	rsync -av --exclude='*.txt' ${int_linux_sbmt_lib_dir}/ ${LIBROOT}
 endif
 
 deploy : ${int_zips} ${pub_zips}
