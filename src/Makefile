@@ -13,6 +13,7 @@ PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
 INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 
 MYCLASSPATH = ${CLASSPATH}
+-OS := $(shell uname)
 
 top_level_dir = ${SBMTROOT}
 saavtk_dir = ${SAAVTKROOT}
@@ -98,8 +99,16 @@ all : ${NEARJAR} ${NEARAPLJAR}
 
 install : ${NEARAPLJAR} tools
 		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
+		cp ${NEARAPLJAR} ${LIBROOT}/near.jar
 
-release: install ${int_zips} ${pub_zips}
+release : install ${int_zips} ${pub_zips}
+ifeq ($(OS), Darwin)
+	@echo "Copying mac libraries to lib/."
+	rsync -av --exclude='*.txt' ${int_mac_sbmt_lib_dir}/ ${LIBROOT}
+else
+	@echo "Copying linux libraries to lib/."
+	rsync -av --exclude='*.txt' ${int_linux_sbmt_lib_dir}/ ${LIBROOT}
+endif
 
 deploy : ${int_zips} ${pub_zips}
 ifeq (,$(findstring,SNAPSHOT,${RELEASE}))
