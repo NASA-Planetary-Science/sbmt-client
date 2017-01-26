@@ -13,7 +13,7 @@ PUBLIC_OUTPUT_DIR := ${SBMTROOT}/build/dist/public
 INTERNAL_OUTPUT_DIR := ${SBMTROOT}/build/dist/internal
 
 MYCLASSPATH = ${CLASSPATH}
--OS := $(shell uname)
+OS := $(shell uname)
 
 top_level_dir = ${SBMTROOT}
 saavtk_dir = ${SAAVTKROOT}
