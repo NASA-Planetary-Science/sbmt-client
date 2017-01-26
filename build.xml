@@ -15,6 +15,7 @@
   <property name="vtkrootdir" location="/project/nearsdc/software/vtk_all_platforms"/>
   <property name="vtkVersion" value="6.3"/>
   <property name="libDir" location="${rootSAAVTKdir}/lib"/>
+  <property name="rootlibDir" location="${rootdir}/lib"/>
 
  <target name="compileSAAVTK">
     <echo>$${rootSAAVTKdir/lib}=${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar</echo>
@@ -260,6 +261,32 @@
 
   <target name="clean">
     <delete dir="${rootdir}/build"/>
+    <delete dir="${rootSAAVTKdir}/build"/>
+    <delete file="${rootlibDir}/commons-io-2.0.jar"/>
+    <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
+    <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
+    <delete file="${rootlibDir}/guava-13.0.1.jar"/>
+    <delete file="${rootlibDir}/Jama-1.0.2.jar"/>
+    <delete file="${rootlibDir}/jcommon-1.0.16.jar"/>
+    <delete file="${rootlibDir}/jfreechart-1.0.13.jar"/>
+    <delete file="${rootlibDir}/jgoodies-common-1.1.1.jar"/>
+    <delete file="${rootlibDir}/jgoodies-looks-2.4.0.jar"/>
+    <delete file="${rootlibDir}/joda-time-1.6.jar"/>
+    <delete file="${rootlibDir}/miglayout-3.7.1-swing.jar"/>
+    <delete file="${rootlibDir}/quaqua-7.3.4-filechooser-only.jar"/>
+    <delete file="${rootlibDir}/quaqua-7.3.4.jar"/>
+    <delete file="${rootlibDir}/RelativeLayout-v1.0.jar"/>
+    <delete file="${rootlibDir}/vtk-${vtkVersion}.jar"/>  
+    <delete file="${rootlibDir}/saavtk.jar"/>
+    <delete file="${rootlibDir}/near.jar"/>
+    <delete>
+        <fileset dir="${rootlibDir}">
+          <include name="gluegen-rt*.jar" />
+          <include name="jogl-all*.jar" />
+        </fileset>
+    </delete>
+    <delete dir="${rootlibDir}/mac64"/>
+    <delete dir="${rootlibDir}/linux64"/>
   </target>
 	
 	
