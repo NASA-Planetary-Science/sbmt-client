@@ -1048,7 +1048,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     "MGS MOC"
             };
             c.hasHierarchicalImageSearch = true;
-            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification("Phobos Experimental");
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
