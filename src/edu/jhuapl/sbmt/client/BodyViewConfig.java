@@ -10,6 +10,7 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 
 
 
@@ -40,6 +41,8 @@ public class BodyViewConfig extends ViewConfig
     public String[] imageSearchUserDefinedCheckBoxesNames;
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
+    public boolean hasHierarchicalImageSearch;
+    public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
@@ -206,6 +209,15 @@ public class BodyViewConfig extends ViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = this.imageSearchUserDefinedCheckBoxesNames.clone();
             c.imageSearchDefaultMaxSpacecraftDistance = this.imageSearchDefaultMaxSpacecraftDistance;
             c.imageSearchDefaultMaxResolution = this.imageSearchDefaultMaxResolution;
+            c.hasHierarchicalImageSearch = this.hasHierarchicalImageSearch;
+            if(this.hierarchicalImageSearchSpecification != null)
+            {
+                c.hierarchicalImageSearchSpecification = this.hierarchicalImageSearchSpecification.clone();
+            }
+            else
+            {
+                c.hierarchicalImageSearchSpecification = null;
+            }
         }
 
         if (this.hasLidarData)
