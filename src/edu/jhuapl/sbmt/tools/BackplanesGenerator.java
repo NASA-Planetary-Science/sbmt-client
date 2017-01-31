@@ -94,7 +94,7 @@ public class BackplanesGenerator
             String ext = FilenameUtils.getExtension(filename).trim();
             if (ext.compareToIgnoreCase("fit")!=0 && ext.compareToIgnoreCase("fits")!=0)
             {
-                System.err.println("   Unexpected image format. Expecting FITS image");
+                System.err.println("   BackplanesGenerator.java: Unexpected image format for file " + filename + ". Expecting FITS image");
                 System.exit(0);
             }
 
@@ -207,7 +207,7 @@ public class BackplanesGenerator
             new File(outputFolder).mkdirs();
 
             // Backplanes file name
-            String baseFilename = getBaseFilename(image, key, resolutionLevel, fmt, outputFolder);
+            String baseFilename = getBaseFilename(key, outputFolder);
             String ddrFilename = baseFilename + fmt.getExtension();
 
             // Write backplanes data to the appropriate format (FITS or IMG)
@@ -231,7 +231,7 @@ public class BackplanesGenerator
     }
 
     /**
-     * Generate base ddr filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
+     * Generate base backplanes filename given the parameters. Currently there is only 1 file naming convention, but this method allows for
      * different filenaming conventions based on which PerspectiveImage subclass is being processed.
      *
      * @param image -PerspectiveImage subclass being processed. This may affect naming convention.
@@ -241,7 +241,7 @@ public class BackplanesGenerator
      * @param outputFolder - destination folder for output file
      * @return base name of ddr backplanes file, no extension
      */
-    public static String getBaseFilename(PerspectiveImage image, ImageKey key, int resolutionLevel, BackplanesFileFormat fmt, String outputFolder)
+    public static String getBaseFilename(ImageKey key, String outputFolder)
     {
         //key class is initialized with base filename (i.e. no ".extension")
         String fname = new File(key.name).getName();
@@ -302,9 +302,14 @@ public class BackplanesGenerator
                 + "                           first, and if not found to traverse the other pointing types in\n"
                 + "                           the order specified above. Backplanes are generated only for\n"
                 + "                           images with pointing information.\n"
-                + "  -f                       Save backplanes as FITS file. Default is IMG.\n";
+                + "  -s                       Process a single file only. In this case, parameter <image-list>\n"
+                + "                           is the name of a single image file, path is relative to\n"
+                + "                           /project/nearsdc/data/.\n"
+                + "  -f                       Save backplanes as FITS file. Default is IMG.\n"
+                + "Example:\n"
+                + "BackplanesGenerator.sh -r 3 -p GASKELL -f -s eros /GASKELL/EROS/MSI/images/M0126589036F4_2P_IOF_DBL.FIT .\n";
         System.out.println(o);
-        System.exit(1);
+        System.exit(0);
     }
 
     public void doMain(String[] args) throws IOException
@@ -360,7 +365,12 @@ public class BackplanesGenerator
         int numberRequiredArgs = 3;
         if (args.length - i != numberRequiredArgs)
         {
-            System.out.println("Incorrectly formed arguments.\n");
+            String argStr = new String();
+            for (String s : args)
+            {
+                argStr = argStr + " " + s;
+            }
+            System.out.println("Incorrectly formed arguments: " + argStr + "\n");
             printUsage();
         }
 

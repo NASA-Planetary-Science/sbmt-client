@@ -14,12 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import nom.tam.fits.FitsException;
-import nom.tam.fits.HeaderCard;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
+import vtk.vtkIdList;
+import vtk.vtkOctreePointLocator;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataNormals;
+
+import edu.jhuapl.sbmt.util.DistributedGravityBatchSubmission;
 
 import altwg.Fits.HeaderTags;
 import altwg.tools.ToolsVersion;
@@ -35,14 +39,9 @@ import altwg.util.PolyDataUtil.CellInfo;
 import altwg.util.PolyDataUtil2;
 import altwg.util.SmallBodyModel;
 import altwg.util.SrcProductType;
-import altwg.util.Tilt;
-
-import vtk.vtkIdList;
-import vtk.vtkOctreePointLocator;
-import vtk.vtkPolyData;
-import vtk.vtkPolyDataNormals;
-
-import edu.jhuapl.sbmt.util.DistributedGravityBatchSubmission;
+import altwg.util.TiltUtil;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.HeaderCard;
 
 /**
  * DistributedGravity program. See the usage string for more information about this program.
@@ -153,7 +152,7 @@ public class BigmapDistributedGravity {
 
         int numCells = polydata.GetNumberOfCells();
 
-        Tilt tilt = new Tilt(tiltRadius);
+        TiltUtil tilt = new TiltUtil(tiltRadius);
 
         for (int i = 0; i < numCells; ++i) {
             CellInfo ci = PolyDataUtil.getCellInfo(polydata, i, idList);
@@ -344,7 +343,7 @@ public class BigmapDistributedGravity {
 
         double[] pt = new double[3];
         double[] normal = new double[3];
-        Tilt tiltClass = new Tilt(tiltRadius);
+        TiltUtil tiltClass = new TiltUtil(tiltRadius);
         String line;
         int i = 0;
 
@@ -382,13 +381,13 @@ public class BigmapDistributedGravity {
             outdata[k++][m][n] = slope;
 
             //calculate vector between vector to point and normal. call this tilt
-            double tilt = Tilt.basicTiltDeg(pt, normal);
+            double tilt = TiltUtil.basicTiltDeg(pt, normal);
             outdata[k++][m][n] = tilt;
 
             //calculate tilt direction. Note: assume longitude is 2nd plane in input fits file!
             //The following will fail if this is not true!
             double lon = indata[1][m][n];
-            double tiltDir = Tilt.basicTiltDir(lon, pt, normal);
+            double tiltDir = TiltUtil.basicTiltDir(lon, pt, normal);
 
             //TODO need to add code to handle tiltDir extra plane
 
@@ -413,7 +412,7 @@ public class BigmapDistributedGravity {
         Map<String, HeaderCard> originalHeaderValues = FitsUtil.getFitsHeaderAsMap(inputfitsfile);
 
         //see if original header values specifies the data source. Use this instead.
-        HeaderCard srcCard = FitsUtil.cardInMap(originalHeaderValues, HeaderTags.DATASRC.toString());
+        HeaderCard srcCard = FitsUtil.getCard(originalHeaderValues, HeaderTags.DATASRC.toString(), false);
         //default value;
         SrcProductType dataSrc = SrcProductType.OLA;
 
