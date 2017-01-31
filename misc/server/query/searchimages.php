@@ -20,9 +20,9 @@ $cubesStr=$_POST['cubes'];
 $limbType=$_POST['limbType'] + 0;
 
 // Go through all posted data and create lists of selected camera and filter type numbers
-$sumOfProductsSearch=$_POST['sumOfProductsSearch'];
-$filterTypes = array();
+$sumOfProductsSearch=$_POST['sumOfProductsSearch'] + 0;
 $cameraTypes = array();
+$filterTypes = array();
 
 // Extract user specified camera/filter types based on what kind of search we are doing
 if($sumOfProductsSearch === 1)
@@ -32,8 +32,8 @@ if($sumOfProductsSearch === 1)
 	for ($i=0; $i<$numProducts; $i++)
 	{
 		// Save the selected camera/filter pair
-		$cameraTypes[] = (int) $_POST['cameraType' . $i]
-		$filterTypes[] = (int) $_POST['filterType' . $i]
+		$cameraTypes[] = (int) $_POST['cameraType' . $i];
+		$filterTypes[] = (int) $_POST['filterType' . $i];
 	}
 }
 else
@@ -41,12 +41,12 @@ else
 	// Product-of-sums (legacy) search
 	foreach ($_POST as $key => $value) 
 	{
-		if(substr($key, 0, 10) === 'cameraType' && $value === 1)
+		if(substr($key, 0, 10) === 'cameraType' && $value === "1")
 		{
 			// Save the selected camera number
 			$cameraTypes[] = (int) substr($key, 10, strlen($key)-10);
 		}
-		elseif(substr($key, 0, 10) === 'filterType' && $value === 1)
+		elseif(substr($key, 0, 10) === 'filterType' && $value === "1")
 		{
 			// Save the selected filter number
 			$filterTypes[] = (int) substr($key, 10, strlen($key)-10);
@@ -99,9 +99,14 @@ else
 			{
             	if ($i > 0)
                 	$query .= " OR ";
-            	$query .= '( camera = ' . $cameraTypes[$i] . ' AND filter = ' . $filterTypes[$i] . ')';
+            	$query .= "( camera = " . $cameraTypes[$i] . " AND filter = " . $filterTypes[$i] . " )";
 			}
-       		$query .= " ) ";					
+       		$query .= " )";					
+		}
+		else
+		{
+			// If no pairs were selected then form impossible condition so query will return nothing
+			$query .= " AND ( camera = 0 AND camera = 1 )";
 		}
 	}
 	else
@@ -127,7 +132,12 @@ else
            	 	$query .= " OR ";
             	$query .= " filter = " . $filterTypes[$i];
      	   	}
-       		$query .= " ) ";
+       		$query .= " )";
+    	}
+    	else
+    	{
+			// If no cameras were selected then form impossible condition so query will return nothing
+			$query .= " AND ( camera = 0 AND camera = 1 )";    	
     	}
 	}
 
