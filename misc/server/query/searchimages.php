@@ -1,5 +1,6 @@
 <?php
 
+// Get posted data that we know the keys to
 $imagesDatabase=$_POST['imagesDatabase'];
 $cubesDatabase=$_POST['cubesDatabase'];
 $searchString=$_POST['searchString'];
@@ -15,108 +16,43 @@ $minEmission=(float)$_POST['minEmission'];
 $maxEmission=(float)$_POST['maxEmission'];
 $minPhase=(float)$_POST['minPhase'];
 $maxPhase=(float)$_POST['maxPhase'];
-$cameraType1=$_POST['cameraType1'] + 0;
-$cameraType2=$_POST['cameraType2'] + 0;
-$cameraType3=$_POST['cameraType3'] + 0;
-$cameraType4=$_POST['cameraType4'] + 0;
-$cameraType5=$_POST['cameraType5'] + 0;
-$cameraType6=$_POST['cameraType6'] + 0;
-$cameraType7=$_POST['cameraType7'] + 0;
-$cameraType8=$_POST['cameraType8'] + 0;
-$cameraType9=$_POST['cameraType9'] + 0;
-$cameraType10=$_POST['cameraType10'] + 0;
-$filterType1=$_POST['filterType1'] + 0;
-$filterType2=$_POST['filterType2'] + 0;
-$filterType3=$_POST['filterType3'] + 0;
-$filterType4=$_POST['filterType4'] + 0;
-$filterType5=$_POST['filterType5'] + 0;
-$filterType6=$_POST['filterType6'] + 0;
-$filterType7=$_POST['filterType7'] + 0;
-$filterType8=$_POST['filterType8'] + 0;
-$filterType9=$_POST['filterType9'] + 0;
-$filterType10=$_POST['filterType10'] + 0;
-$filterType11=$_POST['filterType11'] + 0;
-$filterType12=$_POST['filterType12'] + 0;
-$filterType13=$_POST['filterType13'] + 0;
-$filterType14=$_POST['filterType14'] + 0;
-$filterType15=$_POST['filterType15'] + 0;
-$filterType16=$_POST['filterType16'] + 0;
-$filterType17=$_POST['filterType17'] + 0;
-$filterType18=$_POST['filterType18'] + 0;
-$filterType19=$_POST['filterType19'] + 0;
-$filterType20=$_POST['filterType20'] + 0;
-$filterType21=$_POST['filterType21'] + 0;
-$filterType22=$_POST['filterType22'] + 0;
 $cubesStr=$_POST['cubes'];
 $limbType=$_POST['limbType'] + 0;
 
+// Go through all posted data and create lists of selected camera and filter type numbers
+$sumOfProductsSearch=$_POST['sumOfProductsSearch'];
 $filterTypes = array();
-if ($filterType1 == 1)
-	$filterTypes[] = 1;
-if ($filterType2 == 1)
-	$filterTypes[] = 2;
-if ($filterType3 == 1)
-	$filterTypes[] = 3;
-if ($filterType4 == 1)
-	$filterTypes[] = 4;
-if ($filterType5 == 1)
-	$filterTypes[] = 5;
-if ($filterType6 == 1)
-	$filterTypes[] = 6;
-if ($filterType7 == 1)
-	$filterTypes[] = 7;
-if ($filterType8 == 1)
-	$filterTypes[] = 8;
-if ($filterType9 == 1)
-	$filterTypes[] = 9;
-if ($filterType10 == 1)
-	$filterTypes[] = 10;
-if ($filterType11 == 1)
-	$filterTypes[] = 11;
-if ($filterType12 == 1)
-	$filterTypes[] = 12;
-if ($filterType13 == 1)
-	$filterTypes[] = 13;
-if ($filterType14 == 1)
-	$filterTypes[] = 14;
-if ($filterType15 == 1)
-	$filterTypes[] = 15;
-if ($filterType16 == 1)
-	$filterTypes[] = 16;
-if ($filterType17 == 1)
-	$filterTypes[] = 17;
-if ($filterType18 == 1)
-	$filterTypes[] = 18;
-if ($filterType19 == 1)
-	$filterTypes[] = 19;
-if ($filterType20 == 1)
-	$filterTypes[] = 20;
-if ($filterType21 == 1)
-	$filterTypes[] = 21;
-if ($filterType22 == 1)
-	$filterTypes[] = 22;
-
 $cameraTypes = array();
-if ($cameraType1 == 1)
-	$cameraTypes[] = 1;
-if ($cameraType2 == 1)
-	$cameraTypes[] = 2;
-if ($cameraType3 == 1)
-	$cameraTypes[] = 3;
-if ($cameraType4 == 1)
-	$cameraTypes[] = 4;
-if ($cameraType5 == 1)
-	$cameraTypes[] = 5;
-if ($cameraType6 == 1)
-	$cameraTypes[] = 6;
-if ($cameraType7 == 1)
-	$cameraTypes[] = 7;
-if ($cameraType8 == 1)
-	$cameraTypes[] = 8;
-if ($cameraType9 == 1)
-	$cameraTypes[] = 9;
-if ($cameraType10 == 1)
-	$cameraTypes[] = 10;
+
+// Extract user specified camera/filter types based on what kind of search we are doing
+if($sumOfProductsSearch === 1)
+{
+	// Sum-of-products (hierarchical) search
+	$numProducts = $_POST['numProducts'];
+	for ($i=0; $i<$numProducts; $i++)
+	{
+		// Save the selected camera/filter pair
+		$cameraTypes[] = (int) $_POST['cameraType' . $i]
+		$filterTypes[] = (int) $_POST['filterType' . $i]
+	}
+}
+else
+{
+	// Product-of-sums (legacy) search
+	foreach ($_POST as $key => $value) 
+	{
+		if(substr($key, 0, 10) === 'cameraType' && $value === 1)
+		{
+			// Save the selected camera number
+			$cameraTypes[] = (int) substr($key, 10, strlen($key)-10);
+		}
+		elseif(substr($key, 0, 10) === 'filterType' && $value === 1)
+		{
+			// Save the selected filter number
+			$filterTypes[] = (int) substr($key, 10, strlen($key)-10);
+		}
+	}
+}
 
 $username="nearuser";
 $password="n3ar!usr";
@@ -125,7 +61,8 @@ $host="sd-mysql.jhuapl.edu:3306";
 
 
 $link = mysql_connect($host,$username,$password);
-if (!$link) {
+if (!$link) 
+{
     die('Could not connect: ' . mysql_error());
 }
 @mysql_select_db($database) or die("died!");
@@ -152,30 +89,47 @@ else
     $query .= " AND min_horizontal_pixel_scale <= " . $maxResolution;
     $query .= " AND max_horizontal_pixel_scale >= " . $minResolution;
 
-    if (count($cameraTypes) > 0)
-    {
-        $query .= " AND ( ";
-        for ($i = 0; $i < count($cameraTypes); $i++)
-        {
-            if ($i > 0)
-                $query .= " OR ";
-            $query .= " camera = " . $cameraTypes[$i];
-        }
-        $query .= " ) ";
-    }
+	if($sumOfProductsSearch === 1)
+	{
+		// Sum-of-products (hierarchical) search
+		if (count($cameraTypes) > 0)
+		{	
+        	$query .= " AND ( ";
+			for ($i = 0; $i < count($cameraTypes); $i++)
+			{
+            	if ($i > 0)
+                	$query .= " OR ";
+            	$query .= '( camera = ' . $cameraTypes[$i] . ' AND filter = ' . $filterTypes[$i] . ')';
+			}
+       		$query .= " ) ";					
+		}
+	}
+	else
+	{
+		// Product-of-sums (legacy) search
+		if (count($cameraTypes) > 0)
+	 	{
+        	$query .= " AND ( ";
+        	for ($i = 0; $i < count($cameraTypes); $i++)
+        	{
+            	if ($i > 0)
+                	$query .= " OR ";
+           		$query .= " camera = " . $cameraTypes[$i];
+        	}
+        	$query .= " ) ";
 
-    if (count($filterTypes) > 0)
-    {
-        // Note we need to include filters with id equal to -1 since that
-        // will match cameras with only one filter (which get assigned to -1)
-        $query .= " AND ( filter = -1 ";
-        for ($i = 0; $i < count($filterTypes); $i++)
-        {
-            $query .= " OR ";
-            $query .= " filter = " . $filterTypes[$i];
-        }
-        $query .= " ) ";
-    }
+        	// Note we need to include filters with id equal to -1 since that
+        	// will match cameras with only one filter (which get assigned to -1)
+        	$query .= " AND ( filter = -1 ";
+
+        	for ($i = 0; $i < count($filterTypes); $i++)
+        	{
+           	 	$query .= " OR ";
+            	$query .= " filter = " . $filterTypes[$i];
+     	   	}
+       		$query .= " ) ";
+    	}
+	}
 
     if ($limbType == 1)
         $query .= " AND has_limb = 1";

@@ -2445,13 +2445,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
-            List<Boolean> filtersChecked = new ArrayList<Boolean>();
-            int numberOfFilters = getNumberOfFiltersActuallyUsed();
-            for (int i=0; i<numberOfFilters; ++i)
-            {
-                filtersChecked.add(filterCheckBoxes[i].isSelected());
-            }
-
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
                 searchField = searchByNumberTextField.getText().trim();
@@ -2503,35 +2496,62 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
 
-            List<Boolean> userDefinedChecked = new ArrayList<Boolean>();
-            int numberOfUserDefined = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-            for (int i=0; i<numberOfUserDefined; ++i)
-            {
-                userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
-            }
-
-            // If using hierarchical image search, determine what boxes were checked
+            // Populate camera and filter list differently based on if we are doing sum-of-products or product-of-sums search
+            boolean sumOfProductsSearch;
+            List<Integer> camerasSelected;
+            List<Integer> filtersSelected;
             if(smallBodyConfig.hasHierarchicalImageSearch)
             {
-                // Process the selections
+                // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
+                sumOfProductsSearch = true;
+
+                // Process the user's selections
                 smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
                         checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
 
                 // Get the selected (camera,filter) pairs
-                smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
-                smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
+                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+            }
+            else
+            {
+                // Product of sums (legacy) search: (CAMERA 1 OR ... OR CAMERA N) AND (FILTER 1 OR ... FILTER M)
+                sumOfProductsSearch = false;
+
+                // Populate list of selected cameras
+                camerasSelected = new LinkedList<Integer>();
+                int numberOfCameras = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                for (int i=0; i<numberOfCameras; i++)
+                {
+                    if(userDefinedCheckBoxes[i].isSelected())
+                    {
+                        camerasSelected.add(i);
+                    }
+                }
+
+                // Populate list of selected filters
+                filtersSelected = new LinkedList<Integer>();
+                int numberOfFilters = getNumberOfFiltersActuallyUsed();
+                for (int i=0; i<numberOfFilters; i++)
+                {
+                    if(filterCheckBoxes[i].isSelected())
+                    {
+                        filtersSelected.add(i);
+                    }
+                }
             }
 
+            // Run queries based on user specifications
             List<List<String>> results = null;
-
             if (instrument.spectralMode == SpectralMode.MULTI)
             {
                 results = instrument.searchQuery.runQuery(
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2554,8 +2574,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2578,8 +2599,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2606,8 +2628,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         "",
                         startDateJoda,
                         endDateJoda,
-                        filtersChecked,
-                        userDefinedChecked,
+                        sumOfProductsSearch,
+                        camerasSelected,
+                        filtersSelected,
                         Double.parseDouble(fromDistanceTextField.getText()),
                         Double.parseDouble(toDistanceTextField.getText()),
                         Double.parseDouble(fromResolutionTextField.getText()),
