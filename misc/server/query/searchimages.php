@@ -20,7 +20,11 @@ $cubesStr=$_POST['cubes'];
 $limbType=$_POST['limbType'] + 0;
 
 // Go through all posted data and create lists of selected camera and filter type numbers
-$sumOfProductsSearch=$_POST['sumOfProductsSearch'] + 0;
+$sumOfProductsSearch=0;
+if(isset($_POST['sumOfProductsSearch']))
+{
+	$sumOfProductsSearch=$_POST['sumOfProductsSearch'] + 0;
+}
 $cameraTypes = array();
 $filterTypes = array();
 
