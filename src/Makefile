@@ -242,6 +242,8 @@ ${pub_linux_zip} : ${NEARJAR}
 		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
+		cp ${jogl_dir}/jogl-all-natives-linux-amd64.jar ${pub_linux_sbmt_lib_dir}
 		cp ${SAAVTKJAR} ${pub_linux_sbmt_lib_dir}
 		cp ${NEARJAR} ${pub_linux_sbmt_lib_dir}
 		cp -R ${vtk_dir}/linux64 ${pub_linux_sbmt_lib_dir}
