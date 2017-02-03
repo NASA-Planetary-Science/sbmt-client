@@ -116,33 +116,29 @@ else
 	else
 	{
 		// Product-of-sums (legacy) search
-		if (count($cameraTypes) > 0)
-	 	{
-        	$query .= " AND ( ";
-        	for ($i = 0; $i < count($cameraTypes); $i++)
-        	{
-            	if ($i > 0)
-                	$query .= " OR ";
-           		$query .= " camera = " . $cameraTypes[$i];
-        	}
-        	$query .= " ) ";
+		// Add -1 to camera and filter types
+		$cameraTypes[] = -1;
+		$filterTypes[] = -1;
 
-        	// Note we need to include filters with id equal to -1 since that
-        	// will match cameras with only one filter (which get assigned to -1)
-        	$query .= " AND ( filter = -1 ";
-
-        	for ($i = 0; $i < count($filterTypes); $i++)
-        	{
-           	 	$query .= " OR ";
-            	$query .= " filter = " . $filterTypes[$i];
-     	   	}
-       		$query .= " )";
-    	}
-    	else
+		// Add camera queries	
+    	$query .= " AND ( ";
+    	for ($i = 0; $i < count($cameraTypes); $i++)
     	{
-			// If no cameras were selected then form impossible condition so query will return nothing
-			$query .= " AND ( camera = 0 AND camera = 1 )";    	
+        	if ($i > 0)
+            	$query .= " OR ";
+       		$query .= " camera = " . $cameraTypes[$i];
     	}
+    	$query .= " ) ";
+
+		// Add filter queries
+    	$query .= " AND ( ";
+    	for ($i = 0; $i < count($filterTypes); $i++)
+    	{
+        	if ($i > 0)
+	       	 	$query .= " OR ";
+        	$query .= " filter = " . $filterTypes[$i];
+ 	   	}
+   		$query .= " )";
 	}
 
     if ($limbType == 1)
