@@ -312,7 +312,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
-        boolean showSourceLabelAndComboBox = imageSources.length > 1 ? true : false;
+        boolean showSourceLabelAndComboBox = true; //imageSources.length > 1 ? true : false;
         sourceLabel.setVisible(showSourceLabelAndComboBox);
         sourceComboBox.setVisible(showSourceLabelAndComboBox);
 
