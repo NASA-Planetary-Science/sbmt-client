@@ -2206,7 +2206,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(monochromePanel, gridBagConstraints);
 
-        hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(300, 500));
+        hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(300, 200));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
