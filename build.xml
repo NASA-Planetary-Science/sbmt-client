@@ -26,7 +26,7 @@
  	      <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/data"/>
  	</copy>
  	
- 	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! (I guess that means Mike Z is a hacker... cool...) </echo>
+ 	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
  	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
  	
     <javac srcdir="${rootSAAVTKdir}/src"
@@ -50,6 +50,10 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
       </classpath>
     </javac>
   </target>
@@ -100,6 +104,10 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
       </classpath>
     </javac>
@@ -136,6 +144,10 @@
             vtk-${vtkVersion}.jar
             jogl-all.jar
             gluegen-rt.jar
+	    gluegen-rt-natives-linux-amd64.jar
+	    jogl-all-natives-linux-amd64.jar
+	    gluegen-rt-natives-macosx-universal.jar
+	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
             altwg-java-tools.jar
             jide-oss-3.6.9.jar
@@ -181,6 +193,10 @@
             vtk-${vtkVersion}.jar
             jogl-all.jar
             gluegen-rt.jar
+	    gluegen-rt-natives-linux-amd64.jar
+	    jogl-all-natives-linux-amd64.jar
+	    gluegen-rt-natives-macosx-universal.jar
+	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
             altwg-java-tools.jar
             jide-oss-3.6.9.jar
@@ -214,6 +230,10 @@
                                             vtk-${vtkVersion}.jar
                                             jogl-all.jar
                                             gluegen-rt.jar
+	    				    gluegen-rt-natives-linux-amd64.jar
+					    jogl-all-natives-linux-amd64.jar
+					    gluegen-rt-natives-macosx-universal.jar
+	  				    jogl-all-natives-macosx-universal.jar
                                             "/>
         <attribute name="Main-Class" value="edu.jhuapl.saavtk.example.ExampleTool"/>
       </manifest>
@@ -340,6 +360,10 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
+	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+	<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
         <pathelement location="${rootdir}/build/jar/near.jar"/>
 
