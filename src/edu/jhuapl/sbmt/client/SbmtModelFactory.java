@@ -85,6 +85,7 @@ public class SbmtModelFactory
 
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
+                ImageSource.GASKELL_UPDATED.equals(key.source) ||
                 ImageSource.LABEL.equals(key.source) ||
                 ImageSource.CORRECTED_SPICE.equals(key.source) ||
                 ImageSource.CORRECTED.equals(key.source))

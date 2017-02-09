@@ -36,6 +36,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -49,10 +50,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
 import vtk.vtkPolyData;
@@ -91,6 +92,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
+import nom.tam.fits.FitsException;
+
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
@@ -108,6 +111,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImageKey selectedBlueKey;
     private JCheckBox[] filterCheckBoxes;
     private JCheckBox[] userDefinedCheckBoxes;
+    protected CheckBoxTree checkBoxTree;
 
     protected ImagingInstrument instrument = new ImagingInstrument();
 
@@ -175,7 +179,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
         imageCubes.addPropertyChangeListener(this);
-        
+
         imageCubesDisplayedList.addListSelectionListener(this);
 
         // Hide gallery if not APL internal mode
@@ -189,7 +193,33 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        searchByNumberTextField.setText("N46055787522");
         //searchByNumberTextField.setText("W46990353518");
 
+        // Setup hierarchical image search
+        initHierarchicalImageSearch();
+
         return this;
+    }
+
+    // Sets up everything related to hierarchical image searches
+    protected void initHierarchicalImageSearch()
+    {
+        // Show/hide panels depending on whether this body has hierarchical image search capabilities
+        if(smallBodyConfig.hasHierarchicalImageSearch)
+        {
+            // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
+            filterCheckBoxPanel.setVisible(false);
+            userDefinedCheckBoxPanel.setVisible(false);
+
+            // Create the tree
+            checkBoxTree = new CheckBoxTree(smallBodyConfig.hierarchicalImageSearchSpecification.getTreeModel());
+
+            // Place the tree in the panel
+            this.hierarchicalSearchScrollPane.setViewportView(checkBoxTree);
+        }
+        else
+        {
+            // No hierarchical search capabilities, hide the scroll pane
+            hierarchicalSearchScrollPane.setVisible(false);
+        }
     }
 
     protected void initExtraComponents()
@@ -282,7 +312,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
-        boolean showSourceLabelAndComboBox = imageSources.length > 1 ? true : false;
+        boolean showSourceLabelAndComboBox = true; //imageSources.length > 1 ? true : false;
         sourceLabel.setVisible(showSourceLabelAndComboBox);
         sourceComboBox.setVisible(showSourceLabelAndComboBox);
 
@@ -926,7 +956,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         sourceLabel = new javax.swing.JLabel();
         sourceComboBox = new javax.swing.JComboBox();
         excludeGaskellCheckBox = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
+        filterCheckBoxPanel = new javax.swing.JPanel();
         filter1CheckBox = new javax.swing.JCheckBox();
         filter3CheckBox = new javax.swing.JCheckBox();
         filter5CheckBox = new javax.swing.JCheckBox();
@@ -1009,7 +1039,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel11 = new javax.swing.JPanel();
         hasLimbComboBox = new javax.swing.JComboBox();
         hasLimbLabel = new javax.swing.JLabel();
-        jPanel12 = new javax.swing.JPanel();
+        userDefinedCheckBoxPanel = new javax.swing.JPanel();
         userDefined1CheckBox = new javax.swing.JCheckBox();
         userDefined2CheckBox = new javax.swing.JCheckBox();
         userDefined3CheckBox = new javax.swing.JCheckBox();
@@ -1041,6 +1071,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jScrollPane5 = new javax.swing.JScrollPane();
         imageCubesDisplayedList = new javax.swing.JList();
         monochromePanel = new javax.swing.JPanel();
+        hierarchicalSearchScrollPane = new javax.swing.JScrollPane();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -1132,7 +1163,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         jPanel8.add(jPanel1, gridBagConstraints);
 
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        filterCheckBoxPanel.setLayout(new java.awt.GridBagLayout());
 
         filter1CheckBox.setSelected(true);
         filter1CheckBox.setText("Filter 1");
@@ -1141,7 +1172,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 7, 0, 0);
-        jPanel2.add(filter1CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter1CheckBox, gridBagConstraints);
 
         filter3CheckBox.setSelected(true);
         filter3CheckBox.setText("Filter 3");
@@ -1150,7 +1181,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter3CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter3CheckBox, gridBagConstraints);
 
         filter5CheckBox.setSelected(true);
         filter5CheckBox.setText("Filter 5");
@@ -1159,7 +1190,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter5CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter5CheckBox, gridBagConstraints);
 
         filter7CheckBox.setSelected(true);
         filter7CheckBox.setText("Filter 7");
@@ -1169,7 +1200,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.ipadx = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter7CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter7CheckBox, gridBagConstraints);
 
         filter2CheckBox.setSelected(true);
         filter2CheckBox.setText("Filter 2");
@@ -1178,7 +1209,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 8, 0, 0);
-        jPanel2.add(filter2CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter2CheckBox, gridBagConstraints);
 
         filter4CheckBox.setSelected(true);
         filter4CheckBox.setText("Filter 4");
@@ -1187,7 +1218,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter4CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter4CheckBox, gridBagConstraints);
 
         filter6CheckBox.setSelected(true);
         filter6CheckBox.setText("Filter 6");
@@ -1196,7 +1227,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter6CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter6CheckBox, gridBagConstraints);
 
         filter8CheckBox.setSelected(true);
         filter8CheckBox.setText("Filter 8");
@@ -1205,7 +1236,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter8CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter8CheckBox, gridBagConstraints);
 
         filter9CheckBox.setSelected(true);
         filter9CheckBox.setText("Filter 9");
@@ -1214,7 +1245,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter9CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter9CheckBox, gridBagConstraints);
 
         filter10CheckBox.setSelected(true);
         filter10CheckBox.setText("Filter 10");
@@ -1223,7 +1254,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter10CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter10CheckBox, gridBagConstraints);
 
         filter11CheckBox.setSelected(true);
         filter11CheckBox.setText("Filter 11");
@@ -1232,7 +1263,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter11CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter11CheckBox, gridBagConstraints);
 
         filter12CheckBox.setSelected(true);
         filter12CheckBox.setText("Filter 12");
@@ -1241,7 +1272,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter12CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter12CheckBox, gridBagConstraints);
 
         filter13CheckBox.setSelected(true);
         filter13CheckBox.setText("Filter 13");
@@ -1250,7 +1281,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 7, 0, 0);
-        jPanel2.add(filter13CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter13CheckBox, gridBagConstraints);
 
         filter15CheckBox.setSelected(true);
         filter15CheckBox.setText("Filter 15");
@@ -1259,7 +1290,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter15CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter15CheckBox, gridBagConstraints);
 
         filter17CheckBox.setSelected(true);
         filter17CheckBox.setText("Filter 17");
@@ -1268,7 +1299,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter17CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter17CheckBox, gridBagConstraints);
 
         filter19CheckBox.setSelected(true);
         filter19CheckBox.setText("Filter 19");
@@ -1278,7 +1309,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.ipadx = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter19CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter19CheckBox, gridBagConstraints);
 
         filter14CheckBox.setSelected(true);
         filter14CheckBox.setText("Filter 14");
@@ -1287,7 +1318,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 8, 0, 0);
-        jPanel2.add(filter14CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter14CheckBox, gridBagConstraints);
 
         filter16CheckBox.setSelected(true);
         filter16CheckBox.setText("Filter 16");
@@ -1297,7 +1328,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter16CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter16CheckBox, gridBagConstraints);
 
         filter18CheckBox.setSelected(true);
         filter18CheckBox.setText("Filter 18");
@@ -1306,7 +1337,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter18CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter18CheckBox, gridBagConstraints);
 
         filter20CheckBox.setSelected(true);
         filter20CheckBox.setText("Filter 20");
@@ -1315,7 +1346,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter20CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter20CheckBox, gridBagConstraints);
 
         filter21CheckBox.setSelected(true);
         filter21CheckBox.setText("Filter 21");
@@ -1324,7 +1355,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 7, 0, 0);
-        jPanel2.add(filter21CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter21CheckBox, gridBagConstraints);
 
         filter22CheckBox.setSelected(true);
         filter22CheckBox.setText("Filter 22");
@@ -1333,13 +1364,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 6);
-        jPanel2.add(filter22CheckBox, gridBagConstraints);
+        filterCheckBoxPanel.add(filter22CheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel8.add(jPanel2, gridBagConstraints);
+        jPanel8.add(filterCheckBoxPanel, gridBagConstraints);
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -1583,7 +1614,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         jPanel8.add(jPanel3, gridBagConstraints);
@@ -1613,7 +1644,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(1, 5, 0, 0);
         jPanel8.add(jPanel4, gridBagConstraints);
@@ -1657,7 +1688,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
         jPanel8.add(jPanel5, gridBagConstraints);
 
@@ -1710,7 +1741,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
@@ -1765,7 +1796,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         jPanel8.add(jPanel7, gridBagConstraints);
@@ -1787,7 +1818,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 21;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel9, gridBagConstraints);
@@ -1872,7 +1903,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 21;
+        gridBagConstraints.gridy = 22;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
@@ -1893,7 +1924,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 23;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane3, gridBagConstraints);
 
@@ -1914,10 +1945,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         jPanel8.add(jPanel11, gridBagConstraints);
 
-        jPanel12.setLayout(new java.awt.GridBagLayout());
+        userDefinedCheckBoxPanel.setLayout(new java.awt.GridBagLayout());
 
         userDefined1CheckBox.setSelected(true);
         userDefined1CheckBox.setText("userDefined1");
@@ -1926,7 +1957,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined1CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined1CheckBox, gridBagConstraints);
 
         userDefined2CheckBox.setSelected(true);
         userDefined2CheckBox.setText("userDefined2");
@@ -1935,7 +1966,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined2CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined2CheckBox, gridBagConstraints);
 
         userDefined3CheckBox.setSelected(true);
         userDefined3CheckBox.setText("userDefined3");
@@ -1944,7 +1975,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined3CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined3CheckBox, gridBagConstraints);
 
         userDefined4CheckBox.setSelected(true);
         userDefined4CheckBox.setText("userDefined4");
@@ -1953,7 +1984,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined4CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined4CheckBox, gridBagConstraints);
 
         userDefined5CheckBox.setSelected(true);
         userDefined5CheckBox.setText("userDefined5");
@@ -1962,7 +1993,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined5CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined5CheckBox, gridBagConstraints);
 
         userDefined6CheckBox.setSelected(true);
         userDefined6CheckBox.setText("userDefined6");
@@ -1971,7 +2002,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined6CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined6CheckBox, gridBagConstraints);
 
         userDefined7CheckBox.setSelected(true);
         userDefined7CheckBox.setText("userDefined7");
@@ -1980,7 +2011,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined7CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined7CheckBox, gridBagConstraints);
 
         userDefined8CheckBox.setSelected(true);
         userDefined8CheckBox.setText("userDefined8");
@@ -1989,13 +2020,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 6);
-        jPanel12.add(userDefined8CheckBox, gridBagConstraints);
+        userDefinedCheckBoxPanel.add(userDefined8CheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
-        jPanel8.add(jPanel12, gridBagConstraints);
+        jPanel8.add(userDefinedCheckBoxPanel, gridBagConstraints);
 
         jPanel13.setLayout(new java.awt.GridBagLayout());
 
@@ -2024,13 +2055,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         jPanel8.add(jPanel13, gridBagConstraints);
 
         jPanel14.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 11;
         jPanel8.add(jPanel14, gridBagConstraints);
 
         jPanel15.setLayout(new java.awt.GridBagLayout());
@@ -2064,7 +2095,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 12;
         jPanel8.add(jPanel15, gridBagConstraints);
 
         jPanel16.setLayout(new java.awt.GridBagLayout());
@@ -2079,11 +2110,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 14;
         jPanel8.add(jPanel16, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 23;
+        gridBagConstraints.gridy = 24;
         jPanel8.add(jPanel17, gridBagConstraints);
 
         removeColorImageButton.setText("Remove Color Image");
@@ -2104,7 +2135,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 22;
+        gridBagConstraints.gridy = 23;
         jPanel8.add(jPanel18, gridBagConstraints);
 
         jPanel20.setLayout(new java.awt.GridBagLayout());
@@ -2124,7 +2155,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridy = 17;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
         jPanel8.add(jPanel20, gridBagConstraints);
@@ -2147,7 +2178,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
+        gridBagConstraints.gridy = 18;
         jPanel8.add(jPanel19, gridBagConstraints);
 
         jScrollPane5.setPreferredSize(new java.awt.Dimension(300, 100));
@@ -2165,15 +2196,23 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridy = 19;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel8.add(jScrollPane5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 19;
+        gridBagConstraints.gridy = 20;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel8.add(monochromePanel, gridBagConstraints);
+
+        hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(300, 200));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        jPanel8.add(hierarchicalSearchScrollPane, gridBagConstraints);
 
         jScrollPane2.setViewportView(jPanel8);
 
@@ -2394,6 +2433,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
         ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeImages(ImageSource.GASKELL);
+        model.removeImages(ImageSource.GASKELL_UPDATED);
         model.removeImages(ImageSource.SPICE);
         model.removeImages(ImageSource.CORRECTED_SPICE);
         model.removeImages(ImageSource.CORRECTED);
@@ -2405,13 +2445,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
-
-            List<Boolean> filtersChecked = new ArrayList<Boolean>();
-            int numberOfFilters = getNumberOfFiltersActuallyUsed();
-            for (int i=0; i<numberOfFilters; ++i)
-            {
-                filtersChecked.add(filterCheckBoxes[i].isSelected());
-            }
 
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
@@ -2464,13 +2497,52 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
 
-            List<Boolean> userDefinedChecked = new ArrayList<Boolean>();
-            int numberOfUserDefined = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-            for (int i=0; i<numberOfUserDefined; ++i)
+            // Populate camera and filter list differently based on if we are doing sum-of-products or product-of-sums search
+            boolean sumOfProductsSearch;
+            List<Integer> camerasSelected;
+            List<Integer> filtersSelected;
+            if(smallBodyConfig.hasHierarchicalImageSearch)
             {
-                userDefinedChecked.add(userDefinedCheckBoxes[i].isSelected());
+                // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
+                sumOfProductsSearch = true;
+
+                // Process the user's selections
+                smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
+                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+
+                // Get the selected (camera,filter) pairs
+                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
+                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+            }
+            else
+            {
+                // Product of sums (legacy) search: (CAMERA 1 OR ... OR CAMERA N) AND (FILTER 1 OR ... FILTER M)
+                sumOfProductsSearch = false;
+
+                // Populate list of selected cameras
+                camerasSelected = new LinkedList<Integer>();
+                int numberOfCameras = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                for (int i=0; i<numberOfCameras; i++)
+                {
+                    if(userDefinedCheckBoxes[i].isSelected())
+                    {
+                        camerasSelected.add(i);
+                    }
+                }
+
+                // Populate list of selected filters
+                filtersSelected = new LinkedList<Integer>();
+                int numberOfFilters = getNumberOfFiltersActuallyUsed();
+                for (int i=0; i<numberOfFilters; i++)
+                {
+                    if(filterCheckBoxes[i].isSelected())
+            {
+                        filtersSelected.add(i);
+                    }
+                }
             }
 
+            // Run queries based on user specifications
             List<List<String>> results = null;
 
             if (instrument.spectralMode == SpectralMode.MULTI)
@@ -2479,8 +2551,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2503,8 +2576,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2527,8 +2601,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     "",
                     startDateJoda,
                     endDateJoda,
-                    filtersChecked,
-                    userDefinedChecked,
+                    sumOfProductsSearch,
+                    camerasSelected,
+                    filtersSelected,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     Double.parseDouble(fromResolutionTextField.getText()),
@@ -2555,8 +2630,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         "",
                         startDateJoda,
                         endDateJoda,
-                        filtersChecked,
-                        userDefinedChecked,
+                        sumOfProductsSearch,
+                        camerasSelected,
+                        filtersSelected,
                         Double.parseDouble(fromDistanceTextField.getText()),
                         Double.parseDouble(toDistanceTextField.getText()),
                         Double.parseDouble(fromResolutionTextField.getText()),
@@ -3055,6 +3131,15 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         }
 
+        protected JComboBox getNumberOfBoundariesComboBox()
+        {
+            return numberOfBoundariesComboBox;
+        }
+
+        protected JTable getResultList()
+        {
+            return resultList;
+        }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
@@ -3092,6 +3177,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JCheckBox filter7CheckBox;
     private javax.swing.JCheckBox filter8CheckBox;
     private javax.swing.JCheckBox filter9CheckBox;
+    private javax.swing.JPanel filterCheckBoxPanel;
     private javax.swing.JLabel fromDistanceLabel;
     private javax.swing.JFormattedTextField fromDistanceTextField;
     private javax.swing.JLabel fromEmissionLabel;
@@ -3109,6 +3195,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JLabel greenLabel;
     private javax.swing.JComboBox hasLimbComboBox;
     private javax.swing.JLabel hasLimbLabel;
+    private javax.swing.JScrollPane hierarchicalSearchScrollPane;
     private javax.swing.JList imageCubesDisplayedList;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -3116,7 +3203,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -3124,7 +3210,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -3142,7 +3227,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton loadImageListButton;
     private javax.swing.JPanel monochromePanel;
     private javax.swing.JButton nextButton;
-    protected javax.swing.JComboBox numberOfBoundariesComboBox;
+    private javax.swing.JComboBox numberOfBoundariesComboBox;
     private javax.swing.JButton prevButton;
     private javax.swing.JButton redButton;
     private javax.swing.JComboBox redComboBox;
@@ -3151,7 +3236,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton removeAllImagesButton;
     private javax.swing.JButton removeColorImageButton;
     private javax.swing.JButton removeImageCubeButton;
-    protected javax.swing.JTable resultList;
+    private javax.swing.JTable resultList;
     private javax.swing.JLabel resultsLabel;
     private javax.swing.JButton saveImageListButton;
     private javax.swing.JButton saveSelectedImageListButton;
@@ -3181,6 +3266,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JCheckBox userDefined6CheckBox;
     private javax.swing.JCheckBox userDefined7CheckBox;
     private javax.swing.JCheckBox userDefined8CheckBox;
+    private javax.swing.JPanel userDefinedCheckBoxPanel;
     private javax.swing.JButton viewResultsGalleryButton;
     // End of variables declaration//GEN-END:variables
 }

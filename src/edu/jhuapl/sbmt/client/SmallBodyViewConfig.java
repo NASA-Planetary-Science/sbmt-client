@@ -15,6 +15,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
 
@@ -59,7 +60,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
                         Instrument.MSI
                         )
         };
@@ -1046,6 +1047,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     "MRO HiRISE",
                     "MGS MOC"
             };
+            c.hasHierarchicalImageSearch = true;
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
