@@ -151,7 +151,7 @@ public class MSIBackplanesGenerator
         //Set up the configuration for MSI GASKELL resolution 3
         String resolution = "3";
         Instrument camera = Instrument.MSI;
-        ImageSource ptg = ImageSource.GASKELL;
+        ImageSource ptg = ImageSource.GASKELL_UPDATED;
         ShapeModelAuthor author = ShapeModelAuthor.GASKELL;
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;

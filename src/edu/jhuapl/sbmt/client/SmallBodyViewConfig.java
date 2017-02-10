@@ -60,7 +60,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
                         Instrument.MSI
                         )
         };

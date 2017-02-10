@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.TreeSet;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -21,12 +19,13 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
-import edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+
+import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -324,7 +323,7 @@ public class DatabaseGeneratorSql
             return false;
 
         // Check for the sumfile if source is Gaskell
-        if (source.equals(ImageSource.GASKELL))
+        if (source.equals(ImageSource.GASKELL) || source.equals(ImageSource.GASKELL_UPDATED))
         {
             File sumfile = new File(image.getSumfileFullPath());
             System.out.println(sumfile);
@@ -348,43 +347,25 @@ public class DatabaseGeneratorSql
         return true;
     }
 
-    String getImagesGaskellTableNames()
+    String getImagesTableNames(ImageSource source)
     {
         if(modifyMain){
-            return databasePrefix.toLowerCase() + "images_gaskell";
+            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "images_gaskell" + betaSuffix;
+            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName() + betaSuffix;
         }
     }
 
-    String getCubesGaskellTableNames()
+    String getCubesTableNames(ImageSource source)
     {
         if(modifyMain){
-            return databasePrefix.toLowerCase() + "cubes_gaskell";
+            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "cubes_gaskell" + betaSuffix;
+            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName() + betaSuffix;
         }
     }
 
-    String getImagesPdsTableNames()
-    {
-        if(modifyMain){
-            return databasePrefix.toLowerCase() + "images_pds";
-        }else{
-            return databasePrefix.toLowerCase() + "images_pds" + betaSuffix;
-        }
-    }
-
-    String getCubesPdsTableNames()
-    {
-        if(modifyMain){
-            return databasePrefix.toLowerCase() + "cubes_pds";
-        }else{
-            return databasePrefix.toLowerCase() + "cubes_pds" + betaSuffix;
-        }
-    }
-
-    public void run(String fileList, int mode) throws IOException
+    public void run(String fileList, ImageSource source) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
@@ -405,32 +386,15 @@ public class DatabaseGeneratorSql
             return;
         }
 
-        String imagesGaskellTable = getImagesGaskellTableNames();
-        String cubesGaskellTable = getCubesGaskellTableNames();
-        String imagesPdsTable = getImagesPdsTableNames();
-        String cubesPdsTable = getCubesPdsTableNames();
+        String imagesTable = getImagesTableNames(source);
+        String cubesTable = getCubesTableNames(source);
 
-        if (mode == 1 || mode == 0)
-        {
-            createTables(imagesGaskellTable);
-            createTablesCubes(cubesGaskellTable);
-        }
-        if (mode == 2 || mode == 0)
-        {
-            createTables(imagesPdsTable);
-            createTablesCubes(cubesPdsTable);
-        }
+        createTables(imagesTable);
+        createTablesCubes(cubesTable);
 
         try
         {
-            if (mode == 1 || mode == 0)
-            {
-                populateTables(files, imagesGaskellTable, cubesGaskellTable, ImageSource.GASKELL);
-            }
-            if (mode == 2 || mode == 0)
-            {
-                populateTables(files, imagesPdsTable, cubesPdsTable, ImageSource.SPICE);
-            }
+            populateTables(files, imagesTable, cubesTable, source);
         }
         catch (Exception e1) {
             e1.printStackTrace();
@@ -512,12 +476,14 @@ public class DatabaseGeneratorSql
     private static void usage()
     {
         String o = "This program generates tables in the MySQL database for a given body.\n\n"
-                + "Usage: DatabaseGeneratorSql [options] <mode> <shapemodel>\n\n"
+                + "Usage: DatabaseGeneratorSql [options] <imagesource> <shapemodel>\n\n"
                 + "Where:\n"
-                + "  <mode>\n"
-                + "          Must be either 0, 1, or 2. If 0, then both Gaskell and PDS (SPICE) tables\n"
-                + "          are generated. If 1, then only Gaskell tables are generated. If 2, then\n"
-                + "          only PDS (SPICE) tables are generated.\n"
+                + "  <imagesource>\n"
+                + "          Must be one of the allowed sources for pointing. The tables for this\n"
+                + "          pointing type will be generated. For example, if GASKELL is selected,\n"
+                + "          then only the Gaskell tables are generated; if SPICE is selected, then\n"
+                + "          only the SPICE (PDS) tables are generated. Allowed values are\n"
+                + ImageSource.printSources(16)
                 + "  <shapemodel>\n"
                 + "          shape model to process. Must be one of the values in the RunInfo enumeration\n"
                 + "          such as EROS or ITOKAWA. If ALL is specified then the entire database is\n"
@@ -538,70 +504,21 @@ public class DatabaseGeneratorSql
         System.exit(1);
     }
 
-
-    private static void authenticate()
-    {
-        Configuration.setAPLVersion(true);
-
-        String username = null;
-        String password = null;
-
-        try
-        {
-            // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
-            // containing the runsbmt script.
-            String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String parent = new File(jarLocation).getParentFile().getParent();
-            String[] passwordFilesToTry = {
-                    Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    parent + File.separator + "password.txt"
-            };
-
-            for (String passwordFile : passwordFilesToTry)
-            {
-                if (new File(passwordFile).exists())
-                {
-                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
-                    if (credentials.size() >= 2)
-                    {
-                        String user = credentials.get(0);
-                        String pass = credentials.get(1);
-
-                        if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
-                            pass != null && pass.trim().length() > 0)
-                        {
-                            username = user.trim();
-                            password = pass.trim();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-        }
-
-        if (username != null && password != null)
-        {
-            Configuration.setupPasswordAuthentication(username, password);
-        }
-        else
-        {
-            System.out.println("Warning: no correctly formatted password file found. "
-                    + "Continuing without password. Certain functionality may not work.");
-        }
-    }
-
     /**
      * @param args
      * @throws IOException
      */
     public static void main(String[] args) throws IOException
     {
-        System.setProperty("java.awt.headless", "true");
+        Configuration.setAppName("neartool");
+        Configuration.setCacheVersion("2");
         Configuration.setAPLVersion(true);
+        SmallBodyViewConfig.initialize();
+        System.setProperty("java.awt.headless", "true");
+
         String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
+        Configuration.setRootURL(rootURL);
+
         boolean appendTables = false;
         boolean modifyMain = false;
 
@@ -628,7 +545,7 @@ public class DatabaseGeneratorSql
         if (args.length - i != numberRequiredArgs)
             usage();
 
-        int mode = Integer.parseInt(args[i++]);
+        ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
         RunInfo[] runInfos = null;
@@ -637,13 +554,9 @@ public class DatabaseGeneratorSql
         else
             runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
 
-        Configuration.setRootURL(rootURL);
+        // VTK and authentication
         NativeLibraryLoader.loadVtkLibrariesHeadless();
-
-        // authenticate
-        authenticate();
-
-
+        Authenticator.authenticate();
 
         for (RunInfo ri : runInfos)
         {

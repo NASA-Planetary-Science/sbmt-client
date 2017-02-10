@@ -131,7 +131,8 @@ public class BackplanesGenerator
             }
             else
             {
-                // Try Gaskell pointing first and if that fails try SPICE pointing
+                // Try Gaskell pointing first and if that fails try SPICE pointing. TBD: update this
+                // to loop through ImageSource.values().
                 try
                 {
                     key = new ImageKey(filename.replace("." + ext, ""), ImageSource.GASKELL, imager);
@@ -293,15 +294,11 @@ public class BackplanesGenerator
                 + "                           Resolution is an integer value ranging from 0 (lowest resolution)\n"
                 + "                           to 3 (highest resolution). Default is to generate backplanes for\n"
                 + "                           all four resolutions.\n"
-                + "  -p <pointing type>       Pointing type. Must be one of\n"
-                + "                           GASKELL,\n"
-                + "                           CORRECTED,\n"
-                + "                           SPICE,\n"
-                + "                           CORRECTED_SPICE.\n"
-                + "                           (case insensitive). Default is to search for GASKELL pointing\n"
-                + "                           first, and if not found to traverse the other pointing types in\n"
-                + "                           the order specified above. Backplanes are generated only for\n"
-                + "                           images with pointing information.\n"
+                + "  -p <pointing type>       Pointing type. Allowed values are (case insensitive)\n"
+                + ImageSource.printSources(34)
+                + "                           Default is to search for GASKELL pointing first and if not found,\n"
+                + "                           to traverse the other pointing types in the order specified above.\n"
+                + "                           Backplanes are generated only for images with pointing information.\n"
                 + "  -s                       Process a single file only. In this case, parameter <image-list>\n"
                 + "                           is the name of a single image file, path is relative to\n"
                 + "                           /project/nearsdc/data/.\n"

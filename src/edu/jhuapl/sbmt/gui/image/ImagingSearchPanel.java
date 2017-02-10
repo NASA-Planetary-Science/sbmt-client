@@ -50,8 +50,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -93,6 +91,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -2433,6 +2433,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_removeAllImagesButtonActionPerformed
         ImageCollection model = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         model.removeImages(ImageSource.GASKELL);
+        model.removeImages(ImageSource.GASKELL_UPDATED);
         model.removeImages(ImageSource.SPICE);
         model.removeImages(ImageSource.CORRECTED_SPICE);
         model.removeImages(ImageSource.CORRECTED);
@@ -2535,7 +2536,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int i=0; i<numberOfFilters; i++)
                 {
                     if(filterCheckBoxes[i].isSelected())
-                    {
+            {
                         filtersSelected.add(i);
                     }
                 }
@@ -2543,6 +2544,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             // Run queries based on user specifications
             List<List<String>> results = null;
+
             if (instrument.spectralMode == SpectralMode.MULTI)
             {
                 results = instrument.searchQuery.runQuery(
