@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.TreeSet;
 
+import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -24,8 +26,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-
-import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -412,7 +412,7 @@ public class DatabaseGeneratorSql
     private enum RunInfo
     {
         EROS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL),
-                "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt"),
+                "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
         ITOKAWA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL),
                 "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
         VESTA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.VESTA, ShapeModelAuthor.GASKELL),
