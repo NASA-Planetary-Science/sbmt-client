@@ -81,7 +81,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 "Filter 7 (1050 nm)"
         };
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
-        c.imageSearchDefaultMaxSpacecraftDistance = 100.0;
+        c.imageSearchDefaultMaxSpacecraftDistance = 1000.0;
         c.imageSearchDefaultMaxResolution = 50.0;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();

@@ -167,6 +167,7 @@ public class DatabaseGeneratorSql
             }
         }
 
+        int totalFiles = imageFiles.size();
         for (String filename : imageFiles)
         {
             // Increment image count (for status message purposes only)
@@ -180,13 +181,13 @@ public class DatabaseGeneratorSql
                     queryResult.get(0) != null && !queryResult.get(0).isEmpty() &&
                     queryResult.get(0).get(0) != null){
 
-                    System.out.println("\n\nskipping image " + count + "  " + filename + ", already in table");
+                    System.out.println("\n\nskipping image " + count + " of " + totalFiles + ": " + filename + ", already in table");
                     continue;
                 }
             }
 
             // If we got to this point, the image is not already in the table so we need to create a new entry
-            System.out.println("\n\nstarting image " + count + "  " + filename);
+            System.out.println("\n\nstarting image " + count + " of " + totalFiles + ": " + filename);
 
             String keyName = filename;
             keyName = keyName.replace(".FIT", "");
