@@ -127,7 +127,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     public String getCurrentBand() { return "0"; }
 
-    protected int mapColumnIndex,hideFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
+    protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
 
 
     protected ModelManager getModelManager()
@@ -284,7 +284,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 "Date"
         };
         mapColumnIndex=0;
-        hideFootprintColumnIndex=1;
+        showFootprintColumnIndex=1;
         frusColumnIndex=2;
         bndrColumnIndex=3;
         idColumnIndex=4;
@@ -298,11 +298,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resultList.setDefaultRenderer(String.class, new StringRenderer());
         resultList.getColumnModel().getColumn(mapColumnIndex).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(hideFootprintColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(mapColumnIndex).setResizable(false);
-        resultList.getColumnModel().getColumn(hideFootprintColumnIndex).setResizable(false);
+        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setResizable(false);
         resultList.getColumnModel().getColumn(frusColumnIndex).setResizable(false);
         resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(false);
         resultList.addMouseListener(this);
@@ -573,13 +573,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 resultList.setValueAt(true, i, mapColumnIndex);
                 PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                resultList.setValueAt(!image.isVisible(), i, hideFootprintColumnIndex);
+                resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
                 resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
             }
             else
             {
                 resultList.setValueAt(false, i, mapColumnIndex);
-                resultList.setValueAt(false, i, hideFootprintColumnIndex);
+                resultList.setValueAt(false, i, showFootprintColumnIndex);
                 resultList.setValueAt(false, i, frusColumnIndex);
             }
 
@@ -916,13 +916,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
                     resultList.setValueAt(true, i, mapColumnIndex);
                     PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                    resultList.setValueAt(!image.isVisible(), i, hideFootprintColumnIndex);
+                    resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
                     resultList.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
                 }
                 else
                 {
                     resultList.setValueAt(false, i, mapColumnIndex);
-                    resultList.setValueAt(false, i, hideFootprintColumnIndex);
+                    resultList.setValueAt(false, i, showFootprintColumnIndex);
                     resultList.setValueAt(false, i, frusColumnIndex);
                 }
                 if (boundaries.containsBoundary(key))
@@ -2972,12 +2972,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             else
                 unloadImages(namePrefix);
         }
-        else if (e.getColumn() == hideFootprintColumnIndex)
+        else if (e.getColumn() == showFootprintColumnIndex)
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
             String namePrefix = name.substring(0, name.length()-4);
-            boolean visible = !(Boolean)resultList.getValueAt(row, hideFootprintColumnIndex);
+            boolean visible = (Boolean)resultList.getValueAt(row, showFootprintColumnIndex);
             setImageVisibility(namePrefix, visible);
         }
         else if (e.getColumn() == frusColumnIndex)
@@ -3072,7 +3072,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == hideFootprintColumnIndex || column == frusColumnIndex)
+            if (column == showFootprintColumnIndex || column == frusColumnIndex)
             {
                 String name = imageRawResults.get(row).get(0);
 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
