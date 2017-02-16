@@ -301,10 +301,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(mapColumnIndex).setResizable(false);
-        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setResizable(false);
-        resultList.getColumnModel().getColumn(frusColumnIndex).setResizable(false);
-        resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(false);
+        resultList.getColumnModel().getColumn(mapColumnIndex).setResizable(true);
+        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setResizable(true);
+        resultList.getColumnModel().getColumn(frusColumnIndex).setResizable(true);
+        resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
 
