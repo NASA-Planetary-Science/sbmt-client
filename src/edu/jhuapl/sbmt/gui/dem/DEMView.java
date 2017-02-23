@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,11 +32,12 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 
+import nom.tam.fits.FitsException;
+
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
-import edu.jhuapl.saavtk.colormap.ColormapControllerWithContouring;
 //import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
@@ -62,11 +61,10 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
+import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-
-import nom.tam.fits.FitsException;
 
 public class DEMView extends JFrame implements WindowListener
 {
@@ -85,9 +83,8 @@ public class DEMView extends JFrame implements WindowListener
     private DEMKey key;
     private DEMCollection demCollection;
     private Renderer renderer;
+    private JButton scaleColoringButton;
     private boolean syncColoring;
-
-    ColormapControllerWithContouring colormapController=new ColormapControllerWithContouring();
 
     private static final String Profile = "Profile";
     private static final String StartLatitude = "StartLatitude";
@@ -128,25 +125,6 @@ public class DEMView extends JFrame implements WindowListener
             dem.setCurrentColoringRange(i, macroDEM.getCurrentColoringRange(i));
         }
         dem.setColoringIndex(macroDEM.getColoringIndex());
-
-        dem.setColormap(colormapController.getColormap());
-        colormapController.addPropertyChangeListener(new PropertyChangeListener()
-        {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt)
-            {
-                dem.setColormap(colormapController.getColormap());
-                dem.setContourLineWidth(colormapController.getLineWidth());
-                dem.showScalarsAsContours(colormapController.getContourLinesRequested());
-                // this is a bit of a hack, but it sets the colorbar's default coloring range from the smallBodyModel data anytime there is a change detected; this doesn't propagate the range to the actual GUI values, it just stores them so that the "Reset Range" button on the colorbarController works
-                double[] range=dem.getCurrentColoringRange(dem.getColoringIndex());
-                colormapController.setDefaultRange(range[0], range[1]);
-            }
-        });
-
-
-
 
         final ModelManager modelManager = new SbmtModelManager(dem);
 
@@ -266,7 +244,7 @@ public class DEMView extends JFrame implements WindowListener
                     if (index == numColors)
                     {
                         // No coloring
-                        colormapController.setEnabled(false);
+                        scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
                         plot.setColoringIndex(-1);
                         if(syncColoring)
@@ -277,14 +255,9 @@ public class DEMView extends JFrame implements WindowListener
                     else
                     {
                         // Coloring
-                        colormapController.setEnabled(true);
+                        scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
                         plot.setColoringIndex(index);
-                        double[] range=dem.getCurrentColoringRange(index);
-                        colormapController.setDefaultRange(range[0], range[1]); // this is in case the reset range button is pressed
-                        colormapController.setMinMax(range[0], range[1]);
-                        colormapController.refresh();
-                        dem.setColormap(colormapController.getColormap());
                         if(syncColoring)
                         {
                             // Get the macroDEM
@@ -298,7 +271,6 @@ public class DEMView extends JFrame implements WindowListener
 
                             // Synchronize coloring index
                             macroDEM.setColoringIndex(index);
-                            macroDEM.setColormap(colormapController.getColormap());
                         }
                     }
                 }
@@ -311,18 +283,18 @@ public class DEMView extends JFrame implements WindowListener
         });
         panel.add(coloringTypeComboBox);
 
-//        scaleColoringButton = new JButton("Rescale Data Range");
+        scaleColoringButton = new JButton("Rescale Data Range");
         if(coloringTypeComboBox.getSelectedIndex() == numColors)
         {
             // Initially no coloring selected, scaling does not make sense
-            colormapController.setEnabled(false);
+            scaleColoringButton.setEnabled(false);
         }
         else
         {
             // Initially a valid coloring type, we can scale
-            colormapController.setEnabled(true);
+            scaleColoringButton.setEnabled(true);
         }
-/*        scaleColoringButton.addActionListener(new ActionListener()
+        scaleColoringButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -330,8 +302,8 @@ public class DEMView extends JFrame implements WindowListener
                 scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
                 scaleDataDialog.setVisible(true);
             }
-        });*/
-        panel.add(colormapController);
+        });
+        panel.add(scaleColoringButton);
 
         newButton = new JButton("New Profile");
         newButton.addActionListener(new ActionListener()
@@ -725,7 +697,6 @@ public class DEMView extends JFrame implements WindowListener
 
                     // Synchronize coloring index
                     macroDEM.setColoringIndex(dem.getColoringIndex());
-
                 }
                 catch (Exception e1)
                 {
