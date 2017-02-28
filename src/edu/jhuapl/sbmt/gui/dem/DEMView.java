@@ -122,7 +122,6 @@ public class DEMView extends JFrame implements WindowListener
         // Set this micro DEM to have the same properties as the macroDEM
         for(int i=0; i<macroDEM.getNumberOfColors(); i++)
         {
-            dem.setColoringIndex(macroDEM.getColoringIndex());
             dem.setCurrentColoringRange(i, macroDEM.getCurrentColoringRange(i));
         }
         dem.setColoringIndex(macroDEM.getColoringIndex());
@@ -267,6 +266,7 @@ public class DEMView extends JFrame implements WindowListener
                             // Synchronize coloring ranges
                             for(int i=0; i<dem.getNumberOfColors(); i++)
                             {
+
                                 macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
                             }
 
