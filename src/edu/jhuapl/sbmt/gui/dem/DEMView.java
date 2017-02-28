@@ -32,8 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 
-import nom.tam.fits.FitsException;
-
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
@@ -65,6 +63,8 @@ import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+
+import nom.tam.fits.FitsException;
 
 public class DEMView extends JFrame implements WindowListener
 {
@@ -122,6 +122,7 @@ public class DEMView extends JFrame implements WindowListener
         // Set this micro DEM to have the same properties as the macroDEM
         for(int i=0; i<macroDEM.getNumberOfColors(); i++)
         {
+            dem.setColoringIndex(macroDEM.getColoringIndex());
             dem.setCurrentColoringRange(i, macroDEM.getCurrentColoringRange(i));
         }
         dem.setColoringIndex(macroDEM.getColoringIndex());
@@ -692,6 +693,7 @@ public class DEMView extends JFrame implements WindowListener
                     // Synchronize coloring ranges
                     for(int i=0; i<dem.getNumberOfColors(); i++)
                     {
+                        macroDEM.setColoringIndex(dem.getColoringIndex());
                         macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
                     }
 
