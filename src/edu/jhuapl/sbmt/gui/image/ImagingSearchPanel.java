@@ -762,6 +762,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
 
         ImageKey firstKey = null;
+        boolean multipleFrustumVisible = false;
 
         List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
         int[] selectedIndices = resultList.getSelectedRows();
@@ -783,22 +784,41 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             // "first key" is indicated by the first image with a visible frustum
-            if (selectedImage.isFrustumShowing() && firstKey == null)
-                firstKey = selectedKey;
+            if (selectedImage.isFrustumShowing())
+             {
+                if(firstKey == null)
+                {
+                    firstKey = selectedKey;
+                }
+                else
+                {
+                    multipleFrustumVisible = true;
+                }
+            }
+
 //            if (!selectedRedKey.band.equals("0"))
 //                imageName = selectedKey.band + ":" + imageName;
         }
 
         if(selectedKeys.size() == 0)
         {
+            // We are in here because no images were selected by user
             JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
                     "At least one image must be selected when generating an image cube.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        if (selectedKeys.size() > 0 && firstKey != null)
+        else if(firstKey == null)
+        {
+            // We are in here because no frustum was selected by user
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "At least one selected image must have its frustum showing when generating an image cube.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else
         {
             PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
 
@@ -816,6 +836,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
                         imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+
+                    if(multipleFrustumVisible)
+                    {
+                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                                "More than one selected image has a visible frustum, image cube was generated using the first such frustum in order of appearance in the image list.",
+                                "Notification",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
                 else
                 {
@@ -824,6 +852,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
                         imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                            "Image cube consisting of same images already exists, no new image cube was generated.",
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             catch (IOException e1)
