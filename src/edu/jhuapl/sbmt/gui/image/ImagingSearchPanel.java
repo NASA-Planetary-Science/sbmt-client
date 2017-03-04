@@ -772,6 +772,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //            System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
+            if(selectedImage == null)
+            {
+                // We are in here because the image is not mapped, display an error message and exit
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "All selected images must be mapped when generating an image cube.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // "first key" is indicated by the first image with a visible frustum
             if (selectedImage.isFrustumShowing() && firstKey == null)
                 firstKey = selectedKey;
