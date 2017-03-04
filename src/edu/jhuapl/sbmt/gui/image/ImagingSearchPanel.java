@@ -779,6 +779,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //                imageName = selectedKey.band + ":" + imageName;
         }
 
+        if(selectedKeys.size() == 0)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "At least one image must be selected when generating an image cube.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (selectedKeys.size() > 0 && firstKey != null)
         {
