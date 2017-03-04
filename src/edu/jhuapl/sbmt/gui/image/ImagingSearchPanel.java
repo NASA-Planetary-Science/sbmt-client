@@ -50,6 +50,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -91,8 +93,6 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
-
-import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -728,7 +728,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             catch (ColorImage.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The 3 images you selected do not overlap.",
+                        "The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -827,7 +827,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             catch (ImageCube.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The 3 images you selected do not overlap.",
+                        "The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
