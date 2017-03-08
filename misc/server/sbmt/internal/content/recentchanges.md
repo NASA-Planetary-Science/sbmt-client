@@ -4,13 +4,22 @@
 
 # Recent Changes
 
+### March 1, 2017
+
+-   Linux version working again
+-   Hierarchical image search specification (Phobos Experimental only)
+-   Fixed bugs with structure control point visibility and DEM properties window colorbar synchronization
+-   User is now notified when client fails attempt to access SQL or data server
+-   Added Gaskell Updated pointing search option to Eros MSI tab
+-	Other minor GUI updates and bugfixes
+
 ### January 24, 2017 (Beta)
 
 -   Fixed bugs in Bennu OLA search, browse, and track panels (leftover from the October 21, 2016 beta release)
--	Added colormap specification and control for scalar plate colorings. Contours can be rendered as filled regions or lines.
--	Fixed structure labels so they are hidden when their footpoint is occluded from view.
--	Corrected band slider synchronization issues with multispectral images.
--	Other minor bugfixes.
+-	Added colormap specification and control for scalar plate colorings, contours can be rendered as filled regions or lines
+-	Fixed structure labels so they are hidden when their footpoint is occluded from view
+-	Corrected band slider synchronization issues with multispectral images
+-	Other minor bugfixes
 
 ### November 19, 2016 (Beta)
 

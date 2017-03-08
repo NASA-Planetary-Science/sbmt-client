@@ -51,6 +51,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import nom.tam.fits.FitsException;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -92,8 +94,6 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
-
-import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -729,7 +729,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             catch (ColorImage.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The 3 images you selected do not overlap.",
+                        "The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -763,6 +763,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
 
         ImageKey firstKey = null;
+        boolean multipleFrustumVisible = false;
 
         List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
         int[] selectedIndices = resultList.getSelectedRows();
@@ -774,15 +775,52 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //            System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
+            if(selectedImage == null)
+            {
+                // We are in here because the image is not mapped, display an error message and exit
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "All selected images must be mapped when generating an image cube.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // "first key" is indicated by the first image with a visible frustum
-            if (selectedImage.isFrustumShowing() && firstKey == null)
-                firstKey = selectedKey;
+            if (selectedImage.isFrustumShowing())
+             {
+                if(firstKey == null)
+                {
+                    firstKey = selectedKey;
+                }
+                else
+                {
+                    multipleFrustumVisible = true;
+                }
+            }
+
 //            if (!selectedRedKey.band.equals("0"))
 //                imageName = selectedKey.band + ":" + imageName;
         }
 
-
-        if (selectedKeys.size() > 0 && firstKey != null)
+        if(selectedKeys.size() == 0)
+        {
+            // We are in here because no images were selected by user
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "At least one image must be selected when generating an image cube.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if(firstKey == null)
+        {
+            // We are in here because no frustum was selected by user
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                    "At least one selected image must have its frustum showing when generating an image cube.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else
         {
             PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
 
@@ -800,6 +838,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
                         imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+
+                    if(multipleFrustumVisible)
+                    {
+                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                                "More than one selected image has a visible frustum, image cube was generated using the first such frustum in order of appearance in the image list.",
+                                "Notification",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
                 else
                 {
@@ -808,6 +854,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
                     if (cellBounds != null)
                         imageCubesDisplayedList.scrollRectToVisible(cellBounds);
+
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                            "Image cube consisting of same images already exists, no new image cube was generated.",
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
             catch (IOException e1)
@@ -829,7 +880,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             catch (ImageCube.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The 3 images you selected do not overlap.",
+                        "The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
