@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -276,7 +277,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         String[] columnNames = {
                 "Map",
-                "Hide",
+                "Show",
                 "Frus",
                 "Bndr",
                 "Id",
@@ -298,7 +299,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resultList.setDefaultRenderer(String.class, new StringRenderer());
         resultList.getColumnModel().getColumn(mapColumnIndex).setPreferredWidth(31);
-        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(31);
+        resultList.getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(35);
         resultList.getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
         resultList.getColumnModel().getColumn(mapColumnIndex).setResizable(true);
@@ -765,6 +766,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
         int[] selectedIndices = resultList.getSelectedRows();
+        System.out.println(Arrays.toString(selectedIndices));
         for (int selectedIndex : selectedIndices)
         {
             String name = imageRawResults.get(selectedIndex).get(0);
