@@ -25,7 +25,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -767,7 +766,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
         int[] selectedIndices = resultList.getSelectedRows();
-        System.out.println(Arrays.toString(selectedIndices));
+        //System.out.println(Arrays.toString(selectedIndices));
         for (int selectedIndex : selectedIndices)
         {
             String name = imageRawResults.get(selectedIndex).get(0);

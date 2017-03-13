@@ -8,7 +8,7 @@
 
 -   Linux version working again
 -   Hierarchical image search specification (Phobos Experimental only)
--   Fixed bugs with structure control point visibility and DEM properties window colorbar synchronization
+-   Fixed bugs with structure control point visibility, image cube generation, and DEM properties window colorbar synchronization
 -   User is now notified when client fails attempt to access SQL or data server
 -   Added Gaskell Updated pointing search option to Eros MSI tab
 -	Other minor GUI updates and bugfixes
