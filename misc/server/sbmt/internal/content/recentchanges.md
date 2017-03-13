@@ -4,13 +4,14 @@
 
 # Recent Changes
 
-### March 1, 2017
+### March 13, 2017
 
 -   Linux version working again
 -   Hierarchical image search specification (Phobos Experimental only)
--   Fixed bugs with structure control point visibility, image cube generation, and DEM properties window colorbar synchronization
--   User is now notified when client fails attempt to access SQL or data server
--   Added Gaskell Updated pointing search option to Eros MSI tab
+-   Fixed bugs with structure control point visibility, frustum visibility, image cube generation, and DEM properties window colorbar synchronization
+-   Notifications appear whenever client fails attempt to access SQL or data server
+-   Added "Gaskell Updated" pointing search option to Eros (Gaskell) MSI tab
+-   User is given option to decide when colormaps update
 -	Other minor GUI updates and bugfixes
 
 ### January 24, 2017 (Beta)
