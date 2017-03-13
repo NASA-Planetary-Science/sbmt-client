@@ -39,7 +39,6 @@ import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 
 public class CubicalImagingSearchPanel extends ImagingSearchPanel implements PropertyChangeListener, ChangeListener, ListSelectionListener
@@ -150,25 +149,21 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
 
         Set<ImageCube> imageSet = images.getImages();
-        for (ImageCube i : imageSet)
+        for (ImageCube image : imageSet)
         {
-            if (i instanceof PerspectiveImage)
-            {
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = i.getImageName();
+            ImageKey key = image.getKey();
+            String name = image.getImageName();
 
-                if(name.equals(imagename))
-                {
-                   image.setCurrentSlice(currentSlice);
-                   image.setDisplayedImageRange(null);
-                   if (!source.getValueIsAdjusting())
-                   {
-                        image.loadFootprint();
-                        image.firePropertyChange();
-                   }
-                   return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
-                }
+            if(name.equals(imagename))
+            {
+               image.setCurrentSlice(currentSlice);
+               image.setDisplayedImageRange(null);
+               if (!source.getValueIsAdjusting())
+               {
+                    image.loadFootprint();
+                    image.firePropertyChange();
+               }
+               return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
             }
         }
     }
@@ -181,7 +176,10 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         int index = imageList.getSelectedIndex();
         ImageCubeKey selectedValue = (ImageCubeKey)imageList.getSelectedValue();
         if (selectedValue == null)
+        {
+            setNumberOfBands(1);
             return;
+        }
 
         String imagestring = selectedValue.fileNameString();
         String[]tokens = imagestring.split(",");
@@ -191,21 +189,17 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         ImageCubeCollection images = (ImageCubeCollection)getModelManager().getModel(getImageCubeCollectionModelName());
 
         Set<ImageCube> imageSet = images.getImages();
-        for (ImageCube i : imageSet)
+        for (ImageCube image : imageSet)
         {
-            if (i instanceof PerspectiveImage)
+            ImageKey key = image.getKey();
+            String name = image.getImageName();
+            if (name.equals(imagename))
             {
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = i.getImageName();
-                if (name.equals(imagename))
-                {
-                    int depth = image.getImageDepth();
-                    currentSlice = image.getCurrentSlice();
-                    setNumberOfBands(depth,currentSlice);
-                    image.setDisplayedImageRange(null);
-                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
-                }
+                int depth = image.getImageDepth();
+                currentSlice = image.getCurrentSlice();
+                setNumberOfBands(depth,currentSlice);
+                image.setDisplayedImageRange(null);
+                return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
             }
         }
 
