@@ -3,15 +3,16 @@ package edu.jhuapl.sbmt.client;
 import java.io.File;
 import java.io.IOException;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
@@ -91,6 +92,23 @@ public class SmallBodyModel extends GenericPolyhedralModel
 
 //                System.out.println("Reading Ancillary FITS Data");
 //                System.out.println("Number of Plates: " + nrows);
+
+                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
+                for (int j=0; j<nrows; j++)
+                {
+                    float value = scalars[j];
+                    array.SetTuple1(j, value);
+                }
+            }
+            else if (hdu instanceof BinaryTableHDU)
+            {
+                BinaryTableHDU athdu = (BinaryTableHDU)hdu;
+                int ncols = athdu.getNCols();
+                int nrows = athdu.getNRows();
+
+//                System.out.println("Reading Ancillary FITS Data");
+//                System.out.println("Number of Plates: " + nrows);
+
 
                 float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
                 for (int j=0; j<nrows; j++)
