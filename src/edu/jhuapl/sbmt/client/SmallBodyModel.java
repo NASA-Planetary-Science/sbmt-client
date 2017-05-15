@@ -124,7 +124,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
                 }
             }
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) { throw new IOException(e); }
 
         info.coloringValues = array;
     }
