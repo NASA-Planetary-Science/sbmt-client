@@ -68,6 +68,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //        initialize(defaultModelFile);
     }
 
+    @Override
     protected void loadColoringDataFits(File file, ColoringInfo info) throws IOException
     {
         vtkFloatArray array = new vtkFloatArray();
@@ -79,15 +80,16 @@ public class SmallBodyModel extends GenericPolyhedralModel
             array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfCells());
 
 
+        Fits fits = null;
         try {
-            Fits fits = new Fits(file);
+            fits = new Fits(file);
             fits.read();
 
-            BasicHDU hdu = fits.getHDU(1);
+            BasicHDU<?> hdu = fits.getHDU(1);
             if (hdu instanceof AsciiTableHDU)
             {
                 AsciiTableHDU athdu = (AsciiTableHDU)hdu;
-                int ncols = athdu.getNCols();
+//                int ncols = athdu.getNCols();
                 int nrows = athdu.getNRows();
 
 //                System.out.println("Reading Ancillary FITS Data");
@@ -107,7 +109,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
             else if (hdu instanceof BinaryTableHDU)
             {
                 BinaryTableHDU athdu = (BinaryTableHDU)hdu;
-                int ncols = athdu.getNCols();
+//                int ncols = athdu.getNCols();
                 int nrows = athdu.getNRows();
 
 //                System.out.println("Reading Ancillary FITS Data");
@@ -124,7 +126,11 @@ public class SmallBodyModel extends GenericPolyhedralModel
                 }
             }
 
-        } catch (Exception e) { throw new IOException(e); }
+        } catch (Exception e) {
+            throw new IOException(e);
+        } finally {
+            if (fits != null) fits.close();
+        }
 
         info.coloringValues = array;
     }
