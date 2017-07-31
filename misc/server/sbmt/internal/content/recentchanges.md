@@ -3,6 +3,10 @@
 %
 
 # Recent Changes
+### July 31, 2017
+-   Terms of use is now on the internal and external web page
+-   Splashscreen now shows upon launch
+-   Time history functionality fixes implemented
 
 ### March 13, 2017
 
