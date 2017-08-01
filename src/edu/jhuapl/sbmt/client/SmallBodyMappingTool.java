@@ -76,7 +76,7 @@ public class SmallBodyMappingTool
         setupLookAndFeel();
 
         // set up splash screen
-        final SbmtSplash splash = new SbmtSplash("misc", "splashLogo.png");
+        final SbmtSplash splash = new SbmtSplash("resources", "splashLogo.png");
         splash.setVisible(true);
         splash.validate();
         splash.repaint();
