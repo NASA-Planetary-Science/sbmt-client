@@ -1,7 +1,10 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -9,10 +12,13 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import com.google.common.collect.Lists;
+
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
+import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -24,9 +30,11 @@ import nom.tam.fits.FitsException;
 
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
+    private final List<OpacityChangeListener> imageChangeListeners;
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
         super(modelManager, bodyName);
+        this.imageChangeListeners = Lists.newArrayList();
         if (getColoringComboBox().getItemCount()>0)
             getColoringComboBox().setSelectedIndex(0);
     }
@@ -41,29 +49,33 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
     protected void showImageMap(boolean show)
     {
         PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
-        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
-
-        try
+        if (smallBodyModel.isImageMapAvailable())
         {
-            if (show)
+            ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+
+            try
             {
-                if (smallBodyModel.isImageMapAvailable())
+                ImageKey key = createImageMapKey();
+                if (show)
                 {
-                    imageCollection.addImage(createImageMapKey());
+                    imageCollection.addImage(key);
+                    Image image = imageCollection.getImage(key);
+                    image.addPropertyChangeListener(new OpacityChangeListener(image));
+                }
+                else
+                {
+                    removeListeners(imageCollection.getImage(key));
+                    imageCollection.removeImage(key);
                 }
             }
-            else
+            catch (FitsException e)
             {
-                imageCollection.removeImage(createImageMapKey());
+                e.printStackTrace();
             }
-        }
-        catch (FitsException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -148,5 +160,33 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         }
     }
 
+     private void removeListeners(Image image) {
+        List<OpacityChangeListener> removeMe = Lists.newArrayList();
+        for (OpacityChangeListener listener: imageChangeListeners) {
+            if (listener.image == image) {
+                image.removePropertyChangeListener(listener);
+                removeMe.add(listener);
+            }
+        }
+        for (OpacityChangeListener listener: removeMe) {
+            imageChangeListeners.remove(listener);
+        }
+    }
+
+    private class OpacityChangeListener implements PropertyChangeListener {
+        private final Image image;
+
+        OpacityChangeListener(Image image) {
+            this.image = image;
+            imageChangeListeners.add(this);
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+            getImageMapOpacitySpinner().setValue(image.getOpacity());
+        }
+
+    }
 
 }
