@@ -14,7 +14,6 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 
 
-
 /**
  * A Config is a class for storing models should be instantiated
  * together for a specific tool. Should be subclassed for each tool
