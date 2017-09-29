@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -106,6 +107,7 @@ public class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
+    @Override
     public String getUniqueName()
     {
         if (ShapeModelAuthor.CUSTOM == author)
@@ -121,6 +123,7 @@ public class BodyViewConfig extends ViewConfig
             return body.toString();
     }
 
+    @Override
     public String getShapeModelName()
     {
         if (author == ShapeModelAuthor.CUSTOM)
@@ -134,7 +137,27 @@ public class BodyViewConfig extends ViewConfig
         }
     }
 
+    public String serverPath(String fileName)
+    {
+        return SafePaths.getString(rootDirOnServer, fileName);
+    }
 
+    public String serverPath(String fileName, Instrument instrument)
+    {
+        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
+    }
+
+    public String serverImagePath(String fileName, Instrument instrument)
+    {
+        return serverPath(fileName, instrument, "images");
+    }
+
+    public String serverPath(String fileName, Instrument instrument, String subdir)
+    {
+        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
+    }
+
+    @Override
     public String getPathRepresentation()
     {
         if (ShapeModelAuthor.CUSTOM == author)
@@ -177,6 +200,7 @@ public class BodyViewConfig extends ViewConfig
     // Clone operation
     //
 
+    @Override
     public BodyViewConfig clone() // throws CloneNotSupportedException
     {
 //      PolyhedralModelConfig c = new PolyhedralModelConfig();
@@ -235,8 +259,8 @@ public class BodyViewConfig extends ViewConfig
         {
             c.lidarSearchDefaultStartDate = (Date)this.lidarSearchDefaultStartDate.clone();
             c.lidarSearchDefaultEndDate = (Date)this.lidarSearchDefaultEndDate.clone();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>(this.lidarSearchDataSourceMap);
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>(this.lidarBrowseDataSourceMap);
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>(this.lidarSearchDataSourceMap);
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>(this.lidarBrowseDataSourceMap);
             c.lidarBrowseXYZIndices = this.lidarBrowseXYZIndices.clone();
             c.lidarBrowseSpacecraftIndices = this.lidarBrowseSpacecraftIndices.clone();
             c.lidarBrowseIsLidarInSphericalCoordinates = this.lidarBrowseIsLidarInSphericalCoordinates;
