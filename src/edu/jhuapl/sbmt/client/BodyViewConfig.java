@@ -23,6 +23,9 @@ import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 public class BodyViewConfig extends ViewConfig
 {
     public String rootDirOnServer;
+    protected String shapeModelFileBaseName = "shape/shape";
+    protected String shapeModelFileExtension = ".vtk";
+    public String timeHistoryFile;
     public double density = 0.0; // in units g/cm^3
     public double rotationRate = 0.0; // in units radians/sec
 
@@ -283,5 +286,18 @@ public class BodyViewConfig extends ViewConfig
         c.customTemporary = this.customTemporary;
 
         return c;
+    }
+
+    public String[] getShapeModelFileNames() {
+        if (shapeModelFileBaseName == null || shapeModelFileExtension == null) {
+            throw new NullPointerException();
+        }
+        int numberResolutions = smallBodyLabelPerResolutionLevel != null && smallBodyLabelPerResolutionLevel.length > 0 ? smallBodyLabelPerResolutionLevel.length : 1;
+
+        final String[] modelFiles = new String[numberResolutions];
+        for (int index = 0; index < numberResolutions; ++index) {
+            modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
+        }
+        return modelFiles;
     }
 }
