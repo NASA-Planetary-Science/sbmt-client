@@ -52,6 +52,10 @@ public class BodyViewConfig extends ViewConfig
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
 
+    // Required if hasLidarData is true:
+    public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
+    public String lidarBrowsePathTop; // current top-of-path for lidar data; replaces the expression given by lidarBrowseOrigPathRegex.
+
     public int[] lidarBrowseXYZIndices;
     public int[] lidarBrowseSpacecraftIndices;
     public int lidarBrowseOutgoingIntensityIndex;
