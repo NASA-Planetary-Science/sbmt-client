@@ -25,9 +25,6 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     public static final Key<String> GALLERY_PATH = Key.of("Gallery path"); // If there is a gallery. Relative to image directory.
     public static final Key<String> DISPLAY_NAME = Key.of("Display name"); // If different from instrument.toString().
 
-    // Private key to ensure correct fixed configuration is passed to constructor.
-    private static final Key<FixedTypedLookup.Builder> BUILDER_KEY = Key.of("ImagingInstrumentConfiguration builder");
-
     public static Builder<ImagingInstrumentConfiguration> builder(
             Instrument instrument,
             SpectralMode spectralMode,
@@ -35,7 +32,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
             ImageSource[] imageSource,
             SBMTFileLocator imageFileLocator)
     {
-        FixedTypedLookup.Builder fixedBuilder = FixedTypedLookup.builder(BUILDER_KEY);
+        FixedTypedLookup.Builder fixedBuilder = FixedTypedLookup.builder();
         fixedBuilder.put(Entry.of(INSTRUMENT, instrument));
         fixedBuilder.put(Entry.of(SPECTRAL_MODE, spectralMode));
         fixedBuilder.put(Entry.of(QUERY_BASE, queryBase));
@@ -52,7 +49,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
 
     protected ImagingInstrumentConfiguration(FixedTypedLookup.Builder builder)
     {
-        super(BUILDER_KEY, builder);
+        super(builder);
     }
 
 }
