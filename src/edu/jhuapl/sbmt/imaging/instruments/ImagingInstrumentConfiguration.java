@@ -39,7 +39,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
         fixedBuilder.put(FILE_LOCATOR, imageFileLocator);
         return new Builder<ImagingInstrumentConfiguration>(fixedBuilder) {
             @Override
-            public ImagingInstrumentConfiguration build()
+            public ImagingInstrumentConfiguration doBuild()
             {
                 return new ImagingInstrumentConfiguration(getFixedBuilder());
             }
