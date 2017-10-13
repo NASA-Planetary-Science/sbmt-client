@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.imaging.instruments;
 
 import edu.jhuapl.saavtk.config.Configurable;
-import edu.jhuapl.saavtk.config.Entry;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup;
 import edu.jhuapl.saavtk.config.FixedTypedLookup;
 import edu.jhuapl.saavtk.config.Key;
@@ -33,11 +32,11 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
             SBMTFileLocator imageFileLocator)
     {
         FixedTypedLookup.Builder fixedBuilder = FixedTypedLookup.builder();
-        fixedBuilder.put(Entry.of(INSTRUMENT, instrument));
-        fixedBuilder.put(Entry.of(SPECTRAL_MODE, spectralMode));
-        fixedBuilder.put(Entry.of(QUERY_BASE, queryBase));
-        fixedBuilder.put(Entry.of(IMAGE_SOURCE, imageSource));
-        fixedBuilder.put(Entry.of(FILE_LOCATOR, imageFileLocator));
+        fixedBuilder.put(INSTRUMENT, instrument);
+        fixedBuilder.put(SPECTRAL_MODE, spectralMode);
+        fixedBuilder.put(QUERY_BASE, queryBase);
+        fixedBuilder.put(IMAGE_SOURCE, imageSource);
+        fixedBuilder.put(FILE_LOCATOR, imageFileLocator);
         return new Builder<ImagingInstrumentConfiguration>(fixedBuilder) {
             @Override
             public ImagingInstrumentConfiguration build()

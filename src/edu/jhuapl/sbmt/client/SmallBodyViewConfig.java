@@ -1328,15 +1328,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.JANUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MIMAS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -1346,6 +1337,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PANDORA;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
@@ -1354,7 +1363,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
-
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOEBE;
@@ -1830,6 +1838,35 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             configArray.add(c);
         }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.TELESTO;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
+        c.rootDirOnServer = "/GASKELL/TELESTO";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
     }
 
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
