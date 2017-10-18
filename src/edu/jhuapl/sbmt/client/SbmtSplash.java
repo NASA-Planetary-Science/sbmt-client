@@ -25,7 +25,7 @@ public class SbmtSplash extends JWindow
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int x = (screenSize.width - splashImage.getIconWidth()*2) / 2;
+        int x = (screenSize.width - splashImage.getIconWidth()) / 2;
         int y = (screenSize.height - splashImage.getIconHeight()) / 2;
 
         setBounds(x, y, splashImage.getIconWidth(), splashImage.getIconHeight());
