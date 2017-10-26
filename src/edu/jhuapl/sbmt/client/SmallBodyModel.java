@@ -3,15 +3,16 @@ package edu.jhuapl.sbmt.client;
 import java.io.File;
 import java.io.IOException;
 
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
@@ -67,6 +68,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //        initialize(defaultModelFile);
     }
 
+    @Override
     protected void loadColoringDataFits(File file, ColoringInfo info) throws IOException
     {
         vtkFloatArray array = new vtkFloatArray();
@@ -78,19 +80,43 @@ public class SmallBodyModel extends GenericPolyhedralModel
             array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfCells());
 
 
+        Fits fits = null;
         try {
-            Fits fits = new Fits(file);
+            fits = new Fits(file);
             fits.read();
 
-            BasicHDU hdu = fits.getHDU(1);
+            BasicHDU<?> hdu = fits.getHDU(1);
             if (hdu instanceof AsciiTableHDU)
             {
                 AsciiTableHDU athdu = (AsciiTableHDU)hdu;
-                int ncols = athdu.getNCols();
+//                int ncols = athdu.getNCols();
                 int nrows = athdu.getNRows();
 
 //                System.out.println("Reading Ancillary FITS Data");
 //                System.out.println("Number of Plates: " + nrows);
+
+                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
+
+                if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
+                    System.err.println("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
+
+                for (int j=0; j<nrows; j++)
+                {
+                    float value = scalars[j];
+                    array.SetTuple1(j, value);
+                }
+            }
+            else if (hdu instanceof BinaryTableHDU)
+            {
+                BinaryTableHDU athdu = (BinaryTableHDU)hdu;
+//                int ncols = athdu.getNCols();
+                int nrows = athdu.getNRows();
+
+//                System.out.println("Reading Ancillary FITS Data");
+//                System.out.println("Number of Plates: " + nrows);
+
+                if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
+                    System.err.println("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
 
                 float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
                 for (int j=0; j<nrows; j++)
@@ -100,7 +126,11 @@ public class SmallBodyModel extends GenericPolyhedralModel
                 }
             }
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            throw new IOException(e);
+        } finally {
+            if (fits != null) fits.close();
+        }
 
         info.coloringValues = array;
     }
