@@ -6,17 +6,32 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -30,6 +45,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
  */
 abstract public class QueryBase
 {
+    @Override
     public QueryBase clone()
     {
         return null;
@@ -37,7 +53,8 @@ abstract public class QueryBase
 
     protected List<List<String>> doQuery(String phpScript, String data)
     {
-        List<List<String>> results = new ArrayList<List<String>>();
+        List<List<String>> results = new ArrayList<>();
+        boolean listCachedImages = false;
 
         try
         {
@@ -63,23 +80,28 @@ abstract public class QueryBase
                     continue;
 
                 String[] tokens = line.split("\\s+");
-                List<String> words = new ArrayList<String>();
+                List<String> words = new ArrayList<>();
                 for (String word : tokens)
                     words.add(word);
                 results.add(words);
             }
 
             in.close();
+            updateImageInventory(results);
         }
         catch (IOException e)
         {
             // We will reach this if SBMT is unable to connect to server
             JOptionPane.showMessageDialog(null,
-                    "Search returned no results because SBMT is unable to connect to server.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    "SBMT is unable to connect to server. Ignoring search parameters and listing all cached images.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
+            listCachedImages = true;
         }
+
+        if (listCachedImages)
+            results = getCachedResults(getImagesPath());
 
         return results;
     }
@@ -119,7 +141,7 @@ abstract public class QueryBase
         if (pathToGalleryFolderOnServer != null && !pathToGalleryFolderOnServer.endsWith("/"))
             pathToGalleryFolderOnServer += "/";
 
-        List<List<String>> results = new ArrayList<List<String>>();
+        List<List<String>> results = new ArrayList<>();
 
         File file = FileCache.getFileFromServer(pathToFileListOnServer);
 
@@ -131,7 +153,7 @@ abstract public class QueryBase
                 for (String line : lines)
                 {
                     String[] vals = line.trim().split("\\s+");
-                    List<String> res = new ArrayList<String>();
+                    List<String> res = new ArrayList<>();
                     res.add(pathToImageFolderOnServer + vals[0]);
                     res.add(new Long(new DateTime(vals[1], DateTimeZone.UTC).getMillis()).toString());
                     if(pathToGalleryFolderOnServer == null)
@@ -152,6 +174,7 @@ abstract public class QueryBase
                         "Search returned no results because SBMT is unable to retrieve image list from server.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
             catch (IOException e)
             {
@@ -160,6 +183,181 @@ abstract public class QueryBase
         }
 
         return results;
+    }
+
+    /**
+     * Add the supplied search results to the image inventory for this small body configuration/instrument.
+     * New results (dates) supersede previous results for the same image file.
+     * Following a call to this method, the image inventory file will thus contain a union of all the search
+     * results ever made. Note that this inventory includes all files that were found in a search, whether
+     * or not those files have every actually been displayed and cached.
+     * @param newResults the results to add
+     */
+    protected void updateImageInventory(List<List<String>> newResults)
+    {
+        SortedMap<String, List<String>> inventory = getImageInventory();
+
+        // Add the new results, overwriting any that were previously cached; always assume newer is "better".
+        for (List<String> each: newResults)
+        {
+            inventory.put(each.get(0), each);
+        }
+
+        // Write the new inventory file.
+        String inventoryFileName = getImageInventoryFileName();
+        if (inventoryFileName != null) {
+            PrintWriter writer = null;
+            File newInventoryFile = null;
+            try
+            {
+                // Write as a temporary file first, then rename to keep things clean/atomic.
+                String prefix = inventoryFileName.substring(inventoryFileName.lastIndexOf(File.separator) + File.separator.length(), inventoryFileName.lastIndexOf('.'));
+                String suffix = inventoryFileName.substring(inventoryFileName.lastIndexOf('.'));
+                File directory = new File(inventoryFileName.substring(0, inventoryFileName.lastIndexOf(File.separator)));
+                if (!directory.exists())
+                    directory.mkdirs();
+                newInventoryFile = File.createTempFile(prefix, suffix, directory);
+                writer = new PrintWriter(newInventoryFile, "UTF-8");
+                for (Entry<String, List<String>> each: inventory.entrySet())
+                {
+                    writer.println(String.join(" ", each.getValue()));
+                }
+            }
+            catch (@SuppressWarnings("unused") IOException e)
+            {
+                // Ignore any problems writing this file.
+                // e.printStackTrace();
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.close();
+                if (newInventoryFile != null)
+                {
+                    newInventoryFile.renameTo(new File(inventoryFileName));
+                }
+            }
+        }
+    }
+
+    /**
+     * Return the list of cached results from previous image searches stored in the
+     * image inventory file. This particular implementation
+     * assumes the first element in each result is the name of a file, and checks this
+     * against a list of files that actually exist in the user's cache.
+     * @param pathToImageFolder the folder where the image list and images are located
+     * @return the image list
+     */
+    protected List<List<String>> getCachedResults(
+            String pathToImageFolder
+            )
+    {
+        final List<File> fileList = getCachedFiles(pathToImageFolder);
+        final Map<String, File> filesFound = new TreeMap<>();
+        for (File file: fileList)
+        {
+            filesFound.put(file.getName(), file);
+        }
+
+        final List<List<String>> result = new ArrayList<>();
+        SortedMap<String, List<String>> inventory = getImageInventory();
+        for (Entry<String, List<String>> each: inventory.entrySet())
+        {
+            if (filesFound.containsKey(each.getKey()))
+                result.add(each.getValue());
+        }
+        return result;
+    }
+
+    /**
+     * Return the full path name of the inventory file.
+     * @return the inventory file name
+     */
+    protected String getImageInventoryFileName()
+    {
+        String imagesPath = getImagesPath();
+        if (imagesPath == null) return null;
+        return Configuration.getCacheDir() + imagesPath.substring(0, imagesPath.lastIndexOf(File.separator)) + File.separator + "imageInventory.txt";
+    }
+
+    /**
+     * Return the current content of the image inventory file. Note this inventory
+     * should be a superset of the image files that are locally cached.
+     * @return the image inventory
+     */
+    protected SortedMap<String, List<String>> getImageInventory()
+    {
+        SortedMap<String, List<String>> inventory = new TreeMap<>();
+        String inventoryFileName = getImageInventoryFileName();
+        if (inventoryFileName != null)
+        {
+            try
+            {
+                List<String> lines = FileUtil.getFileLinesAsStringList(inventoryFileName);
+                for (String line: lines)
+                {
+                    String[] values = line.trim().split("\\s+");
+                    inventory.put(values[0], Lists.newArrayList(values));
+                }
+            }
+            catch (@SuppressWarnings("unused") IOException e)
+            {
+                // Ignore any problems reading any previous inventories.
+                // e.printStackTrace();
+            }
+        }
+
+        return inventory;
+    }
+
+    /**
+     * Return a list of files that actually exist on disk in the user's cache.
+     * @param pathToImageFolder
+     * @return the map
+     */
+    protected List<File> getCachedFiles(
+            String pathToImageFolder
+            )
+    {
+        final List<File> filesFound = new ArrayList<>();
+        if (pathToImageFolder != null)
+        {
+            try
+            {
+                final int maxDepth = 10;
+                // Find actual files present.
+                Path start = Paths.get(Configuration.getCacheDir(), pathToImageFolder);
+                Files.walkFileTree(start, EnumSet.allOf(FileVisitOption.class), maxDepth, new SimpleFileVisitor<Path>()
+                {
+                    @Override
+                    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
+                    {
+                        FileVisitResult result = FileVisitResult.CONTINUE;
+                        try
+                        {
+                            result = super.visitFile(path, attrs);
+                            File file = path.toFile();
+                            if (file.isFile())
+                                filesFound.add(file);
+                        }
+                        catch (@SuppressWarnings("unused") IOException e)
+                        {
+                            // Ignore problems that occur while traversing the file tree.
+                            // e.printStackTrace();
+                        }
+                        return result;
+                    }
+
+                });
+            }
+            catch (IOException e)
+            {
+                // Report this for debugging purposes, but no need for a pop-up.
+                e.printStackTrace();
+            }
+        }
+
+        return filesFound;
     }
 
     abstract public String getImagesPath();
