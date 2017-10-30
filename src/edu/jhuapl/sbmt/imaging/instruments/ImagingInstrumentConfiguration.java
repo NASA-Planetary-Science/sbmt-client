@@ -4,10 +4,10 @@ import edu.jhuapl.saavtk.config.Configurable;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup;
 import edu.jhuapl.saavtk.config.FixedTypedLookup;
 import edu.jhuapl.saavtk.config.Key;
-import edu.jhuapl.saavtk.image.filters.ImageDataFilter;
 import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
-import edu.jhuapl.sbmt.imaging.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 
 public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implements Configurable
@@ -20,7 +20,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
     public static final Key<SBMTFileLocator> FILE_LOCATOR = Key.of("Image file locator");
 
     // Optional keys.
-    public static final Key<ImageDataFilter> DATA_FILTER = Key.of("Image data filter");
+//    public static final Key<ImageDataFilter> DATA_FILTER = Key.of("Image data filter");
     public static final Key<String> GALLERY_PATH = Key.of("Gallery path"); // If there is a gallery. Relative to image directory.
     public static final Key<String> DISPLAY_NAME = Key.of("Display name"); // If different from instrument.toString().
 
