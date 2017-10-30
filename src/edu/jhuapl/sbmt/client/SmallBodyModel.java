@@ -16,14 +16,6 @@ import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
-    private static final String[] DEFAULT_COLORING_NAMES = {
-            SlopeStr, ElevStr, GravAccStr, GravPotStr
-    };
-    private static final String[] DEFAULT_COLORING_UNITS = {
-            SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
-    };
-    private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
-
     public SmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
@@ -74,35 +66,6 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 //
 //        initialize(defaultModelFile);
-    }
-
-    protected void initializeConfigParameters(
-            String[] imageMapNames,
-            boolean lowestResolutionModelStoredInResource)
-    {
-        SmallBodyViewConfig config = getSmallBodyConfig();
-        final String[] modelFiles = {
-                serverPath("shape/shape0.vtk.gz"),
-                serverPath("shape/shape1.vtk.gz"),
-                serverPath("shape/shape2.vtk.gz"),
-                serverPath("shape/shape3.vtk.gz")
-        };
-        final String[] coloringFiles = {
-                serverPath("coloring/Slope"),
-                serverPath("coloring/Elevation"),
-                serverPath("coloring/GravitationalAcceleration"),
-                serverPath("coloring/GravitationalPotential")
-        };
-        final boolean[] coloringHasNulls = null;
-        initializeConfigParameters(
-                modelFiles,
-                config.hasColoringData ? coloringFiles : null,
-                config.hasColoringData ? DEFAULT_COLORING_NAMES : null,
-                config.hasColoringData ? DEFAULT_COLORING_UNITS : null,
-                coloringHasNulls,
-                imageMapNames,
-                config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
-                lowestResolutionModelStoredInResource);
     }
 
     @Override
