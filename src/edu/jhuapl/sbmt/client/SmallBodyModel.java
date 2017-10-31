@@ -98,7 +98,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
                 float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
 
                 if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
-                    System.err.println("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
+                    throw new IOException("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
 
                 for (int j=0; j<nrows; j++)
                 {
@@ -116,7 +116,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //                System.out.println("Number of Plates: " + nrows);
 
                 if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
-                    System.err.println("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
+                    throw new IOException("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
 
                 float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
                 for (int j=0; j<nrows; j++)

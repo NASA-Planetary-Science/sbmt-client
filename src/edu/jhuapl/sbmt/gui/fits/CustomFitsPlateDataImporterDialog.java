@@ -10,25 +10,13 @@
  */
 package edu.jhuapl.sbmt.gui.fits;
 
-import java.awt.Dialog;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.swing.JOptionPane;
+import edu.jhuapl.saavtk.gui.dialog.CustomPlateDataImporterDialog;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
-
-import edu.jhuapl.saavtk.gui.dialog.CustomPlateDataImporterDialog;
-import edu.jhuapl.saavtk.model.ColoringInfo;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.PolyhedralModel.Format;
 
 
 public class CustomFitsPlateDataImporterDialog extends CustomPlateDataImporterDialog
@@ -75,6 +63,13 @@ public class CustomFitsPlateDataImporterDialog extends CustomPlateDataImporterDi
 //                    {
 //                        System.out.println("Value " + j + ": " + scalars[j]);
 //                    }
+                }
+                else if (hdu instanceof BinaryTableHDU)
+                {
+                    BinaryTableHDU bthdu = (BinaryTableHDU)hdu;
+                    int ncols = bthdu.getNCols();
+                    if (ncols <= PolyhedralModel.FITS_SCALAR_COLUMN_INDEX)
+                        return "FITS Ancillary File Has Insufficient Columns";
                 }
                 else
                     return "FITS Ancillary File doesn't have an Ascii Table HDU";

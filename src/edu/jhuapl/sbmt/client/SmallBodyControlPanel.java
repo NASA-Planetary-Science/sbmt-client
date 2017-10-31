@@ -1,21 +1,24 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.List;
 
-import javax.swing.AbstractButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import edu.jhuapl.saavtk.model.Graticule;
+import com.google.common.collect.Lists;
+
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
+import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -27,9 +30,11 @@ import nom.tam.fits.FitsException;
 
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
+    private final List<OpacityChangeListener> imageChangeListeners;
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
         super(modelManager, bodyName);
+        this.imageChangeListeners = Lists.newArrayList();
         if (getColoringComboBox().getItemCount()>0)
             getColoringComboBox().setSelectedIndex(0);
     }
@@ -44,149 +49,58 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
     protected void showImageMap(boolean show)
     {
         PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
-        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
-
-        try
+        if (smallBodyModel.isImageMapAvailable())
         {
-            if (show)
+            ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+
+            try
             {
-                if (smallBodyModel.isImageMapAvailable())
+                ImageKey key = createImageMapKey();
+                if (show)
                 {
-                    imageCollection.addImage(createImageMapKey());
+                    imageCollection.addImage(key);
+                    Image image = imageCollection.getImage(key);
+                    image.addPropertyChangeListener(new OpacityChangeListener(image));
+                }
+                else
+                {
+                    removeListeners(imageCollection.getImage(key));
+                    imageCollection.removeImage(key);
                 }
             }
-            else
+            catch (FitsException e)
             {
-                imageCollection.removeImage(createImageMapKey());
+                e.printStackTrace();
             }
-        }
-        catch (FitsException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
     public void stateChanged(ChangeEvent e)
     {
         ImageCollection imageCollection =
-            (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+                (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
-        double val = (Double)getImageMapOpacitySpinner().getValue();
+            double val = (Double)getImageMapOpacitySpinner().getValue();
 
-        CylindricalImage image = (CylindricalImage)imageCollection.getImage(createImageMapKey());
-        image.setOpacity(val);
+            CylindricalImage image = (CylindricalImage)imageCollection.getImage(createImageMapKey());
+            image.setOpacity(val);
     }
 
 
+    // This method overrides the base method in PolyhedralModelControlPanel -- then proceeds to
+    // do EXACTLY the same thing, using method calls to access private members of the base class.
+    // It has the look of a refactoring that was halfway completed. Discovered this while adding
+    // opacity control for the model itself. Since presently can find no reason the base class method
+    // should be overridden, changing it here to just call the base class method. If someone
+    // ever remembers why this method exists, they can resurrect it easily enough, though in that
+    // case, need to be sure it correctly supersedes the CURRENT VERSION of the base class code.
     public void itemStateChanged(ItemEvent e)
     {
-        Picker.setPickingEnabled(false);
-
-        PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
-
-        if (e.getItemSelectable() == this.getModelCheckBox())
-        {
-            // In the following we ensure that the graticule and image map are shown
-            // only if the shape model is shown
-            Graticule graticule = (Graticule)getModelManager().getModel(ModelNames.GRATICULE);
-            if (e.getStateChange() == ItemEvent.SELECTED)
-            {
-                smallBodyModel.setShowSmallBody(true);
-                if (graticule != null && getGridCheckBox().isSelected())
-                    graticule.setShowGraticule(true);
-                if (getImageMapCheckBox().isSelected())
-                    showImageMap(true);
-            }
-            else
-            {
-                smallBodyModel.setShowSmallBody(false);
-                if (graticule != null && getGridCheckBox().isSelected())
-                    graticule.setShowGraticule(false);
-                if (getImageMapCheckBox().isSelected())
-                    showImageMap(false);
-            }
-        }
-        else if (e.getItemSelectable() == this.getGridCheckBox())
-        {
-            Graticule graticule = (Graticule)getModelManager().getModel(ModelNames.GRATICULE);
-            if (graticule != null)
-            {
-                if (e.getStateChange() == ItemEvent.SELECTED)
-                    graticule.setShowGraticule(true);
-                else
-                    graticule.setShowGraticule(false);
-            }
-        }
-        else if (e.getItemSelectable() == this.getImageMapCheckBox())
-        {
-            if (e.getStateChange() == ItemEvent.SELECTED)
-            {
-                showImageMap(true);
-                getOpacityLabel().setEnabled(true);
-                getImageMapOpacitySpinner().setEnabled(true);
-            }
-            else
-            {
-                showImageMap(false);
-                getOpacityLabel().setEnabled(false);
-                getImageMapOpacitySpinner().setEnabled(false);
-            }
-        }
-        else if (this.getResModelButtons().contains(e.getItemSelectable()))
-        {
-            if (((AbstractButton)e.getItemSelectable()).isSelected())
-                try {
-                    int level = this.getResModelButtons().indexOf(e.getItemSelectable());
-                    smallBodyModel.setModelResolution(level);
-                    setStatisticsLabel();
-                    getAdditionalStatisticsButton().setVisible(true);
-                    updateColoringComboBoxes();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-        }
-        else if (e.getItemSelectable() == this.getNoColoringButton())
-        {
-            updateColoringControls();
-
-            try
-            {
-                smallBodyModel.setColoringIndex(-1);
-            }
-            catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-        else if (e.getItemSelectable() == this.getStandardColoringButton())
-        {
-            updateColoringControls();
-            setColoring();
-        }
-        else if (e.getItemSelectable() == this.getRgbColoringButton())
-        {
-            updateColoringControls();
-            setColoring();
-        }
-        else if (e.getItemSelectable() == this.getColoringComboBox())
-        {
-            setColoring();
-        }
-        else if (e.getItemSelectable() == getRgbColoringButton())
-        {
-            setColoring();
-        }
-        else if (e.getItemSelectable() == getCustomColorRedComboBox() ||
-                e.getItemSelectable() == getCustomColorGreenComboBox() ||
-                e.getItemSelectable() == getCustomColorBlueComboBox())
-        {
-            setColoring();
-        }
-
-        Picker.setPickingEnabled(true);
+        super.itemStateChanged(e);
     }
 
 
@@ -246,5 +160,33 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         }
     }
 
+     private void removeListeners(Image image) {
+        List<OpacityChangeListener> removeMe = Lists.newArrayList();
+        for (OpacityChangeListener listener: imageChangeListeners) {
+            if (listener.image == image) {
+                image.removePropertyChangeListener(listener);
+                removeMe.add(listener);
+            }
+        }
+        for (OpacityChangeListener listener: removeMe) {
+            imageChangeListeners.remove(listener);
+        }
+    }
+
+    private class OpacityChangeListener implements PropertyChangeListener {
+        private final Image image;
+
+        OpacityChangeListener(Image image) {
+            this.image = image;
+            imageChangeListeners.add(this);
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+            getImageMapOpacitySpinner().setValue(image.getOpacity());
+        }
+
+    }
 
 }
