@@ -41,22 +41,22 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.NISStatistics;
-import edu.jhuapl.sbmt.model.eros.NISStatistics.Sample;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.eros.Spectrum;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
 
-public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
+public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
 
     ModelManager modelManager;
-    NISStatistics stats;
+    SpectrumStatistics stats;
 
     static final String statsChangedEventName="xYzzY";
     JTabbedPane tabbedPane=new JTabbedPane();
 
 
-    public NISStatisticsInfoPanel(NISStatistics stats, ModelManager modelManager)
+    public SpectrumStatisticsInfoPanel(SpectrumStatistics stats, ModelManager modelManager)
     {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -93,10 +93,10 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
     {
         HistogramDataset dataset=new HistogramDataset();
 
-        double[] ange=NISStatistics.getValuesAsArray(samples);
+        double[] ange=SpectrumStatistics.getValuesAsArray(samples);
 
-        double mine=NISStatistics.getMin(samples);
-        double maxe=NISStatistics.getMax(samples);
+        double mine=SpectrumStatistics.getMin(samples);
+        double maxe=SpectrumStatistics.getMax(samples);
 
         int nBins=Math.max(10, (int)((double)Math.ceil(stats.getNumberOfFaces())/3.));
         dataset.addSeries(String.valueOf(samples.hashCode()), ange, nBins, mine, maxe);     // just pass in garbage value for key (first argument)
@@ -126,10 +126,10 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
         data[1][0]="Standard Deviation";
         data[2][0]="Skewness";
         data[3][0]="Kurtosis";
-        data[0][1]=NISStatistics.getWeightedMean(samples);
-        data[1][1]=Math.sqrt(NISStatistics.getWeightedVariance(samples));
-        data[2][1]=NISStatistics.getWeightedSkewness(samples);
-        data[3][1]=NISStatistics.getWeightedKurtosis(samples);
+        data[0][1]=SpectrumStatistics.getWeightedMean(samples);
+        data[1][1]=Math.sqrt(SpectrumStatistics.getWeightedVariance(samples));
+        data[2][1]=SpectrumStatistics.getWeightedSkewness(samples);
+        data[3][1]=SpectrumStatistics.getWeightedKurtosis(samples);
         String[] columns=new String[]{"Property","Value"};
 
         JTable table=new JTable(data, columns)
@@ -158,10 +158,10 @@ public class NISStatisticsInfoPanel extends ModelInfoWindow implements PropertyC
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Map<NISSpectrum,Integer> stackingOrder=stats.orderSpectraByMeanEmergenceAngle();
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                Map<Spectrum,Integer> stackingOrder=stats.orderSpectraByMeanEmergenceAngle();
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.clearOrdinals();
-                for (NISSpectrum spectrum: stackingOrder.keySet())  // only stack the ones that stats knows about
+                for (Spectrum spectrum: stackingOrder.keySet())  // only stack the ones that stats knows about
                 {
                     model.setOrdinal(spectrum, stackingOrder.get(spectrum));
 //                    System.out.println(stackingOrder.get(spectrum));
