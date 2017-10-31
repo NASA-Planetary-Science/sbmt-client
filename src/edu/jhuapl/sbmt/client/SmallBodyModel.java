@@ -8,6 +8,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.sbmt.model.image.Instrument;
 
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
@@ -27,6 +28,16 @@ public class SmallBodyModel extends GenericPolyhedralModel
     public SmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
+    }
+
+    public String serverPath(String fileName)
+    {
+        return getSmallBodyConfig().serverPath(fileName);
+    }
+
+    public String serverPath(String fileName, Instrument instrument)
+    {
+        return getSmallBodyConfig().serverPath(fileName, instrument);
     }
 
     /**
