@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1896,7 +1897,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
-                        fileLocator);
+                        fileLocator,
+                        ImageType.MAPCAM_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -1913,30 +1915,33 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
-                        fileLocator);
+                        fileLocator,
+                        ImageType.POLYCAM_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 polyCam = BasicImagingInstrument.of(builder.build());
             }
-            BasicImagingInstrument samCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.SAMCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                samCam = BasicImagingInstrument.of(builder.build());
-            }
+// TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then uncomment this block and the line below.
+//            BasicImagingInstrument samCam;
+//            {
+//                // Set up images.
+//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+//                        Instrument.SAMCAM,
+//                        SpectralMode.MONO,
+//                        queryBase,
+//                        new ImageSource[] { ImageSource.SPICE },
+//                        fileLocator,
+//                        ImageType.SAMCAM_IMAGE);
+//
+//                // Put it all together in a session.
+//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+//                samCam = BasicImagingInstrument.of(builder.build());
+//            }
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
@@ -1945,15 +1950,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
+            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
                        // new Vis(ShapeModelBody.PHOBOS)
                         mapCam,
                         polyCam,
-                        samCam
+// TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
+//                        samCam
 /*                    new ImagingInstrument(
                                 SpectralMode.MONO,
                                 new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
@@ -1964,8 +1970,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 };
 
             c.hasMapmaker = false;
-//            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
-//            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+// TODO make hierarchical search work sbmt1dev-style.
 //            c.imageSearchFilterNames = new String[]{
 //                    EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
 //            };
@@ -1974,8 +1981,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            };
 //            c.hasHierarchicalImageSearch = true;
 //            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
-//            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
-//            c.imageSearchDefaultMaxResolution = 300.0;
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
         }
 
         configArray.add(c);
