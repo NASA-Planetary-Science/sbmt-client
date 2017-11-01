@@ -1,13 +1,14 @@
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <iomanip>
 #include <string>
+#include <sys/stat.h>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
 #include <vector>
-
-extern "C"
-{
 #include "SpiceUsr.h"
-}
+
 #define  FILSIZ         256
             #define  LNSIZE         81
             #define  MAXCOV         100000
@@ -17,11 +18,20 @@ extern "C"
 
 #define MAXBND 4
 #define WDSIZE 32
+
 using namespace std;
 
+void getTargetState    (double et, const char* spacecraft, const char* observerBody, const char* targetBody, double targetpos[3], double velocity[3]);
+void getSpacecraftState(double et, const char* spacecraft, const char* observerBody, double scPosition[3], double velocity[3]);
+void getFov            (double et, const char* spacecraft, const char* observerBody, const char* instrFrame, double boredir[3], double updir[3], double frustum[12]);
+
+
 // ******************************************************************
-// Create info files for OSIRIS-REX cameras MAPCAM and POLYCAM
+// Generic package to generate SPICE pointing info files. FITS header
+// information is not used (TBD - may need it to orient the images,
+// but keywords are mission-specific).
 // ******************************************************************
+
 
 // The following 3 functions were adapted from
 // http://stackoverflow.com/questions/479080/trim-is-not-part-of-the-standard-c-c-library?rq=1
@@ -187,211 +197,6 @@ void getEt(const string& fitfile,
     fin.close();
 }
 
-/*
-  This function calculates spacecraft position and orientation.
-
-  Input:
-  et:         Ephemeris time
-  body:       Name of celestial body which is the target
-  obs:        Name of observing spacecraft
-  instrFrame: NAIF frame ID of instrument on the observing spacecraft
-
-  Output:
-  scposbf:    Spacecraft position in bodyframe coordinates
-  boredir:    Boresight direction in bodyframe coordinates
-  updir:
-  frustum:    Field of view boundary corner vectors in bodyframe coordinates
-
-*/
-void getScPositionAndOrientation(double et, string body, const char* obs, const char* instrFrame,
-					  double scposbf[3], double boredir[3], double updir[3], double frustum[12])
-{
-    double lt;
-    double targpos[3];  // sc to target vector in j2000
-    double scpos[3];    // target to sc vector in j2000
-    double inst2inert[3][3], inert2bf[3][3], inst2bf[3][3], rot[3][3];
-    char shape[32];
-    char frame[32];
-    double bsight [3];
-    int n;
-    double bounds [MAXBND][3];
-    double boundssbmt [MAXBND][3];
-    //  The celestial body is the target when dealing with light time
-    const char* target = body.c_str();
-    string ref = string("IAU_") + body.c_str();
-    const char* abcorr = "LT+S";
-    const char* inertframe = "J2000";
-    SpiceInt instid;
-    double tmpvec[3];
-
-    /*
-     *  Compute the apparent position of the center of the target body
-     *  as seen from the spacecraft at the epoch of observation (et),
-     *  and the one-way light time from the target to the spacecraft.
-     */
-    spkpos_c(target, et, inertframe, abcorr, obs, targpos, &lt);
-    if (failed_c()) {
-        cerr << "Failed spkpos" << endl;
-        return;
-    }
-
-    /*
-     *  Get the position of the observer.  This is just the negative of the
-     *  spacecraft-target vector using vminus().  Note that this is _NOT_
-     *  the same as the apparent position of the spacecraft as seen from
-     *  the target!
-     */
-    vminus_c(targpos, scpos);
-
-    /*
-     *  Get the coordinate transformation from instrument to
-     *  inertial frame at time ET
-     */
-    pxform_c(instrFrame, inertframe, et, inst2inert);
-    if (failed_c()) {
-    	cout << "Failed pxform1" << endl;
-        return;
-    }
-
-    /*
-    *  Get field of view boresight and boundary corners
-    */
-    namfrm_c(instrFrame, &instid);
-    if (failed_c()) {
-        cout << "Failed namfrm" << endl;
-        return;
-    }
-    getfov_c(instid, MAXBND, WDSIZE, WDSIZE, shape, frame, bsight, &n, bounds);
-    if (failed_c()) {
-        cout << "Failed getfov" << endl;
-        return;
-    }
-
-    /*
-     *  There is a 180 degree rotation about the boresight in the
-     *  data, not present in the sumfiles (so can't correct in sbmt code).
-     */
-    axisar_c(bsight, pi_c(), rot);
-    mxm_c(inst2inert, rot, inst2inert);
-    
-    /*
-     *  Get the coordinate transformation from inertial to
-     *  body-fixed coordinates at ET minus one light time ago.
-     */
-    pxform_c(inertframe, ref.c_str(), et - lt, inert2bf);
-    if (failed_c()) {
-        cout << "Failed pxform2" << endl;
-        return;
-    }
-
-    /*
-     *  transform scpos vector into body-fixed from j2000 frame
-     */
-    mxv_c(inert2bf, scpos, scposbf);
-
-    /*
-     *  Compute complete transformation to go from
-     *  instrument-fixed coordinates to body-fixed coords
-     */
-    mxm_c(inert2bf, inst2inert, inst2bf);
-
-	//swap the boundary corner vectors so they are in the correct order for SBMT
-	//getfov returns them counter-clockwise starting in the +X,+Y quadrant.
-	//SBMT expects them in the following order (quadrants): -X,-Z -> +X,-Z -> -X,+Z -> +X,+Z
-	//So the vector index mapping is
-	//SBMT   SPICE
-	//  0       1
-	//  1       0
-	//  2       2
-	//  3       3
-	boundssbmt[0][0] = bounds[1][0];
-    boundssbmt[0][1] = bounds[1][1];
-    boundssbmt[0][2] = bounds[1][2];
-    boundssbmt[1][0] = bounds[0][0];
-    boundssbmt[1][1] = bounds[0][1];
-    boundssbmt[1][2] = bounds[0][2];
-    boundssbmt[2][0] = bounds[2][0];
-    boundssbmt[2][1] = bounds[2][1];
-    boundssbmt[2][2] = bounds[2][2];
-    boundssbmt[3][0] = bounds[3][0];
-    boundssbmt[3][1] = bounds[3][1];
-    boundssbmt[3][2] = bounds[3][2];
-
-    //transform boresight into body frame.
-    mxv_c(inst2bf, bsight, boredir);
-
-    //transform boundary corners into body frame and pack into frustum array.
-	int k = 0;
-	for (int i=0; i<MAXBND; i++)
-	{
-	    double bdyCorner[3];
-	    double bdyCornerBodyFrm[3];
-		vpack_c(boundssbmt[i][0], boundssbmt[i][1], boundssbmt[i][2], bdyCorner);
-		mxv_c(inst2bf, bdyCorner, bdyCornerBodyFrm);
-		for (int j=0; j<3; j++)
-		{
-			frustum[k] = bdyCornerBodyFrm[j];
-			k++;
-		}
-	}
-
-    /* Then compute the up direction */
-    vpack_c(1.0, 0.0, 0.0, tmpvec);
-    mxv_c(inst2bf, tmpvec, updir);
-}
-
-/*
- This function computes the position of the sun in the body frame.
-
- Input:
- et:         Ephemeris time
-
- Output:
- sunpos:     The position of the sun in body coordinates
- */
-void getSunPosition(double et, string body, double sunpos[3])
-{
-    double lt, inert2bf[3][3], targpos[3];
-    const char *target = body.c_str();
-    const char *inertframe = "J2000";
-    const char* abcorr = "LT+S";
-    string ref = string("IAU_") + body.c_str();
-
-    /*
-     *  Compute the apparent position of the center of the target body
-     *  as seen from the sun at the epoch of observation (et),
-     *  and the one-way light time from the target to the spacecraft.
-     */
-    spkpos_c(target, et, inertframe, abcorr, "SUN", targpos, &lt);
-    if (failed_c()) {
-        cerr << "Failed spkpos" << endl;
-        return;
-    }
-
-    /*
-     *  Get the position of the SUN.  This is just the negative of the
-     *  SUN to target vector using vminus().  Note that this is _NOT_
-     *  the same as the apparent position of the SUN as seen from
-     *  the target!
-     */
-    vminus_c(targpos, sunpos);    // still in j2000 coordinates
-
-    /*
-     *  Get the coordinate transformation from inertial to
-     *  body-fixed coordinates at ET minus one light time ago.
-     */
-    pxform_c(inertframe, ref.c_str(), et - lt, inert2bf);
-    if (failed_c()) {
-        cerr << "Failed pxform" << endl;
-        return;
-    }
-
-    /*
-     *  transform sun position vector from inertial to body-fixed frame
-     */
-    mxv_c(inert2bf, sunpos, sunpos);
-}
-
 void saveInfoFile(string filename,
                   string utc,
                   const double scposb[3],
@@ -466,7 +271,7 @@ void saveInfoFile(string filename,
 
   1. kernelfiles - a SPICE meta-kernel file containing the paths to the kernel files
   2. body - IAU name of the target body, all caps
-  3. scid - SPICE spacecraft id
+  3. sc - SPICE spacecraft name
   4. instrframe - SPICE instrument frame name
   5. fitstimekeyword - FITS header time keyword, UTC assumed
   6. input file list - path to file in which all image files are listed
@@ -478,12 +283,12 @@ int main(int argc, char** argv)
 {
     if (argc < 9)
     {
-        cerr << "Usage: create_info_files <kernelfiles> <body> <scid> <instrframe> <fitstimekeyword> <inputfilelist> <infofilefolder> <outputfilelist>" << endl;
+        cerr << "Usage: create_info_files <kernelfiles> <body> <sc> <instrframe> <fitstimekeyword> <inputfilelist> <infofilefolder> <outputfilelist>" << endl;
         return 1;
     }
 
     string kernelfiles = argv[1];
-    string body = argv[2];
+    const char* body = argv[2];
     const char* scid = argv[3];
     const char*  instr = argv[4];
     string sclkkey = argv[5];
@@ -511,6 +316,7 @@ int main(int argc, char** argv)
         string utc;
         double et;
         double scposb[3];
+        SpiceDouble unused[3];
         double boredir[3];
         double updir[3];
         double frustum[12];
@@ -520,13 +326,13 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-        getScPositionAndOrientation(et, body, scid, instr, scposb, boredir, updir, frustum);
-        if (failed_c())
-            continue;
+//        cout << setprecision(15) << "et " << et << endl;
 
-        getSunPosition(et, body, sunPosition);
-        if (failed_c())
-            continue;
+		getSpacecraftState(et, scid, body, scposb, unused);
+		getTargetState(et, scid, body, "SUN", sunPosition, unused);
+	    getFov(et, scid, body, instr, boredir, updir, frustum);
+
+//	    cout << "Sun " << sunPosition[0] << "  " << sunPosition[1] << "  " << sunPosition[2] << endl;
 
         const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
         if (std::string::npos != last_slash_idx)
