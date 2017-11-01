@@ -6,6 +6,7 @@ import java.io.IOException;
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -57,6 +58,11 @@ public class SmallBodyModel extends GenericPolyhedralModel
         super(polyData);
     }
 
+    public SmallBodyModel(ViewConfig config)
+    {
+        super(config);
+    }
+
     /**
      * Note that name is used to name this small body model as a whole including all
      * resolution levels whereas modelNames is an array of names that is specific
@@ -92,12 +98,20 @@ public class SmallBodyModel extends GenericPolyhedralModel
             boolean lowestResolutionModelStoredInResource)
     {
         SmallBodyViewConfig config = getSmallBodyConfig();
-        final String[] modelFiles = {
-                serverPath("shape/shape0.vtk.gz"),
-                serverPath("shape/shape1.vtk.gz"),
-                serverPath("shape/shape2.vtk.gz"),
-                serverPath("shape/shape3.vtk.gz")
-        };
+        String [] modelFiles = config.getShapeModelFileNames();
+
+        initializeConfigParameters(
+                modelFiles,
+                imageMapNames,
+                lowestResolutionModelStoredInResource);
+    }
+
+    protected void initializeConfigParameters(
+            String[] modelFiles,
+            String[] imageMapNames,
+            boolean lowestResolutionModelStoredInResource)
+    {
+        SmallBodyViewConfig config = getSmallBodyConfig();
         final String[] coloringFiles = {
                 serverPath("coloring/Slope"),
                 serverPath("coloring/Elevation"),
