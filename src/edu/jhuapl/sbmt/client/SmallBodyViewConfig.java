@@ -6,11 +6,19 @@ import java.util.List;
 
 import com.google.common.collect.Maps;
 
+import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
+import edu.jhuapl.sbmt.config.SBMTFileLocator;
+import edu.jhuapl.sbmt.config.SBMTFileLocators;
+import edu.jhuapl.sbmt.config.SessionConfiguration;
+import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
+import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -18,6 +26,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.QueryBase;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -1867,6 +1876,109 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.EARTH.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.EARTH.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("osirisrex", ShapeModelDataUsed.IMAGE_BASED).build();
+            BasicImagingInstrument mapCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.MAPCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                mapCam = BasicImagingInstrument.of(builder.build());
+            }
+            BasicImagingInstrument polyCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.POLYCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                polyCam = BasicImagingInstrument.of(builder.build());
+            }
+            BasicImagingInstrument samCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.SAMCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                samCam = BasicImagingInstrument.of(builder.build());
+            }
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.EARTH;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.EARTH;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.BLENDER;
+            c.rootDirOnServer = "/earth/osirisrex";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasImageMap=true;
+
+                c.imagingInstruments = new ImagingInstrument[] {
+                       // new Vis(ShapeModelBody.PHOBOS)
+                        mapCam,
+                        polyCam,
+                        samCam
+/*                    new ImagingInstrument(
+                                SpectralMode.MONO,
+                                new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
+                                ImageType.PHOBOS_IMAGE,
+                                new ImageSource[]{ImageSource.GASKELL},
+                                Instrument.IMAGING_DATA
+                                )*/
+                };
+
+            c.hasMapmaker = false;
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+//            c.imageSearchFilterNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+//            c.imageSearchDefaultMaxResolution = 300.0;
+        }
+
+        configArray.add(c);
     }
 
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
