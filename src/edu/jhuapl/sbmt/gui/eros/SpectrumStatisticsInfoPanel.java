@@ -42,9 +42,9 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.eros.Spectrum;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
 public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {

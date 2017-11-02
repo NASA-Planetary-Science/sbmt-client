@@ -39,9 +39,9 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.eros.Spectrum;
 
 
 public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListener

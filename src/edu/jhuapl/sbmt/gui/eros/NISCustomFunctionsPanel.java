@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import vtk.vtkFunctionParser;
 
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 
 public class NISCustomFunctionsPanel extends javax.swing.JDialog {
