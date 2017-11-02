@@ -326,13 +326,11 @@ int main(int argc, char** argv)
         if (failed_c())
             continue;
 
-//        cout << setprecision(15) << "et " << et << endl;
-
 		getSpacecraftState(et, scid, body, scposb, unused);
 		getTargetState(et, scid, body, "SUN", sunPosition, unused);
 	    getFov(et, scid, body, instr, boredir, updir, frustum);
-
-//	    cout << "Sun " << sunPosition[0] << "  " << sunPosition[1] << "  " << sunPosition[2] << endl;
+        if (failed_c())
+            continue; //cout?
 
         const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
         if (std::string::npos != last_slash_idx)
