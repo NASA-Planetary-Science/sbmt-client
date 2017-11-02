@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 #include "SpiceUsr.h"
 
 #define  FILSIZ         256
@@ -273,14 +274,17 @@ void saveInfoFile(string filename,
   2. body - IAU name of the target body, all caps
   3. sc - SPICE spacecraft name
   4. instrframe - SPICE instrument frame name
-  5. fitstimekeyword - FITS header time keyword, UTC assumed
+  5. fitstimekeyword - FITS header time keyword, UTC assumed  *********************** setting this command line argument to "TXTMODE" assumes the input file list actually contains one et string value per line
   6. input file list - path to file in which all image files are listed
   7. output folder - path to folder where infofiles should be saved to
   8. output file list - path to file in which all files for which an infofile was
      created will be listed along with their start times.
 */
+
 int main(int argc, char** argv)
 {
+
+
     if (argc < 9)
     {
         cerr << "Usage: create_info_files <kernelfiles> <body> <sc> <instrframe> <fitstimekeyword> <inputfilelist> <infofilefolder> <outputfilelist>" << endl;
@@ -296,6 +300,12 @@ int main(int argc, char** argv)
     string infofilefolder = argv[7];
     string outputfilelist = argv[8];
 
+	bool txtMode=false;
+	if (sclkkey.compare("TXTMODE")==0)
+	{
+		txtMode=true;
+		cout << "Text mode enabled... reading et values from " << inputfilelist << endl;
+	}
     furnsh_c(kernelfiles.c_str());
 
     erract_c("SET", 1, (char*)"RETURN");
@@ -322,7 +332,25 @@ int main(int argc, char** argv)
         double frustum[12];
         double sunPosition[3];
 
-        getEt(fitfiles[i], sclkkey, utc, et, scid);
+	if (!txtMode)
+	        getEt(fitfiles[i], sclkkey, utc, et, scid);
+	else
+	{
+		int instid;
+  		int found;
+   		bodn2c_c(scid, &instid, &found);
+ 		if (failed_c() || !found)
+       			return EXIT_FAILURE;
+
+		et=atof(fitfiles[i].c_str());
+
+    	    	int len = 25;
+      		char utcchar[len];
+        	et2utc_c(et, "ISOC", 3, len, utcchar);
+        	utc = utcchar;
+//		cout << "et string = " << et << "    utc string = " << utc << endl;
+	}	
+
         if (failed_c())
             continue;
 
@@ -338,12 +366,31 @@ int main(int argc, char** argv)
         	fitfiles[i].erase(0, last_slash_idx + 1);
         }
         int length = fitfiles[i].size();
-        string infofilename = infofilefolder + "/"
+
+
+        string infofilename;
+	if (!txtMode)
+	{
+		infofilename  = infofilefolder + "/"
                 + fitfiles[i].substr(0, length-4) + ".INFO";
+	}
+	else
+	{
+		infofilename = infofilefolder+"/"+string(instr)+"-"+utc+".INFO";
+	}
         saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum, sunPosition);
         cout << "created " << infofilename << endl;
 
-        fout << fitfiles[i].substr(0, length) << " " << utc << endl;
+	if (!txtMode)
+	        fout << fitfiles[i].substr(0, length) << " " << utc << endl;
+	else
+	{
+		string basename=infofilename.substr(0,infofilename.length()-5);
+		int firstSlash=infofilename.find_first_of("/");
+		if (firstSlash != string::npos)
+			basename=basename.substr(firstSlash+1,infofilename.length());
+	        fout << basename  << " " << utc << endl;
+	}
 
     }
     cout << "done." << endl;

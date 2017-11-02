@@ -1,0 +1,3 @@
+if [ -e otes_output ]; then rm -rvf otes_output; fi
+mkdir otes_output
+./create_info_files /project/sbmtpipeline/rawdata/osirisrex/EarthFlyBy/spoc-digest-2017-10-05T22_05_46.366Z.mk EARTH ORX ORX_OTES TXTMODE ./sclk.txt otes_output otes_imagelist.txt
