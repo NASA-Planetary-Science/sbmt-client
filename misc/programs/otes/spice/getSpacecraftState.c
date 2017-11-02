@@ -21,7 +21,7 @@ using namespace std;
      bodyToSc:     The position of the spacecraft in observer body-fixed coordinates corrected for light time
      velocity:     The velocity of the spacecraft in observer body-fixed coordinates corrected for light time
 */
-void getSpacecraftState(double et, const char* observerBody, const char* spacecraft, double bodyToSc[3], double velocity[3])
+void getSpacecraftState(double et, const char* spacecraft, const char* observerBody, double bodyToSc[3], double velocity[3])
 {
     double lt, scToBodyState[6];
     const char* abcorr = "LT+S";

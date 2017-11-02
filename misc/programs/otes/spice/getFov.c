@@ -65,11 +65,10 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
      *  as seen from the spacecraft at the epoch of observation (et),
      *  and the one-way light time from the observer to the spacecraft.
      *  Only the returned light time will be used from this call, as
-     *  such, the reference frame does not matter here. Use the body
-     *  fixed frame.
+     *  such, the reference frame does not matter here. Use J2000.
      */
 //    spkpos_c(target, et, inertframe, abcorr, obs, targpos, &lt);
-    spkpos_c(observerBody, et, bodyFrame.c_str(), abcorr, spacecraft, notUsed, &lt);
+    spkpos_c(observerBody, et, inertframe, abcorr, spacecraft, notUsed, &lt);
     if (failed_c()) {
         cerr << "Failed getFov call to spkpos" << endl;
         return;
@@ -93,11 +92,11 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
 
 
     //Tested with POLYCAM. The correct values are returned.
-	cout<< "bs " << bsight[0] << ", " << bsight[1] << ", " << bsight[2] << endl;
-	cout<< "bdy1 " << bounds[0][1] << ", " << bounds[0][1] << ", " << bounds[0][2] << endl;
-	cout<< "bdy1 " << bounds[1][1] << ", " << bounds[1][1] << ", " << bounds[1][2] << endl;
-	cout<< "bdy1 " << bounds[2][1] << ", " << bounds[2][1] << ", " << bounds[2][2] << endl;
-	cout<< "bdy1 " << bounds[3][1] << ", " << bounds[3][1] << ", " << bounds[3][2] << endl;
+//	cout<< "bs " << bsight[0] << ", " << bsight[1] << ", " << bsight[2] << endl;
+//	cout<< "bdy1 " << bounds[0][1] << ", " << bounds[0][1] << ", " << bounds[0][2] << endl;
+//	cout<< "bdy1 " << bounds[1][1] << ", " << bounds[1][1] << ", " << bounds[1][2] << endl;
+//	cout<< "bdy1 " << bounds[2][1] << ", " << bounds[2][1] << ", " << bounds[2][2] << endl;
+//	cout<< "bdy1 " << bounds[3][1] << ", " << bounds[3][1] << ", " << bounds[3][2] << endl;
 
     /*
      *  Get the coordinate transformation from instrument to
@@ -108,6 +107,19 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
     	cout << "Failed pxform1" << endl;
         return;
     }
+    
+    /*
+    //The values calculated below are not used, they are just
+    //for comparing with FITS header attitude (debugging).
+    double sc2j[3][3];
+    pxform_c("ORX_SPACECRAFT", inertframe, et, sc2j);
+    SpiceDouble q[4];
+    m2q_c(sc2j, q);
+    cout << "sc2j  " << sc2j[0][0] << "  " << sc2j[0][1] << "  " << sc2j[0][2] << endl;
+    cout << "sc2j  " << sc2j[1][0] << "  " << sc2j[1][1] << "  " << sc2j[1][2] << endl;
+    cout << "sc2j  " << sc2j[2][0] << "  " << sc2j[2][1] << "  " << sc2j[2][2] << endl;
+    //end debugging code.
+    */
 
     /*
      *  Get the coordinate transformation from inertial to
@@ -140,11 +152,11 @@ void getFov(double et, const char* spacecraft, const char* observerBody, const c
      *  SEEING IF THIS CAN REPLACE THE TWO PXFORM CALLS ABOVE.
      *  I DON'T THINK SO, THE VALUES DO DIFFER SLIGHTLY.
      */
-    pxform_c(instrFrame, bodyFrame.c_str(), et - lt, inst2bf);
-    if (failed_c()) {
-        cout << "Failed pxform2" << endl;
-        return;
-    }
+//    pxform_c(instrFrame, bodyFrame.c_str(), et - lt, inst2bf);
+//    if (failed_c()) {
+//        cout << "Failed pxform2" << endl;
+//        return;
+//    }
 
 
 	//swap the boundary corner vectors so they are in the correct order for SBMT

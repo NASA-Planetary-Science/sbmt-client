@@ -5,9 +5,11 @@
 
 using namespace std;
 
+#define  TIMFMT         "YYYY-MON-DD HR:MN:SC.###::UTC (UTC)"
+#define  TIMLEN         41
+
 /*
-   This function computes the state (position and velocity) of the target in the observer body frame,
-   at the time the spacecraft imaged the body.
+   This function computes the position of the target in the observer body frame, at the time the spacecraft observed the body.
 
    Input:
      et:           Ephemeris time when an image of the body was taken
@@ -17,7 +19,7 @@ using namespace std;
                    https://naif.jpl.nasa.gov/pub/naif/toolkit_docs/FORTRAN/req/naif_ids.html
 
    Output:
-     bodyToTarget: The position of the target in observer body-fixed coordinates corrected for light time
+     bodyToSc:     The position of the target in observer body-fixed coordinates corrected for light time
      velocity:     The velocity of the target in observer body-fixed coordinates corrected for light time
 */
 void getTargetState(double et, const char* spacecraft, const char* observerBody, const char* targetBody, double bodyToTarget[3], double velocity[3])
@@ -36,7 +38,7 @@ void getTargetState(double et, const char* spacecraft, const char* observerBody,
      */
     spkezr_c(observerBody, et, bodyFrame.c_str(), abcorr, spacecraft, notUsed, &lt);
     if (failed_c()) {
-        cerr << "Failed getTargetState call to spkezr" << endl;
+        cerr << "Failed spkezr" << endl;
         return;
     }
 
@@ -50,7 +52,7 @@ void getTargetState(double et, const char* spacecraft, const char* observerBody,
      */
     spkezr_c(targetBody, et - lt, bodyFrame.c_str(), abcorr, observerBody, bodyToTargetState, &lt);
     if (failed_c()) {
-        cerr << "Failed getTargetState call to spkezr" << endl;
+        cerr << "Failed spkezr" << endl;
         return;
     }
 
