@@ -37,11 +37,11 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 
 
 public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListener
@@ -281,7 +281,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
                 Path fullPath=Paths.get(spectrum.getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-                Vector3D toSunVector=SpectrumSearchPanel.getToSunUnitVector(relativePath.toString());
+                Vector3D toSunVector=new Vector3D(spectrum.getToSunUnitVector());
                 double[] illumFacs=simulateLighting(toSunVector,selectedIds);
 
                 emergenceAngle.addAll(SpectrumStatistics.sampleEmergenceAngle(spectrum, scpos));
@@ -406,7 +406,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
                 renderer.setLighting(LightingType.FIXEDLIGHT);
                 Path fullPath=Paths.get(spectrum.getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-                Vector3D toSunVector=SpectrumSearchPanel.getToSunUnitVector(relativePath.toString());
+                Vector3D toSunVector=new Vector3D(spectrum.getToSunUnitVector());
                 renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
                 updateMenuItems();

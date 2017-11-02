@@ -24,8 +24,8 @@ import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
+import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
 import edu.jhuapl.sbmt.gui.eros.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.gui.eros.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.CustomImagesPanel;
@@ -42,6 +42,7 @@ import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
 import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -304,8 +305,16 @@ public class SbmtView extends View
 
         for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
-            JComponent component = new SpectrumSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            if (instrument instanceof NIS)
+            {
+            JComponent component = new NISSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
             addTab(instrument.getDisplayName(), component);
+            }
+            else
+            {
+            //    JComponent component = new OTESSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            //    addTab(instrument.getDisplayName(), component);
+            }
         }
 
         if (getPolyhedralModelConfig().hasLidarData)
