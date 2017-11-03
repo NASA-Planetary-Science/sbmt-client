@@ -6,8 +6,10 @@ import java.io.IOException;
 import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.sbmt.model.image.Instrument;
 
 import nom.tam.fits.AsciiTableHDU;
 import nom.tam.fits.BasicHDU;
@@ -16,9 +18,27 @@ import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
+    private static final String[] DEFAULT_COLORING_NAMES = {
+            SlopeStr, ElevStr, GravAccStr, GravPotStr
+    };
+    private static final String[] DEFAULT_COLORING_UNITS = {
+            SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
+    };
+    private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
+
     public SmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
+    }
+
+    public String serverPath(String fileName)
+    {
+        return getSmallBodyConfig().serverPath(fileName);
+    }
+
+    public String serverPath(String fileName, Instrument instrument)
+    {
+        return getSmallBodyConfig().serverPath(fileName, instrument);
     }
 
     /**
@@ -36,6 +56,11 @@ public class SmallBodyModel extends GenericPolyhedralModel
     public SmallBodyModel(vtkPolyData polyData)
     {
         super(polyData);
+    }
+
+    public SmallBodyModel(ViewConfig config)
+    {
+        super(config);
     }
 
     /**
@@ -66,6 +91,43 @@ public class SmallBodyModel extends GenericPolyhedralModel
 //            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
 //
 //        initialize(defaultModelFile);
+    }
+
+    protected void initializeConfigParameters(
+            String[] imageMapNames,
+            boolean lowestResolutionModelStoredInResource)
+    {
+        SmallBodyViewConfig config = getSmallBodyConfig();
+        String [] modelFiles = config.getShapeModelFileNames();
+
+        initializeConfigParameters(
+                modelFiles,
+                imageMapNames,
+                lowestResolutionModelStoredInResource);
+    }
+
+    protected void initializeConfigParameters(
+            String[] modelFiles,
+            String[] imageMapNames,
+            boolean lowestResolutionModelStoredInResource)
+    {
+        SmallBodyViewConfig config = getSmallBodyConfig();
+        final String[] coloringFiles = {
+                serverPath("coloring/Slope"),
+                serverPath("coloring/Elevation"),
+                serverPath("coloring/GravitationalAcceleration"),
+                serverPath("coloring/GravitationalPotential")
+        };
+        final boolean[] coloringHasNulls = null;
+        initializeConfigParameters(
+                modelFiles,
+                config.hasColoringData ? coloringFiles : null,
+                config.hasColoringData ? DEFAULT_COLORING_NAMES : null,
+                config.hasColoringData ? DEFAULT_COLORING_UNITS : null,
+                coloringHasNulls,
+                imageMapNames,
+                config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
+                lowestResolutionModelStoredInResource);
     }
 
     @Override
