@@ -17,7 +17,9 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.model.eros.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
+import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class NISSearchPanel extends SpectrumSearchPanel
@@ -25,6 +27,8 @@ public class NISSearchPanel extends SpectrumSearchPanel
 
     Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
     static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
+
+    NISSpectrumMath spectrumMath=new NISSpectrumMath();
 
     public NISSearchPanel(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
@@ -132,5 +136,12 @@ public class NISSearchPanel extends SpectrumSearchPanel
     public String createSpectrumName(String currentSpectrumRaw)
     {
             return currentSpectrumRaw.substring(0,currentSpectrumRaw.length()-4) + ".NIS";
+    }
+
+
+    @Override
+    public SpectrumMath getSpectrumMathHandler()
+    {
+        return spectrumMath;
     }
 }

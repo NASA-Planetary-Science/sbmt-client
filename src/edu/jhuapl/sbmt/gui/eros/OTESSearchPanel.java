@@ -13,10 +13,12 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class OTESSearchPanel extends SpectrumSearchPanel
 {
+
 
 
     public OTESSearchPanel(ModelManager modelManager,
@@ -81,6 +83,13 @@ public class OTESSearchPanel extends SpectrumSearchPanel
     public String createSpectrumName(String currentSpectrumRaw)
     {
         return "/earth/osirisrex/otes/spectra/"+FilenameUtils.getBaseName(currentSpectrumRaw)+".spect";
+    }
+
+    @Override
+    public SpectrumMath getSpectrumMathHandler()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

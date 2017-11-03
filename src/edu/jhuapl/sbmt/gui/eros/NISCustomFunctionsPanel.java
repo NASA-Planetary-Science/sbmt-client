@@ -16,7 +16,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 
@@ -218,9 +217,9 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
             updateFunctionList();
 
             // delete the function from the combo boxes
-            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
-            for (JComboBox comboBox : comboBoxes)
-                comboBox.removeItemAt(comboBoxUserDefinedFunctionsStartIndex + selectedItem);
+     //       int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
+     //       for (JComboBox comboBox : comboBoxes)
+     //           comboBox.removeItemAt(comboBoxUserDefinedFunctionsStartIndex + selectedItem);
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 

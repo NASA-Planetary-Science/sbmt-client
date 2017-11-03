@@ -34,6 +34,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import vtk.vtkActor;
+import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
@@ -51,6 +52,7 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
@@ -73,6 +75,10 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     Renderer renderer;
 
     protected final SpectralInstrument instrument;
+
+
+    public abstract SpectrumMath getSpectrumMathHandler();
+
 
     /** Creates new form NISSearchPanel */
     public SpectrumSearchPanel(final ModelManager modelManager,
@@ -123,7 +129,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
  //       setupComboBoxes();
     }
 
-/*    private void setupComboBoxes()
+    private void setupComboBoxes()
     {
         for (int i=1; i<=64; ++i)
         {
@@ -133,7 +139,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             blueComboBox.addItem(channel);
         }
 
-        String[] derivedParameters = NISSpectrum.getDerivedParameters();
+        String[] derivedParameters = getSpectrumMathHandler().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
         {
             redComboBox.addItem(derivedParameters[i]);
@@ -141,14 +147,14 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             blueComboBox.addItem(derivedParameters[i]);
         }
 
-        for (vtkFunctionParser fp: NISSpectrum.getAllUserDefinedDerivedParameters())
+        for (vtkFunctionParser fp: getSpectrumMathHandler().getAllUserDefinedDerivedParameters())
         {
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
             blueComboBox.addItem(fp.GetFunction());
         }
     }
-*/
+
     protected abstract void setSpectrumSearchResults(List<List<String>> results);
 /*    {
         spectrumResultsLabelText = results.size() + " spectra matched";
@@ -213,7 +219,6 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                System.out.println(createSpectrumName(spectrumRawResults.get(index)));
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index)));
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
