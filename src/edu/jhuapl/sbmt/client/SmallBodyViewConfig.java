@@ -19,6 +19,9 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OTES;
+import edu.jhuapl.sbmt.model.eros.NIS;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -77,7 +80,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c.hasLidarData = true;
         c.hasMapmaker = true;
+
         c.hasSpectralData = true;
+        c.spectralInstruments=new SpectralInstrument[]{
+                new NIS()
+        };
+
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
@@ -149,6 +157,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
+
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
                         SpectralMode.MONO,
@@ -191,6 +200,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // The value 1546.4224133453388 was chosen so that for Eros the offset scale is 0.025 km.
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
+
+        c.spectralInstruments=new SpectralInstrument[]{};
+
         configArray.add(c);
 
         // Ostro Itokawa
@@ -362,6 +374,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new SpectralInstrument[]{
+                    new OTES()
+            };
             configArray.add(c);
         }
 

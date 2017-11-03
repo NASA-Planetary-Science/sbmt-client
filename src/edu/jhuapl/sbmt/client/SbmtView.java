@@ -24,8 +24,8 @@ import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
-import edu.jhuapl.sbmt.gui.eros.NISPopupMenu;
-import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
+import edu.jhuapl.sbmt.gui.eros.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.gui.eros.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.CustomImagesPanel;
@@ -43,11 +43,11 @@ import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
@@ -129,9 +129,9 @@ public class SbmtView extends View
             }
         }
 
-        if (getPolyhedralModelConfig().hasSpectralData)
+        for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
+            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel, instrument));
             if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new NISStatisticsCollection());
         }
@@ -225,7 +225,7 @@ public class SbmtView extends View
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            PopupMenu popupMenu = new NISPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getRenderer());
+            PopupMenu popupMenu = new SpectrumPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getRenderer());
             registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
         }
 
@@ -302,10 +302,10 @@ public class SbmtView extends View
             }
         }
 
-        if (getPolyhedralModelConfig().hasSpectralData)
+        for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
-            JComponent component = new NISSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer());
-            addTab(Instrument.NIS.toString(), component);
+            JComponent component = new SpectrumSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            addTab(instrument.getDisplayName(), component);
         }
 
         if (getPolyhedralModelConfig().hasLidarData)

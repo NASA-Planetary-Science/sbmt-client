@@ -37,14 +37,14 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.NISStatistics;
-import edu.jhuapl.sbmt.model.eros.NISStatistics.Sample;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.eros.Spectrum;
 
 
-public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
+public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListener
 {
     private ModelManager modelManager;
     private String currentSpectrum;
@@ -73,7 +73,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
-    public NISPopupMenu(
+    public SpectrumPopupMenu(
             ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
@@ -137,7 +137,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
 
     private void updateMenuItems()
     {
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 
         boolean containsSpectrum = model.containsSpectrum(currentSpectrum);
         showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
@@ -149,7 +149,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
 
         if (containsSpectrum)
         {
-            NISSpectrum image = model.getSpectrum(currentSpectrum);
+            Spectrum image = model.getSpectrum(currentSpectrum);
             showFrustumMenuItem.setSelected(image.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
             showOutlineMenuItem.setSelected(image.isOutlineShowing());
@@ -179,7 +179,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             try
             {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
@@ -201,7 +201,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
                 infoPanelManager.addData(model.getSpectrum(currentSpectrum));
 
@@ -237,8 +237,8 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
     public void showStatisticsWindow()
     {
         SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        List<NISSpectrum> spectra=model.getSelectedSpectra();
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        List<Spectrum> spectra=model.getSelectedSpectra();
         if (spectra.size()==0)
             spectra.add(model.getSpectrum(currentSpectrum));    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
         //
@@ -257,9 +257,9 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         List<Sample> incidenceAngle=Lists.newArrayList();   // this has nan for faces that are occluded
         List<Sample> irradiation=Lists.newArrayList();
         List<Sample> phaseAngle=Lists.newArrayList();   // this can have a different number of items than the other lists due to occluded faces
-        List<NISSpectrum> spectra;
+        List<Spectrum> spectra;
 
-        public ComputeStatisticsTask(List<NISSpectrum> spectra)
+        public ComputeStatisticsTask(List<Spectrum> spectra)
         {
             this.spectra=spectra;
         }
@@ -271,7 +271,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
             {
                 setProgress((int)(100*(double)i/(double)spectra.size()));
 
-                NISSpectrum spectrum=spectra.get(i);
+                Spectrum spectrum=spectra.get(i);
                 Vector3D scpos=new Vector3D(spectrum.getSpacecraftPosition());
 
                 vtkIdTypeArray ids=(vtkIdTypeArray)spectrum.getUnshiftedFootprint().GetCellData().GetArray(GenericPolyhedralModel.cellIdsArrayName);
@@ -281,14 +281,14 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
 
                 Path fullPath=Paths.get(spectrum.getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-                Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
+                Vector3D toSunVector=SpectrumSearchPanel.getToSunUnitVector(relativePath.toString());
                 double[] illumFacs=simulateLighting(toSunVector,selectedIds);
 
-                emergenceAngle.addAll(NISStatistics.sampleEmergenceAngle(spectrum, scpos));
+                emergenceAngle.addAll(SpectrumStatistics.sampleEmergenceAngle(spectrum, scpos));
                 // XXX: incidence angle currently ignores occlusion
-                incidenceAngle.addAll(NISStatistics.sampleIncidenceAngle(spectrum, toSunVector));
-                phaseAngle.addAll(NISStatistics.samplePhaseAngle(incidenceAngle, emergenceAngle));
-                irradiation.addAll(NISStatistics.sampleIrradiance(spectrum, illumFacs));
+                incidenceAngle.addAll(SpectrumStatistics.sampleIncidenceAngle(spectrum, toSunVector));
+                phaseAngle.addAll(SpectrumStatistics.samplePhaseAngle(incidenceAngle, emergenceAngle));
+                irradiation.addAll(SpectrumStatistics.sampleIrradiance(spectrum, illumFacs));
             }
 
             return null;
@@ -298,7 +298,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         protected void done()
         {
 
-            NISStatistics stats=new NISStatistics(emergenceAngle, incidenceAngle, phaseAngle, irradiation, spectra);
+            SpectrumStatistics stats=new SpectrumStatistics(emergenceAngle, incidenceAngle, phaseAngle, irradiation, spectra);
             NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
             statsModel.addStatistics(stats);
 
@@ -319,8 +319,8 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            Spectrum spectrum = model.getSpectrum(currentSpectrum);
             double[] up=new Vector3D(spectrum.getFrustumCorner(1)).subtract(new Vector3D(spectrum.getFrustumCorner(0))).toArray();
             renderer.setCameraOrientation(spectrum.getFrustumOrigin(), spectrum.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
         }
@@ -332,9 +332,9 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
-                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+                Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
 
@@ -355,9 +355,9 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
-                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+                Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowOutline(showOutlineMenuItem.isSelected());
 
@@ -377,9 +377,9 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
-                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+                Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowToSunVector(showToSunVectorMenuItem.isSelected());
 
@@ -399,14 +399,14 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
-                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+                Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 renderer.setLighting(LightingType.FIXEDLIGHT);
                 Path fullPath=Paths.get(spectrum.getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-                Vector3D toSunVector=NISSearchPanel.getToSunUnitVector(relativePath.toString());
+                Vector3D toSunVector=SpectrumSearchPanel.getToSunUnitVector(relativePath.toString());
                 renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
                 updateMenuItems();
@@ -425,9 +425,9 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
         {
             try
             {
-                NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.addSpectrum(currentSpectrum);
-                NISSpectrum spectrum = model.getSpectrum(currentSpectrum);
+                Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 String name = new File(spectrum.getFullPath()).getName();
                 name = name.substring(0, name.length()-4) + ".txt";
@@ -457,7 +457,7 @@ public class NISPopupMenu extends PopupMenu implements PropertyChangeListener
     {
         if (pickedProp instanceof vtkActor)
         {
-            NISSpectraCollection msiImages = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection msiImages = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             String name = msiImages.getSpectrumName((vtkActor)pickedProp);
             setCurrentSpectrum(name);
             show(e.getComponent(), e.getX(), e.getY());

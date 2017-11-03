@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -113,7 +114,8 @@ public class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
-    @Override
+    public SpectralInstrument[] spectralInstruments = {};
+
     public String getUniqueName()
     {
         if (ShapeModelAuthor.CUSTOM == author)

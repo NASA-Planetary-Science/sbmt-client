@@ -7,11 +7,9 @@
 
 using namespace std;
 
-#define  TIMFMT         "YYYY-MON-DD HR:MN:SC.###::UTC (UTC)"
-#define  TIMLEN         41
-
 /*
-   This function computes the position of the spacecraft in the observer body frame, at the time the spacecraft observed the body.
+   This function computes the state (position and velocity) of the spacecraft in the observer body frame,
+   at the time the spacecraft imaged the body.
    
    Input:
      et:           Ephemeris time when the image was taken
@@ -23,7 +21,7 @@ using namespace std;
      bodyToSc:     The position of the spacecraft in observer body-fixed coordinates corrected for light time
      velocity:     The velocity of the spacecraft in observer body-fixed coordinates corrected for light time
 */
-void getSpacecraftState(double et, const char* observerBody, const char* spacecraft, double bodyToSc[3], double velocity[3])
+void getSpacecraftState(double et, const char* spacecraft, const char* observerBody, double bodyToSc[3], double velocity[3])
 {
     double lt, scToBodyState[6];
     const char* abcorr = "LT+S";
@@ -38,7 +36,7 @@ void getSpacecraftState(double et, const char* observerBody, const char* spacecr
      */
     spkezr_c(observerBody, et, bodyFrame.c_str(), abcorr, spacecraft, scToBodyState, &lt);
     if (failed_c()) {
-        cerr << "Failed spkezr" << endl;
+        cerr << "Failed getSpacecraftState call to spkezr" << endl;
         return;
     }
 

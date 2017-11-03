@@ -22,7 +22,8 @@ import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
@@ -294,9 +295,13 @@ public class SbmtModelFactory
         return new LineamentModel();
     }
 
-    static public NISSpectraCollection createSpectralModel(SmallBodyModel smallBodyModel)
+    static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel, SpectralInstrument instrument)
     {
-        return new NISSpectraCollection(smallBodyModel);
+        ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
+        ShapeModelAuthor author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+        String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
+
+        return new SpectraCollection(smallBodyModel, instrument);
     }
 
     static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)

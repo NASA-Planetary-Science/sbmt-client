@@ -57,21 +57,23 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.NISSpectraCollection;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
+import edu.jhuapl.sbmt.model.eros.Spectrum;
 import edu.jhuapl.sbmt.query.eros.NisQuery;
 
 import altwg.util.PolyDataUtil;
 
 
-public class NISSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
+public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
 {
     private final ModelManager modelManager;
     private final PickManager pickManager;
     private java.util.Date startDate = new GregorianCalendar(2000, 0, 11, 0, 0, 0).getTime();
     private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
 
-    private NISPopupMenu nisPopupMenu;
+    private SpectrumPopupMenu nisPopupMenu;
     private List<String> nisRawResults = new ArrayList<String>();
     private String nisResultsLabelText = " ";
     private IdPair resultIntervalCurrentlyShown = null;
@@ -81,15 +83,18 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
     static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
 
+    private final SpectralInstrument instrument;
+
     /** Creates new form NISSearchPanel */
-    public NISSearchPanel(final ModelManager modelManager,
+    public SpectrumSearchPanel(final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer)
+            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
     {
         this.modelManager = modelManager;
         this.pickManager = pickManager;
+        this.instrument=instrument;
 
-        nisPopupMenu = new NISPopupMenu(this.modelManager, infoPanelManager, renderer);
+        nisPopupMenu = new SpectrumPopupMenu(this.modelManager, infoPanelManager, renderer);
 
         initComponents();
 
@@ -184,7 +189,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     {
         for (int i=1; i<=64; ++i)
         {
-            String channel = new String("(" + i + ") " + NISSpectrum.bandCenters[i-1] + " nm");
+            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " nm");
             redComboBox.addItem(channel);
             greenComboBox.addItem(channel);
             blueComboBox.addItem(channel);
@@ -206,7 +211,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         }
     }
 
-    private void setNISResults(List<String> results)
+    private void setSpectrumSearchResults(List<String> results)
     {
         nisResultsLabelText = results.size() + " spectra matched";
         resultsLabel.setText(nisResultsLabelText);
@@ -234,7 +239,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
 
         // Show the first set of footprints
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem()));
-        this.showNISFootprints(resultIntervalCurrentlyShown);
+        this.showFootprints(resultIntervalCurrentlyShown);
     }
 
 
@@ -288,7 +293,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     {
         if (e.getKeyChar()=='a')
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             model.toggleSelectAll();
         }
         else if (e.getKeyChar()=='s')
@@ -297,14 +302,14 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         }
         else if (e.getKeyChar()=='i' || e.getKeyChar()=='v')    // 'i' sets the lighting direction based on time of a single NIS spectrum, and 'v' looks from just above the footprint toward the sun
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            List<NISSpectrum> selection=model.getSelectedSpectra();
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            List<Spectrum> selection=model.getSelectedSpectra();
             if (selection.size()!=1)
             {
                 JOptionPane.showMessageDialog(this, "Please select only one spectrum to specify lighting or viewpoint");
                 return;
             }
-            NISSpectrum spectrum=selection.get(0);
+            Spectrum spectrum=selection.get(0);
             renderer.setLighting(LightingType.FIXEDLIGHT);
             Path fullPath=Paths.get(spectrum.getFullPath());
             Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
@@ -332,12 +337,12 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         }
         else if (e.getKeyChar()=='h')
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             model.decreaseFootprintSeparation(0.001);
         }
         else if (e.getKeyChar()=='H')
         {
-            NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             model.increaseFootprintSeparation(0.001);
         }
 
@@ -350,12 +355,12 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
 
     }
 
-    private void showNISFootprints(IdPair idPair)
+    private void showFootprints(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
@@ -428,7 +433,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         Double blueMinVal = (Double)blueMinSpinner.getValue();
         Double blueMaxVal = (Double)blueMaxSpinner.getValue();
 
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         if (grayscaleCheckBox.isSelected())
         {
             model.setChannelColoring(
@@ -453,9 +458,9 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof NISSpectraCollection)
+            if (model instanceof SpectraCollection)
             {
-                NISSpectraCollection coll=(NISSpectraCollection)model;
+                SpectraCollection coll=(SpectraCollection)model;
                 MouseEvent event=e.getMouseEvent();
                 if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
                 {
@@ -1433,7 +1438,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             if (resultIntervalCurrentlyShown.id1 > 0)
             {
                 resultIntervalCurrentlyShown.prevBlock(Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
-                showNISFootprints(resultIntervalCurrentlyShown);
+                showFootprints(resultIntervalCurrentlyShown);
             }
         }
     }//GEN-LAST:event_prevButtonActionPerformed
@@ -1446,19 +1451,19 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             if (resultIntervalCurrentlyShown.id2 < resultList.getModel().getSize())
             {
                 resultIntervalCurrentlyShown.nextBlock(Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
-                showNISFootprints(resultIntervalCurrentlyShown);
+                showFootprints(resultIntervalCurrentlyShown);
             }
         }
         else
         {
             resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)numberOfFootprintsComboBox.getSelectedItem()));
-            showNISFootprints(resultIntervalCurrentlyShown);
+            showFootprints(resultIntervalCurrentlyShown);
         }
     }//GEN-LAST:event_nextButtonActionPerformed
 
     private void removeAllFootprintsButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeAllFootprintsButtonActionPerformed
     {//GEN-HEADEREND:event_removeAllFootprintsButtonActionPerformed
-        NISSpectraCollection model = (NISSpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         model.removeAllSpectra();
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
@@ -1548,7 +1553,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
                     null,
                     -1);
 
-            setNISResults(results);
+            setSpectrumSearchResults(results);
         }
         catch (Exception e)
         {
@@ -1633,7 +1638,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
     private void customFunctionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customFunctionsButtonActionPerformed
         NISCustomFunctionsPanel customFunctionsPanel = new NISCustomFunctionsPanel(
                 JOptionPane.getFrameForComponent(this),
-                new JComboBox[]{redComboBox, greenComboBox, blueComboBox});
+                new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument);
         currentlyEditingUserDefinedFunction = true;
         customFunctionsPanel.setVisible(true);
         currentlyEditingUserDefinedFunction = false;
@@ -1648,7 +1653,7 @@ public class NISSearchPanel extends javax.swing.JPanel implements MouseListener,
             if (newMaxId != resultIntervalCurrentlyShown.id2)
             {
                 resultIntervalCurrentlyShown.id2 = newMaxId;
-                showNISFootprints(resultIntervalCurrentlyShown);
+                showFootprints(resultIntervalCurrentlyShown);
             }
         }
     }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed

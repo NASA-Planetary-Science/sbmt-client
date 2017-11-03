@@ -20,18 +20,21 @@ import javax.swing.JOptionPane;
 import vtk.vtkFunctionParser;
 
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
 
 
 public class NISCustomFunctionsPanel extends javax.swing.JDialog {
 
     private JComboBox[] comboBoxes;
+    SpectralInstrument instrument;
 
     /** Creates new form CustomImageLoaderPanel */
     public NISCustomFunctionsPanel(
             java.awt.Frame parent,
-            JComboBox[] comboBoxes)
+            JComboBox[] comboBoxes, SpectralInstrument instrument)
     {
         super(parent, true);
+        this.instrument=instrument;
 
         this.comboBoxes = comboBoxes;
 
@@ -196,7 +199,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
 
                 // replace the function in the combo boxes, by first removing it and then inserting
                 // a new one. If the item was selected, reselect it.
-                int comboBoxUserDefinedFunctionsStartIndex = NISSpectrum.bandCenters.length + NISSpectrum.derivedParameters.length;
+                int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
                 for (JComboBox comboBox : comboBoxes)
                 {
                     int comboBoxIndex = comboBoxUserDefinedFunctionsStartIndex + selectedItem;
@@ -218,7 +221,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
             updateFunctionList();
 
             // delete the function from the combo boxes
-            int comboBoxUserDefinedFunctionsStartIndex = NISSpectrum.bandCenters.length + NISSpectrum.derivedParameters.length;
+            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
             for (JComboBox comboBox : comboBoxes)
                 comboBox.removeItemAt(comboBoxUserDefinedFunctionsStartIndex + selectedItem);
         }
