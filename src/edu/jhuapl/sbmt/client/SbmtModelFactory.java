@@ -10,14 +10,18 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
+import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
+import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
+import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.deimos.DeimosImage;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
+import edu.jhuapl.sbmt.model.earth.Earth;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
@@ -48,6 +52,7 @@ import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
+import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
@@ -107,6 +112,7 @@ public class SbmtModelFactory
             }
             else // SpectralMode.MONO
             {
+
                 if (key.instrument.type == ImageType.MSI_IMAGE)
                     return new MSIImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.AMICA_IMAGE)
@@ -131,6 +137,12 @@ public class SbmtModelFactory
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
+                    return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
+                    return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
+                    return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.POLYCAM_IMAGE)
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
@@ -213,8 +225,27 @@ public class SbmtModelFactory
             {
                 return new Bennu(config);
             }
+            else if (ShapeModelBody.EARTH == name)
+            {
+//                String[] names = {
+//                        name + " low"
+//                };
+//                String[] paths = {
+//                        config.rootDirOnServer + "/globe.obj"
+//                };
+//
+//                return new SimpleSmallBody(config, names, paths);
+
+            	SmallBodyModel earth = new Earth(config);
+//            	earth.getSmallBodyActor().SetScale(3959);
+            	return earth;
+            }
             else
             {
+                if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+                {
+                    return new Sbmt2SimpleSmallBody(config);
+                }
                 String[] names = {
                         name + " low",
                         name + " med",
@@ -251,6 +282,11 @@ public class SbmtModelFactory
         else if (ShapeModelAuthor.CUSTOM == author)
         {
             return new CustomShapeModel(config);
+        }
+
+        if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+        {
+            return new Sbmt2SimpleSmallBody(config);
         }
 
         return new SimpleSmallBody(config);
