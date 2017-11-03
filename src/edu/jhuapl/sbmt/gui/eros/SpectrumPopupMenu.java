@@ -322,7 +322,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             Spectrum spectrum = model.getSpectrum(currentSpectrum);
             double[] up=new Vector3D(spectrum.getFrustumCorner(1)).subtract(new Vector3D(spectrum.getFrustumCorner(0))).toArray();
-            renderer.setCameraOrientation(spectrum.getFrustumOrigin(), spectrum.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
+            if (spectrum.getShiftedFootprint()!=null)
+                renderer.setCameraOrientation(spectrum.getFrustumOrigin(), spectrum.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
         }
     }
 

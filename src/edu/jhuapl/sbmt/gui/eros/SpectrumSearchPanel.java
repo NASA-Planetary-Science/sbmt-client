@@ -34,7 +34,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import vtk.vtkActor;
-import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
@@ -51,7 +50,6 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
@@ -122,10 +120,10 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
 
         polygonType3CheckBox.setVisible(false);
 
-        setupComboBoxes();
+ //       setupComboBoxes();
     }
 
-    private void setupComboBoxes()
+/*    private void setupComboBoxes()
     {
         for (int i=1; i<=64; ++i)
         {
@@ -150,7 +148,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             blueComboBox.addItem(fp.GetFunction());
         }
     }
-
+*/
     protected abstract void setSpectrumSearchResults(List<List<String>> results);
 /*    {
         spectrumResultsLabelText = results.size() + " spectra matched";
