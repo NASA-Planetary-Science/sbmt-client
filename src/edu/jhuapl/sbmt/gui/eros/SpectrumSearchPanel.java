@@ -55,7 +55,6 @@ import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.query.eros.NisQuery;
 
 import altwg.util.PolyDataUtil;
 
@@ -152,7 +151,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         }
     }
 
-    protected abstract void setSpectrumSearchResults(List<String> results);
+    protected abstract void setSpectrumSearchResults(List<List<String>> results);
 /*    {
         spectrumResultsLabelText = results.size() + " spectra matched";
         resultsLabel.setText(spectrumResultsLabelText);
@@ -216,7 +215,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                spectrumPopupMenu.setCurrentSpectrum(spectrumRawResults.get(index));
+                System.out.println(createSpectrumName(spectrumRawResults.get(index)));
+                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index)));
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
@@ -314,8 +314,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             try
             {
                 String currentSpectrum = spectrumRawResults.get(i);
-                String spectrumName = currentSpectrum.substring(0,currentSpectrum.length()-4) + ".NIS";
-                model.addSpectrum(spectrumName);
+                model.addSpectrum(createSpectrumName(currentSpectrum));
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -323,6 +322,11 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         }
     }
 
+
+    public abstract String createSpectrumName(String currentSpectrumRaw);
+//    {
+//        return currentSpectrumRaw.substring(0,currentSpectrumRaw.length()-4) + ".NIS";
+//    }
 
 
     private void checkValidMinMax(int channel, boolean minimunStateChange)
@@ -1472,12 +1476,13 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 }
             }
 
-            List<String> results = NisQuery.getInstance().runQueryNIS(
+            List<List<String>> results = instrument.getQueryBase().runQuery(
+                    null,
                     startDateJoda,
                     endDateJoda,
+                    false,
                     null,
-                    false,
-                    false,
+                    null,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     0.0,

@@ -37,10 +37,10 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
 
@@ -299,7 +299,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         {
 
             SpectrumStatistics stats=new SpectrumStatistics(emergenceAngle, incidenceAngle, phaseAngle, irradiation, spectra);
-            NISStatisticsCollection statsModel=(NISStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
+            SpectrumStatisticsCollection statsModel=(SpectrumStatisticsCollection)modelManager.getModel(ModelNames.STATISTICS);
             statsModel.addStatistics(stats);
 
             try

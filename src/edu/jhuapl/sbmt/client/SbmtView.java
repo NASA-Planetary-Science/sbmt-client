@@ -25,6 +25,7 @@ import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
+import edu.jhuapl.sbmt.gui.eros.OTESSearchPanel;
 import edu.jhuapl.sbmt.gui.eros.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
@@ -43,7 +44,7 @@ import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NIS;
-import edu.jhuapl.sbmt.model.eros.NISStatisticsCollection;
+import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
@@ -134,7 +135,7 @@ public class SbmtView extends View
         {
             allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel, instrument));
             if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
-                allModels.put(ModelNames.STATISTICS, new NISStatisticsCollection());
+                allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
 
         if (getPolyhedralModelConfig().hasLidarData)
@@ -312,8 +313,8 @@ public class SbmtView extends View
             }
             else
             {
-            //    JComponent component = new OTESSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-            //    addTab(instrument.getDisplayName(), component);
+               JComponent component = new OTESSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                addTab(instrument.getDisplayName(), component);
             }
         }
 

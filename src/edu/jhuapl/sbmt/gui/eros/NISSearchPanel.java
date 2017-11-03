@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.gui.Renderer;
@@ -16,6 +17,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.model.eros.NisQuery;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class NISSearchPanel extends SpectrumSearchPanel
@@ -86,17 +88,26 @@ public class NISSearchPanel extends SpectrumSearchPanel
 
 
     @Override
-    protected void setSpectrumSearchResults(List<String> results)
+    protected void setSpectrumSearchResults(List<List<String>> results)
     {
         spectrumResultsLabelText = results.size() + " spectra matched";
         resultsLabel.setText(spectrumResultsLabelText);
-        spectrumRawResults = results;
+
+        List<String> matchedImages=Lists.newArrayList();
+        for (List<String> res : results)
+        {
+            String path = NisQuery.getNisPath(res);
+            matchedImages.add(path);
+        }
+
+
+        spectrumRawResults = matchedImages;
 
         String[] formattedResults = new String[results.size()];
 
         // add the results to the list
         int i=0;
-        for (String str : results)
+        for (String str : matchedImages)
         {
             String fileNum=str.substring(16,25);
             String strippedFileName=str.replace("/NIS/2000/", "");
@@ -115,5 +126,11 @@ public class NISSearchPanel extends SpectrumSearchPanel
         // Show the first set of footprints
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem()));
         this.showFootprints(resultIntervalCurrentlyShown);
+    }
+
+    @Override
+    public String createSpectrumName(String currentSpectrumRaw)
+    {
+            return currentSpectrumRaw.substring(0,currentSpectrumRaw.length()-4) + ".NIS";
     }
 }

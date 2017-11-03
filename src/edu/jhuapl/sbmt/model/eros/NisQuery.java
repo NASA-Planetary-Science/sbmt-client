@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.query.eros;
+package edu.jhuapl.sbmt.model.eros;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,16 +24,16 @@ public class NisQuery extends QueryBase
 {
     private static NisQuery ref = null;
 
-    private String getNisPath(List<String> result)
+    public static String getNisPath(List<String> result)
     {
         int id = Integer.parseInt(result.get(0));
         int year = Integer.parseInt(result.get(1));
         int dayOfYear = Integer.parseInt(result.get(2));
 
-        return this.getNisPath(id, year, dayOfYear);
+        return getNisPath(id, year, dayOfYear);
     }
 
-    private String getNisPath(int name, int year, int dayOfYear)
+    public static String getNisPath(int name, int year, int dayOfYear)
     {
         String str = "/NIS/";
         str += year + "/";
@@ -74,7 +74,7 @@ public class NisQuery extends QueryBase
     }
 
     @Override
-    public String getImagesPath()
+    public String getDataPath()
     {
         return "/NIS/";
     }
@@ -110,33 +110,6 @@ public class NisQuery extends QueryBase
             ImageSource msiSource,
             int limbType)
     {
-        System.err.println("Error: Not implemented. Do not call.");
-        return null;
-    }
-
-    public List<String> runQueryNIS(
-            DateTime startDate,
-            DateTime stopDate,
-            List<Integer> filters,
-            boolean iofdbl,
-            boolean cifdbl,
-            double startDistance,
-            double stopDistance,
-            double startResolution,
-            double stopResolution,
-            String searchString,
-            List<Integer> polygonTypes,
-            double fromIncidence,
-            double toIncidence,
-            double fromEmission,
-            double toEmission,
-            double fromPhase,
-            double toPhase,
-            TreeSet<Integer> cubeList,
-            ImageSource msiSource,
-            int limbType)
-    {
-        List<String> matchedImages = new ArrayList<>();
         List<List<String>> results = null;
 
         double minIncidence = Math.min(fromIncidence, toIncidence);
@@ -186,20 +159,48 @@ public class NisQuery extends QueryBase
 
             results = doQuery("searchnis.php", constructUrlArguments(args));
 
-            for (List<String> res : results)
+/*            for (List<String> res : results)
             {
                 String path = this.getNisPath(res);
 
                 matchedImages.add(path);
-            }
+            }*/
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        return matchedImages;
+        //return matchedImages;
+        return results;
+
+        //System.err.println("Error: Not implemented. Do not call.");
+        //return null;
     }
+
+/*    public List<String> runSpectralQuery(
+            DateTime startDate,
+            DateTime stopDate,
+            List<Integer> filters,
+            boolean iofdbl,
+            boolean cifdbl,
+            double startDistance,
+            double stopDistance,
+            double startResolution,
+            double stopResolution,
+            String searchString,
+            List<Integer> polygonTypes,
+            double fromIncidence,
+            double toIncidence,
+            double fromEmission,
+            double toEmission,
+            double fromPhase,
+            double toPhase,
+            TreeSet<Integer> cubeList,
+            ImageSource msiSource,
+            int limbType)
+    {
+    }*/
 
     @Override
     protected List<List<String>> getCachedResults(
