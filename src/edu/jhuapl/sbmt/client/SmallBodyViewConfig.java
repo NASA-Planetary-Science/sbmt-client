@@ -1,17 +1,26 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.google.common.collect.Maps;
 
+import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
+import edu.jhuapl.sbmt.config.SBMTFileLocator;
+import edu.jhuapl.sbmt.config.SBMTFileLocators;
+import edu.jhuapl.sbmt.config.SessionConfiguration;
+import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
+import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.eros.NIS;
+import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -20,6 +29,7 @@ import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.QueryBase;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -1340,15 +1350,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.JANUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
-        c.population = ShapeModelPopulation.SATURN;
-        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
-        c.rootDirOnServer = "/STOOKE/JANUS/s10janus.llr.gz";
-        configArray.add(c);
-
-        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MIMAS;
         c.type = ShapeModelType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
@@ -1384,7 +1385,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
-
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOEBE;
@@ -1858,6 +1858,193 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = null;
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            configArray.add(c);
+        }
+
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.TELESTO;
+        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelAuthor.GASKELL;
+        c.rootDirOnServer = "/GASKELL/TELESTO";
+        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+        c.imagingInstruments = new ImagingInstrument[] {
+                new ImagingInstrument(
+                        SpectralMode.MONO,
+                        new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"),
+                        ImageType.SATURN_MOON_IMAGE,
+                        new ImageSource[]{ImageSource.GASKELL},
+                        Instrument.IMAGING_DATA
+                        )
+        };
+
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
+        c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
+        c.imageSearchFilterNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
+        c.imageSearchDefaultMaxResolution = 4000.0;
+        configArray.add(c);
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.EARTH.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.EARTH.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("osirisrex", ShapeModelDataUsed.IMAGE_BASED).build();
+            BasicImagingInstrument mapCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.MAPCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.MAPCAM_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                mapCam = BasicImagingInstrument.of(builder.build());
+            }
+            BasicImagingInstrument polyCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.POLYCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.POLYCAM_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                polyCam = BasicImagingInstrument.of(builder.build());
+            }
+// TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then uncomment this block and the line below.
+//            BasicImagingInstrument samCam;
+//            {
+//                // Set up images.
+//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+//                        Instrument.SAMCAM,
+//                        SpectralMode.MONO,
+//                        queryBase,
+//                        new ImageSource[] { ImageSource.SPICE },
+//                        fileLocator,
+//                        ImageType.SAMCAM_IMAGE);
+//
+//                // Put it all together in a session.
+//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+//                samCam = BasicImagingInstrument.of(builder.build());
+//            }
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.EARTH;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.EARTH;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.BLENDER;
+            c.rootDirOnServer = "/earth/osirisrex";
+            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
+            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasImageMap=true;
+
+                c.imagingInstruments = new ImagingInstrument[] {
+                       // new Vis(ShapeModelBody.PHOBOS)
+                        mapCam,
+                        polyCam,
+// TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
+//                        samCam
+/*                    new ImagingInstrument(
+                                SpectralMode.MONO,
+                                new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
+                                ImageType.PHOBOS_IMAGE,
+                                new ImageSource[]{ImageSource.GASKELL},
+                                Instrument.IMAGING_DATA
+                                )*/
+                };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+// TODO make hierarchical search work sbmt1dev-style.
+//            c.imageSearchFilterNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    ShapeModelType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Truth", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.TRUTH;
+            c.rootDirOnServer = "/ryugu/truth";
+            c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    ShapeModelType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = ShapeModelType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/ryugu/gaskell";
+            c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
             configArray.add(c);
         }
     }

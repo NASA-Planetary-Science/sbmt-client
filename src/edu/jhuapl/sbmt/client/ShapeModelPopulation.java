@@ -9,7 +9,8 @@ public enum ShapeModelPopulation
     NEPTUNE("Neptune"),
     NEO("Near-Earth"),
     MAIN_BELT("Main Belt"),
-    PLUTO("Pluto");
+    PLUTO("Pluto"),
+    EARTH("Earth");
 
     final private String str;
     private ShapeModelPopulation(String str)

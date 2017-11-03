@@ -47,6 +47,7 @@ import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
+import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
@@ -215,6 +216,10 @@ public class SbmtModelFactory
             }
             else
             {
+                if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+                {
+                    return new Sbmt2SimpleSmallBody(config);
+                }
                 String[] names = {
                         name + " low",
                         name + " med",
@@ -251,6 +256,11 @@ public class SbmtModelFactory
         else if (ShapeModelAuthor.CUSTOM == author)
         {
             return new CustomShapeModel(config);
+        }
+
+        if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+        {
+            return new Sbmt2SimpleSmallBody(config);
         }
 
         return new SimpleSmallBody(config);
