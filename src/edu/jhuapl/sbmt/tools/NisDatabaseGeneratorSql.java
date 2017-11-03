@@ -20,6 +20,7 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
+import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 
 public class NisDatabaseGeneratorSql
@@ -34,6 +35,8 @@ public class NisDatabaseGeneratorSql
     //static private vtkPolyDataReader footprintReader;
     static private vtkPolyData footprintPolyData;
     //static private double[] meanPlateSizes;
+
+    static private NIS nis=new NIS();
 
     private static void createNISTables()
     {
@@ -129,7 +132,7 @@ public class NisDatabaseGeneratorSql
             yearStr = f.getName();
 
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), erosModel, nis);
 
             if (nisInsert == null)
             {
@@ -197,7 +200,7 @@ public class NisDatabaseGeneratorSql
 //            f = f.getParentFile();
 //            yearStr = f.getName();
 
-            NISSpectrum nisSpectrum = new NISSpectrum(origFile, erosModel);
+            NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), erosModel, nis);
 
             nisSpectrum.generateFootprint();
 

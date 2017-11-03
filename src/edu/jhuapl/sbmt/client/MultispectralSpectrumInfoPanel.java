@@ -33,7 +33,7 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.gui.eros.NISPopupMenu;
+import edu.jhuapl.sbmt.gui.eros.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -173,8 +173,8 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
      */
     private void createMenus()
     {
-        NISPopupMenu msiImagesPopupMenu =
-        new NISPopupMenu(modelManager, null, null);
+        SpectrumPopupMenu msiImagesPopupMenu =
+        new SpectrumPopupMenu(modelManager, null, null);
 
 //        msiImagesPopupMenu.setCurrentSpectrum(perspectiveImage.getServerPath());
 //        msiImagesPopupMenu.setCurrentSpectrum("<file path>");

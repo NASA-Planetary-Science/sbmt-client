@@ -7,7 +7,7 @@
 using namespace std;
 
 void getTargetState(double et, const char* spacecraft, const char* observerBody, const char* targetBody, double targetpos[3], double velocity[3]);
-void getSpacecraftState(double et, const char* observerBody, const char* spacecraft, double scPosition[3], double velocity[3]);
+void getSpacecraftState(double et, const char* spacecraft, const char* observerBody, double scPosition[3], double velocity[3]);
 
 /*
   This program writes a file containing the apparent (light-time corrected) positions of the
@@ -142,7 +142,7 @@ int main(int nargs, char** argv)
 		/* non-spacecraft bodies are below.     */
 		/*--------------------------------------*/
 
-		getSpacecraftState(et, body, sc, scposb, scvelb);
+		getSpacecraftState(et, sc, body, scposb, scvelb);
 		getTargetState(et, sc, body, "SUN", sunpos, unused);
 		getTargetState(et, sc, body, "EARTH", earthpos, unused);
 		

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#############################################################################
+# TBD: make this generic
+#############################################################################
+
+#
 # Script for running the create_info_files program on FITS image files.
 #
 # FITS files must reside in subfolders POLYCAM/images/ and MAPCAM/images.
@@ -12,7 +17,8 @@
 # Example: 
 #
 # ./run.sh /project/sbmtpipeline/rawdata/osirisrex/EarthFlyBy /project/sbmtpipeline/processed/osirisrex/earthflyby /project/sbmtpipeline/rawdata/osirisrex/EarthFlyBy/kernels/spoc-digest-2017-09-26T18_13_09.404Z.mk EARTH
-#
+# ./run.sh /project/sbmtpipeline/rawdata2/planets/earth/ /project/sbmtpipeline/processed2/planets/earth /project/sbmtpipeline/rawdata2/planets/earth/kernel_files/spoc-digest-2017-10-05T22_05_46.366Z.mk  EARTH
+
  
 
 cd `dirname $0`
