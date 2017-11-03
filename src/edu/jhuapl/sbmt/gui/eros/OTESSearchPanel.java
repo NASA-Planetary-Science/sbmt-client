@@ -1,31 +1,23 @@
 package edu.jhuapl.sbmt.gui.eros;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.Frustum;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.model.image.InfoFileReader;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class OTESSearchPanel extends SpectrumSearchPanel
 {
 
-
-    List<Frustum> rawProjections=Lists.newArrayList();
 
     public OTESSearchPanel(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
@@ -43,7 +35,6 @@ public class OTESSearchPanel extends SpectrumSearchPanel
         resultsLabel.setText(spectrumResultsLabelText);
 
         List<String> matchedImages=Lists.newArrayList();
-        List<Frustum> projections=Lists.newArrayList();
         for (List<String> res : results)
         {
             //String path = NisQuery.getNisPath(res);
@@ -51,29 +42,14 @@ public class OTESSearchPanel extends SpectrumSearchPanel
             String basePath=FilenameUtils.getPath(res.get(0));
             String filename=FilenameUtils.getBaseName(res.get(0));
             Path infoFile=Paths.get(basePath).resolveSibling("infofiles-corrected/"+filename+".INFO");
-            File file=FileCache.getFileFromServer("/"+infoFile.toString());
+//            File file=FileCache.getFileFromServer("/"+infoFile.toString());
 
-            matchedImages.add(file.getName());
+            matchedImages.add("/"+infoFile.toString());
 
-            InfoFileReader reader=new InfoFileReader();
-            reader.setFileName(file.getAbsolutePath());
-            reader.read();
-            double[] origin=reader.getSpacecraftPosition();
-            double[] fovVec=reader.getFrustum2();   // for whatever reason, frustum2 contains the vector along the field of view cone
-            double[] boresight=reader.getBoresightDirection();
-            Rotation rotation=new Rotation(new Vector3D(boresight), Math.PI/2.);
-            double[] n=fovVec;
-            double[] w=rotation.applyTo(new Vector3D(n)).toArray();
-            double[] s=rotation.applyTo(new Vector3D(w)).toArray();
-            double[] e=rotation.applyTo(new Vector3D(s)).toArray(); // don't worry about possible loss of precision from repeated application of the same rotation, for now
-
-            Frustum frustum=new Frustum(origin, n, e, w, s);    // the field of view is circular, so just let n,e,w,s be the corners of the frustum, with the understanding that the fov CIRCUMSCRIBES the frustum
-            projections.add(frustum);
         }
 
 
         spectrumRawResults = matchedImages;
-        rawProjections=projections;
 
         String[] formattedResults = new String[results.size()];
 
@@ -104,7 +80,7 @@ public class OTESSearchPanel extends SpectrumSearchPanel
     @Override
     public String createSpectrumName(String currentSpectrumRaw)
     {
-        return "/RQ36/OTES/spectra/"+FilenameUtils.getBaseName(currentSpectrumRaw)+".spect";
+        return "/earth/osirisrex/otes/spectra/"+FilenameUtils.getBaseName(currentSpectrumRaw)+".spect";
     }
 
 }

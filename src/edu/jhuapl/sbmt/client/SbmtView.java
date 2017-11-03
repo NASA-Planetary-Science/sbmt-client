@@ -134,7 +134,7 @@ public class SbmtView extends View
         for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
             allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel, instrument));
-            if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
+            //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
 

@@ -19,6 +19,7 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OTES;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -1979,6 +1980,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 new ImageSource[]{ImageSource.GASKELL},
                                 Instrument.IMAGING_DATA
                                 )*/
+                };
+
+                c.hasSpectralData=true;
+                c.spectralInstruments=new SpectralInstrument[] {
+                        new OTES()
                 };
 
             c.hasMapmaker = false;
