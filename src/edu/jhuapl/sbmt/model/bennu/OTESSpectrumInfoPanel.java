@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.model.bennu;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -33,7 +33,7 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.model.bennu.OTESSpectrum;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 
 public class OTESSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {

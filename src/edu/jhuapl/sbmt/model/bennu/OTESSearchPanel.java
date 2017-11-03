@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.model.bennu;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,13 +13,14 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class OTESSearchPanel extends SpectrumSearchPanel
 {
 
-
+    protected final static SpectrumMath spectrumMath=new OTESSpectrumMath();
 
     public OTESSearchPanel(ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
@@ -88,8 +89,7 @@ public class OTESSearchPanel extends SpectrumSearchPanel
     @Override
     public SpectrumMath getSpectrumMathHandler()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return spectrumMath;
     }
 
 }

@@ -8,7 +8,7 @@
  *
  * Created on May 5, 2011, 3:15:17 PM
  */
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -126,7 +126,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
 
         polygonType3CheckBox.setVisible(false);
 
- //       setupComboBoxes();
+       setupComboBoxes();
     }
 
     private void setupComboBoxes()
@@ -1585,9 +1585,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     }//GEN-LAST:event_grayscaleCheckBoxActionPerformed
 
     private void customFunctionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customFunctionsButtonActionPerformed
-        NISCustomFunctionsPanel customFunctionsPanel = new NISCustomFunctionsPanel(
+        SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
                 JOptionPane.getFrameForComponent(this),
-                new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument);
+                new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument, getSpectrumMathHandler());
         currentlyEditingUserDefinedFunction = true;
         customFunctionsPanel.setVisible(true);
         currentlyEditingUserDefinedFunction = false;

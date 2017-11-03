@@ -17,6 +17,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
 import edu.jhuapl.sbmt.model.eros.SpectrumMath;

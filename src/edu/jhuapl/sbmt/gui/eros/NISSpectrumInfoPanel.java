@@ -34,6 +34,7 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener

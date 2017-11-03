@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;

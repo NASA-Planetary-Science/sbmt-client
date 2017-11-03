@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
