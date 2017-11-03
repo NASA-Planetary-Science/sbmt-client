@@ -19,7 +19,6 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 
@@ -28,16 +27,13 @@ public class SpectrumMathPanel extends javax.swing.JDialog {
     private JComboBox[] comboBoxes;
     SpectralInstrument instrument;
 
-    SpectrumMath spectrumMath;
-
     /** Creates new form CustomImageLoaderPanel */
     public SpectrumMathPanel(
             java.awt.Frame parent,
-            JComboBox[] comboBoxes, SpectralInstrument instrument, SpectrumMath spectrumMath)
+            JComboBox[] comboBoxes, SpectralInstrument instrument)
     {
         super(parent, true);
         this.instrument=instrument;
-        this.spectrumMath=spectrumMath;
 
         this.comboBoxes = comboBoxes;
 
@@ -55,7 +51,7 @@ public class SpectrumMathPanel extends javax.swing.JDialog {
 
     private void updateFunctionList()
     {
-        List<vtkFunctionParser> functions = spectrumMath.getAllUserDefinedDerivedParameters();
+        List<vtkFunctionParser> functions = instrument.getSpectrumMath().getAllUserDefinedDerivedParameters();
 
         ((DefaultListModel)functionList.getModel()).clear();
 
@@ -167,12 +163,12 @@ public class SpectrumMathPanel extends javax.swing.JDialog {
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         SpectrumMathNewFunctionDialog newFunctionDialog =
-                new SpectrumMathNewFunctionDialog(JOptionPane.getFrameForComponent(this), true, null, spectrumMath);
+                new SpectrumMathNewFunctionDialog(JOptionPane.getFrameForComponent(this), true, null, instrument.getSpectrumMath());
         newFunctionDialog.setVisible(true);
         String function = newFunctionDialog.getFunction();
         if (function != null)
         {
-            spectrumMath.addUserDefinedDerivedParameter(function);
+            instrument.getSpectrumMath().addUserDefinedDerivedParameter(function);
             updateFunctionList();
 
             // add the function to the combo boxes
@@ -185,24 +181,24 @@ public class SpectrumMathPanel extends javax.swing.JDialog {
         int selectedItem = functionList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            List<vtkFunctionParser> functions = spectrumMath.getAllUserDefinedDerivedParameters();
+            List<vtkFunctionParser> functions = instrument.getSpectrumMath().getAllUserDefinedDerivedParameters();
 
             SpectrumMathNewFunctionDialog newFunctionDialog =
                     new SpectrumMathNewFunctionDialog(
                             JOptionPane.getFrameForComponent(this),
                             true,
-                            functions.get(selectedItem).GetFunction(), spectrumMath);
+                            functions.get(selectedItem).GetFunction(), instrument.getSpectrumMath());
 
             newFunctionDialog.setVisible(true);
             String function = newFunctionDialog.getFunction();
             if (function != null)
             {
-                spectrumMath.editUserDefinedDerivedParameter(selectedItem, function);
+                instrument.getSpectrumMath().editUserDefinedDerivedParameter(selectedItem, function);
                 updateFunctionList();
 
                 // replace the function in the combo boxes, by first removing it and then inserting
                 // a new one. If the item was selected, reselect it.
-                int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + spectrumMath.getDerivedParameters().length;
+                int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length;
                 for (JComboBox comboBox : comboBoxes)
                 {
                     int comboBoxIndex = comboBoxUserDefinedFunctionsStartIndex + selectedItem;
@@ -220,11 +216,11 @@ public class SpectrumMathPanel extends javax.swing.JDialog {
         int selectedItem = functionList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            spectrumMath.removeUserDefinedDerivedParameters(selectedItem);
+            instrument.getSpectrumMath().removeUserDefinedDerivedParameters(selectedItem);
             updateFunctionList();
 
             // delete the function from the combo boxes
-            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + spectrumMath.getDerivedParameters().length;
+            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length;
             for (JComboBox comboBox : comboBoxes)
                 comboBox.removeItemAt(comboBoxUserDefinedFunctionsStartIndex + selectedItem);
         }

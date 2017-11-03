@@ -52,7 +52,6 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
@@ -77,7 +76,6 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     protected final SpectralInstrument instrument;
 
 
-    public abstract SpectrumMath getSpectrumMathHandler();
 
 
     /** Creates new form NISSearchPanel */
@@ -126,10 +124,10 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
 
         polygonType3CheckBox.setVisible(false);
 
-       setupComboBoxes();
+//       setupComboBoxes();
     }
 
-    private void setupComboBoxes()
+    protected void setupComboBoxes()
     {
         for (int i=1; i<=64; ++i)
         {
@@ -139,7 +137,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             blueComboBox.addItem(channel);
         }
 
-        String[] derivedParameters = getSpectrumMathHandler().getDerivedParameters();
+        String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
         {
             redComboBox.addItem(derivedParameters[i]);
@@ -147,7 +145,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             blueComboBox.addItem(derivedParameters[i]);
         }
 
-        for (vtkFunctionParser fp: getSpectrumMathHandler().getAllUserDefinedDerivedParameters())
+        for (vtkFunctionParser fp: instrument.getSpectrumMath().getAllUserDefinedDerivedParameters())
         {
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
@@ -1587,7 +1585,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private void customFunctionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customFunctionsButtonActionPerformed
         SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
                 JOptionPane.getFrameForComponent(this),
-                new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument, getSpectrumMathHandler());
+                new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument);
         currentlyEditingUserDefinedFunction = true;
         customFunctionsPanel.setVisible(true);
         currentlyEditingUserDefinedFunction = false;
