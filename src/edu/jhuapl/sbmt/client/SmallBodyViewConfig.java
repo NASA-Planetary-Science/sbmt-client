@@ -2014,6 +2014,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Truth", ShapeModelDataUsed.IMAGE_BASED).build();
 
+            BasicImagingInstrument oncCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", ".SUM", ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.IMAGING_DATA,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.ONC_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                oncCam = BasicImagingInstrument.of(builder.build());
+            }
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
             c.type = ShapeModelType.ASTEROID;
@@ -2024,6 +2043,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
 
             configArray.add(c);
         }
@@ -2039,6 +2068,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
+            BasicImagingInstrument oncCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", null, ".SUM", ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.IMAGING_DATA,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.GASKELL },
+                        fileLocator,
+                        ImageType.ONC_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                oncCam = BasicImagingInstrument.of(builder.build());
+            }
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
             c.type = ShapeModelType.ASTEROID;
@@ -2049,6 +2097,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
 
             configArray.add(c);
         }
