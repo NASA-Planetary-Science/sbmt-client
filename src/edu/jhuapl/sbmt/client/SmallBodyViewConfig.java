@@ -2272,6 +2272,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
 
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    oncCam,
+//            };
+//
+//            c.hasMapmaker = false;
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+//            c.imageSearchDefaultMaxResolution = 300.0;
+
             configArray.add(c);
         }
 
@@ -2286,6 +2296,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
+            BasicImagingInstrument oncCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", null, ".SUM", ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.IMAGING_DATA,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.GASKELL },
+                        fileLocator,
+                        ImageType.ONC_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                oncCam = BasicImagingInstrument.of(builder.build());
+            }
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
             c.type = ShapeModelType.ASTEROID;
@@ -2297,10 +2326,282 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+
+            configArray.add(c);
+        }
+
+        // Standard Gaskell shape model may be described once.
+        final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelAuthor.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
+
+        // Gaskell images only.
+        final ImageSource[] gaskellImagingSource = new ImageSource[] { ImageSource.GASKELL };
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.ATLAS.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.ATLAS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/atlas/gaskell";
+            c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.CALYPSO.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.CALYPSO;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/calypso/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.ENCELADUS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/enceladus/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.EPIMETHEUS.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.EPIMETHEUS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/epimetheus/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.HELENE.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.HELENE;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/helene/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.IAPETUS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/iapetus/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.JANUS.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.JANUS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/janus/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.PAN.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.PAN;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/pan/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.PANDORA.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.PANDORA;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/pandora/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
+            configArray.add(c);
+        }
+
+        {
+            // Set up body.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.PROMETHEUS.name(),
+                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    ShapeModelPopulation.SATURN.name()).build();
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.PROMETHEUS;
+            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.SATURN;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelAuthor.GASKELL;
+            c.rootDirOnServer = "/prometheus/gaskell";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    imagingInstrument
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
             configArray.add(c);
         }
     }
 
+    // SBMT1-style helper method.
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType) {
+        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
+        QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                instrument,
+                SpectralMode.MONO,
+                queryBase,
+                imageSources,
+                fileLocator,
+                imageType);
+
+        // Put it all together in a session.
+        Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+        builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+        return BasicImagingInstrument.of(builder.build());
+    }
+
+    @Override
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)super.clone();
@@ -2308,5 +2609,5 @@ public class SmallBodyViewConfig extends BodyViewConfig
         return c;
     }
 
-}
 
+}
