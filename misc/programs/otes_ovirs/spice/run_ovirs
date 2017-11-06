@@ -1,0 +1,3 @@
+if [ -e ovirs_output ]; then rm -rvf ovirs_output; fi
+mkdir ovirs_output
+./create_info_files /project/sbmtpipeline/rawdata/osirisrex/EarthFlyBy/spoc-digest-2017-10-05T22_05_46.366Z.mk EARTH ORX ORX_OVIRS_SCI TXTMODE ./sclk.txt ovirs_output ovirs_imagelist.txt

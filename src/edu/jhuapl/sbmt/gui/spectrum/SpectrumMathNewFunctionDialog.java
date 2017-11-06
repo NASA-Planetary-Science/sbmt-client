@@ -8,18 +8,21 @@
  *
  * Created on Sep 12, 2012, 5:22:17 PM
  */
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.model.eros.SpectrumMath;
 
-
-public class NISNewFunctionDialog extends javax.swing.JDialog {
+public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
 
     private boolean success = false;
 
+    SpectrumMath spectrumMath;
+
     /** Creates new form NISNewFunctionDialog */
-    public NISNewFunctionDialog(java.awt.Frame parent, boolean modal, String function) {
+    public SpectrumMathNewFunctionDialog(java.awt.Frame parent, boolean modal, String function, SpectrumMath spectrumMath) {
         super(parent, modal);
+
+        this.spectrumMath=spectrumMath;
         initComponents();
 
         setLocationRelativeTo(parent);
@@ -74,7 +77,7 @@ public class NISNewFunctionDialog extends javax.swing.JDialog {
         invalidFunctionLabel.setForeground(new java.awt.Color(255, 0, 0));
         invalidFunctionLabel.setText("  ");
 
-        jLabel1.setText("<html>\nEnter the formula below using standard infix notation. Use variables B01<br>\nthrough B64 to refer to specific bands. For example, '(B42 - B01) * 0.5'.");
+        jLabel1.setText("<html>\nEnter the formula below using standard infix notation. Use variables B1<br>\nthrough B"+spectrumMath.getNumberOfBandsPerRawSpectrum()+" to refer to specific bands. For example, '(B2 - B1) * 0.5'.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -117,7 +120,7 @@ public class NISNewFunctionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okayButtonActionPerformed
-        success = NISSpectrum.testUserDefinedDerivedParameter(functionTextField.getText());
+     /*   success = NISSpectrum.testUserDefinedDerivedParameter(functionTextField.getText());
         if (success)
         {
             setVisible(false);
@@ -125,7 +128,7 @@ public class NISNewFunctionDialog extends javax.swing.JDialog {
         else
         {
             invalidFunctionLabel.setText("The formula is invalid.");
-        }
+        }*/
     }//GEN-LAST:event_okayButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed

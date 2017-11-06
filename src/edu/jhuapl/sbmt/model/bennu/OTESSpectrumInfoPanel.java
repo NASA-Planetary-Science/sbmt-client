@@ -1,11 +1,10 @@
-package edu.jhuapl.sbmt.client;
+package edu.jhuapl.sbmt.model.bennu;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -26,6 +25,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -34,45 +34,32 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
-public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
+public class OTESSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private ModelManager modelManager;
-    private PerspectiveImage perspectiveImage;
-    private XYSeriesCollection xyDataset;
-    private int nsegments;
+    private OTESSpectrum spectrum;
 
-    public MultispectralSpectrumInfoPanel(PerspectiveImage perspectiveImage, ModelManager modelManager)
+    public OTESSpectrumInfoPanel(OTESSpectrum spectrum, ModelManager modelManager)
     {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.modelManager = modelManager;
-        this.perspectiveImage = perspectiveImage;
+        this.spectrum = spectrum;
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        nsegments = perspectiveImage.getNumberOfSpectralSegments();
 
-        xyDataset = new XYSeriesCollection();
-
-        for (int spectrum = 0; spectrum<nsegments; spectrum++)
-        {
-            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(spectrum);
-            double[] values = this.perspectiveImage.getSpectrumValues(spectrum);
-
-            // add the jfreechart graph
-            XYSeries series = new XYSeries("Segment " + spectrum);
-
-            for (int i=0; i<wavelengths.length; ++i)
-                series.add(wavelengths[i], values[i]);
-
-            xyDataset.addSeries(series);
-        }
-
-        String wavelengthUnits = perspectiveImage.getSpectrumWavelengthUnits();
-        String valueUnits = perspectiveImage.getSpectrumValueUnits();
-        JFreeChart chart = ChartFactory.createXYLineChart("LEISA Spectrum", "Wavelength (" + wavelengthUnits + ")", "Flux (" + valueUnits + ")", xyDataset, PlotOrientation.VERTICAL, true, true, false);
+        // add the jfreechart graph
+        XYSeries series = new XYSeries("OTES Spectrum");
+        double[] wavelengths = spectrum.getBandCenters();
+        double[] spect = spectrum.getSpectrum();
+        for (int i=0; i<wavelengths.length; ++i)
+            series.add(wavelengths[i], spect[i]);
+        XYDataset xyDataset = new XYSeriesCollection(series);
+        JFreeChart chart = ChartFactory.createXYLineChart
+                ("OTES Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
+                        xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
 
@@ -96,15 +83,16 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
                 BoxLayout.PAGE_AXIS));
 
         // Add a text box for showing information about the image
-        String[] columnNames = {"Property", "Value"};
+        String[] columnNames = {"Property",
+                "Value"};
 
         HashMap<String, String> properties = null;
         Object[][] data = {    {"", ""} };
 
-        try
+/*        try
         {
 
-            properties = this.perspectiveImage.getProperties();
+            properties = this.spectrum.getProperties();
             int size = properties.size();
             data = new Object[size][2];
 
@@ -120,7 +108,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
         catch (IOException e)
         {
             e.printStackTrace();
-        }
+        }*/
 
 
 
@@ -147,7 +135,7 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
         createMenus();
 
         // Finally make the frame visible
-        setTitle("Spectrum Properties");
+        setTitle("NIS Spectrum Properties");
 
         pack();
         setVisible(true);
@@ -156,12 +144,12 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
     public Model getModel()
     {
-        return perspectiveImage;
+        return spectrum;
     }
 
     public Model getCollectionModel()
     {
-        return modelManager.getModel(ModelNames.IMAGES);
+        return modelManager.getModel(ModelNames.SPECTRA);
     }
 
 
@@ -174,10 +162,9 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
     private void createMenus()
     {
         SpectrumPopupMenu msiImagesPopupMenu =
-        new SpectrumPopupMenu(modelManager, null, null);
+            new SpectrumPopupMenu(modelManager, null, null );
 
-//        msiImagesPopupMenu.setCurrentSpectrum(perspectiveImage.getServerPath());
-//        msiImagesPopupMenu.setCurrentSpectrum("<file path>");
+        msiImagesPopupMenu.setCurrentSpectrum(spectrum.getServerPath());
 
         JMenuBar menuBar = new JMenuBar();
 
@@ -198,20 +185,5 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
 
     public void propertyChange(PropertyChangeEvent arg0)
     {
-        xyDataset.removeAllSeries();
-
-        for (int segment = 0; segment<nsegments; segment++)
-        {
-            double[] wavelengths = this.perspectiveImage.getSpectrumWavelengths(segment);
-            double[] values = this.perspectiveImage.getSpectrumValues(segment);
-
-            // add the jfreechart graph
-            XYSeries series = new XYSeries("Segment " + segment);
-
-            for (int i=0; i<wavelengths.length; ++i)
-                series.add(wavelengths[i], values[i]);
-
-            xyDataset.addSeries(series);
-        }
     }
 }

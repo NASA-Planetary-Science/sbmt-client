@@ -2805,7 +2805,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
                     String[] words = lines.get(i).trim().split("\\s+");
                     List<String> result = new ArrayList<String>();
-                    String name = instrument.searchQuery.getImagesPath() + "/" + words[0];
+                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
                     result.add(name);
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));

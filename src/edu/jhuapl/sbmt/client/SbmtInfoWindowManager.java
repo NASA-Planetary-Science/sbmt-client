@@ -14,9 +14,11 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.eros.NISSpectrumInfoPanel;
-import edu.jhuapl.sbmt.gui.eros.SpectrumStatisticsInfoPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImageInfoPanel;
 import edu.jhuapl.sbmt.gui.image.ImageInfoPanel;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumStatisticsInfoPanel;
+import edu.jhuapl.sbmt.model.bennu.OTESSpectrum;
+import edu.jhuapl.sbmt.model.bennu.OTESSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.image.ColorImage;
@@ -110,6 +112,10 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         else if (model instanceof NISSpectrum)
         {
             return new NISSpectrumInfoPanel((NISSpectrum)model, modelManager);
+        }
+        else if (model instanceof OTESSpectrum)
+        {
+            return new OTESSpectrumInfoPanel((OTESSpectrum)model, modelManager);
         }
         else if (model instanceof SpectrumStatistics)
         {

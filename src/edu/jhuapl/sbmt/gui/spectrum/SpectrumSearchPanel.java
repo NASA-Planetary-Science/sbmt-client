@@ -8,7 +8,7 @@
  *
  * Created on May 5, 2011, 3:15:17 PM
  */
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,15 +16,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import javax.swing.JComboBox;
@@ -35,8 +32,6 @@ import javax.swing.SpinnerDateModel;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-
-import com.google.common.collect.Maps;
 
 import vtk.vtkActor;
 import vtk.vtkFunctionParser;
@@ -52,38 +47,36 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
-import edu.jhuapl.sbmt.model.eros.Spectrum;
-import edu.jhuapl.sbmt.query.eros.NisQuery;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
 import altwg.util.PolyDataUtil;
 
 
-public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
+public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
 {
-    private final ModelManager modelManager;
-    private final PickManager pickManager;
-    private java.util.Date startDate = new GregorianCalendar(2000, 0, 11, 0, 0, 0).getTime();
-    private java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
+    protected final ModelManager modelManager;
+    protected final PickManager pickManager;
+    protected java.util.Date startDate = new GregorianCalendar(2000, 0, 11, 0, 0, 0).getTime();
+    protected java.util.Date endDate = new GregorianCalendar(2000, 4, 14, 0, 0, 0).getTime();
 
-    private SpectrumPopupMenu nisPopupMenu;
-    private List<String> nisRawResults = new ArrayList<String>();
-    private String nisResultsLabelText = " ";
-    private IdPair resultIntervalCurrentlyShown = null;
-    private boolean currentlyEditingUserDefinedFunction = false;
+    protected SpectrumPopupMenu spectrumPopupMenu;
+    protected List<String> spectrumRawResults = new ArrayList<String>();
+    protected String spectrumResultsLabelText = " ";
+    protected IdPair resultIntervalCurrentlyShown = null;
+    protected boolean currentlyEditingUserDefinedFunction = false;
 
     Renderer renderer;
-    Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
-    static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
 
-    private final SpectralInstrument instrument;
+    protected final SpectralInstrument instrument;
+
+
+
 
     /** Creates new form NISSearchPanel */
     public SpectrumSearchPanel(final ModelManager modelManager,
@@ -94,7 +87,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         this.pickManager = pickManager;
         this.instrument=instrument;
 
-        nisPopupMenu = new SpectrumPopupMenu(this.modelManager, infoPanelManager, renderer);
+        spectrumPopupMenu = new SpectrumPopupMenu(this.modelManager, infoPanelManager, renderer);
 
         initComponents();
 
@@ -104,58 +97,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         renderer.addKeyListener(this);
         this.renderer=renderer;
 
-        File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
-        try
-        {
-            Scanner scanner=new Scanner(nisTimesFile);
-            boolean found=false;
-            while (scanner.hasNextLine() && !found)
-            {
-                String line=scanner.nextLine();
-                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
-                String file=tokens[0];
-                String time=tokens[1];
-                nisFileToObservationTimeMap.put(file,time);
-            }
-            scanner.close();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
-    }
-
-    static
-    {
-        File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
-        try
-        {
-            Scanner scanner=new Scanner(nisSunFile);
-            boolean found=false;
-            while (scanner.hasNextLine() && !found)
-            {
-                String line=scanner.nextLine();
-                String[] tokens=line.replaceAll(",", "").trim().split("\\s+");
-                String file=tokens[0];
-                String x=tokens[1];
-                String y=tokens[2];
-                String z=tokens[3];
-                nisFileToSunPositionMap.put(file,new Vector3D(Double.valueOf(x),Double.valueOf(y),Double.valueOf(z)).normalize());
-            }
-            scanner.close();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    public static Vector3D getToSunUnitVector(String fileName)    // file name is taken relative to /project/nearsdc/data/NIS/2000
-    {
-        return nisFileToSunPositionMap.get(fileName);
     }
 
 
@@ -182,10 +124,10 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
 
         polygonType3CheckBox.setVisible(false);
 
-        setupComboBoxes();
+//       setupComboBoxes();
     }
 
-    private void setupComboBoxes()
+    protected void setupComboBoxes()
     {
         for (int i=1; i<=64; ++i)
         {
@@ -195,7 +137,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
             blueComboBox.addItem(channel);
         }
 
-        String[] derivedParameters = NISSpectrum.getDerivedParameters();
+        String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
         {
             redComboBox.addItem(derivedParameters[i]);
@@ -203,7 +145,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
             blueComboBox.addItem(derivedParameters[i]);
         }
 
-        for (vtkFunctionParser fp: NISSpectrum.getAllUserDefinedDerivedParameters())
+        for (vtkFunctionParser fp: instrument.getSpectrumMath().getAllUserDefinedDerivedParameters())
         {
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
@@ -211,11 +153,11 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         }
     }
 
-    private void setSpectrumSearchResults(List<String> results)
-    {
-        nisResultsLabelText = results.size() + " spectra matched";
-        resultsLabel.setText(nisResultsLabelText);
-        nisRawResults = results;
+    protected abstract void setSpectrumSearchResults(List<List<String>> results);
+/*    {
+        spectrumResultsLabelText = results.size() + " spectra matched";
+        resultsLabel.setText(spectrumResultsLabelText);
+        spectrumRawResults = results;
 
         String[] formattedResults = new String[results.size()];
 
@@ -240,7 +182,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         // Show the first set of footprints
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfFootprintsComboBox.getSelectedItem()));
         this.showFootprints(resultIntervalCurrentlyShown);
-    }
+    }*/
 
 
 
@@ -275,8 +217,8 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                nisPopupMenu.setCurrentSpectrum(nisRawResults.get(index));
-                nisPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index)));
+                spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -298,7 +240,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         }
         else if (e.getKeyChar()=='s')
         {
-            nisPopupMenu.showStatisticsWindow();
+            spectrumPopupMenu.showStatisticsWindow();
         }
         else if (e.getKeyChar()=='i' || e.getKeyChar()=='v')    // 'i' sets the lighting direction based on time of a single NIS spectrum, and 'v' looks from just above the footprint toward the sun
         {
@@ -313,8 +255,8 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
             renderer.setLighting(LightingType.FIXEDLIGHT);
             Path fullPath=Paths.get(spectrum.getFullPath());
             Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-            Vector3D toSunVector=getToSunUnitVector(relativePath.toString());
-            renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
+            //Vector3D toSunVector=getToSunUnitVector(relativePath.toString());
+            renderer.setFixedLightDirection(spectrum.getToSunUnitVector()); // the fixed light direction points to the light
             if (e.getKeyChar()=='v')
             {
                 Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
@@ -330,7 +272,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
                 double viewHeight=0.01; // km
                 Vector3D cameraPosition=footprintCenter.add(upVector.scalarMultiply(viewHeight));
                 double lookLength=footprintCenter.subtract(cameraPosition).getNorm();
-                Vector3D focalPoint=cameraPosition.add(toSunVector.normalize().scalarMultiply(lookLength));
+                Vector3D focalPoint=cameraPosition.add((new Vector3D(spectrum.getToSunUnitVector())).scalarMultiply(lookLength));
                 //
                 renderer.setCameraOrientation(cameraPosition.toArray(), focalPoint.toArray(), renderer.getRenderWindowPanel().getActiveCamera().GetViewUp(), renderer.getCameraViewAngle());
             }
@@ -355,7 +297,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
 
     }
 
-    private void showFootprints(IdPair idPair)
+    protected void showFootprints(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
@@ -367,14 +309,13 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         {
             if (i < 0)
                 continue;
-            else if(i >= nisRawResults.size())
+            else if(i >= spectrumRawResults.size())
                 break;
 
             try
             {
-                String currentSpectrum = nisRawResults.get(i);
-                String spectrumName = currentSpectrum.substring(0,currentSpectrum.length()-4) + ".NIS";
-                model.addSpectrum(spectrumName);
+                String currentSpectrum = spectrumRawResults.get(i);
+                model.addSpectrum(createSpectrumName(currentSpectrum));
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -382,6 +323,11 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
         }
     }
 
+
+    public abstract String createSpectrumName(String currentSpectrumRaw);
+//    {
+//        return currentSpectrumRaw.substring(0,currentSpectrumRaw.length()-4) + ".NIS";
+//    }
 
 
     private void checkValidMinMax(int channel, boolean minimunStateChange)
@@ -1531,12 +1477,13 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
                 }
             }
 
-            List<String> results = NisQuery.getInstance().runQueryNIS(
+            List<List<String>> results = instrument.getQueryBase().runQuery(
+                    null,
                     startDateJoda,
                     endDateJoda,
+                    false,
                     null,
-                    false,
-                    false,
+                    null,
                     Double.parseDouble(fromDistanceTextField.getText()),
                     Double.parseDouble(toDistanceTextField.getText()),
                     0.0,
@@ -1636,7 +1583,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
     }//GEN-LAST:event_grayscaleCheckBoxActionPerformed
 
     private void customFunctionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customFunctionsButtonActionPerformed
-        NISCustomFunctionsPanel customFunctionsPanel = new NISCustomFunctionsPanel(
+        SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
                 JOptionPane.getFrameForComponent(this),
                 new JComboBox[]{redComboBox, greenComboBox, blueComboBox}, instrument);
         currentlyEditingUserDefinedFunction = true;
@@ -1712,7 +1659,7 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton nextButton;
-    private javax.swing.JComboBox numberOfFootprintsComboBox;
+    protected javax.swing.JComboBox numberOfFootprintsComboBox;
     private javax.swing.JCheckBox polygonType0CheckBox;
     private javax.swing.JCheckBox polygonType1CheckBox;
     private javax.swing.JCheckBox polygonType2CheckBox;
@@ -1725,8 +1672,8 @@ public class SpectrumSearchPanel extends javax.swing.JPanel implements MouseList
     private javax.swing.JLabel redMinLabel;
     private javax.swing.JSpinner redMinSpinner;
     private javax.swing.JButton removeAllFootprintsButton;
-    private javax.swing.JList resultList;
-    private javax.swing.JLabel resultsLabel;
+    protected javax.swing.JList resultList;
+    protected javax.swing.JLabel resultsLabel;
     private javax.swing.JToggleButton selectRegionButton;
     private javax.swing.JLabel startDateLabel;
     private javax.swing.JSpinner startSpinner;

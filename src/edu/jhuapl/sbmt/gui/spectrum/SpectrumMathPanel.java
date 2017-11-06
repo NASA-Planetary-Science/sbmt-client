@@ -8,7 +8,7 @@
  *
  * Created on Jun 5, 2012, 3:56:56 PM
  */
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Dialog;
 import java.util.List;
@@ -19,17 +19,16 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 
-public class NISCustomFunctionsPanel extends javax.swing.JDialog {
+public class SpectrumMathPanel extends javax.swing.JDialog {
 
     private JComboBox[] comboBoxes;
     SpectralInstrument instrument;
 
     /** Creates new form CustomImageLoaderPanel */
-    public NISCustomFunctionsPanel(
+    public SpectrumMathPanel(
             java.awt.Frame parent,
             JComboBox[] comboBoxes, SpectralInstrument instrument)
     {
@@ -52,7 +51,7 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
 
     private void updateFunctionList()
     {
-        List<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
+        List<vtkFunctionParser> functions = instrument.getSpectrumMath().getAllUserDefinedDerivedParameters();
 
         ((DefaultListModel)functionList.getModel()).clear();
 
@@ -163,13 +162,13 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
-        NISNewFunctionDialog newFunctionDialog =
-                new NISNewFunctionDialog(JOptionPane.getFrameForComponent(this), true, null);
+        SpectrumMathNewFunctionDialog newFunctionDialog =
+                new SpectrumMathNewFunctionDialog(JOptionPane.getFrameForComponent(this), true, null, instrument.getSpectrumMath());
         newFunctionDialog.setVisible(true);
         String function = newFunctionDialog.getFunction();
         if (function != null)
         {
-            NISSpectrum.addUserDefinedDerivedParameter(function);
+            instrument.getSpectrumMath().addUserDefinedDerivedParameter(function);
             updateFunctionList();
 
             // add the function to the combo boxes
@@ -182,24 +181,24 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
         int selectedItem = functionList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            List<vtkFunctionParser> functions = NISSpectrum.getAllUserDefinedDerivedParameters();
+            List<vtkFunctionParser> functions = instrument.getSpectrumMath().getAllUserDefinedDerivedParameters();
 
-            NISNewFunctionDialog newFunctionDialog =
-                    new NISNewFunctionDialog(
+            SpectrumMathNewFunctionDialog newFunctionDialog =
+                    new SpectrumMathNewFunctionDialog(
                             JOptionPane.getFrameForComponent(this),
                             true,
-                            functions.get(selectedItem).GetFunction());
+                            functions.get(selectedItem).GetFunction(), instrument.getSpectrumMath());
 
             newFunctionDialog.setVisible(true);
             String function = newFunctionDialog.getFunction();
             if (function != null)
             {
-                NISSpectrum.editUserDefinedDerivedParameter(selectedItem, function);
+                instrument.getSpectrumMath().editUserDefinedDerivedParameter(selectedItem, function);
                 updateFunctionList();
 
                 // replace the function in the combo boxes, by first removing it and then inserting
                 // a new one. If the item was selected, reselect it.
-                int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
+                int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length;
                 for (JComboBox comboBox : comboBoxes)
                 {
                     int comboBoxIndex = comboBoxUserDefinedFunctionsStartIndex + selectedItem;
@@ -217,11 +216,11 @@ public class NISCustomFunctionsPanel extends javax.swing.JDialog {
         int selectedItem = functionList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            NISSpectrum.removeUserDefinedDerivedParameters(selectedItem);
+            instrument.getSpectrumMath().removeUserDefinedDerivedParameters(selectedItem);
             updateFunctionList();
 
             // delete the function from the combo boxes
-            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + NISSpectrum.derivedParameters.length;
+            int comboBoxUserDefinedFunctionsStartIndex = instrument.getBandCenters().length + instrument.getSpectrumMath().getDerivedParameters().length;
             for (JComboBox comboBox : comboBoxes)
                 comboBox.removeItemAt(comboBoxUserDefinedFunctionsStartIndex + selectedItem);
         }
