@@ -6,6 +6,7 @@ public enum ShapeModelDataUsed
     IMAGE_BASED("Image Based"),
     RADAR_BASED("Radar Based"),
     LIDAR_BASED("Lidar Based"),
+    WGS84("WGS84"),
     ENHANCED("Enhanced");
 
     final private String str;
