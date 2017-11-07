@@ -63,6 +63,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
         c.rootDirOnServer = "/GASKELL/EROS";
+        c.timeHistoryFile = "/eros/gaskell/history/TimeHistory.bth";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
@@ -122,6 +123,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = c.clone();
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/EROS";
+        c.timeHistoryFile = "/eros/thomas/history/TimeHistory.bth";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
@@ -137,6 +139,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNLR;
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
+        c.timeHistoryFile = "/eros/nlr/history/TimeHistory.bth";
+
         configArray.add(c);
 
         // Eros NAV
@@ -144,6 +148,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNAV;
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
+        c.timeHistoryFile = "/eros/nav/history/TimeHistory.bth";
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -154,6 +159,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
+        c.timeHistoryFile = "/itokawa/gaskell/history/TimeHistory.bth";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
@@ -907,6 +913,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/deimos/thomas/history/TimeHistory.bth";
+
         c.hasImageMap = true;
         configArray.add(c);
 
