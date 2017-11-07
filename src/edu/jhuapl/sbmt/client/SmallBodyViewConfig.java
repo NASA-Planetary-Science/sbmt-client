@@ -123,7 +123,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = c.clone();
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/EROS";
-        c.timeHistoryFile = "/THOMAS/EROS/history/TimeHistory.bth"; // TODO check remaining timeHistoryFile names
+        c.hasStateHistory = false;
+        c.timeHistoryFile = "/THOMAS/EROS/history/TimeHistory.bth"; // TODO
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
@@ -139,7 +140,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNLR;
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
-        c.timeHistoryFile = "/OTHER/EROSNLR/nlr/history/TimeHistory.bth";
+        c.hasStateHistory = false;
+        c.timeHistoryFile = "/OTHER/EROSNLR/nlr/history/TimeHistory.bth"; // TODO
 
         configArray.add(c);
 
@@ -148,7 +150,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNAV;
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
-        c.timeHistoryFile = "/OTHER/EROSNAV/history/TimeHistory.bth";
+        c.hasStateHistory = false;
+        c.timeHistoryFile = "/OTHER/EROSNAV/history/TimeHistory.bth"; // TODO
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -159,7 +162,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
-        c.timeHistoryFile = "/ITOKAWA/GASKELL/history/TimeHistory.bth";
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
