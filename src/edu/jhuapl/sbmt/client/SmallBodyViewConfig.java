@@ -2374,8 +2374,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelAuthor.GASKELL;
             c.rootDirOnServer = "/atlas/gaskell";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+//            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+//            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.smallBodyLabelPerResolutionLevel = new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] };
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument

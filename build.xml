@@ -77,6 +77,8 @@
       <!-- <arg value="svn info | grep -i 'Last Changed Date'"/> -->
       <arg value="echo Last Changed Date: `date +%F`"/>
     </exec>
+    <copy file="${rootdir}/src/edu/jhuapl/data/splashLogo.png"
+    	        tofile="${rootdir}/build/classes/edu/jhuapl/data/splashLogo.png" />
     <copy todir="${rootdir}/build/classes/edu/jhuapl/sbmt/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/sbmt/data"/>
     </copy>
