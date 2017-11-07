@@ -100,7 +100,7 @@ public class TimeChanger extends javax.swing.JPanel
             playCheckBox.setIcon(playIcon);
         }catch (Exception e)
         {
-//            System.out.println(e);
+            playCheckBox.setText("Play");
         }
         playCheckBox.setActionCommand("PlayButton");
         playCheckBox.addActionListener(new ActionListener(){
