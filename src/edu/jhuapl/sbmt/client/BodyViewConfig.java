@@ -218,6 +218,9 @@ public class BodyViewConfig extends ViewConfig
         c.hasColoringData = this.hasColoringData;
         c.hasImageMap = this.hasImageMap;
 
+        c.timeHistoryFile = this.timeHistoryFile;
+        c.hasStateHistory = this.hasStateHistory;
+
         c.body = this.body;
         c.type = this.type;
         c.population = this.population;

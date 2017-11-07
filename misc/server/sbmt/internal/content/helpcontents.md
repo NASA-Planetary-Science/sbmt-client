@@ -412,21 +412,6 @@ ellipses, and points) works completely independent of each other. You
 can only be drawing one type of structure at a time. Text labels may be
 added to all structures.
 
-### Images tab (Available for all bodies)
-
-The Images tab allows you to import and map custom images onto the body.
-To import a custom image, click on the "New..." button at the bottom of
-the left hand panel. In the dialog box that opens, enter the path to the
-image and the image type if different than the default. Make any changes
-to the rotation and flip, and choose a projection. The Simple Cylindrical
-Projection allows you to set the coordinates to which the corners of the 
-image will be mapped. The Perspective Projection requires you to enter 
-the name of either a .SUM file (Bob Gaskell format) or .INFO file (SBMT
-format) containing the instrument pointing and spacecraft position 
-required to map the image to the body. After clicking the "OK" button,
-the image file will be displayed in the left hand panel. Right click on 
-the file name and select "Map Image" to display it on the body.
-
 #### Drawing Circles, Ellipses, or Points
 
 To draw a circle, ellipse, or point click on the "Edit" button. That
@@ -576,6 +561,22 @@ should evaluate elevation as the distance between a point on the path
 and the center of the asteroid. While not as accurate as true elevation
 data, this may be acceptable for bodies that have a circular shape.
 
+### Images tab (Available for all bodies)
+
+The Images tab allows you to import and map custom images onto the body.
+To import a custom image, click on the "New..." button at the bottom of
+the left hand panel. In the dialog box that opens, enter the path to the
+image and the image type if different than the default. Make any changes
+to the rotation and flip, and choose a projection. The Simple Cylindrical
+Projection allows you to set the coordinates to which the corners of the 
+image will be mapped. The Perspective Projection requires you to enter 
+the name of either a .SUM file (Bob Gaskell format) or .INFO file (SBMT
+format) containing the instrument pointing and spacecraft position 
+required to map the image to the body. After clicking the "OK" button,
+the image file will be displayed in the left hand panel. Right click on 
+the file name and select "Map Image" to display it on the body.
+
+
 ### Tracks tab
 
 Unlike the lidar tab (or NLR tab for Eros) described above which
@@ -642,6 +643,80 @@ out.
 
 In addition an outline of the maplet is shown on the asteroid in
 dark green. It disappears when you close the maplet window.
+
+### Observing Conditions tab (Eros and Itokawa only)
+
+The Observing Conditions tab allows the user to create, load, and save CSV files of trajectory data and 
+display the data in a way that the user can interact with it. 
+Furthermore, the user can play an animation of the spacecraft going around 
+the body. 
+
+To begin, you must first select a time interval that for which you wish to view 
+observing conditions. You can do this by creating a new interval or loading an 
+existing interval from file.  To create a new interval, choose a start and stop date 
+and time and select the "Get Interval" button.  If the interval is within the range
+of available dates, it will be added to the table of intervals below.  If you want 
+to load an interval from an existing .CSV history file, you can do so by selecting 
+the "Load Interval From File" button and choosing the appropriate .CSV file.
+
+In the table, you will see all of the intervals that you created and loaded.  The 
+following options are columns in the table:
+- MAP: map the trajectory
+- SHOW: show the trajectory on the renderer
+- COLOR: choose the color of the trajectory, by default this will be cyan
+- LINE: choose the line thickness of the trajectory
+- NAME: name of the trajectory, by default this will be the dates of the interval startdate_stopdate
+- DESC: an optional description of the trajectory
+- START: start date of the interval
+- STOP: stop date of the interval
+
+To interact with a time interval, select it from the "Time Interval" table.
+Now, several options will become available. 
+ -  Play Speed allows you to choose how fast the animation will play
+ -  The rewind/play/fast forward buttons and slider bar allow you to adjust
+    the current time of the animation
+ -  Enter UTC Time allows the user to get the specified time along the 
+ 	selected interval. 
+ -  Show Earth Pointer displays a pointer that points towards Earth.
+ -  Show Sun Pointer displays a pointer that points towards the Sun.
+ -  Show Spacecraft Pointer displays a pointer that points towards the Spacecraft
+ -  Resize Earth/Sun/Spacecraft lets you resize the respective pointers.
+ -  Show Spacecraft displays a pointer that points towards the spacecraft
+ -  Show Lighting turns on and off the lighting of the body.
+ -  Show Spacecraft displays a ball that represents the location of the 
+ 	spacecraft.
+ -  Distance to Center/Surface lets you change which distance is displayed.
+ -  Show Earth/Sun/Spacecraft locks the camera into a view of the body 
+ 	from the indicated viewpoint.
+ -  Vertical FOV lets the user choose an FOV between 1 and 120 degrees.
+ -	"Save Movie Frames" button allows the user to save individual frames of
+     the animation to export and create movies.
+ 	
+To play an animation of a time interval, click the play button. Rewind 
+resets the animation to the beginning and fast forward will move the
+animation to the end. The play speed can be adjusted to speed up or
+slow down the animation. The speed of the animation is X times faster
+than 1 second of real time. For example, 60 means that the animation is 
+60 times faster than 1 second of real time or 1 minute of the interval 
+is traveled per second.
+
+Note: When playing the animation, be aware of what view you are in. For
+example, if the "Show Spacecraft View" is selected, the animation will
+play with the camera locked looking at the body from the spacecraft's 
+position.
+
+To save an animation, select a time interval and click "Save Movie Frames"
+at the bottom of the panel. A window will pop up allowing you to save 
+the pictures to a specified folder. The number of frames is how many 
+pictures the program will take. The animation will start playing and 
+the pictures will be saved. The pictures can then be put into movie 
+creation software to be made into a movie. 
+
+There is a button called "Reset Camera to Nadir". This resets the camera 
+focal point to the origin. This is necessary because if the focal point
+is not at the center and the user sets the camera to sun, earth, or 
+spacecraft, the camera will not point at the pointers and there's is no
+way to manually set it accurately.
 
 Menu Options
 ------------

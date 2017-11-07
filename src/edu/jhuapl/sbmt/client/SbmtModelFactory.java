@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.client;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.joda.time.DateTime;
+
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
@@ -71,12 +73,14 @@ public class SbmtModelFactory
 
     static public StateHistoryModel createStateHistory(
             StateHistoryKey key,
+            DateTime start,
+            DateTime end,
             SmallBodyModel smallBodyModel,
             Renderer renderer,
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(key, smallBodyModel, renderer);
+        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
     }
 
     static public Image createImage(

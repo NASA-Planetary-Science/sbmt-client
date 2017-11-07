@@ -13,12 +13,16 @@ package edu.jhuapl.sbmt.gui.time;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.JCheckBox;
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -34,10 +38,13 @@ public class TimeChanger extends javax.swing.JPanel
     private HasTime model;
     private double offsetScale = 1.0; // 0.025;
     private int defaultValue = 0; // 15;
+    private int finalValue = 900;
     private int sliderMin = 0;
     private int sliderMax = 900;
     private int sliderMinorTick = 30;
     private int sliderMajorTick = 150;
+    private boolean playChecked = false;
+    private boolean manualSetTime = false;
 
     /** Creates new form RadialOffsetChanger */
     public TimeChanger()
@@ -58,7 +65,15 @@ public class TimeChanger extends javax.swing.JPanel
         currentOffsetTime = 0.0;
         if (model != null)
             model.setTimeFraction(currentOffsetTime);
-        System.out.println("Current Offset Time: " + currentOffsetTime);
+//        System.out.println("Current Offset Time: " + currentOffsetTime);
+    }
+
+    public void fastforward()
+    {
+        slider.setValue(finalValue);
+        currentOffsetTime = 1.0;
+        if (model != null)
+            model.setTimeFraction(currentOffsetTime);
     }
 
     /** This method is called from within the constructor to
@@ -73,10 +88,46 @@ public class TimeChanger extends javax.swing.JPanel
 
         setPreferredSize(new java.awt.Dimension(300, 75));
 
-        playCheckBox = new JCheckBox();
-        playCheckBox.setText("Play");
-        playCheckBox.setSelected(false);
-        playCheckBox.addItemListener(this);
+        playCheckBox = new JButton();
+        //playCheckBox.setText("Play");
+        //playCheckBox.setSelected(false);
+        //playCheckBox.addItemListener(this);
+        try
+        {
+            Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+            play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+            Icon playIcon = new ImageIcon(play);
+            playCheckBox.setIcon(playIcon);
+        }catch (Exception e)
+        {
+//            System.out.println(e);
+        }
+        playCheckBox.setActionCommand("PlayButton");
+        playCheckBox.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e)
+            {
+                playButtonActionPerformed(e);
+            }
+        });
+
+        fastforwardButton = new JButton();
+        try
+        {
+            Image fast = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/FastforwardButton.png"));
+            Icon fastforwardIcon = new ImageIcon(fast);
+            fastforwardButton.setIcon(fastforwardIcon);
+        }catch (Exception e)
+        {
+//            System.out.println(e);
+        }
+        //fastforwardButton.setText("Fast-Forward");
+        fastforwardButton.setActionCommand("FastForwardButton");
+        fastforwardButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e)
+            {
+                fastforwardActionPerformed(e);
+            }
+        });
 
         rateTextField = new JTextField("60.0    ");
 
@@ -95,7 +146,16 @@ public class TimeChanger extends javax.swing.JPanel
 
         jLabel1.setText("Time");
 
-        rewindButton.setText("Rewind");
+        //rewindButton.setText("Rewind");
+        try
+        {
+            Image rewind = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/RewindButton.png"));
+            Icon rewindIcon = new ImageIcon(rewind);
+            rewindButton.setIcon(rewindIcon);
+        }catch (Exception e)
+        {
+//            System.out.println(e);
+        }
         rewindButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
@@ -110,13 +170,26 @@ public class TimeChanger extends javax.swing.JPanel
 //        separator.add(jSeparator1);
 //        add(separator, BorderLayout.NORTH);
 
-        JPanel controls = new JPanel();
-        controls.setLayout(new FlowLayout());
-        controls.add(new JLabel("Rate:"));
-        controls.add(rateTextField);
-        controls.add(playCheckBox);
-        controls.add(rewindButton);
-        add(controls, BorderLayout.NORTH);
+        try
+        {
+            Image questionMark = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/questionMark.png"));
+            Icon question = new ImageIcon(questionMark);
+            JLabel questionRate = new JLabel(question);
+            questionRate.setToolTipText("<html>The speed of the animation is X times <br>faster than 1 second of real time. Ex. <br>60 means 1 minute of the interval is <br>traveled per second</html>");
+
+            JPanel controls = new JPanel();
+            controls.setLayout(new FlowLayout());
+            controls.add(new JLabel("Play Speed:"));
+            controls.add(questionRate);
+            controls.add(rateTextField);
+            controls.add(rewindButton);
+            controls.add(playCheckBox);
+            controls.add(fastforwardButton);
+            add(controls, BorderLayout.NORTH);
+        }catch (Exception e)
+        {
+            //System.out.println(e);
+        }
 
         add(slider, BorderLayout.SOUTH);
 
@@ -168,19 +241,58 @@ public class TimeChanger extends javax.swing.JPanel
 
     private void sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderStateChanged
 
-//        if (!slider.getValueIsAdjusting())
-//        {
+        //System.out.println(slider.getValueIsAdjusting());
+        if(slider.getValueIsAdjusting()){
             int val = slider.getValue();
             int max = slider.getMaximum();
             int min = slider.getMinimum();
             currentOffsetTime = (double)(val - min) / (double)(max-min) * offsetScale;
             ((HasTime)model).setTimeFraction(currentOffsetTime);
-//        }
+        }
     }//GEN-LAST:event_sliderStateChanged
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         rewind();
     }//GEN-LAST:event_resetButtonActionPerformed
+
+    private void playButtonActionPerformed(ActionEvent e)
+    {
+        if (e.getActionCommand().equals("PlayButton")){
+            if(playButtonChecked()){
+                try
+                {
+                    Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                    play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                    Icon playIcon = new ImageIcon(play);
+                    playCheckBox.setIcon(playIcon);
+                }catch (Exception ex)
+                {
+//                    System.out.println(ex);
+                }
+                timer.stop();
+                playChecked = false;
+            }
+            else
+            {
+                try
+                {
+                    Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
+                    Icon pauseIcon = new ImageIcon(pause);
+                    playCheckBox.setIcon(pauseIcon);
+                }catch (Exception ex)
+                {
+//                    System.out.println(ex);
+                }
+                timer.start();
+                playChecked = true;
+            }
+        }
+    }
+
+    private void fastforwardActionPerformed(ActionEvent e)
+    {
+        fastforward();
+    }
 
     public void itemStateChanged(ItemEvent e)
     {
@@ -189,10 +301,12 @@ public class TimeChanger extends javax.swing.JPanel
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
                 timer.start();
+                playChecked = true;
             }
             else
             {
                 timer.stop();
+                playChecked = false;
             }
         }
     }
@@ -203,7 +317,7 @@ public class TimeChanger extends javax.swing.JPanel
     }
 
     private Timer timer;
-    private double currentOffsetTime = 0.0;
+    public double currentOffsetTime = 0.0;
     public void createTimer()
     {
         timer = new Timer(timerInterval, this);
@@ -225,7 +339,7 @@ public class TimeChanger extends javax.swing.JPanel
 
        double deltaSimulationTime = deltaRealTime * playRate;
        double deltaOffsetTime = deltaSimulationTime / period;
-//       System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
+       //System.out.println("Delta time: " + deltaSimulationTime + " Delta offset time: " + deltaOffsetTime);
 
        currentOffsetTime += deltaOffsetTime;
        // time looping
@@ -240,13 +354,28 @@ public class TimeChanger extends javax.swing.JPanel
        int val = (int)Math.round((currentOffsetTime / offsetScale) * ((double)(max - min)) + min);
        slider.setValue(val);
 
-//       System.out.println("Current Offset Time: " + currentOffsetTime);
+       //System.out.println("Current Offset Time: " + currentOffsetTime);
+    }
+
+    public boolean playButtonChecked()
+    {
+        return playChecked;
+    }
+
+    public void setSliderValue(double tf){
+        manualSetTime = true;
+        int max = slider.getMaximum();
+
+        int val = (int)Math.round(max * tf);
+
+        slider.setValue(val);
     }
 
     private javax.swing.JLabel jLabel1;
     private javax.swing.JSeparator jSeparator1;
-    private JCheckBox playCheckBox;
+    private JButton playCheckBox;
     private JTextField rateTextField;
     private javax.swing.JButton rewindButton;
     private javax.swing.JSlider slider;
+    private JButton fastforwardButton;
 }

@@ -372,7 +372,7 @@ public class SbmtView extends View
 
             if (getConfig().hasStateHistory)
             {
-                addTab("Time", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
             }
         }
     }
