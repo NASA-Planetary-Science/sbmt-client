@@ -2296,7 +2296,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.ONC_IMAGE);
+                        ImageType.ONC_TRUTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
