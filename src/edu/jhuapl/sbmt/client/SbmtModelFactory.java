@@ -10,8 +10,11 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
+import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
+import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
+import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -46,6 +49,7 @@ import edu.jhuapl.sbmt.model.phobos.PhobosImage;
 import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.ryugu.ONCImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
@@ -136,6 +140,14 @@ public class SbmtModelFactory
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
+                    return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
+                    return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
+                    return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.ONC_IMAGE)
+                    return new ONCImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
                 else
@@ -178,6 +190,8 @@ public class SbmtModelFactory
               return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
                 return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.instrument.type == ImageType.ONC_IMAGE)
+                return new ONCImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }
