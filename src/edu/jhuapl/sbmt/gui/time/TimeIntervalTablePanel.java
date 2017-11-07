@@ -24,7 +24,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
-import edu.jhuapl.saavtk.model.RenderableManager;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.gui.time.TimeIntervalTable.TimeIntervalTableModel;
 import edu.jhuapl.sbmt.gui.time.TimeIntervalTable.columns;
@@ -42,7 +42,7 @@ public class TimeIntervalTablePanel extends JPanel implements TableModelListener
     private JButton button;
     StateHistoryCollection intervals;
 
-    private RenderableManager modelManager;
+    private ModelManager modelManager;
     private Renderer renderer;
     private ViewOptionsPanel viewOptionsPanel;
 
@@ -50,7 +50,7 @@ public class TimeIntervalTablePanel extends JPanel implements TableModelListener
      * Create the panel.
      * @param simulationMarkerPanel
      */
-    public TimeIntervalTablePanel(StateHistoryCollection intervals, final RenderableManager modelManager, Renderer renderer, ViewOptionsPanel simulationMarkerPanel)
+    public TimeIntervalTablePanel(StateHistoryCollection intervals, final ModelManager modelManager, Renderer renderer, ViewOptionsPanel simulationMarkerPanel)
     {
         this.modelManager = modelManager;
         this.intervals = intervals;

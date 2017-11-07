@@ -20,8 +20,8 @@ import javax.swing.JSpinner;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.RenderableManager;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 
@@ -41,7 +41,7 @@ public class TimeControlPane extends JPanel implements ItemListener
 
     private JButton timeButton;
 
-    public TimeControlPane(RenderableManager modelManager, final StateHistoryPanel panel)
+    public TimeControlPane(ModelManager modelManager, final StateHistoryPanel panel)
     {
         stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
 

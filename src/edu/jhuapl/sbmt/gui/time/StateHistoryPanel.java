@@ -47,8 +47,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.RenderableManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MapUtil;
@@ -65,7 +65,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener
 {
 
-    private RenderableManager modelManager;
+    private ModelManager modelManager;
 
     private boolean initialized = false;
     private StateHistoryCollection runs;
@@ -101,7 +101,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
-            final RenderableManager modelManager,
+            final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             final PickManager pickManager,
             Renderer renderer)
