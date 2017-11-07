@@ -2286,7 +2286,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
 
             c.hasStateHistory = true;
-            c.timeHistoryFile = "";
+            c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
+
+
 //            c.imagingInstruments = new ImagingInstrument[] {
 //                    oncCam,
 //            };
