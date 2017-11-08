@@ -2343,6 +2343,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth";
+
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
             };
