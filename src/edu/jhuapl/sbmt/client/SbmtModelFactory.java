@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.client;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.joda.time.DateTime;
+
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
@@ -50,6 +52,7 @@ import edu.jhuapl.sbmt.model.rosetta.CG;
 import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.ryugu.ONCImage;
+import edu.jhuapl.sbmt.model.ryugu.ONCTruthImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
@@ -74,12 +77,14 @@ public class SbmtModelFactory
 
     static public StateHistoryModel createStateHistory(
             StateHistoryKey key,
+            DateTime start,
+            DateTime end,
             SmallBodyModel smallBodyModel,
             Renderer renderer,
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        return new StateHistoryModel(key, smallBodyModel, renderer);
+        return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
     }
 
     static public Image createImage(
@@ -146,6 +151,8 @@ public class SbmtModelFactory
                     return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
                     return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.ONC_TRUTH_IMAGE)
+                    return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_IMAGE)
                     return new ONCImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.GENERIC_IMAGE)

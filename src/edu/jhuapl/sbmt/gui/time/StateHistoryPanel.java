@@ -10,94 +10,94 @@
  */
 package edu.jhuapl.sbmt.gui.time;
 
-import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.table.DefaultTableModel;
 
-import vtk.vtkCellPicker;
-import vtk.vtkProp;
-import vtk.vtkPropCollection;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
-import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistorySource;
-import edu.jhuapl.sbmt.model.time.Trajectory;
-
-import nom.tam.fits.FitsException;
 
 
-public class StateHistoryPanel extends javax.swing.JPanel implements PropertyChangeListener
+public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener
 {
 
     private ModelManager modelManager;
-    private StateHistoryPopupMenu runPopupMenu;
+
     private boolean initialized = false;
     private StateHistoryCollection runs;
 
-    private javax.swing.JScrollPane simulationRunScrollPane;
-    private javax.swing.JList simulationRunList;
+    private javax.swing.JTable optionsTable;
 
-    private javax.swing.JScrollPane trajectoryScrollPane;
-    private javax.swing.JList trajectoryList;
+    private javax.swing.JCheckBox showEarthMarker;
+    private javax.swing.JCheckBox showSunMarker;
+    private javax.swing.JCheckBox showSpacecraftMarkerHead;
+    private javax.swing.JCheckBox showSpacecraftMarker;
+    private javax.swing.JCheckBox showLighting;
+    private javax.swing.JRadioButton showSpacecraftView;
+    private javax.swing.JRadioButton showEarthView;
+    private javax.swing.JRadioButton showSunView;
+    private javax.swing.JRadioButton showFreeView;
+    private JTextField viewAngleInput;
+    private JCheckBox showTrajectory;
+    private JCheckBox mapTrajectory;
+    private JComboBox<String> distanceOptions;
+    private JSpinner startTime, endTime;
+    private JButton getQueryButton;
+    private File path;
+    final int lineLength = 121;
+    private SmallBodyModel bodyModel;
+    private SmallBodyViewConfig config;
+    private JButton saveAnimationButton;
 
-//    private javax.swing.JScrollPane areaCalculationScrollPane;
-//    private javax.swing.JList areaCalculationList;
-//
-//    private javax.swing.JScrollPane surfacePatchPane;
-//    private javax.swing.JList surfacePatchList;
-
-    private javax.swing.JButton deleteButton;
-    private javax.swing.JButton editButton;
-
-    private javax.swing.JLabel simulationRunLabel;
-    private javax.swing.JLabel trajectoryLabel;
-//    private javax.swing.JLabel areaCalculationLabel;
-//    private javax.swing.JLabel surfacePatchLabel;
-
-//    private SurfaceDataPane surfaceDataPane;
-
-    private javax.swing.JPanel simulationRunButtonPanel;
-//    private javax.swing.JPanel jPanel2;
-
-    private javax.swing.JButton moveDownButton;
-    private javax.swing.JButton moveUpButton;
-    private javax.swing.JButton newButton;
-    private javax.swing.JButton removeAllButton;
+    private ViewOptionsPanel simulationMarkerPanel;
+    private TimeControlPane timeControlPane;
 
     private Renderer renderer;
-//    private vtkRenderWindowPanel renWin;
     private vtksbmtJoglCanvas renWin;
-    private vtkCellPicker smallBodyCellPicker; // only includes small body prop
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
@@ -109,45 +109,15 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         this.modelManager = modelManager;
         this.renderer = renderer;
         this.renWin = renderer.getRenderWindowPanel();
+        //        this.pickManager = pickManager;
+        //        this.infoManager = infoPanelManager;
 
-        initComponents();
-
-        pickManager.getDefaultPicker().addPropertyChangeListener(this);
-
-        simulationRunList.setModel(new DefaultListModel());
+        bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
+        config = (SmallBodyViewConfig) bodyModel.getConfig();
 
         runs = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
-        runPopupMenu = new StateHistoryPopupMenu(runs, infoPanelManager, renderer, this);
 
-        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
-        smallBodyCellPicker = new vtkCellPicker();
-        smallBodyCellPicker.PickFromListOn();
-        smallBodyCellPicker.InitializePickList();
-        List<vtkProp> actors = smallBodyModel.getProps();
-        vtkPropCollection smallBodyPickList = smallBodyCellPicker.GetPickList();
-        smallBodyPickList.RemoveAllItems();
-        for (vtkProp act : actors)
-        {
-            smallBodyCellPicker.AddPickList(act);
-        }
-        smallBodyCellPicker.AddLocator(smallBodyModel.getCellLocator());
-
-        addComponentListener(new ComponentAdapter()
-        {
-            @Override
-            public void componentShown(ComponentEvent e)
-            {
-                try
-                {
-                    initializeRunList();
-                }
-                catch (IOException e1)
-                {
-                    e1.printStackTrace();
-                }
-            }
-        });
-
+        initComponents();
 
         // We need to update the scale bar whenever there is a render or whenever
         // the window gets resized. Although resizing a window results in a render,
@@ -170,51 +140,6 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
 
     }
 
-    /**
-     * Computes the size of a pixel in body fixed coordinates. This is only meaningful
-     * when the user is zoomed in a lot. To compute a result all 4 corners of the
-     * view window must intersect the asteroid.
-     *
-     * @return
-     */
-//    private double computeSizeOfPixel()
-//    {
-//        // Do a pick at each of the 4 corners of the renderer
-//        long currentTime = System.currentTimeMillis();
-//        int width = renWin.getComponent().getWidth();
-//        int height = renWin.getComponent().getHeight();
-//
-//        int[][] corners = { {0, 0}, {width-1, 0}, {width-1, height-1}, {0, height-1} };
-//        double[][] points = new double[4][3];
-//        for (int i=0; i<4; ++i)
-//        {
-//            int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
-//
-//            if (pickSucceeded == 1)
-//            {
-//                points[i] = smallBodyCellPicker.GetPickPosition();
-//            }
-//            else
-//            {
-//                return -1.0;
-//            }
-//        }
-//
-//        // Compute the scale if all 4 points intersect by averaging the distance of all 4 sides
-//        double bottom = MathUtil.distanceBetweenFast(points[0], points[1]);
-//        double right  = MathUtil.distanceBetweenFast(points[1], points[2]);
-//        double top    = MathUtil.distanceBetweenFast(points[2], points[3]);
-//        double left   = MathUtil.distanceBetweenFast(points[3], points[0]);
-//
-//        double sizeOfPixel =
-//                ( bottom / (double)(width-1)  +
-//                  right  / (double)(height-1) +
-//                  top    / (double)(width-1)  +
-//                  left   / (double)(height-1) ) / 4.0;
-//
-//        return sizeOfPixel;
-//    }
-
     private void updateTimeBarValue()
     {
         if (runs != null)
@@ -222,20 +147,25 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
             StateHistoryModel currentRun = runs.getCurrentRun();
             if (currentRun != null)
             {
-                Double time = currentRun.getTime();
-                currentRun.updateTimeBarValue(time);
+                try
+                {
+                    Double time = currentRun.getTime();
+                    currentRun.updateTimeBarValue(time);
+                }catch(Exception ex){
+
+                }
             }
         }
     }
 
-    private void updateScalarBar()
-    {
-        StateHistoryModel currentRun = runs.getCurrentRun();
-        if (currentRun != null)
-        {
-            currentRun.updateScalarBar();
-        }
-    }
+//    private void updateScalarBar()
+//    {
+//        StateHistoryModel currentRun = runs.getCurrentRun();
+//        if (currentRun != null)
+//        {
+//            currentRun.updateScalarBar();
+//        }
+//    }
 
     public void updateTimeBarPosition()
     {
@@ -248,74 +178,493 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         }
     }
 
-    private static volatile boolean pickingEnabled = true;
 
-    public static final double DEFAULT_PICK_TOLERANCE = 0.002;
+    private JLabel lblStartLabel;
+    private JLabel lblStop;
+    private TimeIntervalTablePanel timeTablePanel;
 
-    private double pickTolerance = DEFAULT_PICK_TOLERANCE;
-
-    protected int doPick(MouseEvent e, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
-    {
-        return doPick(e.getWhen(), e.getX(), e.getY(), picker, renWin);
-    }
-
-    protected int doPick(final long when, int x, int y, vtkCellPicker picker, vtksbmtJoglCanvas renWin)
-    {
-        if (pickingEnabled == false)
-            return 0;
-
-        // Don't do a pick if the event is more than a third of a second old
-        final long currentTime = System.currentTimeMillis();
-
-        //System.err.println("elapsed time " + (currentTime - when));
-        if (currentTime - when > 333)
-            return 0;
-
-//        renWin.getVTKLock().lock();
-//        picker.SetTolerance(pickTolerance);
-//        int pickSucceeded = picker.Pick(x, renWin.getHeight()-y-1, 0.0, renWin.GetRenderer());
-//        renWin.getVTKLock().unlock();
-//        return pickSucceeded;
-
-        int pickSucceeded = 0;
-        try
-        {
-            renWin.getComponent().getContext().makeCurrent();
-            renWin.getVTKLock().lock();
-            // Note that on some displays, such as a retina display, the height used by
-            // OpenGL is different than the height used by Java. Therefore we need
-            // scale the mouse coordinates to get the right position for OpenGL.
-//            double openGlHeight = renWin.getComponent().getSurfaceHeight();
-            double openGlHeight = renWin.getComponent().getHeight();
-            double javaHeight = renWin.getComponent().getHeight();
-            double scale = openGlHeight / javaHeight;
-//            pickSucceeded = picker.Pick(scale*e.getX(), scale*(javaHeight-e.getY()-1), 0.0, renWin.getRenderer());
-            pickSucceeded = picker.Pick(scale*x, scale*(javaHeight-y-1), 0.0, renWin.getRenderer());
-            renWin.getVTKLock().unlock();
-        }
-        finally
-        {
-            renWin.getComponent().getContext().release();
-        }
-
-        return pickSucceeded;
-
-
-    }
-
-
-
-    private String getCustomDataFolder()
-    {
-        return modelManager.getPolyhedralModel().getCustomDataFolder();
-    }
+    private GridBagConstraints gridBagConstraints_1;
+    private JPanel panel;
 
     private String getConfigFilename()
     {
         return modelManager.getPolyhedralModel().getConfigFilename();
     }
 
-    private void initializeRunList() throws IOException
+    private RunInfo getRunInfo(int index)
+    {
+        return (RunInfo)((DefaultListModel)optionsTable.getModel()).get(index);
+    }
+
+    private String getFileName(RunInfo runInfo)
+    {
+        //        return getCustomDataFolder() + File.separator + runInfo.runfilename;
+        return runInfo.runfilename;
+    }
+
+    private String getFileName(int index)
+    {
+        return getFileName(getRunInfo(index));
+    }
+
+    private void updateConfigFile()
+    {
+        MapUtil configMap = new MapUtil(getConfigFilename());
+
+        String runNames = "";
+        String runFilenames = "";
+
+        DefaultListModel runListModel = (DefaultListModel)optionsTable.getModel();
+        for (int i=0; i<runListModel.size(); ++i)
+        {
+            RunInfo runInfo = (RunInfo)runListModel.get(i);
+
+            runFilenames += runInfo.runfilename;
+            runNames += runInfo.name;
+
+            if (i < runListModel.size()-1)
+            {
+                runNames += CustomShapeModel.LIST_SEPARATOR;
+                runFilenames += CustomShapeModel.LIST_SEPARATOR;
+            }
+        }
+
+        Map<String, String> newMap = new LinkedHashMap<String, String>();
+
+        newMap.put(StateHistoryModel.RUN_NAMES, runNames);
+        newMap.put(StateHistoryModel.RUN_FILENAMES, runFilenames);
+
+        configMap.put(newMap);
+    }
+
+    private void initComponents() {
+
+        //
+        // time set panel
+        //
+
+        // Calculate the beginning and end of available time
+        path = FileCache.getFileFromServer(config.timeHistoryFile);
+
+        // get range of available dates
+        DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(readString(lineLength));//oldDate.parse(currentRun.getIntervalTime()[0]);
+        DateTime end = ISODateTimeFormat.dateTimeParser().parseDateTime(readString((int)getBinaryFileLength()*lineLength-lineLength));
+        Date newStart = start.toDate();
+        Date newEnd = end.toDate();
+
+
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        gridBagLayout.rowHeights = new int[]{0, 0, 121, 0, 0, 0, 0, 0, 0};
+        gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0};
+        gridBagLayout.columnWidths = new int[]{0, 0, 474};
+        setLayout(gridBagLayout);
+        java.awt.GridBagConstraints gridBagConstraints;
+        revalidate();
+
+        JTextPane queryInfo = new JTextPane();
+        GridBagConstraints gbc_queryInfo = new GridBagConstraints();
+        gbc_queryInfo.fill = GridBagConstraints.HORIZONTAL;
+        gbc_queryInfo.gridwidth = 2;
+        gbc_queryInfo.insets = new Insets(0, 0, 5, 5);
+        gbc_queryInfo.gridx = 1;
+        gbc_queryInfo.gridy = 0;
+        add(queryInfo, gbc_queryInfo);
+        queryInfo.setText("<html>Hello World</html>"); // showing off
+        queryInfo.setEditable(false); // as before
+        queryInfo.setBackground(null); // this is the same as a JLabel
+        queryInfo.setBorder(null);
+        queryInfo.setText("Available Time Range: " + new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newStart)+ " to " + new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newEnd));
+
+        panel = new JPanel();
+        GridBagConstraints gbc_panel = new GridBagConstraints();
+        gbc_panel.fill = GridBagConstraints.BOTH;
+        gbc_panel.gridwidth = 2;
+        gbc_panel.insets = new Insets(0, 0, 5, 0);
+        gbc_panel.gridx = 1;
+        gbc_panel.gridy = 1;
+        add(panel, gbc_panel);
+        GridBagLayout gbl_panel = new GridBagLayout();
+        gbl_panel.columnWidths = new int[]{96, 234, 329, 0};
+        gbl_panel.rowHeights = new int[]{0, 25, 0, 0};
+        gbl_panel.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
+        gbl_panel.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+        panel.setLayout(gbl_panel);
+
+        lblStartLabel = new JLabel("Start Time:");
+        GridBagConstraints gbc_lblStartLabel = new GridBagConstraints();
+        gbc_lblStartLabel.insets = new Insets(0, 0, 5, 5);
+        gbc_lblStartLabel.gridx = 0;
+        gbc_lblStartLabel.gridy = 0;
+        panel.add(lblStartLabel, gbc_lblStartLabel);
+        startTime = new JSpinner();
+        GridBagConstraints gbc_startTime = new GridBagConstraints();
+        gbc_startTime.fill = GridBagConstraints.HORIZONTAL;
+        gbc_startTime.insets = new Insets(0, 0, 5, 5);
+        gbc_startTime.gridx = 1;
+        gbc_startTime.gridy = 0;
+        panel.add(startTime, gbc_startTime);
+
+        startTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newStart.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
+        startTime.setEditor(new javax.swing.JSpinner.DateEditor(startTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
+        startTime.setMinimumSize(new java.awt.Dimension(36, 22));
+        startTime.setPreferredSize(new java.awt.Dimension(200, 28));
+
+        lblStop = new JLabel("Stop Time:");
+        GridBagConstraints gbc_lblStop = new GridBagConstraints();
+        gbc_lblStop.insets = new Insets(0, 0, 5, 5);
+        gbc_lblStop.gridx = 0;
+        gbc_lblStop.gridy = 1;
+        panel.add(lblStop, gbc_lblStop);
+        endTime = new JSpinner();
+        GridBagConstraints gbc_endTime = new GridBagConstraints();
+        gbc_endTime.fill = GridBagConstraints.HORIZONTAL;
+        gbc_endTime.insets = new Insets(0, 0, 5, 5);
+        gbc_endTime.gridx = 1;
+        gbc_endTime.gridy = 1;
+        panel.add(endTime, gbc_endTime);
+
+        endTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newEnd.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
+        endTime.setEditor(new javax.swing.JSpinner.DateEditor(endTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
+        endTime.setMinimumSize(new java.awt.Dimension(36, 22));
+        endTime.setPreferredSize(new java.awt.Dimension(200, 28));
+        getQueryButton = new JButton("Get Interval");
+        GridBagConstraints gbc_getQueryButton = new GridBagConstraints();
+        gbc_getQueryButton.insets = new Insets(0, 0, 0, 5);
+        gbc_getQueryButton.fill = GridBagConstraints.HORIZONTAL;
+        gbc_getQueryButton.gridx = 1;
+        gbc_getQueryButton.gridy = 2;
+        panel.add(getQueryButton, gbc_getQueryButton);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new Insets(5, 5, 5, 0);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+
+        // add view options panel
+        simulationMarkerPanel = new ViewOptionsPanel(runs, renderer);
+        simulationMarkerPanel.setEnabled(false);
+        add(simulationMarkerPanel, gridBagConstraints);
+        simulationMarkerPanel.repaint();
+
+
+        // time table panel
+        timeTablePanel = new TimeIntervalTablePanel(runs, modelManager, renderer, simulationMarkerPanel);
+        GridBagConstraints gbc_timeTablePanel = new GridBagConstraints();
+        gbc_timeTablePanel.fill = GridBagConstraints.BOTH;
+        gbc_timeTablePanel.gridwidth = 2;
+        gbc_timeTablePanel.insets = new Insets(0, 0, 5, 0);
+        gbc_timeTablePanel.gridx = 1;
+        gbc_timeTablePanel.gridy = 2;
+        add(timeTablePanel, gbc_timeTablePanel);
+
+
+        getQueryButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                Date beginTime = (Date) startTime.getModel().getValue();
+                Date stopTime = (Date) endTime.getModel().getValue();
+                double total = (stopTime.getTime()-beginTime.getTime())/ (24.0 * 60.0 * 60.0 * 1000.0);
+                DateTime dtStart = new DateTime(beginTime);
+                DateTime dtEnd = new DateTime(stopTime);
+                DateTime dtStart2 = ISODateTimeFormat.dateTimeParser()
+                        .parseDateTime(dtStart.toString());
+                DateTime dtEnd2 = ISODateTimeFormat.dateTimeParser()
+                        .parseDateTime(dtEnd.toString());
+
+                // TODO check key generation
+                // generate random stateHistoryKey to use for this interval
+                StateHistoryKey key = new StateHistoryKey(runs);
+                StateHistoryModel newInterval = new StateHistoryModel(key, dtStart2, dtEnd2, bodyModel, renderer);
+                if(newInterval.createNewTimeInterval(StateHistoryPanel.this, total, "") > 0) {
+                    timeTablePanel.addIntervalToTable(newInterval, renderer);
+                }
+
+                // once we add an interval, enable the view options
+
+                    simulationMarkerPanel.setEnabled(true);
+
+            }
+        });
+
+        //
+        // time control pane
+        //
+        timeControlPane = new TimeControlPane(modelManager, this);
+        gridBagConstraints_1 = new java.awt.GridBagConstraints();
+        gridBagConstraints_1.gridwidth = 2;
+        gridBagConstraints_1.insets = new Insets(0, 0, 5, 0);
+        gridBagConstraints_1.gridx = 1;
+        gridBagConstraints_1.gridy = 3;
+        gridBagConstraints_1.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_1.anchor = java.awt.GridBagConstraints.WEST;
+        add(timeControlPane, gridBagConstraints_1);
+
+
+        // Now create time panels
+        JPanel timeSetPanel = new JPanel();
+        timeSetPanel.setLayout(new BoxLayout(timeSetPanel, BoxLayout.LINE_AXIS));
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(5, 5, 5, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+
+        add(timeSetPanel, gridBagConstraints);
+
+        //
+        // time query panel
+        //
+
+        JPanel timeQueryPanel = new JPanel();
+        timeQueryPanel.setLayout(new GridLayout(0, 3));
+
+        //
+        // Save time animations
+        //
+
+        saveAnimationButton = new JButton("Save Movie Frames");
+        GridBagConstraints gbc_saveAnimationButton = new GridBagConstraints();
+        gbc_saveAnimationButton.gridwidth = 2;
+        gbc_saveAnimationButton.insets = new Insets(0, 0, 5, 0);
+        gbc_saveAnimationButton.gridx = 1;
+        gbc_saveAnimationButton.gridy = 7;
+        add(saveAnimationButton, gbc_saveAnimationButton);
+        saveAnimationButton.setEnabled(true);
+        saveAnimationButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                StateHistoryModel currentRun = runs.getCurrentRun();
+                if (currentRun != null)
+                {
+                    currentRun.saveAnimation(StateHistoryPanel.this, startTime.getModel().getValue().toString(), endTime.getModel().getValue().toString());
+                }else{
+                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+            }
+        });
+
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new Insets(5, 5, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        timeQueryPanel.add(new JLabel());
+        timeQueryPanel.add(new JLabel());
+
+        add(timeQueryPanel, gridBagConstraints);
+    }
+
+
+    //
+    // Operations
+    //
+
+    @Override
+    public void itemStateChanged(ItemEvent e) throws NullPointerException
+    {
+        Object source = e.getItemSelectable();
+        StateHistoryModel currentRun = runs.getCurrentRun();
+
+        //
+        // handles changes in options to show/hide different parts of the model. Ex. pointers, lighting, trajectory
+        //
+
+        try
+        {
+            if(e.getStateChange() == ItemEvent.SELECTED){
+                if(source == showEarthMarker){
+                    currentRun.setActorVisibility("Earth", true);
+                } else if(source == showSunMarker){
+                    currentRun.setActorVisibility("Sun", true);
+                } else if(source == showSpacecraftMarkerHead){
+                    currentRun.setActorVisibility("SpacecraftMarkerHead", true);
+                } else if(source == showSpacecraftMarker){
+                    distanceOptions.setEnabled(true);
+                    currentRun.setDistanceText(distanceOptions.getSelectedItem().toString());
+                    currentRun.setActorVisibility("SpacecraftMarker", true);
+                } else if(source == showLighting){
+                    currentRun.setActorVisibility("Lighting", true);
+                    renderer.setFixedLightDirection(currentRun.getSunPosition());
+                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                } else if(source == showSpacecraftView){
+                    currentRun.setSpacecraftMovement(true);
+                    currentRun.setActorVisibility("SpacecraftMarker", false);
+                    showSpacecraftMarker.setSelected(false);
+                    showSpacecraftMarker.setEnabled(false);
+                    distanceOptions.setEnabled(false);
+                    viewAngleInput.setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
+                    renderer.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
+                }else if(source == showEarthView){
+                    if(!showSpacecraftMarker.isEnabled()){
+                        showSpacecraftMarker.setSelected(false);
+                        showSpacecraftMarker.setEnabled(true);
+                        currentRun.setSpacecraftMovement(false);
+                    }
+                    currentRun.setSpacecraftMovement(false);
+                    currentRun.setEarthView(true);
+                    viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
+                }else if(source == showSunView){
+                    currentRun.setSpacecraftMovement(false);
+                    currentRun.setEarthView(false);
+                    currentRun.setSunView(true);
+                    viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
+                }else if(source == showFreeView){
+
+                }else if(source == mapTrajectory){
+                    currentRun.setActorVisibility("Trajectory", true);
+                    showTrajectory.setEnabled(true);
+                    showTrajectory.setSelected(true);
+                }else if(source == showTrajectory){
+                    currentRun.showTrajectory(true);
+                }
+
+            }
+            if(e.getStateChange() == ItemEvent.DESELECTED){
+                if(source == showEarthMarker){
+                    currentRun.setActorVisibility("Earth", false);
+                } else if(source == showSunMarker){
+                    currentRun.setActorVisibility("Sun", false);
+                } else if(source == showSpacecraftMarkerHead){
+                    currentRun.setActorVisibility("SpacecraftMarkerHead", false);
+                } else if(source == showSpacecraftMarker){
+                    distanceOptions.setEnabled(false);
+                    currentRun.setActorVisibility("SpacecraftMarker", false);
+                } else if(source == showLighting){
+                    currentRun.setActorVisibility("Lighting", false);
+                    renderer.setLighting(LightingType.LIGHT_KIT);
+                } else if(source == showSpacecraftView){
+                    currentRun.setSpacecraftMovement(false);
+                    showSpacecraftMarker.setSelected(false);
+                    showSpacecraftMarker.setEnabled(true);
+                    distanceOptions.setEnabled(false);
+                } else if(source == showEarthView){
+                    currentRun.setSpacecraftMovement(false);
+                    currentRun.setEarthView(false);
+                } else if(source == showSunView){
+                    currentRun.setSpacecraftMovement(false);
+                    currentRun.setEarthView(false);
+                    currentRun.setSunView(false);
+                } else if(source == mapTrajectory){
+                    currentRun.setActorVisibility("Trajectory", false);
+                    showTrajectory.setEnabled(false);
+                    showTrajectory.setSelected(false);
+                } else if(source == showTrajectory){
+                    currentRun.showTrajectory(false);
+                }
+            }
+            currentRun.updateActorVisibility();
+        }catch(Exception ex){
+
+        }
+
+    }
+
+    //
+    // used to set the time for the slider and its time fraction.
+    //
+    public void setTimeSlider(double tf){
+        StateHistoryModel currentRun = runs.getCurrentRun();
+        TimeChanger tc = timeControlPane.getTimeChanger();
+        tc.setSliderValue(tf);
+        tc.currentOffsetTime = tf;
+    }
+
+    private int binarySearch(int first, int last, String target, boolean pos){
+        if(first > last){
+            if(pos){
+                return (last + 1) * lineLength;
+            }
+            return (last) * lineLength;
+        }else{
+            int middle = (first+last)/2;
+            int compResult = target.compareTo(readString((middle) * lineLength));
+            if(compResult == 0)
+                return (middle) * lineLength;
+            else if(compResult < 0)
+                return binarySearch(first, middle - 1, target, pos);
+            else
+                return binarySearch(middle + 1, last, target, pos);
+        }
+    }
+
+    private long getBinaryFileLength(){
+        long length = 0;
+        try {
+            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
+            length = fileStore.length()/lineLength;
+            fileStore.close();
+        } catch (Exception e) {
+            return length;
+        }
+        return length;
+    }
+
+    private String readString(int postion){
+        String string = "";
+        try {
+            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
+            fileStore.seek(postion);
+            string = fileStore.readUTF();
+            fileStore.close();
+        } catch (Exception e) {
+            return "";
+        }
+        return string;
+    }
+
+    private double readBinary(int postion){
+        double num = 0;
+        try {
+            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
+            fileStore.seek(postion);
+            num = fileStore.readDouble();
+            fileStore.close();
+        } catch (Exception e) {
+            return 0;
+        }
+        return  num;
+    }
+
+    //
+    // a custom table model that was tried to display map and show options for multiple trajectories. Not used because multiple trajectory showing would mess up the animation.
+    //
+
+    class OptionsTableModel extends DefaultTableModel
+    {
+        public OptionsTableModel(Object[][] data, String[] columnNames)
+        {
+            super(data, columnNames);
+        }
+
+        public boolean isCellEditable(int row, int column)
+        {
+            if (column == 2 && !(boolean)optionsTable.getValueAt(0, 1)) //|| column ==6 || column ==7)
+                return false;
+            else
+                return true;
+        }
+    }
+
+    public void initializeRunList() throws IOException
     {
         if (initialized)
             return;
@@ -341,7 +690,6 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
             runInfo.name = runNames[i];
             runInfo.runfilename = runFilenames[i];
 
-            ((DefaultListModel)simulationRunList.getModel()).addElement(runInfo);
         }
 
         if (needToUpgradeConfigFile)
@@ -350,882 +698,4 @@ public class StateHistoryPanel extends javax.swing.JPanel implements PropertyCha
         initialized = true;
     }
 
-    private void saveStateHistory(int index, RunInfo oldRunInfo, RunInfo newRunInfo) throws IOException
-    {
-        String uuid = UUID.randomUUID().toString();
-
-            // If newRunInfo.runfilename is null, that means we are in edit mode
-            // and should continue to use the existing run
-            if (newRunInfo.runfilename == null)
-            {
-                newRunInfo.runfilename = oldRunInfo.runfilename;
-            }
-            else
-            {
-                System.out.println("Added new time interval run: " + newRunInfo.runfilename);
-            }
-
-        DefaultListModel model = (DefaultListModel)simulationRunList.getModel();
-        if (index >= model.getSize())
-        {
-            model.addElement(newRunInfo);
-        }
-        else
-        {
-            model.set(index, newRunInfo);
-        }
-
-        updateConfigFile();
-    }
-
-    private RunInfo getRunInfo(int index)
-    {
-        return (RunInfo)((DefaultListModel)simulationRunList.getModel()).get(index);
-    }
-
-    private String getFileName(RunInfo runInfo)
-    {
-//        return getCustomDataFolder() + File.separator + runInfo.runfilename;
-        return runInfo.runfilename;
-    }
-
-    private String getFileName(int index)
-    {
-        return getFileName(getRunInfo(index));
-    }
-
-    private StateHistoryKey getRunKey(String filename)
-    {
-        return new StateHistoryKey(filename, StateHistorySource.CLIPPER);
-    }
-
-    private StateHistoryKey getRunKey(int i)
-    {
-        return getRunKey(getFileName(getRunInfo(i)));
-    }
-
-    /**
-     * This function unmaps the run from the renderer and maps it again,
-     * if it is currently shown.
-     * @throws IOException
-     * @throws FitsException
-     */
-    private void remapRunToRenderer(int index) throws FitsException, IOException
-    {
-//        RunInfo runInfo = (RunInfo)((DefaultListModel)runList.getModel()).get(index);
-//        String filename = getCustomDataFolder() + File.separator + runInfo.runfilename;
-//        StateHistoryKey runKey = new StateHistoryKey(filename, StateHistorySource.CLIPPER);
-        StateHistoryKey runKey = getRunKey(index);
-
-        // Remap the run on the renderer
-        if (runs.containsRun(runKey))
-        {
-            runs.removeRun(runKey);
-            runs.addRun(runKey, renderer);
-        }
-    }
-
-    private void removeAllRunsFromRenderer()
-    {
-        runs.removeRuns(StateHistorySource.CLIPPER);
-    }
-
-    private void removeRun(int index)
-    {
-        StateHistoryKey runKey = getRunKey(index);
-        runs.removeRun(runKey);
-
-        ((DefaultListModel)simulationRunList.getModel()).remove(index);
-    }
-
-    private void moveDown(int i)
-    {
-        DefaultListModel model = (DefaultListModel)simulationRunList.getModel();
-
-        if (i >= model.getSize())
-            return;
-
-        Object o = model.get(i);
-
-        model.remove(i);
-        model.add(i+1, o);
-    }
-
-    private void updateConfigFile()
-    {
-        MapUtil configMap = new MapUtil(getConfigFilename());
-
-        String runNames = "";
-        String runFilenames = "";
-
-        DefaultListModel runListModel = (DefaultListModel)simulationRunList.getModel();
-        for (int i=0; i<runListModel.size(); ++i)
-        {
-            RunInfo runInfo = (RunInfo)runListModel.get(i);
-
-            runFilenames += runInfo.runfilename;
-            runNames += runInfo.name;
-
-            if (i < runListModel.size()-1)
-            {
-                runNames += CustomShapeModel.LIST_SEPARATOR;
-                runFilenames += CustomShapeModel.LIST_SEPARATOR;
-            }
-        }
-
-        Map<String, String> newMap = new LinkedHashMap<String, String>();
-
-        newMap.put(StateHistoryModel.RUN_NAMES, runNames);
-        newMap.put(StateHistoryModel.RUN_FILENAMES, runFilenames);
-
-        configMap.put(newMap);
-    }
-
-    private void runListMaybeShowPopup(MouseEvent e)
-    {
-        if (e.isPopupTrigger())
-        {
-            int index = simulationRunList.locationToIndex(e.getPoint());
-
-            if (index >= 0 && simulationRunList.getCellBounds(index, index).contains(e.getPoint()))
-            {
-                // If the item right-clicked on is not selected, then deselect all the
-                // other items and select the item right-clicked on.
-                if (!simulationRunList.isSelectedIndex(index))
-                {
-                    simulationRunList.clearSelection();
-                    simulationRunList.setSelectedIndex(index);
-                }
-
-                int[] selectedIndices = simulationRunList.getSelectedIndices();
-                ArrayList<StateHistoryKey> runKeys = new ArrayList<StateHistoryKey>();
-                for (int selectedIndex : selectedIndices)
-                {
-                    StateHistoryKey runKey = getRunKey(selectedIndex);
-                    runKeys.add(runKey);
-                }
-                runPopupMenu.setCurrentRuns(runKeys);
-                runPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        }
-    }
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-//        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-//        {
-//            PickEvent e = (PickEvent)evt.getNewValue();
-//            Model model = modelManager.getModel(e.getPickedProp());
-//            if (model instanceof StateHistoryCollection)
-//            {
-//                String name = null;
-//                System.out.println("Model Picked: " + evt.getPropertyName());
-//
-//                StateHistoryKey runKey = ((StateHistoryCollection)model).getRun((vtkActor)e.getPickedProp()).getKey();
-//                name = runKey.name;
-////                System.out.println("Picked " + runKey.name);
-//                StateHistory run = runs.getRun(runKey);
-//                int cellId = e.getPickedCellId();
-//                vtkProp prop = e.getPickedProp();
-//
-////                Trajectory traj = run.getTrajectoryByCellId(cellId);
-//                Trajectory traj = run.getTrajectory(prop);
-//                if (traj != null)
-//                {
-//                    String trajectoryName = traj.getName();
-//
-//                    int idx = -1;
-//                    int size = trajectoryList.getModel().getSize();
-//                    for (int i=0; i<size; ++i)
-//                    {
-//                        String trajname = (String)((ListModel)trajectoryList.getModel()).getElementAt(i);
-//                        if (trajname.equals(trajectoryName))
-//                        {
-//                            idx = i;
-//                            System.out.println(", " + idx +  " trajectory: " + name);
-//                            break;
-//                        }
-//                    }
-//
-//                    StateHistory currentRun = runs.getCurrentRun();
-//                    if (currentRun != null)
-//                    {
-//                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(idx);
-//                        System.out.println("Selected Trajectory " + selectedTrajectory.getName());
-//                        currentRun.setCurrentTrajectoryIndex(idx);
-//                        currentRun.setShowSpacecraft(true);
-//                        currentRun.setTimeFraction(0.0);
-//                    }
-//                }
-//                if (idx >= 0)
-//                {
-//                    passList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = runList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        runList.scrollRectToVisible(cellBounds);
-//                }
-//            }
-//        }
-    }
-
-    private void initComponents() {
-
-        setLayout(new java.awt.GridBagLayout());
-        java.awt.GridBagConstraints gridBagConstraints;
-
-        //
-        // Simulation Run list
-        //
-
-        // simulation run list label
-        simulationRunLabel = new JLabel();
-        simulationRunLabel.setText("History");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(simulationRunLabel, gridBagConstraints);
-
-        // run JList
-        simulationRunScrollPane = new javax.swing.JScrollPane();
-
-        simulationRunList = new javax.swing.JList();
-        simulationRunList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                runListMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                runListMouseReleased(evt);
-            }
-        });
-        simulationRunList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                simulationRunListValueChanged(evt);
-            }
-        });
-
-        simulationRunScrollPane.setViewportView(simulationRunList);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(simulationRunScrollPane, gridBagConstraints);
-
-        //
-        // Trajectories list
-        //
-
-        // trajectory list label
-        trajectoryLabel = new JLabel();
-        trajectoryLabel.setText("Time Interval");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(trajectoryLabel, gridBagConstraints);
-
-        // trajectory list JList
-        trajectoryScrollPane = new javax.swing.JScrollPane();
-
-        trajectoryList = new javax.swing.JList();
-        trajectoryList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                trajectoryListValueChanged(evt);
-            }
-        });
-        trajectoryList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-              trajectoryList = (JList) mouseEvent.getSource();
-              if (mouseEvent.getClickCount() == 2) {
-                  trajectoryListDoubleClicked(mouseEvent);
-              }
-            }
-          });
-
-        trajectoryScrollPane.setViewportView(trajectoryList);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(trajectoryScrollPane, gridBagConstraints);
-
-        //
-        // run list buttons
-        //
-
-        // create the button panel
-        simulationRunButtonPanel = new javax.swing.JPanel();
-        simulationRunButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
-
-//        jPanel2 = new javax.swing.JPanel();
-//        jPanel2.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
-
-        // create the buttons
-        newButton = new javax.swing.JButton();
-        editButton = new javax.swing.JButton();
-        moveUpButton = new javax.swing.JButton();
-        moveDownButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
-        removeAllButton = new javax.swing.JButton();
-
-        // new
-        newButton.setText("New...");
-        newButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newButtonActionPerformed(evt);
-            }
-        });
-        simulationRunButtonPanel.add(newButton);
-
-        // edit
-        editButton.setText("Edit...");
-        editButton.setEnabled(false);
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonActionPerformed(evt);
-            }
-        });
-        simulationRunButtonPanel.add(editButton);
-
-//        // move up
-//        moveUpButton.setText("Move Up");
-//        moveUpButton.setEnabled(false);
-//        moveUpButton.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                moveUpButtonActionPerformed(evt);
-//            }
-//        });
-//        jPanel1.add(moveUpButton);
-//
-//        // move down
-//        moveDownButton.setText("Move Down");
-//        moveDownButton.setEnabled(false);
-//        moveDownButton.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                moveDownButtonActionPerformed(evt);
-//            }
-//        });
-//        jPanel1.add(moveDownButton);
-//
-        // delete from list
-        deleteButton.setText("Remove");
-        deleteButton.setEnabled(false);
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonActionPerformed(evt);
-            }
-        });
-
-        simulationRunButtonPanel.add(deleteButton);
-
-        // add the button panel 1
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(simulationRunButtonPanel, gridBagConstraints);
-
-        //
-        // Area Calculation List
-        //
-
-        // area calculation label
-//        areaCalculationLabel = new JLabel();
-//        areaCalculationLabel.setText("Area Calculation");
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 5;
-//        gridBagConstraints.gridwidth = 1;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        add(areaCalculationLabel, gridBagConstraints);
-//
-//        // Area Calculation scroll pane and list
-//        areaCalculationScrollPane = new javax.swing.JScrollPane();
-//
-//        // create JList and bind to model
-//        areaCalculationList = new javax.swing.JList();
-////        TorsoBodyModel torsoBodyModel = (TorsoBodyModel)modelManager.getSmallBodyModel();
-////        torsoBodyModel.getProps();
-////        organList.setModel(torsoBodyModel);
-//
-//        // add listeners
-//        areaCalculationList.addListSelectionListener(new ListSelectionListener() {
-//            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-//                areaCalculationListValueChanged(evt);
-//            }
-//        });
-//
-//        areaCalculationList.addMouseListener(new MouseAdapter() {
-//            public void mouseClicked(MouseEvent mouseEvent) {
-//                areaCalculationList = (JList) mouseEvent.getSource();
-//              if (mouseEvent.getClickCount() == 2) {
-//                  areaCalculationListDoubleClicked(mouseEvent);
-//              }
-//            }
-//          });
-//
-//        areaCalculationScrollPane.setViewportView(areaCalculationList);
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 6;
-//        gridBagConstraints.gridwidth = 1;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        gridBagConstraints.weightx = 1.0;
-//        gridBagConstraints.weighty = 1.0;
-//        add(areaCalculationScrollPane, gridBagConstraints);
-//
-//        //
-//        // SurfacePatch List
-//        //
-//
-//        // label
-//        surfacePatchLabel = new JLabel();
-//        surfacePatchLabel.setText("Images");
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 1;
-//        gridBagConstraints.gridy = 5;
-//        gridBagConstraints.gridwidth = 1;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        add(surfacePatchLabel, gridBagConstraints);
-//
-//        // scroll pane and list
-//        surfacePatchPane = new javax.swing.JScrollPane();
-//
-//        // create JList and bind to model
-//        surfacePatchList = new javax.swing.JList();
-//
-//        // add listeners
-//        surfacePatchList.addListSelectionListener(new ListSelectionListener() {
-//            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-//                surfacePatchListValueChanged(evt);
-//            }
-//        });
-//
-//        surfacePatchList.addMouseListener(new MouseAdapter() {
-//            public void mouseClicked(MouseEvent mouseEvent) {
-//                surfacePatchList = (JList) mouseEvent.getSource();
-//              if (mouseEvent.getClickCount() == 2) {
-//                  surfacePatchListDoubleClicked(mouseEvent);
-//              }
-//            }
-//          });
-//
-//        surfacePatchPane.setViewportView(surfacePatchList);
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 1;
-//        gridBagConstraints.gridy = 6;
-//        gridBagConstraints.gridwidth = 1;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        gridBagConstraints.weightx = 1.0;
-//        gridBagConstraints.weighty = 1.0;
-//        add(surfacePatchPane, gridBagConstraints);
-//
-//        //
-//        // surface data pane
-//        //
-//        surfaceDataPane = new SurfaceDataPane(modelManager);
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 7;
-//        gridBagConstraints.gridwidth = 2;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        add(surfaceDataPane, gridBagConstraints);
-//
-//        //
-//        // offset pane
-//        //
-//        SurfacePatchOffsetPane surfaceOffsetPane = new SurfacePatchOffsetPane(modelManager);
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 8;
-//        gridBagConstraints.gridwidth = 2;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        add(surfaceOffsetPane, gridBagConstraints);
-
-        //
-        // passes pane
-        //
-        TimeControlPane timeControlPane = new TimeControlPane(modelManager);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(timeControlPane, gridBagConstraints);
-
-
-
-//        // remove all from view
-//        removeAllButton.setText("Remove All From View");
-//        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                removeAllButtonActionPerformed(evt);
-//            }
-//        });
-//        jPanel2.add(removeAllButton);
-//
-//        // add the button panel 2
-//        gridBagConstraints = new java.awt.GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 8;
-//        gridBagConstraints.gridwidth = 2;
-//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-//        add(jPanel2, gridBagConstraints);
-    }
-
-    //
-    // Operations
-    //
-
-    private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
-        RunInfo runInfo = new RunInfo();
-        StateHistoryImporterDialog dialog = new StateHistoryImporterDialog(null, false);
-        dialog.setRunInfo(runInfo, modelManager.getPolyhedralModel().isEllipsoid());
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-
-        // If user clicks okay add to list
-        if (dialog.getOkayPressed())
-        {
-            runInfo = dialog.getStateHistoryInfo();
-            try
-            {
-                saveStateHistory(((DefaultListModel)simulationRunList.getModel()).getSize(), null, runInfo);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        int[] selectedIndices = simulationRunList.getSelectedIndices();
-        Arrays.sort(selectedIndices);
-        for (int i=selectedIndices.length-1; i>=0; --i)
-        {
-            removeRun(selectedIndices[i]);
-        }
-
-        updateConfigFile();
-    }
-
-    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-        int selectedItem = simulationRunList.getSelectedIndex();
-        if (selectedItem >= 0)
-        {
-            RunInfo oldRunInfo = (RunInfo)((DefaultListModel)simulationRunList.getModel()).get(selectedItem);
-
-            StateHistoryImporterDialog dialog = new StateHistoryImporterDialog(null, true);
-            dialog.setRunInfo(oldRunInfo, modelManager.getPolyhedralModel().isEllipsoid());
-            dialog.setLocationRelativeTo(this);
-            dialog.setVisible(true);
-
-            // If user clicks okay replace item in list
-            if (dialog.getOkayPressed())
-            {
-                RunInfo newRunInfo = dialog.getStateHistoryInfo();
-                try
-                {
-                    saveStateHistory(selectedItem, oldRunInfo, newRunInfo);
-                    remapRunToRenderer(selectedItem);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-                catch (FitsException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private void runListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runListMousePressed
-        runListMaybeShowPopup(evt);
-    }
-
-    private void runListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runListMouseReleased
-        runListMaybeShowPopup(evt);
-    }
-
-    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-        removeAllRunsFromRenderer();
-    }
-
-    private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
-        int minSelectedItem = simulationRunList.getMinSelectionIndex();
-        if (minSelectedItem > 0)
-        {
-            int[] selectedIndices = simulationRunList.getSelectedIndices();
-            Arrays.sort(selectedIndices);
-            for (int i=0; i<selectedIndices.length; ++i)
-            {
-                --selectedIndices[i];
-                moveDown(selectedIndices[i]);
-            }
-
-            simulationRunList.clearSelection();
-            simulationRunList.setSelectedIndices(selectedIndices);
-            simulationRunList.scrollRectToVisible(simulationRunList.getCellBounds(minSelectedItem-1, minSelectedItem-1));
-
-            updateConfigFile();
-        }
-    }
-
-    private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
-        int maxSelectedItem = simulationRunList.getMaxSelectionIndex();
-        if (maxSelectedItem >= 0 && maxSelectedItem < simulationRunList.getModel().getSize()-1)
-        {
-            int[] selectedIndices = simulationRunList.getSelectedIndices();
-            Arrays.sort(selectedIndices);
-            for (int i=selectedIndices.length-1; i>=0; --i)
-            {
-                moveDown(selectedIndices[i]);
-                ++selectedIndices[i];
-            }
-
-            simulationRunList.clearSelection();
-            simulationRunList.setSelectedIndices(selectedIndices);
-            simulationRunList.scrollRectToVisible(simulationRunList.getCellBounds(maxSelectedItem+1, maxSelectedItem+1));
-
-            updateConfigFile();
-        }
-    }
-
-    private void simulationRunListValueChanged(javax.swing.event.ListSelectionEvent evt)
-    {
-        int[] indices = simulationRunList.getSelectedIndices();
-        if (indices == null || indices.length == 0)
-        {
-            editButton.setEnabled(false);
-            moveUpButton.setEnabled(false);
-            moveDownButton.setEnabled(false);
-            deleteButton.setEnabled(false);
-        }
-        else
-        {
-            editButton.setEnabled(indices.length == 1);
-            deleteButton.setEnabled(true);
-            int minSelectedItem = simulationRunList.getMinSelectionIndex();
-            int maxSelectedItem = simulationRunList.getMaxSelectionIndex();
-            moveUpButton.setEnabled(minSelectedItem > 0);
-            moveDownButton.setEnabled(maxSelectedItem < simulationRunList.getModel().getSize()-1);
-
-            if (indices.length == 1 && !evt.getValueIsAdjusting())
-            {
-                int index = indices[0];
-                RunInfo runInfo = getRunInfo(index);
-                System.out.println("Selected " + runInfo.name + ", " + runInfo.runfilename);
-
-                StateHistoryKey runKey = getRunKey(index);
-
-                // load in the new dataset
-                runs.addRun(runKey, renderer);
-
-                // set the current run
-                StateHistoryModel currentRun = runs.getCurrentRun();
-
-                if (currentRun != null)
-                {
-                    trajectoryList.setModel(currentRun);
-//                    areaCalculationList.setModel(currentRun.getAreaCalculationCollection());
-                    updateTimeBarPosition();
-                }
-
-            }
-        }
-    }
-
-    private void trajectoryListDoubleClicked(MouseEvent mouseEvent)
-    {
-        int index = trajectoryList.locationToIndex(mouseEvent.getPoint());
-        if (index >= 0) {
-          Object o = trajectoryList.getModel().getElementAt(index);
-          System.out.println("Time Interval Double-clicked: " + o.toString());
-          StateHistoryModel currentRun = runs.getCurrentRun();
-          if (currentRun != null)
-          {
-              Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
-              String currentTrajectoryName = selectedTrajectory.getName();
-              System.out.println("Select Current Time Interval " + currentTrajectoryName);
-              currentRun.setCurrentTrajectoryIndex(index);
-              currentRun.setTimeFraction(0.0);
-              currentRun.setShowSpacecraft(true);
-          }
-        }
-    }
-
-
-    private void trajectoryListValueChanged(javax.swing.event.ListSelectionEvent evt)
-    {
-        int[] indices = trajectoryList.getSelectedIndices();
-        StateHistoryModel currentRun = runs.getCurrentRun();
-
-        if (indices.length >= 1 && !evt.getValueIsAdjusting())
-        {
-            System.out.println("Time Interval List Value Changed: " + evt.toString());
-
-            if (currentRun != null)
-            {
-                Set<String> trajectoryNames = new HashSet<String>();
-                for (int i=0; i <indices.length; i++)
-                {
-                    int index = indices[i];
-                    Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
-                    System.out.println("Show Time Interval " + selectedTrajectory.getName());
-                    trajectoryNames.add(selectedTrajectory.getName());
-                }
-
-                if (currentRun != null)
-                {
-                    currentRun.setShowSpacecraft(false);
-                    currentRun.setShowTrajectories(trajectoryNames);
-                }
-
-                // if only one item is selected, show the spacecraft and sub points
-                if (indices.length == 1)
-                {
-                    int index = indices[0];
-                    Object o = trajectoryList.getModel().getElementAt(index);
-                    if (currentRun != null)
-                    {
-                        Trajectory selectedTrajectory = currentRun.getTrajectoryByIndex(index);
-                        String currentTrajectoryName = selectedTrajectory.getName();
-                        System.out.println("Select Current Time Interval " + currentTrajectoryName);
-                        currentRun.setCurrentTrajectoryIndex(index);
-                        currentRun.setTimeFraction(0.0);
-                        currentRun.setShowSpacecraft(true);
-                    }
-                }
-            }
-        }
-        else
-        {
-            System.out.println("Remove display of trajectories");
-            if (currentRun != null)
-            {
-                currentRun.setCurrentTrajectory(null);
-                if (currentRun != null)
-                {
-                    currentRun.setShowSpacecraft(false);
-                    currentRun.setShowTrajectories(Collections.EMPTY_SET);
-                }
-                currentRun.setTimeFraction(0.0);
-                currentRun.setShowSpacecraft(false);
-            }
-        }
-    }
-
-
-    private void areaCalculationListDoubleClicked(MouseEvent mouseEvent)
-    {
-//        int index = areaCalculationList.locationToIndex(mouseEvent.getPoint());
-//        if (index >= 0) {
-//          Object o = areaCalculationList.getModel().getElementAt(index);
-//          System.out.println("Double-clicked on: " + o.toString());
-////          Scenario currentScenario = scenarios.getCurrentScenario();
-////          if (currentScenario != null)
-////          {
-////              System.out.println("Select Organ " + o);
-////          }
-//        }
-    }
-
-
-    private void areaCalculationListValueChanged(javax.swing.event.ListSelectionEvent evt)
-    {
-//        int[] indices = areaCalculationList.getSelectedIndices();
-//
-//        if (indices.length == 1 && !evt.getValueIsAdjusting())
-//        {
-//            StateHistoryModel currentRun = runs.getCurrentRun();
-//            // remove currently displayed patches
-//            currentRun.setShowPatches(new HashSet<String>());
-//
-//            int index = indices[0];
-//            AreaCalculation selectedAreaCalculation = (AreaCalculation)areaCalculationList.getModel().getElementAt(index);
-//            System.out.println("Select Area Calculation: " + selectedAreaCalculation);
-//            AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
-//            areaCalculationCollection.setCurrentIndex(index);
-//            AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
-//            if (currentAreaCalculation != null)
-//            {
-//                runs.getCurrentRun().setAreaCalculation(selectedAreaCalculation);
-//                this.surfacePatchList.setModel(selectedAreaCalculation);
-//                this.surfaceDataPane.setModel(selectedAreaCalculation.getScalarRange());
-////                this.invalidate();
-////                this.validate();
-////                this.repaint();
-//            }
-//        }
-    }
-    private void surfacePatchListDoubleClicked(MouseEvent mouseEvent)
-    {
-//        int index = surfacePatchList.locationToIndex(mouseEvent.getPoint());
-//        if (index >= 0) {
-//          SurfacePatch selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
-//          System.out.println("Double-clicked on surface patch: " + selectedSurfacePatch.toString());
-//          AreaCalculation areaCalculation = runs.getCurrentRun().getAreaCalculation();
-//          if (areaCalculation != null)
-//          {
-//              areaCalculation.setCurrentPatchIndex(index);
-//              updateScalarBar();
-//          }
-//        }
-    }
-
-//    private Set<String> visiblePatches = new HashSet<String>();
-//    private SurfacePatch selectedSurfacePatch = null;
-
-    private void surfacePatchListValueChanged(javax.swing.event.ListSelectionEvent evt)
-    {
-//        int[] indices = surfacePatchList.getSelectedIndices();
-//        AreaCalculationCollection areaCalculationCollection = runs.getCurrentRun().getAreaCalculationCollection();
-//        AreaCalculation currentAreaCalculation = areaCalculationCollection.getCurrentValue();
-//
-//        if (indices.length >= 1 && !evt.getValueIsAdjusting())
-//        {
-//            visiblePatches.clear();
-//            for (int i=0; i <indices.length; i++)
-//            {
-//                int index = indices[i];
-//                selectedSurfacePatch = (SurfacePatch)surfacePatchList.getModel().getElementAt(index);
-//                visiblePatches.add(selectedSurfacePatch.getName());
-//                System.out.println("Select Surface Patch: " + selectedSurfacePatch);
-//
-//                // use the first of the selected surface patches as the model for the surface pane
-//                if (i == 0)
-//                {
-//                    this.surfaceDataPane.setModel(selectedSurfacePatch);
-//                    if (currentAreaCalculation != null)
-//                    {
-//                        currentAreaCalculation.setCurrentPatch(selectedSurfacePatch);
-//                    }
-//                }
-//
-//            }
-//            runs.getCurrentRun().setShowPatches(visiblePatches);
-//            updateScalarBar();
-//        }
-    }
 }

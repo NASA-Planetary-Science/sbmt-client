@@ -75,6 +75,12 @@ public class SmallBodyMappingTool
 
         setupLookAndFeel();
 
+        // set up splash screen
+        final SbmtSplash splash = new SbmtSplash("resources", "splashLogo.png");
+        splash.setVisible(true);
+        splash.validate();
+        splash.repaint();
+
         /*if(!startPopup)   INITIALIZES THE START SCREEN
         {
             startPopup=true;
@@ -86,6 +92,8 @@ public class SmallBodyMappingTool
         try
         {
             javax.swing.SwingUtilities.invokeLater(new SbmtRunnable(args));
+            Thread.sleep(8000);
+            splash.setVisible(false);
         }
         catch (Exception e)
         {
