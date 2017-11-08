@@ -118,7 +118,7 @@ public class TimeChanger extends javax.swing.JPanel
             fastforwardButton.setIcon(fastforwardIcon);
         }catch (Exception e)
         {
-//            System.out.println(e);
+              fastforwardButton.setText("Fast Forward");
         }
         //fastforwardButton.setText("Fast-Forward");
         fastforwardButton.setActionCommand("FastForwardButton");
@@ -146,7 +146,7 @@ public class TimeChanger extends javax.swing.JPanel
 
         jLabel1.setText("Time");
 
-        //rewindButton.setText("Rewind");
+
         try
         {
             Image rewind = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/RewindButton.png"));
@@ -154,7 +154,7 @@ public class TimeChanger extends javax.swing.JPanel
             rewindButton.setIcon(rewindIcon);
         }catch (Exception e)
         {
-//            System.out.println(e);
+            rewindButton.setText("Rewind");
         }
         rewindButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

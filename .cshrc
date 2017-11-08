@@ -1,9 +1,10 @@
+
 # 
-#       File:   .cshrc
+#	File: 	.cshrc
 #
-#       Date:   05/29/2014
+# 	Date:	05/29/2014
 #
-#       Author: V. A. Mallder
+#	Author:	V. A. Mallder
 #
 #
 stty intr '^c' erase '^?' kill '^u'
@@ -29,22 +30,21 @@ set prompt="%{\033[31m%}${me}%{\033[34m%}@%{\033[32m%}${shorthost}:%{\033[00m%}{
 
 #echo "TERM is [$TERM]"
 
-switch ($TERM)
-    case "xterm*":
-
-        # this alias puts the current working directory in the title bar of the xterm
-        alias cwdcmd 'echo -n "\033]0;$cwd\007"'
-
-        breaksw
-    default:
-#         echo "not an xterm"
-#        set prompt='csh% '
-        breaksw
-endsw
+#switch ($TERM)
+#    case "xterm*":
+#
+#        # this alias puts the current working directory in the title bar of the xterm
+#	alias cwdcmd 'echo -n "\033]0;$cwd\007"'
+#
+#        breaksw
+#    default:
+##         echo "not an xterm"
+##        set prompt='csh% '
+#        breaksw
+#endsw
 
 # Default Editor is vim
 setenv EDITOR vim
-
 
 
 
@@ -59,6 +59,9 @@ setenv PATH /software/git-2.6.0/bin:${PATH}
 setenv PATH /project/nearsdc/software/cmake/latest/bin:${PATH}
 setenv PATH /software/pandoc-1.17.0.3/bin:${PATH}
 setenv PATH /software/ruby-2.3.0/bin:${PATH}
+
+setenv PATH /project/sbmtpipeline/software/heasoft-6.21/x86_64-unknown-linux-gnu-libc2.12/bin:${PATH}
+
 setenv PYTHONPATH /project/nearsdc/software/spice/pyspice/install
 #
 #setenv JAVA_HOME /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.71.x86_64/jre
@@ -93,6 +96,13 @@ alias xterm 'xterm -ls -sb -sl 1000 -geometry 80x50&'
 alias date 'date -u +"%a %b %e %T %Z %j %Y"'
 alias me 'ps -ef | grep sbmt | grep -v grep | grep -v csh | grep -v xterm | grep -v ps | grep -v sshd'
 
+# Set Altimetry Working Group (ALTWG) paths. This points to executables used to generate shape models.
+setenv ALTWG_DIR /project/osiris/altwg/altwg-software
+setenv PATH ${PATH}:${ALTWG_DIR}/altwg/bin
+# Generic Mapping Tools, used by ALTWG software
+setenv GMT_HOME ${ALTWG_DIR}/gmt
+setenv PATH ${GMT_HOME}/bin:${PATH}
+
 #
 # Set up the grid engine
 #
@@ -104,4 +114,3 @@ foreach dir (ge-GE2011-11p1 ge-GE2011.11-11p1)
     break
   endif
 end
-
