@@ -644,7 +644,7 @@ out.
 In addition an outline of the maplet is shown on the asteroid in
 dark green. It disappears when you close the maplet window.
 
-### Observing Conditions tab (Eros and Itokawa only)
+### Observing Conditions tab (Eros, Itokawa. Deimos, Ryugu)
 
 The Observing Conditions tab allows the user to create, load, and save CSV files of trajectory data and 
 display the data in a way that the user can interact with it. 
@@ -705,7 +705,7 @@ example, if the "Show Spacecraft View" is selected, the animation will
 play with the camera locked looking at the body from the spacecraft's 
 position.
 
-To save an animation, select a time interval and click "Save Movie Frames"
+To save an animation, select a time interval and fclick "Save Movie Frames"
 at the bottom of the panel. A window will pop up allowing you to save 
 the pictures to a specified folder. The number of frames is how many 
 pictures the program will take. The animation will start playing and 
