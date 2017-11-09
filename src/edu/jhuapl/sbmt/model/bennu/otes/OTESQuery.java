@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.query;
+package edu.jhuapl.sbmt.model.bennu.otes;
 
 import java.util.List;
 import java.util.TreeSet;
@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.query.FixedListQuery;
 
 public class OTESQuery extends FixedListQuery
 {
@@ -61,7 +62,7 @@ public class OTESQuery extends FixedListQuery
 //            if (imageSource == ImageSource.CORRECTED)
 //                imageListPrefix = "sumfiles-corrected";
 //            else if (imageSource == ImageSource.CORRECTED_SPICE)
-                spectrumListPrefix = "infofiles-corrected";
+                //spectrumListPrefix = "infofiles-corrected";
 //        }
 
         List<List<String>> result = getResultsFromFileListOnServer(rootPath + "/" + spectrumListPrefix + "/spectrumlist.txt", rootPath + "/spectra/", galleryPath);
