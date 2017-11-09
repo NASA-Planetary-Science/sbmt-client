@@ -40,7 +40,10 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
-import edu.jhuapl.sbmt.model.bennu.OTESSearchPanel;
+import edu.jhuapl.sbmt.model.bennu.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
+import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -312,10 +315,17 @@ public class SbmtView extends View
             addTab(instrument.getDisplayName(), component);
             }
             else
-            {
+                if (instrument instanceof OTES)
+                {
                JComponent component = new OTESSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
-            }
+                }
+                else if (instrument instanceof OVIRS)
+                {
+               JComponent component = new OVIRSSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                addTab(instrument.getDisplayName(), component);
+                }
+
         }
 
         if (getPolyhedralModelConfig().hasLidarData)
