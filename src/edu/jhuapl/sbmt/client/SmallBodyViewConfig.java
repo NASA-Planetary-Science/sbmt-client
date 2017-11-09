@@ -124,8 +124,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = c.clone();
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/EROS";
-        c.hasStateHistory = false;
-        c.timeHistoryFile = "/THOMAS/EROS/history/TimeHistory.bth"; // TODO
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
@@ -141,8 +141,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNLR;
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
-        c.hasStateHistory = false;
-        c.timeHistoryFile = "/OTHER/EROSNLR/nlr/history/TimeHistory.bth"; // TODO
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
 
         configArray.add(c);
 
@@ -151,8 +151,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelAuthor.EROSNAV;
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
-        c.hasStateHistory = false;
-        c.timeHistoryFile = "/OTHER/EROSNAV/history/TimeHistory.bth"; // TODO
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -919,7 +919,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.THOMAS;
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasStateHistory = true;
-        c.timeHistoryFile = "/deimos/thomas/history/TimeHistory.bth";
+        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
         c.hasImageMap = true;
         configArray.add(c);
@@ -2287,15 +2287,37 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
 
-//            c.imagingInstruments = new ImagingInstrument[] {
-//                    oncCam,
-//            };
-//
-//            c.hasMapmaker = false;
-//            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-//            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
-//            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
-//            c.imageSearchDefaultMaxResolution = 300.0;
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
+
+            BasicImagingInstrument oncCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.IMAGING_DATA,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.ONC_TRUTH_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                oncCam = BasicImagingInstrument.of(builder.build());
+            }
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+
 
             configArray.add(c);
         }
@@ -2341,6 +2363,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
             };
@@ -2375,7 +2400,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
             c.rootDirOnServer = "/atlas/gaskell";
-            c.shapeModelFileExtension = ".obj";
 //            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
 //            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.smallBodyLabelPerResolutionLevel = new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] };
