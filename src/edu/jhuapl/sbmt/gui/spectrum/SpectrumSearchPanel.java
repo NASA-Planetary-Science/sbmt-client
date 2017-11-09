@@ -129,7 +129,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
 
     protected void setupComboBoxes()
     {
-        for (int i=1; i<=64; ++i)
+        for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " nm");
             redComboBox.addItem(channel);
