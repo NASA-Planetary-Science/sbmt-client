@@ -736,6 +736,30 @@ and TIFF formats.
 ##### Export Shape Model...
 
 ##### Camera...
+The Camera dialog allows the user to position the camera and control where 
+they look. The user can adjust the field of view, the camera focal point latitude,
+longitude, and altitude, the projection type, the camera position, and the
+camera roll.
+
+The Vertical Field of View can be set to a degree between 0 and 180. The View 
+Point Latitude and Longitude determine the direction to set the camera focal 
+point. The Latitude field takes input between -90 and 90 and the Longitude
+fields takes a degree between -180 and 180.
+The View Point Altitude is the distance from the surface of the 
+body to set the focal point. For example, setting the altitude to 0 would 
+put the focal point on the surface of the body.
+
+The Projection Type can be switched between Perspective and Orthographic.
+
+The Camera Latitude and Longitude are used to determine the direction to set
+the camera. They take a degree between -90 and 90, and between -180 and 180, 
+respectively.
+ The Camera Altitude
+is the distance from the surface of the body to set the camera. For example,
+setting the Camera Altitude to 0 position the camera at the surface of the 
+body.
+Camera Roll takes a degree between -180 and 180 and sets the roll of 
+the camera.
 
 ### View Menu
 
