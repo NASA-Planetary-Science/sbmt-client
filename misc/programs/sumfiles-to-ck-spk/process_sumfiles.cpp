@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <stdlib.h>
 #include "SpiceUsr.h"
-#include<iostream>
 using namespace std;
 
 struct TimeMatrix
@@ -64,14 +63,14 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 
 
 void loadSumFile(const std::string& sumfile,
-		 const std::string& instrumentframe,
-		 const std::string& spacecraftframe,
-		 bool flipX,
-		 bool flipY, 
-		 bool flipZ,
-		 std::string& utc,
-		 double asteroid_to_sc[3][3],
-		 double position[3])
+		const std::string& instrumentframe,
+		const std::string& spacecraftframe,
+		std::string& flipX,
+		std::string& flipY, 
+		std::string& flipZ,
+        std::string& utc,
+        double asteroid_to_sc[3][3],
+        double position[3])
 {
     std::ifstream fin(sumfile.c_str());
 
@@ -93,7 +92,7 @@ void loadSumFile(const std::string& sumfile,
         std::getline(fin, utc);
         trim(utc);
 
-        cout << "utc is " << utc << endl;
+        //cout << "utc is " << utc << endl;
 
         // Replace spaces with dashes in the utc string
         std::replace(utc.begin(), utc.end(), ' ', '-');
@@ -144,33 +143,25 @@ void loadSumFile(const std::string& sumfile,
         vhat_c(cy, cy);
         vhat_c(cz, cz);
 
-
-        //Apply flip. Sumfiles assume increasing pixels (instrument X)
+        //Apply flip. Sumfiles assume increasing pixels (instrument X) 
         //is from left to right looking out the boresight, increasing 
-        //lines (instrument Y) is from up to down looking out the
+        //lines (instrument Y) is from up to down looking out the 
         //boresight, and instrument Z is looking out of the instrument.
 
+        if (flipX == "true" )
+         {
+              vminus_c(cx,cx);
+	     }
+        if (flipY == "true")
+         {
+              vminus_c(cy,cy);
+	     }
+        if (flipZ == "true")
+         {
+             vminus_c(cz,cz);
+	     }
 
-		if (flipX)
-		{
-			cx[0] = -cx[0];
-			cx[1] = -cx[1];
-			cx[2] = -cx[2];
-		}
-        if (flipY)
-        {
-			cy[0] = -cy[0];
-			cy[1] = -cy[1];
-			cy[2] = -cy[2];
-        }
-        if (flipZ)
-        {
-			cz[0] = -cz[0];
-			cz[1] = -cz[1];
-			cz[2] = -cz[2];
-        }
-        
-        double instrument_to_asteroid[3][3];
+	    double instrument_to_asteroid[3][3];
         instrument_to_asteroid[0][0] = cx[0];
         instrument_to_asteroid[1][0] = cx[1];
         instrument_to_asteroid[2][0] = cx[2];
@@ -290,10 +281,11 @@ int main(int argc, char** argv)
     std::string sumfilelist = argv[2];
     std::string instrumentframe = argv[3];
     std::string spacecraftframe = argv[4];
-    bool flipX = argv[5];
-    bool flipY = argv[6];
-    bool flipZ = argv[7];
+    std::string flipX = argv[5];
+    std::string flipY = argv[6];
+    std::string flipZ = argv[7];
 
+    //printf("%s\n",flipX);
     furnsh_c(kernelfiles.c_str());
 
     std::vector<std::string> sumfiles = loadFileList(sumfilelist);
