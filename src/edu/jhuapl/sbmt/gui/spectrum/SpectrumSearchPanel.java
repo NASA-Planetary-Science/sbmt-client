@@ -88,6 +88,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         this.instrument=instrument;
 
         spectrumPopupMenu = new SpectrumPopupMenu(this.modelManager, infoPanelManager, renderer);
+        spectrumPopupMenu.addPropertyChangeListener(this);
 
         initComponents();
 
@@ -218,7 +219,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             {
                 resultList.setSelectedIndex(index);
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index)));
+                spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                spectrumPopupMenu.setSearchPanel(this);
             }
         }
     }
@@ -287,7 +290,19 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             model.increaseFootprintSeparation(0.001);
         }
-
+        else if (e.getKeyChar()=='+')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            model.setOffset(model.getOffset()+body.getBoundingBoxDiagonalLength()/50);
+            System.out.println(model.getOffset());
+        }
+        else if (e.getKeyChar()=='-')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            model.setOffset(model.getOffset()-body.getBoundingBoxDiagonalLength()/50);
+        }
     }
 
     @Override
@@ -315,12 +330,13 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             try
             {
                 String currentSpectrum = spectrumRawResults.get(i);
-                model.addSpectrum(createSpectrumName(currentSpectrum));
+                model.addSpectrum(createSpectrumName(currentSpectrum), instrument);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
             }
         }
+        updateColoring();
     }
 
 
@@ -362,13 +378,14 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         }
     }
 
-    private void updateColoring()
+    protected void updateColoring()
     {
         // If we are currently editing user defined functions
         // (i.e. the dialog is open), do not update the coloring
         // since we may be in an inconsistent state.
         if (currentlyEditingUserDefinedFunction)
             return;
+
 
         Double redMinVal = (Double)redMinSpinner.getValue();
         Double redMaxVal = (Double)redMaxSpinner.getValue();
@@ -1606,12 +1623,12 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox blueComboBox;
+    protected javax.swing.JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
     private javax.swing.JLabel blueMaxLabel;
-    private javax.swing.JSpinner blueMaxSpinner;
+    protected javax.swing.JSpinner blueMaxSpinner;
     private javax.swing.JLabel blueMinLabel;
-    private javax.swing.JSpinner blueMinSpinner;
+    protected javax.swing.JSpinner blueMinSpinner;
     private javax.swing.JButton clearRegionButton;
     private javax.swing.JButton customFunctionsButton;
     private javax.swing.JLabel endDateLabel;
@@ -1629,12 +1646,12 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JLabel fromPhaseLabel;
     private javax.swing.JFormattedTextField fromPhaseTextField;
     private javax.swing.JCheckBox grayscaleCheckBox;
-    private javax.swing.JComboBox greenComboBox;
+    protected javax.swing.JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JLabel greenMaxLabel;
-    private javax.swing.JSpinner greenMaxSpinner;
+    protected javax.swing.JSpinner greenMaxSpinner;
     private javax.swing.JLabel greenMinLabel;
-    private javax.swing.JSpinner greenMinSpinner;
+    protected javax.swing.JSpinner greenMinSpinner;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel6;
@@ -1665,12 +1682,12 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JCheckBox polygonType2CheckBox;
     private javax.swing.JCheckBox polygonType3CheckBox;
     private javax.swing.JButton prevButton;
-    private javax.swing.JComboBox redComboBox;
+    protected javax.swing.JComboBox redComboBox;
     private javax.swing.JLabel redLabel;
     private javax.swing.JLabel redMaxLabel;
-    private javax.swing.JSpinner redMaxSpinner;
+    protected javax.swing.JSpinner redMaxSpinner;
     private javax.swing.JLabel redMinLabel;
-    private javax.swing.JSpinner redMinSpinner;
+    protected javax.swing.JSpinner redMinSpinner;
     private javax.swing.JButton removeAllFootprintsButton;
     protected javax.swing.JList resultList;
     protected javax.swing.JLabel resultsLabel;

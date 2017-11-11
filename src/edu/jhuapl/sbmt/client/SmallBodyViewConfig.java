@@ -2123,7 +2123,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
                 c.hasSpectralData=true;
                 c.spectralInstruments=new SpectralInstrument[] {
-                        new OTES()
+                        new OTES(),new OVIRS()
                 };
 
             c.hasMapmaker = false;
