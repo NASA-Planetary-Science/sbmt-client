@@ -369,16 +369,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY"),
-                            ImageType.POLYCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY", "/GASKELL/RQ36_V4/POLYCAM/gallery"),
+                            ImageType.POLYCAM_V4_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP"),
-                            ImageType.MAPCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP", "/GASKELL/RQ36_V4/MAPCAM/gallery"),
+                            ImageType.MAPCAM_V4_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
                             Instrument.MAPCAM
                             )
             };
