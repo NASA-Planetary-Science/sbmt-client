@@ -14,8 +14,10 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
+import edu.jhuapl.sbmt.model.bennu.MapCamV4Image;
 import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
+import edu.jhuapl.sbmt.model.bennu.PolyCamV4Image;
 import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
@@ -144,6 +146,10 @@ public class SbmtModelFactory
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_V4_IMAGE)
+                    return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_V4_IMAGE)
+                    return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
                     return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
