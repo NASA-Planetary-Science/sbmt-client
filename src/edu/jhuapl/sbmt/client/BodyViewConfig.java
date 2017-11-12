@@ -170,7 +170,7 @@ public class BodyViewConfig extends ViewConfig
     {
         if (ShapeModelAuthor.CUSTOM == author)
         {
-            return ShapeModelAuthor.CUSTOM + " > " + customName;
+            return "SBMT/OSIRIS-REx - " + ShapeModelAuthor.CUSTOM + " > " + customName;
         }
         else
         {
@@ -184,7 +184,7 @@ public class BodyViewConfig extends ViewConfig
                 path += " > " + author;
             if (version != null)
                 path += " (" + version + ")";
-            return path;
+            return "SBMT/OSIRIS-REx - " + path;
         }
     }
 
