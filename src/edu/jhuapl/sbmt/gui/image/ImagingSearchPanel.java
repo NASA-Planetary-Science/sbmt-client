@@ -50,8 +50,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -93,6 +91,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
@@ -2901,7 +2901,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             for(List<String> res : imageRawResults)
             {
                 // Third entry of result is the gallery path (or null if gallery does not exist)
-                String s = res.get(2);
+                String s = "/"+res.get(2);
                 if(s != null)
                 {
                     // Create entry for image gallery
