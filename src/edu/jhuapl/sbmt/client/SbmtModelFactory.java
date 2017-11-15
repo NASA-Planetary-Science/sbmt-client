@@ -55,6 +55,7 @@ import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.ryugu.ONCImage;
 import edu.jhuapl.sbmt.model.ryugu.ONCTruthImage;
+import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
@@ -160,6 +161,8 @@ public class SbmtModelFactory
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_IMAGE)
                     return new ONCImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.TIR_IMAGE)
+                    return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
                 else
