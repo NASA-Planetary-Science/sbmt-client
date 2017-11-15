@@ -17,8 +17,10 @@ import edu.jhuapl.sbmt.gui.eros.NISSpectrumInfoPanel;
 import edu.jhuapl.sbmt.gui.image.ColorImageInfoPanel;
 import edu.jhuapl.sbmt.gui.image.ImageInfoPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumStatisticsInfoPanel;
-import edu.jhuapl.sbmt.model.bennu.OTESSpectrum;
-import edu.jhuapl.sbmt.model.bennu.OTESSpectrumInfoPanel;
+import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrum;
+import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrumInfoPanel;
+import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrum;
+import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.image.ColorImage;
@@ -61,7 +63,6 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
             final Model collectionModel = infoPanel.getCollectionModel();
 
             model.addPropertyChangeListener(infoPanel);
-            System.out.println(collectionModel);
 
             collectionModel.addPropertyChangeListener(this);
 
@@ -116,6 +117,10 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         else if (model instanceof OTESSpectrum)
         {
             return new OTESSpectrumInfoPanel((OTESSpectrum)model, modelManager);
+        }
+        else if (model instanceof OVIRSSpectrum)
+        {
+            return new OVIRSSpectrumInfoPanel((OVIRSSpectrum)model, modelManager);
         }
         else if (model instanceof SpectrumStatistics)
         {

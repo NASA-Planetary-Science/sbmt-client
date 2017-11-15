@@ -1,11 +1,10 @@
-package edu.jhuapl.sbmt.gui.eros;
+package edu.jhuapl.sbmt.model.bennu.otes;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -35,32 +34,31 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 
-public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
+public class OTESSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
     private ModelManager modelManager;
-    private NISSpectrum nisSpectrum;
+    private OTESSpectrum spectrum;
 
-    public NISSpectrumInfoPanel(NISSpectrum nisSpectrum, ModelManager modelManager)
+    public OTESSpectrumInfoPanel(OTESSpectrum spectrum, ModelManager modelManager)
     {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.modelManager = modelManager;
-        this.nisSpectrum = nisSpectrum;
+        this.spectrum = spectrum;
 
         JPanel panel = new JPanel(new BorderLayout());
 
 
         // add the jfreechart graph
-        XYSeries series = new XYSeries("NIS Spectrum");
-        double[] wavelengths = this.nisSpectrum.getBandCenters();
-        double[] spectrum = this.nisSpectrum.getSpectrum();
+        XYSeries series = new XYSeries("OTES Spectrum");
+        double[] wavelengths = spectrum.getBandCenters();
+        double[] spect = spectrum.getSpectrum();
         for (int i=0; i<wavelengths.length; ++i)
-            series.add(wavelengths[i], spectrum[i]);
+            series.add(wavelengths[i], spect[i]);
         XYDataset xyDataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYLineChart
-                ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
+                ("OTES Calibrated Spectrum", "Wavelength (nm)", "Reflectance",
                         xyDataset, PlotOrientation.VERTICAL, true, true, false);
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMouseWheelEnabled(true);
@@ -91,10 +89,10 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         HashMap<String, String> properties = null;
         Object[][] data = {    {"", ""} };
 
-        try
+/*        try
         {
 
-            properties = this.nisSpectrum.getProperties();
+            properties = this.spectrum.getProperties();
             int size = properties.size();
             data = new Object[size][2];
 
@@ -110,7 +108,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         catch (IOException e)
         {
             e.printStackTrace();
-        }
+        }*/
 
 
 
@@ -146,7 +144,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
     public Model getModel()
     {
-        return nisSpectrum;
+        return spectrum;
     }
 
     public Model getCollectionModel()
@@ -166,7 +164,7 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
         SpectrumPopupMenu msiImagesPopupMenu =
             new SpectrumPopupMenu(modelManager, null, null );
 
-        msiImagesPopupMenu.setCurrentSpectrum(nisSpectrum.getSpectrumPathOnServer());
+        msiImagesPopupMenu.setCurrentSpectrum(spectrum.getSpectrumPathOnServer());
 
         JMenuBar menuBar = new JMenuBar();
 

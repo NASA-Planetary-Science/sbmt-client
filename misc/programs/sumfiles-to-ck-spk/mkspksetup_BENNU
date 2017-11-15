@@ -1,0 +1,21 @@
+        \begindata
+        INPUT_DATA_TYPE   = 'STATES'
+        OUTPUT_SPK_TYPE   = 9
+        OBJECT_ID         = -64
+        OBJECT_NAME       = 'ORX'
+        CENTER_ID         = 2101955 
+        CENTER_NAME       = 'BENNU'
+        REF_FRAME_NAME    = 'IAU_BENNU'
+        PRODUCER_ID       = 'JHUAPL'
+        DATA_ORDER        = 'EPOCH X Y Z VX VY VZ'
+        INPUT_DATA_UNITS  = ('ANGLES=DEGREES' 'DISTANCES=km')
+        DATA_DELIMITER    = ' '
+        LINES_PER_RECORD  = 1
+        EPOCH_STR_LENGTH  = 24
+        IGNORE_FIRST_LINE = 0
+        LEAPSECONDS_FILE  = '/project/osiris/ola/spice/Kernels/LSK/naif0011.tls'
+        POLYNOM_DEGREE    = 3
+        SEGMENT_ID        = 'SPK_STATES_09'
+        COMMENT_FILE      = 'spk_comments.txt'
+        \begintext
+
