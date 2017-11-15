@@ -2243,6 +2243,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //            samCam = BasicImagingInstrument.of(builder.build());
     //        }
 
+          BasicImagingInstrument tir;
+          {
+              // Set up images.
+              SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
+              QueryBase queryBase = new FixedListQuery("/" + fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), "/" + fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+              Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                      Instrument.TIR,
+                      SpectralMode.MONO,
+                      queryBase,
+                      new ImageSource[] { ImageSource.SPICE },
+                      fileLocator,
+                      ImageType.TIR_IMAGE);
+
+              // Put it all together in a session.
+              Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+              builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+              tir = BasicImagingInstrument.of(builder.build());
+          }
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
@@ -2255,7 +2274,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
 
-//                c.imagingInstruments = new ImagingInstrument[] {
+                c.imagingInstruments = new ImagingInstrument[] {
 //                       // new Vis(ShapeModelBody.PHOBOS)
 //                        mapCam,
 //                        polyCam,
@@ -2268,7 +2287,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 new ImageSource[]{ImageSource.GASKELL},
                                 Instrument.IMAGING_DATA
                                 )*/
-//                };
+                        tir
+                };
 
 //                c.hasSpectralData=true;
 //                c.spectralInstruments=new SpectralInstrument[] {
