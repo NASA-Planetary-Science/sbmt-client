@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.TreeSet;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -26,6 +24,8 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+
+import nom.tam.fits.FitsException;
 
 public class DatabaseGeneratorSql
 {
@@ -453,7 +453,10 @@ public class DatabaseGeneratorSql
 //        RQ36V4_POLY(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
 //                "/project/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
-                "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt");
+                "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
+        RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelAuthor.GASKELL),
+                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist.txt");
+
 
         public final SmallBodyViewConfig config;
         public final String pathToFileList;
