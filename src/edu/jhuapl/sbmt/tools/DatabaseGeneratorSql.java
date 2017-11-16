@@ -455,7 +455,9 @@ public class DatabaseGeneratorSql
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelAuthor.GASKELL),
-                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist.txt");
+                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt"),
+        RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelAuthor.GASKELL),
+                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt");
 
 
         public final SmallBodyViewConfig config;
