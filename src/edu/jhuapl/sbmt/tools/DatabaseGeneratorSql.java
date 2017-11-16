@@ -285,6 +285,8 @@ public class DatabaseGeneratorSql
             insertStatement.setDouble(17, image.getMinPhase());
             insertStatement.setDouble(18, image.getMaxPhase());
 
+            System.out.println("statement: " + insertStatement.toString());
+
             insertStatement.executeUpdate();
 
 
