@@ -737,14 +737,14 @@ and TIFF formats.
 
 ##### Camera...
 The Camera dialog allows the user to position the camera and control where 
-they look. The user can adjust the field of view, the boresight latitude,
-longitude, and altitude, the projection type, the camera position, and the
+they look. The user can adjust the field of view, the boresight position,
+the projection type, the camera position, and the
 camera roll.
 
-The Vertical Field of View can be set to a degree between 0 and 180. The Boresight
- Latitude and Longitude determine the direction to set the camera focal 
-point. The Latitude field takes input between -90 and 90 and the Longitude
-fields takes a degree between -180 and 180.
+The Vertical Field of View can be set to a degree between 0 and 180.
+The Boresight Latitude and Longitude determine the direction to set the camera
+focal point. The Latitude field takes input between -90 and 90 and the
+Longitude fields takes a degree between -180 and 180.
 The Line of Sight distance is the distance from the surface of the 
 body to set the focal point. For example, setting the distance to 0 would 
 put the focal point on the surface of the body.
@@ -754,7 +754,7 @@ The Projection Type can be switched between Perspective and Orthographic.
 The Sub-Spacecraft Latitude and Longitude are used to determine the direction to set
 the camera. They take a degree between -90 and 90, and between -180 and 180, 
 respectively.
- The Spacecraft Altitude is the distance from the surface of the body to set the camera.
+The Spacecraft Altitude is the distance from the surface of the body to set the camera.
  For example, setting the Spacecraft Altitude to 0 position the camera at the surface of the 
 body.
 Camera Roll takes a degree between -180 and 180 and sets the roll of 
