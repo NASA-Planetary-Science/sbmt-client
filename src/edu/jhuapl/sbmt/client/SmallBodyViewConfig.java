@@ -28,6 +28,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
@@ -2309,6 +2310,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new SpectralInstrument[]
+                    {
+                            new NIRS3()
+                    };
             configArray.add(c);
         }
 
