@@ -28,6 +28,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
@@ -2269,10 +2270,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
+            c.hasColoringData = false;
 
                 c.imagingInstruments = new ImagingInstrument[] {
 //                       // new Vis(ShapeModelBody.PHOBOS)
@@ -2309,6 +2311,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new SpectralInstrument[]
+                    {
+                            new NIRS3()
+                    };
             configArray.add(c);
         }
 
