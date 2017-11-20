@@ -2274,6 +2274,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
+            c.hasColoringData = false;
 
                 c.imagingInstruments = new ImagingInstrument[] {
 //                       // new Vis(ShapeModelBody.PHOBOS)
