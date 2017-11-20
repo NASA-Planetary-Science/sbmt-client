@@ -136,10 +136,10 @@ clean :
 bare : clean
 
 ${NEARJAR} : ${all_java_files}
-	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jar
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jar
 
 ${NEARAPLJAR} : ${all_java_files}
-	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jarapl
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jarapl
 
 
 # Generate Run Scripts
