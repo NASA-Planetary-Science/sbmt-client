@@ -18,7 +18,7 @@ public class SbmtViewMenu extends ViewMenu
 
     public SbmtViewMenu(ViewManager rootPanel, RecentlyViewed viewed)
     {
-        super(rootPanel, viewed);
+        super("Body", rootPanel, viewed);
     }
 
     protected void addMenuItem(JMenuItem mi, ViewConfig config)
