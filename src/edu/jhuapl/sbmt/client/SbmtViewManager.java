@@ -87,6 +87,13 @@ public class SbmtViewManager extends ViewManager
             if (result == 0)
                 result = name1.compareTo(name2);
 
+            if (result == 0 && config1 instanceof BodyViewConfig && config2 instanceof BodyViewConfig)
+            {
+                BodyViewConfig body1 = (BodyViewConfig) config1;
+                BodyViewConfig body2 = (BodyViewConfig) config2;
+                result = body1.dataUsed.compareTo(body2.dataUsed);
+            }
+
             if (result == 0 && name1.equals(name2))
                 result = config1.author.compareTo(config2.author);
             return result;
@@ -105,17 +112,10 @@ public class SbmtViewManager extends ViewManager
             // which included this information in a word document titled Order-of-Objects.docx,
             // as described in Redmine issue #1009.
             String[] modelOrder = new String[] {
-                    "1 Ceres",
-                    "4 Vesta",
-                    "21 Lutetia",
-                    "243 Ida",
-                    "253 Mathilde",
-                    "951 Gaspra",
-                    "2867 Steins",
-                    "2 Pallas",
-                    "41 Daphne",
-                    "121 Hermione",
-                    "216 Kleopatra",
+                    ////////////////////////////////////////
+                    // Asteroids
+                    ////////////////////////////////////////
+                    // Near Earth
                     "433 Eros",
                     "25143 Itokawa",
                     "101955 Bennu",
@@ -145,6 +145,22 @@ public class SbmtViewManager extends ViewManager
                     "(136617) 1994 CC",
                     "(276049) 2002 CE26",
                     "(341843) 2008 EV5",
+                    // Main Belt
+                    "1 Ceres",
+                    "4 Vesta",
+                    "21 Lutetia",
+                    "243 Ida",
+                    "253 Mathilde",
+                    "951 Gaspra",
+                    "2867 Steins",
+                    "2 Pallas",
+                    "41 Daphne",
+                    "121 Hermione",
+                    "216 Kleopatra",
+
+                    ////////////////////////////////////////
+                    // Comets
+                    ////////////////////////////////////////
                     "9P/Tempel 1",
                     "67P/Churyumov-Gerasimenko (SHAP4S)",
                     "67P/Churyumov-Gerasimenko (SHAP5 V0.3)",
@@ -153,22 +169,34 @@ public class SbmtViewManager extends ViewManager
                     "81P/Wild 2",
                     "103P/Hartley 2",
                     "1P/Halley",
+
+                    ////////////////////////////////////////
+                    // Kuiper Belt Objects
+                    ////////////////////////////////////////
+                    // Pluto
                     "Charon",
                     "Hydra",
                     "Kerberos",
                     "Nix",
                     "Pluto",
                     "Styx",
+
+                    ////////////////////////////////////////
+                    // Planets and Satellites
+                    ////////////////////////////////////////
                     "Earth",
+                    // Mars
                     "Mars",
                     "Deimos",
                     "Phobos",
+                    // Jupiter
                     "Jupiter",
                     "Amalthea",
                     "Callisto",
                     "Europa",
                     "Ganymede",
                     "Io",
+                    // Saturn
                     "Saturn",
                     "Atlas",
                     "Calypso",
@@ -187,6 +215,7 @@ public class SbmtViewManager extends ViewManager
                     "Rhea",
                     "Telesto",
                     "Tethys",
+                    // Neptune
                     "Neptune",
                     "Larissa",
                     "Proteus",
