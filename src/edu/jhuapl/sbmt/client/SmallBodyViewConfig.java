@@ -2270,10 +2270,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
+            c.hasColoringData = false;
 
                 c.imagingInstruments = new ImagingInstrument[] {
 //                       // new Vis(ShapeModelBody.PHOBOS)
