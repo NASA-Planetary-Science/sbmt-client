@@ -1727,7 +1727,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PLUTO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1773,7 +1773,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1813,7 +1813,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.HYDRA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1851,7 +1851,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.KERBEROS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1861,7 +1861,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = hydra;
             c.body = ShapeModelBody.NIX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1897,7 +1897,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.STYX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
