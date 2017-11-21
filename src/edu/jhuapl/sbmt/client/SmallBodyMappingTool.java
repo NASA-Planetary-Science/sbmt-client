@@ -9,8 +9,6 @@ import javax.swing.UIManager;
 
 import com.jgoodies.looks.LookUtils;
 
-import vtk.vtkJavaGarbageCollector;
-
 import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
@@ -26,8 +24,27 @@ import edu.jhuapl.sbmt.tools.SbmtRunnable;
  */
 public class SmallBodyMappingTool
 {
-    private static vtkJavaGarbageCollector garbageCollector;
-    private static boolean startPopup = false;
+
+    public enum Mission
+    {
+        HAYABUSA2("133314b"),
+        NEARTOOL("b1bc7ed"),
+        OSIRIS_REX("7cd84586"),
+        ;
+        private final String hashedName;
+
+        Mission(String hashedName)
+        {
+            this.hashedName = hashedName;
+        }
+
+        String getHashedName()
+        {
+            return hashedName;
+        }
+    }
+
+    private static Mission mission = null;
 
     static
     {
@@ -39,7 +56,7 @@ public class SmallBodyMappingTool
         }
     }
 
-    private static void setupLookAndFeel()
+    static void setupLookAndFeel()
     {
         try
         {
@@ -68,15 +85,89 @@ public class SmallBodyMappingTool
         }
     }
 
+    public static Mission getMission()
+    {
+        if (mission == null)
+        {
+            String missionHash = System.getProperty("edu.jhuapl.sbmt.mission");
+            Mission mission = missionHash == null ? Mission.NEARTOOL : null;
+            for (Mission each: Mission.values())
+            {
+                if (each.getHashedName().equals(missionHash))
+                {
+                    mission = each;
+                    break;
+                }
+            }
+            SmallBodyMappingTool.mission = mission;
+        }
+
+        return mission;
+    }
+
+    static Mission configureMission()
+    {
+        Mission mission = getMission();
+        if (mission == null)
+        {
+            throw new RuntimeException("Invalid mission hash supplied at start-up");
+        }
+
+        switch (mission)
+        {
+        case HAYABUSA2:
+            Configuration.setAppName("sbmt1hayabusa2");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2");
+            break;
+        case NEARTOOL:
+            Configuration.setAppName("neartool");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle("SBMT");
+            break;
+        case OSIRIS_REX:
+            Configuration.setAppName("sbmt1orex");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx");
+            break;
+            default:
+                throw new AssertionError();
+        }
+       return mission;
+    }
+
+    static SbmtSplash createSplash(Mission mission)
+    {
+        SbmtSplash splash = null;
+        switch (mission)
+        {
+        case HAYABUSA2:
+            splash = new SbmtSplash("resources", "splashLogo.png");
+            break;
+        case NEARTOOL:
+            splash = new SbmtSplash("resources", "splashLogo.png");
+            break;
+        case OSIRIS_REX:
+            splash = new SbmtSplash("resources", "splashLogoOrex.png");
+            break;
+            default:
+                throw new AssertionError();
+        }
+        return splash;
+    }
+
     public static void main(final String[] args)
     {
-        Configuration.setAppName("neartool");
-        Configuration.setCacheVersion("2");
+        if (Configuration.getAppName() == null)
+        {
+            SmallBodyMappingTool.configureMission();
+        }
+        Mission mission = getMission();
 
         setupLookAndFeel();
 
         // set up splash screen
-        final SbmtSplash splash = new SbmtSplash("resources", "splashLogo.png");
+        SbmtSplash splash = createSplash(mission);
         splash.setVisible(true);
         splash.validate();
         splash.repaint();
