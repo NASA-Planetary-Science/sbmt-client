@@ -53,7 +53,7 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
 
         // add the server datasource
         String defaultDatasourceName = "Default";
-        String defaultDatasourcePath = lidarModel.getLidarDataSourceMap().get("Default");
+        String defaultDatasourcePath = lidarModel.getLidarDataSourceMap().get("Hayabusa2");
         lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(defaultDatasourceName, defaultDatasourcePath);
 
         // add the custom local datasources
@@ -81,9 +81,12 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 
-        int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
-        String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
-        String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        //int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
+        //String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
+        //String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        int lidarIndex=-1;
+        String lidarDatasourceName="Hayabusa2";
+        String lidarDatasourcePath="/earth/hayabusa2/laser/tree/dataSource.lidar";
         System.out.println("Current Lidar Datasource Index : " + lidarIndex);
         System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
         System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
@@ -123,7 +126,7 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
             interiorPoly.DeepCopy(box.GetOutput());
         }
 
-        String selectedSourceName = null; // (String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
+        String selectedSourceName = (String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
         System.out.println("Selected lidar source name: "+selectedSourceName);
 //        if (lidarDatasourceName.equals("Default"))
             lidarModel=(LaserLidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
@@ -148,7 +151,8 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
 
         Stopwatch sw=new Stopwatch();
         sw.start();
-        TreeSet<Integer> cubeList=((LaserLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
+        TreeSet<Integer> cubeList=((LaserLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(new double[]{Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY}), getSelectedTimeLimits());
+        System.out.println(cubeList);
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 

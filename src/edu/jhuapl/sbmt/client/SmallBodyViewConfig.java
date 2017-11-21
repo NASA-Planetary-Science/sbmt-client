@@ -2325,8 +2325,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
-            c.lidarSearchDataSourceMap.put("Default","/earth/hayabusa2/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default","/earth/hayabusa2/laser/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;

@@ -18,7 +18,7 @@ public class LaserLidarBrowsePanel extends LidarBrowsePanel
     public LaserLidarBrowsePanel(ModelManager modelManager, SmallBodyViewConfig smallBodyConfig)
     {
         super(modelManager);
-        String datasourceName="Default";
+        String datasourceName="Hayabusa2";
         String browseFileList=smallBodyConfig.lidarBrowseDataSourceMap.get(datasourceName);
         repopulate(browseFileList, datasourceName);
     }

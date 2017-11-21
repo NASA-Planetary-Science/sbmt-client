@@ -26,25 +26,31 @@ public class LidarPanel extends JTabbedPane
         {
             lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
         }
         else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.LASER))
         {
-            lidarSearchPanel=new LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+//            lidarSearchPanel=new LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new LaserLidarBrowsePanel(modelManager, smallBodyConfig);
+            addTab("Browse", lidarBrowsePanel);
+//            addTab("Search", lidarSearchPanel);
         }
         else if (smallBodyConfig.lidarInstrumentName.equals(Instrument.OLA))
         {
             lidarBrowsePanel = new OlaLidarBrowsePanel(modelManager, smallBodyConfig);
             lidarSearchPanel=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
         }
         else
         {
             lidarSearchPanel=new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
         }
 
-        addTab("Browse", lidarBrowsePanel);
-        addTab("Search", lidarSearchPanel);
 
     }
 }
