@@ -42,6 +42,8 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
+import edu.jhuapl.sbmt.model.lidar.LaserLidarBrowseDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
@@ -337,14 +339,28 @@ public class SbmtModelFactory
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
-        models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
+        if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName==Instrument.LASER)
+        {
+            models.put(ModelNames.LIDAR_BROWSE, new LaserLidarBrowseDataCollection(smallBodyModel));
+        }
+        else
+        {
+            models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
+        }
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.MOLA))
+            switch (smallBodyModel.getSmallBodyConfig().lidarInstrumentName)
+            {
+            case MOLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
-            else if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.OLA))
+            case OLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
+            case LASER:
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LaserLidarHyperTreeSearchDataCollection(smallBodyModel));
+            }
+
+
         }
 
         return models;
