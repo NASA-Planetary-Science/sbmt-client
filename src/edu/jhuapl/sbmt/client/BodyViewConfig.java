@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -170,7 +171,7 @@ public class BodyViewConfig extends ViewConfig
     {
         if (ShapeModelAuthor.CUSTOM == author)
         {
-            return "SBMT/OSIRIS-REx - " + ShapeModelAuthor.CUSTOM + " > " + customName;
+            return Configuration.getAppTitle() + " - " + ShapeModelAuthor.CUSTOM + " > " + customName;
         }
         else
         {
@@ -184,7 +185,7 @@ public class BodyViewConfig extends ViewConfig
                 path += " > " + author;
             if (version != null)
                 path += " (" + version + ")";
-            return "SBMT/OSIRIS-REx - " + path;
+            return Configuration.getAppTitle() + " - " + path;
         }
     }
 
