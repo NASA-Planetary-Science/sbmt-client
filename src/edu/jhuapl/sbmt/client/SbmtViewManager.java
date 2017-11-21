@@ -110,7 +110,8 @@ public class SbmtViewManager extends ViewManager
             ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
             // This order was based on an email from Terik Daly to James Peachey on 2017-11-14,
             // which included this information in a word document titled Order-of-Objects.docx,
-            // as described in Redmine issue #1009.
+            // as described in Redmine issue #1009. One difference is that Carolyn Ernst asked
+            // that Near Earth come before Main Belt asteroids.
             String[] modelOrder = new String[] {
                     ////////////////////////////////////////
                     // Asteroids
