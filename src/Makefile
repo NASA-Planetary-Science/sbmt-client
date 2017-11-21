@@ -136,10 +136,10 @@ clean :
 bare : clean
 
 ${NEARJAR} : ${all_java_files}
-	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jar
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jar
 
 ${NEARAPLJAR} : ${all_java_files}
-	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" jarapl
+	ant -f ${SBMTROOT}/build.xml -DRELEASE="${RELEASE}" -DMISSION=${MISSION} jarapl
 
 
 # Generate Run Scripts
@@ -166,7 +166,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		rm -rf ${int_mac_sbmt_dir}/jre
 		mv ${int_mac_sbmt_dir}/jre-mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
+		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION} ${MISSION}
 		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} sbmt)
 
 # Note this uses near-apl.jar, and creating 'runsbmt' is same as mac64 but different than win64
@@ -188,7 +188,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		rm -rf ${int_linux_sbmt_dir}/jre
 		mv ${int_linux_sbmt_dir}/jre-linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
-		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION}
+		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR} ${INTERNAL_VERSION} ${MISSION}
 		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} sbmt)
 
 # Note this uses near-apl.jar, and creating 'runsbmt' script is different here.
@@ -207,7 +207,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/jre-win64 ${int_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
-		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
+		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir} ${MISSION}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} sbmt)
 
