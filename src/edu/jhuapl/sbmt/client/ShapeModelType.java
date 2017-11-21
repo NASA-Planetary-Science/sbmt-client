@@ -5,7 +5,9 @@ public enum ShapeModelType
 {
     ASTEROID("Asteroids"),
     PLANETS_AND_SATELLITES("Planets and Satellites"),
-    COMETS("Comets");
+    COMETS("Comets"),
+    KBO("Kuiper Belt Objects"),
+    ;
 
     final public String str;
     private ShapeModelType(String str)

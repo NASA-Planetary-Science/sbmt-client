@@ -1727,7 +1727,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PLUTO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1773,7 +1773,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1813,7 +1813,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.HYDRA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1851,7 +1851,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.KERBEROS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1861,7 +1861,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = hydra;
             c.body = ShapeModelBody.NIX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1897,7 +1897,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.STYX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -2012,6 +2012,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/earth/osirisrex";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
@@ -2130,9 +2131,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.OREX;
             c.rootDirOnServer = "/earth/orex";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
