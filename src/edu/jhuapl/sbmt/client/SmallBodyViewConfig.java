@@ -2012,6 +2012,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/earth/osirisrex";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
@@ -2130,9 +2131,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.OREX;
             c.rootDirOnServer = "/earth/orex";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
