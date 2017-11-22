@@ -61,6 +61,12 @@ public class SbmtViewMenu extends ViewMenu
                 {
                     parentMenu.addSeparator();
                 }
+                if (viewManager.isAddLabel(config, subMenu))
+                {
+                    String label = viewManager.getLabel(config);
+                    parentMenu.add(label);
+                    parentMenu.getItem(parentMenu.getItemCount() - 1).setEnabled(false);
+                }
                 parentMenu.add(childMenu);
             }
             parentMenu = childMenu;
