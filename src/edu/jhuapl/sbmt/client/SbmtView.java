@@ -88,21 +88,25 @@ public class SbmtView extends View
         return (SmallBodyViewConfig)super.getConfig();
     }
 
+    @Override
     public String getDisplayName()
     {
-        if (getPolyhedralModelConfig().author == ShapeModelAuthor.CUSTOM)
-            return getPolyhedralModelConfig().customName;
-        else if (getPolyhedralModelConfig().author == null)
-            return getPolyhedralModelConfig().body.toString();
-        else
-        {
-            String version = "";
-            if (getPolyhedralModelConfig().version != null)
-                version += " (" + getPolyhedralModelConfig().version + ")";
-            return getPolyhedralModelConfig().author.toString() + version;
-        }
+    	String result = "";
+    	SmallBodyViewConfig config = getPolyhedralModelConfig();
+    	if (config.customName != null)
+    	    result = config.customName;
+    	else if (config.author == null)
+    	    result = config.body.toString();
+    	else
+    	    result = config.author.toString();
+
+    	if (config.version != null)
+    	    result = result + " (" + config.version + ")";
+
+    	return result;
     }
 
+    @Override
     protected void setupModelManager()
     {
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
@@ -110,7 +114,7 @@ public class SbmtView extends View
 
         Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
 
-        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
@@ -177,6 +181,7 @@ public class SbmtView extends View
         setModels(allModels);
     }
 
+    @Override
     protected void setupPopupManager()
     {
         setPopupManager(new ImagePopupManager(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer()));
@@ -256,6 +261,7 @@ public class SbmtView extends View
         }
     }
 
+    @Override
     protected void setupTabs()
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
@@ -272,7 +278,7 @@ public class SbmtView extends View
                 // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
-                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)(SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)(SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == getPolyhedralModelConfig().author))
@@ -394,16 +400,19 @@ public class SbmtView extends View
         }
     }
 
+    @Override
     protected void setupPickManager()
     {
       setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
     }
 
+    @Override
     protected void setupInfoPanelManager()
     {
         setInfoPanelManager(new SbmtInfoWindowManager(getModelManager(), getStatusBar()));
     }
 
+    @Override
     protected void setupSpectrumPanelManager()
     {
         setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
