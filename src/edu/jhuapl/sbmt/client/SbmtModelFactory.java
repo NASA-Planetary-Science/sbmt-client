@@ -354,10 +354,15 @@ public class SbmtModelFactory
             {
             case MOLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                break;
             case OLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                break;
             case LASER:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LaserLidarHyperTreeSearchDataCollection(smallBodyModel));
+                break;
+                default:
+                	throw new AssertionError();
             }
 
 
