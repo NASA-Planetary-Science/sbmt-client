@@ -336,15 +336,16 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     }
 
-  /*  private void populateTracksErrorLabel()
+    private void populateTracksErrorLabel()
     {
-        if (trackErrorCheckBox.isSelected())
-        {
-            String errorText = "" + (float)lidarModel.getTrackError();
+        //if (trackErrorButton.isSelected())
+        //{
+        //"<html>Hello World!<br>blahblahblah</html>"
+            String errorText = "<html>"+ (float)lidarModel.getTrackError() + " RMS (units of DATA) <br> for " + lidarModel.getNumberOfVisibleTracks() + " visible tracks / " + lidarModel.getLastNumberOfPointsForTrackError() + " points </html>";
             trackErrorLabel.setText(errorText);
-        }
+        //}
     }
-*/
+
 
     @Override
     public void itemStateChanged(ItemEvent e)
@@ -600,7 +601,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         translateTracksButton = new javax.swing.JButton();
         dragTracksToggleButton = new javax.swing.JToggleButton();
         loadTrackButton = new javax.swing.JButton();
-        trackErrorCheckBox = new javax.swing.JCheckBox();
+        trackErrorButton = new javax.swing.JButton();
         trackErrorLabel = new javax.swing.JLabel();
         sourceLabel = new javax.swing.JLabel();
         sourceComboBox = new javax.swing.JComboBox();
@@ -738,11 +739,11 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-        trackErrorCheckBox.setText("Show Track Error");
-        trackErrorCheckBox.setToolTipText("<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean distance between each lidar point and its<br>\nclosest point on the asteroid.");
-        trackErrorCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        trackErrorButton.setText("Show Track Error");
+        trackErrorButton.setToolTipText("<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean distance between each lidar point and its<br>\nclosest point on the asteroid.");
+        trackErrorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                trackErrorCheckBoxActionPerformed(evt);
+                trackErrorButtonActionPerformed(evt);
             }
         });
 
@@ -839,7 +840,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                                         .addComponent(jLabel5)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(pointSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(trackErrorCheckBox))
+                                    .addComponent(trackErrorButton))
                                 .addGap(32, 32, 32)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(spacecraftPositionCheckbox)
@@ -895,7 +896,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     .addComponent(dragTracksToggleButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(trackErrorCheckBox)
+                    .addComponent(trackErrorButton)
                     .addComponent(spacecraftPositionCheckbox))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1066,10 +1067,10 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
         }
     }//GEN-LAST:event_loadTrackButtonActionPerformed
 
-    private void trackErrorCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackErrorCheckBoxActionPerformed
-        lidarModel.setEnableTrackErrorComputation(trackErrorCheckBox.isSelected());
-        trackErrorLabel.setEnabled(trackErrorCheckBox.isSelected());
-        //populateTracksErrorLabel();
+    private void trackErrorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackErrorCheckBoxActionPerformed
+        lidarModel.setEnableTrackErrorComputation(true);
+        trackErrorLabel.setEnabled(true);
+        populateTracksErrorLabel();
     }//GEN-LAST:event_trackErrorCheckBoxActionPerformed
 
     private void manageDatasourcesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageDatasourcesButtonActionPerformed
@@ -1121,7 +1122,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
     private javax.swing.JSpinner startSpinner;
     private javax.swing.JButton submitButton;
     private javax.swing.JPanel submitPanel;
-    private javax.swing.JCheckBox trackErrorCheckBox;
+    private javax.swing.JButton trackErrorButton;
     private javax.swing.JLabel trackErrorLabel;
     private javax.swing.JLabel trackSeparationLabel;
     private javax.swing.JFormattedTextField trackSeparationTextField;
