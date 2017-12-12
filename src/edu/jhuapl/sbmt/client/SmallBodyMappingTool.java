@@ -28,6 +28,8 @@ public class SmallBodyMappingTool
     public enum Mission
     {
         HAYABUSA2("133314b"),
+        HAYABUSA2_STAGE("244425c"),
+        HAYABUSA2_DEPLOY("355536d"),
         NEARTOOL("b1bc7ed"),
         OSIRIS_REX("7cd84586"),
         ;
@@ -118,7 +120,17 @@ public class SmallBodyMappingTool
         case HAYABUSA2:
             Configuration.setAppName("sbmt1hayabusa2");
             Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+            break;
+        case HAYABUSA2_STAGE:
+            Configuration.setAppName("sbmt1hb2-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+            break;
+        case HAYABUSA2_DEPLOY:
+            Configuration.setAppName("sbmt1hb2-deploy");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
             break;
         case NEARTOOL:
             Configuration.setAppName("neartool");
@@ -142,7 +154,13 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            splash = new SbmtSplash("resources", "splashLogo.png");
+            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+            break;
+        case HAYABUSA2_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+            break;
+        case HAYABUSA2_DEPLOY:
+            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
             break;
         case NEARTOOL:
             splash = new SbmtSplash("resources", "splashLogo.png");

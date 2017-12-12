@@ -108,6 +108,28 @@ public class SbmtRunnable implements Runnable
                 config.enable(true);
             }
             break;
+        case HAYABUSA2_STAGE:
+            if (
+                    ShapeModelBody.EROS.equals(config.body) ||
+                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelAuthor.HAYABUSA2.equals(config.author) ||
+                    ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
+        case HAYABUSA2_DEPLOY:
+            if (
+                    ShapeModelBody.EROS.equals(config.body) ||
+                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelAuthor.HAYABUSA2.equals(config.author) ||
+                    ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
         case NEARTOOL:
             config.enable(true);
             break;
