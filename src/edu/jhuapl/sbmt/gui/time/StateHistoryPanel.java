@@ -44,9 +44,10 @@ import javax.swing.table.DefaultTableModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
+import vtk.rendering.jogl.vtkJoglPanelComponent;
+
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.Renderer.LightingType;
-import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -97,7 +98,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
     private TimeControlPane timeControlPane;
 
     private Renderer renderer;
-    private vtksbmtJoglCanvas renWin;
+    private vtkJoglPanelComponent renWin;
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
