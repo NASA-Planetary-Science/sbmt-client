@@ -466,23 +466,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS_LOW_RES;
+        c.body = ShapeModelBody.TOUTATIS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
         c.customName = "Neese 2004";
         c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
+        c.version = "Low resolution";
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS_HIGH_RES;
+        c.body = ShapeModelBody.TOUTATIS;
         c.type = ShapeModelType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
         c.customName = "Neese 2004";
         c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+        c.version = "High resolution";
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
