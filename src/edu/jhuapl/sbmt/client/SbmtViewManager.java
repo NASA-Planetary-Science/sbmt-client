@@ -9,6 +9,7 @@ import java.util.SortedSet;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -97,48 +98,18 @@ public class SbmtViewManager extends ViewManager
         menuEntries.clear();
         configMap.clear();
 
+        // TODO: make the code below handle putting the spacecraft labels in front of groups of bodies
+        // listed in MARK_VISITED_BY_SPACECRAFT (see below).
         // Use an iterator to traverse all the Views in viewSet.
         Iterator<View> viewItor = viewSet.iterator();
 
-        // Use an index for the labels, rather than an iterator, so that we can easily access
-        // preceding entries in SMALL_BODY_LIST.
-        int labelIndex = 0;
-
         // Loop simultaneously over the list of all labels and the set of all Views.
-        while (viewItor.hasNext() && labelIndex < SMALL_BODY_LIST.size())
+        while (viewItor.hasNext())
         {
-            // Each time through this "while", process the next view from viewItor,
-            // possibly also going through 1 or more labels (using labelIndex).
             View nextView = viewItor.next();
             ViewConfig nextConfig = nextView.getConfig();
-            String modelName = nextConfig.getShapeModelName();
-
-            String label = SMALL_BODY_LIST.get(labelIndex);
-
-            // Process cosmetic labels and views that are not part of the new built-in view set.
-            while (!label.equals(modelName))
-            {
-                // If a label starts with LABEL_PREFIX, it must be included in menuEntries so that
-                // the latter includes all labels and separator positions.
-                if (label.startsWith(LABEL_PREFIX)) menuEntries.add(makeEntry(SMALL_BODY_LIST.get(labelIndex)));
-
-                // Done with this label -- it doesn't match this model, and because the collections
-                // go in a parallel order, it won't match any in later loop iterations. So go on
-                // to the next label, but be prepared to escape from the loop if needed.
-                ++labelIndex;
-                if (labelIndex < SMALL_BODY_LIST.size()) label = SMALL_BODY_LIST.get(labelIndex);
-                else break;
-            }
-            if (labelIndex < SMALL_BODY_LIST.size())
-            {
-                // The loop above exits either a) if we ran out of labels or b) if the label equals modelName.
-                // The predicate eliminates running out of labels, so at this point the label must
-                // equal the modelName. This is a match, so put the index in the configMap and add
-                // the wrapped view to the menuEntries list.
-                if (!label.equals(modelName)) throw new AssertionError(); // This check could be commented out at some point.
-                configMap.put(nextConfig, menuEntries.size());
-                menuEntries.add(makeEntry(nextView));
-            }
+            configMap.put(nextConfig, menuEntries.size());
+            menuEntries.add(makeEntry(nextView));
         }
     }
 
@@ -343,6 +314,12 @@ public class SbmtViewManager extends ViewManager
 
             if (result == 0)
             {
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+            }
+
+
+            if (result == 0)
+            {
                 result = BODY_COMPARATOR.compare(config1.body, config2.body);
             }
 
@@ -399,6 +376,41 @@ public class SbmtViewManager extends ViewManager
             ShapeModelPopulation.EARTH,
             null
             ));
+
+    private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
+            ShapeModelBody.EROS,
+            ShapeModelBody.ITOKAWA,
+            ShapeModelBody.RQ36,
+            ShapeModelBody.RYUGU,
+            ShapeModelBody.CERES,
+            ShapeModelBody.VESTA,
+            ShapeModelBody.LUTETIA,
+            ShapeModelBody.IDA,
+            ShapeModelBody.MATHILDE,
+            ShapeModelBody.GASPRA,
+            ShapeModelBody.STEINS
+            );
+
+    private static final Comparator<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT_COMPARATOR = new Comparator<ShapeModelBody>() {
+        @Override
+        public int compare(ShapeModelBody o1, ShapeModelBody o2)
+        {
+            int result = 0;
+            if (o1 != null && o2 != null)
+            {
+                if (MARK_VISITED_BY_SPACECRAFT.contains(o1))
+                {
+                    result = MARK_VISITED_BY_SPACECRAFT.contains(o2) ? 0 : -1;
+                }
+                else if (MARK_VISITED_BY_SPACECRAFT.contains(o2))
+                {
+                    result = 1;
+                }
+            }
+            return result;
+        }
+
+    };
 
     private static final OrderedComparator<ShapeModelBody> BODY_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
             // Asteroids -> NEO (visited)
