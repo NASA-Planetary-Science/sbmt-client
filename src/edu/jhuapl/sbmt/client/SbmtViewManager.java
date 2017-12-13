@@ -358,9 +358,9 @@ public class SbmtViewManager extends ViewManager
                 LABEL_PREFIX + "Spacecraft Data",
                 "433 Eros",
                 "25143 Itokawa",
-                "101955 Bennu",
                 "101955 Bennu (V3)",
                 "101955 Bennu (V4)",
+                "101955 Bennu",
                 "162173 Ryugu",
                 SEPARATOR,
                 "1580 Betulia",
@@ -404,24 +404,24 @@ public class SbmtViewManager extends ViewManager
                 ////////////////////////////////////////
                 // Comets
                 ////////////////////////////////////////
+                "1P/Halley",
                 "9P/Tempel 1",
+                "81P/Wild 2",
                 "67P/Churyumov-Gerasimenko (SHAP4S)",
                 "67P/Churyumov-Gerasimenko (SHAP5 V0.3)",
                 "67P/Churyumov-Gerasimenko (V2)",
                 "67P/Churyumov-Gerasimenko (V3)",
-                "81P/Wild 2",
                 "103P/Hartley 2",
-                "1P/Halley",
 
                 ////////////////////////////////////////
                 // Kuiper Belt Objects
                 ////////////////////////////////////////
                 // Pluto
+                "Pluto",
                 "Charon",
                 "Hydra",
                 "Kerberos",
                 "Nix",
-                "Pluto",
                 "Styx",
 
                 ////////////////////////////////////////
