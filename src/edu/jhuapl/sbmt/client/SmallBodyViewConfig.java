@@ -1471,7 +1471,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.customName = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
