@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.image.hyperoctree;
+package edu.jhuapl.sbmt.boudedobject.hyperoctree;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +29,7 @@ public class BoundedObjectHyperTreeGenerator
     long totalObjectsWritten = 0;
 
 
-    BiMap<Path, Integer> fileMap=HashBiMap.create();
+    BiMap<Path, Integer> fileMap = HashBiMap.create();
 
     public BoundedObjectHyperTreeGenerator(Path outputDirectory, int maxObjectsPerLeaf, HyperBox bbox, int maxNumberOfOpenOutputFiles, DataOutputStreamPool pool)
     {
@@ -99,25 +99,11 @@ public class BoundedObjectHyperTreeGenerator
         else {
             if (!dataFile.exists() || dataFile.length()==0l)
             {
-//                node.getBoundsFilePath().toFile().delete();
+                node.getBoundsFilePath().toFile().delete();
                 node.getPath().toFile().delete();
             }
         }
     }
-
-//    public double convertBytesToMB(long bytes)
-//    {
-//        return (double)bytes/(double)(1024*1024);
-//    }
-//
-//    public long countBytes()
-//    {
-//        List<FSHyperTreeNode> nodeList=getAllNonEmptyLeafNodes();
-//        long total=0;
-//        for (FSHyperTreeNode node : nodeList)
-//            total+=node.getDataFilePath().toFile().length();
-//        return total;
-//    }
 
     public List<BoundedObjectHyperTreeNode> getAllNonEmptyLeafNodes()
     {
@@ -167,10 +153,8 @@ public class BoundedObjectHyperTreeGenerator
         System.out.println("Max # open output files = "+maxNumOpenOutputFiles);
 
         NativeLibraryLoader.loadVtkLibrariesHeadless();
-        Path inputDirectoryListFile=Paths.get(inputFile);
         Path outputDirectory=Paths.get(outputDirectoryString);
 
-        int dataFileByteLimit=(int)(dataFileMBLimit*1024*1024);
         int maxObjectsPerLeaf = 2;
         DataOutputStreamPool pool=new DataOutputStreamPool(maxNumOpenOutputFiles);
 

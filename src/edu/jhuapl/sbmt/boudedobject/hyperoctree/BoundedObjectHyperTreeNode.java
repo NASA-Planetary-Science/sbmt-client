@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.image.hyperoctree;
+package edu.jhuapl.sbmt.boudedobject.hyperoctree;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -76,17 +76,12 @@ public class BoundedObjectHyperTreeNode
         return bbox.getDimension();
     }
 
-    public Path getChildPath(int i)
-    {
-        return path.resolve(String.valueOf(i));
-    }
-
     protected HyperBoundedObject createNewBoundedObject(DataInputStream stream)
     {
         return new HyperBoundedObject(stream);
     }
 
-    // TODO  implement adding of images
+    // TODO  implement adding of objects
     public boolean add(HyperBoundedObject obj) throws HyperException, IOException
     {
         if (!isLeaf) {
@@ -102,12 +97,6 @@ public class BoundedObjectHyperTreeNode
         }
         return false;
 
-    }
-
-    public Path getDataFilePath()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public int getNumberOfChildren()
@@ -163,14 +152,29 @@ public class BoundedObjectHyperTreeNode
         return children[i];
     }
 
+    public boolean isLeaf()
+    {
+        return isLeaf;
+    }
+
     public Path getPath()
     {
         return path;
     }
 
-    public boolean isLeaf()
+    public Path getChildPath(int i)
     {
-        return isLeaf;
+        return path.resolve(String.valueOf(i));
+    }
+
+    public Path getDataFilePath()
+    {
+        return path.resolve("data");
+    }
+
+    public Path getBoundsFilePath()
+    {
+        return path.resolve("bounds");
     }
 
 

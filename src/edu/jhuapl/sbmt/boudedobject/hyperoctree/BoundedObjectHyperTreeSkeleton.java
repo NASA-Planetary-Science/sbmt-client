@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.image.hyperoctree;
+package edu.jhuapl.sbmt.boudedobject.hyperoctree;
 
 import java.nio.file.Path;
 
