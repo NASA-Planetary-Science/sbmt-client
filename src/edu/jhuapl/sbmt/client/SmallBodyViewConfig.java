@@ -2015,6 +2015,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             c.hasImageMap=true;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
+
                 c.imagingInstruments = new ImagingInstrument[] {
                        // new Vis(ShapeModelBody.PHOBOS)
                         mapCam,
@@ -2030,6 +2033,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 Instrument.IMAGING_DATA
                                 )*/
                 };
+
 
                 c.hasSpectralData=true;
                 c.spectralInstruments=new SpectralInstrument[] {
@@ -2157,6 +2161,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 c.spectralInstruments=new SpectralInstrument[] {
                         new OTES(),new OVIRS()
                 };
+
+                c.hasStateHistory = true;
+                c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
