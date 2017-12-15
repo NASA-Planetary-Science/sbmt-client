@@ -11,7 +11,6 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
-import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
@@ -221,9 +220,6 @@ public class SbmtModelFactory
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
-        // This method will throw an exception if we cannot access this file.
-        FileCache.getFileInfoFromServer(config.serverPath(""));
-
         ShapeModelBody name = config.body;
         ShapeModelAuthor author = config.author;
 
