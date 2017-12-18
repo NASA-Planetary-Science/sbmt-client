@@ -118,26 +118,31 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            Configuration.setAppName("sbmt1hayabusa2");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
             break;
         case HAYABUSA2_STAGE:
-            Configuration.setAppName("sbmt1hb2-stage");
+            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-stage");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
             break;
         case HAYABUSA2_DEPLOY:
-            Configuration.setAppName("sbmt1hb2-deploy");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-deploy");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
             break;
         case NEARTOOL:
-            Configuration.setAppName("neartool");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+           Configuration.setAppName("neartool");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle("SBMT");
             break;
         case OSIRIS_REX:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
             Configuration.setAppName("sbmt1orex");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/OSIRIS REx");
