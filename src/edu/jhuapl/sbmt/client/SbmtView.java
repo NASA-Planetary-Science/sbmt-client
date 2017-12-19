@@ -55,6 +55,8 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchPanel;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
@@ -134,9 +136,9 @@ public class SbmtView extends View
             }
         }
 
-        for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+        if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel, instrument));
+            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
@@ -325,6 +327,11 @@ public class SbmtView extends View
                JComponent component = new OVIRSSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
                 }
+                else if (instrument instanceof NIRS3)
+                    {
+                    JComponent component = new NIRS3SearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                    addTab(instrument.getDisplayName(), component);
+                    }
 
         }
 

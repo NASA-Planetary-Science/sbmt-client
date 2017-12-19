@@ -8,14 +8,19 @@ import javax.swing.ToolTipManager;
 import vtk.vtkJavaGarbageCollector;
 import vtk.vtkNativeLibrary;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
+import edu.jhuapl.sbmt.client.SmallBodyMappingTool;
+import edu.jhuapl.sbmt.client.SmallBodyMappingTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
 {
-    private String[] args;
+    private final String[] args;
     public SbmtRunnable(String[] args)
     {
         this.args = args;
@@ -24,6 +29,7 @@ public class SbmtRunnable implements Runnable
     public void run()
     {
         SmallBodyViewConfig.initialize();
+        configureMissionBodies();
 
         // Parse options that come first
         int i = 0;
@@ -60,4 +66,64 @@ public class SbmtRunnable implements Runnable
         frame.setVisible(true);
     }
 
+    protected void configureMissionBodies()
+    {
+        disableAllBodies();
+        enableMissionBodies(SmallBodyMappingTool.getMission());
+    }
+
+    protected void disableAllBodies()
+    {
+        for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+        {
+            each.enable(false);
+        }
+    }
+
+    protected void enableMissionBodies(Mission mission)
+    {
+        for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+        {
+            if (each instanceof SmallBodyViewConfig)
+            {
+                SmallBodyViewConfig config = (SmallBodyViewConfig) each;
+                setBodyEnableState(mission, config);
+            }
+        }
+
+    }
+
+    protected void setBodyEnableState(Mission mission, SmallBodyViewConfig config)
+    {
+        switch (mission)
+        {
+        case HAYABUSA2:
+            if (
+                    ShapeModelBody.EROS.equals(config.body) ||
+                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelAuthor.HAYABUSA2.equals(config.author) ||
+                    ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
+        case NEARTOOL:
+            config.enable(true);
+            break;
+        case OSIRIS_REX:
+            if (
+                    ShapeModelBody.RQ36.equals(config.body) ||
+                    ShapeModelBody.EROS.equals(config.body) ||
+                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelAuthor.OREX.equals(config.author)
+               )
+            {
+                config.enable(true);
+            }
+            break;
+            default:
+                throw new AssertionError();
+        }
+    }
 }

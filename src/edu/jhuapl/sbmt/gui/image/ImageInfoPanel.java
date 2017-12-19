@@ -36,12 +36,12 @@ import vtk.vtkInteractorStyleImage;
 import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -55,7 +55,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     public static final double VIEWPOINT_DELTA = 1.0;
     public static final double ROTATION_DELTA = 5.0;
 
-    private vtksbmtJoglCanvas renWin;
+    private vtkJoglPanelComponent renWin;
     private Image image;
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
@@ -81,7 +81,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         this.imageBoundaryCollection = imageBoundaryCollection;
         this.statusBar = statusBar;
 
-        renWin = new vtksbmtJoglCanvas();
+        renWin = new vtkJoglPanelComponent();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style =

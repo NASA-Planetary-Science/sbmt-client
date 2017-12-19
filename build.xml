@@ -77,8 +77,8 @@
       <!-- <arg value="svn info | grep -i 'Last Changed Date'"/> -->
       <arg value="echo Last Changed Date: `date +%F`"/>
     </exec>
-    <copy file="${rootdir}/src/edu/jhuapl/data/splashLogo.png"
-    	        tofile="${rootdir}/build/classes/edu/jhuapl/data/splashLogo.png" />
+    <copy file="${rootdir}/src/edu/jhuapl/sbmt/data/splashLogo.png"
+    	        tofile="${rootdir}/build/classes/edu/jhuapl/sbmt/data/splashLogo.png" />
     <copy todir="${rootdir}/build/classes/edu/jhuapl/sbmt/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/sbmt/data"/>
     </copy>
@@ -270,7 +270,7 @@
       <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms/current"/>
       <jvmarg value="-Dsun.java2d.noddraw=true"/>
 -->
-    	
+    	  <jvmarg value="-Dedu.jhuapl.sbmt.mission=${MISSION}"/>
       <jvmarg value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64"/>
       <jvmarg value="-Dcom.apple.mrj.application.apple.menu.about.name=Small Body Mapping Tool"/>
       <classpath>

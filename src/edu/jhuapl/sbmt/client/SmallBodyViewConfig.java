@@ -28,6 +28,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.query.FixedListQuery;
 import edu.jhuapl.sbmt.query.GenericPhpQuery;
@@ -369,22 +370,51 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY"),
-                            ImageType.POLYCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY", "/GASKELL/RQ36_V4/POLYCAM/gallery"),
+                            ImageType.POLYCAM_V4_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP"),
-                            ImageType.MAPCAM_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP", "/GASKELL/RQ36_V4/MAPCAM/gallery"),
+                            ImageType.MAPCAM_V4_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
                             Instrument.MAPCAM
                             )
             };
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
+
+
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
 
             configArray.add(c);
         }
@@ -1697,7 +1727,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PLUTO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1743,7 +1773,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1783,7 +1813,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.HYDRA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1821,7 +1851,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.KERBEROS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1831,7 +1861,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = hydra;
             c.body = ShapeModelBody.NIX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1867,7 +1897,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.STYX;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = null;
             c.author = null;
@@ -1929,7 +1959,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_IMAGE);
+                        ImageType.MAPCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -1947,32 +1977,31 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_IMAGE);
+                        ImageType.MAPCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 polyCam = BasicImagingInstrument.of(builder.build());
             }
-// TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then uncomment this block and the line below.
-//            BasicImagingInstrument samCam;
-//            {
-//                // Set up images.
-//                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
-//                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-//                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-//                        Instrument.SAMCAM,
-//                        SpectralMode.MONO,
-//                        queryBase,
-//                        new ImageSource[] { ImageSource.SPICE },
-//                        fileLocator,
-//                        ImageType.SAMCAM_IMAGE);
-//
-//                // Put it all together in a session.
-//                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-//                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-//                samCam = BasicImagingInstrument.of(builder.build());
-//            }
+             BasicImagingInstrument samCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.SAMCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.SAMCAM_EARTH_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                samCam = BasicImagingInstrument.of(builder.build());
+            }
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
@@ -1983,12 +2012,17 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/earth/osirisrex";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
                 c.imagingInstruments = new ImagingInstrument[] {
                        // new Vis(ShapeModelBody.PHOBOS)
                         mapCam,
                         polyCam,
+                        samCam,
 // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
 //                        samCam
 /*                    new ImagingInstrument(
@@ -1999,6 +2033,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 Instrument.IMAGING_DATA
                                 )*/
                 };
+
 
                 c.hasSpectralData=true;
                 c.spectralInstruments=new SpectralInstrument[] {
@@ -2049,7 +2084,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_IMAGE);
+                        ImageType.MAPCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2067,32 +2102,31 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_IMAGE);
+                        ImageType.POLYCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 polyCam = BasicImagingInstrument.of(builder.build());
             }
-    //TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then uncomment this block and the line below.
-    //        BasicImagingInstrument samCam;
-    //        {
-    //            // Set up images.
-    //            SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
-    //            QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-    //            Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-    //                    Instrument.SAMCAM,
-    //                    SpectralMode.MONO,
-    //                    queryBase,
-    //                    new ImageSource[] { ImageSource.SPICE },
-    //                    fileLocator,
-    //                    ImageType.SAMCAM_IMAGE);
-    //
-    //            // Put it all together in a session.
-    //            Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-    //            builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-    //            samCam = BasicImagingInstrument.of(builder.build());
-    //        }
+            BasicImagingInstrument samCam;
+            {
+                // Set up images.
+                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                        Instrument.SAMCAM,
+                        SpectralMode.MONO,
+                        queryBase,
+                        new ImageSource[] { ImageSource.SPICE },
+                        fileLocator,
+                        ImageType.SAMCAM_EARTH_IMAGE);
+
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                samCam = BasicImagingInstrument.of(builder.build());
+            }
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
@@ -2101,15 +2135,17 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.OREX;
             c.rootDirOnServer = "/earth/orex";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.hasColoringData = false;
             c.hasImageMap=true;
 
                 c.imagingInstruments = new ImagingInstrument[] {
                        // new Vis(ShapeModelBody.PHOBOS)
                         mapCam,
                         polyCam,
+                        samCam,
     //TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
     //                    samCam
     /*                    new ImagingInstrument(
@@ -2123,8 +2159,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
                 c.hasSpectralData=true;
                 c.spectralInstruments=new SpectralInstrument[] {
-                        new OTES()
+                        new OTES(),new OVIRS()
                 };
+
+                c.hasStateHistory = true;
+                c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
@@ -2214,6 +2253,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //            samCam = BasicImagingInstrument.of(builder.build());
     //        }
 
+          BasicImagingInstrument tir;
+          {
+              // Set up images.
+              SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
+              QueryBase queryBase = new FixedListQuery("/" + fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), "/" + fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+              Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
+                      Instrument.TIR,
+                      SpectralMode.MONO,
+                      queryBase,
+                      new ImageSource[] { ImageSource.SPICE },
+                      fileLocator,
+                      ImageType.TIR_IMAGE);
+
+              // Put it all together in a session.
+              Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+              builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+              tir = BasicImagingInstrument.of(builder.build());
+          }
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
             c.type = ShapeModelType.PLANETS_AND_SATELLITES;
@@ -2221,12 +2279,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
-            c.shapeModelFileExtension = ".obj";
+//            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
             c.hasImageMap=true;
+            c.hasColoringData = false;
 
-//                c.imagingInstruments = new ImagingInstrument[] {
+                c.imagingInstruments = new ImagingInstrument[] {
 //                       // new Vis(ShapeModelBody.PHOBOS)
 //                        mapCam,
 //                        polyCam,
@@ -2239,7 +2298,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 new ImageSource[]{ImageSource.GASKELL},
                                 Instrument.IMAGING_DATA
                                 )*/
-//                };
+                        tir
+                };
 
 //                c.hasSpectralData=true;
 //                c.spectralInstruments=new SpectralInstrument[] {
@@ -2260,6 +2320,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new SpectralInstrument[]
+                    {
+                            new NIRS3()
+                    };
+
+
             configArray.add(c);
         }
 
@@ -2375,6 +2443,31 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<String, String>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }

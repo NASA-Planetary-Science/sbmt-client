@@ -14,7 +14,8 @@
         EPOCH_STR_LENGTH  = 24
         IGNORE_FIRST_LINE = 0
         LEAPSECONDS_FILE  = '/project/nearsdc/spice-kernels/near/LSK/NAIF0007.TLS'
-        POLYNOM_DEGREE    = 1
+        POLYNOM_DEGREE    = 3
         SEGMENT_ID        = 'SPK_STATES_09'
+        COMMENT_FILE      = 'spk_comments.txt'
         \begintext
 

@@ -48,21 +48,25 @@ public class SbmtMainWindow extends MainWindow
 
     }
 
+    @Override
     protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
     {
         return new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
     }
 
-    protected ViewMenu createViewMenu(ViewManager rootPanel, RecentlyViewed recentsMenu)
+    @Override
+    protected ViewMenu createViewMenu(ViewManager viewManager, RecentlyViewed recentsMenu)
     {
-        return new SbmtViewMenu(rootPanel, recentsMenu);
+        return new SbmtViewMenu((SbmtViewManager) viewManager, recentsMenu);
     }
 
+    @Override
     protected ImageIcon createImageIcon()
     {
         return new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
     }
 
+    @Override
     protected HelpMenu createHelpMenu(ViewManager rootPanel)
     {
         return new SbmtHelpMenu(rootPanel);
@@ -75,7 +79,8 @@ public class SbmtMainWindow extends MainWindow
             super("OBJ...");
         }
 
-        public void actionPerformed(ActionEvent actionEvent)
+        @Override
+        public void actionPerformed(@SuppressWarnings("unused") ActionEvent actionEvent)
         {
             File file = DirectoryChooser.showOpenDialog(rootPanel);
 
