@@ -72,5 +72,6 @@ public class SbmtViewMenu extends ViewMenu
             parentMenu = childMenu;
         }
         parentMenu.add(mi);
+        mi.setEnabled(config.isAccessible());
     }
 }
