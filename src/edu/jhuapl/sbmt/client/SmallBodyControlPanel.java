@@ -31,18 +31,20 @@ import nom.tam.fits.FitsException;
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
     private final List<OpacityChangeListener> imageChangeListeners;
+    private ImageKey currentImageMapKey;
+
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {
         super(modelManager, bodyName);
         this.imageChangeListeners = Lists.newArrayList();
+        this.currentImageMapKey = null;
         if (getColoringComboBox().getItemCount()>0)
             getColoringComboBox().setSelectedIndex(0);
     }
 
     private ImageKey createImageMapKey()
     {
-        PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
-        String name = smallBodyModel.getImageMapNames()[0];
+        String name = getSelectedImageMapName();
         return new ImageKey(name, ImageSource.IMAGE_MAP);
     }
 
@@ -51,21 +53,33 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
         if (smallBodyModel.isImageMapAvailable())
         {
-            ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
-
             try
             {
-                ImageKey key = createImageMapKey();
                 if (show)
                 {
-                    imageCollection.addImage(key);
+                    ImageKey key = createImageMapKey();
+                    if (key != currentImageMapKey)
+                    {
+                        hideImageMap();
+                    }
+                    ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
                     Image image = imageCollection.getImage(key);
-                    image.addPropertyChangeListener(new OpacityChangeListener(image));
+                    if (image == null)
+                    {
+                        imageCollection.addImage(key);
+                        image = imageCollection.getImage(key);
+                        getImageMapOpacitySpinner().setValue(image.getOpacity());
+                        image.addPropertyChangeListener(new OpacityChangeListener(image));
+                    }
+                    else
+                    {
+                        image.setVisible(true);
+                    }
+                    currentImageMapKey = key;
                 }
                 else
                 {
-                    removeListeners(imageCollection.getImage(key));
-                    imageCollection.removeImage(key);
+                    hideImageMap();
                 }
             }
             catch (FitsException e)
@@ -75,6 +89,24 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
             catch (IOException e)
             {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void hideImageMap() {
+        if (currentImageMapKey != null)
+        {
+            try
+            {
+                ImageCollection imageCollection = (ImageCollection) getModelManager().getModel(ModelNames.IMAGES);
+                Image image = imageCollection.getImage(currentImageMapKey);
+                if (image != null) image.setVisible(false);
+//                removeListeners(imageCollection.getImage(currentImageMapKey));
+//                imageCollection.removeImage(currentImageMapKey);
+            }
+            finally
+            {
+                currentImageMapKey = null;
             }
         }
     }
