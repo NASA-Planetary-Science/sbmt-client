@@ -921,7 +921,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -996,7 +997,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1017,7 +1019,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
@@ -1268,7 +1271,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.STOOKE;
-            c.customName = "Stooke (2016)";
+            // 2017-12-20: this name will be correct when "the new model" has been brought in.
+            // c.customName = "Stooke (2016)";
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
@@ -1459,7 +1463,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
@@ -1533,7 +1538,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
@@ -1573,7 +1579,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "STOOKE (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -1585,7 +1592,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "STOOKE (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -1597,7 +1605,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
-        c.customName = "Stooke (2016)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
@@ -1647,7 +1656,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        c.customName = "Farnham and Thomas (2013)";
+        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // c.customName = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
@@ -1838,6 +1848,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
+        c.customName = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
 
@@ -1848,9 +1859,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.PLUTO;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Nimmo et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1895,9 +1906,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.CHARON;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Nimmo et al. (2016)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1936,9 +1947,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.HYDRA;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1975,9 +1986,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.KERBEROS;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -1986,9 +1997,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.NIX;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -2023,9 +2034,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.STYX;
             c.type = ShapeModelType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
-            c.dataUsed = null;
+            c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Stern et. al (2015)";
+            c.customName = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
