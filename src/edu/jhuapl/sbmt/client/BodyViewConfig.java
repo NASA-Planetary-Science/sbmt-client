@@ -22,7 +22,7 @@ import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public class BodyViewConfig extends ViewConfig
+public abstract class BodyViewConfig extends ViewConfig
 {
     public String rootDirOnServer;
     protected String shapeModelFileBaseName = "shape/shape";

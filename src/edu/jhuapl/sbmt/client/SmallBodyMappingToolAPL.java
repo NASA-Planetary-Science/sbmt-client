@@ -16,11 +16,12 @@ public class SmallBodyMappingToolAPL
 {
     public static void main(String[] args)
     {
+        Configuration.setAPLVersion(true);
+
         if (Configuration.getAppName() == null)
         {
             SmallBodyMappingTool.configureMission();
         }
-        Configuration.setAPLVersion(true);
 
         String username = null;
         String password = null;
