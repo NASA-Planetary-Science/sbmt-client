@@ -459,7 +459,10 @@ public class DatabaseGeneratorSql
         RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelAuthor.GASKELL),
                 "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelAuthor.GASKELL),
-                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu");
+                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+        ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelAuthor.GASKELL),
+                "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+        ;
 
 
         public final SmallBodyViewConfig config;
