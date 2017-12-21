@@ -97,6 +97,20 @@ public class SbmtRunnable implements Runnable
     {
         switch (mission)
         {
+        case APL_INTERNAL:
+            config.enable(true);
+            break;
+        case PUBLIC_RELEASE:
+            if (
+                    !ShapeModelAuthor.HAYABUSA2.equals(config.author) &&
+                    !ShapeModelAuthor.OREX.equals(config.author) &&
+                    !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelAuthor.GASKELL.equals(config.author)) &&
+                    !ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
         case HAYABUSA2:
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
@@ -107,9 +121,6 @@ public class SbmtRunnable implements Runnable
             {
                 config.enable(true);
             }
-            break;
-        case NEARTOOL:
-            config.enable(true);
             break;
         case OSIRIS_REX:
             if (
