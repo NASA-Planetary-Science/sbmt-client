@@ -926,6 +926,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
+        c.customName = "Stooke (2002)";
         c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1002,6 +1003,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
+        c.customName = "Stooke (2002)";
         c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1024,6 +1026,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
+        c.customName = "Stooke (2002)";
         c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
@@ -1468,6 +1471,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
+        c.customName = "Stooke (2002)";
         c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
@@ -1543,6 +1547,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
+        c.customName = "Stooke (2002)";
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
@@ -1609,6 +1614,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        c.customName = "Stooke (2002)";
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
@@ -1659,8 +1665,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Farnham and Thomas (2013)";
+        c.customName = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
