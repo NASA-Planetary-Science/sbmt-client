@@ -277,6 +277,7 @@ ${pub_win_zip} : ${NEARJAR}
 			cp ${jre_dir}/runsbmt_hayabusa.exe ${pub_win_sbmt_dir}/runsbmt.exe
 		else
 			cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
+		endif
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
 		(cd ${pub_win_dir} ; zip -q -r ${win_zip} sbmt)
 
