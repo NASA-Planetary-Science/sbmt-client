@@ -207,10 +207,11 @@ ${int_win_zip} : ${NEARAPLJAR}
 		rm -rf ${int_win_sbmt_dir}/jre
 		mv ${int_win_sbmt_dir}/jre-win64 ${int_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
-		ifeq ("${MISSION}", "244425c")
+		ifeq ($(MISSION),244425c)
 			cp ${jre_dir}/runsbmt_hayabusa.exe ${int_win_sbmt_dir}/runsbmt.exe
 		else
 			cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
+		endif
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} sbmt)
 
@@ -273,7 +274,7 @@ ${pub_win_zip} : ${NEARJAR}
 		rm -rf ${pub_win_sbmt_dir}/jre
 		mv ${pub_win_sbmt_dir}/jre-win64 ${pub_win_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
-		ifeq (${MISSION}, "244425c")
+		ifeq ($(MISSION),244425c)
 			cp ${jre_dir}/runsbmt_hayabusa.exe ${pub_win_sbmt_dir}/runsbmt.exe
 		else
 			cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
