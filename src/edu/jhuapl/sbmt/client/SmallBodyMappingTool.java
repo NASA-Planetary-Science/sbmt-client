@@ -28,6 +28,8 @@ public class SmallBodyMappingTool
     public enum Mission
     {
         HAYABUSA2("133314b"),
+        HAYABUSA2_STAGE("244425c"),
+        HAYABUSA2_DEPLOY("355536d"),
         NEARTOOL("b1bc7ed"),
         OSIRIS_REX("7cd84586"),
         ;
@@ -119,16 +121,31 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            Configuration.setAppName("sbmt1hayabusa2");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2");
             Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+            break;
+        case HAYABUSA2_STAGE:
+            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+            break;
+        case HAYABUSA2_DEPLOY:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-deploy");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
             break;
         case NEARTOOL:
-            Configuration.setAppName("neartool");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+           Configuration.setAppName("neartool");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle("SBMT");
             break;
         case OSIRIS_REX:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
             Configuration.setAppName("sbmt1orex");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/OSIRIS REx");
@@ -145,7 +162,13 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            splash = new SbmtSplash("resources", "splashLogo.png");
+            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+            break;
+        case HAYABUSA2_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+            break;
+        case HAYABUSA2_DEPLOY:
+            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
             break;
         case NEARTOOL:
             splash = new SbmtSplash("resources", "splashLogo.png");
