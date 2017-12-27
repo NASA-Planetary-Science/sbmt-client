@@ -44,8 +44,8 @@ public class SmallBodyMappingTool
         }
     }
 
-    private static final String MISSION_HASH = "b1bc7ed";
-    private static Mission mission = null;
+    private static final Mission RELEASED_MISSION = null;
+    private static Mission mission = RELEASED_MISSION;
 
     static
     {
@@ -90,8 +90,7 @@ public class SmallBodyMappingTool
     {
         if (mission == null)
         {
-//            String missionHash = System.getProperty("edu.jhuapl.sbmt.mission");
-            String missionHash = MISSION_HASH;
+            String missionHash = System.getProperty("edu.jhuapl.sbmt.mission");
             Mission mission = missionHash == null ? Mission.NEARTOOL : null;
             for (Mission each: Mission.values())
             {
