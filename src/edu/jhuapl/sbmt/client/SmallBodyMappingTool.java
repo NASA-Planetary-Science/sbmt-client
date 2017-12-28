@@ -133,7 +133,7 @@ public class SmallBodyMappingTool
             Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
             break;
         case HAYABUSA2_DEPLOY:
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
             Configuration.setAppName("sbmt1hyb2-deploy");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
