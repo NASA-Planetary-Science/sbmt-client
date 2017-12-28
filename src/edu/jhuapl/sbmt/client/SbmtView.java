@@ -93,8 +93,8 @@ public class SbmtView extends View
     {
     	String result = "";
     	SmallBodyViewConfig config = getPolyhedralModelConfig();
-    	if (config.customName != null)
-    	    result = config.customName;
+    	if (config.modelLabel != null)
+    	    result = config.modelLabel;
     	else if (config.author == null)
     	    result = config.body.toString();
     	else

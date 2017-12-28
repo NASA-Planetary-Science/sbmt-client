@@ -120,7 +120,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public String getUniqueName()
     {
         if (ShapeModelType.CUSTOM == author)
-            return author + "/" + customName;
+            return author + "/" + modelLabel;
         else if (author != null)
         {
             if (version == null)
@@ -136,7 +136,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public String getShapeModelName()
     {
         if (author == ShapeModelType.CUSTOM)
-            return customName;
+            return modelLabel;
         else
         {
             String ver = "";
@@ -171,7 +171,7 @@ public abstract class BodyViewConfig extends ViewConfig
     {
         if (ShapeModelType.CUSTOM == author)
         {
-            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + customName;
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
         }
         else
         {
@@ -292,7 +292,7 @@ public abstract class BodyViewConfig extends ViewConfig
             c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
             c.lidarOffsetScale = this.lidarOffsetScale;
         }
-        c.customName = this.customName;
+        c.modelLabel = this.modelLabel;
         c.customTemporary = this.customTemporary;
 
         return c;

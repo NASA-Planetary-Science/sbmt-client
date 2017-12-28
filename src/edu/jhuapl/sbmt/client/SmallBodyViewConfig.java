@@ -67,7 +67,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2008)";
+        c.modelLabel = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -128,7 +128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Thomas Eros
         c = c.clone();
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas et al. (2001)";
+        c.modelLabel = "Thomas et al. (2001)";
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
@@ -146,7 +146,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelType.EROSNLR;
-        c.customName = "Neumann et al. (2001)";
+        c.modelLabel = "Neumann et al. (2001)";
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
@@ -157,7 +157,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelType.EROSNAV;
-        c.customName = "NAV team (2001)";
+        c.modelLabel = "NAV team (2001)";
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
@@ -170,7 +170,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell et al. (2008)";
+        c.modelLabel = "Gaskell et al. (2008)";
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
@@ -232,7 +232,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.OSTRO;
-        c.customName = "Ostro et al. (2004)";
+        c.modelLabel = "Ostro et al. (2004)";
         c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
         configArray.add(c);
 
@@ -242,7 +242,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.NOLAN;
-        c.customName = "Nolan et al. (2013)";
+        c.modelLabel = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
         configArray.add(c);
 
@@ -288,7 +288,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "OREX Simulated";
+            c.modelLabel = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -364,7 +364,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "OREX Simulated";
+            c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/GASKELL/RQ36_V4";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -449,7 +449,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Neese (2004)";
+        c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -461,7 +461,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Neese (2004)";
+        c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -485,7 +485,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Hudson et al. (2004)";
+        c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         c.version = "Low resolution";
         configArray.add(c);
@@ -496,7 +496,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Hudson et al. (2004)";
+        c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         c.version = "High resolution";
         configArray.add(c);
@@ -531,7 +531,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Neese (2004)";
+        c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -543,7 +543,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Neese (2004)";
+        c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -711,7 +711,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "SPC";
+            c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -762,7 +762,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2013)";
+        c.modelLabel = "Gaskell (2013)";
         c.rootDirOnServer = "/GASKELL/VESTA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -801,7 +801,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
 
@@ -813,7 +813,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "SPC";
+            c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -843,7 +843,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.JORDA;
-        c.customName = "Farnham et al. (2013)";
+        c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
         c.smallBodyLabelPerResolutionLevel = new String[]{
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
@@ -884,7 +884,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
-        c.customName = "Neese (2004)";
+        c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -896,7 +896,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas et al. (2000)";
+        c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
 
@@ -936,7 +936,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas et al. (2000)";
+        c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
 
@@ -972,7 +972,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas et al. (2000)";
+        c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
 
@@ -1012,7 +1012,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.JORDA;
-        c.customName = "Farnham and Jorda (2013)";
+        c.modelLabel = "Farnham and Jorda (2013)";
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
@@ -1033,7 +1033,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
@@ -1049,7 +1049,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.EXPERIMENTAL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
 
@@ -1087,7 +1087,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2011)";
+        c.modelLabel = "Gaskell (2011)";
         c.density = 1.876;
         c.rotationRate = 0.00022803304110600688;
         c.rootDirOnServer = "/GASKELL/PHOBOS";
@@ -1150,7 +1150,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
 
         c.lidarSearchDataSourceMap=Maps.newHashMap();   // this must be instantiated, but can be empty
@@ -1166,7 +1166,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.EXPERIMENTAL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1427,7 +1427,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2013a)";
+        c.modelLabel = "Gaskell (2013a)";
         c.rootDirOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1456,7 +1456,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
@@ -1479,7 +1479,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Gaskell et al. (in progress)";
+            c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1492,7 +1492,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         configArray.add(c);
 
@@ -1502,7 +1502,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Thomas (2000)";
+        c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
@@ -1512,7 +1512,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2013b)";
+        c.modelLabel = "Gaskell (2013b)";
         c.rootDirOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1552,7 +1552,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2013c)";
+        c.modelLabel = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1621,7 +1621,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Gaskell (in progress)";
+            c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1634,7 +1634,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Gaskell (2013d)";
+        c.modelLabel = "Gaskell (2013d)";
         c.rootDirOnServer = "/GASKELL/TETHYS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1648,7 +1648,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Gaskell et al. (in progress)";
+            c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/TEMPEL1";
             configArray.add(c);
         }
@@ -1670,7 +1670,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.DUXBURY;
-        c.customName = "Farnham et al. (2005)";
+        c.modelLabel = "Farnham et al. (2005)";
         c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
 
@@ -1851,7 +1851,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.customName = "Farnham and Thomas (2013)";
+        c.modelLabel = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
 
@@ -1864,7 +1864,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1911,7 +1911,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2016)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1952,7 +1952,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Weaver et al. (2016)";
+            c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1991,7 +1991,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Weaver et al. (2016)";
+            c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -2002,7 +2002,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Weaver et al. (2016)";
+            c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -2039,7 +2039,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.customName = "Weaver et al. (2016)";
+            c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             configArray.add(c);
@@ -2051,7 +2051,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
-        c.customName = "Ernst et al. (in progress)";
+        c.modelLabel = "Ernst et al. (in progress)";
         c.rootDirOnServer = "/GASKELL/TELESTO";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2490,7 +2490,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.TRUTH;
-            c.customName = "H2 Simulated Truth";
+            c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
@@ -2567,7 +2567,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "H2 Simulated Gaskell";
+            c.modelLabel = "H2 Simulated Gaskell";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2634,7 +2634,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/atlas/gaskell";
 //            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
 //            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2663,7 +2663,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/calypso/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2683,7 +2683,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Gaskell (in progress)";
+            c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/enceladus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2705,7 +2705,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/epimetheus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2732,7 +2732,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/helene/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2752,7 +2752,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Gaskell (in progress)";
+            c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/iapetus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2774,7 +2774,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/janus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2801,7 +2801,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pan/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2828,7 +2828,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pandora/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -2855,7 +2855,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.customName = "Ernst et al. (in progress)";
+            c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/prometheus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;

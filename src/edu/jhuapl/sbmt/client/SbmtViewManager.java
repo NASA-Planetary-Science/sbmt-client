@@ -126,7 +126,7 @@ public class SbmtViewManager extends ViewManager
     public View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
         SmallBodyViewConfig config = new SmallBodyViewConfig();
-        config.customName = name;
+        config.modelLabel = name;
         config.customTemporary = temporary;
         config.author = ShapeModelType.CUSTOM;
         return new SbmtView(statusBar, config);
