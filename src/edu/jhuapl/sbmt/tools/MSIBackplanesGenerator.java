@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -152,7 +152,7 @@ public class MSIBackplanesGenerator
         String resolution = "3";
         Instrument camera = Instrument.MSI;
         ImageSource ptg = ImageSource.GASKELL_UPDATED;
-        ShapeModelAuthor author = ShapeModelAuthor.GASKELL;
+        ShapeModelType author = ShapeModelType.GASKELL;
         ShapeModelBody body = ShapeModelBody.EROS;
         BackplanesFileFormat fmt = BackplanesFileFormat.FITS;
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, author, null));

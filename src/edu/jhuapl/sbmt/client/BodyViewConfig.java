@@ -7,7 +7,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -119,7 +119,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String getUniqueName()
     {
-        if (ShapeModelAuthor.CUSTOM == author)
+        if (ShapeModelType.CUSTOM == author)
             return author + "/" + customName;
         else if (author != null)
         {
@@ -135,7 +135,7 @@ public abstract class BodyViewConfig extends ViewConfig
     @Override
     public String getShapeModelName()
     {
-        if (author == ShapeModelAuthor.CUSTOM)
+        if (author == ShapeModelType.CUSTOM)
             return customName;
         else
         {
@@ -169,9 +169,9 @@ public abstract class BodyViewConfig extends ViewConfig
     @Override
     public String getPathRepresentation()
     {
-        if (ShapeModelAuthor.CUSTOM == author)
+        if (ShapeModelType.CUSTOM == author)
         {
-            return Configuration.getAppTitle() + " - " + ShapeModelAuthor.CUSTOM + " > " + customName;
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + customName;
         }
         else
         {

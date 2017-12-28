@@ -21,7 +21,7 @@ import nom.tam.fits.FitsException;
 
 import vtk.vtkObject;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -498,7 +498,7 @@ public class AmicaBackplanesGenerator
         String inertialFilename = args[1];
         int mode = Integer.parseInt(args[2]);
 
-        itokawaModel = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelAuthor.GASKELL));
+        itokawaModel = new Itokawa(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ITOKAWA, ShapeModelType.GASKELL));
 
         computeMeanPlateSizeAtAllResolutions();
 

@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -46,12 +46,12 @@ import edu.jhuapl.sbmt.query.QueryBase;
 */
 public class SmallBodyViewConfig extends BodyViewConfig
 {
-    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author)
+    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
         return (SmallBodyViewConfig)getConfig(name, author, null);
     }
 
-    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelAuthor author, String version)
+    static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
     {
         return (SmallBodyViewConfig)getConfig(name, author, version);
     }
@@ -66,7 +66,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
@@ -127,7 +127,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         // Thomas Eros
         c = c.clone();
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas et al. (2001)";
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
@@ -145,7 +145,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Eros NLR
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
-        c.author = ShapeModelAuthor.EROSNLR;
+        c.author = ShapeModelType.EROSNLR;
         c.customName = "Neumann et al. (2001)";
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         c.hasStateHistory = true;
@@ -156,7 +156,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Eros NAV
         c = c.clone();
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
-        c.author = ShapeModelAuthor.EROSNAV;
+        c.author = ShapeModelType.EROSNAV;
         c.customName = "NAV team (2001)";
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         c.hasStateHistory = true;
@@ -169,7 +169,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell et al. (2008)";
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
@@ -231,7 +231,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.OSTRO;
+        c.author = ShapeModelType.OSTRO;
         c.customName = "Ostro et al. (2004)";
         c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
         configArray.add(c);
@@ -241,7 +241,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.NOLAN;
+        c.author = ShapeModelType.NOLAN;
         c.customName = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
         configArray.add(c);
@@ -287,7 +287,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
@@ -363,7 +363,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/GASKELL/RQ36_V4";
@@ -436,7 +436,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -448,7 +448,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -460,7 +460,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -472,7 +472,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -484,7 +484,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         c.version = "Low resolution";
@@ -495,7 +495,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         c.version = "High resolution";
@@ -506,7 +506,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -518,7 +518,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -530,7 +530,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -542,7 +542,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -554,7 +554,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -566,7 +566,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/SK/sk.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -578,7 +578,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -590,7 +590,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -602,7 +602,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/WT24/wt24.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -614,7 +614,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -625,7 +625,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/YORP/yorp.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -637,7 +637,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -649,7 +649,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -661,7 +661,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -673,7 +673,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/CE26/ce26.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -685,7 +685,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -697,7 +697,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -710,7 +710,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -750,7 +750,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
+        c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -761,7 +761,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2013)";
         c.rootDirOnServer = "/GASKELL/VESTA";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -800,7 +800,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/VESTA_OLD";
         configArray.add(c);
@@ -812,7 +812,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -842,7 +842,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.JORDA;
+        c.author = ShapeModelType.JORDA;
         c.customName = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
         c.smallBodyLabelPerResolutionLevel = new String[]{
@@ -861,7 +861,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
+        c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -872,7 +872,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.CARRY;
+        c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -883,7 +883,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelAuthor.HUDSON;
+        c.author = ShapeModelType.HUDSON;
         c.customName = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
@@ -895,7 +895,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
@@ -923,7 +923,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
@@ -935,7 +935,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
@@ -971,7 +971,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
@@ -999,7 +999,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
@@ -1011,7 +1011,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.JORDA;
+        c.author = ShapeModelType.JORDA;
         c.customName = "Farnham and Jorda (2013)";
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
@@ -1021,7 +1021,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
@@ -1032,7 +1032,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
         c.hasStateHistory = true;
@@ -1048,7 +1048,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.EXPERIMENTAL;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
@@ -1086,7 +1086,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2011)";
         c.density = 1.876;
         c.rotationRate = 0.00022803304110600688;
@@ -1149,7 +1149,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
 
@@ -1165,7 +1165,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.EXPERIMENTAL;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1273,7 +1273,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.STOOKE;
+            c.author = ShapeModelType.STOOKE;
             // 2017-12-20: this name will be correct when "the new model" has been brought in.
             // c.customName = "Stooke (2016)";
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
@@ -1426,7 +1426,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2013a)";
         c.rootDirOnServer = "/GASKELL/DIONE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1455,7 +1455,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
@@ -1465,7 +1465,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
@@ -1478,7 +1478,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1491,7 +1491,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         configArray.add(c);
@@ -1501,7 +1501,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
@@ -1511,7 +1511,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2013b)";
         c.rootDirOnServer = "/GASKELL/MIMAS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1540,7 +1540,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
@@ -1551,7 +1551,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1581,7 +1581,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
@@ -1594,7 +1594,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
@@ -1607,7 +1607,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.STOOKE;
+        c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
@@ -1620,7 +1620,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Gaskell (in progress)";
             c.rootDirOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1633,7 +1633,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Gaskell (2013d)";
         c.rootDirOnServer = "/GASKELL/TETHYS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1647,7 +1647,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/TEMPEL1";
             configArray.add(c);
@@ -1658,7 +1658,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
         // c.customName = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
@@ -1669,7 +1669,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.DUXBURY;
+        c.author = ShapeModelType.DUXBURY;
         c.customName = "Farnham et al. (2005)";
         c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
         configArray.add(c);
@@ -1681,7 +1681,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
             c.rootDirOnServer = "/GASKELL/67P";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -1719,7 +1719,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
 
             c = c.clone();
-            c.author = ShapeModelAuthor.DLR;
+            c.author = ShapeModelType.DLR;
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
@@ -1738,7 +1738,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.version = "V2";
             c.rootDirOnServer = "/GASKELL/67P_V2";
 
@@ -1792,7 +1792,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/67P_V3";
 
@@ -1850,7 +1850,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.THOMAS;
+        c.author = ShapeModelType.THOMAS;
         c.customName = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         configArray.add(c);
@@ -2050,7 +2050,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-        c.author = ShapeModelAuthor.GASKELL;
+        c.author = ShapeModelType.GASKELL;
         c.customName = "Ernst et al. (in progress)";
         c.rootDirOnServer = "/GASKELL/TELESTO";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2148,7 +2148,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.BLENDER;
+            c.author = ShapeModelType.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
             c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
@@ -2273,7 +2273,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
-            c.author = ShapeModelAuthor.OREX;
+            c.author = ShapeModelType.OREX;
             c.rootDirOnServer = "/earth/orex";
 //            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
@@ -2417,7 +2417,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
-            c.author = ShapeModelAuthor.HAYABUSA2;
+            c.author = ShapeModelType.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
@@ -2489,7 +2489,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.TRUTH;
+            c.author = ShapeModelType.TRUTH;
             c.customName = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
@@ -2566,7 +2566,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "H2 Simulated Gaskell";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
@@ -2615,7 +2615,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         }
 
         // Standard Gaskell shape model may be described once.
-        final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelAuthor.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
+        final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
 
         // Gaskell images only.
         final ImageSource[] gaskellImagingSource = new ImageSource[] { ImageSource.GASKELL };
@@ -2633,7 +2633,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/atlas/gaskell";
 //            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2662,7 +2662,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/calypso/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2682,7 +2682,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Gaskell (in progress)";
             c.rootDirOnServer = "/enceladus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2704,7 +2704,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/epimetheus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2731,7 +2731,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/helene/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2751,7 +2751,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Gaskell (in progress)";
             c.rootDirOnServer = "/iapetus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2773,7 +2773,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/janus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2800,7 +2800,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pan/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2827,7 +2827,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pandora/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
@@ -2854,7 +2854,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelAuthor.GASKELL;
+            c.author = ShapeModelType.GASKELL;
             c.customName = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/prometheus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
