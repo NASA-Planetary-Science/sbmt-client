@@ -108,7 +108,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // Additional variables not inherited from parent
     //
 
-    public ShapeModelType type; // e.g. asteroid, comet, satellite
+    public BodyType type; // e.g. asteroid, comet, satellite
     public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
 

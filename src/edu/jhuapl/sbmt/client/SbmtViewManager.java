@@ -357,11 +357,11 @@ public class SbmtViewManager extends ViewManager
         }
     }
 
-    private static final OrderedComparator<ShapeModelType> TYPE_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
-            ShapeModelType.ASTEROID,
-            ShapeModelType.COMETS,
-            ShapeModelType.KBO,
-            ShapeModelType.PLANETS_AND_SATELLITES,
+    private static final OrderedComparator<BodyType> TYPE_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            BodyType.ASTEROID,
+            BodyType.COMETS,
+            BodyType.KBO,
+            BodyType.PLANETS_AND_SATELLITES,
             null
             ));
 

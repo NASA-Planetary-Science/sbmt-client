@@ -63,7 +63,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Gaskell Eros
         SmallBodyViewConfig c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EROS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -166,7 +166,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Gaskell Itokawa
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.ITOKAWA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -228,7 +228,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Ostro Itokawa
        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.ITOKAWA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.OSTRO;
@@ -238,7 +238,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.RQ36;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.NOLAN;
@@ -284,7 +284,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RQ36;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -360,7 +360,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RQ36;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -433,7 +433,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BETULIA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -445,7 +445,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GEOGRAPHOS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -457,7 +457,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BACCHUS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -469,7 +469,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.RASHALOM;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -481,7 +481,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TOUTATIS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -492,7 +492,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TOUTATIS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -503,7 +503,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MITHRA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -515,7 +515,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.NEREUS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -527,7 +527,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CASTALIA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -539,7 +539,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GOLEVKA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -551,7 +551,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HW1;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -563,7 +563,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.SK;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -575,7 +575,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._1950DAPROGRADE;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -587,7 +587,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._1950DARETROGRADE;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -599,7 +599,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.WT24;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -611,7 +611,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._52760_1998_ML14;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -622,7 +622,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.YORP;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -634,7 +634,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KW4A;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -646,7 +646,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KW4B;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -658,7 +658,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CCALPHA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -670,7 +670,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CE26;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -682,7 +682,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EV5;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -694,7 +694,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KY26;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -707,7 +707,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.CERES;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -747,7 +747,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PALLAS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
@@ -758,7 +758,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.VESTA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -797,7 +797,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.VESTA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -809,7 +809,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.LUTETIA;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.MAIN_BELT;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -839,7 +839,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.LUTETIA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.JORDA;
@@ -858,7 +858,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.DAPHNE;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
@@ -869,7 +869,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HERMIONE;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.CARRY;
@@ -880,7 +880,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KLEOPATRA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelAuthor.HUDSON;
@@ -892,7 +892,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -920,7 +920,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -932,7 +932,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MATHILDE;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -968,7 +968,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -996,7 +996,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1008,7 +1008,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.STEINS;
-        c.type = ShapeModelType.ASTEROID;
+        c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.JORDA;
@@ -1018,7 +1018,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
-        c.type = ShapeModelType.COMETS;
+        c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1029,7 +1029,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.DEIMOS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1045,7 +1045,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.DEIMOS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.EXPERIMENTAL;
@@ -1083,7 +1083,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Gaskell Phobos
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOBOS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -1146,7 +1146,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Thomas Phobos
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOBOS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.MARS;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1162,7 +1162,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PHOBOS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.EXPERIMENTAL;
@@ -1221,7 +1221,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.JUPITER;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
@@ -1270,7 +1270,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.AMALTHEA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.STOOKE;
@@ -1283,7 +1283,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = callisto.clone();
             c.body = ShapeModelBody.CALLISTO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
@@ -1307,7 +1307,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.EUROPA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
@@ -1346,7 +1346,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.GANYMEDE;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
@@ -1384,7 +1384,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.IO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
@@ -1423,7 +1423,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.DIONE;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -1452,7 +1452,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1462,7 +1462,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1475,7 +1475,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.HYPERION;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1488,7 +1488,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HYPERION;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1498,7 +1498,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.JANUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1508,7 +1508,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MIMAS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -1537,7 +1537,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PANDORA;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1548,7 +1548,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PHOEBE;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -1578,7 +1578,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.LARISSA;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1591,7 +1591,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PROTEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1604,7 +1604,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PROMETHEUS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.STOOKE;
@@ -1617,7 +1617,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RHEA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1630,7 +1630,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TETHYS;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -1644,7 +1644,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.TEMPEL_1;
-            c.type = ShapeModelType.COMETS;
+            c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1655,7 +1655,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
-        c.type = ShapeModelType.COMETS;
+        c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1666,7 +1666,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.WILD_2;
-        c.type = ShapeModelType.COMETS;
+        c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.DUXBURY;
@@ -1678,7 +1678,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
-            c.type = ShapeModelType.COMETS;
+            c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1735,7 +1735,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // 67P_V2
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
-            c.type = ShapeModelType.COMETS;
+            c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1789,7 +1789,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // 67P_V3
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
-            c.type = ShapeModelType.COMETS;
+            c.type = BodyType.COMETS;
             c.population = null;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -1847,7 +1847,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HARTLEY;
-        c.type = ShapeModelType.COMETS;
+        c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.THOMAS;
@@ -1860,7 +1860,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PLUTO;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -1907,7 +1907,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -1948,7 +1948,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = c.clone();
             c.body = ShapeModelBody.HYDRA;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -1987,7 +1987,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.KERBEROS;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -1998,7 +1998,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = hydra;
             c.body = ShapeModelBody.NIX;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -2035,7 +2035,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.STYX;
-            c.type = ShapeModelType.KBO;
+            c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
@@ -2047,7 +2047,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TELESTO;
-        c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelAuthor.GASKELL;
@@ -2083,7 +2083,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.EARTH.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.EARTH.name()).build();
 
             // Set up shape model -- one will suffice.
@@ -2145,7 +2145,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.BLENDER;
@@ -2207,7 +2207,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.EARTH.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.EARTH.name()).build();
 
 
@@ -2270,7 +2270,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.OREX;
@@ -2331,7 +2331,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.EARTH.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.EARTH.name()).build();
 
 
@@ -2414,7 +2414,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelAuthor.HAYABUSA2;
@@ -2478,7 +2478,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.RYUGU.name(),
-                    ShapeModelType.ASTEROID.name(),
+                    BodyType.ASTEROID.name(),
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
@@ -2486,7 +2486,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.TRUTH;
@@ -2536,7 +2536,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.RYUGU.name(),
-                    ShapeModelType.ASTEROID.name(),
+                    BodyType.ASTEROID.name(),
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
@@ -2563,7 +2563,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
-            c.type = ShapeModelType.ASTEROID;
+            c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2624,13 +2624,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.ATLAS.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.ATLAS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2653,13 +2653,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.CALYPSO.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.CALYPSO;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2679,7 +2679,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.ENCELADUS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2695,13 +2695,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.EPIMETHEUS.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EPIMETHEUS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2722,13 +2722,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.HELENE.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.HELENE;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2748,7 +2748,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.IAPETUS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2764,13 +2764,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.JANUS.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.JANUS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2791,13 +2791,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.PAN.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PAN;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2818,13 +2818,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.PANDORA.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PANDORA;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
@@ -2845,13 +2845,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up body.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
                     ShapeModelBody.PROMETHEUS.name(),
-                    ShapeModelType.PLANETS_AND_SATELLITES.name(),
+                    BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.PROMETHEUS;
-            c.type = ShapeModelType.PLANETS_AND_SATELLITES;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.SATURN;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelAuthor.GASKELL;
