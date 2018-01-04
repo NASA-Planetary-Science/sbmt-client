@@ -7,6 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import com.google.common.collect.BiMap;
@@ -29,7 +32,7 @@ public class BoundedObjectHyperTreeGenerator
     long totalObjectsWritten = 0;
 
 
-    BiMap<Path, Integer> fileMap = HashBiMap.create();
+    BiMap<String, Integer> fileMap = HashBiMap.create();
 
     public BoundedObjectHyperTreeGenerator(Path outputDirectory, int maxObjectsPerLeaf, HyperBox bbox, int maxNumberOfOpenOutputFiles, DataOutputStreamPool pool)
     {
@@ -41,20 +44,31 @@ public class BoundedObjectHyperTreeGenerator
         root = new BoundedObjectHyperTreeNode(null, outputDirectory, bbox, maxObjectsPerLeaf,pool);
     }
 
-    private void addAllObjectsFromFile(String inputFile) throws HyperException, IOException
+    private void addAllObjectsFromFile(String inputPath) throws HyperException, IOException
     {
-        try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        try (BufferedReader br = new BufferedReader(new FileReader(inputPath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] toks = line.split(",");
+                String[] toks = line.split(" ");
                 String objName = toks[0];
-                String objId = toks[1];
-                HyperBox objBBox = new HyperBox(new double[]{Double.parseDouble(toks[2]), Double.parseDouble(toks[3])},
-                        new double[]{Double.parseDouble(toks[4]), Double.parseDouble(toks[5])});
+                try {
+                    double minT = df.parse(toks[7]).getTime();
+                    double maxT = df.parse(toks[8]).getTime();
 
-                HyperBoundedObject obj = new HyperBoundedObject(objName, Integer.parseInt(objId), objBBox);
-                root.add(obj);
-                totalObjectsWritten++;
+                    HyperBox objBBox = new HyperBox(new double[]{Double.parseDouble(toks[1]), Double.parseDouble(toks[3]), Double.parseDouble(toks[5]), minT},
+                            new double[]{Double.parseDouble(toks[2]), Double.parseDouble(toks[4]), Double.parseDouble(toks[6]), maxT});
+
+                    int objId = inputPath.hashCode();
+                    fileMap.put(inputPath, objId);
+                    HyperBoundedObject obj = new HyperBoundedObject(objName, objId, objBBox);
+                    root.add(obj);
+                    totalObjectsWritten++;
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
 
@@ -173,9 +187,10 @@ public class BoundedObjectHyperTreeGenerator
             System.out.println();
         }
 
+
         // TODO min and max dimensions for hyperbox around body
-        double[] min = {};
-        double[] max = {};
+        double[] min = {-50, -50, -50, -9E20};
+        double[] max = {50, 50, 50, 9E20};
         HyperBox hbox = new HyperBox(min, max);
         BoundedObjectHyperTreeGenerator generator = new BoundedObjectHyperTreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
 

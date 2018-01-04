@@ -16,9 +16,9 @@ public class HyperBoundedObject
     protected int fileNum;
     protected HyperBox bbox;
 
-    public HyperBoundedObject(DataInputStream stream)
+    public HyperBoundedObject(DataInputStream stream) throws HyperDimensionMismatchException, IOException
     {
-        // TODO create a bounded object from an input stream
+        read(stream);
     }
 
     public HyperBoundedObject(String objName, int objId, HyperBox objBBox)
@@ -33,8 +33,8 @@ public class HyperBoundedObject
 
     public void read(DataInputStream inputStream) throws IOException, HyperDimensionMismatchException
     {
-        double[] data = new double[8];
-        for (int i=0; i<8; i++)
+        double[] data = new double[16];
+        for (int i=0; i<data.length; i++)
             data[i]=inputStream.readDouble();
         fileNum=inputStream.readInt();
 
@@ -45,7 +45,7 @@ public class HyperBoundedObject
     public void write(DataOutputStream outputStream) throws IOException
     {
         double[] data = getData();
-        for (int i=0; i<8; i++)
+        for (int i=0; i<data.length; i++)
             outputStream.writeDouble(data[i]);
         outputStream.writeInt(fileNum);
     }

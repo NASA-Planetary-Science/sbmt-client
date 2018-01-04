@@ -76,9 +76,17 @@ public class BoundedObjectHyperTreeNode
         return bbox.getDimension();
     }
 
-    protected HyperBoundedObject createNewBoundedObject(DataInputStream stream)
+    protected HyperBoundedObject createNewBoundedObject(DataInputStream stream) throws HyperDimensionMismatchException
     {
-        return new HyperBoundedObject(stream);
+        try
+        {
+            return new HyperBoundedObject(stream);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // TODO  implement adding of objects
@@ -114,20 +122,23 @@ public class BoundedObjectHyperTreeNode
         return numObjs;
     }
 
+
     public void split() throws HyperException, IOException
     {
+        pool.closeStream(getDataFilePath());
         for (int i=0; i<getNumberOfChildren(); i++)
             children[i]=createNewChild(i); // this creates a bounding box for where it is in comparison to the root
         DataInputStream instream=new DataInputStream(new BufferedInputStream(new FileInputStream(getDataFilePath().toFile())));
         while (instream.available()>0) // for every object in the node
         {
             HyperBoundedObject obj = createNewBoundedObject(instream);
+            if (obj != null ){
             for (int i=0; i<getNumberOfChildren() ; i++)
-                if (children[i].getBoundingBox().contains(obj))
+                if (children[i].add(obj))
                 {
-                    children[i].add(obj);
                     break;
                 }
+            }
         }
         instream.close();
         isLeaf=false;
