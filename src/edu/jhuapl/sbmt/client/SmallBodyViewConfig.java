@@ -12,6 +12,9 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache.FileInfo;
+import edu.jhuapl.saavtk.util.FileCache.FileInfo.YesOrNo;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -2015,6 +2018,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             c.hasImageMap=true;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
+
                 c.imagingInstruments = new ImagingInstrument[] {
                        // new Vis(ShapeModelBody.PHOBOS)
                         mapCam,
@@ -2030,6 +2036,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                                 Instrument.IMAGING_DATA
                                 )*/
                 };
+
 
                 c.hasSpectralData=true;
                 c.spectralInstruments=new SpectralInstrument[] {
@@ -2157,6 +2164,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 c.spectralInstruments=new SpectralInstrument[] {
                         new OTES(),new OVIRS()
                 };
+
+                c.hasStateHistory = true;
+                c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
@@ -2734,6 +2744,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
         SmallBodyViewConfig c = (SmallBodyViewConfig)super.clone();
 
         return c;
+    }
+
+    @Override
+    public boolean isAccessible()
+    {
+        FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
+        return info.isURLAccessAuthorized() == YesOrNo.YES;
     }
 
 

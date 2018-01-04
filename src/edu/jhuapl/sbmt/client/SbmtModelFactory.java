@@ -11,6 +11,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
@@ -220,6 +221,11 @@ public class SbmtModelFactory
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
+        // This will throw an exception if access is not authorized. That's the main
+    	// check to perform right here so we ignore the result returned. If the top path
+    	// is not "gettable" (this returns false) but no exception
+    	// is thrown, it's worth trying to create the model.
+        FileCache.isFileGettable(config.serverPath(""));
         ShapeModelBody name = config.body;
         ShapeModelAuthor author = config.author;
 
