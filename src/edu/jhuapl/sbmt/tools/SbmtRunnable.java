@@ -10,7 +10,7 @@ import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
@@ -101,7 +101,29 @@ public class SbmtRunnable implements Runnable
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
                     ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelAuthor.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
+        case HAYABUSA2_STAGE:
+            if (
+//                    ShapeModelBody.EROS.equals(config.body) ||
+//                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
+        case HAYABUSA2_DEPLOY:
+            if (
+//                    ShapeModelBody.EROS.equals(config.body) ||
+//                    ShapeModelBody.ITOKAWA.equals(config.body) ||
+                    ShapeModelType.HAYABUSA2.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -116,7 +138,7 @@ public class SbmtRunnable implements Runnable
                     ShapeModelBody.RQ36.equals(config.body) ||
                     ShapeModelBody.EROS.equals(config.body) ||
                     ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelAuthor.OREX.equals(config.author)
+                    ShapeModelType.OREX.equals(config.author)
                )
             {
                 config.enable(true);

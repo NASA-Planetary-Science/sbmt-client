@@ -8,6 +8,7 @@ public enum ShapeModelDataUsed
     LIDAR_BASED("Lidar-based"),
     RADAR_BASED("Radar-based"),
     WGS84("WGS84"),
+    TRIAXIAL("Triaxial"),
     ;
 
     final private String str;

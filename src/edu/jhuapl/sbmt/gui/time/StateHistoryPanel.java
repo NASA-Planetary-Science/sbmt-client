@@ -245,7 +245,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         //
 
         // Calculate the beginning and end of available time
-        path = FileCache.getFileFromServer(config.timeHistoryFile);
+        try {
+            path = FileCache.getFileFromServer(config.timeHistoryFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // get range of available dates
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(readString(lineLength));//oldDate.parse(currentRun.getIntervalTime()[0]);

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.TreeSet;
 
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
@@ -102,7 +102,7 @@ public class SearchLidarDataInsideMaplet
             System.exit(1);
         }
 
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);

@@ -7,7 +7,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -108,7 +108,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // Additional variables not inherited from parent
     //
 
-    public ShapeModelType type; // e.g. asteroid, comet, satellite
+    public BodyType type; // e.g. asteroid, comet, satellite
     public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
 
@@ -119,8 +119,8 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String getUniqueName()
     {
-        if (ShapeModelAuthor.CUSTOM == author)
-            return author + "/" + customName;
+        if (ShapeModelType.CUSTOM == author)
+            return author + "/" + modelLabel;
         else if (author != null)
         {
             if (version == null)
@@ -135,8 +135,8 @@ public abstract class BodyViewConfig extends ViewConfig
     @Override
     public String getShapeModelName()
     {
-        if (author == ShapeModelAuthor.CUSTOM)
-            return customName;
+        if (author == ShapeModelType.CUSTOM)
+            return modelLabel;
         else
         {
             String ver = "";
@@ -169,9 +169,9 @@ public abstract class BodyViewConfig extends ViewConfig
     @Override
     public String getPathRepresentation()
     {
-        if (ShapeModelAuthor.CUSTOM == author)
+        if (ShapeModelType.CUSTOM == author)
         {
-            return Configuration.getAppTitle() + " - " + ShapeModelAuthor.CUSTOM + " > " + customName;
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
         }
         else
         {
@@ -292,7 +292,7 @@ public abstract class BodyViewConfig extends ViewConfig
             c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
             c.lidarOffsetScale = this.lidarOffsetScale;
         }
-        c.customName = this.customName;
+        c.modelLabel = this.modelLabel;
         c.customTemporary = this.customTemporary;
 
         return c;

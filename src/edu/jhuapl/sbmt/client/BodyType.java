@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
 // Types of bodies
-public enum ShapeModelType
+public enum BodyType
 {
     ASTEROID("Asteroids"),
     PLANETS_AND_SATELLITES("Planets and Satellites"),
@@ -10,7 +10,7 @@ public enum ShapeModelType
     ;
 
     final public String str;
-    private ShapeModelType(String str)
+    private BodyType(String str)
     {
         this.str = str;
     }

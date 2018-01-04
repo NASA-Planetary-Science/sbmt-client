@@ -9,6 +9,7 @@ import java.util.SortedSet;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,7 +18,8 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.model.ShapeModelBody;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -96,48 +98,18 @@ public class SbmtViewManager extends ViewManager
         menuEntries.clear();
         configMap.clear();
 
+        // TODO: make the code below handle putting the spacecraft labels in front of groups of bodies
+        // listed in MARK_VISITED_BY_SPACECRAFT (see below).
         // Use an iterator to traverse all the Views in viewSet.
         Iterator<View> viewItor = viewSet.iterator();
 
-        // Use an index for the labels, rather than an iterator, so that we can easily access
-        // preceding entries in SMALL_BODY_LIST.
-        int labelIndex = 0;
-
         // Loop simultaneously over the list of all labels and the set of all Views.
-        while (viewItor.hasNext() && labelIndex < SMALL_BODY_LIST.size())
+        while (viewItor.hasNext())
         {
-            // Each time through this "while", process the next view from viewItor,
-            // possibly also going through 1 or more labels (using labelIndex).
             View nextView = viewItor.next();
             ViewConfig nextConfig = nextView.getConfig();
-            String modelName = nextConfig.getShapeModelName();
-
-            String label = SMALL_BODY_LIST.get(labelIndex);
-
-            // Process cosmetic labels and views that are not part of the new built-in view set.
-            while (!label.equals(modelName))
-            {
-                // If a label starts with LABEL_PREFIX, it must be included in menuEntries so that
-                // the latter includes all labels and separator positions.
-                if (label.startsWith(LABEL_PREFIX)) menuEntries.add(makeEntry(SMALL_BODY_LIST.get(labelIndex)));
-
-                // Done with this label -- it doesn't match this model, and because the collections
-                // go in a parallel order, it won't match any in later loop iterations. So go on
-                // to the next label, but be prepared to escape from the loop if needed.
-                ++labelIndex;
-                if (labelIndex < SMALL_BODY_LIST.size()) label = SMALL_BODY_LIST.get(labelIndex);
-                else break;
-            }
-            if (labelIndex < SMALL_BODY_LIST.size())
-            {
-                // The loop above exits either a) if we ran out of labels or b) if the label equals modelName.
-                // The predicate eliminates running out of labels, so at this point the label must
-                // equal the modelName. This is a match, so put the index in the configMap and add
-                // the wrapped view to the menuEntries list.
-                if (!label.equals(modelName)) throw new AssertionError(); // This check could be commented out at some point.
-                configMap.put(nextConfig, menuEntries.size());
-                menuEntries.add(makeEntry(nextView));
-            }
+            configMap.put(nextConfig, menuEntries.size());
+            menuEntries.add(makeEntry(nextView));
         }
     }
 
@@ -154,9 +126,9 @@ public class SbmtViewManager extends ViewManager
     public View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
         SmallBodyViewConfig config = new SmallBodyViewConfig();
-        config.customName = name;
+        config.modelLabel = name;
         config.customTemporary = temporary;
-        config.author = ShapeModelAuthor.CUSTOM;
+        config.author = ShapeModelType.CUSTOM;
         return new SbmtView(statusBar, config);
     }
 
@@ -305,40 +277,324 @@ public class SbmtViewManager extends ViewManager
     /**
      * Comparator used to order Views
      */
-    private static class ViewComparator implements Comparator<View> {
+    private static class ViewComparator implements Comparator<View>
+    {
+        private static final Map<ShapeModelBody, Comparator<ViewConfig>> CUSTOM_COMPARATORS = Maps.newHashMap();
+
+        static {
+            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.TOUTATIS, TOUTATIS_COMPARATOR);
+        }
 
         @Override
         public int compare(View view1, View view2) {
             int result = 0;
+            if (view1 == view2) return result;
+
             ViewConfig config1 = view1.getConfig();
             ViewConfig config2 = view2.getConfig();
-            String name1 = config1.getShapeModelName();
-            String name2 = config2.getShapeModelName();
+            if (config1 == config2) return result;
 
-            // Two views may refer to the same author and shape model only if they are the same
-            // object.
-            if (name1.equals(name2) && config1.author.equals(config2.author) && config1 != config2)
-                throw new AssertionError("Configuration duplicated: " + name1 + "/" + config1.author);
-
-            // First look up the body names in the canonical order.
-            if (result == 0 && SMALL_BODY_LOOKUP.containsKey(name1) && SMALL_BODY_LOOKUP.containsKey(name2))
-                result = Integer.compare(SMALL_BODY_LOOKUP.get(name1), SMALL_BODY_LOOKUP.get(name2));
-
+            // If we get to here, equality is not an option -- two ViewConfigs must differ
+            // in one of their significant fields. From here on down is a series of tie-breakers.
             if (result == 0 && config1 instanceof BodyViewConfig && config2 instanceof BodyViewConfig)
             {
-                // Break ties where both views refer to the same body. Compare how models were generated (image-based/radar-based, etc.) and sort them alphabetically
-                // by the method.
                 BodyViewConfig body1 = (BodyViewConfig) config1;
                 BodyViewConfig body2 = (BodyViewConfig) config2;
-                result = body1.dataUsed.compareTo(body2.dataUsed);
+                result = TYPE_COMPARATOR.compare(body1.type, body2.type);
+
+                if (result == 0)
+                {
+                    result = POPULATION_COMPARATOR.compare(body1.population, body2.population);
+                }
             }
 
-            // Final tie-breaker: all else is equal; require distinct authors.
-            if (result == 0 && name1.equals(name2))
-                result = config1.author.compareTo(config2.author);
+            if (result == 0)
+            {
+                result = MARK_VISITED_BY_SPACECRAFT_COMPARATOR.compare(config1.body, config2.body);
+            }
+
+
+            if (result == 0)
+            {
+                result = BODY_COMPARATOR.compare(config1.body, config2.body);
+            }
+
+            if (result == 0 && CUSTOM_COMPARATORS.containsKey(config1.body))
+            {
+                // Try the custom comparator.
+                Comparator<ViewConfig> customComparator = CUSTOM_COMPARATORS.get(config1.body);
+                result = customComparator.compare(config1, config2);
+            }
+
+            if (result == 0)
+            {
+                result = STANDARD_AUTHOR_COMPARATOR.compare(config1.author, config2.author);
+            }
+
+            if (result == 0)
+            {
+                String name1 = config1.getShapeModelName();
+                String name2 = config2.getShapeModelName();
+                result = name1 == name2 ? 0 : name1 == null ? -1 : name2 == null ? 1 : name1.compareTo(name2);
+            }
+
+            if (result == 0)
+            {
+                String name1 = config1.getUniqueName();
+                String name2 = config2.getUniqueName();
+                result = name1 == name2 ? 0 : name1 == null ? -1 : name2 == null ? 1 : name1.compareTo(name2);
+            }
+
+            if (result == 0)
+            {
+                throw new AssertionError();
+            }
+            return result;
+        }
+    }
+
+    private static final OrderedComparator<BodyType> TYPE_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            BodyType.ASTEROID,
+            BodyType.COMETS,
+            BodyType.KBO,
+            BodyType.PLANETS_AND_SATELLITES,
+            null
+            ));
+
+    private static final OrderedComparator<ShapeModelPopulation> POPULATION_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            ShapeModelPopulation.NEO,
+            ShapeModelPopulation.MAIN_BELT,
+            ShapeModelPopulation.PLUTO,
+            ShapeModelPopulation.MARS,
+            ShapeModelPopulation.JUPITER,
+            ShapeModelPopulation.SATURN,
+            ShapeModelPopulation.NEPTUNE,
+            ShapeModelPopulation.EARTH,
+            null
+            ));
+
+    private static final ImmutableSet<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT = ImmutableSet.of(
+            ShapeModelBody.EROS,
+            ShapeModelBody.ITOKAWA,
+            ShapeModelBody.RQ36,
+            ShapeModelBody.RYUGU,
+            ShapeModelBody.CERES,
+            ShapeModelBody.VESTA,
+            ShapeModelBody.LUTETIA,
+            ShapeModelBody.IDA,
+            ShapeModelBody.MATHILDE,
+            ShapeModelBody.GASPRA,
+            ShapeModelBody.STEINS
+            );
+
+    private static final Comparator<ShapeModelBody> MARK_VISITED_BY_SPACECRAFT_COMPARATOR = new Comparator<ShapeModelBody>() {
+        @Override
+        public int compare(ShapeModelBody o1, ShapeModelBody o2)
+        {
+            int result = 0;
+            if (o1 != null && o2 != null)
+            {
+                if (MARK_VISITED_BY_SPACECRAFT.contains(o1))
+                {
+                    result = MARK_VISITED_BY_SPACECRAFT.contains(o2) ? 0 : -1;
+                }
+                else if (MARK_VISITED_BY_SPACECRAFT.contains(o2))
+                {
+                    result = 1;
+                }
+            }
             return result;
         }
 
+    };
+
+    private static final OrderedComparator<ShapeModelBody> BODY_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            // Asteroids -> NEO (visited)
+            ShapeModelBody.EROS,
+            ShapeModelBody.ITOKAWA,
+            ShapeModelBody.RQ36,
+            ShapeModelBody.RYUGU,
+            // Asteroids -> NEO (not visited)
+            ShapeModelBody.BETULIA,
+            ShapeModelBody.GEOGRAPHOS,
+            ShapeModelBody.KY26,
+            ShapeModelBody.BACCHUS,
+            ShapeModelBody.RASHALOM,
+            ShapeModelBody.TOUTATIS,
+            ShapeModelBody.NEREUS,
+            ShapeModelBody.CASTALIA,
+            ShapeModelBody.MITHRA,
+            ShapeModelBody.GOLEVKA,
+            ShapeModelBody.YORP,
+            ShapeModelBody.HW1,
+            ShapeModelBody.SK,
+            ShapeModelBody._1950DAPROGRADE,
+            ShapeModelBody._1950DARETROGRADE,
+            ShapeModelBody.WT24,
+            ShapeModelBody._52760_1998_ML14,
+            ShapeModelBody.KW4A,
+            ShapeModelBody.KW4B,
+            ShapeModelBody.CCALPHA,
+            ShapeModelBody.CE26,
+            ShapeModelBody.EV5,
+            // Asteroids -> Main Belt (visited)
+            ShapeModelBody.CERES,
+            ShapeModelBody.VESTA,
+            ShapeModelBody.LUTETIA,
+            ShapeModelBody.IDA,
+            ShapeModelBody.MATHILDE,
+            ShapeModelBody.GASPRA,
+            ShapeModelBody.STEINS,
+            // Asteroids -> Main Belt (not visited)
+            ShapeModelBody.PALLAS,
+            ShapeModelBody.DAPHNE,
+            ShapeModelBody.HERMIONE,
+            ShapeModelBody.KLEOPATRA,
+            // Comets
+            ShapeModelBody.HALLEY,
+            ShapeModelBody.TEMPEL_1,
+            ShapeModelBody.WILD_2,
+            ShapeModelBody._67P,
+            ShapeModelBody.HARTLEY,
+            // KBO
+            ShapeModelBody.PLUTO,
+            ShapeModelBody.CHARON,
+            ShapeModelBody.HYDRA,
+            ShapeModelBody.KERBEROS,
+            ShapeModelBody.NIX,
+            ShapeModelBody.STYX,
+            // Planets -> Mars
+            ShapeModelBody.DEIMOS,
+            ShapeModelBody.PHOBOS,
+            // Planets -> Jupiter
+            ShapeModelBody.AMALTHEA,
+            ShapeModelBody.CALLISTO,
+            ShapeModelBody.EUROPA,
+            ShapeModelBody.GANYMEDE,
+            ShapeModelBody.IO,
+            // Planets -> Saturn
+            ShapeModelBody.ATLAS,
+            ShapeModelBody.CALYPSO,
+            ShapeModelBody.DIONE,
+            ShapeModelBody.ENCELADUS,
+            ShapeModelBody.EPIMETHEUS,
+            ShapeModelBody.HELENE,
+            ShapeModelBody.HYPERION,
+            ShapeModelBody.IAPETUS,
+            ShapeModelBody.JANUS,
+            ShapeModelBody.MIMAS,
+            ShapeModelBody.PAN,
+            ShapeModelBody.PANDORA,
+            ShapeModelBody.PHOEBE,
+            ShapeModelBody.PROMETHEUS,
+            ShapeModelBody.RHEA,
+            ShapeModelBody.TELESTO,
+            ShapeModelBody.TETHYS,
+            // Planets -> Neptune
+            ShapeModelBody.LARISSA,
+            ShapeModelBody.PROTEUS,
+            // Planets -> Earth
+            ShapeModelBody.EARTH,
+            null
+            ));
+
+    private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            ShapeModelType.TRUTH,
+            ShapeModelType.GASKELL,
+            ShapeModelType.THOMAS,
+            ShapeModelType.STOOKE,
+            ShapeModelType.HUDSON,
+            ShapeModelType.DUXBURY,
+            ShapeModelType.OSTRO,
+            ShapeModelType.JORDA,
+            ShapeModelType.NOLAN,
+            ShapeModelType.EROSNLR,
+            ShapeModelType.EROSNAV,
+            ShapeModelType.EXPERIMENTAL,
+            ShapeModelType.CUSTOM,
+            ShapeModelType.LORRI,
+            ShapeModelType.MVIC,
+            ShapeModelType.CARRY,
+            ShapeModelType.DLR,
+            ShapeModelType.OREX,
+            ShapeModelType.HAYABUSA2,
+            ShapeModelType.BLENDER,
+            null
+            ));
+
+    private static final OrderedComparator<ShapeModelType> THOMAS_STOOKE_GASKELL_AUTHOR_COMPARATOR =  OrderedComparator.of(Lists.newArrayList(
+            ShapeModelType.THOMAS,
+            ShapeModelType.STOOKE,
+            ShapeModelType.GASKELL
+            ));
+
+    private static final Comparator<ViewConfig> THOMAS_STOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {
+
+        @Override
+        public int compare(ViewConfig o1, ViewConfig o2)
+        {
+            int result = 0;
+            if (o1 instanceof BodyViewConfig && o2 instanceof BodyViewConfig)
+            {
+                BodyViewConfig body1 = (BodyViewConfig) o1;
+                BodyViewConfig body2 = (BodyViewConfig) o2;
+                result = THOMAS_STOOKE_GASKELL_AUTHOR_COMPARATOR.compare(body1.author, body2.author);
+            }
+            return result;
+        }
+    };
+
+    private static final Comparator<ViewConfig> TOUTATIS_COMPARATOR = new Comparator<ViewConfig>() {
+        @Override
+        public int compare(ViewConfig o1, ViewConfig o2)
+        {
+            if (o1.body == ShapeModelBody.TOUTATIS && o2.body == ShapeModelBody.TOUTATIS)
+            {
+                if (o1.version == o2.version) return 0;
+                if (o1.version == null || o2.version == null) throw new IllegalStateException();
+                if (o1.version.equals(o2.version)) return 0;
+                if (o1.version.contains("High") && o2.version.contains("Low")) return 1;
+                if (o1.version.contains("Low") && o2.version.contains("High")) return -1;
+            }
+            return 0;
+        }
+    };
+
+    private static final class OrderedComparator<T> implements Comparator<T>
+    {
+        public static <T> OrderedComparator<T> of(List<T> list)
+        {
+            Map<T, Integer> map = Maps.newHashMap();
+            for (int index = 0; index != list.size(); ++index)
+            {
+                T item = list.get(index);
+                if (map.containsKey(item)) throw new IllegalArgumentException("List cannot contain duplicates");
+                map.put(list.get(index), index);
+            }
+            return new OrderedComparator<>(map);
+        }
+        private final Map<T, Integer> map;
+
+        private OrderedComparator(Map<T, Integer> map)
+        {
+            this.map = map;
+        }
+
+        @Override
+        public final int compare(T object1, T object2)
+        {
+            int result = 0;
+            // If either object is not in the map -- return 0, i.e., the determination must be made by other means.
+            if (map.containsKey(object1) && map.containsKey(object2))
+            {
+                return Integer.compare(map.get(object1), map.get(object2));
+            }
+            return result;
+        }
     }
 
     private static ImmutableList<String> listModels()
@@ -358,9 +614,9 @@ public class SbmtViewManager extends ViewManager
                 LABEL_PREFIX + "Spacecraft Data",
                 "433 Eros",
                 "25143 Itokawa",
+                "101955 Bennu (V3)",
+                "101955 Bennu (V4)",
                 "101955 Bennu",
-                "101955 Bennu (V3 Image)",
-                "101955 Bennu (V4 Image)",
                 "162173 Ryugu",
                 SEPARATOR,
                 "1580 Betulia",
@@ -368,8 +624,8 @@ public class SbmtViewManager extends ViewManager
                 "1998 KY26",
                 "2063 Bacchus",
                 "2100 Ra-Shalom",
-                "4179 Toutatis (High Res)",
-                "4179 Toutatis (Low Res)",
+                "4179 Toutatis (High resolution)",
+                "4179 Toutatis (Low resolution)",
                 "4660 Nereus",
                 "4769 Castalia",
                 "4486 Mithra",
@@ -404,24 +660,24 @@ public class SbmtViewManager extends ViewManager
                 ////////////////////////////////////////
                 // Comets
                 ////////////////////////////////////////
+                "1P/Halley",
                 "9P/Tempel 1",
+                "81P/Wild 2",
                 "67P/Churyumov-Gerasimenko (SHAP4S)",
                 "67P/Churyumov-Gerasimenko (SHAP5 V0.3)",
                 "67P/Churyumov-Gerasimenko (V2)",
                 "67P/Churyumov-Gerasimenko (V3)",
-                "81P/Wild 2",
                 "103P/Hartley 2",
-                "1P/Halley",
 
                 ////////////////////////////////////////
                 // Kuiper Belt Objects
                 ////////////////////////////////////////
                 // Pluto
+                "Pluto",
                 "Charon",
                 "Hydra",
                 "Kerberos",
                 "Nix",
-                "Pluto",
                 "Styx",
 
                 ////////////////////////////////////////
