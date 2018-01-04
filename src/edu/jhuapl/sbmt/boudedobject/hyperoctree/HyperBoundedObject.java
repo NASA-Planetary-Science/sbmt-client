@@ -33,7 +33,7 @@ public class HyperBoundedObject
 
     public void read(DataInputStream inputStream) throws IOException, HyperDimensionMismatchException
     {
-        double[] data = new double[16];
+        double[] data = new double[8];
         for (int i=0; i<data.length; i++)
             data[i]=inputStream.readDouble();
         fileNum=inputStream.readInt();

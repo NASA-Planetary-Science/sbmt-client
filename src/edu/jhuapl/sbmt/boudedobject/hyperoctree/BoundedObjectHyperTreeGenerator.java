@@ -10,13 +10,13 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
@@ -166,7 +166,7 @@ public class BoundedObjectHyperTreeGenerator
         System.out.println("Data file MB limit = "+dataFileMBLimit);
         System.out.println("Max # open output files = "+maxNumOpenOutputFiles);
 
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
+//        NativeLibraryLoader.loadVtkLibrariesHeadless();
         Path outputDirectory=Paths.get(outputDirectoryString);
 
         int maxObjectsPerLeaf = 2;
@@ -189,8 +189,9 @@ public class BoundedObjectHyperTreeGenerator
 
 
         // TODO min and max dimensions for hyperbox around body
-        double[] min = {-50, -50, -50, -9E20};
-        double[] max = {50, 50, 50, 9E20};
+        double today = new Date().getTime();
+        double[] min = {-17.565, -8.28392, -6.07243, -Double.MAX_VALUE};
+        double[] max = {15.0934, 8.60042, 5.8865, today};
         HyperBox hbox = new HyperBox(min, max);
         BoundedObjectHyperTreeGenerator generator = new BoundedObjectHyperTreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
 
