@@ -91,32 +91,26 @@ public class SbmtRunnable implements Runnable
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
             frame.setVisible(true);
+
         }
         catch (Exception e)
         {
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
-            try
+            e.printStackTrace();
+            restoreStreams();
+            if (outputFile != null)
             {
-                e.printStackTrace();
-
-                // Prevent trying to close again during finally.
-                PrintStream outputFileCopy = outputFile;
-                outputFile = null;
-                restoreStreams(outputFileCopy);
-                if (outputFileCopy != null)
+                outputFile.close();
+                try
                 {
                     Files.move(OUTPUT_FILE_PATH, SAVED_OUTPUT_FILE_PATH, StandardCopyOption.REPLACE_EXISTING);
                 }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
             }
-            catch (IOException e1)
-            {
-                e1.printStackTrace();
-            }
-        }
-        finally
-        {
-            restoreStreams(outputFile);
         }
     }
 
@@ -126,15 +120,10 @@ public class SbmtRunnable implements Runnable
         System.setErr(outputFile);
     }
 
-    protected void restoreStreams(final PrintStream outputFile)
+    protected void restoreStreams()
     {
         System.setErr(savedErr);
         System.setOut(savedOut);
-
-        if (outputFile != null)
-        {
-            outputFile.close();
-        }
     }
 
     protected void writeStartupMessage()
