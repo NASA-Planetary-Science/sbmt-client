@@ -1,8 +1,11 @@
 package edu.jhuapl.sbmt.boudedobject.hyperoctree;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -35,6 +38,8 @@ public class BoundedObjectHyperTreeNode
         for (int i=0; i<children.length; i++)
             children[i]=null;
         path.toFile().mkdir();
+
+        writeBoundsFile();
     }
 
     protected BoundedObjectHyperTreeNode createNewChild(int i)
@@ -187,6 +192,50 @@ public class BoundedObjectHyperTreeNode
     {
         return path.resolve("bounds");
     }
+
+    public void writeBoundsFile()
+    {
+        try
+        {
+            DataOutputStream stream=new DataOutputStream(new BufferedOutputStream(new FileOutputStream(getBoundsFilePath().toFile())));
+            double[] min=bbox.getMin();
+            double[] max=bbox.getMax();
+            for (int i=0; i<bbox.getDimension(); i++)
+            {
+                stream.writeDouble(min[i]);
+                stream.writeDouble(max[i]);
+            }
+            stream.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static double[] readBoundsFile(Path boundsFilePath, int dimension)
+
+    {
+        double[] bounds=new double[dimension*2];
+        try
+        {
+            DataInputStream stream = new DataInputStream(new BufferedInputStream(new FileInputStream(boundsFilePath.toFile())));
+            for (int i=0; i<dimension; i++)
+            {
+                bounds[2*i+0]=stream.readDouble();
+                bounds[2*i+1]=stream.readDouble();
+            }
+            stream.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bounds;
+    }
+
 
 
 }
