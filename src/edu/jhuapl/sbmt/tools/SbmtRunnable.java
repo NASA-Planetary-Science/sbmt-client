@@ -42,8 +42,11 @@ public class SbmtRunnable implements Runnable
 
     public void run()
     {
-        try (PrintStream outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH)))
+        // Don't use try-with-resources form -- it suppresses reporting the actual exception!
+        PrintStream outputFile = null;
+        try
         {
+            outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
             redirectStreams(outputFile);
             writeStartupMessage();
             SmallBodyViewConfig.initialize();
@@ -80,16 +83,24 @@ public class SbmtRunnable implements Runnable
             ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-//        MainWindow frame = new MainWindow("data/Torso.stl");
             frame.setVisible(true);
         }
-        catch (@SuppressWarnings("unused") Exception e)
+        catch (Exception e)
         {
-            // Something went tragically wrong, so move the output file to a more
-            // prominent location.
+            // Something went tragically wrong, so report the error, close the output file and
+            // move it to a more prominent location.
             try
             {
-                Files.move(OUTPUT_FILE_PATH, SAVED_OUTPUT_FILE_PATH, StandardCopyOption.REPLACE_EXISTING);
+                e.printStackTrace();
+
+                // Prevent trying to close again during finally.
+                PrintStream outputFileCopy = outputFile;
+                outputFile = null;
+                restoreStreams(outputFileCopy);
+                if (outputFileCopy != null)
+                {
+                    Files.move(OUTPUT_FILE_PATH, SAVED_OUTPUT_FILE_PATH, StandardCopyOption.REPLACE_EXISTING);
+                }
             }
             catch (IOException e1)
             {
@@ -98,7 +109,7 @@ public class SbmtRunnable implements Runnable
         }
         finally
         {
-            restoreStreams();
+            restoreStreams(outputFile);
         }
     }
 
@@ -108,10 +119,15 @@ public class SbmtRunnable implements Runnable
         System.setErr(outputFile);
     }
 
-    protected void restoreStreams()
+    protected void restoreStreams(final PrintStream outputFile)
     {
         System.setErr(savedErr);
         System.setOut(savedOut);
+
+        if (outputFile != null)
+        {
+            outputFile.close();
+        }
     }
 
     protected void writeStartupMessage()
