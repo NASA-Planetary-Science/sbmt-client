@@ -45,6 +45,7 @@ public class SbmtRunnable implements Runnable
         try (PrintStream outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH)))
         {
             redirectStreams(outputFile);
+            writeStartupMessage();
             SmallBodyViewConfig.initialize();
             configureMissionBodies();
 
@@ -113,6 +114,15 @@ public class SbmtRunnable implements Runnable
         System.setOut(savedOut);
     }
 
+    protected void writeStartupMessage()
+    {
+        if (!Configuration.isPasswordAuthenticationSetup())
+        {
+            System.out.println("Warning: no correctly formatted password file found. "
+                    + "Continuing without password. Some models may not be available.");
+        }
+
+    }
     protected void configureMissionBodies()
     {
         disableAllBodies();
