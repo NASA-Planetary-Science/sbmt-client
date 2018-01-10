@@ -66,11 +66,6 @@ public class SmallBodyMappingToolAPL
         {
             Configuration.setupPasswordAuthentication(username, password);
         }
-        else
-        {
-            System.out.println("Warning: no correctly formatted password file found. "
-                    + "Continuing without password. Certain functionality may not work.");
-        }
 
         // Call the public version's main function
         SmallBodyMappingTool.main(args);
