@@ -40,28 +40,35 @@ public class SbmtRunnable implements Runnable
         this.savedErr = System.err;
     }
 
+    @Override
     public void run()
     {
         // Don't use try-with-resources form -- it suppresses reporting the actual exception!
         PrintStream outputFile = null;
         try
         {
-            outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
-            redirectStreams(outputFile);
-            writeStartupMessage();
-            SmallBodyViewConfig.initialize();
-            configureMissionBodies();
-
             // Parse options that come first
             int i = 0;
+            boolean redirectStreams = true; // Proper default behavior for released code.
             for (; i < args.length; ++i) {
                 if (args[i].equals("--beta")) {
                     SmallBodyViewConfig.betaMode = true;
-                }else {
+                } else if (args[i].equals("--no-stream-redirect")) {
+                    redirectStreams = false;
+                } else {
                     // We've encountered something that is not an option, must be at the args
                     break;
                 }
             }
+            if (redirectStreams)
+            {
+                outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
+                redirectStreams(outputFile);
+            }
+            writeStartupMessage();
+            SmallBodyViewConfig.initialize();
+            configureMissionBodies();
+
 
             // After options comes the args
             String tempShapeModelPath = null;
