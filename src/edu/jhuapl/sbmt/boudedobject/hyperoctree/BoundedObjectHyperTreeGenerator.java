@@ -59,8 +59,8 @@ public class BoundedObjectHyperTreeGenerator
                     HyperBox objBBox = new HyperBox(new double[]{Double.parseDouble(toks[1]), Double.parseDouble(toks[3]), Double.parseDouble(toks[5]), minT},
                             new double[]{Double.parseDouble(toks[2]), Double.parseDouble(toks[4]), Double.parseDouble(toks[6]), maxT});
 
-                    int objId = inputPath.hashCode();
-                    fileMap.put(inputPath, objId);
+                    int objId = objName.hashCode();
+                    fileMap.put(objName, objId);
                     HyperBoundedObject obj = new HyperBoundedObject(objName, objId, objBBox);
                     root.add(obj);
                     totalObjectsWritten++;
