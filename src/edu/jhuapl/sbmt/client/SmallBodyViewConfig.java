@@ -9,8 +9,8 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.FileInfo;
@@ -1864,7 +1864,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.modelLabel = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2017)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1911,7 +1911,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.modelLabel = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2017)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
