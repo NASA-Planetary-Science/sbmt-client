@@ -9,8 +9,8 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.FileInfo;
@@ -2899,7 +2899,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     public boolean isAccessible()
     {
         FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
-        return info.isURLAccessAuthorized() == YesOrNo.YES;
+        return info.isURLAccessAuthorized() == YesOrNo.YES && (info.isExistsLocally() || info.isExistsOnServer() == YesOrNo.YES);
     }
 
 
