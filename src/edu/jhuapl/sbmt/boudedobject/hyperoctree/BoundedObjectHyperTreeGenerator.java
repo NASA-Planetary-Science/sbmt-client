@@ -107,7 +107,7 @@ public class BoundedObjectHyperTreeGenerator
         {
             if (dataFile.exists())
                 dataFile.delete();
-            for (int i=0; i<8; i++)
+            for (int i=0; i<node.getNumberOfChildren(); i++)
                 finalCommit((BoundedObjectHyperTreeNode)node.getChild(i));
         }
         else {
