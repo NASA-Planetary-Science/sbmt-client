@@ -10,8 +10,8 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;

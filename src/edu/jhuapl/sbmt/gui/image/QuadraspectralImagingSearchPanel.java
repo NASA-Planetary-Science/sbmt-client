@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 
 import nom.tam.fits.FitsException;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;

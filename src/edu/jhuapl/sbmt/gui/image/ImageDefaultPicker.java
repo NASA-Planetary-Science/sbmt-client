@@ -19,9 +19,9 @@ import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.AxisType;
 import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer.AxisType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;

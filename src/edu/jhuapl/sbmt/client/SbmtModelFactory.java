@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;

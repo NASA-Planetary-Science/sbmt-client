@@ -24,12 +24,12 @@ import nom.tam.fits.FitsException;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer.LightingType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;

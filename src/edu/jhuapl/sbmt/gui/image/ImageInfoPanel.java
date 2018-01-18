@@ -39,9 +39,9 @@ import vtk.vtkTransform;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.Image;

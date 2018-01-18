@@ -10,7 +10,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;

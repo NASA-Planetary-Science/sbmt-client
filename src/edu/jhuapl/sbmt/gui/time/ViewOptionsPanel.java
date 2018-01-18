@@ -22,8 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer.LightingType;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 

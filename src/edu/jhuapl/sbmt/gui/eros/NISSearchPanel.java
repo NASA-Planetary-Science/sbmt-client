@@ -11,7 +11,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;

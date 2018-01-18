@@ -22,8 +22,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.io.FilenameUtils;
 
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
+import edu.jhuapl.saavtk.gui.renderer.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.gui.time.TimeIntervalTable.TimeIntervalTableModel;
