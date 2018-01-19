@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +18,6 @@ import org.joda.time.DateTimeZone;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.model.image.ImageSearchDataCollection;
 
@@ -54,6 +54,7 @@ public class ImageHyperTreeSearch
             Path dataPath = path.resolve("data");
             DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
             ArrayList<HyperBoundedObject> images = new ArrayList<HyperBoundedObject>();
+            Set<String> files = new HashSet<String>();
             try
             {
                 while (instream.available() > 0) {
@@ -62,12 +63,13 @@ public class ImageHyperTreeSearch
                     int fileNum = obj.getFileNum();
                     Map<Integer, String> fileMap = skeleton.getFileMap();
                     String file = fileMap.get(fileNum);
-                    System.out.println("file: " + file);
-                    HyperBox box = obj.getBbox();
-                    double[] bounds = box.getBounds();
-                    double[] nodeBounds = currNode.getBounds();
-                    System.out.println("Node Bounds : [" + nodeBounds[1] +"-" + nodeBounds[0] + ", " + nodeBounds[3] +"-" + nodeBounds[2] + "," + nodeBounds[5] +"-" + nodeBounds[4]+"], [" + nodeBounds[0] +"," + nodeBounds[2] + "," + nodeBounds[4] +"]");
-                    System.out.println("Image Bounds: [" + bounds[1] +"-" + bounds[0] + ", " + bounds[3] +"-" + bounds[2] + "," + bounds[5] +"-" + bounds[4]+"], [" + bounds[0] +"," + bounds[2] + "," + bounds[4] +"]");
+//                    System.out.println("file: " + file);
+                    files.add(file);
+//                    HyperBox box = obj.getBbox();
+//                    double[] bounds = box.getBounds();
+//                    double[] nodeBounds = currNode.getBounds();
+//                    System.out.println("Node Bounds : [" + nodeBounds[1] +"-" + nodeBounds[0] + ", " + nodeBounds[3] +"-" + nodeBounds[2] + "," + nodeBounds[5] +"-" + nodeBounds[4]+"], [" + nodeBounds[0] +"," + nodeBounds[2] + "," + nodeBounds[4] +"]");
+//                    System.out.println("Image Bounds: [" + bounds[1] +"-" + bounds[0] + ", " + bounds[3] +"-" + bounds[2] + "," + bounds[5] +"-" + bounds[4]+"], [" + bounds[0] +"," + bounds[2] + "," + bounds[4] +"]");
                 }
             }
             catch (IOException e)
@@ -75,6 +77,11 @@ public class ImageHyperTreeSearch
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+            for (String file : files) {
+                System.out.println(file);
+            }
+            /// NOW CHECK WHICH FILES ACTUALLY INTERSECT REGION
         }
 
     }

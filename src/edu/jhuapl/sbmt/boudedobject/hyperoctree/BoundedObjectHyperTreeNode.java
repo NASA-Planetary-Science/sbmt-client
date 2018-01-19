@@ -102,11 +102,11 @@ public class BoundedObjectHyperTreeNode
                 if (children[i].add(obj))
                     return true;
         } else {
-            if (isInside(obj)) {
+//            if (isInside(obj)) {
                 obj.write(pool.getStream(getDataFilePath()));
                 numObjs ++;
                 return true;
-            }
+//            }
         }
         return false;
 
@@ -132,32 +132,24 @@ public class BoundedObjectHyperTreeNode
     {
         pool.closeStream(getDataFilePath());
         for (int i=0; i<getNumberOfChildren(); i++)
-            children[i]=createNewChild(i); // this creates a bounding box for where it is in comparison to the root
+            children[i]=createNewChild(i); // this creates a bounding box for where it is in comparison to its parent
         DataInputStream instream=new DataInputStream(new BufferedInputStream(new FileInputStream(getDataFilePath().toFile())));
         while (instream.available()>0) // for every object in the node
         {
             HyperBoundedObject obj = createNewBoundedObject(instream);
 
-
             for (int i=0; i<getNumberOfChildren() ; i++)
-                if (children[i].getBoundingBox().contains(obj))
+            {
+                if (children[i].getBoundingBox().intersects(obj.getBbox()))
                 {
                     children[i].add(obj);
-                    break;
                 }
-
-
-
-//            if (obj != null ){
-//            for (int i=0; i<getNumberOfChildren() ; i++)
-//                if (children[i].add(obj))
-//                {
-//                    System.out.println(obj.getFileNum() + " added to child " + i);
-//                }
-//            }
+            }
         }
+
         instream.close();
         isLeaf=false;
+        deleteDataFile();
     }
 
     void deleteDataFile() {

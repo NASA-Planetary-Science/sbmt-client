@@ -89,7 +89,7 @@ public class BoundedObjectHyperTreeGenerator
             for (int i=0; i<node.getNumberOfChildren(); i++)
                 if (node.childExists(i))
                 {
-                    System.out.println(node.getChild(i).getPath());
+//                    System.out.println(node.getChild(i).getPath());
                     expandNode((BoundedObjectHyperTreeNode)node.getChild(i));
                 }
         }
