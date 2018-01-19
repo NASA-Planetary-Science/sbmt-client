@@ -81,7 +81,7 @@ public class BoundedObjectHyperTreeNode
         return bbox.getDimension();
     }
 
-    protected HyperBoundedObject createNewBoundedObject(DataInputStream stream) throws HyperDimensionMismatchException
+    public static HyperBoundedObject createNewBoundedObject(DataInputStream stream) throws HyperDimensionMismatchException
     {
         try
         {
@@ -137,13 +137,24 @@ public class BoundedObjectHyperTreeNode
         while (instream.available()>0) // for every object in the node
         {
             HyperBoundedObject obj = createNewBoundedObject(instream);
-            if (obj != null ){
+
+
             for (int i=0; i<getNumberOfChildren() ; i++)
-                if (children[i].add(obj))
+                if (children[i].getBoundingBox().contains(obj))
                 {
+                    children[i].add(obj);
                     break;
                 }
-            }
+
+
+
+//            if (obj != null ){
+//            for (int i=0; i<getNumberOfChildren() ; i++)
+//                if (children[i].add(obj))
+//                {
+//                    System.out.println(obj.getFileNum() + " added to child " + i);
+//                }
+//            }
         }
         instream.close();
         isLeaf=false;

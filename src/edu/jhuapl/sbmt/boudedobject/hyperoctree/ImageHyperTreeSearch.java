@@ -1,21 +1,33 @@
 
 package edu.jhuapl.sbmt.boudedobject.hyperoctree;
 
-import java.util.TreeSet;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
+import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
+import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
+import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.model.image.ImageSearchDataCollection;
-
 
 public class ImageHyperTreeSearch
 {
-    public static void main(String[] args) {
-        DateTime startDateJoda = new DateTime(2000, 2, 16, 11, 00, 00, 00,
+
+    public static void main(String[] args) throws HyperDimensionMismatchException, FileNotFoundException {
+        DateTime startDateJoda = new DateTime(2000, 2, 21, 10, 00, 00, 00,
                 DateTimeZone.UTC);
-        DateTime endDateJoda = new DateTime(2000, 2, 16, 12, 00, 00, 00,
+        DateTime endDateJoda = new DateTime(2000, 2, 21, 12, 00, 00, 00,
                 DateTimeZone.UTC);
         double start = (startDateJoda.toDate()).getTime();
         double end = (endDateJoda.toDate()).getTime();
@@ -25,71 +37,47 @@ public class ImageHyperTreeSearch
         imageModel.addDatasourceSkeleton("ErosTest", "/Users/osheacm1/Documents/SAA/testHypertree/dataSource.image");
         imageModel.setCurrentDatasourceSkeleton("ErosTest");
         imageModel.readSkeleton();
+        FSHyperTreeSkeleton skeleton = imageModel.getCurrentSkeleton();
 
+        Set<Integer> cubeList = null;
 
-        TreeSet<Integer> cubeList = null;
         BoundingBox bb = new BoundingBox(new double[]{-17.6, -3.5, -3, 9, -6, 3});
+//        BoundingBox bb = new BoundingBox(new double[]{-5, -3.5, -3, 1, -6, 3});
+
         cubeList = ((ImageSearchDataCollection)imageModel).getLeavesIntersectingBoundingBox(bb, new double[]{start, end});
 
         for (Integer cubeid : cubeList)
         {
-            String filename = "Users/osheacm1/Documets/SAA/testHypertree/" + cubeid + ".imagecube";
-            System.out.println(filename);
+            System.out.println("cubeId: " + cubeid);
+            Node currNode = skeleton.getNodeById(cubeid);
+            Path path = currNode.getPath();
+            Path dataPath = path.resolve("data");
+            DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
+            ArrayList<HyperBoundedObject> images = new ArrayList<HyperBoundedObject>();
+            try
+            {
+                while (instream.available() > 0) {
+                    HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream);
+                    images.add(obj);
+                    int fileNum = obj.getFileNum();
+                    Map<Integer, String> fileMap = skeleton.getFileMap();
+                    String file = fileMap.get(fileNum);
+                    System.out.println("file: " + file);
+                    HyperBox box = obj.getBbox();
+                    double[] bounds = box.getBounds();
+                    double[] nodeBounds = currNode.getBounds();
+                    System.out.println("Node Bounds : [" + nodeBounds[1] +"-" + nodeBounds[0] + ", " + nodeBounds[3] +"-" + nodeBounds[2] + "," + nodeBounds[5] +"-" + nodeBounds[4]+"], [" + nodeBounds[0] +"," + nodeBounds[2] + "," + nodeBounds[4] +"]");
+                    System.out.println("Image Bounds: [" + bounds[1] +"-" + bounds[0] + ", " + bounds[3] +"-" + bounds[2] + "," + bounds[5] +"-" + bounds[4]+"], [" + bounds[0] +"," + bounds[2] + "," + bounds[4] +"]");
+                }
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
-//            int fileId;
-//            if (!localFileMap.containsValue(file.toString()))
-//            {
-//                fileId=localFileMap.size();
-//                localFileMap.put(fileId, file.toString());
-//            }
-//            else
-//                fileId=localFileMap.inverse().get(file.toString());
-//
-//            if (file == null)
-//                continue;
-//
-//            InputStream fs = new FileInputStream(file.getAbsolutePath());
-//            InputStreamReader isr = new InputStreamReader(fs);
-//            BufferedReader in = new BufferedReader(isr);
-//
-//            String lineRead;
-//            while ((lineRead = in.readLine()) != null)
-//            {
-//                String[] vals = lineRead.trim().split("\\s+");
-//
-//                double time = TimeUtil.str2et(vals[timeindex]);
-//                if (time < start || time > stop)
-//                    continue;
-//
-//                double[] scpos = new double[3];
-//                double[] target = new double[3];
-//                target[0] = Double.parseDouble(vals[xindex]);
-//                target[1] = Double.parseDouble(vals[yindex]);
-//                target[2] = Double.parseDouble(vals[zindex]);
-//                scpos[0] = Double.parseDouble(vals[scxindex]);
-//                scpos[1] = Double.parseDouble(vals[scyindex]);
-//                scpos[2] = Double.parseDouble(vals[sczindex]);
-//
-//                if (pointInRegionChecker==null) // if this part of the code has been reached and the point-checker is null then this is a time-only search, and the time criterion has already been met (cf. continue statement a few lines above)
-//                {
-//                    LidarPoint p=new BasicLidarPoint(target, scpos, time, 0);
-//                    originalPoints.add(p);
-//                    originalPointsSourceFiles.put(p, fileId);
-//                    continue;
-//                }
-//
-//
-//                if (pointInRegionChecker.checkPointIsInRegion(target))  // here, the point is known to be within the specified time bounds, and since the point checker exists the target coordinates are filtered against
-//                {
-//                    LidarPoint p=new BasicLidarPoint(target, scpos, time, 0);
-//                    originalPoints.add(p);
-//                    originalPointsSourceFiles.put(p, fileId);
-//                    continue;
-//                }
-//            }
-//
-//            in.close();
-        }
-        }
+    }
+
 
 }

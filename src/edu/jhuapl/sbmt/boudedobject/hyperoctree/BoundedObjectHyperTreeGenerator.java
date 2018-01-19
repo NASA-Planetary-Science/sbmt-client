@@ -53,7 +53,8 @@ public class BoundedObjectHyperTreeGenerator
                 String[] toks = line.split(" ");
                 String objName = toks[0];
                 try {
-                    double minT = df.parse(toks[7]).getTime();
+                    Date minTime = df.parse(toks[7]);
+                    double minT = minTime.getTime();
                     double maxT = df.parse(toks[8]).getTime();
 
                     HyperBox objBBox = new HyperBox(new double[]{Double.parseDouble(toks[1]), Double.parseDouble(toks[3]), Double.parseDouble(toks[5]), minT},
@@ -169,7 +170,7 @@ public class BoundedObjectHyperTreeGenerator
 //        NativeLibraryLoader.loadVtkLibrariesHeadless();
         Path outputDirectory=Paths.get(outputDirectoryString);
 
-        int maxObjectsPerLeaf = 2;
+        int maxObjectsPerLeaf = 13;
         DataOutputStreamPool pool=new DataOutputStreamPool(maxNumOpenOutputFiles);
 
 
@@ -196,6 +197,14 @@ public class BoundedObjectHyperTreeGenerator
         BoundedObjectHyperTreeGenerator generator = new BoundedObjectHyperTreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
 
         generator.addAllObjectsFromFile(inputFile);
+        Path fileMapPath = outputDirectory.resolve("fileMap.txt");
+        System.out.print("Writing file map to "+fileMapPath+"... ");
+        FileWriter writer = new FileWriter(fileMapPath.toFile());
+        for (int i : generator.fileMap.inverse().keySet())
+            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
+        writer.close();
+        System.out.println("Done.");
+
 
         System.out.println("Expanding tree.");
         System.out.println("Max # pts per leaf="+maxObjectsPerLeaf);
@@ -204,13 +213,13 @@ public class BoundedObjectHyperTreeGenerator
         generator.commit(); // clean up any empty or open data files
 
 
-        Path fileMapPath = outputDirectory.resolve("fileMap.txt");
-        System.out.print("Writing file map to "+fileMapPath+"... ");
-        FileWriter writer = new FileWriter(fileMapPath.toFile());
-        for (int i : generator.fileMap.inverse().keySet())
-            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
-        writer.close();
-        System.out.println("Done.");
+//        Path fileMapPath = outputDirectory.resolve("fileMap.txt");
+//        System.out.print("Writing file map to "+fileMapPath+"... ");
+//        FileWriter writer = new FileWriter(fileMapPath.toFile());
+//        for (int i : generator.fileMap.inverse().keySet())
+//            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
+//        writer.close();
+//        System.out.println("Done.");
     }
 
 
