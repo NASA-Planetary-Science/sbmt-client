@@ -46,6 +46,9 @@ public class ImageHyperTreeSearch
 
         cubeList = ((ImageSearchDataCollection)imageModel).getLeavesIntersectingBoundingBox(bb, new double[]{start, end});
 
+        Set<String> files = new HashSet<String>();
+
+
         for (Integer cubeid : cubeList)
         {
             System.out.println("cubeId: " + cubeid);
@@ -54,7 +57,6 @@ public class ImageHyperTreeSearch
             Path dataPath = path.resolve("data");
             DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
             ArrayList<HyperBoundedObject> images = new ArrayList<HyperBoundedObject>();
-            Set<String> files = new HashSet<String>();
             try
             {
                 while (instream.available() > 0) {
@@ -78,12 +80,13 @@ public class ImageHyperTreeSearch
                 e.printStackTrace();
             }
 
-            for (String file : files) {
-                System.out.println(file);
-            }
-            /// NOW CHECK WHICH FILES ACTUALLY INTERSECT REGION
         }
 
+        for (String file : files) {
+            System.out.println(file);
+        }
+
+        /// NOW CHECK WHICH FILES ACTUALLY INTERSECT REGION
     }
 
 
