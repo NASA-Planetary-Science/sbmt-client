@@ -119,7 +119,7 @@ public class SbmtViewManager extends ViewManager
         for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
         {
 //            System.out.println(config.getUniqueName());
-            if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
+            //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
                 addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
         }
     }
