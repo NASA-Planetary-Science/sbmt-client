@@ -18,8 +18,8 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -118,7 +118,9 @@ public class SbmtViewManager extends ViewManager
     {
         for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
         {
-            addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
+//            System.out.println(config.getUniqueName());
+            if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
+                addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
         }
     }
 
