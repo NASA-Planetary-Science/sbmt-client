@@ -26,8 +26,8 @@ import vtk.vtkIdTypeArray;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.gui.renderer.Renderer;
-import edu.jhuapl.saavtk.gui.renderer.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.illum.IlluminationField;
 import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
 import edu.jhuapl.saavtk.illum.UniformIlluminationField;

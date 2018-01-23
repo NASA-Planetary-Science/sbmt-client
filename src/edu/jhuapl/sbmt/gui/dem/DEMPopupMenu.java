@@ -24,7 +24,7 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
-import edu.jhuapl.saavtk.gui.renderer.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
