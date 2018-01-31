@@ -2899,7 +2899,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     public boolean isAccessible()
     {
         FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
-        return info.isURLAccessAuthorized() == YesOrNo.YES;
+        return info.isURLAccessAuthorized() == YesOrNo.YES && (info.isExistsLocally() || info.isExistsOnServer() == YesOrNo.YES);
     }
 
 
