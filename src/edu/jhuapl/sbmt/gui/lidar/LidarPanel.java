@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 import javax.swing.BorderFactory;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;

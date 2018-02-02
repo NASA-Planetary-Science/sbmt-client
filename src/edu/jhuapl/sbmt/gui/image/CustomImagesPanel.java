@@ -51,7 +51,7 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
