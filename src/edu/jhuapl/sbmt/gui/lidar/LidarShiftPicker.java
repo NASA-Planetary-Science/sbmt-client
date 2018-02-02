@@ -8,7 +8,7 @@ import vtk.vtkActor;
 import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
-import vtk.rendering.jogl.vtkJoglPanelComponent;
+import vtk.rendering.jogl.vtkJoglCanvasComponent;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Model;
@@ -25,7 +25,7 @@ import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 public class LidarShiftPicker extends Picker
 {
     private ModelManager modelManager;
-    private vtkJoglPanelComponent renWin;
+    private vtkJoglCanvasComponent renWin;
     private PolyhedralModel smallBodyModel;
     private LidarSearchDataCollection lidarModel;
     private vtkCellPicker smallBodyPicker;
