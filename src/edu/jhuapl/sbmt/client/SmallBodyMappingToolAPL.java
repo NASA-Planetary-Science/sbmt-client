@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.SafePaths;
 
 
@@ -18,6 +19,11 @@ public class SmallBodyMappingToolAPL
 {
     public static void main(String[] args)
     {
+        if (SmallBodyMappingTool.getOption(args, "--debug") != null)
+        {
+            Debug.setEnabled(true);
+        }
+
         Configuration.setAPLVersion(true);
 
         if (Configuration.getAppName() == null)
