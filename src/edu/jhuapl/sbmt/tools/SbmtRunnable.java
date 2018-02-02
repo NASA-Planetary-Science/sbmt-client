@@ -146,6 +146,7 @@ public class SbmtRunnable implements Runnable
         catch (@SuppressWarnings("unused") URISyntaxException e)
         {
         }
+        FileCache.showDotsForFiles(true);
         System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
         System.out.println(mission + " edition" + (compileDate != null ? " released " + DATE_FORMAT.format(compileDate) : ""));
         if (Debug.isEnabled())
