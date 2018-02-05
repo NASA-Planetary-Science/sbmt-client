@@ -13,7 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import vtk.vtkDebugLeaks;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -423,7 +423,7 @@ public class BackplanesGenerator
             System.err.println("Instrument " + camera + " for body " + body + " not found, exiting.");
             System.exit(0);
         }
-        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelAuthor.GASKELL, version));
+        smallBodyModel = SbmtModelFactory.createSmallBodyModel(SmallBodyViewConfig.getSmallBodyConfig(body, ShapeModelType.GASKELL, version));
         if (instr == null)
         {
             instr = ((SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig()).imagingInstruments[0].instrumentName;

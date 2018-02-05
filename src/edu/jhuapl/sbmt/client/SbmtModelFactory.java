@@ -9,8 +9,8 @@ import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
@@ -227,10 +227,10 @@ public class SbmtModelFactory
     	// is thrown, it's worth trying to create the model.
         FileCache.isFileGettable(config.serverPath(""));
         ShapeModelBody name = config.body;
-        ShapeModelAuthor author = config.author;
+        ShapeModelType author = config.author;
 
-        if (ShapeModelAuthor.GASKELL == author ||
-                (ShapeModelAuthor.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name))
+        if (ShapeModelType.GASKELL == author ||
+                (ShapeModelType.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
                 return new Eros(config);
@@ -273,24 +273,24 @@ public class SbmtModelFactory
                 return new SimpleSmallBody(config, names, paths);
             }
         }
-        else if (ShapeModelAuthor.THOMAS == author)
+        else if (ShapeModelType.THOMAS == author)
         {
             if (ShapeModelBody.EROS == name)
                 return new ErosThomas(config);
             else if (ShapeModelBody.VESTA == name)
                 return new VestaOld(config);
         }
-        else if (ShapeModelAuthor.JORDA == author)
+        else if (ShapeModelType.JORDA == author)
         {
             if (ShapeModelBody.LUTETIA == name)
                 return new Lutetia(config);
         }
-        else if (ShapeModelAuthor.DLR == author)
+        else if (ShapeModelType.DLR == author)
         {
             if (ShapeModelBody._67P == name)
                 return new CG(config);
         }
-        else if (ShapeModelAuthor.CUSTOM == author)
+        else if (ShapeModelType.CUSTOM == author)
         {
             return new CustomShapeModel(config);
         }
@@ -306,9 +306,9 @@ public class SbmtModelFactory
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelAuthor author = config.author;
+        ShapeModelType author = config.author;
 
-        if (ShapeModelAuthor.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
+        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
         {
             String[] graticulePaths = new String[]{
                     config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
@@ -319,7 +319,7 @@ public class SbmtModelFactory
 
             return new Graticule(smallBodyModel, graticulePaths);
         }
-        else if (ShapeModelAuthor.CUSTOM == author && !config.customTemporary)
+        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
         {
             return new CustomGraticule(smallBodyModel);
         }
@@ -335,7 +335,7 @@ public class SbmtModelFactory
     static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel)
     {
         ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
-        ShapeModelAuthor author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
         String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
 
         return new SpectraCollection(smallBodyModel);

@@ -1,10 +1,12 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.File;
-import java.util.List;
+import java.nio.file.Path;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.SafePaths;
 
 
 /**
@@ -23,53 +25,21 @@ public class SmallBodyMappingToolAPL
             SmallBodyMappingTool.configureMission();
         }
 
-        String username = null;
-        String password = null;
-
         try
         {
             // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
             // containing the runsbmt script.
             String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
             String parent = new File(jarLocation).getParentFile().getParent();
-            String[] passwordFilesToTry = {
-                    Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    parent + File.separator + "password.txt"
-            };
+            ImmutableList<Path> passwordFilesToTry = ImmutableList.of(
+                    SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"),
+                    SafePaths.get(parent, "password.txt")
+            );
 
-            for (String passwordFile : passwordFilesToTry)
-            {
-                if (new File(passwordFile).exists())
-                {
-                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
-                    if (credentials.size() >= 2)
-                    {
-                        String user = credentials.get(0);
-                        String pass = credentials.get(1);
-
-                        if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
-                            pass != null && pass.trim().length() > 0)
-                        {
-                            username = user.trim();
-                            password = pass.trim();
-                            break;
-                        }
-                    }
-                }
-            }
+            Configuration.setupPasswordAuthentication("http://sbmt.jhuapl.edu/internal/restricted", "DO_NOT_DELETE.TXT", passwordFilesToTry);
         }
-        catch (Exception e)
+        catch (@SuppressWarnings("unused") Exception e)
         {
-        }
-
-        if (username != null && password != null)
-        {
-            Configuration.setupPasswordAuthentication(username, password);
-        }
-        else
-        {
-            System.out.println("Warning: no correctly formatted password file found. "
-                    + "Continuing without password. Certain functionality may not work.");
         }
 
         // Call the public version's main function

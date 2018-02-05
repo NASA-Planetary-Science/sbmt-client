@@ -36,7 +36,6 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
-//import edu.jhuapl.near.model.DEMBoundaryCollection;
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;

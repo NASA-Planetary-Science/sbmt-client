@@ -15,7 +15,7 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkTriangle;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -281,7 +281,7 @@ public class MSIBestResolutionPerPlate
 
         String msiFileList=args[0];
 
-        erosModel = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+        erosModel = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
         resolutionLevel = Integer.parseInt(args[1]);
         try {
             erosModel.setModelResolution(resolutionLevel);

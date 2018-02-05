@@ -45,8 +45,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.miginfocom.swing.MigLayout;
-
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.gui.JTextFieldDoubleVerifier;
@@ -67,6 +65,8 @@ import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+
+import net.miginfocom.swing.MigLayout;
 
 public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
