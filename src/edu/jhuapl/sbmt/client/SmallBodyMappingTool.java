@@ -27,10 +27,11 @@ public class SmallBodyMappingTool
 
     public enum Mission
     {
+        APL_INTERNAL("b1bc7ed"),
+        PUBLIC_RELEASE("3ee38f0"),
         HAYABUSA2("133314b"),
         HAYABUSA2_STAGE("244425c"),
         HAYABUSA2_DEPLOY("355536d"),
-        NEARTOOL("b1bc7ed"),
         OSIRIS_REX("7cd84586"),
         ;
         private final String hashedName;
@@ -95,16 +96,18 @@ public class SmallBodyMappingTool
         if (mission == null)
         {
             String missionHash = System.getProperty("edu.jhuapl.sbmt.mission");
-            Mission mission = missionHash == null ? Mission.NEARTOOL : null;
+            if (missionHash == null)
+            {
+                throw new RuntimeException("Invalid launch configuration");
+            }
             for (Mission each: Mission.values())
             {
-                if (each.getHashedName().equals(missionHash))
+                if (each.getHashedName().equalsIgnoreCase(missionHash))
                 {
                     mission = each;
                     break;
                 }
             }
-            SmallBodyMappingTool.mission = mission;
         }
 
         return mission;
@@ -113,43 +116,38 @@ public class SmallBodyMappingTool
     static Mission configureMission()
     {
         Mission mission = getMission();
-        if (mission == null)
-        {
-            throw new RuntimeException("Invalid mission hash supplied at start-up");
-        }
-
         switch (mission)
         {
-        case HAYABUSA2:
-//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("sbmt1hyb2");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
-            break;
-        case HAYABUSA2_STAGE:
-            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-            Configuration.setAppName("sbmt1hyb2-stage");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-            break;
-        case HAYABUSA2_DEPLOY:
-            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-            Configuration.setAppName("sbmt1hyb2-deploy");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
-            break;
-        case NEARTOOL:
-//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("neartool");
-            Configuration.setCacheVersion("2");
-            Configuration.setAppTitle("SBMT");
-            break;
-        case OSIRIS_REX:
-//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("sbmt1orex");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx");
-            break;
+            case APL_INTERNAL:
+            case PUBLIC_RELEASE:
+                Configuration.setAppName("neartool");
+                Configuration.setCacheVersion("2");
+                Configuration.setAppTitle("SBMT");
+                break;
+            case HAYABUSA2:
+//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setAppName("sbmt1hyb2");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+                break;
+            case HAYABUSA2_STAGE:
+                Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+                Configuration.setAppName("sbmt1hyb2-stage");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+                break;
+            case HAYABUSA2_DEPLOY:
+                Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+                Configuration.setAppName("sbmt1hyb2-deploy");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
+                break;
+            case OSIRIS_REX:
+//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setAppName("sbmt1orex");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/OSIRIS REx");
+                break;
             default:
                 throw new AssertionError();
         }
@@ -161,21 +159,22 @@ public class SmallBodyMappingTool
         SbmtSplash splash = null;
         switch (mission)
         {
-        case HAYABUSA2:
-            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-            break;
-        case HAYABUSA2_STAGE:
-            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-            break;
-        case HAYABUSA2_DEPLOY:
-            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
-            break;
-        case NEARTOOL:
-            splash = new SbmtSplash("resources", "splashLogo.png");
-            break;
-        case OSIRIS_REX:
-            splash = new SbmtSplash("resources", "splashLogoOrex.png");
-            break;
+            case APL_INTERNAL:
+            case PUBLIC_RELEASE:
+                splash = new SbmtSplash("resources", "splashLogo.png");
+                break;
+            case HAYABUSA2:
+                splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+                break;
+            case HAYABUSA2_STAGE:
+                splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+                break;
+            case HAYABUSA2_DEPLOY:
+                splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
+                break;
+            case OSIRIS_REX:
+                splash = new SbmtSplash("resources", "splashLogoOrex.png");
+                break;
             default:
                 throw new AssertionError();
         }

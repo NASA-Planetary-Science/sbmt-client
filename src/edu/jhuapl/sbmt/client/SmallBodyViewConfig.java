@@ -2195,7 +2195,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            configArray.add(c);
+            // 2017-12-21: exclude this body/model for now, but do not comment out anything else in
+            // this block so that Eclipse updates will continue to keep this code intact.
+            //  configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
