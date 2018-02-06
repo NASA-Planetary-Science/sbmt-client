@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-import vtk.rendering.jogl.vtkJoglPanelComponent;
+import vtk.rendering.jogl.vtkJoglCanvasComponent;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.Renderer.LightingType;
@@ -98,7 +98,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
     private TimeControlPane timeControlPane;
 
     private Renderer renderer;
-    private vtkJoglPanelComponent renWin;
+    private vtkJoglCanvasComponent renWin;
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
@@ -245,7 +245,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         //
 
         // Calculate the beginning and end of available time
-        path = FileCache.getFileFromServer(config.timeHistoryFile);
+        try {
+            path = FileCache.getFileFromServer(config.timeHistoryFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // get range of available dates
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(readString(lineLength));//oldDate.parse(currentRun.getIntervalTime()[0]);

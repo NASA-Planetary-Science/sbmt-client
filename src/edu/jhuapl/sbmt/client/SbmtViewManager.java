@@ -18,8 +18,8 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -118,7 +118,9 @@ public class SbmtViewManager extends ViewManager
     {
         for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
         {
-            addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
+//            System.out.println(config.getUniqueName());
+            //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
+                addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
         }
     }
 
@@ -126,9 +128,9 @@ public class SbmtViewManager extends ViewManager
     public View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
         SmallBodyViewConfig config = new SmallBodyViewConfig();
-        config.customName = name;
+        config.modelLabel = name;
         config.customTemporary = temporary;
-        config.author = ShapeModelAuthor.CUSTOM;
+        config.author = ShapeModelType.CUSTOM;
         return new SbmtView(statusBar, config);
     }
 
@@ -357,11 +359,11 @@ public class SbmtViewManager extends ViewManager
         }
     }
 
-    private static final OrderedComparator<ShapeModelType> TYPE_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
-            ShapeModelType.ASTEROID,
-            ShapeModelType.COMETS,
-            ShapeModelType.KBO,
-            ShapeModelType.PLANETS_AND_SATELLITES,
+    private static final OrderedComparator<BodyType> TYPE_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            BodyType.ASTEROID,
+            BodyType.COMETS,
+            BodyType.KBO,
+            BodyType.PLANETS_AND_SATELLITES,
             null
             ));
 
@@ -502,34 +504,34 @@ public class SbmtViewManager extends ViewManager
             null
             ));
 
-    private static final OrderedComparator<ShapeModelAuthor> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
-            ShapeModelAuthor.TRUTH,
-            ShapeModelAuthor.GASKELL,
-            ShapeModelAuthor.THOMAS,
-            ShapeModelAuthor.STOOKE,
-            ShapeModelAuthor.HUDSON,
-            ShapeModelAuthor.DUXBURY,
-            ShapeModelAuthor.OSTRO,
-            ShapeModelAuthor.JORDA,
-            ShapeModelAuthor.NOLAN,
-            ShapeModelAuthor.EROSNLR,
-            ShapeModelAuthor.EROSNAV,
-            ShapeModelAuthor.EXPERIMENTAL,
-            ShapeModelAuthor.CUSTOM,
-            ShapeModelAuthor.LORRI,
-            ShapeModelAuthor.MVIC,
-            ShapeModelAuthor.CARRY,
-            ShapeModelAuthor.DLR,
-            ShapeModelAuthor.OREX,
-            ShapeModelAuthor.HAYABUSA2,
-            ShapeModelAuthor.BLENDER,
+    private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
+            ShapeModelType.TRUTH,
+            ShapeModelType.GASKELL,
+            ShapeModelType.THOMAS,
+            ShapeModelType.STOOKE,
+            ShapeModelType.HUDSON,
+            ShapeModelType.DUXBURY,
+            ShapeModelType.OSTRO,
+            ShapeModelType.JORDA,
+            ShapeModelType.NOLAN,
+            ShapeModelType.EROSNLR,
+            ShapeModelType.EROSNAV,
+            ShapeModelType.EXPERIMENTAL,
+            ShapeModelType.CUSTOM,
+            ShapeModelType.LORRI,
+            ShapeModelType.MVIC,
+            ShapeModelType.CARRY,
+            ShapeModelType.DLR,
+            ShapeModelType.OREX,
+            ShapeModelType.HAYABUSA2,
+            ShapeModelType.BLENDER,
             null
             ));
 
-    private static final OrderedComparator<ShapeModelAuthor> THOMAS_STOOKE_GASKELL_AUTHOR_COMPARATOR =  OrderedComparator.of(Lists.newArrayList(
-            ShapeModelAuthor.THOMAS,
-            ShapeModelAuthor.STOOKE,
-            ShapeModelAuthor.GASKELL
+    private static final OrderedComparator<ShapeModelType> THOMAS_STOOKE_GASKELL_AUTHOR_COMPARATOR =  OrderedComparator.of(Lists.newArrayList(
+            ShapeModelType.THOMAS,
+            ShapeModelType.STOOKE,
+            ShapeModelType.GASKELL
             ));
 
     private static final Comparator<ViewConfig> THOMAS_STOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {

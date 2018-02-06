@@ -34,9 +34,10 @@ public class NISSearchPanel extends SpectrumSearchPanel
         super(modelManager, infoPanelManager, pickManager, renderer, instrument);
         // TODO Auto-generated constructor stub
 
-        File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
         try
         {
+            File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
+
             Scanner scanner=new Scanner(nisTimesFile);
             boolean found=false;
             while (scanner.hasNextLine() && !found)
@@ -60,9 +61,10 @@ public class NISSearchPanel extends SpectrumSearchPanel
 
     static
     {
-        File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
         try
         {
+            File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
+
             Scanner scanner=new Scanner(nisSunFile);
             boolean found=false;
             while (scanner.hasNextLine() && !found)

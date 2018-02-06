@@ -28,6 +28,8 @@ public class SmallBodyMappingTool
     public enum Mission
     {
         HAYABUSA2("133314b"),
+        HAYABUSA2_STAGE("244425c"),
+        HAYABUSA2_DEPLOY("355536d"),
         NEARTOOL("b1bc7ed"),
         OSIRIS_REX("7cd84586"),
         ;
@@ -44,7 +46,10 @@ public class SmallBodyMappingTool
         }
     }
 
-    private static Mission mission = null;
+    // DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
+    // This field is used during the build process to "hard-wire" a release to point to a specific server.
+    private static final Mission RELEASED_MISSION = null;
+    private static Mission mission = RELEASED_MISSION;
 
     static
     {
@@ -116,16 +121,31 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            Configuration.setAppName("sbmt1hayabusa2");
+//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1hyb2");
             Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+            break;
+        case HAYABUSA2_STAGE:
+            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+            break;
+        case HAYABUSA2_DEPLOY:
+            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+            Configuration.setAppName("sbmt1hyb2-deploy");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
             break;
         case NEARTOOL:
+//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
             Configuration.setAppName("neartool");
             Configuration.setCacheVersion("2");
             Configuration.setAppTitle("SBMT");
             break;
         case OSIRIS_REX:
+//            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
             Configuration.setAppName("sbmt1orex");
             Configuration.setCacheVersion("");
             Configuration.setAppTitle("SBMT/OSIRIS REx");
@@ -142,7 +162,13 @@ public class SmallBodyMappingTool
         switch (mission)
         {
         case HAYABUSA2:
-            splash = new SbmtSplash("resources", "splashLogo.png");
+            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+            break;
+        case HAYABUSA2_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+            break;
+        case HAYABUSA2_DEPLOY:
+            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
             break;
         case NEARTOOL:
             splash = new SbmtSplash("resources", "splashLogo.png");
@@ -156,6 +182,24 @@ public class SmallBodyMappingTool
         return splash;
     }
 
+    public static String getOption(String[] args, String optionPrefix)
+    {
+        for (String arg : args)
+        {
+            arg = arg.toLowerCase();
+            optionPrefix = optionPrefix.toLowerCase();
+            if (arg.startsWith(optionPrefix + "="))
+            {
+                return arg.substring(optionPrefix.length() + 1);
+            }
+            else if (arg.startsWith(optionPrefix))
+            {
+                return arg.substring(optionPrefix.length());
+            }
+        }
+        return null;
+    }
+
     public static void main(final String[] args)
     {
         if (Configuration.getAppName() == null)
@@ -166,11 +210,6 @@ public class SmallBodyMappingTool
 
         setupLookAndFeel();
 
-        // set up splash screen
-        SbmtSplash splash = createSplash(mission);
-        splash.setVisible(true);
-        splash.validate();
-        splash.repaint();
 
         /*if(!startPopup)   INITIALIZES THE START SCREEN
         {
@@ -182,8 +221,13 @@ public class SmallBodyMappingTool
 
         try
         {
+            // set up splash screen
+            SbmtSplash splash = createSplash(mission);
+            splash.setVisible(true);
+            splash.validate();
+            splash.repaint();
             javax.swing.SwingUtilities.invokeLater(new SbmtRunnable(args));
-            Thread.sleep(8000);
+            Thread.sleep(10000);
             splash.setVisible(false);
         }
         catch (Exception e)
