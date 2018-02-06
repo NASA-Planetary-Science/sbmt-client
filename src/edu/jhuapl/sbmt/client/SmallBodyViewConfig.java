@@ -924,9 +924,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.modelLabel = "Stooke (2002)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1001,9 +1002,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.modelLabel = "Stooke (2002)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1024,9 +1026,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.modelLabel = "Stooke (2002)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
@@ -1469,9 +1472,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.modelLabel = "Stooke (2002)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
@@ -1545,9 +1549,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.modelLabel = "Stooke (2002)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
@@ -1613,9 +1618,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        c.modelLabel = "Stooke (2002)";
-        // c.modelLabel = "Stooke (2016)";
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
+      // 2017-12-20: this name will be correct when "the new model" has been brought in.
+      // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
