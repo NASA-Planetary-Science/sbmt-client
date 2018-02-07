@@ -17,7 +17,7 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
-import vtk.rendering.jogl.vtkJoglCanvasComponent;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.Renderer.AxisType;
@@ -41,7 +41,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 public class ImageDefaultPicker extends DefaultPicker
 {
     private Renderer renderer;
-    private vtkJoglCanvasComponent renWin;
+    private vtkJoglPanelComponent renWin;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private PopupManager popupManager;
