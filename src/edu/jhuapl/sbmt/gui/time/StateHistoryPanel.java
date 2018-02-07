@@ -46,8 +46,8 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
