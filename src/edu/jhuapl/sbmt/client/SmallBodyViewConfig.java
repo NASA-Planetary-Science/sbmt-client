@@ -2645,10 +2645,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 150000.0;
-            c.imageSearchDefaultMaxResolution = 550.0;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
+            c.imageSearchDefaultMaxResolution = 5000.0;
             configArray.add(c);
         }
 
