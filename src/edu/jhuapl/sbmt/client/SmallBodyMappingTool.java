@@ -182,6 +182,24 @@ public class SmallBodyMappingTool
         return splash;
     }
 
+    public static String getOption(String[] args, String optionPrefix)
+    {
+        for (String arg : args)
+        {
+            arg = arg.toLowerCase();
+            optionPrefix = optionPrefix.toLowerCase();
+            if (arg.startsWith(optionPrefix + "="))
+            {
+                return arg.substring(optionPrefix.length() + 1);
+            }
+            else if (arg.startsWith(optionPrefix))
+            {
+                return arg.substring(optionPrefix.length());
+            }
+        }
+        return null;
+    }
+
     public static void main(final String[] args)
     {
         if (Configuration.getAppName() == null)
@@ -192,11 +210,6 @@ public class SmallBodyMappingTool
 
         setupLookAndFeel();
 
-        // set up splash screen
-        SbmtSplash splash = createSplash(mission);
-        splash.setVisible(true);
-        splash.validate();
-        splash.repaint();
 
         /*if(!startPopup)   INITIALIZES THE START SCREEN
         {
@@ -208,8 +221,13 @@ public class SmallBodyMappingTool
 
         try
         {
+            // set up splash screen
+            SbmtSplash splash = createSplash(mission);
+            splash.setVisible(true);
+            splash.validate();
+            splash.repaint();
             javax.swing.SwingUtilities.invokeLater(new SbmtRunnable(args));
-            Thread.sleep(8000);
+            Thread.sleep(10000);
             splash.setVisible(false);
         }
         catch (Exception e)

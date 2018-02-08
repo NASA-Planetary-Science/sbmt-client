@@ -1,10 +1,14 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPopupMenu;
@@ -18,6 +22,8 @@ import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SmallBodyMappingTool;
@@ -55,7 +61,7 @@ public class SbmtRunnable implements Runnable
                     SmallBodyViewConfig.betaMode = true;
                 } else if (args[i].equals("--no-stream-redirect")) {
                     redirectStreams = false;
-                } else {
+                } else if (!args[i].startsWith("-")) {
                     // We've encountered something that is not an option, must be at the args
                     break;
                 }
@@ -65,9 +71,10 @@ public class SbmtRunnable implements Runnable
                 outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
                 redirectStreams(outputFile);
             }
-            writeStartupMessage();
+            Mission mission = SmallBodyMappingTool.getMission();
+            writeStartupMessage(mission);
             SmallBodyViewConfig.initialize();
-            configureMissionBodies();
+            configureMissionBodies(mission);
 
 
             // After options comes the args
@@ -91,6 +98,8 @@ public class SbmtRunnable implements Runnable
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
             frame.setVisible(true);
+            FileCache.showDotsForFiles(false);
+            System.out.println("\nSBMT Ready");
 
         }
         catch (Exception e)
@@ -126,19 +135,37 @@ public class SbmtRunnable implements Runnable
         System.setOut(savedOut);
     }
 
-    protected void writeStartupMessage()
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
+    protected void writeStartupMessage(Mission mission)
     {
+        Date compileDate = null;
+        try
+        {
+            compileDate = new Date(new File(getClass().getClassLoader().getResource(getClass().getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified());
+        }
+        catch (@SuppressWarnings("unused") URISyntaxException e)
+        {
+        }
+        FileCache.showDotsForFiles(true);
+        System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
+        System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
+        if (Debug.isEnabled())
+        {
+            System.out.println("Tool started in debug mode; diagnostic output is enabled.");
+        }
+        System.out.println("Using server at " + Configuration.getDataRootURL());
         if (!Configuration.isPasswordAuthenticationSetup())
         {
             System.out.println("Warning: no correctly formatted password file found. "
                     + "Continuing without password. Some models may not be available.");
         }
+        System.out.println("Please be patient while the SBMT starts up");
 
     }
-    protected void configureMissionBodies()
+    protected void configureMissionBodies(Mission mission)
     {
         disableAllBodies();
-        enableMissionBodies(SmallBodyMappingTool.getMission());
+        enableMissionBodies(mission);
     }
 
     protected void disableAllBodies()
