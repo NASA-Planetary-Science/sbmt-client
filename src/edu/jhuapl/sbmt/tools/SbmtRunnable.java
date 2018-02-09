@@ -144,6 +144,8 @@ public class SbmtRunnable implements Runnable
         }
         catch (@SuppressWarnings("unused") Exception e)
         {
+            // Temporarily print this so we can correct this error.
+            e.printStackTrace();
         }
         FileCache.showDotsForFiles(true);
         System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
