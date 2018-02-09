@@ -38,8 +38,8 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -236,6 +236,17 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     @Override
     public void keyPressed(KeyEvent e)
     {
+        // 2018-02-08 JP. Turn this method into a no-op for now. The reason is that
+        // currently all listeners respond to all key strokes, and VTK keyboard events
+        // do not have a means to determine their source, so there is no way for listeners
+        // to be more selective. The result is, e.g., if one types "s", statistics windows show
+        // up even if we're not looking at a spectrum tab.
+        //
+        // Leave it in the code (don't comment it out) so Eclipse can find references to this,
+        // and so that we don't unknowingly break this code.
+        boolean disableKeyResponses = true;
+        if (disableKeyResponses) return;
+
         if (e.getKeyChar()=='a')
         {
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
