@@ -27,7 +27,7 @@
  	</copy>
  	
  	<copy todir="${rootSAAVTKdir}/build/classes/edu/jhuapl/saavtk/gui/render/toolbar">
- 	 	  <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/gui/render/toolbar/**.png"/>
+ 	 	  <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/gui/render/toolbar/*.png"/>
  	</copy>
  	
  	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
