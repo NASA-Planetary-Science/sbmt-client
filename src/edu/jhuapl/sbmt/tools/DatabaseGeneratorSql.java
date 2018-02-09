@@ -13,8 +13,8 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -436,30 +436,33 @@ public class DatabaseGeneratorSql
                 "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
         _67P_V3(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody._67P, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
-        JUPITER(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
-                "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
-        CALLISTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
-                "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
-        EUROPA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null),
-                "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
-        GANYMEDE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
-                "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
-        IO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
-                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
-        RQ36_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3 Image"),
+//        JUPITER(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.JUPITER, null),
+//                "/project/nearsdc/data/NEWHORIZONS/JUPITER/IMAGING/imagelist-fullpath.txt"),
+//        CALLISTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CALLISTO, null),
+//                "/project/nearsdc/data/NEWHORIZONS/CALLISTO/IMAGING/imagelist-fullpath.txt"),
+//        EUROPA(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EUROPA, null),
+//                "/project/nearsdc/data/NEWHORIZONS/EUROPA/IMAGING/imagelist-fullpath.txt"),
+//        GANYMEDE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.GANYMEDE, null),
+//                "/project/nearsdc/data/NEWHORIZONS/GANYMEDE/IMAGING/imagelist-fullpath.txt"),
+//        IO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
+//                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
+        RQ36_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
-        RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3 Image"),
+        RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
-//        RQ36V4_MAP(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
-//               "/project/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
-//        RQ36V4_POLY(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
-//                "/project/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
+        RQ36V4_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
+               "/project/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
+        RQ36V4_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
+                "/project/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu");
+                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+        ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
+                "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+        ;
 
 
         public final SmallBodyViewConfig config;

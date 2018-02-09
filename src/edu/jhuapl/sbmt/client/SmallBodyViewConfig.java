@@ -2513,6 +2513,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
 
+            // This version would enable image search but this seems to hang, possibly because of the very high resolution of the model.
+            // Re-enable this if/when that issue is addressed.
+//            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
+//            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
+
             BasicImagingInstrument oncCam;
             {
                 // Set up images.
@@ -2556,24 +2561,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", null, ".SUM", ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.IMAGING_DATA,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.GASKELL },
-                        fileLocator,
-                        ImageType.ONC_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/images/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2640,7 +2629,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelBody.ATLAS.name(),
                     BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.ATLAS;
@@ -2658,8 +2648,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
+            c.imageSearchDefaultMaxResolution = 5000.0;
             configArray.add(c);
         }
 
@@ -2883,10 +2875,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         }
     }
 
-    // SBMT1-style helper method.
+    // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType) {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
         QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
+        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
         Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                 instrument,
                 SpectralMode.MONO,
