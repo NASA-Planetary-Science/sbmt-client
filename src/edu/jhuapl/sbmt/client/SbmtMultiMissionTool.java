@@ -22,7 +22,7 @@ import edu.jhuapl.sbmt.tools.SbmtRunnable;
  * to a temporary shape model which is then loaded as a custom view
  * though it is not retained the next time the tool starts.
  */
-public class SmallBodyMappingTool
+public class SbmtMultiMissionTool
 {
 
     public enum Mission
@@ -57,7 +57,7 @@ public class SmallBodyMappingTool
         if (Configuration.isMac())
         {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon(SmallBodyMappingTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
+            ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
             OSXAdapter.setDockIconImage(erosIcon.getImage());
         }
     }
@@ -203,7 +203,7 @@ public class SmallBodyMappingTool
     {
         if (Configuration.getAppName() == null)
         {
-            SmallBodyMappingTool.configureMission();
+            SbmtMultiMissionTool.configureMission();
         }
         Mission mission = getMission();
 

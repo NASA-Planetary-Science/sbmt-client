@@ -19,7 +19,7 @@ public class SmallBodyMappingToolAPL
 {
     public static void main(String[] args)
     {
-        if (SmallBodyMappingTool.getOption(args, "--debug") != null)
+        if (SbmtMultiMissionTool.getOption(args, "--debug") != null)
         {
             Debug.setEnabled(true);
         }
@@ -28,7 +28,7 @@ public class SmallBodyMappingToolAPL
 
         if (Configuration.getAppName() == null)
         {
-            SmallBodyMappingTool.configureMission();
+            SbmtMultiMissionTool.configureMission();
         }
 
         try
@@ -49,6 +49,6 @@ public class SmallBodyMappingToolAPL
         }
 
         // Call the public version's main function
-        SmallBodyMappingTool.main(args);
+        SbmtMultiMissionTool.main(args);
     }
 }
