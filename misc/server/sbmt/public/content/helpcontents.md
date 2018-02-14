@@ -60,10 +60,10 @@ and varies from 0 to 360 degrees. Radius is the distance from the center
 of the body to the point and distance is the distance from the camera to
 the center of the body.
 
-In addition if one clicks with the left mouse button on certain object,
+<!-- In addition if one clicks with the left mouse button on certain object,
 more information about that object is shown on the left side of the
 status bar. If one clicks with the right button on certain objects, a
-context menu is displayed with various options depending on the object.
+context menu is displayed with various options depending on the object.  -->
 
 ## Control Panel
 
