@@ -25,8 +25,8 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
-import edu.jhuapl.sbmt.client.SmallBodyMappingTool;
-import edu.jhuapl.sbmt.client.SmallBodyMappingTool.Mission;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
@@ -70,7 +70,7 @@ public class SbmtRunnable implements Runnable
                 outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
                 redirectStreams(outputFile);
             }
-            Mission mission = SmallBodyMappingTool.getMission();
+            Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission);
             SmallBodyViewConfig.initialize();
             configureMissionBodies(mission);
@@ -194,6 +194,20 @@ public class SbmtRunnable implements Runnable
     {
         switch (mission)
         {
+        case APL_INTERNAL:
+            config.enable(true);
+            break;
+        case PUBLIC_RELEASE:
+            if (
+                    !ShapeModelType.HAYABUSA2.equals(config.author) &&
+                    !ShapeModelType.OREX.equals(config.author) &&
+                    !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
+                    !ShapeModelBody.RYUGU.equals(config.body)
+               )
+            {
+                config.enable(true);
+            }
+            break;
         case HAYABUSA2:
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
@@ -226,9 +240,6 @@ public class SbmtRunnable implements Runnable
             {
                 config.enable(true);
             }
-            break;
-        case NEARTOOL:
-            config.enable(true);
             break;
         case OSIRIS_REX:
             if (

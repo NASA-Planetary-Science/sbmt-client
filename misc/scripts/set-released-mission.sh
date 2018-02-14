@@ -7,7 +7,7 @@ if test "x$SBMTROOT" = x; then
 fi
 
 if test "x$1" = x; then
-  echo "Usage: $0 <mission-enum> where <mission-enum> is one of the members of SmallBodyMappingTool.Mission" >&2
+  echo "Usage: $0 <mission-enum> where <mission-enum> is one of the members of SbmtMultiMissionTool.Mission" >&2
   status=1
 fi
 
@@ -17,7 +17,7 @@ fi
 
 released_mission=$1
 
-file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SmallBodyMappingTool.java"
+file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SbmtMultiMissionTool.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1
