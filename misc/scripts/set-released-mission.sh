@@ -17,7 +17,7 @@ fi
 
 released_mission=$1
 
-file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SmallBodyMappingTool.java"
+file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.java"
 if test ! -f $file; then
   echo "Cannot find file $file" >&2
   exit 1
