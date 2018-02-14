@@ -120,8 +120,11 @@ public class ImagePopupMenu extends PopupMenu
         if (this.spectrumPanelManager != null)
         {
             showImageSpectrumMenuItem = new JMenuItem(new ShowSpectrumAction());
-            showImageSpectrumMenuItem.setText("Spectrum...");
-            this.add(showImageSpectrumMenuItem);
+            if (spectrumPanelManager.getNumberSpectrumModels() > 0)
+            {
+                showImageSpectrumMenuItem.setText("Spectrum...");
+                this.add(showImageSpectrumMenuItem);
+            }
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
