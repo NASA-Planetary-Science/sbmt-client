@@ -18,6 +18,7 @@ import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.MainWindow;
+import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -96,10 +97,17 @@ public class SbmtRunnable implements Runnable
             ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-            frame.setVisible(true);
             FileCache.showDotsForFiles(false);
             System.out.println("\nSBMT Ready");
 
+            if (redirectStreams && outputFile != null)
+            {
+                outputFile.close();
+                Console.configure(true);
+            } else {
+                Console.configure(false);
+            }
+            frame.setVisible(true);
         }
         catch (Exception e)
         {
