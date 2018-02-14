@@ -125,7 +125,7 @@ public class ImagePopupMenu extends PopupMenu
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-        saveToDiskMenuItem.setText("Save Original FITS Image...");
+        saveToDiskMenuItem.setText("Save FITS Image...");
         this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());

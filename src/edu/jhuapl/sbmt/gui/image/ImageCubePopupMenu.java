@@ -19,8 +19,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -45,6 +43,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
+
+import nom.tam.fits.FitsException;
 
 
 public class ImageCubePopupMenu extends PopupMenu
@@ -122,7 +122,7 @@ public class ImageCubePopupMenu extends PopupMenu
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-        saveToDiskMenuItem.setText("Save Original FITS Image...");
+        saveToDiskMenuItem.setText("Save FITS Image...");
         this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
