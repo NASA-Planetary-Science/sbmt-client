@@ -190,10 +190,35 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 }
 
                 // once we add an interval, enable the view options
-                view.getViewControlPanel().setEnabled(true);
-
+//                view.getViewControlPanel().setEnabled(true);
+                setViewControlPanelEnabled(true);
             }
         });
+    }
+
+    private void setViewControlPanelEnabled(boolean enabled)
+    {
+        view.getDistanceOptions().setEnabled(enabled);
+        view.getViewOptions().setEnabled(enabled);
+        view.getShowEarthPointer().setEnabled(enabled);
+        view.getShowSunPointer().setEnabled(enabled);
+        view.getShowSpacecraftMarker().setEnabled(enabled);
+        view.getShowSpacecraft().setEnabled(enabled);
+        view.getShowLighting().setEnabled(enabled);
+        view.getEarthText().setEnabled(enabled);
+        view.getSunText().setEnabled(enabled);
+        view.getSpacecraftText().setEnabled(enabled);
+        view.getEarthSlider().setEnabled(enabled);
+        view.getSunSlider().setEnabled(enabled);
+        view.getSpacecraftSlider().setEnabled(enabled);
+        view.getViewOptions().setEnabled(enabled);
+        view.getBtnResetCameraTo().setEnabled(enabled);
+        view.getViewInputAngle().setEnabled(enabled);
+        view.getSetViewAngle().setEnabled(enabled);
+        view.getSaveAnimationButton().setEnabled(enabled);
+        view.getLblSelectView().setEnabled(enabled);
+        view.getLblVerticalFov().setEnabled(enabled);
+        view.getDistanceOptions().setEnabled(enabled);
     }
 
     private void initializeIntervalSelectionPanel()
@@ -215,6 +240,8 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                     File file = fc.getSelectedFile();
                     SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
                     model.loadIntervalFromFile(file, bodyModel);
+                    setViewControlPanelEnabled(true);
+
                 }
             }
         });
@@ -500,6 +527,8 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                         currentRun.setSunView(true);
                         view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
+                        currentRun.setEarthView(false);
+                        currentRun.setSunView(false);
                         currentRun.setSpacecraftMovement(true);
                         currentRun.setActorVisibility("Spacecraft", false);
                         view.getShowSpacecraft().setSelected(false);
@@ -511,6 +540,8 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 }
             }
         });
+
+        view.getViewOptions().setSelectedIndex(0);
 
         view.getBtnResetCameraTo().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
