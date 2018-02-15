@@ -17,8 +17,8 @@ import vtk.vtkJavaGarbageCollector;
 import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -70,6 +70,11 @@ public class SbmtRunnable implements Runnable
             {
                 outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
                 redirectStreams(outputFile);
+                Console.configure(true);
+                Console.showStandaloneConsole();
+                PrintStream outCopy = outputFile;
+                outputFile = null;
+                outCopy.close();
             }
             Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission);
@@ -100,23 +105,17 @@ public class SbmtRunnable implements Runnable
             FileCache.showDotsForFiles(false);
             System.out.println("\nSBMT Ready");
 
-            if (redirectStreams && outputFile != null)
-            {
-                outputFile.close();
-                Console.configure(true);
-            } else {
-                Console.configure(false);
-            }
             frame.setVisible(true);
+            Console.hideConsole();
         }
         catch (Exception e)
         {
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
             e.printStackTrace();
-            restoreStreams();
             if (outputFile != null)
             {
+                restoreStreams();
                 outputFile.close();
                 try
                 {
@@ -165,10 +164,12 @@ public class SbmtRunnable implements Runnable
         System.out.println("Using server at " + Configuration.getDataRootURL());
         if (!Configuration.isPasswordAuthenticationSetup())
         {
-            System.out.println("Warning: no correctly formatted password file found. "
+            System.out.println("\nWarning: no correctly formatted password file found. "
                     + "Continuing without password. Some models may not be available.");
+            System.out.println("If you have login credentials, you can update them on the Body -> Update Password menu.");
         }
-        System.out.println("Please be patient while the SBMT starts up");
+        System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.\nIt will be hidden automatically after the SBMT launches.\n");
+        System.out.println("Please be patient while the SBMT starts up.");
 
     }
     protected void configureMissionBodies(Mission mission)
