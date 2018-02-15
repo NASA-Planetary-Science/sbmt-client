@@ -126,8 +126,8 @@ public class SbmtRunnable implements Runnable
                 {
                     e1.printStackTrace();
                 }
-                System.exit(1);
             }
+            System.exit(1);
         }
     }
 
