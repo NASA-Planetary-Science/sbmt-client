@@ -308,8 +308,13 @@ public class DEMPopupMenu extends PopupMenu
                     // No view currently exists, create one and associate it to the DEM
                     DEMView view=new DEMView(demKey, demCollection, smallBodyModel);
                     macroDEM.setView(view);
+
+                    // ugh... this is a hack to get the renderer to wake up and look at the DEM, otherwise it is by default looking at the origin and the user might think that there is a bug since the DEM is usually not visible from that viewpoint
+                    // ....  It would be nice if instead we could call getRenderer().resetCamera() but there is some synchronization issue between the 3d view and DEM actors that breaks this approach -- so just making the camera at least look in the direction of the DEM seems to get around the issue for now -- zimmemi1
+                    view.getRenderer().getRenderWindowPanel().getActiveCamera().SetFocalPoint(macroDEM.getBoundingBox().getCenterPoint());
                 }
                 updateMenuItems();
+
             }
             catch (FitsException e1) {
                 e1.printStackTrace();
