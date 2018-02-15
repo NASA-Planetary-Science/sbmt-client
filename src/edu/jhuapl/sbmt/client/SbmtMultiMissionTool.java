@@ -3,6 +3,8 @@ package edu.jhuapl.sbmt.client;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -225,7 +227,8 @@ public class SbmtMultiMissionTool
             splash.setVisible(true);
             splash.validate();
             splash.repaint();
-            javax.swing.SwingUtilities.invokeLater(new SbmtRunnable(args));
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(new SbmtRunnable(args));
             Thread.sleep(10000);
             splash.setVisible(false);
         }
