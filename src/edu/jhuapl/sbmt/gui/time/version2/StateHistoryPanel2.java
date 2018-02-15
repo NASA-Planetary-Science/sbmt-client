@@ -12,6 +12,8 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -47,6 +49,25 @@ public class StateHistoryPanel2 extends JPanel
     private JSpinner timeBox;
     private JButton setTimeButton;
     private JPanel viewControlPanel;
+    private JTextField viewInputAngle;
+    private JScrollPane tableScrollPane;
+    private JPanel panel_9;
+    private JComboBox viewOptions;
+    private JButton btnResetCameraTo;
+    private JButton saveAnimationButton;
+    private JButton setViewAngle;
+    private JSlider spacecraftSlider;
+    private JCheckBox showSpacecraftMarker;
+    private JSlider sunSlider;
+    private JCheckBox showSunPointer;
+    private JSlider earthSlider;
+    private JCheckBox showEarthPointer;
+    private JCheckBox showLighting;
+    private JComboBox distanceOptions;
+    private JCheckBox showSpacecraft;
+    private JLabel earthText;
+    private JLabel sunText;
+    private JLabel spacecraftText;
 
 
     /**
@@ -74,8 +95,8 @@ public class StateHistoryPanel2 extends JPanel
         JLabel lblNewLabel = new JLabel("Available Time Range");
         panel_4.add(lblNewLabel);
 
-        Component horizontalGlue = Box.createHorizontalGlue();
-        panel_4.add(horizontalGlue);
+        Component horizontalStrut_1 = Box.createHorizontalStrut(40);
+        panel_4.add(horizontalStrut_1);
 
         availableTimeLabel = new JTextPane();
         panel_4.add(availableTimeLabel);
@@ -122,20 +143,23 @@ public class StateHistoryPanel2 extends JPanel
         getIntervalButton = new JButton("Get Interval");
         panel_7.add(getIntervalButton);
 
+        Component verticalStrut_1 = Box.createVerticalStrut(20);
+        timeControlPanel.add(verticalStrut_1);
+
         JPanel intervalSelectionPanel = new JPanel();
         intervalSelectionPanel.setBorder(new TitledBorder(null, "Interval Selection", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         timeControlPanel.add(intervalSelectionPanel);
         intervalSelectionPanel.setLayout(new BoxLayout(intervalSelectionPanel, BoxLayout.Y_AXIS));
 
-        JPanel panel_9 = new JPanel();
+        panel_9 = new JPanel();
         intervalSelectionPanel.add(panel_9);
 
-        JScrollPane tableScrollPane = new JScrollPane(table);
-//        tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
-        panel_9.add(tableScrollPane);
-
-//        table = new TimeInterval();
-        tableScrollPane.setViewportView(table);
+////        tableScrollPane = new JScrollPane(table);
+////        tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
+//        panel_9.add(tableScrollPane);
+//
+////        table = new TimeInterval();
+//        tableScrollPane.setViewportView(table);
 
         JPanel panel_8 = new JPanel();
         intervalSelectionPanel.add(panel_8);
@@ -150,10 +174,27 @@ public class StateHistoryPanel2 extends JPanel
         removeButton = new JButton("Remove Selected");
         panel_8.add(removeButton);
 
+        Component verticalStrut_2 = Box.createVerticalStrut(20);
+        timeControlPanel.add(verticalStrut_2);
+
         JPanel intervalPlaybackPanel = new JPanel();
         intervalPlaybackPanel.setBorder(new TitledBorder(null, "Interval Playback", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         timeControlPanel.add(intervalPlaybackPanel);
         intervalPlaybackPanel.setLayout(new BoxLayout(intervalPlaybackPanel, BoxLayout.Y_AXIS));
+
+        JPanel panel_17 = new JPanel();
+        intervalPlaybackPanel.add(panel_17);
+                panel_17.setLayout(new BoxLayout(panel_17, BoxLayout.X_AXIS));
+
+                slider = new JSlider();
+                panel_17.add(slider);
+                slider.setMinimum(sliderMin);
+                slider.setMaximum(sliderMax);
+                slider.setMinorTickSpacing(sliderMinorTick);
+                slider.setMajorTickSpacing(sliderMajorTick);
+                slider.setPaintTicks(true);
+                slider.setSnapToTicks(false);
+                slider.setValue(defaultValue);
 
         JPanel panel = new JPanel();
         intervalPlaybackPanel.add(panel);
@@ -222,17 +263,6 @@ public class StateHistoryPanel2 extends JPanel
         }
         panel.add(fastForwardButton);
 
-        slider = new JSlider();
-        slider.setMinimum(sliderMin);
-        slider.setMaximum(sliderMax);
-        slider.setMinorTickSpacing(sliderMinorTick);
-        slider.setMajorTickSpacing(sliderMajorTick);
-        slider.setPaintTicks(true);
-        slider.setSnapToTicks(false);
-        slider.setValue(defaultValue);
-
-        panel.add(slider);
-
         JPanel panel_1 = new JPanel();
         intervalPlaybackPanel.add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
@@ -249,9 +279,124 @@ public class StateHistoryPanel2 extends JPanel
         setTimeButton = new JButton("Set Time");
         panel_1.add(setTimeButton);
 
+        Component verticalStrut = Box.createVerticalStrut(20);
+        add(verticalStrut);
+
         viewControlPanel = new JPanel();
         viewControlPanel.setBorder(new TitledBorder(null, "View Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         add(viewControlPanel);
+        viewControlPanel.setLayout(new BoxLayout(viewControlPanel, BoxLayout.Y_AXIS));
+
+        JPanel panel_2 = new JPanel();
+        viewControlPanel.add(panel_2);
+        panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+
+        JLabel lblSelectView = new JLabel("Select View:");
+        panel_2.add(lblSelectView);
+
+        viewOptions = new JComboBox();
+        panel_2.add(viewOptions);
+
+        Component horizontalStrut_4 = Box.createHorizontalStrut(50);
+        panel_2.add(horizontalStrut_4);
+
+        btnResetCameraTo = new JButton("Reset Camera to Nadir");
+        panel_2.add(btnResetCameraTo);
+
+        JPanel panel_3 = new JPanel();
+        viewControlPanel.add(panel_3);
+        panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
+
+        showSpacecraft = new JCheckBox("Show Spacecraft");
+        panel_3.add(showSpacecraft);
+
+        Component horizontalStrut = Box.createHorizontalStrut(100);
+        panel_3.add(horizontalStrut);
+
+        distanceOptions = new JComboBox();
+        panel_3.add(distanceOptions);
+
+        JPanel panel_10 = new JPanel();
+        viewControlPanel.add(panel_10);
+        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
+
+        showLighting = new JCheckBox("Show Lighting");
+        panel_10.add(showLighting);
+
+        Component horizontalGlue_3 = Box.createHorizontalGlue();
+        panel_10.add(horizontalGlue_3);
+
+        JPanel panel_11 = new JPanel();
+        viewControlPanel.add(panel_11);
+        panel_11.setLayout(new BoxLayout(panel_11, BoxLayout.X_AXIS));
+
+        showEarthPointer = new JCheckBox("Show Earth Pointer");
+        panel_11.add(showEarthPointer);
+
+        Component horizontalStrut_5 = Box.createHorizontalStrut(40);
+        panel_11.add(horizontalStrut_5);
+
+        earthText = new JLabel("Resize:");
+        panel_11.add(earthText);
+
+        earthSlider = new JSlider();
+        panel_11.add(earthSlider);
+
+        JPanel panel_12 = new JPanel();
+        viewControlPanel.add(panel_12);
+        panel_12.setLayout(new BoxLayout(panel_12, BoxLayout.X_AXIS));
+
+        showSunPointer = new JCheckBox("Show Sun Pointer");
+        panel_12.add(showSunPointer);
+
+        Component horizontalStrut_2 = Box.createHorizontalStrut(50);
+        panel_12.add(horizontalStrut_2);
+
+        sunText = new JLabel("Resize:");
+        panel_12.add(sunText);
+
+        sunSlider = new JSlider();
+        panel_12.add(sunSlider);
+
+        JPanel panel_13 = new JPanel();
+        viewControlPanel.add(panel_13);
+        panel_13.setLayout(new BoxLayout(panel_13, BoxLayout.X_AXIS));
+
+        showSpacecraftMarker = new JCheckBox("Show S/C Pointer");
+        panel_13.add(showSpacecraftMarker);
+
+        Component horizontalStrut_3 = Box.createHorizontalStrut(50);
+        panel_13.add(horizontalStrut_3);
+
+        spacecraftText = new JLabel("Resize:");
+        panel_13.add(spacecraftText);
+
+        spacecraftSlider = new JSlider();
+        panel_13.add(spacecraftSlider);
+
+        JPanel panel_14 = new JPanel();
+        viewControlPanel.add(panel_14);
+        panel_14.setLayout(new BoxLayout(panel_14, BoxLayout.X_AXIS));
+
+        JLabel lblVerticalFov = new JLabel("Vertical Field of View (deg):");
+        panel_14.add(lblVerticalFov);
+
+        viewInputAngle = new JTextField();
+        panel_14.add(viewInputAngle);
+        viewInputAngle.setColumns(10);
+
+        setViewAngle = new JButton("Set");
+        panel_14.add(setViewAngle);
+
+        JPanel panel_15 = new JPanel();
+        viewControlPanel.add(panel_15);
+        panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
+
+        JPanel panel_16 = new JPanel();
+        panel_15.add(panel_16);
+
+        saveAnimationButton = new JButton("Save Movie Frames");
+        panel_16.add(saveAnimationButton);
 
     }
 
@@ -309,5 +454,67 @@ public class StateHistoryPanel2 extends JPanel
     public void setTable(TimeIntervalTable table)
     {
         this.table = table;
+        tableScrollPane = new JScrollPane(table);
+        panel_9.add(tableScrollPane);
+
+        tableScrollPane.setViewportView(table);
+    }
+
+    public JScrollPane getTableScrollPane() {
+        return tableScrollPane;
+    }
+    public JPanel getPanel_9() {
+        return panel_9;
+    }
+    public JComboBox getViewOptions() {
+        return viewOptions;
+    }
+    public JButton getBtnResetCameraTo() {
+        return btnResetCameraTo;
+    }
+    public JButton getSaveAnimationButton() {
+        return saveAnimationButton;
+    }
+    public JButton getSetViewAngle() {
+        return setViewAngle;
+    }
+    public JTextField getViewInputAngle() {
+        return viewInputAngle;
+    }
+    public JSlider getSpacecraftSlider() {
+        return spacecraftSlider;
+    }
+    public JCheckBox getShowSpacecraftMarker() {
+        return showSpacecraftMarker;
+    }
+    public JSlider getSunSlider() {
+        return sunSlider;
+    }
+    public JCheckBox getShowSunPointer() {
+        return showSunPointer;
+    }
+    public JSlider getEarthSlider() {
+        return earthSlider;
+    }
+    public JCheckBox getShowEarthPointer() {
+        return showEarthPointer;
+    }
+    public JCheckBox getShowLighting() {
+        return showLighting;
+    }
+    public JComboBox getDistanceOptions() {
+        return distanceOptions;
+    }
+    public JCheckBox getShowSpacecraft() {
+        return showSpacecraft;
+    }
+    public JLabel getEarthText() {
+        return earthText;
+    }
+    public JLabel getSunText() {
+        return sunText;
+    }
+    public JLabel getSpacecraftText() {
+        return spacecraftText;
     }
 }
