@@ -29,7 +29,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 public class TimeIntervalTable extends JTable
 {
 
-    protected static enum columns {
+    public static enum columns {
             MAP("Map"),
             SHOW("Show"),
             COLOR("Color"),
