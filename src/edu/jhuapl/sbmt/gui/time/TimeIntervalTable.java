@@ -226,7 +226,7 @@ public class TimeIntervalTable extends JTable
 
         // add row to table
         int i=getModel().getRowCount();
-        org.joda.time.format.DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-dd-MM HH:mm:ss");
+        org.joda.time.format.DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         double[] trajColor = interval.getTrajectoryColor();
         Color intervalColor = new Color((int)trajColor[0], (int)trajColor[1], (int)trajColor[2], (int)trajColor[3]);
         ((DefaultTableModel)getModel()).addRow(new Object[]{

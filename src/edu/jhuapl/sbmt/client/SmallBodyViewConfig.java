@@ -80,7 +80,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
+                        new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
                         Instrument.MSI
                         )
         };
@@ -924,8 +924,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//        c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1000,8 +1002,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
         configArray.add(c);
@@ -1022,8 +1026,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
         configArray.add(c);
 
@@ -1275,7 +1281,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.STOOKE;
             // 2017-12-20: this name will be correct when "the new model" has been brought in.
-            // c.customName = "Stooke (2016)";
+            // c.modelLabel = "Stooke (2016)";
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
@@ -1466,8 +1472,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
@@ -1541,8 +1549,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
         configArray.add(c);
 
@@ -1583,7 +1593,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -1596,7 +1606,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -1608,8 +1618,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
+        // 2018-02-06: this name contingent on an update.
+//      c.modelLabel = "Stooke (2002)";
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
         configArray.add(c);
 
@@ -1659,8 +1671,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Farnham and Thomas (2013)";
+        // 2018-02-06: this citation *may* actually be contingent on a new shape model delivery.
+        c.modelLabel = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
         configArray.add(c);
 
@@ -2195,7 +2207,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            configArray.add(c);
+            // 2017-12-21: exclude this body/model for now, but do not comment out anything else in
+            // this block so that Eclipse updates will continue to keep this code intact.
+            //  configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
@@ -2499,6 +2513,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
 
+            // This version would enable image search but this seems to hang, possibly because of the very high resolution of the model.
+            // Re-enable this if/when that issue is addressed.
+//            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
+//            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
+
             BasicImagingInstrument oncCam;
             {
                 // Set up images.
@@ -2542,24 +2561,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", null, ".SUM", ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.IMAGING_DATA,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.GASKELL },
-                        fileLocator,
-                        ImageType.ONC_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/images/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2626,7 +2629,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelBody.ATLAS.name(),
                     BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.ATLAS;
@@ -2644,8 +2648,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
+            c.imageSearchDefaultMaxResolution = 5000.0;
             configArray.add(c);
         }
 
@@ -2869,10 +2875,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         }
     }
 
-    // SBMT1-style helper method.
+    // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType) {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
         QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
+        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
         Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                 instrument,
                 SpectralMode.MONO,

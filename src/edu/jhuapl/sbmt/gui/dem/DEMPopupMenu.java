@@ -89,7 +89,7 @@ public class DEMPopupMenu extends PopupMenu
         this.add(showDEMInfoMenuItem);
 
         saveToDiskMenuItem = new JMenuItem(new SaveDEMAction());
-        saveToDiskMenuItem.setText("Save Original FITS File...");
+        saveToDiskMenuItem.setText("Save FITS File...");
         this.add(saveToDiskMenuItem);
 
         changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
