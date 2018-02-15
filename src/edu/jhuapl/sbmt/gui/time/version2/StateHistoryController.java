@@ -65,7 +65,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 
-public class StateHistoryController implements TableModelListener, ItemListener
+public class StateHistoryController implements TableModelListener, ItemListener, IStateHistoryPanel
 {
 
     private JTable optionsTable;
@@ -286,6 +286,22 @@ public class StateHistoryController implements TableModelListener, ItemListener
 
         view.getRewindButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+
+                if(playChecked){
+                    try
+                    {
+                        Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                        Icon playIcon = new ImageIcon(play);
+                        view.getPlayButton().setIcon(playIcon);
+                    }catch (Exception ex)
+                    {
+//                        System.out.println(ex);
+                    }
+                    timer.stop();
+                    playChecked = false;
+                }
+
                 slider.setValue(defaultValue);
                 currentOffsetTime = 0.0;
                 if (model != null)
@@ -296,10 +312,26 @@ public class StateHistoryController implements TableModelListener, ItemListener
         view.getFastForwardButton().addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e)
             {
+                if(playChecked){
+                    try
+                    {
+                        Image play = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PlayButton.png"));
+                        play.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+                        Icon playIcon = new ImageIcon(play);
+                        view.getPlayButton().setIcon(playIcon);
+                    }catch (Exception ex)
+                    {
+//                        System.out.println(ex);
+                    }
+                    timer.stop();
+                    playChecked = false;
+                }
+
                 slider.setValue(finalValue);
                 currentOffsetTime = 1.0;
                 if (model != null)
                     model.setTimeFraction(currentOffsetTime);
+
             }
         });
 
@@ -404,10 +436,10 @@ public class StateHistoryController implements TableModelListener, ItemListener
     }
 
     private enum viewChoices {
-        FREE("Free View"),
-        EARTH("Earth View"),
-        SUN("Sun View"),
-        SPACECRAFT("Spacecraft View");
+//      FREE("Free View"),
+      SPACECRAFT("Spacecraft View"),
+      EARTH("Earth View"),
+      SUN("Sun View");
 
         private final String text;
 
@@ -437,6 +469,8 @@ public class StateHistoryController implements TableModelListener, ItemListener
         String[] distanceChoices = {"Distance to Center", "Distance to Surface"};
         DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
         DefaultComboBoxModel<String> comboModelView = new DefaultComboBoxModel<String>(viewChoices.valuesAsStrings());
+        view.getDistanceOptions().setModel(comboModelDistance);
+        view.getViewOptions().setModel(comboModelView);
         view.getShowEarthPointer().addItemListener(this);
         view.getShowSunPointer().addItemListener(this);
         view.getShowSpacecraftMarker().addItemListener(this);
@@ -454,9 +488,9 @@ public class StateHistoryController implements TableModelListener, ItemListener
                 if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
                     String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
                     view.getShowSpacecraft().setEnabled(true);
-                    if(selectedItem.equals(viewChoices.FREE.toString())){
+                    /*if(selectedItem.equals(viewChoices.FREE.toString())){
 
-                    } else if(selectedItem.equals(viewChoices.EARTH.toString())){
+                    } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
                         currentRun.setSpacecraftMovement(false);
                         currentRun.setEarthView(true);
                         view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
@@ -568,6 +602,30 @@ public class StateHistoryController implements TableModelListener, ItemListener
                         view.getViewInputAngle().setText("1.0");
                         currentRun.setViewAngle(1.0);
                     }
+                }
+
+            }
+        });
+
+        view.getSaveAnimationButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                StateHistoryModel currentRun = runs.getCurrentRun();
+                if (currentRun != null)
+                {
+                    DateTime startTime = currentRun.getStartTime();
+                    DateTime endTime = currentRun.getEndTime();
+                    currentRun.saveAnimation(StateHistoryController.this, "" + startTime, "" + endTime);
+
+//                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());
+                }else
+                {
+                    JOptionPane.showMessageDialog(null, "No History Interval selected.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
             }
@@ -845,23 +903,23 @@ public class StateHistoryController implements TableModelListener, ItemListener
         view.getSlider().setValue(val);
     }
 
-    private int binarySearch(int first, int last, String target, boolean pos){
-        if(first > last){
-            if(pos){
-                return (last + 1) * lineLength;
-            }
-            return (last) * lineLength;
-        }else{
-            int middle = (first+last)/2;
-            int compResult = target.compareTo(readString((middle) * lineLength));
-            if(compResult == 0)
-                return (middle) * lineLength;
-            else if(compResult < 0)
-                return binarySearch(first, middle - 1, target, pos);
-            else
-                return binarySearch(middle + 1, last, target, pos);
-        }
-    }
+//    private int binarySearch(int first, int last, String target, boolean pos){
+//        if(first > last){
+//            if(pos){
+//                return (last + 1) * lineLength;
+//            }
+//            return (last) * lineLength;
+//        }else{
+//            int middle = (first+last)/2;
+//            int compResult = target.compareTo(readString((middle) * lineLength));
+//            if(compResult == 0)
+//                return (middle) * lineLength;
+//            else if(compResult < 0)
+//                return binarySearch(first, middle - 1, target, pos);
+//            else
+//                return binarySearch(middle + 1, last, target, pos);
+//        }
+//    }
 
     private long getBinaryFileLength(){
         long length = 0;
@@ -888,18 +946,18 @@ public class StateHistoryController implements TableModelListener, ItemListener
         return string;
     }
 
-    private double readBinary(int postion){
-        double num = 0;
-        try {
-            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
-            fileStore.seek(postion);
-            num = fileStore.readDouble();
-            fileStore.close();
-        } catch (Exception e) {
-            return 0;
-        }
-        return  num;
-    }
+//    private double readBinary(int postion){
+//        double num = 0;
+//        try {
+//            RandomAccessFile fileStore = new RandomAccessFile(path, "r");
+//            fileStore.seek(postion);
+//            num = fileStore.readDouble();
+//            fileStore.close();
+//        } catch (Exception e) {
+//            return 0;
+//        }
+//        return  num;
+//    }
 
     //
     // a custom table model that was tried to display map and show options for multiple trajectories. Not used because multiple trajectory showing would mess up the animation.

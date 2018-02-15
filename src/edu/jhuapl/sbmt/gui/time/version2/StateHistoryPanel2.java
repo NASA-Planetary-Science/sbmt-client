@@ -153,6 +153,7 @@ public class StateHistoryPanel2 extends JPanel
 
         panel_9 = new JPanel();
         intervalSelectionPanel.add(panel_9);
+        panel_9.setLayout(new BoxLayout(panel_9, BoxLayout.X_AXIS));
 
 ////        tableScrollPane = new JScrollPane(table);
 ////        tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
@@ -301,6 +302,7 @@ public class StateHistoryPanel2 extends JPanel
         panel_2.add(horizontalStrut_4);
 
         btnResetCameraTo = new JButton("Reset Camera to Nadir");
+        btnResetCameraTo.setVisible(false);
         panel_2.add(btnResetCameraTo);
 
         JPanel panel_3 = new JPanel();

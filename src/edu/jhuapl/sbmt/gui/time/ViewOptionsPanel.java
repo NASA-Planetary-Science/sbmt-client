@@ -53,10 +53,10 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
     private JButton btnResetCameraTo;
 
     private enum viewChoices {
-        FREE("Free View"),
+//        FREE("Free View"),
+        SPACECRAFT("Spacecraft View"),
         EARTH("Earth View"),
-        SUN("Sun View"),
-        SPACECRAFT("Spacecraft View");
+        SUN("Sun View");
 
         private final String text;
 
@@ -132,9 +132,9 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
                 if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
                     String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
                     showSpacecraft.setEnabled(true);
-                    if(selectedItem.equals(viewChoices.FREE.toString())){
+                    /*if(selectedItem.equals(viewChoices.FREE.toString())){
 
-                    } else if(selectedItem.equals(viewChoices.EARTH.toString())){
+                    } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
                         currentRun.setSpacecraftMovement(false);
                         currentRun.setEarthView(true);
                         viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));

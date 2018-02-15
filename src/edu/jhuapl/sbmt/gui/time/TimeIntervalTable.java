@@ -35,9 +35,9 @@ public class TimeIntervalTable extends JTable
             COLOR("Color"),
             LINE("Line"),
             NAME("Name"),
-            DESC("Desc"),
-            START("Start"),
-            END("End");
+            DESC("Description"),
+            START("Start Time"),
+            END("End Time");
 
         private String columnName;
 
@@ -54,7 +54,7 @@ public class TimeIntervalTable extends JTable
             columns[] values = values();
             String[] asStrings = new String[values.length];
             for (int ix = 0; ix < values.length; ix++) {
-                asStrings[ix] = values[ix].toString();
+                asStrings[ix] = values[ix].columnName();
             }
             return asStrings;
         }
