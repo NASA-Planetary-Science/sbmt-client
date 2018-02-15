@@ -153,19 +153,15 @@ public class SbmtRunnable implements Runnable
         }
         catch (@SuppressWarnings("unused") Exception e)
         {
-            System.out.println("Problem 1");
-            e.printStackTrace();
             try {
                 String rn = getClass().getName().replace('.', '/') + ".class";
                 JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
                 long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
                 compileDate = new Date(time);
-            } catch (Exception e1) {
-                System.out.println("Problem 2");
-                e1.printStackTrace();
+            } catch (@SuppressWarnings("unused") Exception e1) {
             }
-
         }
+
         FileCache.showDotsForFiles(true);
         System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
         System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
