@@ -31,14 +31,11 @@ mkdir -p $output_dir/win64/sbmt/lib
 
 
 echo -n -e "#!/bin/sh
-echo '**********************************'
-echo 'CLOSING THIS WINDOW WILL QUIT SBMT'
-echo '**********************************'
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\$DYLD_LIBRARY_PATH
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
-\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -Dedu.jhuapl.sbmt.mission=$mission -jar \"\$DIR/lib/near.jar\" \$@
+\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -Dcom.apple.mrj.application.apple.menu.about.name=\"Small Body Mapping Tool\" -Dedu.jhuapl.sbmt.mission=$mission -jar \"\$DIR/lib/near.jar\" \$@ &
 " > $output_dir/mac64/sbmt/runsbmt
 chmod +x $output_dir/mac64/sbmt/runsbmt
 
@@ -47,7 +44,7 @@ DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\$LD_LIBRARY_PATH
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
-\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -Dedu.jhuapl.sbmt.mission=$mission  -jar \"\$DIR/lib/near.jar\" \$@
+\"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -Dedu.jhuapl.sbmt.mission=$mission  -jar \"\$DIR/lib/near.jar\" \$@ &
 " > $output_dir/linux64/sbmt/runsbmt
 chmod +x $output_dir/linux64/sbmt/runsbmt
 
