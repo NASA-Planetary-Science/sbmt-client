@@ -29,6 +29,7 @@ import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
+import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
@@ -219,7 +220,8 @@ public class SbmtRunnable implements Runnable
                     !ShapeModelType.HAYABUSA2.equals(config.author) &&
                     !ShapeModelType.OREX.equals(config.author) &&
                     !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
-                    !ShapeModelBody.RYUGU.equals(config.body)
+                    !ShapeModelBody.RYUGU.equals(config.body) &&
+                    !ShapeModelPopulation.PLUTO.equals(config.population)
                )
             {
                 config.enable(true);
