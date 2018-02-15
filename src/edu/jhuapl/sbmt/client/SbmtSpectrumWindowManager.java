@@ -24,6 +24,11 @@ public class SbmtSpectrumWindowManager implements WindowManager, PropertyChangeL
         this.modelManager = modelManager;
     }
 
+    public int getNumberSpectrumModels()
+    {
+        return spectrumPanels.size();
+    }
+
     public void addData(final Model model) throws Exception
     {
         if (spectrumPanels.containsKey(model))

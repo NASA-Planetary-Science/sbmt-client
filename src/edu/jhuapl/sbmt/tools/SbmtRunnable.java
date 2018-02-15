@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.JarURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -17,6 +18,7 @@ import vtk.vtkJavaGarbageCollector;
 import vtk.vtkNativeLibrary;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -25,8 +27,9 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
-import edu.jhuapl.sbmt.client.SmallBodyMappingTool;
-import edu.jhuapl.sbmt.client.SmallBodyMappingTool.Mission;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
+import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 
 public class SbmtRunnable implements Runnable
@@ -69,8 +72,13 @@ public class SbmtRunnable implements Runnable
             {
                 outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
                 redirectStreams(outputFile);
+                Console.configure(true);
+                Console.showStandaloneConsole();
+                PrintStream outCopy = outputFile;
+                outputFile = null;
+                outCopy.close();
             }
-            Mission mission = SmallBodyMappingTool.getMission();
+            Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission);
             SmallBodyViewConfig.initialize();
             configureMissionBodies(mission);
@@ -96,19 +104,20 @@ public class SbmtRunnable implements Runnable
             ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
-            frame.setVisible(true);
             FileCache.showDotsForFiles(false);
             System.out.println("\nSBMT Ready");
 
+            frame.setVisible(true);
+            Console.hideConsole();
         }
         catch (Exception e)
         {
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
             e.printStackTrace();
-            restoreStreams();
             if (outputFile != null)
             {
+                restoreStreams();
                 outputFile.close();
                 try
                 {
@@ -119,6 +128,7 @@ public class SbmtRunnable implements Runnable
                     e1.printStackTrace();
                 }
             }
+            System.exit(1);
         }
     }
 
@@ -144,9 +154,15 @@ public class SbmtRunnable implements Runnable
         }
         catch (@SuppressWarnings("unused") Exception e)
         {
-            // Temporarily print this so we can correct this error.
-            e.printStackTrace();
+            try {
+                String rn = getClass().getName().replace('.', '/') + ".class";
+                JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
+                long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+                compileDate = new Date(time);
+            } catch (@SuppressWarnings("unused") Exception e1) {
+            }
         }
+
         FileCache.showDotsForFiles(true);
         System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
         System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
@@ -157,10 +173,12 @@ public class SbmtRunnable implements Runnable
         System.out.println("Using server at " + Configuration.getDataRootURL());
         if (!Configuration.isPasswordAuthenticationSetup())
         {
-            System.out.println("Warning: no correctly formatted password file found. "
+            System.out.println("\nWarning: no correctly formatted password file found. "
                     + "Continuing without password. Some models may not be available.");
+            System.out.println("If you have login credentials, you can update them on the Body -> Update Password menu.");
         }
-        System.out.println("Please be patient while the SBMT starts up");
+        System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.\nIt will be hidden automatically after the SBMT launches.\n");
+        System.out.println("Please be patient while the SBMT starts up.");
 
     }
     protected void configureMissionBodies(Mission mission)
@@ -194,6 +212,21 @@ public class SbmtRunnable implements Runnable
     {
         switch (mission)
         {
+        case APL_INTERNAL:
+            config.enable(true);
+            break;
+        case PUBLIC_RELEASE:
+            if (
+                    !ShapeModelType.HAYABUSA2.equals(config.author) &&
+                    !ShapeModelType.OREX.equals(config.author) &&
+                    !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
+                    !ShapeModelBody.RYUGU.equals(config.body) &&
+                    !ShapeModelPopulation.PLUTO.equals(config.population)
+               )
+            {
+                config.enable(true);
+            }
+            break;
         case HAYABUSA2:
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
@@ -226,9 +259,6 @@ public class SbmtRunnable implements Runnable
             {
                 config.enable(true);
             }
-            break;
-        case NEARTOOL:
-            config.enable(true);
             break;
         case OSIRIS_REX:
             if (
