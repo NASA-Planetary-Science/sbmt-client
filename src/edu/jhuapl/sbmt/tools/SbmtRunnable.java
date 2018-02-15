@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.JarURLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -152,8 +153,18 @@ public class SbmtRunnable implements Runnable
         }
         catch (@SuppressWarnings("unused") Exception e)
         {
-            // Temporarily print this so we can correct this error.
+            System.out.println("Problem 1");
             e.printStackTrace();
+            try {
+                String rn = getClass().getName().replace('.', '/') + ".class";
+                JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
+                long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+                compileDate = new Date(time);
+            } catch (Exception e1) {
+                System.out.println("Problem 2");
+                e1.printStackTrace();
+            }
+
         }
         FileCache.showDotsForFiles(true);
         System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
