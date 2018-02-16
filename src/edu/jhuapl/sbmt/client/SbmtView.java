@@ -10,8 +10,8 @@ import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
 import edu.jhuapl.saavtk.model.structure.EllipseModel;
@@ -39,7 +39,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
+import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
@@ -395,7 +395,9 @@ public class SbmtView extends View
 
             if (getConfig().hasStateHistory)
             {
-                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+//                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+                addTab("Observing Conditions", new StateHistoryController(getModelManager(), getRenderer()).getView());
+
             }
         }
     }

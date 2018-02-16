@@ -54,9 +54,9 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
 
     private enum viewChoices {
         FREE("Free View"),
+        SPACECRAFT("Spacecraft View"),
         EARTH("Earth View"),
-        SUN("Sun View"),
-        SPACECRAFT("Spacecraft View");
+        SUN("Sun View");
 
         private final String text;
 
@@ -464,52 +464,52 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
 
         try
         {
-        if(e.getStateChange() == ItemEvent.SELECTED){
-            if(source == showEarthMarker){
-                currentRun.setActorVisibility("Earth", true);
-                earthSlider.setEnabled(true);
-                earthText.setEnabled(true);
-            } else if(source == showSunMarker){
-                currentRun.setActorVisibility("Sun", true);
-                sunSlider.setEnabled(true);
-                sunText.setEnabled(true);
-            } else if(source == showSpacecraftMarker){
-                currentRun.setActorVisibility("SpacecraftMarker", true);
-                spacecraftSlider.setEnabled(true);
-                spacecraftText.setEnabled(true);
-            } else if(source == showSpacecraft){
-                distanceOptions.setEnabled(true);
-                currentRun.setDistanceText(distanceOptions.getSelectedItem().toString());
-                currentRun.setActorVisibility("Spacecraft", true);
-            } else if(source == showLighting){
-                currentRun.setActorVisibility("Lighting", true);
-                renderer.setFixedLightDirection(currentRun.getSunPosition());
-                renderer.setLighting(LightingType.FIXEDLIGHT);
-            }
+            if(e.getStateChange() == ItemEvent.SELECTED){
+                if(source == showEarthMarker){
+                    currentRun.setActorVisibility("Earth", true);
+                    earthSlider.setEnabled(true);
+                    earthText.setEnabled(true);
+                } else if(source == showSunMarker){
+                    currentRun.setActorVisibility("Sun", true);
+                    sunSlider.setEnabled(true);
+                    sunText.setEnabled(true);
+                } else if(source == showSpacecraftMarker){
+                    currentRun.setActorVisibility("SpacecraftMarker", true);
+                    spacecraftSlider.setEnabled(true);
+                    spacecraftText.setEnabled(true);
+                } else if(source == showSpacecraft){
+                    distanceOptions.setEnabled(true);
+                    currentRun.setDistanceText(distanceOptions.getSelectedItem().toString());
+                    currentRun.setActorVisibility("Spacecraft", true);
+                } else if(source == showLighting){
+                    currentRun.setActorVisibility("Lighting", true);
+                    renderer.setFixedLightDirection(currentRun.getSunPosition());
+                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                }
 
-        }
-        if(e.getStateChange() == ItemEvent.DESELECTED){
-            if(source == showEarthMarker){
-                currentRun.setActorVisibility("Earth", false);
-                earthSlider.setEnabled(false);
-                earthText.setEnabled(false);
-            } else if(source == showSunMarker){
-                currentRun.setActorVisibility("Sun", false);
-                sunSlider.setEnabled(false);
-                sunText.setEnabled(false);
-            } else if(source == showSpacecraftMarker){
-                currentRun.setActorVisibility("SpacecraftMarker", false);
-                spacecraftSlider.setEnabled(false);
-                spacecraftText.setEnabled(false);
-            } else if(source == showSpacecraft){
-                distanceOptions.setEnabled(false);
-                currentRun.setActorVisibility("Spacecraft", false);
-            } else if(source == showLighting){
-                currentRun.setActorVisibility("Lighting", false);
-                renderer.setLighting(LightingType.LIGHT_KIT);
             }
-        }
-        currentRun.updateActorVisibility();
+            if(e.getStateChange() == ItemEvent.DESELECTED){
+                if(source == showEarthMarker){
+                    currentRun.setActorVisibility("Earth", false);
+                    earthSlider.setEnabled(false);
+                    earthText.setEnabled(false);
+                } else if(source == showSunMarker){
+                    currentRun.setActorVisibility("Sun", false);
+                    sunSlider.setEnabled(false);
+                    sunText.setEnabled(false);
+                } else if(source == showSpacecraftMarker){
+                    currentRun.setActorVisibility("SpacecraftMarker", false);
+                    spacecraftSlider.setEnabled(false);
+                    spacecraftText.setEnabled(false);
+                } else if(source == showSpacecraft){
+                    distanceOptions.setEnabled(false);
+                    currentRun.setActorVisibility("Spacecraft", false);
+                } else if(source == showLighting){
+                    currentRun.setActorVisibility("Lighting", false);
+                    renderer.setLighting(LightingType.LIGHT_KIT);
+                }
+            }
+            currentRun.updateActorVisibility();
         }catch(Exception ex){
 
         }
