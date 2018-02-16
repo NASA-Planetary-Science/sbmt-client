@@ -16,8 +16,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -36,6 +34,8 @@ import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+
+import nom.tam.fits.FitsException;
 
 
 public class DEMPopupMenu extends PopupMenu
@@ -89,7 +89,7 @@ public class DEMPopupMenu extends PopupMenu
         this.add(showDEMInfoMenuItem);
 
         saveToDiskMenuItem = new JMenuItem(new SaveDEMAction());
-        saveToDiskMenuItem.setText("Save Original FITS File...");
+        saveToDiskMenuItem.setText("Save FITS File...");
         this.add(saveToDiskMenuItem);
 
         changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
@@ -306,9 +306,15 @@ public class DEMPopupMenu extends PopupMenu
                 else
                 {
                     // No view currently exists, create one and associate it to the DEM
-                    macroDEM.setView(new DEMView(demKey, demCollection, smallBodyModel));
+                    DEMView view=new DEMView(demKey, demCollection, smallBodyModel);
+                    macroDEM.setView(view);
+
+                    // ugh... this is a hack to get the renderer to wake up and look at the DEM, otherwise it is by default looking at the origin and the user might think that there is a bug since the DEM is usually not visible from that viewpoint
+                    // ....  It would be nice if instead we could call getRenderer().resetCamera() but there is some synchronization issue between the 3d view and DEM actors that breaks this approach -- so just making the camera at least look in the direction of the DEM seems to get around the issue for now -- zimmemi1
+                    view.getRenderer().getRenderWindowPanel().getActiveCamera().SetFocalPoint(macroDEM.getBoundingBox().getCenterPoint());
                 }
                 updateMenuItems();
+
             }
             catch (FitsException e1) {
                 e1.printStackTrace();
