@@ -527,15 +527,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                         currentRun.setSunView(true);
                         view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
-                        currentRun.setEarthView(false);
-                        currentRun.setSunView(false);
-                        currentRun.setSpacecraftMovement(true);
-                        currentRun.setActorVisibility("Spacecraft", false);
-                        view.getShowSpacecraft().setSelected(false);
-                        view.getShowSpacecraft().setEnabled(false);
-                        view.getDistanceOptions().setEnabled(false);
-                        view.getViewInputAngle().setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
-                        renderer.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
+                       setSpacecraftView(currentRun);
                     }
                 }
             }
@@ -662,6 +654,19 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             }
         });
 
+    }
+
+    private void setSpacecraftView(StateHistoryModel currentRun)
+    {
+        currentRun.setEarthView(false);
+        currentRun.setSunView(false);
+        currentRun.setSpacecraftMovement(true);
+        currentRun.setActorVisibility("Spacecraft", false);
+        view.getShowSpacecraft().setSelected(false);
+        view.getShowSpacecraft().setEnabled(false);
+        view.getDistanceOptions().setEnabled(false);
+        view.getViewInputAngle().setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
+        renderer.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
     }
 
     public StateHistoryPanel2 getView()
@@ -1089,6 +1094,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                         if (iRow != row)
                             view.getTable().setValueAt(false, iRow, columns.SHOW.ordinal());
                     }
+                    setSpacecraftView(runs.getCurrentRun());
                     return;
                 }
                 else // hide trajectory
