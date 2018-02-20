@@ -79,7 +79,7 @@ public class SbmtRunnable implements Runnable
                 outCopy.close();
             }
             Mission mission = SbmtMultiMissionTool.getMission();
-            writeStartupMessage(mission);
+            writeStartupMessage(mission, redirectStreams);
             SmallBodyViewConfig.initialize();
             configureMissionBodies(mission);
 
@@ -145,7 +145,7 @@ public class SbmtRunnable implements Runnable
     }
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
-    protected void writeStartupMessage(Mission mission)
+    protected void writeStartupMessage(Mission mission, boolean redirectStreams)
     {
         Date compileDate = null;
         try
@@ -171,15 +171,28 @@ public class SbmtRunnable implements Runnable
             System.out.println("Tool started in debug mode; diagnostic output is enabled.");
         }
         System.out.println("Using server at " + Configuration.getDataRootURL());
-        if (!Configuration.isPasswordAuthenticationSetup())
+        if (Configuration.wasUserPasswordAccepted())
         {
-            System.out.println("\nWarning: no correctly formatted password file found. "
-                    + "Continuing without password. Some models may not be available.");
-            System.out.println("If you have login credentials, you can update them on the Body -> Update Password menu.");
+            System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
         }
-        System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.\nIt will be hidden automatically after the SBMT launches.\n");
-        System.out.println("Please be patient while the SBMT starts up.");
-
+        else
+        {
+            System.out.println("\nNo user name and password entered. Some models may not be available.");
+            System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
+        }
+        if (redirectStreams)
+        {
+            System.out.println("\nThis is the SBMT console. You can show or hide it on the Console menu.");
+            System.out.println("The console shows diagnostic information and other messages.");
+            System.out.println("It will be hidden automatically after the SBMT launches.");
+            System.out.println("\nPlease be patient while the SBMT starts up.");
+        }
+        else
+        {
+            System.out.println("\nStreams were not redirected. Diagnostic information will appear here.");
+            System.out.println("The in-app console is disabled.");
+        }
+        System.out.println();
     }
     protected void configureMissionBodies(Mission mission)
     {
