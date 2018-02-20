@@ -171,7 +171,7 @@ public class SbmtRunnable implements Runnable
             System.out.println("Tool started in debug mode; diagnostic output is enabled.");
         }
         System.out.println("Using server at " + Configuration.getDataRootURL());
-        if (Configuration.isPasswordAuthenticationSetup())
+        if (Configuration.wasUserPasswordAccepted())
         {
             System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
         }
