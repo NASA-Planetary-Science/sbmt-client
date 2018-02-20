@@ -214,6 +214,9 @@ public class TimeIntervalTablePanel extends JPanel implements TableModelListener
                     intervals.setCurrentRun(key);
                     currentRun = intervals.getCurrentRun();
                     currentRun.showTrajectory(true);
+
+                    currentRun.updateStatusBarPosition(renderer.getPanelWidth(), renderer.getPanelHeight());
+
 //                    viewOptionsPanel.setEnabled(true);
                     // uncheck show for all other rows
                     int numRows = timeTable.getRowCount();
