@@ -2773,7 +2773,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(i).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
                 }
 
                 out.close();
@@ -2862,7 +2862,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(selectedIndex).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
                 }
 
                 out.close();
