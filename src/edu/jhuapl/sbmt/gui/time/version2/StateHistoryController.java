@@ -377,6 +377,11 @@ public class StateHistoryController implements TableModelListener, ItemListener,
 //                        System.out.println(ex);
                     }
                     timer.stop();
+                    renderer.setMouseEnabled(true);
+                    if (runs.getCurrentRun() != null)
+                    {
+                        runs.getCurrentRun().updateStatusBarValue("");
+                    }
                     playChecked = false;
                 }
                 else
@@ -391,6 +396,12 @@ public class StateHistoryController implements TableModelListener, ItemListener,
 //                        System.out.println(ex);
                     }
                     timer.start();
+                    renderer.setMouseEnabled(false);
+                    if (runs.getCurrentRun() != null)
+                    {
+                        runs.getCurrentRun().updateStatusBarPosition(renWin.getComponent().getWidth(), renWin.getComponent().getHeight());
+                        runs.getCurrentRun().updateStatusBarValue("Playing (mouse disabled)");
+                    }
                     playChecked = true;
                 }
             }
