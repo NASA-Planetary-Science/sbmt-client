@@ -26,8 +26,8 @@ public class SmallBodyMappingToolAPL
             System.setProperty("apple.awt.application.name", "Small Body Mapping Tool");
             //to show the menu bar at the top of the screen:
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            // to show a more mac-like file dialog box
-            System.setProperty("apple.awt.fileDialogForDirectories", "true");
+//            // to show a more mac-like file dialog box
+//            System.setProperty("apple.awt.fileDialogForDirectories", "true");
         }
 
         if (SbmtMultiMissionTool.getOption(args, "--debug") != null)
