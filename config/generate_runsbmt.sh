@@ -7,14 +7,13 @@ then
 	echo "ERROR: SBMTROOT is undefined!"
 	exit 1
 fi
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 1 ]
 then
-	echo "ERROR: must provide output directory and version parameters"
+	echo "ERROR: must provide output directory"
 	exit 1
 fi
 
 output_dir=$1
-version=$2
 
 #top_level_dir=`pwd`
 top_level_dir=$SBMTROOT
@@ -26,8 +25,6 @@ mkdir -p $output_dir/win64/sbmt/lib
 
 #echo "top_level_dir=$top_level_dir"
 #echo "output_dir=$output_dir"
-#echo "version=$version"
-
 
 echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`

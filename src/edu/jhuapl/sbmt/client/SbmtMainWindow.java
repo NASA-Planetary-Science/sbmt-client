@@ -5,10 +5,7 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
@@ -40,10 +37,10 @@ public class SbmtMainWindow extends MainWindow
     {
 
         FileMenu menu=super.createFileMenu(rootPanel);
-        JMenu saveImagesMenu=new JMenu("Save visible images to...");
-        saveImagesMenu.add(new JMenuItem(new SaveImagesAsSTLAction()));
-        menu.add(new JSeparator());
-        menu.add(saveImagesMenu);
+//        JMenu saveImagesMenu=new JMenu("Save mapped images to...");
+//        saveImagesMenu.add(new JMenuItem(new SaveImagesAsSTLAction()));
+//        menu.add(new JSeparator());
+//        menu.add(saveImagesMenu);
         return menu;
 
     }
@@ -86,9 +83,13 @@ public class SbmtMainWindow extends MainWindow
 
             try
             {
+                System.out.println(
+                        "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: file " + file);
                 if (file != null)
                 {
                     ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
+                    System.out.println(
+                            "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
                     for (Image image : collection.getImages())
                     {
                         System.out.println(image.getImageName());
