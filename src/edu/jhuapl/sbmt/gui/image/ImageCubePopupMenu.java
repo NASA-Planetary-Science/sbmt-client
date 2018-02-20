@@ -123,7 +123,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
         saveToDiskMenuItem.setText("Save FITS Image...");
-        this.add(saveToDiskMenuItem);
+//        this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
         saveBackplanesMenuItem.setText("Generate Backplanes...");
