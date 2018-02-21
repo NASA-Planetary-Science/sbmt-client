@@ -44,10 +44,10 @@ import javax.swing.table.DefaultTableModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-import vtk.rendering.jogl.vtkJoglCanvasComponent;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -57,13 +57,14 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
+import edu.jhuapl.sbmt.gui.time.version2.IStateHistoryPanel;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 
 
-public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener
+public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener, IStateHistoryPanel
 {
 
     private ModelManager modelManager;
@@ -98,7 +99,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
     private TimeControlPane timeControlPane;
 
     private Renderer renderer;
-    private vtkJoglCanvasComponent renWin;
+    private vtkJoglPanelComponent renWin;
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
@@ -583,6 +584,8 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         }
 
     }
+
+    public JPanel getView() { return this; }
 
     //
     // used to set the time for the slider and its time fraction.

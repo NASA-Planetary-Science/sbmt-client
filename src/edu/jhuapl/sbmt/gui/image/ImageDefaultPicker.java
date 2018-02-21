@@ -17,11 +17,11 @@ import vtk.vtkCellPicker;
 import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
-import vtk.rendering.jogl.vtkJoglCanvasComponent;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.AxisType;
 import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.AxisType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -41,7 +41,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 public class ImageDefaultPicker extends DefaultPicker
 {
     private Renderer renderer;
-    private vtkJoglCanvasComponent renWin;
+    private vtkJoglPanelComponent renWin;
     private StatusBar statusBar;
     private ModelManager modelManager;
     private PopupManager popupManager;
@@ -346,11 +346,11 @@ public class ImageDefaultPicker extends DefaultPicker
                 radStr = " " + radStr;
             radStr += " km";
 
-            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Distance: " + distanceStr + " ");
+            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
         }
         else
         {
-            statusBar.setRightText("Distance: " + distanceStr + " ");
+            statusBar.setRightText("Range: " + distanceStr + " ");
         }
     }
 

@@ -58,8 +58,8 @@ import com.jidesoft.swing.CheckBoxTree;
 import vtk.vtkActor;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -2765,6 +2765,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                 String nl = System.getProperty("line.separator");
+                out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
                 int size = imageRawResults.size();
                 for (int i=0; i<size; ++i)
                 {
@@ -2772,7 +2773,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(i).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
                 }
 
                 out.close();
@@ -2803,6 +2804,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
                 for (int i=0; i<lines.size(); ++i)
                 {
+                    if (lines.get(i).startsWith("#")) continue;
                     String[] words = lines.get(i).trim().split("\\s+");
                     List<String> result = new ArrayList<String>();
                     String name = instrument.searchQuery.getDataPath() + "/" + words[0];
@@ -2837,6 +2839,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     }//GEN-LAST:event_loadImageListButtonActionPerformed
 
+
     private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSelectedImageListButtonActionPerformed
         File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
 
@@ -2851,7 +2854,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                 String nl = System.getProperty("line.separator");
-
+                out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
                 int[] selectedIndices = resultList.getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
@@ -2859,7 +2862,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(selectedIndex).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
                 }
 
                 out.close();

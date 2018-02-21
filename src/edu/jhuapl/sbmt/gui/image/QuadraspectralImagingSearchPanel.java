@@ -29,7 +29,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import nom.tam.fits.FitsException;
+
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -41,8 +43,6 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-
-import nom.tam.fits.FitsException;
 
 
 public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener

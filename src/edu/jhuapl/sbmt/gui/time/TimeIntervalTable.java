@@ -20,7 +20,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.google.common.collect.Sets;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
@@ -29,15 +29,15 @@ import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 public class TimeIntervalTable extends JTable
 {
 
-    protected static enum columns {
+    public static enum columns {
             MAP("Map"),
             SHOW("Show"),
             COLOR("Color"),
             LINE("Line"),
             NAME("Name"),
-            DESC("Desc"),
-            START("Start"),
-            END("End");
+            DESC("Description"),
+            START("Start Time"),
+            END("End Time");
 
         private String columnName;
 
@@ -54,7 +54,7 @@ public class TimeIntervalTable extends JTable
             columns[] values = values();
             String[] asStrings = new String[values.length];
             for (int ix = 0; ix < values.length; ix++) {
-                asStrings[ix] = values[ix].toString();
+                asStrings[ix] = values[ix].columnName();
             }
             return asStrings;
         }
@@ -226,7 +226,7 @@ public class TimeIntervalTable extends JTable
 
         // add row to table
         int i=getModel().getRowCount();
-        org.joda.time.format.DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-dd-MM HH:mm:ss");
+        org.joda.time.format.DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         double[] trajColor = interval.getTrajectoryColor();
         Color intervalColor = new Color((int)trajColor[0], (int)trajColor[1], (int)trajColor[2], (int)trajColor[3]);
         ((DefaultTableModel)getModel()).addRow(new Object[]{

@@ -22,12 +22,12 @@ import javax.swing.JOptionPane;
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.NormalOffsetChangerDialog;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -122,8 +122,8 @@ public class ImageCubePopupMenu extends PopupMenu
         }
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
-        saveToDiskMenuItem.setText("Save Original FITS Image...");
-        this.add(saveToDiskMenuItem);
+        saveToDiskMenuItem.setText("Save FITS Image...");
+//        this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
         saveBackplanesMenuItem.setText("Generate Backplanes...");
