@@ -181,15 +181,36 @@ public abstract class BodyViewConfig extends ViewConfig
             path += " > " + body;
             if (dataUsed != null)
                 path += " > " + dataUsed;
-            if (author != null)
-                path += " > " + author;
-            if (version != null)
-                path += " (" + version + ")";
+            path += " > " + getDisplayName();
             return Configuration.getAppTitle() + " - " + path;
         }
     }
 
-//
+    // 2018-02-21 JP. This method was copied from SBMTView, which uses it for setting up the
+    // menu entries. This is not ideal because this is parallel code that must
+    // be maintained in two places. The reason for allowing this redundancy
+    // to continue, at least for now, is that all the options for correcting it
+    // involved making bigger changes than were advisable this close to a public
+    // release.
+    //
+    // Consider making this a method of ViewConfig, but probably need to do that
+    // as part of a consolidation and clean-up of all the many name-related methods.
+    private String getDisplayName()
+    {
+        String result = "";
+        if (modelLabel != null)
+            result = modelLabel;
+        else if (author == null)
+            result = body.toString();
+        else
+            result = author.toString();
+
+        if (version != null)
+            result = result + " (" + version + ")";
+
+        return result;
+    }
+
     // methods
     //
      /**

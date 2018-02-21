@@ -88,6 +88,15 @@ public class SbmtView extends View
         return (SmallBodyViewConfig)super.getConfig();
     }
 
+    // 2018-02-21 JP. This method was copied to BodyViewConfig, which uses it for setting up the
+    // path representations. This is not ideal because this is parallel code that must
+    // be maintained in two places. The reason for allowing this redundancy
+    // to continue, at least for now, is that all the options for correcting it
+    // involved making bigger changes than were advisable this close to a public
+    // release.
+    //
+    // Consider making this a method of ViewConfig, but probably need to do that
+    // as part of a consolidation and clean-up of all the many name-related methods.
     @Override
     public String getDisplayName()
     {
