@@ -109,6 +109,7 @@ public class SbmtRunnable implements Runnable
 
             frame.setVisible(true);
             Console.hideConsole();
+            Console.setDefaultLocation(frame);
         }
         catch (Exception e)
         {

@@ -678,6 +678,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
         view.getDistanceOptions().setEnabled(false);
         view.getViewInputAngle().setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
         renderer.setCameraViewAngle(currentRun.getRenderer().getCameraViewAngle());
+        view.getViewOptions().setSelectedIndex(0);
     }
 
     public StateHistoryPanel2 getView()
