@@ -43,7 +43,7 @@ public class SbmtHelpMenu extends HelpMenu
 
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(getRootPanel()),
                 "Small Body Mapping Tool\n" + versionString +
-                COPYRIGHT + " 2016 The Johns Hopkins University Applied Physics Laboratory\n",
+                COPYRIGHT + " 2018 The Johns Hopkins University Applied Physics Laboratory\n",
                 "About Small Body Mapping Tool",
                 JOptionPane.PLAIN_MESSAGE);
     }
@@ -53,7 +53,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "helpcontents.html"));
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt2.jhuapl.edu/index.php#documentation"));
         }
         catch (IOException e)
         {
@@ -66,7 +66,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "references.html"));
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt2.jhuapl.edu/Object-Index.php"));
         }
         catch (IOException e)
         {
@@ -79,7 +79,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "recentchanges.html"));
+           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt2.jhuapl.edu/Recent-Changes.php"));
         }
         catch (IOException e)
         {
@@ -92,7 +92,7 @@ public class SbmtHelpMenu extends HelpMenu
         String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create(helpRootUrl + "SBMT_tutorial_STM.pdf"));
+           java.awt.Desktop.getDesktop().browse(java.net.URI.create("http://sbmt2.jhuapl.edu/How-To-Tutorials.php"));
         }
         catch (IOException e)
         {
