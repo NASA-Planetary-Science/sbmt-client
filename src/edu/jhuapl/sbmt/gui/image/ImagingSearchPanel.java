@@ -1203,7 +1203,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(sourceComboBox, gridBagConstraints);
 
-        excludeGaskellCheckBox.setText("Exclude Gaskell derived");
+        excludeGaskellCheckBox.setText("Exclude SPC-Derived");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -2698,7 +2698,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL : ImageSource.SPICE,
+                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
