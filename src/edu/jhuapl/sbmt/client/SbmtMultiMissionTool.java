@@ -224,12 +224,13 @@ public class SbmtMultiMissionTool
         {
             // set up splash screen
             SbmtSplash splash = createSplash(mission);
+            splash.setAlwaysOnTop(true);
             splash.setVisible(true);
             splash.validate();
             splash.repaint();
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(new SbmtRunnable(args));
-            Thread.sleep(10000);
+            Thread.sleep(8000);
             splash.setVisible(false);
         }
         catch (Exception e)

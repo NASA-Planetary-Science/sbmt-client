@@ -145,8 +145,8 @@ public class StateHistoryPanel2 extends JPanel
         getIntervalButton = new JButton("Get Interval");
         panel_7.add(getIntervalButton);
 
-        Component verticalStrut_1 = Box.createVerticalStrut(20);
-        timeControlPanel.add(verticalStrut_1);
+        Component verticalGlue_1 = Box.createVerticalGlue();
+        timeControlPanel.add(verticalGlue_1);
 
         JPanel intervalSelectionPanel = new JPanel();
         intervalSelectionPanel.setBorder(new TitledBorder(null, "Interval Selection", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -177,8 +177,8 @@ public class StateHistoryPanel2 extends JPanel
         removeButton = new JButton("Remove Selected");
         panel_8.add(removeButton);
 
-        Component verticalStrut_2 = Box.createVerticalStrut(20);
-        timeControlPanel.add(verticalStrut_2);
+        Component verticalGlue = Box.createVerticalGlue();
+        timeControlPanel.add(verticalGlue);
 
         JPanel intervalPlaybackPanel = new JPanel();
         intervalPlaybackPanel.setBorder(new TitledBorder(null, "Interval Playback", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -282,7 +282,7 @@ public class StateHistoryPanel2 extends JPanel
         setTimeButton = new JButton("Set Time");
         panel_1.add(setTimeButton);
 
-        Component verticalStrut = Box.createVerticalStrut(20);
+        Component verticalStrut = Box.createVerticalStrut(10);
         add(verticalStrut);
 
         viewControlPanel = new JPanel();
