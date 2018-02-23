@@ -22,6 +22,7 @@ public class SbmtHelpMenu extends HelpMenu
     public SbmtHelpMenu(JPanel rootPanel)
     {
         super(rootPanel);
+        dataSourceMenuItem.setText("SBMT Data Sources");
      }
 
     public void showAbout()
