@@ -111,11 +111,11 @@ public class SbmtRunnable implements Runnable
             Console.hideConsole();
             Console.setDefaultLocation(frame);
         }
-        catch (Exception e)
+        catch (Throwable throwable)
         {
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
-            e.printStackTrace();
+            throwable.printStackTrace();
             if (outputFile != null)
             {
                 restoreStreams();
