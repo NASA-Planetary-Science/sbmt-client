@@ -2,7 +2,9 @@ package edu.jhuapl.sbmt.client;
 
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
 
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
@@ -365,6 +367,12 @@ public class SbmtView extends View
             }
 
             addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+
+
+            JTabbedPane customDataPane=new JTabbedPane();
+            customDataPane.setBorder(BorderFactory.createEmptyBorder());
+            addTab("Custom Data", customDataPane);
+
             if (!getPolyhedralModelConfig().customTemporary)
             {
                 ImagingInstrument instrument = null;
@@ -374,10 +382,10 @@ public class SbmtView extends View
                     break;
                 }
 
-                addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
 
             /*if (getSmallBodyConfig().hasMapmaker)
             {
