@@ -353,7 +353,7 @@ public class SbmtViewManager extends ViewManager
 
             if (result == 0)
             {
-                throw new AssertionError();
+                throw new AssertionError("Two models have the same designation: " + config1.toString());
             }
             return result;
         }
