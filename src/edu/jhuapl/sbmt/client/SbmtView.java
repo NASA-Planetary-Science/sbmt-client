@@ -399,7 +399,7 @@ public class SbmtView extends View
             }*/
 
             JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
-                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap);
+                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
             addTab("DEMs", component);
 
             if (getConfig().hasStateHistory)
