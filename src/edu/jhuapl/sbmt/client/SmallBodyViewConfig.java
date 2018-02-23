@@ -1672,7 +1672,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        c.modelLabel = "New Farnham and Thomas (2013)";
+        c.modelLabel = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/tempel1/farnham";
         c.shapeModelFileExtension = ".obj";
         // Number of plates found by inspection of files.
