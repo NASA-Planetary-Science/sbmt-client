@@ -1203,7 +1203,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(sourceComboBox, gridBagConstraints);
 
-        excludeGaskellCheckBox.setText("Exclude Gaskell derived");
+        excludeGaskellCheckBox.setText("Exclude SPC-Derived");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -2698,7 +2698,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL : ImageSource.SPICE,
+                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
@@ -2773,7 +2773,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(i).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
                 }
 
                 out.close();
@@ -2862,7 +2862,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(selectedIndex).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
                 }
 
                 out.close();
