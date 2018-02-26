@@ -122,6 +122,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
     private ImageCubePopupMenu imageCubePopupMenu;
+    private boolean enableGallery;
 
     public int getCurrentSlice() { return 0; }
 
@@ -186,6 +187,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         if (!Configuration.isAPLVersion())
         {
             viewResultsGalleryButton.setVisible(false);
+        }
+        else
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery);
         }
 
 //        // XXX: Mike Z's defaults for testing off-limb plane generation
@@ -310,7 +315,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
+        resultList.getSelectionModel().addListSelectionListener(this);
 
+        enableGallery = instrument.searchQuery.getGalleryPath() != null;
         ImageSource imageSources[] = instrument.searchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
@@ -614,7 +621,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             boolean enablePostSearchButtons = resultList.getModel().getRowCount() > 0;
             saveImageListButton.setEnabled(enablePostSearchButtons);
             saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
-            viewResultsGalleryButton.setEnabled(enablePostSearchButtons);
+            viewResultsGalleryButton.setEnabled(enableGallery && enablePostSearchButtons);
         }
         finally
         {
@@ -629,7 +636,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.showImageBoundaries(resultIntervalCurrentlyShown);
 
         // Enable or disable the image gallery button
-        viewResultsGalleryButton.setEnabled(!results.isEmpty());
+        viewResultsGalleryButton.setEnabled(enableGallery && !results.isEmpty());
     }
 
 
@@ -922,8 +929,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-        // TODO Auto-generated method stub
-
+        if (!e.getValueIsAdjusting())
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery && resultList.getSelectedRowCount() > 0);
+        }
     }
 
 
