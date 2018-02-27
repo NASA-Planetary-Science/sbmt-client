@@ -1665,15 +1665,22 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
+        // An update was delivered to this model on 02018-02-22.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        // 2018-02-06: this citation *may* actually be contingent on a new shape model delivery.
         c.modelLabel = "Farnham and Thomas (2013)";
-        c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
+        c.rootDirOnServer = "/tempel1/farnham";
+        c.shapeModelFileExtension = ".obj";
+        // Number of plates found by inspection of files.
+        c.smallBodyLabelPerResolutionLevel = new String[] { "32040 plates" };
+        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 32040 };
+        // Density and rotation rate were provided with delivery manifest.
+        c.density = 470.0;
+        c.rotationRate = 4.28434129815435E-5;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();

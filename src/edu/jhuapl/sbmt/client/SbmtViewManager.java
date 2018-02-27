@@ -284,10 +284,10 @@ public class SbmtViewManager extends ViewManager
         private static final Map<ShapeModelBody, Comparator<ViewConfig>> CUSTOM_COMPARATORS = Maps.newHashMap();
 
         static {
-            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
             CUSTOM_COMPARATORS.put(ShapeModelBody.TOUTATIS, TOUTATIS_COMPARATOR);
         }
 
@@ -353,7 +353,7 @@ public class SbmtViewManager extends ViewManager
 
             if (result == 0)
             {
-                throw new AssertionError();
+                throw new AssertionError("Two models have the same designation: " + config1.toString());
             }
             return result;
         }
@@ -534,7 +534,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.GASKELL
             ));
 
-    private static final Comparator<ViewConfig> THOMAS_STOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {
+    private static final Comparator<ViewConfig> THOMAS_STOOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {
 
         @Override
         public int compare(ViewConfig o1, ViewConfig o2)
