@@ -1,7 +1,12 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -12,15 +17,33 @@ import edu.jhuapl.saavtk.util.Configuration;
 
 public class SbmtHelpMenu extends HelpMenu
 {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd");
 
     public SbmtHelpMenu(JPanel rootPanel)
     {
         super(rootPanel);
+        dataSourceMenuItem.setText("SBMT Data Sources");
      }
 
     public void showAbout()
     {
         final String COPYRIGHT  = "\u00a9";
+
+        Date compileDate = null;
+        try
+        {
+            compileDate = new Date(new File(getClass().getClassLoader().getResource(getClass().getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified());
+        }
+        catch (@SuppressWarnings("unused") Exception e)
+        {
+            try {
+                String rn = getClass().getName().replace('.', '/') + ".class";
+                JarURLConnection j = (JarURLConnection) ClassLoader.getSystemResource(rn).openConnection();
+                long time =  j.getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
+                compileDate = new Date(time);
+            } catch (@SuppressWarnings("unused") Exception e1) {
+            }
+        }
 
 
         String versionString = "\n";
@@ -42,8 +65,8 @@ public class SbmtHelpMenu extends HelpMenu
         }
 
         JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(getRootPanel()),
-                "Small Body Mapping Tool\n" + versionString +
-                COPYRIGHT + " 2018 The Johns Hopkins University Applied Physics Laboratory\n",
+                "Small Body Mapping Tool (" + SbmtMultiMissionTool.getMission() + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : "") + ")\n" + versionString +
+                COPYRIGHT + " " + Calendar.getInstance().get(Calendar.YEAR) + " The Johns Hopkins University Applied Physics Laboratory\n",
                 "About Small Body Mapping Tool",
                 JOptionPane.PLAIN_MESSAGE);
     }
