@@ -122,6 +122,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
     private ImageCubePopupMenu imageCubePopupMenu;
+    private boolean enableGallery;
 
     public int getCurrentSlice() { return 0; }
 
@@ -187,6 +188,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             viewResultsGalleryButton.setVisible(false);
         }
+        else
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery);
+        }
 
 //        // XXX: Mike Z's defaults for testing off-limb plane generation
         //searchByFilenameCheckBox.setSelected(true);
@@ -195,6 +200,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         // Setup hierarchical image search
         initHierarchicalImageSearch();
+
+        final List<List<String>> emptyList = new ArrayList<>();
+        setImageResults(emptyList);
 
         return this;
     }
@@ -307,7 +315,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
+        resultList.getSelectionModel().addListSelectionListener(this);
 
+        enableGallery = instrument.searchQuery.getGalleryPath() != null;
         ImageSource imageSources[] = instrument.searchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
@@ -556,66 +566,77 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         images.removePropertyChangeListener(this);
         boundaries.removePropertyChangeListener(this);
 
-        int[] widths = new int[resultList.getColumnCount()];
-        int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
-
-        // add the results to the list
-        ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
-        int i=0;
-        for (List<String> str : results)
+        try
         {
-            Date dt = new Date(Long.parseLong(str.get(1)));
+            int[] widths = new int[resultList.getColumnCount()];
+            int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
 
-            String name = imageRawResults.get(i).get(0);
+            // add the results to the list
+            ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
+            int i=0;
+            for (List<String> str : results)
+            {
+                Date dt = new Date(Long.parseLong(str.get(1)));
+
+                String name = imageRawResults.get(i).get(0);
 //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            if (images.containsImage(key))
-            {
-                resultList.setValueAt(true, i, mapColumnIndex);
-                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                if (images.containsImage(key))
+                {
+                    resultList.setValueAt(true, i, mapColumnIndex);
+                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+                    resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+                    resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+                }
+                else
+                {
+                    resultList.setValueAt(false, i, mapColumnIndex);
+                    resultList.setValueAt(false, i, showFootprintColumnIndex);
+                    resultList.setValueAt(false, i, frusColumnIndex);
+                }
+
+
+                if (boundaries.containsBoundary(key))
+                    resultList.setValueAt(true, i, bndrColumnIndex);
+                else
+                    resultList.setValueAt(false, i, bndrColumnIndex);
+
+                resultList.setValueAt(i+1, i, idColumnIndex);
+                resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                resultList.setValueAt(sdf.format(dt), i, dateColumnIndex);
+
+                for (int j : columnsNeedingARenderer)
+                {
+                    TableCellRenderer renderer = resultList.getCellRenderer(i, j);
+                    Component comp = resultList.prepareRenderer(renderer, i, j);
+                    widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
+                }
+
+                ++i;
             }
-            else
-            {
-                resultList.setValueAt(false, i, mapColumnIndex);
-                resultList.setValueAt(false, i, showFootprintColumnIndex);
-                resultList.setValueAt(false, i, frusColumnIndex);
-            }
-
-
-            if (boundaries.containsBoundary(key))
-                resultList.setValueAt(true, i, bndrColumnIndex);
-            else
-                resultList.setValueAt(false, i, bndrColumnIndex);
-
-            resultList.setValueAt(i+1, i, idColumnIndex);
-            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-            resultList.setValueAt(sdf.format(dt), i, dateColumnIndex);
 
             for (int j : columnsNeedingARenderer)
-            {
-                TableCellRenderer renderer = resultList.getCellRenderer(i, j);
-                Component comp = resultList.prepareRenderer(renderer, i, j);
-                widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
-            }
+                resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
 
-            ++i;
+            boolean enablePostSearchButtons = resultList.getModel().getRowCount() > 0;
+            saveImageListButton.setEnabled(enablePostSearchButtons);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
+            viewResultsGalleryButton.setEnabled(enableGallery && enablePostSearchButtons);
+        }
+        finally
+        {
+            resultList.getModel().addTableModelListener(this);
+            images.addPropertyChangeListener(this);
+            boundaries.addPropertyChangeListener(this);
         }
 
-        for (int j : columnsNeedingARenderer)
-            resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
-
-        resultList.getModel().addTableModelListener(this);
-        images.addPropertyChangeListener(this);
-        boundaries.addPropertyChangeListener(this);
 
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
         this.showImageBoundaries(resultIntervalCurrentlyShown);
 
         // Enable or disable the image gallery button
-        viewResultsGalleryButton.setEnabled(!results.isEmpty());
+        viewResultsGalleryButton.setEnabled(enableGallery && !results.isEmpty());
     }
 
 
@@ -908,8 +929,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-        // TODO Auto-generated method stub
-
+        if (!e.getValueIsAdjusting())
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery && resultList.getSelectedRowCount() > 0);
+        }
     }
 
 
@@ -3155,11 +3178,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public void mousePressed(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
         }
 
         public void mouseReleased(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
         }
 
 
