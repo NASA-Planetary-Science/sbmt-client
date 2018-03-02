@@ -2,35 +2,25 @@
 title: Small Body Mapping Tool (APL Version)
 ---
 
-## Overview
-
-Analyzing and interpreting data returned from small body missions is
-currently difficult due to the large amounts of data returned and the
-difficult to understand formats in which the data is often stored
-in. In addition, the highly irregular shapes of small bodies such as
-433 Eros or 25143 Itokawa add further difficulties and 2D-based tools
-are not well suited. The Small Body Mapping Tool (SBMT) is a 3D tool
-designed to address these issues and attempts to make it easy to
-quickly search and visualize small body data.
-
 ## Quick Start
 
 Latest version: VERSIONXXXXXX
 
 The SBMT is currently available for Mac, Windows, and Linux systems. It is distributed as a self-contained zip file.
 
-To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the “runsbmt” program.
+To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the "runsbmt" program.
 
 
    -  Mac: [VERSIONXXXXXX-macosx-x64.zip](releases/VERSIONXXXXXX-macosx-x64.zip)
    -  Linux: [VERSIONXXXXXX-linux-x64.zip](releases/VERSIONXXXXXX-linux-x64.zip)
    -  Windows: [VERSIONXXXXXX-windows-x64.zip](releases/VERSIONXXXXXX-windows-x64.zip)
 
-NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: “runsbmt can’t be opened because the identity of the developer cannot be confirmed.” Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the “runsbmt” icon, select “open”, and then click the “open” button. The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
+NOTE: On a Mac, built in Apple security measures may cause you to see an error message the first time you try to run a downloaded version of the SBMT: "runsbmt can’t be opened because the identity of the developer cannot be confirmed." Rest assured that the SBMT is safe to run. To open the SBMT for the first time, right-click on the "runsbmt" icon, select "open", and then click the "open" button. The SBMT should then open without further problems, and this additional step will not be necessary until you download a new version of the tool.
 
-NOTE: The OSIRIS-REx and Hayabusa2 SBMT builds must be downloaded from the site made specifically for those missions. Please email sbmt@jhuapl.edu if you need help finding the OSIRIS-REx or Hayabusa2 SBMT builds.
+NOTE: The OSIRIS-REx and Hayabusa2 SBMT builds must be downloaded from the site made specifically for those missions. Please email [sbmt@jhuapl.edu](mailto:sbmt@jhuapl.edu) if you need help finding the OSIRIS-REx or Hayabusa2 SBMT builds.
 
 ## System requirements
+* Java 8 1.8.0_101 or above
 * Windows 7 or higher (64-bit)
 * Linux, recent distributions (64-bit)
 * Mac OS X version 10.10 or higher (64-bit Intel-based Macs only)
@@ -46,7 +36,5 @@ Please acknowledge use of the Small Body Mapping Tool in your abstracts and publ
 
 Currently, the best reference to cite for the SBMT is Ernst et al., 2018, The Small Body Mapping Tool (SBMT) for Accessing, Visualizing, and Analyzing Spacecraft Data in Three Dimensions, LPSC 49, abstract no. 1043.
 
-If you have used the SBMT to create or map structures, you can share your data with the community by adding them to the SBMT structures database. If you would like to share your data in this way, please email [sbmt@jhuapl.edu](mailto:sbmt@jhuapl.edu). 
- 
-
+If you have used the SBMT to create or map structures, you can share your data with the community by adding them to the SBMT structures database. If you would like to share your data in this way, please email [sbmt@jhuapl.edu](mailto:sbmt@jhuapl.edu).
 
