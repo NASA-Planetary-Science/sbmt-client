@@ -1,5 +1,5 @@
 ---
-title: Small Body Mapping Tool (APL Version)
+title: Small Body Mapping Tool
 ---
 
 ## Quick Start
