@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.time.version2;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -70,6 +71,7 @@ public class StateHistoryPanel2 extends JPanel
     private JLabel spacecraftText;
     private JLabel lblSelectView;
     private JLabel lblVerticalFov;
+    private JPanel intervalSelectionPanel;
 
 
     /**
@@ -79,15 +81,29 @@ public class StateHistoryPanel2 extends JPanel
     {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        JScrollPane scrollPane = new JScrollPane();
+        add(scrollPane);
+
+        JPanel panel_18 = new JPanel();
+        scrollPane.setViewportView(panel_18);
+        panel_18.setLayout(new BoxLayout(panel_18, BoxLayout.Y_AXIS));
+
         JPanel timeControlPanel = new JPanel();
-        timeControlPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Time Controls", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-        add(timeControlPanel);
-        timeControlPanel.setLayout(new BoxLayout(timeControlPanel, BoxLayout.Y_AXIS));
+        panel_18.add(timeControlPanel);
+        timeControlPanel.setBorder(new TitledBorder(
+                new EtchedBorder(EtchedBorder.LOWERED, null, null),
+                "Time Controls", TitledBorder.LEADING, TitledBorder.TOP, null,
+                new Color(0, 0, 0)));
+        timeControlPanel
+                .setLayout(new BoxLayout(timeControlPanel, BoxLayout.Y_AXIS));
 
         JPanel intervalGenerationPanel = new JPanel();
-        intervalGenerationPanel.setBorder(new TitledBorder(null, "Interval Generation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        intervalGenerationPanel
+                .setBorder(new TitledBorder(null, "Interval Generation",
+                        TitledBorder.LEADING, TitledBorder.TOP, null, null));
         timeControlPanel.add(intervalGenerationPanel);
-        intervalGenerationPanel.setLayout(new BoxLayout(intervalGenerationPanel, BoxLayout.Y_AXIS));
+        intervalGenerationPanel.setLayout(
+                new BoxLayout(intervalGenerationPanel, BoxLayout.Y_AXIS));
 
         JPanel panel_4 = new JPanel();
         panel_4.setBorder(null);
@@ -115,7 +131,9 @@ public class StateHistoryPanel2 extends JPanel
         panel_5.add(horizontalGlue_1);
 
         startTimeSpinner = new JSpinner();
-//        startTimeSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS"));
+        // startTimeSpinner.setEditor(new
+        // javax.swing.JSpinner.DateEditor(startTimeSpinner, "yyyy-MMM-dd
+        // HH:mm:ss.SSS"));
         startTimeSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         startTimeSpinner.setPreferredSize(new java.awt.Dimension(200, 28));
         panel_5.add(startTimeSpinner);
@@ -132,7 +150,8 @@ public class StateHistoryPanel2 extends JPanel
         panel_6.add(horizontalGlue_2);
 
         stopTimeSpinner = new JSpinner();
-//        stopTimeSpinner.setEditor(new DateEditor(stopTimeSpinner, "yyyy-MMM-dd HH:mm:ss.SSS"));
+        // stopTimeSpinner.setEditor(new DateEditor(stopTimeSpinner,
+        // "yyyy-MMM-dd HH:mm:ss.SSS"));
         stopTimeSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         stopTimeSpinner.setPreferredSize(new java.awt.Dimension(200, 28));
         panel_6.add(stopTimeSpinner);
@@ -148,21 +167,24 @@ public class StateHistoryPanel2 extends JPanel
         Component verticalGlue_1 = Box.createVerticalGlue();
         timeControlPanel.add(verticalGlue_1);
 
-        JPanel intervalSelectionPanel = new JPanel();
-        intervalSelectionPanel.setBorder(new TitledBorder(null, "Interval Selection", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        intervalSelectionPanel = new JPanel();
+        intervalSelectionPanel
+                .setBorder(new TitledBorder(null, "Interval Selection",
+                        TitledBorder.LEADING, TitledBorder.TOP, null, null));
         timeControlPanel.add(intervalSelectionPanel);
-        intervalSelectionPanel.setLayout(new BoxLayout(intervalSelectionPanel, BoxLayout.Y_AXIS));
+        intervalSelectionPanel.setLayout(
+                new BoxLayout(intervalSelectionPanel, BoxLayout.Y_AXIS));
 
         panel_9 = new JPanel();
         intervalSelectionPanel.add(panel_9);
-        panel_9.setLayout(new BoxLayout(panel_9, BoxLayout.X_AXIS));
+        panel_9.setLayout(new BorderLayout(0, 0));
 
-////        tableScrollPane = new JScrollPane(table);
-////        tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
-//        panel_9.add(tableScrollPane);
-//
-////        table = new TimeInterval();
-//        tableScrollPane.setViewportView(table);
+        //// tableScrollPane = new JScrollPane(table);
+        //// tableScrollPane.setPreferredSize(new Dimension(10000, 10000));
+        // panel_9.add(tableScrollPane);
+        //
+        //// table = new TimeInterval();
+        // tableScrollPane.setViewportView(table);
 
         JPanel panel_8 = new JPanel();
         intervalSelectionPanel.add(panel_8);
@@ -181,23 +203,26 @@ public class StateHistoryPanel2 extends JPanel
         timeControlPanel.add(verticalGlue);
 
         JPanel intervalPlaybackPanel = new JPanel();
-        intervalPlaybackPanel.setBorder(new TitledBorder(null, "Interval Playback", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        intervalPlaybackPanel
+                .setBorder(new TitledBorder(null, "Interval Playback",
+                        TitledBorder.LEADING, TitledBorder.TOP, null, null));
         timeControlPanel.add(intervalPlaybackPanel);
-        intervalPlaybackPanel.setLayout(new BoxLayout(intervalPlaybackPanel, BoxLayout.Y_AXIS));
+        intervalPlaybackPanel.setLayout(
+                new BoxLayout(intervalPlaybackPanel, BoxLayout.Y_AXIS));
 
         JPanel panel_17 = new JPanel();
         intervalPlaybackPanel.add(panel_17);
-                panel_17.setLayout(new BoxLayout(panel_17, BoxLayout.X_AXIS));
+        panel_17.setLayout(new BoxLayout(panel_17, BoxLayout.X_AXIS));
 
-                slider = new JSlider();
-                panel_17.add(slider);
-                slider.setMinimum(sliderMin);
-                slider.setMaximum(sliderMax);
-                slider.setMinorTickSpacing(sliderMinorTick);
-                slider.setMajorTickSpacing(sliderMajorTick);
-                slider.setPaintTicks(true);
-                slider.setSnapToTicks(false);
-                slider.setValue(defaultValue);
+        slider = new JSlider();
+        panel_17.add(slider);
+        slider.setMinimum(sliderMin);
+        slider.setMaximum(sliderMax);
+        slider.setMinorTickSpacing(sliderMinorTick);
+        slider.setMajorTickSpacing(sliderMajorTick);
+        slider.setPaintTicks(true);
+        slider.setSnapToTicks(false);
+        slider.setValue(defaultValue);
 
         JPanel panel = new JPanel();
         intervalPlaybackPanel.add(panel);
@@ -274,7 +299,8 @@ public class StateHistoryPanel2 extends JPanel
         panel_1.add(lblEnterUtcTime);
 
         timeBox = new JSpinner();
-//        timeBox.setEditor(new DateEditor(timeBox, "yyyy-MMM-dd HH:mm:ss.SSS"));
+        // timeBox.setEditor(new DateEditor(timeBox, "yyyy-MMM-dd
+        // HH:mm:ss.SSS"));
         timeBox.setMinimumSize(new Dimension(36, 22));
         timeBox.setPreferredSize(new Dimension(200, 28));
         panel_1.add(timeBox);
@@ -283,12 +309,14 @@ public class StateHistoryPanel2 extends JPanel
         panel_1.add(setTimeButton);
 
         Component verticalStrut = Box.createVerticalStrut(10);
-        add(verticalStrut);
+        panel_18.add(verticalStrut);
 
         viewControlPanel = new JPanel();
-        viewControlPanel.setBorder(new TitledBorder(null, "View Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        add(viewControlPanel);
-        viewControlPanel.setLayout(new BoxLayout(viewControlPanel, BoxLayout.Y_AXIS));
+        panel_18.add(viewControlPanel);
+        viewControlPanel.setBorder(new TitledBorder(null, "View Controls",
+                TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        viewControlPanel
+                .setLayout(new BoxLayout(viewControlPanel, BoxLayout.Y_AXIS));
 
         JPanel panel_2 = new JPanel();
         viewControlPanel.add(panel_2);
@@ -423,49 +451,78 @@ public class StateHistoryPanel2 extends JPanel
 
     }
 
-    public JTextPane getAvailableTimeLabel() {
+    public JTextPane getAvailableTimeLabel()
+    {
         return availableTimeLabel;
     }
-    public JSpinner getStartTimeSpinner() {
+
+    public JSpinner getStartTimeSpinner()
+    {
         return startTimeSpinner;
     }
-    public JSpinner getStopTimeSpinner() {
+
+    public JSpinner getStopTimeSpinner()
+    {
         return stopTimeSpinner;
     }
-    public JButton getGetIntervalButton() {
+
+    public JButton getGetIntervalButton()
+    {
         return getIntervalButton;
     }
-    public JButton getLoadButton() {
+
+    public JButton getLoadButton()
+    {
         return loadButton;
     }
-    public JButton getSaveButton() {
+
+    public JButton getSaveButton()
+    {
         return saveButton;
     }
-    public JButton getRemoveButton() {
+
+    public JButton getRemoveButton()
+    {
         return removeButton;
     }
-    public JButton getRewindButton() {
+
+    public JButton getRewindButton()
+    {
         return rewindButton;
     }
-    public JButton getPlayButton() {
+
+    public JButton getPlayButton()
+    {
         return playButton;
     }
-    public JButton getFastForwardButton() {
+
+    public JButton getFastForwardButton()
+    {
         return fastForwardButton;
     }
-    public JSlider getSlider() {
+
+    public JSlider getSlider()
+    {
         return slider;
     }
-    public JTextField getRateTextField() {
+
+    public JTextField getRateTextField()
+    {
         return rateTextField;
     }
-    public JSpinner getTimeBox() {
+
+    public JSpinner getTimeBox()
+    {
         return timeBox;
     }
-    public JButton getSetTimeButton() {
+
+    public JButton getSetTimeButton()
+    {
         return setTimeButton;
     }
-    public JPanel getViewControlPanel() {
+
+    public JPanel getViewControlPanel()
+    {
         return viewControlPanel;
     }
 
@@ -477,73 +534,124 @@ public class StateHistoryPanel2 extends JPanel
     public void setTable(TimeIntervalTable table)
     {
         this.table = table;
+//        this.table.setPreferredSize(new Dimension(intervalSelectionPanel.getWidth(), table.getHeight()));
+//        this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//        this.table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        this.table.setFillsViewportHeight(true);
         tableScrollPane = new JScrollPane(table);
-        panel_9.add(tableScrollPane);
+        tableScrollPane.setPreferredSize(new Dimension(150, 150));
+        tableScrollPane.setMaximumSize(new Dimension(150, 150));
+//        tableScrollPane.setPreferredSize(new Dimension(intervalSelectionPanel.getWidth(), tableScrollPane.getHeight()));
+        panel_9.add(tableScrollPane, BorderLayout.CENTER);
 
-        tableScrollPane.setViewportView(table);
+//        tableScrollPane.setViewportView(table);
     }
 
-    public JScrollPane getTableScrollPane() {
+    public JScrollPane getTableScrollPane()
+    {
         return tableScrollPane;
     }
-    public JPanel getPanel_9() {
+
+    public JPanel getPanel_9()
+    {
         return panel_9;
     }
-    public JComboBox getViewOptions() {
+
+    public JComboBox getViewOptions()
+    {
         return viewOptions;
     }
-    public JButton getBtnResetCameraTo() {
+
+    public JButton getBtnResetCameraTo()
+    {
         return btnResetCameraTo;
     }
-    public JButton getSaveAnimationButton() {
+
+    public JButton getSaveAnimationButton()
+    {
         return saveAnimationButton;
     }
-    public JButton getSetViewAngle() {
+
+    public JButton getSetViewAngle()
+    {
         return setViewAngle;
     }
-    public JTextField getViewInputAngle() {
+
+    public JTextField getViewInputAngle()
+    {
         return viewInputAngle;
     }
-    public JSlider getSpacecraftSlider() {
+
+    public JSlider getSpacecraftSlider()
+    {
         return spacecraftSlider;
     }
-    public JCheckBox getShowSpacecraftMarker() {
+
+    public JCheckBox getShowSpacecraftMarker()
+    {
         return showSpacecraftMarker;
     }
-    public JSlider getSunSlider() {
+
+    public JSlider getSunSlider()
+    {
         return sunSlider;
     }
-    public JCheckBox getShowSunPointer() {
+
+    public JCheckBox getShowSunPointer()
+    {
         return showSunPointer;
     }
-    public JSlider getEarthSlider() {
+
+    public JSlider getEarthSlider()
+    {
         return earthSlider;
     }
-    public JCheckBox getShowEarthPointer() {
+
+    public JCheckBox getShowEarthPointer()
+    {
         return showEarthPointer;
     }
-    public JCheckBox getShowLighting() {
+
+    public JCheckBox getShowLighting()
+    {
         return showLighting;
     }
-    public JComboBox getDistanceOptions() {
+
+    public JComboBox getDistanceOptions()
+    {
         return distanceOptions;
     }
-    public JCheckBox getShowSpacecraft() {
+
+    public JCheckBox getShowSpacecraft()
+    {
         return showSpacecraft;
     }
-    public JLabel getEarthText() {
+
+    public JLabel getEarthText()
+    {
         return earthText;
     }
-    public JLabel getSunText() {
+
+    public JLabel getSunText()
+    {
         return sunText;
     }
-    public JLabel getSpacecraftText() {
+
+    public JLabel getSpacecraftText()
+    {
         return spacecraftText;
     }
-    public JLabel getLblSelectView() {
+
+    public JLabel getLblSelectView()
+    {
         return lblSelectView;
     }
-    public JLabel getLblVerticalFov() {
+
+    public JLabel getLblVerticalFov()
+    {
         return lblVerticalFov;
+    }
+    public JPanel getIntervalSelectionPanel() {
+        return intervalSelectionPanel;
     }
 }
