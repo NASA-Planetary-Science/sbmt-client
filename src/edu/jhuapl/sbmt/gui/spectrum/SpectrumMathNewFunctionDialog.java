@@ -77,7 +77,7 @@ public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
         invalidFunctionLabel.setForeground(new java.awt.Color(255, 0, 0));
         invalidFunctionLabel.setText("  ");
 
-        jLabel1.setText("<html>\nEnter the formula below using standard infix notation. Use variables B01<br>\nthrough B"+spectrumMath.getNumberOfBandsPerRawSpectrum()+" to refer to specific bands. Numbers must have values before and after the decimal point. For example, '(B2 - B1) * 2.0'.");
+        jLabel1.setText("<html>\nEnter the formula below using standard infix notation. Use variables B1<br>\nthrough B"+spectrumMath.getNumberOfBandsPerRawSpectrum()+" to refer to specific bands. For example, '(B2 - B1) * 0.5'.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
