@@ -2,7 +2,7 @@
 title: Small Body Mapping Tool
 ---
 
-## Quick Start
+## Download
 
 Latest version: VERSIONXXXXXX
 
@@ -32,7 +32,7 @@ Release notes of the SBMT can be found [here](releasenotes.html).
 Previous releases of the SBMT can be found [here](releases/).
 
 ##Terms and conditions
-Please acknowledge use of the Small Body Mapping Tool in your abstracts and publications. This courtesy helps us to demonstrate how the SBMT is being used and, therefore, contributes to the SBMT's continued availability, maintenance, and development. We are excited to see how the SBMT is being used by the community. A list of publications that have made use of the SBMT can be found here.
+Please acknowledge use of the Small Body Mapping Tool in your abstracts and publications. This courtesy helps us to demonstrate how the SBMT is being used and, therefore, contributes to the SBMT's continued availability, maintenance, and development. We are excited to see how the SBMT is being used by the community. A list of publications that have made use of the SBMT will soon be available on this website.
 
 Currently, the best reference to cite for the SBMT is Ernst et al., 2018, The Small Body Mapping Tool (SBMT) for Accessing, Visualizing, and Analyzing Spacecraft Data in Three Dimensions, LPSC 49, abstract no. 1043.
 
