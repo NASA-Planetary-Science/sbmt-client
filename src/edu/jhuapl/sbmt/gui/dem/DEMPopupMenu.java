@@ -16,7 +16,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import vtk.vtkActor;
+import vtk.vtkCamera;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
@@ -47,6 +50,7 @@ public class DEMPopupMenu extends PopupMenu
     private List<DEMKey> demKeys = new ArrayList<DEMKey>();
     private JMenuItem mapDEMMenuItem;
     private JMenuItem mapBoundaryMenuItem;
+    private JMenuItem centerDemMenuItem;
     private JMenuItem showDEMInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem changeOpacityMenuItem;
@@ -83,6 +87,11 @@ public class DEMPopupMenu extends PopupMenu
         mapBoundaryMenuItem = new JCheckBoxMenuItem(new MapBoundaryAction());
         mapBoundaryMenuItem.setText("Map DEM Boundary");
         this.add(mapBoundaryMenuItem);
+
+        centerDemMenuItem = new JMenuItem(new CenterDemAction());
+        centerDemMenuItem.setText("Center DEM in Window");
+
+        this.add(centerDemMenuItem);
 
         showDEMInfoMenuItem = new JMenuItem(new ShowInfoAction());
         showDEMInfoMenuItem.setText("Properties...");
@@ -219,6 +228,8 @@ public class DEMPopupMenu extends PopupMenu
             }
         }
 
+        centerDemMenuItem.setEnabled(enableHideImage);
+
         mapDEMMenuItem.setSelected(selectMapImage);
         mapDEMMenuItem.setEnabled(enableMapImage);
         mapBoundaryMenuItem.setSelected(selectMapBoundary);
@@ -256,6 +267,41 @@ public class DEMPopupMenu extends PopupMenu
                     e1.printStackTrace();
                 }
             }
+
+            updateMenuItems();
+        }
+    }
+
+    public class CenterDemAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if (demKeys.size() != 1)
+                return;
+
+            DEMKey demKey = demKeys.get(0);
+            DEM dem=demCollection.getDEM(demKey);
+
+            vtkCamera cam=renderer.getRenderWindowPanel().getActiveCamera();
+            Vector3D look=new Vector3D(cam.GetFocalPoint());
+            Vector3D pos=new Vector3D(cam.GetPosition());
+            Vector3D center=new Vector3D(dem.getCenter());
+            Vector3D normal=new Vector3D(dem.getNormal());
+
+            /*            double distance=pos.getNorm();
+
+            cam.SetPosition(center.add(normal.scalarMultiply(distance)).toArray());
+            cam.SetFocalPoint(look.toArray());*/
+
+            /*Rotation rot=new Rotation(pos.subtract(look), normal);
+            look=rot.applyTo(look);
+            pos=rot.applyTo(look);*/
+
+            cam.SetFocalPoint(center.toArray());
+            cam.SetPosition(center.add(normal.scalarMultiply(dem.getBoundingBoxDiagonalLength())).toArray());
+            renderer.getRenderWindowPanel().Render();
+
+
 
             updateMenuItems();
         }
