@@ -296,7 +296,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             public void actionPerformed(ActionEvent e)
             {
                 File file = CustomFileChooser.showSaveDialog(renWin.getComponent(), "Export to PNG Image...", "image.png", "png");
-                Renderer.saveToFile(file, renWin);
+                Renderer.saveToFile(file, renWin, null);
             }
         });
         fileMenu.add(mi);
