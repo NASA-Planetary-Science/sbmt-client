@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -117,6 +116,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public SpectralInstrument[] spectralInstruments = {};
 
+    @Override
     public String getUniqueName()
     {
         if (ShapeModelType.CUSTOM == author)
@@ -164,51 +164,6 @@ public abstract class BodyViewConfig extends ViewConfig
     public String serverPath(String fileName, Instrument instrument, String subdir)
     {
         return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
-    }
-
-    @Override
-    public String getPathRepresentation()
-    {
-        if (ShapeModelType.CUSTOM == author)
-        {
-            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
-        }
-        else
-        {
-            String path = type.str;
-            if (population != null)
-                path += " > " + population;
-            path += " > " + body;
-            if (dataUsed != null)
-                path += " > " + dataUsed;
-            path += " > " + getDisplayName();
-            return Configuration.getAppTitle() + " - " + path;
-        }
-    }
-
-    // 2018-02-21 JP. This method was copied from SBMTView, which uses it for setting up the
-    // menu entries. This is not ideal because this is parallel code that must
-    // be maintained in two places. The reason for allowing this redundancy
-    // to continue, at least for now, is that all the options for correcting it
-    // involved making bigger changes than were advisable this close to a public
-    // release.
-    //
-    // Consider making this a method of ViewConfig, but probably need to do that
-    // as part of a consolidation and clean-up of all the many name-related methods.
-    private String getDisplayName()
-    {
-        String result = "";
-        if (modelLabel != null)
-            result = modelLabel;
-        else if (author == null)
-            result = body.toString();
-        else
-            result = author.toString();
-
-        if (version != null)
-            result = result + " (" + version + ")";
-
-        return result;
     }
 
     // methods
