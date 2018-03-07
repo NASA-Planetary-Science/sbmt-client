@@ -1,17 +1,22 @@
 package edu.jhuapl.sbmt.client;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
@@ -22,6 +27,7 @@ import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
@@ -70,8 +76,11 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  * All the configuration details of all the built-in and custom views
  * are contained in this class.
  */
-public class SbmtView extends View
+public class SbmtView extends View implements PropertyChangeListener
 {
+    private Colorbar smallBodyColorbar;
+
+
     /**
      * By default a view should be created empty. Only when the user
      * requests to show a particular View, should the View's contents
@@ -82,6 +91,7 @@ public class SbmtView extends View
     public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
+
     }
 
 
@@ -190,6 +200,8 @@ public class SbmtView extends View
         allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
 
         setModels(allModels);
+
+        getModelManager().addPropertyChangeListener(this);
     }
 
     @Override
@@ -437,7 +449,53 @@ public class SbmtView extends View
         setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
     }
 
+    public void propertyChange(PropertyChangeEvent e)
+    {
+        if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
+        {
+            renderer.setProps(getModelManager().getProps());
 
+            if (smallBodyColorbar==null)
+                return;
+
+            PolyhedralModel sbModel=(PolyhedralModel)getModelManager().getModel(ModelNames.SMALL_BODY);
+            if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex()>=0)
+            {
+                if (!smallBodyColorbar.isVisible())
+                    smallBodyColorbar.setVisible(true);
+                smallBodyColorbar.setColormap(sbModel.getColormap());
+                int index = sbModel.getColoringIndex();
+                String title = sbModel.getColoringName(index).trim();
+                String units = sbModel.getColoringUnits(index).trim();
+                if (units != null && !units.isEmpty())
+                {
+                    title += " (" + units + ")";
+                }
+                if (title.length() > 16)
+                {
+                    title = title.replaceAll("\\s+", "\n");
+                }
+                smallBodyColorbar.setTitle(title);
+                if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
+                    renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
+                smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+            }
+            else
+                smallBodyColorbar.setVisible(false);
+
+        }
+        else
+        {
+            renderer.getRenderWindowPanel().Render();
+        }
+    }
+
+    @Override
+    public void setRenderer(Renderer renderer)
+    {
+        this.renderer = renderer;
+        smallBodyColorbar = new Colorbar(renderer);
+    }
 
 
 }
