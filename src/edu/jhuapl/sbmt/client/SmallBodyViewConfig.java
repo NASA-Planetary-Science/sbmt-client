@@ -1466,17 +1466,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         configArray.add(c);
 
+        // Model stooke2016 delivered 2018-03-06.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2018-02-06: this name contingent on an update.
-//      c.modelLabel = "Stooke (2002)";
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/epimetheus/stooke2016/";
+        c.shapeModelFileExtension = ".obj";
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
