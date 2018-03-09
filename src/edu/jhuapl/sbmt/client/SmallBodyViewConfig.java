@@ -1040,17 +1040,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
+        // This model was delivered on 2018-03-08 to replace the existing model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2018-02-06: this name contingent on an update.
-//      c.modelLabel = "Stooke (2002)";
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/halley/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 600;
+        c.rotationRate = 0.0000323209;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
