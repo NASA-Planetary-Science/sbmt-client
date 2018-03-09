@@ -1476,6 +1476,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1486,6 +1487,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
@@ -1513,6 +1515,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/GASKELL/HYPERION";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -1524,6 +1527,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1534,6 +1538,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
@@ -1576,6 +1581,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
@@ -1619,6 +1625,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1672,6 +1679,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/GASKELL/RHEA";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -1685,6 +1693,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/GASKELL/TETHYS";
         c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
         c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -2126,6 +2135,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -2694,6 +2704,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
             c.imageSearchDefaultMaxResolution = 5000.0;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2721,6 +2732,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2735,7 +2747,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/enceladus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2763,6 +2775,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2790,6 +2803,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2804,7 +2818,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/iapetus/gaskell";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2832,6 +2846,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2859,6 +2874,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2886,6 +2902,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2913,6 +2930,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
     }
