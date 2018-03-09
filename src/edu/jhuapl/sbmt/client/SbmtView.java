@@ -440,12 +440,12 @@ public class SbmtView extends View implements PropertyChangeListener
             {
                 JComponent component = new DEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
                         getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
-                addTab("DEMs", component);
+                addTab("Regional DTMs", component);
             }*/
 
             JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
                     getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
-            addTab("DEMs", component);
+            addTab("Regional DTMs", component);
 
             if (getConfig().hasStateHistory)
             {

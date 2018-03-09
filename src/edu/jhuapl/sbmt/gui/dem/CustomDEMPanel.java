@@ -619,7 +619,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
         add(newButton, gridBagConstraints);
 
-        jLabel1.setText("DEMs");
+        jLabel1.setText("Regional DTMs");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
