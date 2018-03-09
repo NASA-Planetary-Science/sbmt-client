@@ -918,17 +918,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This model delivered on 2018-03-08.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2018-02-06: this name contingent on an update.
-//        c.modelLabel = "Stooke (2002)";
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "ida/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 2600.;
+        c.rotationRate = 0.0003766655;
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -1476,6 +1478,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/epimetheus/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1523,6 +1526,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/janus/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1564,6 +1568,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/pandora/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1632,6 +1637,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/prometheus/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1674,7 +1680,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
-        // An update was delivered to this model on 02018-02-22.
+        // An update was delivered to this model on 2018-02-22.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = BodyType.COMETS;
