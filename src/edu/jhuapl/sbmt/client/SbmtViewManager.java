@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -15,9 +19,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
+import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
+import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 
@@ -59,6 +67,36 @@ public class SbmtViewManager extends ViewManager
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
         setupViews(); // Must be called before this view manager is used.
+    }
+
+    @Override
+    protected void createMenus(JMenuBar menuBar) {
+        fileMenu = new FileMenu(this);
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+
+        recentsMenu = new RecentlyViewed(this);
+        viewMenu = new SbmtViewMenu(this, recentsMenu);
+        viewMenu.setMnemonic('V');
+
+        menuBar.add(viewMenu);
+
+        favoritesMenu = new FavoritesMenu(this);
+
+        JMenuItem passwordMenu = createPasswordMenu();
+
+        viewMenu.add(new JSeparator());
+        viewMenu.add(favoritesMenu);
+        viewMenu.add(passwordMenu);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(recentsMenu);
+
+        Console.addConsoleMenu(menuBar);
+
+        helpMenu = new SbmtHelpMenu(this);
+        helpMenu.setMnemonic('H');
+        menuBar.add(helpMenu);
+
     }
 
     @Override

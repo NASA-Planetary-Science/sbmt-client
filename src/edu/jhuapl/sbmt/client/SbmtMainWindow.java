@@ -8,13 +8,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
-import edu.jhuapl.saavtk.gui.menu.HelpMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -46,27 +43,15 @@ public class SbmtMainWindow extends MainWindow
     }
 
     @Override
-    protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
+    protected ViewManager createViewManager(StatusBar statusBar, String tempCustomShapeModelPath)
     {
         return new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
-    }
-
-    @Override
-    protected ViewMenu createViewMenu(ViewManager viewManager, RecentlyViewed recentsMenu)
-    {
-        return new SbmtViewMenu((SbmtViewManager) viewManager, recentsMenu);
     }
 
     @Override
     protected ImageIcon createImageIcon()
     {
         return new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
-    }
-
-    @Override
-    protected HelpMenu createHelpMenu(ViewManager rootPanel)
-    {
-        return new SbmtHelpMenu(rootPanel);
     }
 
     private class SaveImagesAsSTLAction extends AbstractAction

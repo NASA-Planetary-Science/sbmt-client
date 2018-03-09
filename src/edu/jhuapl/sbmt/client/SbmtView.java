@@ -100,15 +100,33 @@ public class SbmtView extends View implements PropertyChangeListener
         return (SmallBodyViewConfig)super.getConfig();
     }
 
-    // 2018-02-21 JP. This method was copied to BodyViewConfig, which uses it for setting up the
-    // path representations. This is not ideal because this is parallel code that must
-    // be maintained in two places. The reason for allowing this redundancy
-    // to continue, at least for now, is that all the options for correcting it
-    // involved making bigger changes than were advisable this close to a public
-    // release.
-    //
-    // Consider making this a method of ViewConfig, but probably need to do that
-    // as part of a consolidation and clean-up of all the many name-related methods.
+    @Override
+    public String getPathRepresentation()
+    {
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
+        ShapeModelType author = config.author;
+        String modelLabel = config.modelLabel;
+        BodyType type = config.type;
+        ShapeModelPopulation population = config.population;
+        ShapeModelDataUsed dataUsed = config.dataUsed;
+        ShapeModelBody body = config.body;
+        if (ShapeModelType.CUSTOM == author)
+        {
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
+        }
+        else
+        {
+            String path = type.str;
+            if (population != null)
+                path += " > " + population;
+            path += " > " + body;
+            if (dataUsed != null)
+                path += " > " + dataUsed;
+            path += " > " + getDisplayName();
+            return Configuration.getAppTitle() + " - " + path;
+        }
+    }
+
     @Override
     public String getDisplayName()
     {
@@ -125,6 +143,13 @@ public class SbmtView extends View implements PropertyChangeListener
     	    result = result + " (" + config.version + ")";
 
     	return result;
+    }
+
+    @Override
+    public String getModelDisplayName()
+    {
+        ShapeModelBody body = getConfig().body;
+        return body != null ? body + " / " + getDisplayName() : getDisplayName();
     }
 
     @Override
