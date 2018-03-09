@@ -1513,6 +1513,18 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         configArray.add(c);
 
+        // Model stooke2016 delivered 2018-03-06.
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/janus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        configArray.add(c);
+
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MIMAS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
