@@ -918,7 +918,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
-        // This model delivered on 2018-03-08.
+        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
@@ -970,6 +970,22 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This new model was delivered on 2018-03-08.
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.MATHILDE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "mathilde/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 1300.;
+        c.rotationRate = 0.0000041780;
+        c.hasImageMap = true;
+        configArray.add(c);
+
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
@@ -998,17 +1014,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2018-02-06: this name contingent on an update.
-//      c.modelLabel = "Stooke (2002)";
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "gaspra/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 2700.;
+        c.rotationRate = 0.0002478;
         c.hasImageMap = true;
         configArray.add(c);
 
