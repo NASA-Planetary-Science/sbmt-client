@@ -32,6 +32,8 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
@@ -283,28 +285,89 @@ public class DEMPopupMenu extends PopupMenu
             DEM dem=demCollection.getDEM(demKey);
 
             vtkCamera cam=renderer.getRenderWindowPanel().getActiveCamera();
-            Vector3D look=new Vector3D(cam.GetFocalPoint());
-            Vector3D pos=new Vector3D(cam.GetPosition());
-            Vector3D center=new Vector3D(dem.getCenter());
-            Vector3D normal=new Vector3D(dem.getNormal());
 
-            /*            double distance=pos.getNorm();
+            // Find center of DEM. Arbitrarily create an origin exactly opposite this center.
+            final double[] centerArray = dem.getCenter();
+            final double[] origin = new double[] { -centerArray[0], -centerArray[1], -centerArray[2] };
 
-            cam.SetPosition(center.add(normal.scalarMultiply(distance)).toArray());
-            cam.SetFocalPoint(look.toArray());*/
+            // Figure out roughly the size of the DEM and from it compute a maximum radius
+            // in angle space for a circle centered on the DEM, perpendicular to the
+            // "center" array computed above.
+            final Vector3D center = new Vector3D(centerArray);
+            final double mPerKm = 1000.;
+            final double maximumRadius = dem.getScale() * dem.getHalfSize() / mPerKm;
+            final double maximumAngle = maximumRadius / (center.getNorm() * 2.);
 
-            /*Rotation rot=new Rotation(pos.subtract(look), normal);
-            look=rot.applyTo(look);
-            pos=rot.applyTo(look);*/
+            // Find vectors roughly along the DEM surface, roughly oriented by latitude/longitude.
+            Vector3D latVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, true);
+            Vector3D lonVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, false);
 
-            cam.SetFocalPoint(center.toArray());
-            cam.SetPosition(center.add(normal.scalarMultiply(dem.getBoundingBoxDiagonalLength())).toArray());
+            // Compute a normal from these two vectors.
+            Vector3D normal = lonVec.crossProduct(latVec).normalize();
+
+            cam.SetFocalPoint(centerArray);
+            cam.SetPosition(center.add(normal.scalarMultiply(center.getNorm())).toArray());
+            cam.SetViewUp(lonVec.crossProduct(normal).normalize().toArray());
+            cam.Modified();
             renderer.getRenderWindowPanel().Render();
-
-
 
             updateMenuItems();
         }
+    }
+
+    private Vector3D findPointNearToCenter(DEM dem, final double[] origin, final double [] center, final double maximumAngle, boolean alongLat)
+    {
+        final int maxIterations = 10;
+        LatLon centerLatLon = MathUtil.reclat(center);
+
+        double [] point0 = new double[] { 0., 0., 0. };
+        double angle = maximumAngle;
+        boolean foundMatch = false;
+        for (int index = 0; index < maxIterations; ++index)
+        {
+            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
+            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point0) >= 0)
+            {
+                foundMatch = true;
+                break;
+            }
+            angle *= .5;
+        }
+
+        if (!foundMatch)
+        {
+            point0 = center;
+        }
+
+        double [] point1 = new double[] { 0., 0., 0. };
+        angle = -maximumAngle;
+        foundMatch = false;
+        for (int index = 0; index < maxIterations; ++index)
+        {
+            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
+            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point1) >= 0)
+            {
+                foundMatch = true;
+                break;
+            }
+            angle *= .5;
+        }
+
+        if (!foundMatch)
+        {
+            point1 = center;
+        }
+
+        if (point0 == point1)
+        {
+            return null;
+        }
+        return new Vector3D(point1).subtract(new Vector3D(point0));
+    }
+
+    private LatLon getDirToTry(final LatLon centerLatLon, double angle, boolean alongLat)
+    {
+        return alongLat ? new LatLon(centerLatLon.lat + angle, centerLatLon.lon) : new LatLon(centerLatLon.lat, centerLatLon.lon + angle);
     }
 
     private class MapBoundaryAction extends AbstractAction
