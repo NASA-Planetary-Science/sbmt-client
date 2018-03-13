@@ -306,9 +306,9 @@ public class DEMPopupMenu extends PopupMenu
             Vector3D normal = lonVec.crossProduct(latVec).normalize();
 
             cam.SetFocalPoint(centerArray);
-            cam.SetPosition(center.add(normal.scalarMultiply(center.getNorm())).toArray());
+            cam.SetPosition(center.add(normal.scalarMultiply(2. * dem.getBoundingBoxDiagonalLength())).toArray());
             cam.SetViewUp(lonVec.crossProduct(normal).normalize().toArray());
-            cam.Modified();
+            renderer.getRenderWindowPanel().resetCameraClippingRange();
             renderer.getRenderWindowPanel().Render();
 
             updateMenuItems();
