@@ -153,7 +153,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
         view.getAvailableTimeLabel().setEditable(false); // as before
         view.getAvailableTimeLabel().setBackground(null); // this is the same as a JLabel
         view.getAvailableTimeLabel().setBorder(null);
-        view.getAvailableTimeLabel().setText(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newStart)+ " to " + new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newEnd));
+        view.getAvailableTimeLabel().setText(new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newStart)+ " to\n " + new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS").format(newEnd));
 
 
         view.getStartTimeSpinner().setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newStart.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));

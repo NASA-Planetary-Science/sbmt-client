@@ -117,6 +117,8 @@ public class StateHistoryPanel2 extends JPanel
         panel_4.add(horizontalStrut_1);
 
         availableTimeLabel = new JTextPane();
+        availableTimeLabel.setMaximumSize( new Dimension(Integer.MAX_VALUE, availableTimeLabel.getPreferredSize().height*2) );
+
         panel_4.add(availableTimeLabel);
 
         JPanel panel_5 = new JPanel();
@@ -249,6 +251,7 @@ public class StateHistoryPanel2 extends JPanel
         }
 
         rateTextField = new JTextField("60.0    ");
+        rateTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, rateTextField.getPreferredSize().height) );
         panel.add(rateTextField);
         rateTextField.setColumns(10);
 
@@ -430,6 +433,8 @@ public class StateHistoryPanel2 extends JPanel
         panel_14.add(lblVerticalFov);
 
         viewInputAngle = new JTextField();
+        viewInputAngle.setMaximumSize( new Dimension(Integer.MAX_VALUE, viewInputAngle.getPreferredSize().height) );
+
         viewInputAngle.setEnabled(false);
         panel_14.add(viewInputAngle);
         viewInputAngle.setColumns(10);
