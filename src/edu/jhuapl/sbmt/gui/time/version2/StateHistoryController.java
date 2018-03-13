@@ -144,6 +144,11 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             {
                 updateTimeBarValue();
                 updateTimeBarPosition();
+                StateHistoryModel currentRun = stateHistoryCollection.getCurrentRun();
+                if (currentRun != null)
+                {
+                    currentRun.updateStatusBarPosition(e.getComponent().getWidth(), e.getComponent().getHeight());
+                }
             }
         });
     }
