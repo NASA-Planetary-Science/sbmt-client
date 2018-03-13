@@ -144,6 +144,11 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             {
                 updateTimeBarValue();
                 updateTimeBarPosition();
+                StateHistoryModel currentRun = stateHistoryCollection.getCurrentRun();
+                if (currentRun != null)
+                {
+                    currentRun.updateStatusBarPosition(e.getComponent().getWidth(), e.getComponent().getHeight());
+                }
             }
         });
     }
@@ -386,6 +391,12 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 }
                 else
                 {
+                    if (view.getTable().getSelectedRowCount() == 0)
+                    {
+                        JOptionPane.showMessageDialog(null, "Please select a row from the table before playing", "Choose Interval",
+                                JOptionPane.OK_OPTION);
+                        return;
+                    }
                     try
                     {
                         Image pause = ImageIO.read(getClass().getResource("/edu/jhuapl/sbmt/data/PauseButton.png"));
