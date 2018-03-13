@@ -104,6 +104,7 @@ public class SbmtRunnable implements Runnable
             ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
 
             MainWindow frame = new SbmtMainWindow(tempShapeModelPath);
+            MainWindow.setMainWindow(frame);
             FileCache.showDotsForFiles(false);
             System.out.println("\nSBMT Ready");
 
