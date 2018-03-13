@@ -240,6 +240,8 @@ public class TimeIntervalTable extends JTable
                 interval.getEndTime().toString(dtf)});
 
             setValueAt(true, i, columns.MAP.ordinal());
+            setValueAt(true, i, columns.SHOW.ordinal());
+            setRowSelectionInterval(i, i);
     }
 
 
