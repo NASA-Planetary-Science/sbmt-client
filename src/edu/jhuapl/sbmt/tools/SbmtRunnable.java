@@ -72,11 +72,8 @@ public class SbmtRunnable implements Runnable
             {
                 outputFile = new PrintStream(Files.newOutputStream(OUTPUT_FILE_PATH));
                 redirectStreams(outputFile);
-                Console.configure(true);
+                Console.configure(true, outputFile);
                 Console.showStandaloneConsole();
-                PrintStream outCopy = outputFile;
-                outputFile = null;
-                outCopy.close();
             }
             Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission, redirectStreams);
