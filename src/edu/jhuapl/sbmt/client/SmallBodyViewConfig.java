@@ -2277,7 +2277,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.EARTH.name()).build();
 
 
-            // Set up shape model -- one will suffice.
+            // Set up shape model -- one will suffice. Note the "orex" here must be kept exactly as it is; that is what the directory is named in the data area.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("orex", ShapeModelDataUsed.WGS84).build();
             BasicImagingInstrument mapCam;
             {
