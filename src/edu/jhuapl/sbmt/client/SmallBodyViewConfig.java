@@ -1119,6 +1119,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/deimos/ernst2018";
             c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
