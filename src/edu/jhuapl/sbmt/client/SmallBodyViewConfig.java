@@ -1126,7 +1126,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
                             ImageType.DEIMOS_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
+                            new ImageSource[]{ImageSource.GASKELL},
                             Instrument.IMAGING_DATA
                             )
             };
