@@ -1076,8 +1076,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.EXPERIMENTAL;
-            c.modelLabel = "Ernst et al. (in progress)";
+            c.author = ShapeModelType.BLENDER;
+            c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
 
@@ -1085,6 +1085,46 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"),
+                            ImageType.DEIMOS_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
+                            Instrument.IMAGING_DATA
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+            c.imageSearchDefaultMaxResolution = 800.0;
+            configArray.add(c);
+
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.rootDirOnServer = "/deimos/ernst2018";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
                             ImageType.DEIMOS_IMAGE,
                             new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
                             Instrument.IMAGING_DATA

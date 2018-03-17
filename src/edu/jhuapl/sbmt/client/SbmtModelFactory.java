@@ -230,7 +230,7 @@ public class SbmtModelFactory
         ShapeModelType author = config.author;
 
         if (ShapeModelType.GASKELL == author ||
-                (ShapeModelType.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name) || ShapeModelType.BLENDER == author)
+                ((ShapeModelType.EXPERIMENTAL == author || ShapeModelType.BLENDER == author) && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
                 return new Eros(config);
