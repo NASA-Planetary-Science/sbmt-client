@@ -462,6 +462,8 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+        PHOBOS_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelType.EXPERIMENTAL),
+                "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist.txt", "phobos_ernst_2018"),
         ;
 
 
