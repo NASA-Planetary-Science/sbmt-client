@@ -1,12 +1,12 @@
 ---
-title: Small Body Mapping Tool - Hayabusa2 Mission
+title: Small Body Mapping Tool (Hayabusa2 Version)
 ---
 
 ## Download
 
 Latest version: VERSIONXXXXXX
 
-The SBMT Hayabusa2 Release is currently available for Mac, Windows, and Linux systems. It is distributed as a self-contained zip file.
+The SBMT Hayabusa2 Version is currently available for Mac, Windows, and Linux systems. It is distributed as a self-contained zip file.
 
 To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the "runsbmt" program.
 
