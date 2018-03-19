@@ -2622,7 +2622,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "H2 Simulated SPC Ryugoid";
+            c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
