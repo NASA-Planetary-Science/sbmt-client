@@ -1,5 +1,5 @@
 ---
-title: Small Body Mapping Tool - Hayabusa2 Release
+title: Small Body Mapping Tool - Hayabusa2 Mission
 ---
 
 ## Download
