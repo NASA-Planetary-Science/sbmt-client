@@ -1127,7 +1127,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
+//                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"),
                             ImageType.DEIMOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -1347,9 +1348,26 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.lidarSearchDataSourceMap=Maps.newHashMap();
-            c.lidarSearchDataSourceMap.put("Default", "/phobos/ernst2018/tree/dataSource.lidar");
+            c.hasLidarData = true;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
+            c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+            c.lidarBrowseIsLidarInSphericalCoordinates = true;
+            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+            c.lidarBrowseIsTimeInET = true;
+            c.lidarBrowseTimeIndex = 5;
+            c.lidarBrowseNoiseIndex = -1;
+            c.lidarBrowseIsRangeExplicitInData = true;
+            c.lidarBrowseRangeIndex = 3;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
+            c.lidarBrowseNumberHeaderLines = 1;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarOffsetScale = 0.025;
+            c.lidarInstrumentName = Instrument.MOLA;
 
+            c.hasHypertreeBasedLidarSearch=true;
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
             configArray.add(c);
         }
