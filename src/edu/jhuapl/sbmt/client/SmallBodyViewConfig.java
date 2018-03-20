@@ -1108,6 +1108,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         }
 
+        // Latest Gaskell Deimos (experimental)
         if (Configuration.isAPLVersion())
         {
             c = new SmallBodyViewConfig();
@@ -1129,7 +1130,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
                             ImageType.DEIMOS_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.IMAGING_DATA
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
                             )
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
