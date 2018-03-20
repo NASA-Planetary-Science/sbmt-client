@@ -1076,8 +1076,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.EXPERIMENTAL;
-            c.modelLabel = "Ernst et al. (in progress)";
+            c.author = ShapeModelType.BLENDER;
+            c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
 
@@ -1102,6 +1102,52 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+            c.imageSearchDefaultMaxResolution = 800.0;
+//            configArray.add(c);
+
+        }
+
+        // Latest Gaskell Deimos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.rootDirOnServer = "/deimos/ernst2018";
+            c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasImageMap = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+//                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"),
+                            ImageType.DEIMOS_IMAGE,
+                            new ImageSource[]{ ImageSource.GASKELL },
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+//            c.imageSearchFilterNames = new String[]{
+//                    "VIS, Blue",
+//                    "VIS, Minus Blue",
+//                    "VIS, Violet",
+//                    "VIS, Clear",
+//                    "VIS, Green",
+//                    "VIS, Red",
+//            };
+//
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
             configArray.add(c);
@@ -1165,6 +1211,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.MOLA;
 
+        // MOLA search is disabled for now. See LidarPanel class.
         c.hasHypertreeBasedLidarSearch=true;
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
@@ -1242,7 +1289,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
 
-            configArray.add(c);
+//            configArray.add(c);
         }
 
         // Latest Gaskell Phobos (experimental)
@@ -1263,45 +1310,66 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.IMAGING_DATA
+                            new ImageSource[]{ ImageSource.GASKELL },
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
                             )
             };
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
-                    "VSK, Channel 1",
-                    "VSK, Channel 2",
-                    "VSK, Channel 3",
-                    "VIS, Blue",
-                    "VIS, Minus Blue",
-                    "VIS, Violet",
-                    "VIS, Clear",
-                    "VIS, Green",
-                    "VIS, Red",
-            };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-                    "Phobos 2",
-                    "Viking Orbiter 1-A",
-                    "Viking Orbiter 1-B",
-                    "Viking Orbiter 2-A",
-                    "Viking Orbiter 2-B",
-                    "MEX HRSC",
-                    "MRO HiRISE",
-                    "MGS MOC"
-            };
-            c.hasHierarchicalImageSearch = true;
-            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+//            c.imageSearchFilterNames = new String[]{
+//                    "VSK, Channel 1",
+//                    "VSK, Channel 2",
+//                    "VSK, Channel 3",
+//                    "VIS, Blue",
+//                    "VIS, Minus Blue",
+//                    "VIS, Violet",
+//                    "VIS, Clear",
+//                    "VIS, Green",
+//                    "VIS, Red",
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+//                    "Phobos 2",
+//                    "Viking Orbiter 1-A",
+//                    "Viking Orbiter 1-B",
+//                    "Viking Orbiter 2-A",
+//                    "Viking Orbiter 2-B",
+//                    "MEX HRSC",
+//                    "MRO HiRISE",
+//                    "MGS MOC"
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.lidarSearchDataSourceMap=Maps.newHashMap();
-            c.lidarSearchDataSourceMap.put("Default", "/phobos/ernst2018/tree/dataSource.lidar");
+            c.hasLidarData = true;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
+            c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+            c.lidarBrowseIsLidarInSphericalCoordinates = true;
+            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+            c.lidarBrowseIsTimeInET = true;
+            c.lidarBrowseTimeIndex = 5;
+            c.lidarBrowseNoiseIndex = -1;
+            c.lidarBrowseIsRangeExplicitInData = true;
+            c.lidarBrowseRangeIndex = 3;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
+            c.lidarBrowseNumberHeaderLines = 1;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarOffsetScale = 0.025;
+            c.lidarInstrumentName = Instrument.MOLA;
 
+            // MOLA search is disabled for now. See LidarPanel class.
+            c.hasHypertreeBasedLidarSearch=true;
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
             configArray.add(c);
         }

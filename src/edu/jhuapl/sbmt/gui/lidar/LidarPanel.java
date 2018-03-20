@@ -22,7 +22,16 @@ public class LidarPanel extends JTabbedPane
 
         LidarBrowsePanel lidarBrowsePanel;
         LidarSearchPanel lidarSearchPanel;
-        if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
+        if (smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
+        {
+            // Search isn't working, so disable it for now. Leave remaining stanzas intact to make it
+            // easy to re-enable by just removing this top clause.
+//            lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+            lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+//            addTab("Search", lidarSearchPanel);
+        }
+        else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
         {
             lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
