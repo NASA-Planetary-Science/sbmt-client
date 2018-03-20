@@ -1309,8 +1309,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
-//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
+//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
