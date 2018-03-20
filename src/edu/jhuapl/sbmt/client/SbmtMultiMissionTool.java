@@ -122,7 +122,7 @@ public class SbmtMultiMissionTool
         {
             case APL_INTERNAL:
             case PUBLIC_RELEASE:
-                Configuration.setAppName("neartool");
+                Configuration.setAppName("sbmt");
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
                 break;
