@@ -1193,8 +1193,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.EXPERIMENTAL;
-            c.modelLabel = "Ernst et al. (in progress)";
+            c.author = ShapeModelType.BLENDER;
+            c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
             c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
@@ -1240,6 +1240,67 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.lidarSearchDataSourceMap=Maps.newHashMap();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
+
+
+            configArray.add(c);
+        }
+
+        // Latest Gaskell Phobos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.PHOBOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.rootDirOnServer = "/phobos/ernst2018";
+            c.shapeModelFileExtension = ".obj";
+            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
+            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+                            ImageType.PHOBOS_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL},
+                            Instrument.IMAGING_DATA
+                            )
+            };
+
+            c.hasMapmaker = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VSK, Channel 1",
+                    "VSK, Channel 2",
+                    "VSK, Channel 3",
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                    "Phobos 2",
+                    "Viking Orbiter 1-A",
+                    "Viking Orbiter 1-B",
+                    "Viking Orbiter 2-A",
+                    "Viking Orbiter 2-B",
+                    "MEX HRSC",
+                    "MRO HiRISE",
+                    "MGS MOC"
+            };
+            c.hasHierarchicalImageSearch = true;
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.lidarSearchDataSourceMap=Maps.newHashMap();
+            c.lidarSearchDataSourceMap.put("Default", "/phobos/ernst2018/tree/dataSource.lidar");
 
 
             configArray.add(c);
