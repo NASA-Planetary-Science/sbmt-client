@@ -2559,8 +2559,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
+
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Low", "High" };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5404, 5450419 };
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
