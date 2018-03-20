@@ -1211,6 +1211,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.MOLA;
 
+        // MOLA search is disabled for now. See LidarPanel class.
         c.hasHypertreeBasedLidarSearch=true;
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
@@ -1365,6 +1366,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarOffsetScale = 0.025;
             c.lidarInstrumentName = Instrument.MOLA;
 
+            // MOLA search is disabled for now. See LidarPanel class.
             c.hasHypertreeBasedLidarSearch=true;
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
