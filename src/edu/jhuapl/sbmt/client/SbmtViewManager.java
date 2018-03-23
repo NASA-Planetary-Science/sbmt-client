@@ -543,8 +543,8 @@ public class SbmtViewManager extends ViewManager
             ));
 
     private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
-            ShapeModelType.TRUTH,
             ShapeModelType.GASKELL,
+            ShapeModelType.TRUTH,
             ShapeModelType.THOMAS,
             ShapeModelType.STOOKE,
             ShapeModelType.HUDSON,
