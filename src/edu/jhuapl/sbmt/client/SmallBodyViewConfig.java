@@ -2689,7 +2689,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.smallBodyLabelPerResolutionLevel = new String[] { "Low", "High" };
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Low (5404 plates)", "High (5450419 plates)" };
             c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5404, 5450419 };
 
             c.hasStateHistory = true;
