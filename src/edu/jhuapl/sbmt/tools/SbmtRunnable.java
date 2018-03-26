@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
+import org.apache.commons.io.FileUtils;
+
 import vtk.vtkJavaGarbageCollector;
 import vtk.vtkNativeLibrary;
 
@@ -57,10 +59,14 @@ public class SbmtRunnable implements Runnable
         {
             // Parse options that come first
             int i = 0;
-            boolean redirectStreams = true; // Proper default behavior for released code.
+            // Default settings are correct for released version of the tool.
+            boolean clearCache = false;
+            boolean redirectStreams = true;
             for (; i < args.length; ++i) {
                 if (args[i].equals("--beta")) {
                     SmallBodyViewConfig.betaMode = true;
+                } else if (args[i].equals("--auto-clear-cache")) {
+                    clearCache = true;
                 } else if (args[i].equals("--no-stream-redirect")) {
                     redirectStreams = false;
                 } else if (!args[i].startsWith("-")) {
@@ -77,6 +83,10 @@ public class SbmtRunnable implements Runnable
             }
             Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission, redirectStreams);
+            if (clearCache)
+            {
+                clearCache();
+            }
             SmallBodyViewConfig.initialize();
             configureMissionBodies(mission);
 
@@ -128,6 +138,27 @@ public class SbmtRunnable implements Runnable
                 }
             }
             System.exit(1);
+        }
+    }
+
+    protected void clearCache()
+    {
+        String cacheDir = Configuration.getCacheDir();
+        if (cacheDir != null)
+        {
+            System.err.println("Clearing the cache for all models in the directory " + cacheDir);
+            File file = new File(cacheDir);
+            if (file.exists())
+            {
+                try
+                {
+                    FileUtils.deleteDirectory(file);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
