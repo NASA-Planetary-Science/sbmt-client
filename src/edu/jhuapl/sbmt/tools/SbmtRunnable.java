@@ -55,6 +55,7 @@ public class SbmtRunnable implements Runnable
     {
         // Don't use try-with-resources form -- it suppresses reporting the actual exception!
         PrintStream outputFile = null;
+        boolean exitOnError = true;
         try
         {
             // Parse options that come first
@@ -80,6 +81,7 @@ public class SbmtRunnable implements Runnable
                 redirectStreams(outputFile);
                 Console.configure(true, outputFile);
                 Console.showStandaloneConsole();
+                exitOnError = false;
             }
             Mission mission = SbmtMultiMissionTool.getMission();
             writeStartupMessage(mission, redirectStreams);
@@ -117,6 +119,7 @@ public class SbmtRunnable implements Runnable
 
             frame.setVisible(true);
             Console.hideConsole();
+            exitOnError = true;
             Console.setDefaultLocation(frame);
         }
         catch (Throwable throwable)
@@ -124,6 +127,9 @@ public class SbmtRunnable implements Runnable
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
             throwable.printStackTrace();
+            System.err.println("The SBMT had a fatal error during launch. Please view this console window for more information.");
+            System.err.println("Note that the SBMT requires an internet connection the first time it is launched.");
+            System.err.println("Close the console window to exit the SBMT.");
             if (outputFile != null)
             {
                 restoreStreams();
@@ -137,7 +143,10 @@ public class SbmtRunnable implements Runnable
                     e1.printStackTrace();
                 }
             }
-            System.exit(1);
+            if (exitOnError)
+            {
+                System.exit(1);
+            }
         }
     }
 
