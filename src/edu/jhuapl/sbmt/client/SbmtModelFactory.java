@@ -225,7 +225,7 @@ public class SbmtModelFactory
     	// check to perform right here so we ignore the result returned. If the top path
     	// is not "gettable" (this returns false) but no exception
     	// is thrown, it's worth trying to create the model.
-        FileCache.isFileGettable(config.serverPath(""));
+        FileCache.isFileGettable(config.getShapeModelFileNames()[0]);
         ShapeModelBody name = config.body;
         ShapeModelType author = config.author;
 
