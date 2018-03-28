@@ -9,8 +9,8 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
@@ -230,7 +230,7 @@ public class SbmtModelFactory
         ShapeModelType author = config.author;
 
         if (ShapeModelType.GASKELL == author ||
-                (ShapeModelType.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name))
+                ((ShapeModelType.EXPERIMENTAL == author || ShapeModelType.BLENDER == author) && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
                 return new Eros(config);
