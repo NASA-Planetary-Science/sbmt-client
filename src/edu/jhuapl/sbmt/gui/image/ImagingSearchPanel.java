@@ -2834,14 +2834,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     result.add(name);
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
-                    if(instrument.searchQuery.getGalleryPath() == null)
-                    {
-                        result.add(null);
-                    }
-                    else
-                    {
-                        result.add(instrument.searchQuery.getGalleryPath() + "/" + words[0]);
-                    }
                     results.add(result);
                 }
 
@@ -2922,19 +2914,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // Check if image search results are valid and nonempty
         if(imageRawResults != null)
         {
+            String dataPath = instrument.searchQuery.getDataPath();
+            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for(List<String> res : imageRawResults)
             {
-                // Third entry of result is the gallery path (or null if gallery does not exist)
-                String s = "/"+res.get(2);
-                if(s != null)
-                {
-                    // Create entry for image gallery
-                    galleryEntries.add(new ImageGalleryEntry(
-                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                        s+".jpeg", s+"-small.jpeg"));
-                }
+                String s = "/" + res.get(0).replace(dataPath, galleryPath);
+                // Create entry for image gallery
+                galleryEntries.add(new ImageGalleryEntry(
+                    res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
+                    s+".jpeg", s+"-small.jpeg"));
             }
 
             // Don't bother creating a gallery if empty
