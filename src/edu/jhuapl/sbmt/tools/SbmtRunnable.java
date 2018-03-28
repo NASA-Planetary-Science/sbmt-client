@@ -127,7 +127,7 @@ public class SbmtRunnable implements Runnable
             // Something went tragically wrong, so report the error, close the output file and
             // move it to a more prominent location.
             throwable.printStackTrace();
-            System.err.println("The SBMT had a fatal error during launch. Please view this console window for more information.");
+            System.err.println("\nThe SBMT had a fatal error during launch. Please view this console window for more information.");
             System.err.println("Note that the SBMT requires an internet connection the first time it is launched.");
             System.err.println("Close the console window to exit the SBMT.");
             if (outputFile != null)
