@@ -145,9 +145,9 @@ public class SbmtMultiMissionTool
                 break;
             case HAYABUSA2_DEPLOY:
                 Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-                Configuration.setAppName("sbmt1hyb2-deploy");
+                Configuration.setAppName("sbmthyb2");
                 Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
+                Configuration.setAppTitle("SBMT/Hayabusa2");
                 break;
             case OSIRIS_REX:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
