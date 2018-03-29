@@ -61,7 +61,7 @@ public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implem
             ImageType type)
     {
         Builder<ImagingInstrumentConfiguration> builder = builder(instrument, spectralMode, queryBase, imageSource, imageFileLocator);
-        builder.put(IMAGE_TYPE,  type);
+        builder.put(IMAGE_TYPE, type);
         return builder;
     }
 
