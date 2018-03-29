@@ -37,10 +37,7 @@ public class SmallBodyMappingToolAPL
 
         Configuration.setAPLVersion(true);
 
-        if (Configuration.getAppName() == null)
-        {
-            SbmtMultiMissionTool.configureMission();
-        }
+        SbmtMultiMissionTool.configureMission();
 
         try
         {
@@ -53,7 +50,7 @@ public class SmallBodyMappingToolAPL
                     SafePaths.get(parent, "password.txt")
             );
 
-            Configuration.setupPasswordAuthentication("http://sbmt.jhuapl.edu/internal/restricted", "DO_NOT_DELETE.TXT", passwordFilesToTry);
+            Configuration.setupPasswordAuthentication(Configuration.getDataRootURL(), "DO_NOT_DELETE.TXT", passwordFilesToTry);
         }
         catch (@SuppressWarnings("unused") Exception e)
         {

@@ -53,6 +53,7 @@ public class SbmtMultiMissionTool
     // This field is used during the build process to "hard-wire" a release to point to a specific server.
     private static final Mission RELEASED_MISSION = null;
     private static Mission mission = RELEASED_MISSION;
+    private static boolean missionConfigured = false;
 
     static
     {
@@ -73,9 +74,9 @@ public class SbmtMultiMissionTool
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
-// uncomment for cross-platform LAF
-//            else
-//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            // uncomment for cross-platform LAF
+            //            else
+            //                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
         }
         catch (Exception e)
@@ -117,43 +118,48 @@ public class SbmtMultiMissionTool
 
     static Mission configureMission()
     {
+        if (missionConfigured)
+        {
+            return mission;
+        }
         Mission mission = getMission();
         switch (mission)
         {
-            case APL_INTERNAL:
-            case PUBLIC_RELEASE:
-                Configuration.setAppName("sbmt");
-                Configuration.setCacheVersion("2");
-                Configuration.setAppTitle("SBMT");
-                break;
-            case HAYABUSA2:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1hyb2");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
-                break;
-            case HAYABUSA2_STAGE:
-                Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-                Configuration.setAppName("sbmt1hyb2-stage");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-                break;
-            case HAYABUSA2_DEPLOY:
-                Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-                Configuration.setAppName("sbmt1hyb2-deploy");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
-                break;
-            case OSIRIS_REX:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1orex");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/OSIRIS REx");
-                break;
-            default:
-                throw new AssertionError();
+        case APL_INTERNAL:
+        case PUBLIC_RELEASE:
+            Configuration.setAppName("sbmt");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle("SBMT");
+            break;
+        case HAYABUSA2:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1hyb2");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+            break;
+        case HAYABUSA2_STAGE:
+            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1hyb2-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+            break;
+        case HAYABUSA2_DEPLOY:
+            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+            Configuration.setAppName("sbmt1hyb2-deploy");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
+            break;
+        case OSIRIS_REX:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1orex");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx");
+            break;
+        default:
+            throw new AssertionError();
         }
-       return mission;
+        missionConfigured = true;
+        return mission;
     }
 
     static SbmtSplash createSplash(Mission mission)
@@ -161,24 +167,24 @@ public class SbmtMultiMissionTool
         SbmtSplash splash = null;
         switch (mission)
         {
-            case APL_INTERNAL:
-            case PUBLIC_RELEASE:
-                splash = new SbmtSplash("resources", "splashLogo.png");
-                break;
-            case HAYABUSA2:
-                splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-                break;
-            case HAYABUSA2_STAGE:
-                splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-                break;
-            case HAYABUSA2_DEPLOY:
-                splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
-                break;
-            case OSIRIS_REX:
-                splash = new SbmtSplash("resources", "splashLogoOrex.png");
-                break;
-            default:
-                throw new AssertionError();
+        case APL_INTERNAL:
+        case PUBLIC_RELEASE:
+            splash = new SbmtSplash("resources", "splashLogo.png");
+            break;
+        case HAYABUSA2:
+            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+            break;
+        case HAYABUSA2_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+            break;
+        case HAYABUSA2_DEPLOY:
+            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
+            break;
+        case OSIRIS_REX:
+            splash = new SbmtSplash("resources", "splashLogoOrex.png");
+            break;
+        default:
+            throw new AssertionError();
         }
         return splash;
     }
@@ -203,11 +209,7 @@ public class SbmtMultiMissionTool
 
     public static void main(final String[] args)
     {
-        if (Configuration.getAppName() == null)
-        {
-            SbmtMultiMissionTool.configureMission();
-        }
-        Mission mission = getMission();
+        Mission mission = SbmtMultiMissionTool.configureMission();
 
         setupLookAndFeel();
 
