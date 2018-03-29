@@ -74,9 +74,9 @@ public class SbmtMultiMissionTool
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
                 UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
-            // uncomment for cross-platform LAF
-            //            else
-            //                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+// uncomment for cross-platform LAF
+//            else
+//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
         }
         catch (Exception e)
