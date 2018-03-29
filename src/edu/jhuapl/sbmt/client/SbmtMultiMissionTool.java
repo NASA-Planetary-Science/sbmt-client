@@ -125,38 +125,38 @@ public class SbmtMultiMissionTool
         Mission mission = getMission();
         switch (mission)
         {
-        case APL_INTERNAL:
-        case PUBLIC_RELEASE:
-            Configuration.setAppName("sbmt");
-            Configuration.setCacheVersion("2");
-            Configuration.setAppTitle("SBMT");
-            break;
-        case HAYABUSA2:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("sbmt1hyb2");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
-            break;
-        case HAYABUSA2_STAGE:
-            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-            Configuration.setAppName("sbmt1hyb2-stage");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-            break;
-        case HAYABUSA2_DEPLOY:
-            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-            Configuration.setAppName("sbmt1hyb2-deploy");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
-            break;
-        case OSIRIS_REX:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("sbmt1orex");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx");
-            break;
-        default:
-            throw new AssertionError();
+            case APL_INTERNAL:
+            case PUBLIC_RELEASE:
+                Configuration.setAppName("sbmt");
+                Configuration.setCacheVersion("2");
+                Configuration.setAppTitle("SBMT");
+                break;
+            case HAYABUSA2:
+//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setAppName("sbmt1hyb2");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+                break;
+            case HAYABUSA2_STAGE:
+                Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+                Configuration.setAppName("sbmt1hyb2-stage");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+                break;
+            case HAYABUSA2_DEPLOY:
+                Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+                Configuration.setAppName("sbmt1hyb2-deploy");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
+                break;
+            case OSIRIS_REX:
+//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setAppName("sbmt1orex");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/OSIRIS REx");
+                break;
+            default:
+                throw new AssertionError();
         }
         missionConfigured = true;
         return mission;
@@ -167,24 +167,24 @@ public class SbmtMultiMissionTool
         SbmtSplash splash = null;
         switch (mission)
         {
-        case APL_INTERNAL:
-        case PUBLIC_RELEASE:
-            splash = new SbmtSplash("resources", "splashLogo.png");
-            break;
-        case HAYABUSA2:
-            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-            break;
-        case HAYABUSA2_STAGE:
-            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-            break;
-        case HAYABUSA2_DEPLOY:
-            splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
-            break;
-        case OSIRIS_REX:
-            splash = new SbmtSplash("resources", "splashLogoOrex.png");
-            break;
-        default:
-            throw new AssertionError();
+            case APL_INTERNAL:
+            case PUBLIC_RELEASE:
+                splash = new SbmtSplash("resources", "splashLogo.png");
+                break;
+            case HAYABUSA2:
+                splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+                break;
+            case HAYABUSA2_STAGE:
+                splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+                break;
+            case HAYABUSA2_DEPLOY:
+                splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
+                break;
+            case OSIRIS_REX:
+                splash = new SbmtSplash("resources", "splashLogoOrex.png");
+                break;
+            default:
+                throw new AssertionError();
         }
         return splash;
     }
