@@ -2642,8 +2642,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //                };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
     //TODO make hierarchical search work sbmt1dev-style.
     //        c.imageSearchFilterNames = new String[]{
     //                EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
