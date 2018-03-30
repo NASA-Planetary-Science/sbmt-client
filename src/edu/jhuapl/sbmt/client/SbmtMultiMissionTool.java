@@ -178,7 +178,7 @@ public class SbmtMultiMissionTool
                 splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
                 break;
             case HAYABUSA2_DEPLOY:
-                splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
+                splash = new SbmtSplash("resources", "splashLogoHb2.png");
                 break;
             case OSIRIS_REX:
                 splash = new SbmtSplash("resources", "splashLogoOrex.png");
