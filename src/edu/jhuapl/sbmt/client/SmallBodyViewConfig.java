@@ -2713,8 +2713,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.smallBodyLabelPerResolutionLevel = new String[] { "Low (5404 plates)", "High (5450419 plates)" };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5404, 5450419 };
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Low (54504 plates)", "High (5450420 plates)" };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 54504, 5450420 };
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
@@ -2747,8 +2747,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
@@ -2790,8 +2790,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
