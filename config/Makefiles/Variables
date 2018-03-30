@@ -82,6 +82,6 @@ REMAKE_EVERYTHING :=
 #    make deploy RELEASE=2016.06.02
 #--------------------------------------------------------------
 #
-todays_date = ${shell date +.%Y.%m.%d}
-RELEASE := SNAPSHOT${todays_date}
+todays_date = ${shell date +%Y.%m.%d}
+RELEASE := SNAPSHOT-${todays_date}
 
