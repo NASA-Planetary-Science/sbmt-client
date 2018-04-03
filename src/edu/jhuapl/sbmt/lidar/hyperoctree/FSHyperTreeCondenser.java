@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.lidar.hyperoctree.ola;
+package edu.jhuapl.sbmt.lidar.hyperoctree;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,11 +9,9 @@ import java.nio.file.Paths;
 import com.google.common.base.Stopwatch;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.lidar.hyperoctree.Dimensioned;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeNode;
 
 
-public class OlaFSHyperTreeCondenser implements Dimensioned
+public class FSHyperTreeCondenser implements Dimensioned
 {
     static { NativeLibraryLoader.loadVtkLibraries(); }
 
@@ -22,7 +20,7 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
     Stopwatch sw;
     FileWriter writer;
 
-    public OlaFSHyperTreeCondenser(Path rootPath, Path outFilePath)
+    public FSHyperTreeCondenser(Path rootPath, Path outFilePath)
     {
         rootNodePath=rootPath;
         this.outFilePath=outFilePath;
@@ -174,7 +172,7 @@ public class OlaFSHyperTreeCondenser implements Dimensioned
         Path outFilePath=rootPath.resolve("dataSource.lidar");
         System.out.println("Root path = "+rootPath);
         System.out.println("Output path = "+outFilePath);
-        OlaFSHyperTreeCondenser condenser=new OlaFSHyperTreeCondenser(rootPath,outFilePath);
+        FSHyperTreeCondenser condenser=new FSHyperTreeCondenser(rootPath,outFilePath);
         condenser.condense();
         System.out.println("Wrote tree structure to "+outFilePath);
     }

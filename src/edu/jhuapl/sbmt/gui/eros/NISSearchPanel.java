@@ -11,7 +11,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -34,9 +34,10 @@ public class NISSearchPanel extends SpectrumSearchPanel
         super(modelManager, infoPanelManager, pickManager, renderer, instrument);
         // TODO Auto-generated constructor stub
 
-        File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
         try
         {
+            File nisTimesFile=FileCache.getFileFromServer("/NIS/2000/nisTimes.txt");
+
             Scanner scanner=new Scanner(nisTimesFile);
             boolean found=false;
             while (scanner.hasNextLine() && !found)
@@ -60,9 +61,10 @@ public class NISSearchPanel extends SpectrumSearchPanel
 
     static
     {
-        File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
         try
         {
+            File nisSunFile=FileCache.getFileFromServer("/NIS/nisSunVectors.txt");
+
             Scanner scanner=new Scanner(nisSunFile);
             boolean found=false;
             while (scanner.hasNextLine() && !found)

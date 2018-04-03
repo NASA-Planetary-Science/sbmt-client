@@ -21,7 +21,7 @@ import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -430,7 +430,7 @@ public class CompareGaskellAndNLR
             int lineOffset
             ) throws Exception
     {
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel lowResSmallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         lowResSmallBodyModel.setModelResolution(0);
 
@@ -552,7 +552,7 @@ public class CompareGaskellAndNLR
         NativeLibraryLoader.loadVtkLibraries();
 
 
-        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL);
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         smallBodyModel.setModelResolution(3);
 

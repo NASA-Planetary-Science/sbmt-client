@@ -26,6 +26,7 @@ import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
 import edu.jhuapl.sbmt.lidar.LidarInstrument;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.lidar.RawLidarFile;
+import edu.jhuapl.sbmt.lidar.hyperoctree.laser.LaserFSHyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.nlr.NlrFSHyperTreeGenerator;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperPoint;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperTreeGenerator;
@@ -56,6 +57,7 @@ public abstract class FSHyperTreeGenerator
     public void addAllPointsFromFile(Path inputPath) throws HyperException, IOException
     {
         RawLidarFile file=openFile(inputPath);
+        fileMap.put(inputPath.getFileName(),file.getFileNumber());
         Iterator<LidarPoint> iterator=file.iterator();
         while (iterator.hasNext())
         {
@@ -247,6 +249,9 @@ public abstract class FSHyperTreeGenerator
         case NLR:
             generator=new NlrFSHyperTreeGenerator(outputDirectory, maxPointsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
             break;
+        case LASER:
+            generator=new LaserFSHyperTreeGenerator(outputDirectory, maxPointsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
+            break;
         }
 
         Stopwatch sw=new Stopwatch();
@@ -276,6 +281,7 @@ public abstract class FSHyperTreeGenerator
 
         System.out.println("Total MB stored = "+generator.convertBytesToMB(generator.countBytes()));
         System.out.println("Total MB initially copied = "+generator.convertBytesToMB(rootFileSizeBytes));
+
 
         Path fileMapPath=outputDirectory.resolve("fileMap.txt");
         System.out.print("Writing file map to "+fileMapPath+"... ");

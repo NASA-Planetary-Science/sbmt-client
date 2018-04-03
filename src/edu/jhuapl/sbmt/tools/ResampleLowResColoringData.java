@@ -9,7 +9,7 @@ import vtk.vtkPoints;
 import vtk.vtkPolyData;
 import vtk.vtkTriangle;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -30,12 +30,12 @@ public class ResampleLowResColoringData
         NativeLibraryLoader.loadVtkLibraries();
 
         // Load in the low res model
-        SmallBodyModel modelLow = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+        SmallBodyModel modelLow = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
         //SmallBodyModel modelLow = new Itokawa();
         modelLow.setModelResolution(0);
 
         // Load in the high res model
-        SmallBodyModel modelHigh = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelAuthor.GASKELL));
+        SmallBodyModel modelHigh = new Eros(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL));
         //SmallBodyModel modelHigh = new Itokawa();
         vtkPolyData polydata = modelHigh.getSmallBodyPolyData();
         for (int resLevel = 1; resLevel < 4; ++resLevel)

@@ -29,10 +29,10 @@ import vtk.vtkInteractorStyleImage;
 import vtk.vtkPropCollection;
 import vtk.vtkPropPicker;
 import vtk.vtkTransform;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.gui.StatusBar;
-import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.model.image.ColorImage;
@@ -46,7 +46,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
     private ColorImage image;
     private ColorImageCollection imageCollection;
 
-    private vtksbmtJoglCanvas renWin;
+    private vtkJoglPanelComponent renWin;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private vtkImageSlice actor;
     private vtkImageReslice reslice;
@@ -84,7 +84,7 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         this.imageCollection = imageCollection;
         this.statusBar = statusBar;
 
-        renWin = new vtksbmtJoglCanvas();
+        renWin = new vtkJoglPanelComponent();
         renWin.getComponent().setPreferredSize(new Dimension(550, 550));
 
         vtkInteractorStyleImage style = new vtkInteractorStyleImage();

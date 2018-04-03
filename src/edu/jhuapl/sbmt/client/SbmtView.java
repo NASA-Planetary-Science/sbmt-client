@@ -1,17 +1,24 @@
 package edu.jhuapl.sbmt.client;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
 
+import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.CircleModel;
 import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
 import edu.jhuapl.saavtk.model.structure.EllipseModel;
@@ -20,6 +27,7 @@ import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
@@ -39,7 +47,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.gui.time.StateHistoryPanel;
+import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
@@ -55,6 +63,8 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchPanel;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
@@ -66,8 +76,11 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  * All the configuration details of all the built-in and custom views
  * are contained in this class.
  */
-public class SbmtView extends View
+public class SbmtView extends View implements PropertyChangeListener
 {
+    private Colorbar smallBodyColorbar;
+
+
     /**
      * By default a view should be created empty. Only when the user
      * requests to show a particular View, should the View's contents
@@ -78,6 +91,7 @@ public class SbmtView extends View
     public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
+
     }
 
 
@@ -86,21 +100,59 @@ public class SbmtView extends View
         return (SmallBodyViewConfig)super.getConfig();
     }
 
-    public String getDisplayName()
+    @Override
+    public String getPathRepresentation()
     {
-        if (getPolyhedralModelConfig().author == ShapeModelAuthor.CUSTOM)
-            return getPolyhedralModelConfig().customName;
-        else if (getPolyhedralModelConfig().author == null)
-            return getPolyhedralModelConfig().body.toString();
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
+        ShapeModelType author = config.author;
+        String modelLabel = config.modelLabel;
+        BodyType type = config.type;
+        ShapeModelPopulation population = config.population;
+        ShapeModelDataUsed dataUsed = config.dataUsed;
+        ShapeModelBody body = config.body;
+        if (ShapeModelType.CUSTOM == author)
+        {
+            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
+        }
         else
         {
-            String version = "";
-            if (getPolyhedralModelConfig().version != null)
-                version += " (" + getPolyhedralModelConfig().version + ")";
-            return getPolyhedralModelConfig().author.toString() + version;
+            String path = type.str;
+            if (population != null)
+                path += " > " + population;
+            path += " > " + body;
+            if (dataUsed != null)
+                path += " > " + dataUsed;
+            path += " > " + getDisplayName();
+            return Configuration.getAppTitle() + " - " + path;
         }
     }
 
+    @Override
+    public String getDisplayName()
+    {
+    	String result = "";
+    	SmallBodyViewConfig config = getPolyhedralModelConfig();
+    	if (config.modelLabel != null)
+    	    result = config.modelLabel;
+    	else if (config.author == null)
+    	    result = config.body.toString();
+    	else
+    	    result = config.author.toString();
+
+    	if (config.version != null)
+    	    result = result + " (" + config.version + ")";
+
+    	return result;
+    }
+
+    @Override
+    public String getModelDisplayName()
+    {
+        ShapeModelBody body = getConfig().body;
+        return body != null ? body + " / " + getDisplayName() : getDisplayName();
+    }
+
+    @Override
     protected void setupModelManager()
     {
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
@@ -108,7 +160,7 @@ public class SbmtView extends View
 
         Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
 
-        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
+        HashMap<ModelNames, Model> allModels = new HashMap<>();
         allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
@@ -134,9 +186,9 @@ public class SbmtView extends View
             }
         }
 
-        for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+        if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel, instrument));
+            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
@@ -173,8 +225,11 @@ public class SbmtView extends View
         allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
 
         setModels(allModels);
+
+        getModelManager().addPropertyChangeListener(this);
     }
 
+    @Override
     protected void setupPopupManager()
     {
         setPopupManager(new ImagePopupManager(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer()));
@@ -254,6 +309,7 @@ public class SbmtView extends View
         }
     }
 
+    @Override
     protected void setupTabs()
     {
         addTab(getPolyhedralModelConfig().getShapeModelName(), new SmallBodyControlPanel(getModelManager(), getPolyhedralModelConfig().getShapeModelName()));
@@ -270,10 +326,10 @@ public class SbmtView extends View
                 // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
-                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)(SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)(SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
                     addTab(instrument.instrumentName.toString(), component);
                 }
-                else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelAuthor.GASKELL == getPolyhedralModelConfig().author))
+                else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
                 {
                     if (getPolyhedralModelConfig().body == ShapeModelBody._67P)
                     {
@@ -325,6 +381,11 @@ public class SbmtView extends View
                JComponent component = new OVIRSSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
                 }
+                else if (instrument instanceof NIRS3)
+                    {
+                    JComponent component = new NIRS3SearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                    addTab(instrument.getDisplayName(), component);
+                    }
 
         }
 
@@ -343,6 +404,12 @@ public class SbmtView extends View
             }
 
             addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+
+
+            JTabbedPane customDataPane=new JTabbedPane();
+            customDataPane.setBorder(BorderFactory.createEmptyBorder());
+            addTab("Custom Data", customDataPane);
+
             if (!getPolyhedralModelConfig().customTemporary)
             {
                 ImagingInstrument instrument = null;
@@ -352,10 +419,10 @@ public class SbmtView extends View
                     break;
                 }
 
-                addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
 
             /*if (getSmallBodyConfig().hasMapmaker)
             {
@@ -373,36 +440,87 @@ public class SbmtView extends View
             {
                 JComponent component = new DEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
                         getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
-                addTab("DEMs", component);
+                addTab("Regional DTMs", component);
             }*/
 
             JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
-                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap);
-            addTab("DEMs", component);
+                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
+            addTab("Regional DTMs", component);
 
             if (getConfig().hasStateHistory)
             {
-                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+//                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
+                addTab("Observing Conditions", new StateHistoryController(getModelManager(), getRenderer()).getView());
+
             }
         }
     }
 
+    @Override
     protected void setupPickManager()
     {
       setPickManager(new ImagePickManager(getRenderer(), getStatusBar(), getModelManager(), getPopupManager()));
     }
 
+    @Override
     protected void setupInfoPanelManager()
     {
         setInfoPanelManager(new SbmtInfoWindowManager(getModelManager(), getStatusBar()));
     }
 
+    @Override
     protected void setupSpectrumPanelManager()
     {
         setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
     }
 
+    public void propertyChange(PropertyChangeEvent e)
+    {
+        if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
+        {
+            renderer.setProps(getModelManager().getProps());
 
+            if (smallBodyColorbar==null)
+                return;
+
+            PolyhedralModel sbModel=(PolyhedralModel)getModelManager().getModel(ModelNames.SMALL_BODY);
+            if (sbModel.isColoringDataAvailable() && sbModel.getColoringIndex()>=0)
+            {
+                if (!smallBodyColorbar.isVisible())
+                    smallBodyColorbar.setVisible(true);
+                smallBodyColorbar.setColormap(sbModel.getColormap());
+                int index = sbModel.getColoringIndex();
+                String title = sbModel.getColoringName(index).trim();
+                String units = sbModel.getColoringUnits(index).trim();
+                if (units != null && !units.isEmpty())
+                {
+                    title += " (" + units + ")";
+                }
+                if (title.length() > 16)
+                {
+                    title = title.replaceAll("\\s+", "\n");
+                }
+                smallBodyColorbar.setTitle(title);
+                if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
+                    renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
+                smallBodyColorbar.getActor().SetNumberOfLabels(sbModel.getColormap().getNumberOfLabels());
+            }
+            else
+                smallBodyColorbar.setVisible(false);
+
+        }
+        else
+        {
+            renderer.getRenderWindowPanel().Render();
+        }
+    }
+
+    @Override
+    public void setRenderer(Renderer renderer)
+    {
+        this.renderer = renderer;
+        smallBodyColorbar = new Colorbar(renderer);
+    }
 
 
 }

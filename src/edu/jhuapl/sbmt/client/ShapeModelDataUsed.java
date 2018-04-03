@@ -3,11 +3,13 @@ package edu.jhuapl.sbmt.client;
 // Data used to construct shape model (either images, radar, lidar, or enhanced)
 public enum ShapeModelDataUsed
 {
-    IMAGE_BASED("Image Based"),
-    RADAR_BASED("Radar Based"),
-    LIDAR_BASED("Lidar Based"),
+    ENHANCED("Enhanced"),
+    IMAGE_BASED("Image-based"),
+    LIDAR_BASED("Lidar-based"),
+    RADAR_BASED("Radar-based"),
     WGS84("WGS84"),
-    ENHANCED("Enhanced");
+    TRIAXIAL("Triaxial"),
+    ;
 
     final private String str;
     private ShapeModelDataUsed(String str)

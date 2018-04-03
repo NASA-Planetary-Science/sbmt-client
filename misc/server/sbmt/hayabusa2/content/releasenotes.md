@@ -1,8 +1,8 @@
-% Recent Changes
+% Release Notes
 %
 %
 
-# Recent Changes
+# Release Notes
 ### July 31, 2017
 -   Terms of use is now on the internal and external web page
 -   Splashscreen now shows upon launch

@@ -24,6 +24,8 @@ public enum Instrument
     SAMCAM("SAMCAM"),
     ISS("ISS"),
     ONC("ONC"),
+    TIR("TIR"),
+    LASER("LIDAR")
     ;
 
     final private String str;

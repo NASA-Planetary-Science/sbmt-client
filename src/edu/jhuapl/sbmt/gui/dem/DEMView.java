@@ -36,10 +36,9 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
-//import edu.jhuapl.near.model.DEMBoundaryCollection;
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -95,6 +94,11 @@ public class DEMView extends JFrame implements WindowListener
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
 
+    public Renderer getRenderer()
+    {
+        return renderer;
+    }
+
     public DEMView(DEMKey key, DEMCollection demCollection, PolyhedralModel parentPolyhedralModel) throws IOException, FitsException
     {
         this.key = key;
@@ -127,6 +131,7 @@ public class DEMView extends JFrame implements WindowListener
         dem.setColoringIndex(macroDEM.getColoringIndex());
 
         final ModelManager modelManager = new SbmtModelManager(dem);
+
 
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
@@ -173,8 +178,10 @@ public class DEMView extends JFrame implements WindowListener
 
         // Finally make the frame visible
         setTitle("DEM View: " + key.displayName);
-        pack();
+     //   pack();
         setVisible(true);
+
+        setSize(600, 300);
     }
 
     private void createMenus()

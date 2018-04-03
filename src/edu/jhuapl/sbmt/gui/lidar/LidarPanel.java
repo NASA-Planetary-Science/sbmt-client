@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 import javax.swing.BorderFactory;
 import javax.swing.JTabbedPane;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -22,24 +22,44 @@ public class LidarPanel extends JTabbedPane
 
         LidarBrowsePanel lidarBrowsePanel;
         LidarSearchPanel lidarSearchPanel;
-        if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
+        if (smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
+        {
+            // Search isn't working, so disable it for now. Leave remaining stanzas intact to make it
+            // easy to re-enable by just removing this top clause.
+//            lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+            lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+//            addTab("Search", lidarSearchPanel);
+        }
+        else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
         {
             lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
+        }
+        else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.LASER))
+        {
+//            lidarSearchPanel=new LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+            lidarBrowsePanel = new LaserLidarBrowsePanel(modelManager, smallBodyConfig);
+            addTab("Browse", lidarBrowsePanel);
+//            addTab("Search", lidarSearchPanel);
         }
         else if (smallBodyConfig.lidarInstrumentName.equals(Instrument.OLA))
         {
             lidarBrowsePanel = new OlaLidarBrowsePanel(modelManager, smallBodyConfig);
             lidarSearchPanel=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
         }
         else
         {
             lidarSearchPanel=new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
+            addTab("Browse", lidarBrowsePanel);
+            addTab("Search", lidarSearchPanel);
         }
 
-        addTab("Browse", lidarBrowsePanel);
-        addTab("Search", lidarSearchPanel);
 
     }
 }

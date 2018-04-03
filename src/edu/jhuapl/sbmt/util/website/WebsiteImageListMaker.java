@@ -3,12 +3,15 @@ package edu.jhuapl.sbmt.util.website;
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -29,51 +32,51 @@ public class WebsiteImageListMaker
             System.out.println(tables.get(i));
 
         List<ShapeModelBody> bodies=Lists.newArrayList();
-        List<ShapeModelAuthor> authors=Lists.newArrayList();
+        List<ShapeModelType> authors=Lists.newArrayList();
         List<String> versions=Lists.newArrayList();
 
         bodies.add(ShapeModelBody.EROS);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("");
 
         bodies.add(ShapeModelBody.ITOKAWA);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("");
 
        bodies.add( ShapeModelBody.VESTA);
-       authors.add(ShapeModelAuthor.GASKELL);
+       authors.add(ShapeModelType.GASKELL);
        versions.add("");
 
        bodies.add(ShapeModelBody.CERES);
-       authors.add(ShapeModelAuthor.GASKELL);
+       authors.add(ShapeModelType.GASKELL);
        versions.add("");
 
        bodies.add(ShapeModelBody.DEIMOS);
-       authors.add(ShapeModelAuthor.THOMAS);
+       authors.add(ShapeModelType.THOMAS);
        versions.add("");
 
        bodies.add(ShapeModelBody.PHOBOS);
-       authors.add(ShapeModelAuthor.GASKELL);
+       authors.add(ShapeModelType.GASKELL);
        versions.add("");
 
        bodies.add(ShapeModelBody.PHOBOS);
-       authors.add(ShapeModelAuthor.EXPERIMENTAL);
+       authors.add(ShapeModelType.EXPERIMENTAL);
        versions.add("");
 
         bodies.add(ShapeModelBody._67P);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("SHAP5 V0.3");
 
         bodies.add(ShapeModelBody._67P);
-        authors.add(ShapeModelAuthor.DLR);
+        authors.add(ShapeModelType.DLR);
         versions.add("SHAP4S");
 
         bodies.add(ShapeModelBody._67P);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("V2");
 
         bodies.add(ShapeModelBody._67P);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("V3");
 
         bodies.add(ShapeModelBody.JUPITER);
@@ -97,11 +100,11 @@ public class WebsiteImageListMaker
         versions.add("");
 
         bodies.add(ShapeModelBody.RQ36);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("V3 Image");
 
         bodies.add(ShapeModelBody.RQ36);
-        authors.add(ShapeModelAuthor.GASKELL);
+        authors.add(ShapeModelType.GASKELL);
         versions.add("V3 Image");
 
 //        RQ36V4_MAP(SmallBodyConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelAuthor.GASKELL, "V4 Image"),
@@ -113,7 +116,13 @@ public class WebsiteImageListMaker
         authors.add(null);
         versions.add("");
 
+
+        // set date format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         SmallBodyViewConfig.initialize();
+        List<ViewConfig> configs = SmallBodyViewConfig.getBuiltInConfigs();
         for (ViewConfig c : SmallBodyViewConfig.getBuiltInConfigs())
         {
             SmallBodyViewConfig config = (SmallBodyViewConfig) c;
@@ -137,10 +146,10 @@ public class WebsiteImageListMaker
                 continue;
             }
 
-            for (ImagingInstrument instrument : config.imagingInstruments)
+            for (ImagingInstrument instrument : config.imagingInstruments) // for example MSI
             {
 
-                for (ImageSource source : instrument.searchImageSources)
+                for (ImageSource source : instrument.searchImageSources) // pointing (i.e. Gaskell Derived, SPICE)
                 {
 
                     if (instrument.searchQuery instanceof GenericPhpQuery)
@@ -169,7 +178,7 @@ public class WebsiteImageListMaker
                             FileWriter writer = new FileWriter(
                                     new File(filename));
                             for (int i = 0; i < columnNames.size(); i++)
-                                writer.write(columnNames.get(i) + " ");
+                                writer.write(columnNames.get(i) + ", ");
                             writer.write(System.lineSeparator());
 
                             List<List<Object>> result = db
@@ -177,7 +186,20 @@ public class WebsiteImageListMaker
                             for (int i = 0; i < result.size(); i++)
                             {
                                 for (int j = 0; j < result.get(i).size(); j++)
-                                    writer.write(String.valueOf(result.get(i).get(j))+" ");
+                                {
+                                    if (j == 1) { // file name
+                                        // TODO write full path instead of just file name??
+                                        writer.write("/project/nearsdc/data" + genericQuery.getDataPath() + "/"+ String.valueOf(result.get(i).get(j)) + ", ");
+                                    }
+                                    else if (j == 2 || j == 3) { // start time / stop time
+                                        // TODO format datetime correctly
+                                        Date dt = new Date(Long.parseLong(String.valueOf(result.get(i).get(j))));
+                                        writer.write(sdf.format(dt) + ", ");
+                                    }
+                                    else {
+                                        writer.write(String.valueOf(result.get(i).get(j))+", ");
+                                    }
+                                }
                                 writer.write(System.lineSeparator());
                             }
                             writer.close();

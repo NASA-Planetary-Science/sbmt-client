@@ -21,7 +21,7 @@ public class SbmtSplash extends JWindow
         ImageIcon splashImage;
 
         //            splashImage = ImageIO.read(new File(imageDir, splashImageName));
-        splashImage = new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/splashLogo.png"));
+        splashImage = new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/" + splashImageName));
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 

@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.VtkDataTypes;
@@ -23,7 +23,7 @@ public class ColoringImageMapGenerator
         System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
 
-        SmallBodyViewConfig smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelAuthor.THOMAS);
+        SmallBodyViewConfig smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelType.THOMAS);
         SmallBodyModel model = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
         vtkImageData slopeImage = new vtkImageData();

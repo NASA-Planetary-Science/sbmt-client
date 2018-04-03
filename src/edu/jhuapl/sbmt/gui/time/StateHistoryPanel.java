@@ -44,9 +44,10 @@ import javax.swing.table.DefaultTableModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
-import edu.jhuapl.saavtk.gui.jogl.vtksbmtJoglCanvas;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
+
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -56,13 +57,14 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.time.StateHistoryImporterDialog.RunInfo;
+import edu.jhuapl.sbmt.gui.time.version2.IStateHistoryPanel;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 
 
-public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener
+public class StateHistoryPanel extends javax.swing.JPanel implements ItemListener, IStateHistoryPanel
 {
 
     private ModelManager modelManager;
@@ -97,7 +99,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
     private TimeControlPane timeControlPane;
 
     private Renderer renderer;
-    private vtksbmtJoglCanvas renWin;
+    private vtkJoglPanelComponent renWin;
 
     /** Creates new form CustomImageLoaderPanel */
     public StateHistoryPanel(
@@ -244,7 +246,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         //
 
         // Calculate the beginning and end of available time
-        path = FileCache.getFileFromServer(config.timeHistoryFile);
+        try {
+            path = FileCache.getFileFromServer(config.timeHistoryFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // get range of available dates
         DateTime start = ISODateTimeFormat.dateTimeParser().parseDateTime(readString(lineLength));//oldDate.parse(currentRun.getIntervalTime()[0]);
@@ -285,7 +291,7 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         gbc_panel.gridy = 1;
         add(panel, gbc_panel);
         GridBagLayout gbl_panel = new GridBagLayout();
-        gbl_panel.columnWidths = new int[]{96, 234, 329, 0};
+        gbl_panel.columnWidths = new int[]{96, 102, 329, 0};
         gbl_panel.rowHeights = new int[]{0, 25, 0, 0};
         gbl_panel.columnWeights = new double[]{1.0, 0.0, 1.0, Double.MIN_VALUE};
         gbl_panel.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -294,42 +300,43 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         lblStartLabel = new JLabel("Start Time:");
         GridBagConstraints gbc_lblStartLabel = new GridBagConstraints();
         gbc_lblStartLabel.insets = new Insets(0, 0, 5, 5);
-        gbc_lblStartLabel.gridx = 0;
+        gbc_lblStartLabel.gridx = 1;
         gbc_lblStartLabel.gridy = 0;
         panel.add(lblStartLabel, gbc_lblStartLabel);
         startTime = new JSpinner();
         GridBagConstraints gbc_startTime = new GridBagConstraints();
         gbc_startTime.fill = GridBagConstraints.HORIZONTAL;
-        gbc_startTime.insets = new Insets(0, 0, 5, 5);
-        gbc_startTime.gridx = 1;
+        gbc_startTime.insets = new Insets(0, 0, 5, 0);
+        gbc_startTime.gridx = 2;
         gbc_startTime.gridy = 0;
         panel.add(startTime, gbc_startTime);
 
-        startTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newStart.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
-        startTime.setEditor(new javax.swing.JSpinner.DateEditor(startTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
-        startTime.setMinimumSize(new java.awt.Dimension(36, 22));
-        startTime.setPreferredSize(new java.awt.Dimension(200, 28));
+                startTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newStart.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
+                startTime.setEditor(new javax.swing.JSpinner.DateEditor(startTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
+                startTime.setMinimumSize(new java.awt.Dimension(36, 22));
+                startTime.setPreferredSize(new java.awt.Dimension(200, 28));
 
         lblStop = new JLabel("Stop Time:");
         GridBagConstraints gbc_lblStop = new GridBagConstraints();
         gbc_lblStop.insets = new Insets(0, 0, 5, 5);
-        gbc_lblStop.gridx = 0;
+        gbc_lblStop.gridx = 1;
         gbc_lblStop.gridy = 1;
         panel.add(lblStop, gbc_lblStop);
         endTime = new JSpinner();
         GridBagConstraints gbc_endTime = new GridBagConstraints();
         gbc_endTime.fill = GridBagConstraints.HORIZONTAL;
-        gbc_endTime.insets = new Insets(0, 0, 5, 5);
-        gbc_endTime.gridx = 1;
+        gbc_endTime.insets = new Insets(0, 0, 5, 0);
+        gbc_endTime.gridx = 2;
         gbc_endTime.gridy = 1;
         panel.add(endTime, gbc_endTime);
 
-        endTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newEnd.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
-        endTime.setEditor(new javax.swing.JSpinner.DateEditor(endTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
-        endTime.setMinimumSize(new java.awt.Dimension(36, 22));
-        endTime.setPreferredSize(new java.awt.Dimension(200, 28));
+                endTime.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(newEnd.getTime()), null, null, java.util.Calendar.DAY_OF_MONTH));
+                endTime.setEditor(new javax.swing.JSpinner.DateEditor(endTime, "yyyy-MMM-dd HH:mm:ss.SSS"));
+                endTime.setMinimumSize(new java.awt.Dimension(36, 22));
+                endTime.setPreferredSize(new java.awt.Dimension(200, 28));
         getQueryButton = new JButton("Get Interval");
         GridBagConstraints gbc_getQueryButton = new GridBagConstraints();
+        gbc_getQueryButton.gridwidth = 2;
         gbc_getQueryButton.insets = new Insets(0, 0, 0, 5);
         gbc_getQueryButton.fill = GridBagConstraints.HORIZONTAL;
         gbc_getQueryButton.gridx = 1;
@@ -577,6 +584,8 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
         }
 
     }
+
+    public JPanel getView() { return this; }
 
     //
     // used to set the time for the slider and its time fraction.

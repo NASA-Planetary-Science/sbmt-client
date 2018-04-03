@@ -55,7 +55,7 @@ public class Authenticator
 
         if (username != null && password != null)
         {
-            Configuration.setupPasswordAuthentication(username, password);
+            Configuration.setupPasswordAuthentication(username, password.toCharArray());
         }
         else
         {

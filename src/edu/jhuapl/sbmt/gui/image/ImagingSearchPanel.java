@@ -50,8 +50,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import nom.tam.fits.FitsException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -60,8 +58,8 @@ import com.jidesoft.swing.CheckBoxTree;
 import vtk.vtkActor;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -94,6 +92,8 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
+import nom.tam.fits.FitsException;
+
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
@@ -122,6 +122,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private ImagePopupMenu imagePopupMenu;
     private ColorImagePopupMenu colorImagePopupMenu;
     private ImageCubePopupMenu imageCubePopupMenu;
+    private boolean enableGallery;
 
     public int getCurrentSlice() { return 0; }
 
@@ -187,6 +188,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             viewResultsGalleryButton.setVisible(false);
         }
+        else
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery);
+        }
 
 //        // XXX: Mike Z's defaults for testing off-limb plane generation
         //searchByFilenameCheckBox.setSelected(true);
@@ -195,6 +200,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         // Setup hierarchical image search
         initHierarchicalImageSearch();
+
+        final List<List<String>> emptyList = new ArrayList<>();
+        setImageResults(emptyList);
 
         return this;
     }
@@ -307,7 +315,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         resultList.getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
         resultList.addMouseListener(this);
         resultList.getModel().addTableModelListener(this);
+        resultList.getSelectionModel().addListSelectionListener(this);
 
+        enableGallery = instrument.searchQuery.getGalleryPath() != null;
         ImageSource imageSources[] = instrument.searchImageSources;
         DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
@@ -556,66 +566,77 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         images.removePropertyChangeListener(this);
         boundaries.removePropertyChangeListener(this);
 
-        int[] widths = new int[resultList.getColumnCount()];
-        int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
-
-        // add the results to the list
-        ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
-        int i=0;
-        for (List<String> str : results)
+        try
         {
-            Date dt = new Date(Long.parseLong(str.get(1)));
+            int[] widths = new int[resultList.getColumnCount()];
+            int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
 
-            String name = imageRawResults.get(i).get(0);
+            // add the results to the list
+            ((DefaultTableModel)resultList.getModel()).setRowCount(results.size());
+            int i=0;
+            for (List<String> str : results)
+            {
+                Date dt = new Date(Long.parseLong(str.get(1)));
+
+                String name = imageRawResults.get(i).get(0);
 //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            if (images.containsImage(key))
-            {
-                resultList.setValueAt(true, i, mapColumnIndex);
-                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                if (images.containsImage(key))
+                {
+                    resultList.setValueAt(true, i, mapColumnIndex);
+                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+                    resultList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+                    resultList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+                }
+                else
+                {
+                    resultList.setValueAt(false, i, mapColumnIndex);
+                    resultList.setValueAt(false, i, showFootprintColumnIndex);
+                    resultList.setValueAt(false, i, frusColumnIndex);
+                }
+
+
+                if (boundaries.containsBoundary(key))
+                    resultList.setValueAt(true, i, bndrColumnIndex);
+                else
+                    resultList.setValueAt(false, i, bndrColumnIndex);
+
+                resultList.setValueAt(i+1, i, idColumnIndex);
+                resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                resultList.setValueAt(sdf.format(dt), i, dateColumnIndex);
+
+                for (int j : columnsNeedingARenderer)
+                {
+                    TableCellRenderer renderer = resultList.getCellRenderer(i, j);
+                    Component comp = resultList.prepareRenderer(renderer, i, j);
+                    widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
+                }
+
+                ++i;
             }
-            else
-            {
-                resultList.setValueAt(false, i, mapColumnIndex);
-                resultList.setValueAt(false, i, showFootprintColumnIndex);
-                resultList.setValueAt(false, i, frusColumnIndex);
-            }
-
-
-            if (boundaries.containsBoundary(key))
-                resultList.setValueAt(true, i, bndrColumnIndex);
-            else
-                resultList.setValueAt(false, i, bndrColumnIndex);
-
-            resultList.setValueAt(i+1, i, idColumnIndex);
-            resultList.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-            resultList.setValueAt(sdf.format(dt), i, dateColumnIndex);
 
             for (int j : columnsNeedingARenderer)
-            {
-                TableCellRenderer renderer = resultList.getCellRenderer(i, j);
-                Component comp = resultList.prepareRenderer(renderer, i, j);
-                widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
-            }
+                resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
 
-            ++i;
+            boolean enablePostSearchButtons = resultList.getModel().getRowCount() > 0;
+            saveImageListButton.setEnabled(enablePostSearchButtons);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
+            viewResultsGalleryButton.setEnabled(enableGallery && enablePostSearchButtons);
+        }
+        finally
+        {
+            resultList.getModel().addTableModelListener(this);
+            images.addPropertyChangeListener(this);
+            boundaries.addPropertyChangeListener(this);
         }
 
-        for (int j : columnsNeedingARenderer)
-            resultList.getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
-
-        resultList.getModel().addTableModelListener(this);
-        images.addPropertyChangeListener(this);
-        boundaries.addPropertyChangeListener(this);
 
         // Show the first set of boundaries
         this.resultIntervalCurrentlyShown = new IdPair(0, Integer.parseInt((String)this.numberOfBoundariesComboBox.getSelectedItem()));
         this.showImageBoundaries(resultIntervalCurrentlyShown);
 
         // Enable or disable the image gallery button
-        viewResultsGalleryButton.setEnabled(!results.isEmpty());
+        viewResultsGalleryButton.setEnabled(enableGallery && !results.isEmpty());
     }
 
 
@@ -908,8 +929,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-        // TODO Auto-generated method stub
-
+        if (!e.getValueIsAdjusting())
+        {
+            viewResultsGalleryButton.setEnabled(enableGallery && resultList.getSelectedRowCount() > 0);
+        }
     }
 
 
@@ -1203,7 +1226,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel1.add(sourceComboBox, gridBagConstraints);
 
-        excludeGaskellCheckBox.setText("Exclude Gaskell derived");
+        excludeGaskellCheckBox.setText("Exclude SPC-Derived");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -2698,7 +2721,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
                         cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL : ImageSource.SPICE,
+                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
                         hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
@@ -2765,6 +2788,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                 String nl = System.getProperty("line.separator");
+                out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
                 int size = imageRawResults.size();
                 for (int i=0; i<size; ++i)
                 {
@@ -2772,7 +2796,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(i).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
                 }
 
                 out.close();
@@ -2803,20 +2827,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
                 for (int i=0; i<lines.size(); ++i)
                 {
+                    if (lines.get(i).startsWith("#")) continue;
                     String[] words = lines.get(i).trim().split("\\s+");
                     List<String> result = new ArrayList<String>();
                     String name = instrument.searchQuery.getDataPath() + "/" + words[0];
                     result.add(name);
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
-                    if(instrument.searchQuery.getGalleryPath() == null)
-                    {
-                        result.add(null);
-                    }
-                    else
-                    {
-                        result.add(instrument.searchQuery.getGalleryPath() + "/" + words[0]);
-                    }
                     results.add(result);
                 }
 
@@ -2837,6 +2854,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     }//GEN-LAST:event_loadImageListButtonActionPerformed
 
+
     private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSelectedImageListButtonActionPerformed
         File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
 
@@ -2851,7 +2869,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                 String nl = System.getProperty("line.separator");
-
+                out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
                 int[] selectedIndices = resultList.getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
@@ -2859,7 +2877,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(selectedIndex).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.name() + nl);
+                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
                 }
 
                 out.close();
@@ -2896,19 +2914,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         // Check if image search results are valid and nonempty
         if(imageRawResults != null)
         {
+            String dataPath = instrument.searchQuery.getDataPath();
+            String galleryPath = instrument.searchQuery.getGalleryPath();
             // Create list of gallery and preview image names based on results
             List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
             for(List<String> res : imageRawResults)
             {
-                // Third entry of result is the gallery path (or null if gallery does not exist)
-                String s = res.get(2);
-                if(s != null)
-                {
-                    // Create entry for image gallery
-                    galleryEntries.add(new ImageGalleryEntry(
-                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                        s+".jpeg", s+"-small.jpeg"));
-                }
+                String s = "/" + res.get(0).replace(dataPath, galleryPath);
+                // Create entry for image gallery
+                galleryEntries.add(new ImageGalleryEntry(
+                    res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
+                    s+".jpeg", s+"-small.jpeg"));
             }
 
             // Don't bother creating a gallery if empty
@@ -3152,11 +3168,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         public void mousePressed(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
         }
 
         public void mouseReleased(MouseEvent e)
         {
             resultsListMaybeShowPopup(e);
+            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
         }
 
 

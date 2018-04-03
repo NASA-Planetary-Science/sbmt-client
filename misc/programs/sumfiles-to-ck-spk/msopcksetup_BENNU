@@ -1,0 +1,12 @@
+\begindata
+LSK_FILE_NAME          = '/project/osiris/ola/spice/Kernels/LSK/naif0011.tls'
+SCLK_FILE_NAME         = '/project/osiris/ola/spice/Kernels/SCLK/ORX_SCLKSCET.00000.example.tsc'
+CK_TYPE                = 3
+INSTRUMENT_ID          = -64000
+REFERENCE_FRAME_NAME   = 'IAU_BENNU'
+ANGULAR_RATE_PRESENT   = 'MAKE UP/NO AVERAGING'
+INPUT_TIME_TYPE        = 'UTC'
+INPUT_DATA_TYPE        = 'MATRICES'
+PRODUCER_ID            = 'JHUAPL'
+COMMENTS_FILE_NAME     = 'ck_comments.txt'
+\begintext

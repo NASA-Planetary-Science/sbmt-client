@@ -7,7 +7,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -21,7 +21,7 @@ import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
  * application instance. This class is also used when creating (to know which tabs
  * to create).
  */
-public class BodyViewConfig extends ViewConfig
+public abstract class BodyViewConfig extends ViewConfig
 {
     public String rootDirOnServer;
     protected String shapeModelFileBaseName = "shape/shape";
@@ -107,7 +107,7 @@ public class BodyViewConfig extends ViewConfig
     // Additional variables not inherited from parent
     //
 
-    public ShapeModelType type; // e.g. asteroid, comet, satellite
+    public BodyType type; // e.g. asteroid, comet, satellite
     public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
     public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
 
@@ -116,10 +116,11 @@ public class BodyViewConfig extends ViewConfig
 
     public SpectralInstrument[] spectralInstruments = {};
 
+    @Override
     public String getUniqueName()
     {
-        if (ShapeModelAuthor.CUSTOM == author)
-            return author + "/" + customName;
+        if (ShapeModelType.CUSTOM == author)
+            return author + "/" + modelLabel;
         else if (author != null)
         {
             if (version == null)
@@ -134,8 +135,8 @@ public class BodyViewConfig extends ViewConfig
     @Override
     public String getShapeModelName()
     {
-        if (author == ShapeModelAuthor.CUSTOM)
-            return customName;
+        if (author == ShapeModelType.CUSTOM)
+            return modelLabel;
         else
         {
             String ver = "";
@@ -165,30 +166,6 @@ public class BodyViewConfig extends ViewConfig
         return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
     }
 
-    @Override
-    public String getPathRepresentation()
-    {
-        if (ShapeModelAuthor.CUSTOM == author)
-        {
-            return ShapeModelAuthor.CUSTOM + " > " + customName;
-        }
-        else
-        {
-            String path = type.str;
-            if (population != null)
-                path += " > " + population;
-            path += " > " + body;
-            if (dataUsed != null)
-                path += " > " + dataUsed;
-            if (author != null)
-                path += " > " + author;
-            if (version != null)
-                path += " (" + version + ")";
-            return path;
-        }
-    }
-
-//
     // methods
     //
      /**
@@ -291,7 +268,7 @@ public class BodyViewConfig extends ViewConfig
             c.lidarBrowseBinaryRecordSize = this.lidarBrowseBinaryRecordSize;
             c.lidarOffsetScale = this.lidarOffsetScale;
         }
-        c.customName = this.customName;
+        c.modelLabel = this.modelLabel;
         c.customTemporary = this.customTemporary;
 
         return c;

@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import edu.jhuapl.sbmt.model.image.BasicFileReader;
 
@@ -25,16 +24,21 @@ public class OTESSpectrumReader extends BasicFileReader
     {
         try
         {
-            calibratedRadiance=new double[349];
+            calibratedRadiance=new double[OTES.bandCenters.length];
             DataInputStream stream=new DataInputStream(new FileInputStream(new File(filename)));
-            byte[] sourceFileNameBytes=new byte[36];
+            byte[] sourceFileNameBytes=new byte[36];    // Ray stores the filename as 36 bytes at the beginning of the header
             stream.readFully(sourceFileNameBytes);
             sourceFileName=new String(sourceFileNameBytes);
             et=stream.readDouble();
-            byte[] data=new byte[OTES.bandCenters.length*Double.BYTES];
-            stream.readFully(data);
-            ByteBuffer buffer=ByteBuffer.wrap(data);
-            buffer.asDoubleBuffer().get(calibratedRadiance);
+            //byte[] data=new byte[OTES.bandCenters.length*Double.BYTES];
+            //stream.readFully(data);
+            //ByteBuffer buffer=ByteBuffer.wrap(data);
+            //buffer.asDoubleBuffer().get(calibratedRadiance);
+            //for (int i=0; i<calibratedRadiance.length; i++)
+            //    System.out.println(i+" "+OTES.bandCenters[i]+" "+calibratedRadiance[i]);
+            for (int i=0; i<OTES.bandCenters.length; i++)
+                calibratedRadiance[i]=stream.readDouble();
+
             stream.close();
         }
         catch (IOException e)

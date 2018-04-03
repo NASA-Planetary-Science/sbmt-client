@@ -43,8 +43,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import nom.tam.fits.FitsException;
-
 import com.google.common.io.Files;
 
 import vtk.vtkActor;
@@ -53,7 +51,7 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -80,6 +78,8 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
+
+import nom.tam.fits.FitsException;
 
 
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
@@ -177,6 +177,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     protected void initExtraComponents()
     {
         imageList.setModel(new DefaultListModel());
+
     }
 
     public CustomImagesPanel init()
@@ -228,6 +229,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
     protected void populateMonochromePanel(JPanel panel)
     {
         panel.setLayout(new BorderLayout());
+
+
+
         bandPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         bandPanel.add(new JLabel("Band:"));
         int midband = (nbands-1) / 2;
@@ -248,7 +252,10 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 //        bandPanel.add(defaultFrustum);
 
         panel.add(bandPanel, BorderLayout.NORTH);
-        panel.add(monoSlider, BorderLayout.SOUTH);
+        panel.add(monoSlider, BorderLayout.CENTER);
+
+
+
     }
 
     private void setNumberOfBands(int nbands)
@@ -288,6 +295,8 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
 
     private void postInitComponents(ImagingInstrument instrument)
     {
+
+
     }
 
 

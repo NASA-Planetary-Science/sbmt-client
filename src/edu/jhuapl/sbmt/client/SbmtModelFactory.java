@@ -5,17 +5,19 @@ import java.util.HashMap;
 
 import org.joda.time.DateTime;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelAuthor;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
+import edu.jhuapl.sbmt.model.bennu.MapCamV4Image;
 import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
+import edu.jhuapl.sbmt.model.bennu.PolyCamV4Image;
 import edu.jhuapl.sbmt.model.bennu.SamCamEarthImage;
 import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
@@ -40,6 +42,8 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
+import edu.jhuapl.sbmt.model.lidar.LaserLidarBrowseDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
@@ -53,10 +57,10 @@ import edu.jhuapl.sbmt.model.rosetta.Lutetia;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.ryugu.ONCImage;
 import edu.jhuapl.sbmt.model.ryugu.ONCTruthImage;
+import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
@@ -145,6 +149,10 @@ public class SbmtModelFactory
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_V4_IMAGE)
+                    return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_V4_IMAGE)
+                    return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
                     return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
@@ -155,6 +163,8 @@ public class SbmtModelFactory
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_IMAGE)
                     return new ONCImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.TIR_IMAGE)
+                    return new TIRImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
                 else
@@ -210,11 +220,16 @@ public class SbmtModelFactory
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
     {
-        ShapeModelBody name = config.body;
-        ShapeModelAuthor author = config.author;
+        if (!config.isAccessible())
+        {
+            throw new RuntimeException("Unable to access data for model " + config.getUniqueName());
+        }
 
-        if (ShapeModelAuthor.GASKELL == author ||
-                (ShapeModelAuthor.EXPERIMENTAL == author && ShapeModelBody.DEIMOS != name))
+        ShapeModelBody name = config.body;
+        ShapeModelType author = config.author;
+
+        if (ShapeModelType.GASKELL == author ||
+                ((ShapeModelType.EXPERIMENTAL == author || ShapeModelType.BLENDER == author) && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
                 return new Eros(config);
@@ -257,24 +272,24 @@ public class SbmtModelFactory
                 return new SimpleSmallBody(config, names, paths);
             }
         }
-        else if (ShapeModelAuthor.THOMAS == author)
+        else if (ShapeModelType.THOMAS == author)
         {
             if (ShapeModelBody.EROS == name)
                 return new ErosThomas(config);
             else if (ShapeModelBody.VESTA == name)
                 return new VestaOld(config);
         }
-        else if (ShapeModelAuthor.JORDA == author)
+        else if (ShapeModelType.JORDA == author)
         {
             if (ShapeModelBody.LUTETIA == name)
                 return new Lutetia(config);
         }
-        else if (ShapeModelAuthor.DLR == author)
+        else if (ShapeModelType.DLR == author)
         {
             if (ShapeModelBody._67P == name)
                 return new CG(config);
         }
-        else if (ShapeModelAuthor.CUSTOM == author)
+        else if (ShapeModelType.CUSTOM == author)
         {
             return new CustomShapeModel(config);
         }
@@ -290,9 +305,9 @@ public class SbmtModelFactory
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
         SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
-        ShapeModelAuthor author = config.author;
+        ShapeModelType author = config.author;
 
-        if (ShapeModelAuthor.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
+        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
         {
             String[] graticulePaths = new String[]{
                     config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
@@ -303,7 +318,7 @@ public class SbmtModelFactory
 
             return new Graticule(smallBodyModel, graticulePaths);
         }
-        else if (ShapeModelAuthor.CUSTOM == author && !config.customTemporary)
+        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
         {
             return new CustomGraticule(smallBodyModel);
         }
@@ -316,27 +331,46 @@ public class SbmtModelFactory
         return new LineamentModel();
     }
 
-    static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel, SpectralInstrument instrument)
+    static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel)
     {
         ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
-        ShapeModelAuthor author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
         String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
 
-        return new SpectraCollection(smallBodyModel, instrument);
+        return new SpectraCollection(smallBodyModel);
     }
 
     static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
-        models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
+        if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName==Instrument.LASER)
+        {
+            models.put(ModelNames.LIDAR_BROWSE, new LaserLidarBrowseDataCollection(smallBodyModel));
+        }
+        else
+        {
+            models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
+        }
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
         {
-            if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.MOLA))
+            switch (smallBodyModel.getSmallBodyConfig().lidarInstrumentName)
+            {
+            case MOLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
-            else if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName.equals(Instrument.OLA))
+                break;
+            case OLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                break;
+            case LASER:
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LaserLidarHyperTreeSearchDataCollection(smallBodyModel));
+                break;
+                default:
+                	throw new AssertionError();
+            }
+
+
         }
 
         return models;

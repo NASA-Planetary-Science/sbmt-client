@@ -120,7 +120,7 @@ public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okayButtonActionPerformed
-     /*   success = NISSpectrum.testUserDefinedDerivedParameter(functionTextField.getText());
+        success = spectrumMath.testUserDefinedDerivedParameter(functionTextField.getText());
         if (success)
         {
             setVisible(false);
@@ -128,7 +128,7 @@ public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
         else
         {
             invalidFunctionLabel.setText("The formula is invalid.");
-        }*/
+        }
     }//GEN-LAST:event_okayButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed

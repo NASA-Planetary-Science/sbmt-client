@@ -25,9 +25,9 @@ import vtk.vtkActor;
 import vtk.vtkIdTypeArray;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.illum.IlluminationField;
 import edu.jhuapl.saavtk.illum.PolyhedralModelIlluminator;
 import edu.jhuapl.saavtk.illum.UniformIlluminationField;
@@ -41,6 +41,7 @@ import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 
 
@@ -65,6 +66,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     ComputeStatisticsTask task;
     JProgressBar statisticsProgressBar=new JProgressBar(0,100);
+
+    SpectrumSearchPanel searchPanel;
+
+    public void setSearchPanel(SpectrumSearchPanel searchPanel)
+    {
+        this.searchPanel=searchPanel;
+    }
 
     /**
      *
@@ -172,8 +180,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         }
     }
 
+    SpectralInstrument instrument;
 
 
+    public void setInstrument(SpectralInstrument instrument)
+    {
+        this.instrument=instrument;
+    }
 
     private class ShowRemoveIn3DAction extends AbstractAction
     {
@@ -183,15 +196,20 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
-                    model.addSpectrum(currentSpectrum);
+                {
+                    model.addSpectrum(currentSpectrum, instrument);
+                    if (searchPanel!=null)
+                        searchPanel.updateColoring();
+
+                }
                 else
                     model.removeSpectrum(currentSpectrum);
-
-                updateMenuItems();
             }
             catch (IOException e1) {
                 e1.printStackTrace();
             }
+
+
         }
     }
 
@@ -202,9 +220,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 infoPanelManager.addData(model.getSpectrum(currentSpectrum));
-
                 updateMenuItems();
             }
             catch (IOException e1) {
@@ -334,7 +351,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
@@ -357,7 +374,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowOutline(showOutlineMenuItem.isSelected());
@@ -379,7 +396,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 spectrum.setShowToSunVector(showToSunVectorMenuItem.isSelected());
@@ -401,7 +418,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 renderer.setLighting(LightingType.FIXEDLIGHT);
@@ -427,7 +444,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             try
             {
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-                model.addSpectrum(currentSpectrum);
+                model.addSpectrum(currentSpectrum, instrument);
                 Spectrum spectrum = model.getSpectrum(currentSpectrum);
 
                 String name = new File(spectrum.getFullPath()).getName();
