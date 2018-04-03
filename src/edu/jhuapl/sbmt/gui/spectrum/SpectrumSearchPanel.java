@@ -10,6 +10,8 @@
  */
 package edu.jhuapl.sbmt.gui.spectrum;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -24,11 +26,17 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -98,6 +106,30 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         renderer.addKeyListener(this);
         this.renderer=renderer;
 
+
+        resultList.setCellRenderer(new MyListCellRenderer());
+
+        resultList.addListSelectionListener(new ListSelectionListener()
+        {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (e.getValueIsAdjusting())
+                    return;
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    Spectrum spectrum=model.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                    if (spectrum == null)
+                        continue;
+                    if (resultList.isSelectedIndex(i))
+                        model.select(spectrum);
+                    else
+                        model.deselect(spectrum);
+                }
+            }
+        });
 
     }
 
@@ -250,7 +282,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         if (e.getKeyChar()=='a')
         {
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            renderer.removeKeyListener(this);
             model.toggleSelectAll();
+            renderer.addKeyListener(this);
         }
         else if (e.getKeyChar()=='s')
         {
@@ -306,7 +340,6 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             model.setOffset(model.getOffset()+body.getBoundingBoxDiagonalLength()/50);
-            System.out.println(model.getOffset());
         }
         else if (e.getKeyChar()=='-')
         {
@@ -422,8 +455,11 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                     new double[]{redMinVal, greenMinVal, blueMinVal},
                     new double[]{redMaxVal, greenMaxVal, blueMaxVal});
         }
-    }
 
+
+
+    }
+    PickEvent lastPickEvent=null;
 
     @Override
     public void propertyChange(PropertyChangeEvent evt)
@@ -431,16 +467,46 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
+
+
             Model model = modelManager.getModel(e.getPickedProp());
             if (model instanceof SpectraCollection)
             {
                 SpectraCollection coll=(SpectraCollection)model;
-                MouseEvent event=e.getMouseEvent();
-                if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
+                String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                Spectrum spectrum=coll.getSpectrum(name);
+                if (spectrum==null)
+                    return;
+                //MouseEvent event=e.getMouseEvent();
+                //if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
+                //{
+                //    String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                //    coll.toggleSelect(coll.getSpectrum(name));
+               // }
+
+                resultList.getSelectionModel().clearSelection();
+                for (int i=0; i<resultList.getModel().getSize(); i++)
                 {
-                    String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
-                    coll.toggleSelect(coll.getSpectrum(name));
+                    if (FilenameUtils.getBaseName(name).equals(resultList.getModel().getElementAt(i)))
+                    {
+                        resultList.getSelectionModel().setSelectionInterval(i, i);
+                        resultList.ensureIndexIsVisible(i);
+                        coll.select(coll.getSpectrum(name));//.setShowOutline(true);
+                    }
                 }
+
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    if (!resultList.getSelectionModel().isSelectedIndex(i))
+                    {
+                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                        if (spectrum_ != null)
+                            coll.deselect(spectrum_);
+                    }
+                }
+                resultList.repaint();
+
+
 
 /*                int idx = -1;
                 int size = imageRawResults.size();
@@ -466,8 +532,53 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                         resultList.scrollRectToVisible(cellBounds);
                 }*/
             }
+       }
+        else
+        {
+            resultList.repaint();
         }
 
+    }
+
+
+    class MyListCellRenderer extends DefaultListCellRenderer  {
+
+        public MyListCellRenderer() {
+            setOpaque(true);
+        }
+
+        public Component getListCellRendererComponent(JList paramlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            //setText(value.toString());
+            JLabel label = (JLabel) super.getListCellRendererComponent(paramlist, value, index, isSelected, cellHasFocus);
+            label.setOpaque(isSelected); // Highlight only when selected
+            if(isSelected) { // I faked a match for the second index, put you matching condition here.
+                label.setBackground(Color.YELLOW);
+                label.setEnabled(false);
+            }
+            else
+            {
+            String spectrumFile=createSpectrumName(value.toString());
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            Spectrum spectrum=model.getSpectrum(spectrumFile);
+            if (spectrum==null)
+                setForeground(Color.black);
+            else
+            {
+                double[] color=spectrum.getChannelColor();
+                for (int i=0; i<3; i++)
+                {
+                    if (color[i]>1)
+                        color[i]=1;
+                    if (color[i]<0)
+                        color[i]=0;
+                }
+                setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
+                setBackground(paramlist.getBackground());
+            }
+            }
+
+            return label;
+        }
     }
 
 
