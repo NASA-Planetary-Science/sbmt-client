@@ -78,6 +78,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
+    private static final long serialVersionUID = 1L;
     private Colorbar smallBodyColorbar;
 
 
@@ -474,6 +475,7 @@ public class SbmtView extends View implements PropertyChangeListener
         setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent e)
     {
         if (e.getPropertyName().equals(Properties.MODEL_CHANGED))
