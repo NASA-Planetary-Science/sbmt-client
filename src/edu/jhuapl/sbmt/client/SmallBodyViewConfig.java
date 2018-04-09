@@ -1322,7 +1322,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 9, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
             c.imageSearchFilterNames = new String[]{
                     "VSK, Channel 1",
                     "VSK, Channel 2",
