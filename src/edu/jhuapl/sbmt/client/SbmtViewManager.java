@@ -28,9 +28,15 @@ import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.state.State;
+import edu.jhuapl.saavtk.state.StateKey;
+import edu.jhuapl.saavtk.state.StateManager;
+import edu.jhuapl.saavtk.state.StringAttribute;
 
 public class SbmtViewManager extends ViewManager
 {
+    private static final long serialVersionUID = 1L;
+
     // These two collections are used to maintain a sorted hierarchical order for
     // small bodies.
     // A comprehensive list of all possible small bodies in canonical order. Note that this
@@ -61,17 +67,20 @@ public class SbmtViewManager extends ViewManager
     // A map of config objects to their indices in the menuEntries list.
     private final Map<ViewConfig, Integer> configMap;
 
+    private final StateManager stateManager;
+
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(statusBar, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
+        this.stateManager = createStateManager();
         setupViews(); // Must be called before this view manager is used.
     }
 
     @Override
     protected void createMenus(JMenuBar menuBar) {
-        fileMenu = new FileMenu(this);
+        fileMenu = new FileMenu(this, ImmutableList.of("sbmt"));
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
@@ -107,7 +116,7 @@ public class SbmtViewManager extends ViewManager
         ViewConfig config = view.getConfig();
         if (!config.isEnabled()) return;
         List<View> builtInViews = getBuiltInViews();
-        if (builtInViews.contains(config)) return; // View was already added.
+        if (builtInViews.contains(view)) return; // View was already added.
 
         // Ensure that this view's body has a canonical position in the master list of bodies.
         // This is important for the algorithm below, which requires all bodies to be named in SMALL_BODY_LIST.
@@ -170,6 +179,11 @@ public class SbmtViewManager extends ViewManager
         config.customTemporary = temporary;
         config.author = ShapeModelType.CUSTOM;
         return new SbmtView(statusBar, config);
+    }
+
+    @Override
+    public StateManager getStateManager() {
+        return stateManager;
     }
 
     /**
@@ -775,4 +789,36 @@ public class SbmtViewManager extends ViewManager
         }
         return builder.build();
     }
+
+    private static final StateKey<StringAttribute> CURRENT_VIEW_KEY = new StateKey<>("currentView");
+
+    private StateManager createStateManager()
+    {
+
+        return new StateManager() {
+
+            @Override
+            public State getState()
+            {
+                State state = State.of();
+                View currentView = getCurrentView();
+
+                state.put(CURRENT_VIEW_KEY, new StringAttribute(currentView.getUniqueName()));
+                return state;
+            }
+
+            @Override
+            public void setState(State state)
+            {
+                try {
+                    String uniqueName = state.get(CURRENT_VIEW_KEY).get();
+                    setCurrentView(getView(uniqueName));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        };
+    }
+
 }
