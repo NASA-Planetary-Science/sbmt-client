@@ -789,7 +789,7 @@ public class SbmtViewManager extends ViewManager
         return builder.build();
     }
 
-    private static final StateKey<String> CURRENT_VIEW_KEY = new StateKey<>("currentView");
+    private static final StateKey<String> CURRENT_VIEW_KEY = StateKey.ofString("currentView");
 
     private StateManager createStateManager()
     {
