@@ -31,7 +31,6 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.state.State;
 import edu.jhuapl.saavtk.state.StateKey;
 import edu.jhuapl.saavtk.state.StateManager;
-import edu.jhuapl.saavtk.state.StringAttribute;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -790,7 +789,7 @@ public class SbmtViewManager extends ViewManager
         return builder.build();
     }
 
-    private static final StateKey<StringAttribute> CURRENT_VIEW_KEY = new StateKey<>("currentView");
+    private static final StateKey<String> CURRENT_VIEW_KEY = new StateKey<>("currentView");
 
     private StateManager createStateManager()
     {
@@ -803,7 +802,7 @@ public class SbmtViewManager extends ViewManager
                 State state = State.of();
                 View currentView = getCurrentView();
 
-                state.put(CURRENT_VIEW_KEY, new StringAttribute(currentView.getUniqueName()));
+                state.put(CURRENT_VIEW_KEY, currentView.getUniqueName());
                 return state;
             }
 
@@ -811,7 +810,7 @@ public class SbmtViewManager extends ViewManager
             public void setState(State state)
             {
                 try {
-                    String uniqueName = state.get(CURRENT_VIEW_KEY).get();
+                    String uniqueName = state.get(CURRENT_VIEW_KEY);
                     setCurrentView(getView(uniqueName));
                 } catch (Exception e) {
                     e.printStackTrace();
