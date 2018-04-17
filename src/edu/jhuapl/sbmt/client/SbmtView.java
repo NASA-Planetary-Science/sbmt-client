@@ -498,10 +498,6 @@ public class SbmtView extends View implements PropertyChangeListener
                 {
                     title += " (" + units + ")";
                 }
-                if (title.length() > 16)
-                {
-                    title = title.replaceAll("\\s+", "\n");
-                }
                 smallBodyColorbar.setTitle(title);
                 if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
                     renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
