@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
-import org.apache.commons.io.FileUtils;
-
 import vtk.vtkJavaGarbageCollector;
 import vtk.vtkNativeLibrary;
 
@@ -87,7 +85,7 @@ public class SbmtRunnable implements Runnable
             writeStartupMessage(mission, redirectStreams);
             if (clearCache)
             {
-                clearCache();
+                Configuration.clearCache();
             }
             SmallBodyViewConfig.initialize();
             configureMissionBodies(mission);
@@ -146,27 +144,6 @@ public class SbmtRunnable implements Runnable
             if (exitOnError)
             {
                 System.exit(1);
-            }
-        }
-    }
-
-    protected void clearCache()
-    {
-        String cacheDir = Configuration.getCacheDir();
-        if (cacheDir != null)
-        {
-            System.err.println("Clearing the cache for all models in the directory " + cacheDir);
-            File file = new File(cacheDir);
-            if (file.exists())
-            {
-                try
-                {
-                    FileUtils.deleteDirectory(file);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
             }
         }
     }
