@@ -20,7 +20,7 @@ public class TrackPanel extends LidarSearchPanel
         super(polyhedralModelConfig, modelManager, pickManager, renderer);
         hideSearchControls();
 
-        if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"));
+        if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"))
             fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OLA Level 2", "Text" }));
 
     }
