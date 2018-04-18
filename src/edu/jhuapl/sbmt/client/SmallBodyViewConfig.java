@@ -1310,8 +1310,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
-                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
+                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -1322,30 +1322,30 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-//            c.imageSearchFilterNames = new String[]{
-//                    "VSK, Channel 1",
-//                    "VSK, Channel 2",
-//                    "VSK, Channel 3",
-//                    "VIS, Blue",
-//                    "VIS, Minus Blue",
-//                    "VIS, Violet",
-//                    "VIS, Clear",
-//                    "VIS, Green",
-//                    "VIS, Red",
-//            };
-//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-//                    "Phobos 2",
-//                    "Viking Orbiter 1-A",
-//                    "Viking Orbiter 1-B",
-//                    "Viking Orbiter 2-A",
-//                    "Viking Orbiter 2-B",
-//                    "MEX HRSC",
-//                    "MRO HiRISE",
-//                    "MGS MOC"
-//            };
-//            c.hasHierarchicalImageSearch = true;
-//            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VSK, Channel 1",
+                    "VSK, Channel 2",
+                    "VSK, Channel 3",
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                    "Phobos 2",
+                    "Viking Orbiter 1-A",
+                    "Viking Orbiter 1-B",
+                    "Viking Orbiter 2-A",
+                    "Viking Orbiter 2-B",
+                    "MEX HRSC",
+                    "MRO HiRISE",
+                    "MGS MOC"
+            };
+            c.hasHierarchicalImageSearch = true;
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
