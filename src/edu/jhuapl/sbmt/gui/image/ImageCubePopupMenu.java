@@ -15,9 +15,13 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.FilenameUtils;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
@@ -34,7 +38,10 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -61,7 +68,10 @@ public class ImageCubePopupMenu extends PopupMenu
     private JMenuItem saveBackplanesMenuItem;
     private JMenuItem centerImageMenuItem;
     private JMenuItem showFrustumMenuItem;
-    private JMenuItem exportENVIImageMenuItem;
+
+    private JMenuItem exportPerspectiveENVIImageMenuItem;
+    private JMenuItem exportCylindricalENVIImageMenuItem;
+
     private JMenuItem exportInfofileMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JMenuItem simulateLightingMenuItem;
@@ -77,20 +87,19 @@ public class ImageCubePopupMenu extends PopupMenu
     /**
      *
      * @param modelManager
-     * @param type the type of popup. 0 for right clicks on items in the search list,
-     * 1 for right clicks on boundaries mapped on the small body, 2 for right clicks on images
-     * mapped to the small body.
+     * @param type
+     *            the type of popup. 0 for right clicks on items in the search
+     *            list, 1 for right clicks on boundaries mapped on the small
+     *            body, 2 for right clicks on images mapped to the small body.
      */
-    public ImageCubePopupMenu(
-            ImageCubeCollection imageCollection,
+    public ImageCubePopupMenu(ImageCubeCollection imageCollection,
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             SbmtInfoWindowManager infoPanelManager,
-            SbmtSpectrumWindowManager spectrumPanelManager,
-            Renderer renderer,
+            SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer,
             Component invoker)
-//            ModelInfoWindowManager infoPanelManager,
-//            ModelManager modelManager,
-//            Component invoker)
+    // ModelInfoWindowManager infoPanelManager,
+    // ModelManager modelManager,
+    // Component invoker)
     {
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
@@ -123,7 +132,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
         saveToDiskMenuItem = new JMenuItem(new SaveImageAction());
         saveToDiskMenuItem.setText("Save FITS Image...");
-//        this.add(saveToDiskMenuItem);
+        // this.add(saveToDiskMenuItem);
 
         saveBackplanesMenuItem = new JMenuItem(new SaveBackplanesAction());
         saveBackplanesMenuItem.setText("Generate Backplanes...");
@@ -140,15 +149,25 @@ public class ImageCubePopupMenu extends PopupMenu
         showFrustumMenuItem.setText("Show Frustum");
         this.add(showFrustumMenuItem);
 
-        exportENVIImageMenuItem = new JMenuItem(new ExportENVIImageAction()); // twupy1
-        exportENVIImageMenuItem.setText("Export ENVI Image...");
-        this.add(exportENVIImageMenuItem);
+        exportPerspectiveENVIImageMenuItem = new JMenuItem(
+                new ExportPerspectiveENVIImageAction()); // twupy1
+        exportPerspectiveENVIImageMenuItem
+                .setText("Export Perspective ENVI Image...");
+        this.add(exportPerspectiveENVIImageMenuItem);
 
-        exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
+        exportCylindricalENVIImageMenuItem = new JMenuItem(
+                new ExportCylindricalENVIImageAction()); // zimmemi1, bitches!
+        exportCylindricalENVIImageMenuItem
+                .setText("Export Cylindrical ENVI Image...");
+        this.add(exportCylindricalENVIImageMenuItem);
+
+        exportInfofileMenuItem = new JCheckBoxMenuItem(
+                new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
 
-        changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
+        changeNormalOffsetMenuItem = new JMenuItem(
+                new ChangeNormalOffsetAction());
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
         this.add(changeNormalOffsetMenuItem);
 
@@ -168,9 +187,11 @@ public class ImageCubePopupMenu extends PopupMenu
         this.add(colorMenu);
         for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
         {
-            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new BoundaryColorAction(color.color()));
+            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(
+                    new BoundaryColorAction(color.color()));
             colorMenuItems.add(colorMenuItem);
-            colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
+            colorMenuItem
+                    .setText(color.toString().toLowerCase().replace('_', ' '));
             colorMenu.add(colorMenuItem);
         }
         colorMenu.addSeparator();
@@ -220,7 +241,8 @@ public class ImageCubePopupMenu extends PopupMenu
             boolean containsImage = imageCollection.containsImage(imageKey);
             boolean containsBoundary = false;
             if (imageBoundaryCollection != null)
-                containsBoundary = imageBoundaryCollection.containsBoundary(imageKey);
+                containsBoundary = imageBoundaryCollection
+                        .containsBoundary(imageKey);
 
             if (!containsBoundary)
             {
@@ -250,7 +272,8 @@ public class ImageCubePopupMenu extends PopupMenu
             if (containsImage)
             {
                 Image image = imageCollection.getImage(imageKey);
-                if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                if (!(image instanceof PerspectiveImage)
+                        || !((PerspectiveImage) image).isFrustumShowing())
                     selectShowFrustum = false;
                 if (imageKeys.size() == 1)
                     enableSimulateLighting = true;
@@ -265,7 +288,8 @@ public class ImageCubePopupMenu extends PopupMenu
                 enableHideImage = false;
             }
 
-            if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
+            if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL
+                    || imageKey.source == ImageSource.IMAGE_MAP)
             {
                 enableMapBoundary = false;
                 enableShowFrustum = false;
@@ -283,7 +307,7 @@ public class ImageCubePopupMenu extends PopupMenu
             }
             else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
             {
-//                enableSaveToDisk = false;
+                // enableSaveToDisk = false;
                 enableSaveToDisk = true;
                 enableSaveBackplanes = false;
             }
@@ -294,21 +318,24 @@ public class ImageCubePopupMenu extends PopupMenu
             HashSet<String> colors = new HashSet<String>();
             for (ImageCubeKey imageKey : imageKeys)
             {
-                int[] c = imageBoundaryCollection.getBoundary(imageKey).getBoundaryColor();
+                int[] c = imageBoundaryCollection.getBoundary(imageKey)
+                        .getBoundaryColor();
                 colors.add(c[0] + " " + c[1] + " " + c[2]);
             }
 
-            // If the boundary color equals one of the predefined colors, then check
+            // If the boundary color equals one of the predefined colors, then
+            // check
             // the corresponding menu item.
-            int[] currentColor = imageBoundaryCollection.getBoundary(imageKeys.get(0)).getBoundaryColor();
+            int[] currentColor = imageBoundaryCollection
+                    .getBoundary(imageKeys.get(0)).getBoundaryColor();
             for (JCheckBoxMenuItem item : colorMenuItems)
             {
-                BoundaryColorAction action = (BoundaryColorAction)item.getAction();
+                BoundaryColorAction action = (BoundaryColorAction) item
+                        .getAction();
                 Color color = action.color;
-                if (colors.size() == 1 &&
-                        currentColor[0] == color.getRed() &&
-                        currentColor[1] == color.getGreen() &&
-                        currentColor[2] == color.getBlue())
+                if (colors.size() == 1 && currentColor[0] == color.getRed()
+                        && currentColor[1] == color.getGreen()
+                        && currentColor[2] == color.getBlue())
                 {
                     item.setSelected(true);
                 }
@@ -332,7 +359,7 @@ public class ImageCubePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
         showFrustumMenuItem.setSelected(selectShowFrustum);
         showFrustumMenuItem.setEnabled(enableShowFrustum);
-        exportENVIImageMenuItem.setEnabled(enableSaveToDisk);
+        exportPerspectiveENVIImageMenuItem.setEnabled(enableSaveToDisk);
         simulateLightingMenuItem.setEnabled(enableSimulateLighting);
         changeOpacityMenuItem.setEnabled(enableChangeOpacity);
         hideImageMenuItem.setSelected(selectHideImage);
@@ -344,7 +371,7 @@ public class ImageCubePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-//            System.out.println("MapImageAction.actionPerformed()");
+            // System.out.println("MapImageAction.actionPerformed()");
             for (ImageCubeKey imageKey : imageKeys)
             {
                 try
@@ -354,10 +381,12 @@ public class ImageCubePopupMenu extends PopupMenu
                     else
                         imageCollection.removeImage(imageKey);
                 }
-                catch (FitsException e1) {
+                catch (FitsException e1)
+                {
                     e1.printStackTrace();
                 }
-                catch (IOException e1) {
+                catch (IOException e1)
+                {
                     e1.printStackTrace();
                 }
             }
@@ -379,10 +408,12 @@ public class ImageCubePopupMenu extends PopupMenu
                     else
                         imageBoundaryCollection.removeBoundary(imageKey);
                 }
-                catch (FitsException e1) {
+                catch (FitsException e1)
+                {
                     e1.printStackTrace();
                 }
-                catch (IOException e1) {
+                catch (IOException e1)
+                {
                     e1.printStackTrace();
                 }
             }
@@ -406,11 +437,16 @@ public class ImageCubePopupMenu extends PopupMenu
 
                 updateMenuItems();
             }
-            catch (FitsException e1) {
+            catch (FitsException e1)
+            {
                 e1.printStackTrace();
-            } catch (IOException e1) {
+            }
+            catch (IOException e1)
+            {
                 e1.printStackTrace();
-            } catch (Exception e1) {
+            }
+            catch (Exception e1)
+            {
                 e1.printStackTrace();
             }
         }
@@ -428,16 +464,23 @@ public class ImageCubePopupMenu extends PopupMenu
             {
                 imageCollection.addImage(imageKey);
                 Image image = imageCollection.getImage(imageKey);
-                if (image instanceof LEISAJupiterImage || image instanceof MVICQuadJupiterImage)
-                    spectrumPanelManager.addData(imageCollection.getImage(imageKey));
+                if (image instanceof LEISAJupiterImage
+                        || image instanceof MVICQuadJupiterImage)
+                    spectrumPanelManager
+                            .addData(imageCollection.getImage(imageKey));
 
                 updateMenuItems();
             }
-            catch (FitsException e1) {
+            catch (FitsException e1)
+            {
                 e1.printStackTrace();
-            } catch (IOException e1) {
+            }
+            catch (IOException e1)
+            {
                 e1.printStackTrace();
-            } catch (Exception e1) {
+            }
+            catch (Exception e1)
+            {
                 e1.printStackTrace();
             }
         }
@@ -455,25 +498,28 @@ public class ImageCubePopupMenu extends PopupMenu
             try
             {
                 imageCollection.addImage(imageKey);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage) imageCollection
+                        .getImage(imageKey);
                 String path = image.getFitFileFullPath();
                 String extension = path.substring(path.lastIndexOf("."));
                 String imageFileName = new File(path).getName();
 
-                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
+                file = CustomFileChooser.showSaveDialog(invoker,
+                        "Save FITS image", imageFileName, "fit");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(imageKey.name + extension);
+                    File fitFile = FileCache
+                            .getFileFromServer(imageKey.name + extension);
 
                     FileUtil.copyFile(fitFile, file);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Error Saving File", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         }
@@ -492,17 +538,22 @@ public class ImageCubePopupMenu extends PopupMenu
             double[] upVector = new double[3];
             double viewAngle = 0.0;
 
-            if (imageBoundaryCollection != null && imageBoundaryCollection.containsBoundary(imageKey))
+            if (imageBoundaryCollection != null
+                    && imageBoundaryCollection.containsBoundary(imageKey))
             {
-                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
-                boundary.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+                PerspectiveImageBoundary boundary = imageBoundaryCollection
+                        .getBoundary(imageKey);
+                boundary.getCameraOrientation(spacecraftPosition, focalPoint,
+                        upVector);
 
                 viewAngle = boundary.getImage().getMaxFovAngle();
             }
             else if (imageCollection.containsImage(imageKey))
             {
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                image.getCameraOrientation(spacecraftPosition, focalPoint, upVector);
+                PerspectiveImage image = (PerspectiveImage) imageCollection
+                        .getImage(imageKey);
+                image.getCameraOrientation(spacecraftPosition, focalPoint,
+                        upVector);
 
                 viewAngle = image.getMaxFovAngle();
             }
@@ -511,7 +562,8 @@ public class ImageCubePopupMenu extends PopupMenu
                 return;
             }
 
-            renderer.setCameraOrientation(spacecraftPosition, focalPoint, upVector, viewAngle);
+            renderer.setCameraOrientation(spacecraftPosition, focalPoint,
+                    upVector, viewAngle);
         }
     }
 
@@ -525,30 +577,34 @@ public class ImageCubePopupMenu extends PopupMenu
 
             // First generate the DDR
 
-            String defaultFilename = new File(imageKey.name + "_DDR.IMG").getName();
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", defaultFilename, "img");
+            String defaultFilename = new File(imageKey.name + "_DDR.IMG")
+                    .getName();
+            File file = CustomFileChooser.showSaveDialog(invoker,
+                    "Save Backplanes DDR", defaultFilename, "img");
 
             try
             {
                 if (file != null)
                 {
-                    OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+                    OutputStream out = new BufferedOutputStream(
+                            new FileOutputStream(file));
 
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection
+                            .getImage(imageKey);
 
                     updateMenuItems();
 
                     float[] backplanes = image.generateBackplanes();
 
                     byte[] buf = new byte[4];
-                    for (int i=0; i<backplanes.length; ++i)
+                    for (int i = 0; i < backplanes.length; ++i)
                     {
                         int v = Float.floatToIntBits(backplanes[i]);
-                        buf[0] = (byte)(v >>> 24);
-                        buf[1] = (byte)(v >>> 16);
-                        buf[2] = (byte)(v >>>  8);
-                        buf[3] = (byte)(v >>>  0);
+                        buf[0] = (byte) (v >>> 24);
+                        buf[1] = (byte) (v >>> 16);
+                        buf[2] = (byte) (v >>> 8);
+                        buf[3] = (byte) (v >>> 0);
                         out.write(buf, 0, buf.length);
                     }
 
@@ -557,34 +613,36 @@ public class ImageCubePopupMenu extends PopupMenu
             }
             catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Error Saving File", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
 
-            // Then generate the LBL file using the same filename but with a lbl extension.
+            // Then generate the LBL file using the same filename but with a lbl
+            // extension.
             // The extension is chosen to have the same case as the img file.
 
             try
             {
                 if (file != null)
                 {
-//                    String imgName = file.getName();
+                    // String imgName = file.getName();
                     File imgName = file;
 
                     String lblName = file.getAbsolutePath();
-                    lblName = lblName.substring(0, lblName.length()-4);
-//                    if (file.getAbsolutePath().endsWith("img"))
-//                        lblName += ".lbl";
-//                    else
-//                        lblName += ".LBL";
+                    lblName = lblName.substring(0, lblName.length() - 4);
+                    // if (file.getAbsolutePath().endsWith("img"))
+                    // lblName += ".lbl";
+                    // else
+                    // lblName += ".LBL";
 
                     File labelFile = new File(lblName);
 
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection
+                            .getImage(imageKey);
 
                     updateMenuItems();
 
@@ -593,10 +651,10 @@ public class ImageCubePopupMenu extends PopupMenu
             }
             catch (Exception ex)
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(invoker),
                         "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Error Saving File", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
 
@@ -612,7 +670,8 @@ public class ImageCubePopupMenu extends PopupMenu
                 try
                 {
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection
+                            .getImage(imageKey);
                     image.setShowFrustum(showFrustumMenuItem.isSelected());
                 }
                 catch (Exception ex)
@@ -625,10 +684,11 @@ public class ImageCubePopupMenu extends PopupMenu
         }
     }
 
-    private class ExportENVIImageAction extends AbstractAction
+    private class ExportPerspectiveENVIImageAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
         {
+
             // Only works for a single image (for now)
             if (imageKeys.size() != 1)
                 return;
@@ -639,7 +699,8 @@ public class ImageCubePopupMenu extends PopupMenu
             {
                 // Get the PerspectiveImage
                 imageCollection.addImage(imageKey);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                PerspectiveImage image = (PerspectiveImage) imageCollection
+                        .getImage(imageKey);
 
                 // Default name
                 String fullPathName = image.getFitFileFullPath();
@@ -647,33 +708,107 @@ public class ImageCubePopupMenu extends PopupMenu
                     fullPathName = image.getPngFileFullPath();
                 if (fullPathName == null)
                     fullPathName = image.getSumfileFullPath();
-                String imageFileName = fullPathName != null ? new File(fullPathName).getName() : null;
+                String imageFileName = fullPathName != null
+                        ? new File(fullPathName).getName() : null;
 
                 String defaultFileName = null;
                 if (imageFileName != null)
-                    defaultFileName = imageFileName.substring(0, imageFileName.length()-4);
+                    defaultFileName = imageFileName.substring(0,
+                            imageFileName.length() - 4);
                 else
-                    defaultFileName = ((ImageCubeKey)image.getKey()).name;
+                    defaultFileName = ((ImageCubeKey) image.getKey()).name;
 
                 // Open save dialog
-                file = CustomFileChooser.showSaveDialog(invoker, "Export ENVI image as", defaultFileName + ".hdr", "hdr");
+                file = CustomFileChooser.showSaveDialog(invoker,
+                        "Export ENVI image as", defaultFileName + ".hdr",
+                        "hdr");
                 if (file != null)
                 {
                     String filename = file.getAbsolutePath();
-                    image.exportAsEnvi(filename.substring(0, filename.length()-4), "bsq", true);
+                    image.exportAsEnvi(
+                            filename.substring(0, filename.length() - 4), "bsq",
+                            true);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                // Something went wrong during the file conversion/export process
+                // Something went wrong during the file conversion/export
+                // process
                 // (after save dialog has returned)
                 String path = file != null ? file.getAbsolutePath() : "null";
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "Unable to export ENVI image as " + file.getAbsolutePath(),
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(invoker),
+                        "Unable to export ENVI image as "
+                                + file.getAbsolutePath(),
                         "Error Exporting ENVI Image",
                         JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private class ExportCylindricalENVIImageAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+
+            for (ImageCubeKey imageKey : imageKeys)
+            {
+                try
+                {
+
+                    // make sure each image is mapped
+                    imageCollection.addImage(imageKey);
+                    ImageCube image = imageCollection.getImage(imageKey);
+                    //new ComplicatedCylindricalImageCubeExporter(image.getShiftedFootprint(),image.getImages());
+                    SimpleCylindricalImageCubeExporter exporter=new SimpleCylindricalImageCubeExporter(image);
+                    exporter.setFileFilter(new FileFilter()
+                    {
+
+                        @Override
+                        public String getDescription()
+                        {
+                            return "ENVI files";
+                        }
+
+                        @Override
+                        public boolean accept(File f)
+                        {
+                            String ext=FilenameUtils.getExtension(f.getName());
+                            return ext.equals("envi") || ext.equals("hdr");
+                        }
+                    });
+                    int result=exporter.showSaveDialog(getParent());
+                    if (result==JFileChooser.APPROVE_OPTION)
+                    {
+                        File file=exporter.getSelectedFile();
+                        String filename=FilenameUtils.getBaseName(file.getName());
+                        new CylindricalImage((SmallBodyModel)renderer.getGenericPolyhedralModel(), image, exporter.getMinLon(), exporter.getMaxLon(), exporter.getMinLat(), exporter.getMaxLat(), exporter.getPixelsPerDegree());
+                    }
+
+
+
+/*                    for (PerspectiveImage pimage : image.getImages())
+                    {
+
+                        Frustum frustum = new Frustum(pimage.getFrustum().origin,
+                                pimage.getFrustum().ul, pimage.getFrustum().ur,
+                                pimage.getFrustum().ll, pimage.getFrustum().lr);
+                        PerspectiveProjection projection = new PerspectiveProjection(
+                                frustum);
+                        edu.jhuapl.saavtk2.image.PerspectiveImage image2 = new edu.jhuapl.saavtk2.image.PerspectiveImage(
+                                projection, pimage.getUnshiftedFootprint(),
+                                pimage.getRawImage());
+                        mappedImages.add(image2);
+                    }*/
+
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
         }
     }
 
@@ -686,18 +821,20 @@ public class ImageCubePopupMenu extends PopupMenu
                 try
                 {
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection
+                            .getImage(imageKey);
                     String fullPathName = image.getFitFileFullPath();
                     if (fullPathName == null)
                         fullPathName = image.getPngFileFullPath();
                     String imageFileName = new File(fullPathName).getName();
 
-
                     String defaultFileName = null;
                     if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
+                        defaultFileName = imageFileName.substring(0,
+                                imageFileName.length() - 3) + "INFO";
 
-                    File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
+                    File file = CustomFileChooser.showSaveDialog(invoker,
+                            "Save INFO file as...", defaultFileName);
                     if (file == null)
                     {
                         return;
@@ -705,7 +842,8 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     String filename = file.getAbsolutePath();
 
-                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+                    System.out.println("Exporting INFO file for "
+                            + image.getImageName() + " to " + filename);
 
                     image.saveImageInfo(filename);
                 }
@@ -730,8 +868,10 @@ public class ImageCubePopupMenu extends PopupMenu
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
             {
-                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(image);
-                changeOffsetDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(invoker));
+                NormalOffsetChangerDialog changeOffsetDialog = new NormalOffsetChangerDialog(
+                        image);
+                changeOffsetDialog.setLocationRelativeTo(
+                        JOptionPane.getFrameForComponent(invoker));
                 changeOffsetDialog.setVisible(true);
             }
         }
@@ -745,7 +885,8 @@ public class ImageCubePopupMenu extends PopupMenu
                 return;
             ImageCubeKey imageKey = imageKeys.get(0);
 
-            PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+            PerspectiveImage image = (PerspectiveImage) imageCollection
+                    .getImage(imageKey);
             if (image != null)
             {
                 double[] sunDir = image.getSunVector();
@@ -808,7 +949,8 @@ public class ImageCubePopupMenu extends PopupMenu
         {
             for (ImageCubeKey imageKey : imageKeys)
             {
-                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+                PerspectiveImageBoundary boundary = imageBoundaryCollection
+                        .getBoundary(imageKey);
                 boundary.setBoundaryColor(color);
             }
 
@@ -820,9 +962,11 @@ public class ImageCubePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKeys.get(0));
+            PerspectiveImageBoundary boundary = imageBoundaryCollection
+                    .getBoundary(imageKeys.get(0));
             int[] currentColor = boundary.getBoundaryColor();
-            Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
+            Color newColor = ColorChooser.showColorChooser(invoker,
+                    currentColor);
             if (newColor != null)
             {
                 for (ImageCubeKey imageKey : imageKeys)
@@ -839,16 +983,18 @@ public class ImageCubePopupMenu extends PopupMenu
     {
         if (pickedProp instanceof vtkActor)
         {
-            if (imageBoundaryCollection != null && imageBoundaryCollection.getBoundary((vtkActor)pickedProp) != null)
+            if (imageBoundaryCollection != null && imageBoundaryCollection
+                    .getBoundary((vtkActor) pickedProp) != null)
             {
-                PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary((vtkActor)pickedProp);
-                setCurrentImage((ImageCubeKey)boundary.getKey());
+                PerspectiveImageBoundary boundary = imageBoundaryCollection
+                        .getBoundary((vtkActor) pickedProp);
+                setCurrentImage((ImageCubeKey) boundary.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
-            else if (imageCollection.getImage((vtkActor)pickedProp) != null)
+            else if (imageCollection.getImage((vtkActor) pickedProp) != null)
             {
-                Image image = imageCollection.getImage((vtkActor)pickedProp);
-                setCurrentImage((ImageCubeKey)image.getKey());
+                Image image = imageCollection.getImage((vtkActor) pickedProp);
+                setCurrentImage((ImageCubeKey) image.getKey());
                 show(e.getComponent(), e.getX(), e.getY());
             }
         }
