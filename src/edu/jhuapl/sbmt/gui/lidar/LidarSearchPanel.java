@@ -1046,6 +1046,8 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                     trackFileType = TrackFileType.BINARY;
                 else if (fileTypeComboBox.getSelectedItem().equals("OLA Level 2"))
                     trackFileType = TrackFileType.OLA_LEVEL_2;
+                else if (fileTypeComboBox.getSelectedItem().equals("PLY"))
+                    trackFileType=TrackFileType.PLY;
                 lidarModel.loadTracksFromFiles(files, trackFileType);
 
                 radialOffsetChanger.reset();
