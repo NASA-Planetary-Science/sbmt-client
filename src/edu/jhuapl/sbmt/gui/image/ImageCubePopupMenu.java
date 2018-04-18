@@ -15,13 +15,15 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.FilenameUtils;
 
 import vtk.vtkActor;
-import vtk.vtkImageData;
-import vtk.vtkPolyData;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
@@ -34,13 +36,12 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk2.image.CylindricalImage;
-import edu.jhuapl.saavtk2.image.projection.CylindricalProjection;
-import edu.jhuapl.saavtk2.image.projection.PerspectiveProjection;
-import edu.jhuapl.saavtk2.util.Frustum;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -155,7 +156,7 @@ public class ImageCubePopupMenu extends PopupMenu
         this.add(exportPerspectiveENVIImageMenuItem);
 
         exportCylindricalENVIImageMenuItem = new JMenuItem(
-                new ExportCylindricalENVIImageAction()); // zimmemi1 bi-otch
+                new ExportCylindricalENVIImageAction()); // zimmemi1, bitches!
         exportCylindricalENVIImageMenuItem
                 .setText("Export Cylindrical ENVI Image...");
         this.add(exportCylindricalENVIImageMenuItem);
@@ -755,22 +756,51 @@ public class ImageCubePopupMenu extends PopupMenu
             {
                 try
                 {
+
                     // make sure each image is mapped
                     imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage) imageCollection
-                            .getImage(imageKey);
+                    ImageCube image = imageCollection.getImage(imageKey);
+                    //new ComplicatedCylindricalImageCubeExporter(image.getShiftedFootprint(),image.getImages());
+                    SimpleCylindricalImageCubeExporter exporter=new SimpleCylindricalImageCubeExporter(image);
+                    exporter.setFileFilter(new FileFilter()
+                    {
+
+                        @Override
+                        public String getDescription()
+                        {
+                            return "ENVI files";
+                        }
+
+                        @Override
+                        public boolean accept(File f)
+                        {
+                            String ext=FilenameUtils.getExtension(f.getName());
+                            return ext.equals("envi") || ext.equals("hdr");
+                        }
+                    });
+                    int result=exporter.showSaveDialog(getParent());
+                    if (result==JFileChooser.APPROVE_OPTION)
+                    {
+                        File file=exporter.getSelectedFile();
+                        String filename=FilenameUtils.getBaseName(file.getName());
+                        new CylindricalImage((SmallBodyModel)renderer.getGenericPolyhedralModel(), image, exporter.getMinLon(), exporter.getMaxLon(), exporter.getMinLat(), exporter.getMaxLat(), exporter.getPixelsPerDegree());
+                    }
 
 
-                    Frustum frustum=new Frustum(image.getFrustum().origin, image.getFrustum().ul, image.getFrustum().ur, image.getFrustum().ll, image.getFrustum().lr);
-                    PerspectiveProjection projection=new PerspectiveProjection(frustum);
-                    edu.jhuapl.saavtk2.image.PerspectiveImage image2=new edu.jhuapl.saavtk2.image.PerspectiveImage(projection, image.getSmallBodyModel(), image.getRawImage());
 
-                    vtkPolyData polyData=image.getUnshiftedFootprint();
-                    double[] bounds=polyData.GetBounds();
+/*                    for (PerspectiveImage pimage : image.getImages())
+                    {
 
-
-                    CylindricalProjection cproj=new CylindricalProjection(-10, 10, -10, 10);
-                    CylindricalImage cimage=new CylindricalImage(cproj, image.getSmallBodyModel(), new vtkImageData());
+                        Frustum frustum = new Frustum(pimage.getFrustum().origin,
+                                pimage.getFrustum().ul, pimage.getFrustum().ur,
+                                pimage.getFrustum().ll, pimage.getFrustum().lr);
+                        PerspectiveProjection projection = new PerspectiveProjection(
+                                frustum);
+                        edu.jhuapl.saavtk2.image.PerspectiveImage image2 = new edu.jhuapl.saavtk2.image.PerspectiveImage(
+                                projection, pimage.getUnshiftedFootprint(),
+                                pimage.getRawImage());
+                        mappedImages.add(image2);
+                    }*/
 
                 }
                 catch (Exception ex)
@@ -778,6 +808,7 @@ public class ImageCubePopupMenu extends PopupMenu
                     ex.printStackTrace();
                 }
             }
+
         }
     }
 
