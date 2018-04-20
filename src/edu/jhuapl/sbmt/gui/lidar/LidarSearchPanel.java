@@ -62,8 +62,8 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.Track;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.TrackFileType;
+import edu.jhuapl.sbmt.model.lidar.Track;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 
