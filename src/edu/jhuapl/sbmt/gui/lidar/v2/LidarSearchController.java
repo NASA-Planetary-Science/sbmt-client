@@ -60,9 +60,9 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class LidarSearchController implements ItemListener
 {
-    private LidarSearchModel model;
-    private LidarSearchView view;
-    private LidarSearchDataCollection lidarModel;
+    protected LidarSearchModel model;
+    protected LidarSearchView view;
+    protected LidarSearchDataCollection lidarModel;
     boolean populatingTracks=false;
 
     //view components
@@ -74,9 +74,11 @@ public class LidarSearchController implements ItemListener
     protected LidarPopupMenu lidarPopupMenu;
     JComboBox sourceComboBox = null;
 
+    protected PropertyChangeListener propertyChangeListener = null;
+
     //model components
-    ModelManager modelManager = null;
-    PickManager pickManager = null;
+    protected ModelManager modelManager = null;
+    protected PickManager pickManager = null;
 
     public LidarSearchController(BodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -120,7 +122,7 @@ public class LidarSearchController implements ItemListener
             }
         });
 
-        PropertyChangeListener propertyChangeListener = new PropertyChangeListener()
+        propertyChangeListener = new PropertyChangeListener()
         {
 
             @Override
@@ -165,6 +167,68 @@ public class LidarSearchController implements ItemListener
     public LidarSearchView getView()
     {
         return view;
+    }
+
+    protected void submitButtonActionPerformed(ActionEvent evt)
+    {
+        PolyhedralModel smallBodyModel = modelManager
+                .getPolyhedralModel();
+
+        view.getSelectRegionButton().setSelected(false);
+        model.getPickManager().setPickMode(PickMode.DEFAULT);
+
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel) modelManager
+                .getModel(ModelNames.CIRCLE_SELECTION);
+
+        TreeSet<Integer> cubeList = null;
+        double[] selectionRegionCenter = null;
+        double selectionRegionRadius = 0.0;
+        if (selectionModel.getNumberOfStructures() > 0)
+        {
+            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+                    .getStructure(0);
+            selectionRegionCenter = region.center;
+            selectionRegionRadius = region.radius;
+
+            // Always use the lowest resolution model for getting the
+            // intersection cubes list.
+            // Therefore, if the selection region was created using a
+            // higher resolution model,
+            // we need to recompute the selection region using the low
+            // res model.
+            if (smallBodyModel.getModelResolution() > 0)
+            {
+                vtkPolyData interiorPoly = new vtkPolyData();
+                smallBodyModel.drawRegularPolygonLowRes(region.center,
+                        region.radius, region.numberOfSides,
+                        interiorPoly, null);
+                cubeList = smallBodyModel.getIntersectingCubes(
+                        new BoundingBox(interiorPoly.GetBounds()));
+            }
+            else
+            {
+                cubeList = smallBodyModel
+                        .getIntersectingCubes(new BoundingBox(
+                                region.interiorPolyData.GetBounds()));
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(
+                    JOptionPane.getFrameForComponent(view),
+                    "Please select a region on the asteroid.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+
+        Picker.setPickingEnabled(false);
+
+        showData(cubeList, selectionRegionCenter,
+                selectionRegionRadius);
+        radialOffsetChanger.reset();
+
+        Picker.setPickingEnabled(true);
     }
 
     private void setupConnections()
@@ -385,64 +449,7 @@ public class LidarSearchController implements ItemListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PolyhedralModel smallBodyModel = modelManager
-                        .getPolyhedralModel();
-
-                view.getSelectRegionButton().setSelected(false);
-                model.getPickManager().setPickMode(PickMode.DEFAULT);
-
-                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel) modelManager
-                        .getModel(ModelNames.CIRCLE_SELECTION);
-
-                TreeSet<Integer> cubeList = null;
-                double[] selectionRegionCenter = null;
-                double selectionRegionRadius = 0.0;
-                if (selectionModel.getNumberOfStructures() > 0)
-                {
-                    AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
-                            .getStructure(0);
-                    selectionRegionCenter = region.center;
-                    selectionRegionRadius = region.radius;
-
-                    // Always use the lowest resolution model for getting the
-                    // intersection cubes list.
-                    // Therefore, if the selection region was created using a
-                    // higher resolution model,
-                    // we need to recompute the selection region using the low
-                    // res model.
-                    if (smallBodyModel.getModelResolution() > 0)
-                    {
-                        vtkPolyData interiorPoly = new vtkPolyData();
-                        smallBodyModel.drawRegularPolygonLowRes(region.center,
-                                region.radius, region.numberOfSides,
-                                interiorPoly, null);
-                        cubeList = smallBodyModel.getIntersectingCubes(
-                                new BoundingBox(interiorPoly.GetBounds()));
-                    }
-                    else
-                    {
-                        cubeList = smallBodyModel
-                                .getIntersectingCubes(new BoundingBox(
-                                        region.interiorPolyData.GetBounds()));
-                    }
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(
-                            JOptionPane.getFrameForComponent(view),
-                            "Please select a region on the asteroid.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-
-                    return;
-                }
-
-                Picker.setPickingEnabled(false);
-
-                showData(cubeList, selectionRegionCenter,
-                        selectionRegionRadius);
-                radialOffsetChanger.reset();
-
-                Picker.setPickingEnabled(true);
+                submitButtonActionPerformed(e);
             }
         });
 
@@ -654,7 +661,7 @@ public class LidarSearchController implements ItemListener
         }
     }
 
-    double[] getSelectedTimeLimits()
+    protected double[] getSelectedTimeLimits()
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
         double start = TimeUtil.str2et(sdf.format(model.getStartDate()).replace(' ', 'T'));
@@ -670,6 +677,7 @@ public class LidarSearchController implements ItemListener
     protected void hideSearchControls()
     {
         view.getSearchPanel().setVisible(false);
+        view.getTrackInfoPanel().setVisible(true);
 //        sourceLabel.setVisible(false);
 //        sourceComboBox.setVisible(false);
 //        startLabel.setVisible(false);

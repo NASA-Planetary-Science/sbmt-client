@@ -46,11 +46,12 @@ public class LidarSearchView extends JPanel
     private JSpinner endDateSpinner;
     private JFormattedTextField minTrackSizeTextField;
     private JFormattedTextField trackSeparationTextField;
-    private JButton selectRegionButton;
+    private JToggleButton selectRegionButton;
     private JButton clearRegionButton;
     private JButton searchButton;
     private JSpinner pointSizeSpinner;
     private JPanel searchPanel;
+    private JPanel trackInfoPanel;
 
     /**
      * Create the panel.
@@ -149,7 +150,7 @@ public class LidarSearchView extends JPanel
         searchButtonsPanel
                 .setLayout(new BoxLayout(searchButtonsPanel, BoxLayout.X_AXIS));
 
-        selectRegionButton = new JButton("Select Region");
+        selectRegionButton = new JToggleButton("Select Region");
         searchButtonsPanel.add(selectRegionButton);
 
         clearRegionButton = new JButton("Clear Region");
@@ -158,7 +159,8 @@ public class LidarSearchView extends JPanel
         searchButton = new JButton("Search");
         searchButtonsPanel.add(searchButton);
 
-        JPanel trackInfoPanel = new JPanel();
+        trackInfoPanel = new JPanel();
+        trackInfoPanel.setVisible(false);
         trackInfoPanel.setBorder(new TitledBorder(null, "Tracks",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(trackInfoPanel);
@@ -413,7 +415,7 @@ public class LidarSearchView extends JPanel
         return trackSeparationTextField;
     }
 
-    public JButton getSelectRegionButton()
+    public JToggleButton getSelectRegionButton()
     {
         return selectRegionButton;
     }
@@ -449,5 +451,8 @@ public class LidarSearchView extends JPanel
     public void setLidarPopupMenu(LidarPopupMenu lidarPopupMenu)
     {
         this.lidarPopupMenu = lidarPopupMenu;
+    }
+    public JPanel getTrackInfoPanel() {
+        return trackInfoPanel;
     }
 }
