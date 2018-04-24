@@ -28,6 +28,7 @@ import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.state.Serializers;
 import edu.jhuapl.saavtk.state.State;
 import edu.jhuapl.saavtk.state.StateKey;
 import edu.jhuapl.saavtk.state.StateManager;
@@ -789,7 +790,7 @@ public class SbmtViewManager extends ViewManager
         return builder.build();
     }
 
-    private static final StateKey<String> CURRENT_VIEW_KEY = StateKey.of("currentView");
+    private static final StateKey<String> CURRENT_VIEW_KEY = Serializers.getDefault().getKey("currentView");
 
     private StateManager createStateManager()
     {
