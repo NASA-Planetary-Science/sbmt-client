@@ -31,7 +31,8 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.state.Serializers;
 import edu.jhuapl.saavtk.state.State;
 import edu.jhuapl.saavtk.state.StateKey;
-import edu.jhuapl.saavtk.state.StateManager;
+import edu.jhuapl.saavtk.state.StateSerializer;
+import edu.jhuapl.saavtk.state.TrackedStateManager;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -67,7 +68,7 @@ public class SbmtViewManager extends ViewManager
     // A map of config objects to their indices in the menuEntries list.
     private final Map<ViewConfig, Integer> configMap;
 
-    private final StateManager stateManager;
+    private final TrackedStateManager stateManager;
 
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
@@ -182,8 +183,8 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    public StateManager getStateManager() {
-        return stateManager;
+    public void setUpStateManagerOnce() {
+        stateManager.registerOnce();
     }
 
     /**
@@ -790,32 +791,27 @@ public class SbmtViewManager extends ViewManager
         return builder.build();
     }
 
-    private static final StateKey<String> CURRENT_VIEW_KEY = Serializers.getDefault().getKey("currentView");
+    private static final StateSerializer SERIALIZER = Serializers.getDefault();
 
-    private StateManager createStateManager()
+    private TrackedStateManager createStateManager()
     {
+        final StateKey<State> myKey = SERIALIZER.getKey("viewManager.1");
+        final StateKey<String> CURRENT_VIEW_KEY = SERIALIZER.getKey("currentView");
 
-        return new StateManager() {
+        return new TrackedStateManager(myKey, SERIALIZER) {
 
             @Override
-            public State getState()
+            public State doGetState()
             {
-                State state = State.of();
                 View currentView = getCurrentView();
-
-                state.put(CURRENT_VIEW_KEY, currentView.getUniqueName());
-                return state;
+                return State.of().put(CURRENT_VIEW_KEY, currentView != null ? currentView.getUniqueName() : null);
             }
 
             @Override
-            public void setState(State state)
+            public void doSetState(State state)
             {
-                try {
-                    String uniqueName = state.get(CURRENT_VIEW_KEY);
-                    setCurrentView(getView(uniqueName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                String uniqueName = state.get(CURRENT_VIEW_KEY);
+                setCurrentView(getView(uniqueName));
             }
 
         };
