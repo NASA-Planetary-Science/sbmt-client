@@ -1063,8 +1063,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
+//        c.hasStateHistory = true;
+//        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
         c.hasImageMap = true;
         configArray.add(c);
@@ -2780,7 +2780,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
