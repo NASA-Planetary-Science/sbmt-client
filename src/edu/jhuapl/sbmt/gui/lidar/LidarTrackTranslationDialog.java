@@ -10,32 +10,43 @@
  */
 package edu.jhuapl.sbmt.gui.lidar;
 
+import java.awt.Frame;
+
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
 
 public class LidarTrackTranslationDialog extends javax.swing.JDialog {
 
     LidarSearchDataCollection lidarModel;
+    int selectedIndex = -1;
 
     /** Creates new form LidarAbsoluteOffsetDialog */
-    public LidarTrackTranslationDialog(java.awt.Frame parent, boolean modal, LidarSearchDataCollection lidarModel) {
+    public LidarTrackTranslationDialog(Frame parent, boolean modal, LidarSearchDataCollection lidarModel) {
         super(parent, modal);
         initComponents();
-
+        selectedIndex = -1;
         this.lidarModel = lidarModel;
     }
 
-    public void setVisible(boolean b)
+    /** Creates new form LidarAbsoluteOffsetDialog */
+    public LidarTrackTranslationDialog(Frame parent, boolean modal, LidarSearchDataCollection lidarModel, int lidarIndex) {
+        super(parent, modal);
+        initComponents();
+        this.lidarModel = lidarModel;
+        this.selectedIndex = lidarIndex;
+    }
+
+    public void setVisible(boolean b, int index)
     {
         setTitle("Translate Lidar Tracks");
-
-        double[] shift = lidarModel.getTranslation();
+        double[] shift = lidarModel.getTranslation(index);
         xTranslationFormattedTextField.setValue(shift[0]);
         yTranslationFormattedTextField.setValue(shift[1]);
         zTranslationFormattedTextField.setValue(shift[2]);
 
         super.setVisible(b);
     }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -141,6 +152,7 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
         getContentPane().add(jPanel1, gridBagConstraints);
 
         xTranslationFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.################"))));
+        xTranslationFormattedTextField.setText("0.0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -150,6 +162,7 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
         getContentPane().add(xTranslationFormattedTextField, gridBagConstraints);
 
         yTranslationFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.################"))));
+        yTranslationFormattedTextField.setText("0.0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -157,6 +170,7 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
         getContentPane().add(yTranslationFormattedTextField, gridBagConstraints);
 
         zTranslationFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#.################"))));
+        zTranslationFormattedTextField.setText("0.0");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -172,7 +186,12 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
                 Double.parseDouble(yTranslationFormattedTextField.getText()),
                 Double.parseDouble(zTranslationFormattedTextField.getText())
         };
-        lidarModel.setTranslation(shift);
+        if (selectedIndex == -1)
+            lidarModel.setTranslation(shift);
+        else
+        {
+            lidarModel.setTranslation(shift, selectedIndex);
+        }
     }//GEN-LAST:event_applyButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
@@ -188,7 +207,13 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
         xTranslationFormattedTextField.setValue(0.0);
         yTranslationFormattedTextField.setValue(0.0);
         zTranslationFormattedTextField.setValue(0.0);
-        lidarModel.setTranslation(new double[]{0.0, 0.0, 0.0});
+
+        if (selectedIndex == -1)
+            lidarModel.setTranslation(new double[]{0.0, 0.0, 0.0});
+        else
+        {
+            lidarModel.setTranslation(new double[]{0.0, 0.0, 0.0}, selectedIndex);
+        }
     }//GEN-LAST:event_resetButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -204,4 +229,9 @@ public class LidarTrackTranslationDialog extends javax.swing.JDialog {
     private javax.swing.JFormattedTextField yTranslationFormattedTextField;
     private javax.swing.JFormattedTextField zTranslationFormattedTextField;
     // End of variables declaration//GEN-END:variables
+
+    public void setSelectedIndex(int selectedIndex)
+    {
+        this.selectedIndex = selectedIndex;
+    }
 }
