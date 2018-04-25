@@ -39,27 +39,6 @@ public class GenericPhpQuery extends QueryBase
         return rootPath + "/images";
     }
 
-    // Append the full path to the image gallery to this search result.
-    private void addGalleryFullPath(List<String> result)
-    {
-        final String galleryPath = getGalleryPath();
-        if(galleryPath == null)
-        {
-            result.add(null);
-        }
-        else
-        {
-            result.add(galleryPath + "/" + result.get(0));
-        }
-    }
-
-    // Convert the 0th element of the result (the path to the image)
-    // with the full path.
-    private void changeImagePathToFullPath(List<String> result)
-    {
-        result.set(0, rootPath + "/images/" + result.get(0));
-    }
-
     @Override
     public List<List<String>> runQuery(
             @SuppressWarnings("unused") String type,
@@ -88,12 +67,12 @@ public class GenericPhpQuery extends QueryBase
         if (imageSource == ImageSource.CORRECTED)
         {
             return getResultsFromFileListOnServer(rootPath + "/sumfiles-corrected/imagelist.txt",
-                    rootPath + "/images/", galleryPath);
+                    rootPath + "/images/", galleryPath, searchString);
         }
         else if (imageSource == ImageSource.CORRECTED_SPICE)
         {
             return getResultsFromFileListOnServer(rootPath + "/infofiles-corrected/imagelist.txt",
-                    rootPath + "/images/", galleryPath);
+                    rootPath + "/images/", galleryPath, searchString);
         }
         /*else if (imageSource == ImageSource.GASKELL_UPDATED)
         {
@@ -119,28 +98,19 @@ public class GenericPhpQuery extends QueryBase
             cubesDatabase += "_beta";
         }
 
-        if (searchString != null)
-        {
-            HashMap<String, String> args = new HashMap<>();
-            args.put("imagesDatabase", imagesDatabase);
-            args.put("imageSource", imageSource.toString());
-            args.put("searchString", searchString);
-
-            results = doQuery("searchimages.php", constructUrlArguments(args));
-
-            if (results != null && results.size() > 0)
-            {
-                for (List<String> res : results)
-                {
-                    this.addGalleryFullPath(res);
-                    this.changeImagePathToFullPath(res);
-                }
-            }
-            return results;
-        }
-
         try
         {
+            if (searchString != null)
+            {
+                HashMap<String, String> args = new HashMap<>();
+                args.put("imagesDatabase", imagesDatabase);
+                args.put("searchString", searchString);
+
+                results = doQuery("searchimages.php", constructUrlArguments(args));
+
+                return results;
+            }
+
             double minScDistance = Math.min(startDistance, stopDistance);
             double maxScDistance = Math.max(startDistance, stopDistance);
             double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
@@ -175,12 +145,12 @@ public class GenericPhpQuery extends QueryBase
                 // Populate search parameters
                 args.put("numProducts", new Integer(numProducts).toString());
                 for(int i=0; i<numProducts; i++)
-            {
+                {
                     args.put("cameraType"+i, new Integer(camerasSelectedArray[i]+1).toString());
                     args.put("filterType"+i, new Integer(filtersSelectedArray[i]+1).toString());
                 }
             }
-                else
+            else
             {
                 // Product of sums (legacy) search: (CAMERA 1 OR ... OR CAMERA N) AND (FILTER 1 OR ... FILTER M)
                 args.put("sumOfProductsSearch", "0");
@@ -189,9 +159,9 @@ public class GenericPhpQuery extends QueryBase
                 for(Integer c : camerasSelected)
                 {
                     args.put("cameraType"+(c+1), "1");
-            }
+                }
                 for(Integer f : filtersSelected)
-            {
+                {
                     args.put("filterType"+(f+1), "1");
                 }
             }
@@ -212,16 +182,11 @@ public class GenericPhpQuery extends QueryBase
 
             results = doQuery("searchimages.php", constructUrlArguments(args));
 
-            for (List<String> res : results)
-            {
-                this.addGalleryFullPath(res);
-                this.changeImagePathToFullPath(res);
-            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            results = getResultsFromFileListOnServer(rootPath + "/imagelist.txt", getDataPath(), getGalleryPath());
+            results = getResultsFromFileListOnServer(rootPath + "/imagelist.txt", getDataPath(), getGalleryPath(), searchString);
         }
 
         return results;

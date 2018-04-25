@@ -16,6 +16,16 @@ if test $status -ne 0; then
 fi
 
 released_mission=$1
+mission_name=$2
+
+if test $mission_name; then
+  echo Setting mission name to $mission_name
+  variablefile="$SBMTROOT/config/Makefiles/Variables"
+  variablefileorig="$SBMTROOT/config/Makefiles/Variables-orig"
+#  echo "Variable file is: " $variablefile
+  mv $variablefile $variablefileorig
+  cat $variablefileorig | sed "s/SNAPSHOT/$mission_name/" > $variablefile
+fi
 
 file="$SBMTROOT/src/edu/jhuapl/sbmt/client/SbmtMultiMissionTool.java"
 if test ! -f $file; then

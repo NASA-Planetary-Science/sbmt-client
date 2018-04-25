@@ -1063,8 +1063,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
+//        c.hasStateHistory = true;
+//        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
         c.hasImageMap = true;
         configArray.add(c);
@@ -2592,7 +2592,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
           {
               // Set up images.
               SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
-              QueryBase queryBase = new FixedListQuery("/" + fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), "/" + fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+              QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
                       SpectralMode.MONO,
@@ -2642,8 +2642,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //                };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
     //TODO make hierarchical search work sbmt1dev-style.
     //        c.imageSearchFilterNames = new String[]{
     //                EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
@@ -2662,6 +2662,30 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new NIRS3()
                     };
 
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }
@@ -2688,8 +2712,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
+
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Low (54504 plates)", "High (5450420 plates)" };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 54504, 5450420 };
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
@@ -2705,7 +2730,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
                 Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.IMAGING_DATA,
+                        Instrument.ONC,
                         SpectralMode.MONO,
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
@@ -2722,8 +2747,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
@@ -2742,8 +2767,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/images/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2751,11 +2776,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "H2 Simulated Gaskell";
+            c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
             c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
@@ -2765,35 +2789,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.LASER;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }

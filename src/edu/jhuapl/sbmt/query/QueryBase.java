@@ -74,57 +74,45 @@ public abstract class QueryBase implements Cloneable
         }
     }
 
-    protected List<List<String>> doQuery(String phpScript, String data)
+    protected List<List<String>> doQuery(String phpScript, String data) throws IOException
     {
         List<List<String>> results = new ArrayList<>();
-        boolean listCachedImages = false;
 
-        try
+        URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
+        URLConnection conn = u.openConnection();
+        conn.setDoOutput(true);
+        conn.setUseCaches(false);
+        conn.setRequestProperty("User-Agent", "Mozilla/4.0");
+
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        wr.write(data);
+        wr.flush();
+
+        InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+        BufferedReader in = new BufferedReader(isr);
+
+        String line;
+
+        while ((line = in.readLine()) != null)
         {
-            URL u = new URL(Configuration.getQueryRootURL() + "/" + phpScript);
-            URLConnection conn = u.openConnection();
-            conn.setDoOutput(true);
-            conn.setUseCaches(false);
-            conn.setRequestProperty("User-Agent", "Mozilla/4.0");
+            line = line.trim();
+            if (line.length() == 0)
+                continue;
 
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-            wr.write(data);
-            wr.flush();
-
-            InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-            BufferedReader in = new BufferedReader(isr);
-
-            String line;
-
-            while ((line = in.readLine()) != null)
-            {
-                line = line.trim();
-                if (line.length() == 0)
-                    continue;
-
-                String[] tokens = line.split("\\s+");
-                List<String> words = new ArrayList<>();
-                for (String word : tokens)
-                    words.add(word);
-                results.add(words);
-            }
-
-            in.close();
-            updateImageInventory(results);
-        }
-        catch (IOException e)
-        {
-            // We will reach this if SBMT is unable to connect to server
-            JOptionPane.showMessageDialog(null,
-                    "SBMT is unable to connect to server. Ignoring search parameters and listing all cached images.",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
-            e.printStackTrace();
-            listCachedImages = true;
+            String[] tokens = line.split("\\s+");
+            List<String> words = new ArrayList<>();
+            for (String word : tokens)
+                words.add(word);
+            results.add(words);
         }
 
-        if (listCachedImages)
-            results = getCachedResults(getDataPath());
+        in.close();
+        for (List<String> res : results)
+        {
+            changeImagePathToFullPath(res);
+        }
+
+        updateImageInventory(results);
 
         return results;
     }
@@ -150,14 +138,33 @@ public abstract class QueryBase implements Cloneable
     protected List<List<String>> getResultsFromFileListOnServer(
             String pathToFileListOnServer,
             String pathToImageFolderOnServer,
+            String pathToGalleryFolderOnServer,
+            String searchString)
+    {
+        List<List<String>> results = getResultsFromFileListOnServer(pathToFileListOnServer, pathToImageFolderOnServer, pathToGalleryFolderOnServer);
+
+        if (searchString != null && !searchString.isEmpty())
+        {
+            searchString = wildcardToPathRegex(searchString);
+            List<List<String>> unfilteredResults = results;
+            results = new ArrayList<>();
+            for (List<String> result : unfilteredResults)
+            {
+                String name = result.get(0);
+                if (name.matches(searchString))
+                {
+                    results.add(result);
+                }
+            }
+        }
+        return results;
+    }
+
+    private List<List<String>> getResultsFromFileListOnServer(
+            String pathToFileListOnServer,
+            String pathToImageFolderOnServer,
             String pathToGalleryFolderOnServer)
     {
-        // Let user know that search uses fixed list and ignores search parameters
-        JOptionPane.showMessageDialog(null,
-                "Search uses a fixed list and ignores selected search parameters.",
-                "Notification",
-                JOptionPane.INFORMATION_MESSAGE);
-
         if (!pathToImageFolderOnServer.endsWith("/"))
             pathToImageFolderOnServer += "/";
 
@@ -166,7 +173,18 @@ public abstract class QueryBase implements Cloneable
 
         List<List<String>> results = new ArrayList<>();
 
+        FileInfo info = FileCache.getFileInfoFromServer(pathToFileListOnServer);
+        if (!info.isURLAccessAuthorized().equals(YesOrNo.YES) || !info.isExistsOnServer().equals(YesOrNo.YES))
+        {
+            return getCachedResults(getDataPath());
+        }
         File file = FileCache.getFileFromServer(pathToFileListOnServer);
+
+        // Let user know that search uses fixed list and ignores search parameters
+        JOptionPane.showMessageDialog(null,
+                "Search uses a fixed list and ignores all but file name search parameters.",
+                "Notification",
+                JOptionPane.INFORMATION_MESSAGE);
 
         if (file != null)
         {
@@ -182,16 +200,9 @@ public abstract class QueryBase implements Cloneable
                     String imagePath = vals.get(0).replace(pathToImageFolderOnServer, "");
                     res.add(pathToImageFolderOnServer + imagePath);
                     res.add(new Long(new DateTime(timeString, DateTimeZone.UTC).getMillis()).toString());
-                    if(pathToGalleryFolderOnServer == null)
-                    {
-                        res.add(null);
-                    }
-                    else
-                    {
-                        res.add(pathToGalleryFolderOnServer + imagePath);
-                    }
                     results.add(res);
                 }
+                updateImageInventory(results);
             }
             catch (FileNotFoundException e)
             {
@@ -209,6 +220,35 @@ public abstract class QueryBase implements Cloneable
         }
 
         return results;
+    }
+
+    private String wildcardToPathRegex(String wildcard)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("^.*/");
+        for (char c : wildcard.toCharArray())
+        {
+            switch(c) {
+            case '*':
+                builder.append(".*");
+                break;
+            case '?':
+                builder.append(".");
+                break;
+                // escape special regexp-characters
+            case '(': case ')': case '[': case ']': case '$':
+            case '^': case '.': case '{': case '}': case '|':
+            case '\\':
+                builder.append("\\");
+                builder.append(c);
+                break;
+            default:
+                builder.append(c);
+                break;
+            }
+        }
+        builder.append('$');
+        return builder.toString();
     }
 
     private static final DateTimeFormatter YYYY_MM_DD = DateTimeFormatter.ofPattern("YYYY MM DD HH:MM:SS");
@@ -306,11 +346,18 @@ public abstract class QueryBase implements Cloneable
             String pathToImageFolder
             )
     {
+        // We will reach this if SBMT is unable to connect to server
+        JOptionPane.showMessageDialog(null,
+                "SBMT had a problem while performing the search. Ignoring search parameters and listing all cached images.",
+                "Warning",
+                JOptionPane.WARNING_MESSAGE);
         final List<File> fileList = getCachedFiles(pathToImageFolder);
         final Map<String, File> filesFound = new TreeMap<>();
         for (File file: fileList)
         {
-            filesFound.put(file.getName(), file);
+            // Strip off the local cache part of the prefix.
+            String path = file.getPath().substring(Configuration.getCacheDir().length());
+            filesFound.put(path, file);
         }
 
         final List<List<String>> result = new ArrayList<>();
@@ -483,5 +530,17 @@ public abstract class QueryBase implements Cloneable
             }
         }
         return galleryExists ? galleryPath : null;
+    }
+
+    // Convert the 0th element of the result (the path to the image)
+    // with the full path, but only if the result does not already have
+    // a full path.
+    private void changeImagePathToFullPath(List<String> result)
+    {
+        String fullPath = result.get(0);
+        if (!fullPath.contains("/"))
+        {
+            result.set(0, getDataPath() + "/" + fullPath);
+        }
     }
 }

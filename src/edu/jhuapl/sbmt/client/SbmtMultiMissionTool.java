@@ -53,6 +53,7 @@ public class SbmtMultiMissionTool
     // This field is used during the build process to "hard-wire" a release to point to a specific server.
     private static final Mission RELEASED_MISSION = null;
     private static Mission mission = RELEASED_MISSION;
+    private static boolean missionConfigured = false;
 
     static
     {
@@ -117,6 +118,10 @@ public class SbmtMultiMissionTool
 
     static Mission configureMission()
     {
+        if (missionConfigured)
+        {
+            return mission;
+        }
         Mission mission = getMission();
         switch (mission)
         {
@@ -140,9 +145,9 @@ public class SbmtMultiMissionTool
                 break;
             case HAYABUSA2_DEPLOY:
                 Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-                Configuration.setAppName("sbmt1hyb2-deploy");
+                Configuration.setAppName("sbmthyb2");
                 Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Deploy");
+                Configuration.setAppTitle("SBMT/Hayabusa2");
                 break;
             case OSIRIS_REX:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
@@ -153,7 +158,8 @@ public class SbmtMultiMissionTool
             default:
                 throw new AssertionError();
         }
-       return mission;
+        missionConfigured = true;
+        return mission;
     }
 
     static SbmtSplash createSplash(Mission mission)
@@ -172,7 +178,7 @@ public class SbmtMultiMissionTool
                 splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
                 break;
             case HAYABUSA2_DEPLOY:
-                splash = new SbmtSplash("resources", "splashLogoHb2Deploy.png");
+                splash = new SbmtSplash("resources", "splashLogoHb2.png");
                 break;
             case OSIRIS_REX:
                 splash = new SbmtSplash("resources", "splashLogoOrex.png");
@@ -203,11 +209,7 @@ public class SbmtMultiMissionTool
 
     public static void main(final String[] args)
     {
-        if (Configuration.getAppName() == null)
-        {
-            SbmtMultiMissionTool.configureMission();
-        }
-        Mission mission = getMission();
+        Mission mission = SbmtMultiMissionTool.configureMission();
 
         setupLookAndFeel();
 
