@@ -718,7 +718,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             }
         });
 
-        translateTracksButton.setText("Translate Tracks...");
+        translateTracksButton.setText("Translate All Tracks...");
         translateTracksButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 translateTracksButtonActionPerformed(evt);

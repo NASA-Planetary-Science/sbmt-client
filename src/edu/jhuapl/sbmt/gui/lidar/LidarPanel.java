@@ -7,6 +7,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 
@@ -21,7 +22,7 @@ public class LidarPanel extends JTabbedPane
         setBorder(BorderFactory.createEmptyBorder());
 
         LidarBrowsePanel lidarBrowsePanel;
-        LidarSearchPanel lidarSearchPanel;
+        LidarSearchController lidarSearchController;
         if (smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
         {
             // Search isn't working, so disable it for now. Leave remaining stanzas intact to make it
@@ -33,10 +34,10 @@ public class LidarPanel extends JTabbedPane
         }
         else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.MOLA))
         {
-            lidarSearchPanel=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+            lidarSearchController=new MolaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
             addTab("Browse", lidarBrowsePanel);
-            addTab("Search", lidarSearchPanel);
+            addTab("Search", lidarSearchController.getView());
         }
         else if (smallBodyConfig.hasHypertreeBasedLidarSearch && smallBodyConfig.lidarInstrumentName.equals(Instrument.LASER))
         {
@@ -48,16 +49,17 @@ public class LidarPanel extends JTabbedPane
         else if (smallBodyConfig.lidarInstrumentName.equals(Instrument.OLA))
         {
             lidarBrowsePanel = new OlaLidarBrowsePanel(modelManager, smallBodyConfig);
-            lidarSearchPanel=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
+            lidarSearchController=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
             addTab("Browse", lidarBrowsePanel);
-            addTab("Search", lidarSearchPanel);
+            addTab("Search", lidarSearchController.getView());
         }
         else
         {
-            lidarSearchPanel=new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
+//            lidarSearchPanel=new LidarSearchPanel(smallBodyConfig, modelManager, pickManager, renderer);
+            lidarSearchController=new LidarSearchController(smallBodyConfig, modelManager, pickManager, renderer);
             lidarBrowsePanel = new LidarBrowsePanel(modelManager);
             addTab("Browse", lidarBrowsePanel);
-            addTab("Search", lidarSearchPanel);
+            addTab("Search", lidarSearchController.getView());
         }
 
 
