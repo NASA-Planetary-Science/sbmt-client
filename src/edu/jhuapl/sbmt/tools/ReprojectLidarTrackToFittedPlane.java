@@ -1,16 +1,13 @@
 package edu.jhuapl.sbmt.tools;
 
-import java.io.File;
-
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.TrackFileType;
 
 /**
  * This program takes a lidar track, fits a plane through it and reorients the track into
@@ -47,18 +44,18 @@ public class ReprojectLidarTrackToFittedPlane
         LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
 
-        try
-        {
-            lidarModel.loadTracksFromFiles(new File[]{new File(inputFile)}, TrackFileType.TEXT);
-
-            String transformationFile = outputFile + "-transformation.txt";
-            lidarModel.reprojectedTrackOntoFittedPlane(0, new File(outputFile), new File(transformationFile));
-        }
-        catch (Exception e)
-        {
-            System.out.println("An error saving the track to disk.");
-            System.exit(1);
-        }
+//        try
+//        {
+//            lidarModel.loadTracksFromFiles(new File[]{new File(inputFile)}, TrackFileType.TEXT);
+//
+//            String transformationFile = outputFile + "-transformation.txt";
+//            lidarModel.reprojectedTrackOntoFittedPlane(0, new File(outputFile), new File(transformationFile));
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println("An error saving the track to disk.");
+//            System.exit(1);
+//        }
 
     }
 

@@ -93,7 +93,8 @@ public class LidarSearchController implements ItemListener
 
         this.view = new LidarSearchView();
         fileTypeComboBox = view.getFileTypeComboBox();
-        fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "Binary", "OLA Level 2" }));
+        fileTypeComboBox.setModel(new DefaultComboBoxModel<String>(TrackFileType.names()));
+//        fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "Binary", "OLA Level 2" }));
 
         sourceComboBox = view.getSourceComboBox();
         sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Default" }));
@@ -303,14 +304,17 @@ public class LidarSearchController implements ItemListener
                     {
 
                         TrackFileType trackFileType = null;
-                        if (fileTypeComboBox.getSelectedItem().equals("Text"))
-                            trackFileType = TrackFileType.TEXT;
-                        else if (fileTypeComboBox.getSelectedItem()
-                                .equals("Binary"))
-                            trackFileType = TrackFileType.BINARY;
-                        else if (fileTypeComboBox.getSelectedItem()
-                                .equals("OLA Level 2"))
-                            trackFileType = TrackFileType.OLA_LEVEL_2;
+                        trackFileType = trackFileType.find(fileTypeComboBox.getSelectedItem().toString());
+
+
+//                        if (fileTypeComboBox.getSelectedItem().equals("Text"))
+//                            trackFileType = TrackFileType.TEXT;
+//                        else if (fileTypeComboBox.getSelectedItem()
+//                                .equals("Binary"))
+//                            trackFileType = TrackFileType.BINARY;
+//                        else if (fileTypeComboBox.getSelectedItem()
+//                                .equals("OLA Level 2"))
+//                            trackFileType = TrackFileType.OLA_LEVEL_2;
                         lidarModel.loadTracksFromFiles(files, trackFileType);
 
                         radialOffsetChanger.reset();
