@@ -28,11 +28,11 @@ import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.state.Serializers;
 import edu.jhuapl.saavtk.state.State;
 import edu.jhuapl.saavtk.state.StateKey;
-import edu.jhuapl.saavtk.state.StateSerializer;
+import edu.jhuapl.saavtk.state.StateManager;
 import edu.jhuapl.saavtk.state.TrackedStateManager;
+import edu.jhuapl.saavtk.state.Version;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -75,7 +75,7 @@ public class SbmtViewManager extends ViewManager
         super(statusBar, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
-        this.stateManager = createStateManager();
+        this.stateManager = TrackedStateManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
     }
 
@@ -173,7 +173,7 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    public View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
         SmallBodyViewConfig config = new SmallBodyViewConfig();
         config.modelLabel = name;
@@ -183,8 +183,31 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    public void setUpStateManagerOnce() {
-        stateManager.registerOnce();
+    public void initializeStateManager() {
+        if (!stateManager.isRegistered())
+        {
+            stateManager.register(new StateManager() {
+                final StateKey<String> currentViewKey = stateManager.getKey("currentView");
+
+                @Override
+                public State store()
+                {
+                    View currentView = getCurrentView();
+                    State state = State.of(stateManager.getStateKey(), Version.of(2, 1));
+                    state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
+                    return state;
+                }
+
+                @Override
+                public void retrieve(State source)
+                {
+                    if (Version.of(1, 0).compareTo(source.getVersion()) <= 0) {
+                        String uniqueName = source.get(currentViewKey);
+                        setCurrentView(getView(uniqueName));
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -789,32 +812,6 @@ public class SbmtViewManager extends ViewManager
             }
         }
         return builder.build();
-    }
-
-    private static final StateSerializer SERIALIZER = Serializers.getDefault();
-
-    private TrackedStateManager createStateManager()
-    {
-        final StateKey<State> myKey = SERIALIZER.getKey("viewManager.1");
-        final StateKey<String> CURRENT_VIEW_KEY = SERIALIZER.getKey("currentView");
-
-        return new TrackedStateManager(myKey, SERIALIZER) {
-
-            @Override
-            public State doGetState()
-            {
-                View currentView = getCurrentView();
-                return State.of().put(CURRENT_VIEW_KEY, currentView != null ? currentView.getUniqueName() : null);
-            }
-
-            @Override
-            public void doSetState(State state)
-            {
-                String uniqueName = state.get(CURRENT_VIEW_KEY);
-                setCurrentView(getView(uniqueName));
-            }
-
-        };
     }
 
 }

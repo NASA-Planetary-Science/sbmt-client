@@ -26,6 +26,10 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.state.State;
+import edu.jhuapl.saavtk.state.StateManager;
+import edu.jhuapl.saavtk.state.TrackedStateManager;
+import edu.jhuapl.saavtk.state.Version;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
@@ -79,6 +83,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 public class SbmtView extends View implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1L;
+    private final TrackedStateManager stateManager;
     private Colorbar smallBodyColorbar;
 
 
@@ -92,7 +97,7 @@ public class SbmtView extends View implements PropertyChangeListener
     public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
-
+        this.stateManager = TrackedStateManager.of("View " + getUniqueName());
     }
 
 
@@ -513,6 +518,7 @@ public class SbmtView extends View implements PropertyChangeListener
         }
         else
         {
+            initializeStateManager();
             renderer.getRenderWindowPanel().Render();
         }
     }
@@ -522,7 +528,27 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         this.renderer = renderer;
         smallBodyColorbar = new Colorbar(renderer);
-    }
+        }
 
+    protected void initializeStateManager()
+    {
+        if (!stateManager.isRegistered()) {
+            stateManager.register(new StateManager() {
+
+                @Override
+                public State store()
+                {
+                    return State.of(stateManager.getStateKey(), Version.of(1, 0));
+                }
+
+                @Override
+                public void retrieve(State state)
+                {
+                    // TODO write this
+                }
+
+            });
+        }
+    }
 
 }
