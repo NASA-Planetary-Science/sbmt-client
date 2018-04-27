@@ -8,10 +8,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
+import vtk.vtkCamera;
+
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
+import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
@@ -27,6 +30,7 @@ import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.state.State;
+import edu.jhuapl.saavtk.state.StateKey;
 import edu.jhuapl.saavtk.state.StateManager;
 import edu.jhuapl.saavtk.state.TrackedStateManager;
 import edu.jhuapl.saavtk.state.Version;
@@ -518,7 +522,6 @@ public class SbmtView extends View implements PropertyChangeListener
         }
         else
         {
-            initializeStateManager();
             renderer.getRenderWindowPanel().Render();
         }
     }
@@ -528,23 +531,44 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         this.renderer = renderer;
         smallBodyColorbar = new Colorbar(renderer);
-        }
+    }
 
-    protected void initializeStateManager()
+    @Override
+    public void initializeStateManager()
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new StateManager() {
+                final StateKey<double[]> positionKey = stateManager.getKey("cameraPosition");
+                final StateKey<double[]> upKey = stateManager.getKey("cameraUp");
 
                 @Override
                 public State store()
                 {
-                    return State.of(stateManager.getStateKey(), Version.of(1, 0));
+                    State result = State.of(Version.of(1, 0));
+                    Renderer localRenderer = SbmtView.this.getRenderer();
+                    if (localRenderer != null) {
+                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+//                    vtkCamera camera = ((RenderPanel) SbmtView.this.getRenderer().getRenderWindowPanel()).getActiveCamera();
+                        vtkCamera camera = panel.getActiveCamera();
+                        result.put(positionKey, camera.GetPosition());
+                        result.put(upKey, camera.GetViewUp());
+                    }
+                    return result;
                 }
 
                 @Override
                 public void retrieve(State state)
                 {
-                    // TODO write this
+                    Renderer localRenderer = SbmtView.this.getRenderer();
+                    if (localRenderer != null)
+                    {
+                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        vtkCamera camera = panel.getActiveCamera();
+                        camera.SetPosition(state.get(positionKey));
+                        camera.SetViewUp(state.get(upKey));
+                        panel.resetCameraClippingRange();
+                        panel.Render();
+                    }
                 }
 
             });

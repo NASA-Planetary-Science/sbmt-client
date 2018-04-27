@@ -193,7 +193,7 @@ public class SbmtViewManager extends ViewManager
                 public State store()
                 {
                     View currentView = getCurrentView();
-                    State state = State.of(stateManager.getStateKey(), Version.of(2, 1));
+                    State state = State.of(Version.of(2, 1));
                     state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
                     return state;
                 }
