@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.lidar;
+package edu.jhuapl.sbmt.gui.lidar.v2;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -10,18 +10,18 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
  * Panel used for showing custom tracks. It is essentially the LidarSearchPanel but with the search
  * controls removed.
  */
-public class TrackPanel extends LidarSearchPanel
+public class TrackController extends LidarSearchController
 {
 
-    public TrackPanel(BodyViewConfig polyhedralModelConfig,
+    public TrackController(BodyViewConfig polyhedralModelConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
         super(polyhedralModelConfig, modelManager, pickManager, renderer);
         hideSearchControls();
 
-        if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"))
-            fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OLA Level 2", "Text" }));
+//        if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"))
+//            fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OLA Level 2", "Text" }));
 
     }
 

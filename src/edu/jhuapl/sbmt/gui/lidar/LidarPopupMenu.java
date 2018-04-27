@@ -41,9 +41,12 @@ public class LidarPopupMenu extends PopupMenu
     private JMenuItem saveAllTracksModifiedToSingleFileMenuItem;
     private JMenuItem hideTrackMenuItem;
     private JMenuItem hideOtherTracksMenuItem;
+    private JMenuItem translateTrackMenuItem;
     private JMenuItem plotTrackMenuItem;
     private LidarSearchDataCollection lidarModel;
     private int currentTrack;
+    private LidarTrackTranslationDialog translateDialog;
+
 
     public LidarPopupMenu(LidarSearchDataCollection lidarModel,
             Component invoker)
@@ -104,6 +107,9 @@ public class LidarPopupMenu extends PopupMenu
         hideOtherTracksMenuItem.setText("Hide Other Tracks");
         this.add(hideOtherTracksMenuItem);
 
+        translateTrackMenuItem = new JMenuItem(new TranslateTrackAction());
+        translateTrackMenuItem.setText("Translate Track");
+        this.add(translateTrackMenuItem);
 
         if (Configuration.isAPLVersion())
         {
@@ -293,6 +299,20 @@ public class LidarPopupMenu extends PopupMenu
         }
     }
 
+    private class TranslateTrackAction extends AbstractAction
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            if (translateDialog == null)
+                translateDialog = new LidarTrackTranslationDialog(JOptionPane.getFrameForComponent(LidarPopupMenu.this), true, lidarModel, currentTrack);
+            else
+                translateDialog.setSelectedIndex(currentTrack);
+            translateDialog.setLocationRelativeTo(LidarPopupMenu.this);
+            translateDialog.setVisible(true);
+        }
+    }
+
     private class PlotTrackAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -325,6 +345,7 @@ public class LidarPopupMenu extends PopupMenu
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)
     {
+        System.out.println("LidarPopupMenu: showPopup: picked cell id " + pickedCellId);
         setCurrentTrack(lidarModel.getTrackIdFromPointId(pickedCellId));
         show(e.getComponent(), e.getX(), e.getY());
     }

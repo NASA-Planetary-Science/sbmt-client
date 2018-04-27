@@ -22,10 +22,11 @@ import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.OlaLidarHyperTreeSearchDataCollection;
 
-public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
     BiMap<Integer, String> sourceComboBoxEnumeration;
@@ -56,23 +57,23 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
 
         // clear the skeletons instances (should we try to keep these around to avoid having to load them again? -turnerj1)
         lidarHyperTreeSearchDataCollection.clearDatasourceSkeletons();
-        sourceComboBox.removeItemListener(this);
-        sourceComboBox.removeAllItems();
-        sourceComboBox.addItemListener(this);
+        view.getSourceComboBox().removeItemListener(this);
+        view.getSourceComboBox().removeAllItems();
+        view.getSourceComboBox().addItemListener(this);
 
         // add the server datasource
         String defaultDatasourceName = "Default";
         String defaultDatasourcePath = lidarModel.getLidarDataSourceMap().get("Default");
 
         lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(defaultDatasourceName, defaultDatasourcePath);
-        sourceComboBox.addItem(defaultDatasourceName);
+        view.getSourceComboBox().addItem(defaultDatasourceName);
 
         // add other pre-existing server datasources
         for (String preExistingDatasourceName : lidarModel.getLidarDataSourceMap().keySet())
             if (!preExistingDatasourceName.equals(defaultDatasourceName))
             {
                 lidarHyperTreeSearchDataCollection.addDatasourceSkeleton(preExistingDatasourceName, lidarModel.getLidarDataSourceMap().get(preExistingDatasourceName));
-                sourceComboBox.addItem(preExistingDatasourceName);
+                view.getSourceComboBox().addItem(preExistingDatasourceName);
             }
 
         // add the custom local datasources
@@ -84,8 +85,8 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         }
 
         sourceComboBoxEnumeration=HashBiMap.create();
-        for (int i=0; i<sourceComboBox.getItemCount(); i++)
-            sourceComboBoxEnumeration.put(i, (String)sourceComboBox.getItemAt(i));
+        for (int i=0; i<view.getSourceComboBox().getItemCount(); i++)
+            sourceComboBoxEnumeration.put(i, (String)view.getSourceComboBox().getItemAt(i));
 
         // set the current datasource
         //int index = smallBodyModel.getLidarDatasourceIndex();
@@ -102,9 +103,9 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(this);
+        lidarModel.removePropertyChangeListener(propertyChangeListener);
 
-        selectRegionButton.setSelected(false);
+        view.getSelectRegionButton().setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
@@ -113,7 +114,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
         //int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
         //String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
         //String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
-        int lidarIndex=sourceComboBox.getSelectedIndex();
+        int lidarIndex=view.getSourceComboBox().getSelectedIndex();
         String lidarDatasourceName=sourceComboBoxEnumeration.get(lidarIndex);
         String lidarDatasourcePath=lidarModel.getLidarDataSourceMap().get(lidarDatasourceName);
         System.out.println("Current Lidar Datasource Index : " + lidarIndex);
@@ -174,9 +175,9 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
             }*/
 
         System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(this);
-        radialOffsetChanger.setModel(lidarModel);
-        radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
+        lidarModel.addPropertyChangeListener(propertyChangeListener);
+        view.getRadialOffsetSlider().setModel(lidarModel);
+        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
@@ -187,9 +188,9 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
 
         Picker.setPickingEnabled(false);
 
-        ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(this);
+        ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        radialOffsetChanger.reset();
+        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();
@@ -236,12 +237,12 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently
     @Override
     public void itemStateChanged(ItemEvent e)
     {
-        int lidarIndex=sourceComboBox.getSelectedIndex();
+        int lidarIndex=view.getSourceComboBox().getSelectedIndex();
         System.out.println("Lidar Datasource Changed: " + lidarIndex);
         if (sourceComboBoxEnumeration!=null)
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);
-            browsePanel.repopulate(smallBodyConfig.lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
         }
     }
 

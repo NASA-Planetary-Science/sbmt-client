@@ -19,10 +19,11 @@ import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
-public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class LaserLidarHyperTreeSearchPanel extends LidarSearchController//LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
 
@@ -73,9 +74,9 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(this);
+        lidarModel.removePropertyChangeListener(propertyChangeListener);
 
-        selectRegionButton.setSelected(false);
+        view.getSelectRegionButton().setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
@@ -126,7 +127,7 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
             interiorPoly.DeepCopy(box.GetOutput());
         }
 
-        String selectedSourceName = (String)sourceComboBox.getModel().getElementAt(sourceComboBox.getSelectedIndex());
+        String selectedSourceName = (String)view.getSourceComboBox().getModel().getElementAt(view.getSourceComboBox().getSelectedIndex());
         System.out.println("Selected lidar source name: "+selectedSourceName);
 //        if (lidarDatasourceName.equals("Default"))
             lidarModel=(LaserLidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
@@ -144,9 +145,9 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
             }*/
 
         System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(this);
-        radialOffsetChanger.setModel(lidarModel);
-        radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
+        lidarModel.addPropertyChangeListener(propertyChangeListener);
+        view.getRadialOffsetSlider().setModel(lidarModel);
+        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
@@ -158,9 +159,9 @@ public class LaserLidarHyperTreeSearchPanel extends LidarSearchPanel  // current
 
         Picker.setPickingEnabled(false);
 
-        ((LaserLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(this);
+        ((LaserLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        radialOffsetChanger.reset();
+        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();
