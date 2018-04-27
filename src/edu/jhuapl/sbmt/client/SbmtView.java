@@ -102,6 +102,7 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         super(statusBar, smallBodyConfig);
         this.stateManager = TrackedStateManager.of("View " + getUniqueName());
+        initializeStateManager();
     }
 
 
@@ -548,7 +549,6 @@ public class SbmtView extends View implements PropertyChangeListener
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-//                    vtkCamera camera = ((RenderPanel) SbmtView.this.getRenderer().getRenderWindowPanel()).getActiveCamera();
                         vtkCamera camera = panel.getActiveCamera();
                         result.put(positionKey, camera.GetPosition());
                         result.put(upKey, camera.GetViewUp());
@@ -559,6 +559,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(State state)
                 {
+                    initialize();
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null)
                     {
