@@ -44,7 +44,10 @@ int main(int nargs, char** argv)
 	    fprintf(stderr, "usage: timeHistory <body> <spacecraft> <metaKernel> <startTime> <endTime> <spinRate>\n");
 	    fprintf(stderr, "       body                  - IAU name of body in uppercase\n");
 	    fprintf(stderr, "       spacecraft            - SPICE name of spacecraft\n");
-	    fprintf(stderr, "       metaKernel            - file name of SPICE metakernel\n");
+	    fprintf(stderr, "       metaKernel            - file name of SPICE metakernel,\n");
+	    fprintf(stderr, "                               which must include (at least) the following kernels:\n");
+	    fprintf(stderr, "                               planetary SPK, target SPK, target body-fixed PCK,\n");
+	    fprintf(stderr, "                               spacecraft SPK, and leap seconds LSK\n");
 	    fprintf(stderr, "       startEt               - SPICE string representation of start time of history\n");
 	    fprintf(stderr, "       startEt               - SPICE string representation of end time of history\n");
 	    fprintf(stderr, "       spinRate (optional)   - body rotation period in days per revolution\n");
