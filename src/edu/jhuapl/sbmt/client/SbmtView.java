@@ -53,7 +53,7 @@ import edu.jhuapl.sbmt.gui.image.ImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
+import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
@@ -433,7 +433,8 @@ public class SbmtView extends View implements PropertyChangeListener
                 customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+//            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+            customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
 
             /*if (getSmallBodyConfig().hasMapmaker)
             {
@@ -507,10 +508,6 @@ public class SbmtView extends View implements PropertyChangeListener
                 if (units != null && !units.isEmpty())
                 {
                     title += " (" + units + ")";
-                }
-                if (title.length() > 16)
-                {
-                    title = title.replaceAll("\\s+", "\n");
                 }
                 smallBodyColorbar.setTitle(title);
                 if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
