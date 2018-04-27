@@ -539,6 +539,7 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new StateManager() {
+                final StateKey<Boolean> initializedKey = stateManager.getKey("initialized");
                 final StateKey<double[]> positionKey = stateManager.getKey("cameraPosition");
                 final StateKey<double[]> upKey = stateManager.getKey("cameraUp");
 
@@ -546,6 +547,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 public State store()
                 {
                     State result = State.of(Version.of(1, 0));
+                    result.put(initializedKey, isInitialized());
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
@@ -559,16 +561,18 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(State state)
                 {
-                    initialize();
-                    Renderer localRenderer = SbmtView.this.getRenderer();
-                    if (localRenderer != null)
-                    {
-                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-                        vtkCamera camera = panel.getActiveCamera();
-                        camera.SetPosition(state.get(positionKey));
-                        camera.SetViewUp(state.get(upKey));
-                        panel.resetCameraClippingRange();
-                        panel.Render();
+                    if (state.get(initializedKey)) {
+                        initialize();
+                        Renderer localRenderer = SbmtView.this.getRenderer();
+                        if (localRenderer != null)
+                        {
+                            RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                            vtkCamera camera = panel.getActiveCamera();
+                            camera.SetPosition(state.get(positionKey));
+                            camera.SetViewUp(state.get(upKey));
+                            panel.resetCameraClippingRange();
+                            panel.Render();
+                        }
                     }
                 }
 

@@ -192,8 +192,8 @@ public class SbmtViewManager extends ViewManager
                 @Override
                 public State store()
                 {
+                    State state = State.of(Version.of(1, 0));
                     View currentView = getCurrentView();
-                    State state = State.of(Version.of(2, 1));
                     state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
                     return state;
                 }
@@ -201,10 +201,8 @@ public class SbmtViewManager extends ViewManager
                 @Override
                 public void retrieve(State source)
                 {
-                    if (Version.of(1, 0).compareTo(source.getVersion()) <= 0) {
-                        String uniqueName = source.get(currentViewKey);
-                        setCurrentView(getView(uniqueName));
-                    }
+                    String uniqueName = source.get(currentViewKey);
+                    setCurrentView(getView(uniqueName));
                 }
             });
         }
