@@ -8,10 +8,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 
+import vtk.vtkCamera;
+
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
+import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
@@ -26,6 +29,11 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
+import edu.jhuapl.saavtk.state.State;
+import edu.jhuapl.saavtk.state.StateKey;
+import edu.jhuapl.saavtk.state.StateManager;
+import edu.jhuapl.saavtk.state.TrackedStateManager;
+import edu.jhuapl.saavtk.state.Version;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
@@ -45,7 +53,7 @@ import edu.jhuapl.sbmt.gui.image.ImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.TrackPanel;
+import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
@@ -79,6 +87,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 public class SbmtView extends View implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1L;
+    private final TrackedStateManager stateManager;
     private Colorbar smallBodyColorbar;
 
 
@@ -92,7 +101,8 @@ public class SbmtView extends View implements PropertyChangeListener
     public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
-
+        this.stateManager = TrackedStateManager.of("View " + getUniqueName());
+        initializeStateManager();
     }
 
 
@@ -423,7 +433,8 @@ public class SbmtView extends View implements PropertyChangeListener
                 customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+//            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
+            customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
 
             /*if (getSmallBodyConfig().hasMapmaker)
             {
@@ -498,10 +509,6 @@ public class SbmtView extends View implements PropertyChangeListener
                 {
                     title += " (" + units + ")";
                 }
-                if (title.length() > 16)
-                {
-                    title = title.replaceAll("\\s+", "\n");
-                }
                 smallBodyColorbar.setTitle(title);
                 if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(smallBodyColorbar.getActor())==0)
                     renderer.getRenderWindowPanel().getRenderer().AddActor(smallBodyColorbar.getActor());
@@ -524,5 +531,50 @@ public class SbmtView extends View implements PropertyChangeListener
         smallBodyColorbar = new Colorbar(renderer);
     }
 
+    @Override
+    public void initializeStateManager()
+    {
+        if (!stateManager.isRegistered()) {
+            stateManager.register(new StateManager() {
+                final StateKey<Boolean> initializedKey = stateManager.getKey("initialized");
+                final StateKey<double[]> positionKey = stateManager.getKey("cameraPosition");
+                final StateKey<double[]> upKey = stateManager.getKey("cameraUp");
+
+                @Override
+                public State store()
+                {
+                    State result = State.of(Version.of(1, 0));
+                    result.put(initializedKey, isInitialized());
+                    Renderer localRenderer = SbmtView.this.getRenderer();
+                    if (localRenderer != null) {
+                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        vtkCamera camera = panel.getActiveCamera();
+                        result.put(positionKey, camera.GetPosition());
+                        result.put(upKey, camera.GetViewUp());
+                    }
+                    return result;
+                }
+
+                @Override
+                public void retrieve(State state)
+                {
+                    if (state.get(initializedKey)) {
+                        initialize();
+                        Renderer localRenderer = SbmtView.this.getRenderer();
+                        if (localRenderer != null)
+                        {
+                            RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                            vtkCamera camera = panel.getActiveCamera();
+                            camera.SetPosition(state.get(positionKey));
+                            camera.SetViewUp(state.get(upKey));
+                            panel.resetCameraClippingRange();
+                            panel.Render();
+                        }
+                    }
+                }
+
+            });
+        }
+    }
 
 }
