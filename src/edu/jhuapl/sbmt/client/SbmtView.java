@@ -16,6 +16,11 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -29,11 +34,6 @@ import edu.jhuapl.saavtk.model.structure.LineModel;
 import edu.jhuapl.saavtk.model.structure.PointModel;
 import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
-import edu.jhuapl.saavtk.state.State;
-import edu.jhuapl.saavtk.state.StateKey;
-import edu.jhuapl.saavtk.state.StateManager;
-import edu.jhuapl.saavtk.state.TrackedStateManager;
-import edu.jhuapl.saavtk.state.Version;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
@@ -87,7 +87,7 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 public class SbmtView extends View implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1L;
-    private final TrackedStateManager stateManager;
+    private final TrackedMetadataManager stateManager;
     private Colorbar smallBodyColorbar;
 
 
@@ -101,7 +101,7 @@ public class SbmtView extends View implements PropertyChangeListener
     public SbmtView(StatusBar statusBar, SmallBodyViewConfig smallBodyConfig)
     {
         super(statusBar, smallBodyConfig);
-        this.stateManager = TrackedStateManager.of("View " + getUniqueName());
+        this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
         initializeStateManager();
     }
 
@@ -535,15 +535,15 @@ public class SbmtView extends View implements PropertyChangeListener
     public void initializeStateManager()
     {
         if (!stateManager.isRegistered()) {
-            stateManager.register(new StateManager() {
-                final StateKey<Boolean> initializedKey = stateManager.getKey("initialized");
-                final StateKey<double[]> positionKey = stateManager.getKey("cameraPosition");
-                final StateKey<double[]> upKey = stateManager.getKey("cameraUp");
+            stateManager.register(new MetadataManager() {
+                final Key<Boolean> initializedKey = stateManager.getKey("initialized");
+                final Key<double[]> positionKey = stateManager.getKey("cameraPosition");
+                final Key<double[]> upKey = stateManager.getKey("cameraUp");
 
                 @Override
-                public State store()
+                public Metadata store()
                 {
-                    State result = State.of(Version.of(1, 0));
+                    Metadata result = Metadata.of(Version.of(1, 0));
                     result.put(initializedKey, isInitialized());
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
@@ -556,7 +556,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 }
 
                 @Override
-                public void retrieve(State state)
+                public void retrieve(Metadata state)
                 {
                     if (state.get(initializedKey)) {
                         initialize();
