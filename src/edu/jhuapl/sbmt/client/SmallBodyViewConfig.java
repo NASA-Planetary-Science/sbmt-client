@@ -3102,7 +3102,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
+        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer("file://" + Configuration.getImportedShapeModelsDir(), getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
         return info.isURLAccessAuthorized() == YesOrNo.YES && (info.isExistsLocally() || info.isExistsOnServer() == YesOrNo.YES);
     }
 
