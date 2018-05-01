@@ -536,9 +536,9 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Boolean> initializedKey = stateManager.getKey("initialized");
-                final Key<double[]> positionKey = stateManager.getKey("cameraPosition");
-                final Key<double[]> upKey = stateManager.getKey("cameraUp");
+                final Key<Boolean> initializedKey = Key.of("initialized");
+                final Key<double[]> positionKey = Key.of("cameraPosition");
+                final Key<double[]> upKey = Key.of("cameraUp");
 
                 @Override
                 public Metadata store()

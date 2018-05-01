@@ -187,7 +187,7 @@ public class SbmtViewManager extends ViewManager
         if (!stateManager.isRegistered())
         {
             stateManager.register(new MetadataManager() {
-                final Key<String> currentViewKey = stateManager.getKey("currentView");
+                final Key<String> currentViewKey = Key.of("currentView");
 
                 @Override
                 public Metadata store()
