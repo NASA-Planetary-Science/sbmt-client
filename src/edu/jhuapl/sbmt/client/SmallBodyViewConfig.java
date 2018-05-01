@@ -354,6 +354,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
         }
 
         if (Configuration.isAPLVersion())
@@ -427,6 +430,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
             configArray.add(c);
         }
