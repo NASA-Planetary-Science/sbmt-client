@@ -19,6 +19,8 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
@@ -447,7 +449,7 @@ public class DatabaseGeneratorSql
 //        IO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
 //                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
         RQ36_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
-                "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
+                "nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
         RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
         RQ36V4_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
@@ -457,7 +459,8 @@ public class DatabaseGeneratorSql
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+                "data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+//                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
@@ -525,18 +528,16 @@ public class DatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        Configuration.setAppName("neartool");
-        Configuration.setCacheVersion("2");
-        Configuration.setAPLVersion(true);
-        SmallBodyViewConfig.initialize();
-        System.setProperty("java.awt.headless", "true");
-
+        // default configuration parameters
+        String appName = "neartool";
+        String cacheVersion = "2";
+        boolean aplVersion = true;
         String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
-        Configuration.setRootURL(rootURL);
 
         boolean appendTables = false;
         boolean modifyMain = false;
 
+        // modify configuration parameters with command line args
         int i = 0;
         for (; i < args.length; ++i) {
             if (args[i].equals("--root-url")) {
@@ -560,6 +561,24 @@ public class DatabaseGeneratorSql
         if (args.length - i != numberRequiredArgs)
             usage();
 
+        // basic default configuration, most of these will be overwritten by the configureMission() method
+//        Configuration.setAppName(appName);
+        Configuration.setCacheVersion(cacheVersion);
+        Configuration.setAPLVersion(aplVersion);
+        Configuration.setRootURL(rootURL);
+
+        SbmtMultiMissionTool.configureMission();
+
+        // authentication
+        Authenticator.authenticate();
+
+        // initialize view config
+        SmallBodyViewConfig.initialize();
+
+        // VTK
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
+
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
@@ -569,13 +588,18 @@ public class DatabaseGeneratorSql
         else
             runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
 
-        // VTK and authentication
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
-        Authenticator.authenticate();
+        Mission mission = SbmtMultiMissionTool.getMission();
+        System.out.println("Mission: " + mission);
 
         for (RunInfo ri : runInfos)
         {
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
+
+            String pathToFileList = ri.pathToFileList;
+            if (!pathToFileList.startsWith("/project/"))
+                pathToFileList = Configuration.getRootURL() + File.separator + pathToFileList;
+
+            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
             generator.run(ri.pathToFileList, mode);
         }
     }

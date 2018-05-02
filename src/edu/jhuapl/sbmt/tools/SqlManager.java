@@ -85,14 +85,12 @@ public class SqlManager
             return;
         }
 
-       List<String> credentials = FileUtil.getFileLinesAsStringList(
-               Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
+       List<String> credentials = FileUtil.getFileLinesAsStringList(Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
        String username = credentials.get(0);
        String password = credentials.get(1);
 
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
-        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" +
-        "user=" + username + "&password=" + password);
+        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" + "user=" + username + "&password=" + password);
 
     }
 
