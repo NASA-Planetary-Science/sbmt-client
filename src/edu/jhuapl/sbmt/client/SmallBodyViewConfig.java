@@ -321,6 +321,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+
             c.density = 1.0;
             c.useMinimumReferencePotential = false;
             c.rotationRate = 0.000407026411379;
@@ -395,6 +402,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
