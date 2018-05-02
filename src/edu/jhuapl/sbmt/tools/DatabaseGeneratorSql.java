@@ -16,6 +16,8 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
@@ -376,11 +378,21 @@ public class DatabaseGeneratorSql
 
         List<String> files = null;
         try {
-            files = FileUtil.getFileLinesAsStringList(fileList);
+            // if the file path starts with "/project/" then we know we are accessing files from the local file system
+            if (fileList.startsWith("/project/"))
+                files = FileUtil.getFileLinesAsStringList(fileList);
+            // otherwise, we try to load the file from the server via HTTP
+            else
+                files = FileCache.getFileLinesFromServerAsStringList(fileList);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
         }
+
+        for (String file : files)
+            System.out.println(file);
+
+        System.exit(0);
 
         try
         {
@@ -459,7 +471,7 @@ public class DatabaseGeneratorSql
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
 //                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
@@ -539,15 +551,23 @@ public class DatabaseGeneratorSql
 
         // modify configuration parameters with command line args
         int i = 0;
-        for (; i < args.length; ++i) {
-            if (args[i].equals("--root-url")) {
+        for (; i < args.length; ++i)
+        {
+            if (args[i].equals("--root-url"))
+            {
                 rootURL = args[++i];
             }
-            else if (args[i].equals("--append-tables")){
+            else if (args[i].equals("--append-tables"))
+            {
                 appendTables = true;
             }
-            else if (args[i].equals("--modify-main")){
+            else if (args[i].equals("--modify-main"))
+            {
                 modifyMain = true;
+            }
+            else if (args[i].equals("--debug"))
+            {
+                Debug.setEnabled(true);
             }
             else {
                 // We've encountered something that is not an option, must be at the args
@@ -596,11 +616,11 @@ public class DatabaseGeneratorSql
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
 
             String pathToFileList = ri.pathToFileList;
-            if (!pathToFileList.startsWith("/project/"))
-                pathToFileList = Configuration.getRootURL() + File.separator + pathToFileList;
+//            if (!pathToFileList.startsWith("/project/"))
+//                pathToFileList = Configuration.getRootURL() + File.separator + pathToFileList;
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(ri.pathToFileList, mode);
+            generator.run(pathToFileList, mode);
         }
     }
 }
