@@ -389,19 +389,27 @@ public class DatabaseGeneratorSql
             return;
         }
 
-        for (String file : files)
-            System.out.println(file);
+//        System.out.println("Generating database for the following image files:");
+//        for (String file : files)
+//            System.out.println(file);
 
-        System.exit(0);
+        String dburl = null;
+        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
+            dburl = "hyb2sbmt.jhuapl.edu";
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2)
+            dburl = "sd-mysql.jhuapl.edu";
 
         try
         {
-            db = new SqlManager(null);
+            db = new SqlManager(dburl);
+            System.out.println("Connected to database: " + dburl);
         }
         catch (Exception ex1) {
             ex1.printStackTrace();
             return;
         }
+
+        System.exit(0);
 
         String imagesTable = getImagesTableNames(source);
         String cubesTable = getCubesTableNames(source);
