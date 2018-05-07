@@ -244,6 +244,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
