@@ -29,6 +29,7 @@ import edu.jhuapl.saavtk.gui.menu.FileMenu;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -192,7 +193,7 @@ public class SbmtViewManager extends ViewManager
                 @Override
                 public Metadata store()
                 {
-                    Metadata state = Metadata.of(Version.of(1, 0));
+                    SettableMetadata state = SettableMetadata.of(Version.of(1, 0));
                     View currentView = getCurrentView();
                     state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
                     return state;

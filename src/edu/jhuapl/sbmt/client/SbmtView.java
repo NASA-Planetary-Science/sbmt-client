@@ -19,6 +19,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Graticule;
@@ -543,7 +544,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public Metadata store()
                 {
-                    Metadata result = Metadata.of(Version.of(1, 0));
+                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
                     result.put(initializedKey, isInitialized());
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
