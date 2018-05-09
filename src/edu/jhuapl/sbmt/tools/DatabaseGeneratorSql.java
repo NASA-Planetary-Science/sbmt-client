@@ -409,8 +409,6 @@ public class DatabaseGeneratorSql
             return;
         }
 
-        System.exit(0);
-
         String imagesTable = getImagesTableNames(source);
         String cubesTable = getCubesTableNames(source);
 
