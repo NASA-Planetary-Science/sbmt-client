@@ -366,9 +366,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
-            c.rootDirOnServer = "/GASKELL/RQ36_V4";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.rootDirOnServer = "/bennu/bennu-simulated-v4";
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
