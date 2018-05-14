@@ -44,18 +44,18 @@ public class SmallBodyModel extends GenericPolyhedralModel
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
      */
-    public SmallBodyModel()
+    public SmallBodyModel(String uniqueModelId)
     {
-        super();
+        super(uniqueModelId);
     }
 
     /**
      * Convenience method for initializing a SmallBodyModel with just a vtkPolyData.
      * @param polyData
      */
-    public SmallBodyModel(vtkPolyData polyData)
+    public SmallBodyModel(String uniqueModelId, vtkPolyData polyData)
     {
-        super(polyData);
+        super(uniqueModelId, polyData);
     }
 
     public SmallBodyModel(ViewConfig config)
