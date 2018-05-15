@@ -550,7 +550,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         public Component getListCellRendererComponent(JList paramlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             //setText(value.toString());
             JLabel label = (JLabel) super.getListCellRendererComponent(paramlist, value, index, isSelected, cellHasFocus);
-            label.setOpaque(isSelected); // Highlight only when selected
+            label.setOpaque(true /* was isSelected */); // Highlight only when selected
             if(isSelected) { // I faked a match for the second index, put you matching condition here.
                 label.setBackground(Color.YELLOW);
                 label.setEnabled(false);
@@ -560,6 +560,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             String spectrumFile=createSpectrumName(value.toString());
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             Spectrum spectrum=model.getSpectrum(spectrumFile);
+            setBackground(Color.LIGHT_GRAY);
             if (spectrum==null)
                 setForeground(Color.black);
             else
@@ -573,7 +574,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                         color[i]=0;
                 }
                 setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
-                setBackground(paramlist.getBackground());
+
+//                setBackground(paramlist.getBackground());
             }
             }
 
