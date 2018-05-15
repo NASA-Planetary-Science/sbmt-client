@@ -99,14 +99,14 @@ public class StateHistoryController implements TableModelListener, ItemListener,
     public static final int timerInterval = 100;
     private boolean playChecked = false;
     private boolean manualSetTime = false;
-
+    public boolean earthEnabled = true;
 
     public StateHistoryController(
             final ModelManager modelManager,
-            Renderer renderer)
+            Renderer renderer, boolean earthEnabled)
     {
         view = new StateHistoryPanel2();
-
+        this.earthEnabled = earthEnabled;
         stateHistoryCollection = (StateHistoryCollection)modelManager.getModel(ModelNames.STATE_HISTORY_COLLECTION);
 
         this.modelManager = modelManager;
@@ -502,9 +502,13 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             return text;
         }
 
-        public static String[] valuesAsStrings()
+        public static String[] valuesAsStrings(boolean earthIncluded)
         {
             viewChoices[] values = values();
+            if (earthIncluded == false)
+            {
+                values = new viewChoices[]{viewChoices.SPACECRAFT, viewChoices.SUN};
+            }
             String[] asStrings = new String[values.length];
             for (int ix = 0; ix < values.length; ix++) {
                 asStrings[ix] = values[ix].toString();
@@ -517,7 +521,7 @@ public class StateHistoryController implements TableModelListener, ItemListener,
     {
         String[] distanceChoices = {"Distance to Center", "Distance to Surface"};
         DefaultComboBoxModel<String> comboModelDistance = new DefaultComboBoxModel<String>(distanceChoices);
-        DefaultComboBoxModel<String> comboModelView = new DefaultComboBoxModel<String>(viewChoices.valuesAsStrings());
+        DefaultComboBoxModel<String> comboModelView = new DefaultComboBoxModel<String>(viewChoices.valuesAsStrings(earthEnabled));
         view.getDistanceOptions().setModel(comboModelDistance);
         view.getViewOptions().setModel(comboModelView);
         view.getShowEarthPointer().addItemListener(this);
