@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.client;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -38,7 +39,9 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
-import edu.jhuapl.sbmt.gui.dtm.ExperimentalDtmPanel;
+import edu.jhuapl.sbmt.gui.dtm.DEMCreator;
+import edu.jhuapl.sbmt.gui.dtm.ExperimentalDEMPanel;
+import edu.jhuapl.sbmt.gui.dtm.MapmakerDEMCreator;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
@@ -467,7 +470,12 @@ public class SbmtView extends View implements PropertyChangeListener
 
             }
 
-            addTab("Experimental DTM tab", new ExperimentalDtmPanel());
+            if (getPolyhedralModelConfig().body==ShapeModelBody.EROS)
+            {
+
+                DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+                addTab("Experimental DTM tab", new ExperimentalDEMPanel(getModelManager(), creationTool));
+            }
         }
     }
 
