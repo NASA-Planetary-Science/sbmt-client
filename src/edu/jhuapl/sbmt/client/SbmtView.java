@@ -38,6 +38,7 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
+import edu.jhuapl.sbmt.gui.dtm.ExperimentalDtmPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
@@ -465,6 +466,8 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Observing Conditions", new StateHistoryController(getModelManager(), getRenderer()).getView());
 
             }
+
+            addTab("Experimental DTM tab", new ExperimentalDtmPanel());
         }
     }
 
