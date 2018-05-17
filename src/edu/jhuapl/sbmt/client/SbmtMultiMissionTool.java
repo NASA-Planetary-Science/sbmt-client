@@ -35,6 +35,10 @@ public class SbmtMultiMissionTool
         HAYABUSA2_STAGE("244425c"),
         HAYABUSA2_DEPLOY("355536d"),
         OSIRIS_REX("7cd84586"),
+        STAGE_APL_INTERNAL("f7e441b"),
+        STAGE_PUBLIC_RELEASE("8cc8e12"),
+        TEST_APL_INTERNAL("fb404a7"),
+        TEST_PUBLIC_RELEASE("a1a32b4"),
         ;
         private final String hashedName;
 
@@ -98,17 +102,34 @@ public class SbmtMultiMissionTool
     {
         if (mission == null)
         {
-            String missionHash = System.getProperty("edu.jhuapl.sbmt.mission");
-            if (missionHash == null)
+            // Note that System.getProperty is inconsistent with regard to whether it includes quote marks.
+            // To be sure the mission identifier is processed consistently, exclude all non-word characters.
+            String missionIdentifier = System.getProperty("edu.jhuapl.sbmt.mission").replaceAll("\\W+", "");
+            if (missionIdentifier == null)
             {
-                throw new RuntimeException("Invalid launch configuration");
+                throw new IllegalArgumentException("Mission was not specified at build time or run time");
             }
-            for (Mission each: Mission.values())
+            try
             {
-                if (each.getHashedName().equalsIgnoreCase(missionHash))
+                // First see if provided mission identifier matches the enumeration
+                // name.
+                mission = Mission.valueOf(missionIdentifier);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // No mission identifier with that natural enumeration name,
+                // so see if instead this is a hashed mission identifier.
+                for (Mission each: Mission.values())
                 {
-                    mission = each;
-                    break;
+                    if (each.getHashedName().equalsIgnoreCase(missionIdentifier))
+                    {
+                        mission = each;
+                        break;
+                    }
+                }
+                if (mission == null)
+                {
+                    throw new IllegalArgumentException("Invalid mission identifier specified at run time: " + missionIdentifier, e);
                 }
             }
         }
@@ -127,6 +148,20 @@ public class SbmtMultiMissionTool
         {
             case APL_INTERNAL:
             case PUBLIC_RELEASE:
+                Configuration.setAppName("sbmt");
+                Configuration.setCacheVersion("2");
+                Configuration.setAppTitle("SBMT");
+                break;
+            case STAGE_APL_INTERNAL:
+            case STAGE_PUBLIC_RELEASE:
+                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+                Configuration.setAppName("sbmt");
+                Configuration.setCacheVersion("2");
+                Configuration.setAppTitle("SBMT");
+                break;
+            case TEST_APL_INTERNAL:
+            case TEST_PUBLIC_RELEASE:
+                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
                 Configuration.setAppName("sbmt");
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
@@ -169,6 +204,10 @@ public class SbmtMultiMissionTool
         {
             case APL_INTERNAL:
             case PUBLIC_RELEASE:
+            case STAGE_APL_INTERNAL:
+            case STAGE_PUBLIC_RELEASE:
+            case TEST_APL_INTERNAL:
+            case TEST_PUBLIC_RELEASE:
                 splash = new SbmtSplash("resources", "splashLogo.png");
                 break;
             case HAYABUSA2:
