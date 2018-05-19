@@ -1,20 +1,10 @@
 package edu.jhuapl.sbmt.client;
 
-import java.io.File;
-import java.io.IOException;
-
-import vtk.vtkFloatArray;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ColoringInfo;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.sbmt.model.image.Instrument;
-
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
 
 public class SmallBodyModel extends GenericPolyhedralModel
 {
@@ -129,73 +119,5 @@ public class SmallBodyModel extends GenericPolyhedralModel
                 config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
                 lowestResolutionModelStoredInResource);
     }
-
-    @Override
-    protected void loadColoringDataFits(File file, ColoringInfo info) throws IOException
-    {
-        vtkFloatArray array = new vtkFloatArray();
-
-        array.SetNumberOfComponents(1);
-        if (getColoringValueType() == ColoringValueType.POINT_DATA)
-            array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfPoints());
-        else
-            array.SetNumberOfTuples(getSmallBodyPolyData().GetNumberOfCells());
-
-
-        Fits fits = null;
-        try {
-            fits = new Fits(file);
-            fits.read();
-
-            BasicHDU<?> hdu = fits.getHDU(1);
-            if (hdu instanceof AsciiTableHDU)
-            {
-                AsciiTableHDU athdu = (AsciiTableHDU)hdu;
-//                int ncols = athdu.getNCols();
-                int nrows = athdu.getNRows();
-
-//                System.out.println("Reading Ancillary FITS Data");
-//                System.out.println("Number of Plates: " + nrows);
-
-                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
-
-                if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
-                    throw new IOException("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
-
-                for (int j=0; j<nrows; j++)
-                {
-                    float value = scalars[j];
-                    array.SetTuple1(j, value);
-                }
-            }
-            else if (hdu instanceof BinaryTableHDU)
-            {
-                BinaryTableHDU athdu = (BinaryTableHDU)hdu;
-//                int ncols = athdu.getNCols();
-                int nrows = athdu.getNRows();
-
-//                System.out.println("Reading Ancillary FITS Data");
-//                System.out.println("Number of Plates: " + nrows);
-
-                if (nrows!=getSmallBodyPolyData().GetNumberOfCells())
-                    throw new IOException("# rows on file ("+nrows+") != # faces ("+getSmallBodyPolyData().GetNumberOfCells()+")");
-
-                float[] scalars = (float[])athdu.getColumn(FITS_SCALAR_COLUMN_INDEX);
-                for (int j=0; j<nrows; j++)
-                {
-                    float value = scalars[j];
-                    array.SetTuple1(j, value);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new IOException(e);
-        } finally {
-            if (fits != null) fits.close();
-        }
-
-        info.coloringValues = array;
-    }
-
 
 }
