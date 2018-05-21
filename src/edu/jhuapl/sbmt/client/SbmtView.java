@@ -462,7 +462,12 @@ public class SbmtView extends View implements PropertyChangeListener
             if (getConfig().hasStateHistory)
             {
 //                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
-                addTab("Observing Conditions", new StateHistoryController(getModelManager(), getRenderer()).getView());
+                StateHistoryController controller = null;
+                if (getConfig().body == ShapeModelBody.EARTH)
+                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
+                else
+                    controller = new StateHistoryController(getModelManager(), getRenderer(), true);
+                addTab("Observing Conditions", controller.getView());
 
             }
         }
