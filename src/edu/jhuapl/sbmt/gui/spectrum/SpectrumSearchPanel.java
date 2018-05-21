@@ -446,14 +446,16 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
                     new double[]{redMinVal, redMinVal, redMinVal},
-                    new double[]{redMaxVal, redMaxVal, redMaxVal});
+                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+                    instrument);
         }
         else
         {
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
                     new double[]{redMinVal, greenMinVal, blueMinVal},
-                    new double[]{redMaxVal, greenMaxVal, blueMaxVal});
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+                    instrument);
         }
 
 
@@ -1751,7 +1753,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JComboBox blueComboBox;
+    protected JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
     private javax.swing.JLabel blueMaxLabel;
     protected javax.swing.JSpinner blueMaxSpinner;
@@ -1774,7 +1776,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JLabel fromPhaseLabel;
     private javax.swing.JFormattedTextField fromPhaseTextField;
     private javax.swing.JCheckBox grayscaleCheckBox;
-    protected javax.swing.JComboBox greenComboBox;
+    protected JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JLabel greenMaxLabel;
     protected javax.swing.JSpinner greenMaxSpinner;
@@ -1804,13 +1806,13 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton nextButton;
-    protected javax.swing.JComboBox numberOfFootprintsComboBox;
+    protected JComboBox numberOfFootprintsComboBox;
     private javax.swing.JCheckBox polygonType0CheckBox;
     private javax.swing.JCheckBox polygonType1CheckBox;
     private javax.swing.JCheckBox polygonType2CheckBox;
     private javax.swing.JCheckBox polygonType3CheckBox;
     private javax.swing.JButton prevButton;
-    protected javax.swing.JComboBox redComboBox;
+    protected JComboBox redComboBox;
     private javax.swing.JLabel redLabel;
     private javax.swing.JLabel redMaxLabel;
     protected javax.swing.JSpinner redMaxSpinner;
