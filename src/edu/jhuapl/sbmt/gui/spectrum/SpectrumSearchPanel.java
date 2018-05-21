@@ -362,7 +362,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         int endId = idPair.id2;
 
         SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        model.removeAllSpectra();
+//        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -1553,6 +1553,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
 
+    protected TreeSet<Integer> cubeList = null;
+
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
@@ -1594,7 +1596,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                     endDateGreg.get(GregorianCalendar.MILLISECOND),
                     DateTimeZone.UTC);
 
-            TreeSet<Integer> cubeList = null;
+//            TreeSet<Integer> cubeList = null;
+            if (cubeList != null)
+                cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
