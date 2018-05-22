@@ -362,7 +362,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         int endId = idPair.id2;
 
         SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        model.removeAllSpectra();
+//        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -446,14 +446,16 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
                     new double[]{redMinVal, redMinVal, redMinVal},
-                    new double[]{redMaxVal, redMaxVal, redMaxVal});
+                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+                    instrument);
         }
         else
         {
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
                     new double[]{redMinVal, greenMinVal, blueMinVal},
-                    new double[]{redMaxVal, greenMaxVal, blueMaxVal});
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+                    instrument);
         }
 
 
@@ -550,7 +552,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         public Component getListCellRendererComponent(JList paramlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             //setText(value.toString());
             JLabel label = (JLabel) super.getListCellRendererComponent(paramlist, value, index, isSelected, cellHasFocus);
-            label.setOpaque(isSelected); // Highlight only when selected
+            label.setOpaque(true /* was isSelected */); // Highlight only when selected
             if(isSelected) { // I faked a match for the second index, put you matching condition here.
                 label.setBackground(Color.YELLOW);
                 label.setEnabled(false);
@@ -560,6 +562,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             String spectrumFile=createSpectrumName(value.toString());
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             Spectrum spectrum=model.getSpectrum(spectrumFile);
+            setBackground(Color.LIGHT_GRAY);
             if (spectrum==null)
                 setForeground(Color.black);
             else
@@ -573,7 +576,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                         color[i]=0;
                 }
                 setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
-                setBackground(paramlist.getBackground());
+
+//                setBackground(paramlist.getBackground());
             }
             }
 
@@ -1553,6 +1557,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
 
+    protected TreeSet<Integer> cubeList = null;
+
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
@@ -1594,7 +1600,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                     endDateGreg.get(GregorianCalendar.MILLISECOND),
                     DateTimeZone.UTC);
 
-            TreeSet<Integer> cubeList = null;
+//            TreeSet<Integer> cubeList = null;
+            if (cubeList != null)
+                cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
@@ -1745,7 +1753,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JComboBox blueComboBox;
+    protected JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
     private javax.swing.JLabel blueMaxLabel;
     protected javax.swing.JSpinner blueMaxSpinner;
@@ -1768,7 +1776,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JLabel fromPhaseLabel;
     private javax.swing.JFormattedTextField fromPhaseTextField;
     private javax.swing.JCheckBox grayscaleCheckBox;
-    protected javax.swing.JComboBox greenComboBox;
+    protected JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JLabel greenMaxLabel;
     protected javax.swing.JSpinner greenMaxSpinner;
@@ -1798,13 +1806,13 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton nextButton;
-    protected javax.swing.JComboBox numberOfFootprintsComboBox;
+    protected JComboBox numberOfFootprintsComboBox;
     private javax.swing.JCheckBox polygonType0CheckBox;
     private javax.swing.JCheckBox polygonType1CheckBox;
     private javax.swing.JCheckBox polygonType2CheckBox;
     private javax.swing.JCheckBox polygonType3CheckBox;
     private javax.swing.JButton prevButton;
-    protected javax.swing.JComboBox redComboBox;
+    protected JComboBox redComboBox;
     private javax.swing.JLabel redLabel;
     private javax.swing.JLabel redMaxLabel;
     protected javax.swing.JSpinner redMaxSpinner;

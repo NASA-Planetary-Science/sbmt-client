@@ -244,6 +244,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
@@ -321,6 +325,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+
             c.density = 1.0;
             c.useMinimumReferencePotential = false;
             c.rotationRate = 0.000407026411379;
@@ -354,6 +365,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
         }
 
         if (Configuration.isAPLVersion())
@@ -395,6 +409,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
@@ -427,6 +447,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
             configArray.add(c);
         }
@@ -3102,7 +3124,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
+        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer("file://" + Configuration.getImportedShapeModelsDir(), getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
         return info.isURLAccessAuthorized() == YesOrNo.YES && (info.isExistsLocally() || info.isExistsOnServer() == YesOrNo.YES);
     }
 
