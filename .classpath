@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java|edu/jhuapl/sbmt/util/hololens/HololensEros.java|edu/jhuapl/sbmt/util/hololens/" kind="src" path="src"/>
+	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
 	<classpathentry kind="lib" path="lib/altwg-java-tools.jar"/>
