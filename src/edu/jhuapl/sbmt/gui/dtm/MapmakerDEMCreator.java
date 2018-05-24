@@ -8,6 +8,11 @@ import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk2.event.BasicEventSource;
+import edu.jhuapl.saavtk2.task.BasicTask;
+import edu.jhuapl.saavtk2.task.Task;
+import edu.jhuapl.saavtk2.task.TaskFinishedEvent;
+import edu.jhuapl.saavtk2.task.TaskProgressEvent;
+import edu.jhuapl.saavtk2.task.TaskStartedEvent;
 import edu.jhuapl.saavtk2.util.LatLon;
 import edu.jhuapl.saavtk2.util.MathUtil;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
@@ -19,6 +24,76 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
 
     Path exePathOnServer;
     Path demOutputBasePath;
+
+    static protected class DEMCreationTask extends BasicTask
+    {
+
+        MapmakerNativeWrapper wrapper;
+
+        public DEMCreationTask(MapmakerNativeWrapper wrapper)
+        {
+            this.wrapper=wrapper;
+        }
+
+        @Override
+        public String getDisplayName()
+        {
+            return wrapper.getName();
+        }
+
+        @Override
+        public void run()
+        {
+            fire(new TaskStartedEvent(this));
+            processAndWait(wrapper);
+            DEMKey key=postProcessAndCreate(wrapper);
+            fire(new DEMCreatedEvent(this, key));
+            fire(new TaskFinishedEvent(this));
+        }
+
+        protected void processAndWait(MapmakerNativeWrapper wrapper)
+        {
+            Process mapmakerProcess;
+            try
+            {
+                mapmakerProcess = wrapper.runMapmaker();
+                while (true)
+                {
+                    // if (isCancelled())
+                    // break;
+
+                    fire(new TaskProgressEvent(DEMCreationTask.this, -1));
+
+                    try
+                    {
+                        mapmakerProcess.exitValue();
+                        break;
+                    }
+                    catch (IllegalThreadStateException e)
+                    {
+                        // e.printStackTrace();
+                        // do nothing. We'll get here if the process is still
+                        // running
+                    }
+
+                    Thread.sleep(333);
+                }
+            }
+            catch (IOException | InterruptedException e1)
+            {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+        }
+
+        protected DEMKey postProcessAndCreate(MapmakerNativeWrapper wrapper)
+        {
+            wrapper.convertCubeToFitsAndSaveInOutputFolder(false);
+            return new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
+        }
+
+    }
 
     public MapmakerDEMCreator(Path exePathOnServer, Path demOutputBasePath)
     {
@@ -52,20 +127,34 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     }
 
     @Override
-    public DEMKey create(String name, double latDeg, double lonDeg,
+    public Task getCreationTask(String name, double latDeg, double lonDeg,
             double pixScaleMeters, int pixHalfSize)
     {
-        MapmakerNativeWrapper wrapper=createWrapperInstance();
+        final MapmakerNativeWrapper wrapper=createWrapperInstance();
         wrapper.setName(name);
         wrapper.setLatitude(latDeg);
         wrapper.setLongitude(lonDeg);
         wrapper.setPixelSize(pixScaleMeters);
         wrapper.setHalfSize(pixHalfSize);
         wrapper.setOutputFolder(getDEMOutputBasePath().toFile());
-        processAndWait(wrapper);
-        DEMKey key=postProcessAndCreate(wrapper);
-        fire(new DEMCreatedEvent(this, key));
-        return key;
+        return new DEMCreationTask(wrapper);
+    }
+
+
+    @Override
+    public Task getCreationTask(String name, double[] center, double radius,
+            int pixHalfSize)
+    {
+
+        MapmakerNativeWrapper wrapper=createWrapperInstance();
+        wrapper.setName(name);
+        LatLon ll = MathUtil.reclat(center).toDegrees();
+        wrapper.setLatitude(ll.lat);
+        wrapper.setLongitude(ll.lon);
+        wrapper.setPixelSize(1000.0 * 1.5 * radius / (double) pixHalfSize);
+        wrapper.setHalfSize(pixHalfSize);
+        wrapper.setOutputFolder(getDEMOutputBasePath().toFile());
+        return new DEMCreationTask(wrapper);
     }
 
     protected MapmakerNativeWrapper createWrapperInstance()
@@ -83,65 +172,7 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         }
     }
 
-    protected void processAndWait(MapmakerNativeWrapper wrapper)
-    {
-        Process mapmakerProcess;
-        try
-        {
-            mapmakerProcess = wrapper.runMapmaker();
-            while (true)
-            {
-                // if (isCancelled())
-                // break;
 
-                try
-                {
-                    mapmakerProcess.exitValue();
-                    break;
-                }
-                catch (IllegalThreadStateException e)
-                {
-                    // e.printStackTrace();
-                    // do nothing. We'll get here if the process is still
-                    // running
-                }
-
-                Thread.sleep(333);
-            }
-        }
-        catch (IOException | InterruptedException e1)
-        {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-
-    }
-
-    protected DEMKey postProcessAndCreate(MapmakerNativeWrapper wrapper)
-    {
-        wrapper.convertCubeToFitsAndSaveInOutputFolder(false);
-        return new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
-    }
-
-
-    @Override
-    public DEMKey create(String name, double[] center, double radius,
-            int pixHalfSize)
-    {
-
-        MapmakerNativeWrapper wrapper=createWrapperInstance();
-        wrapper.setName(name);
-        LatLon ll = MathUtil.reclat(center).toDegrees();
-        wrapper.setLatitude(ll.lat);
-        wrapper.setLongitude(ll.lon);
-        wrapper.setPixelSize(1000.0 * 1.5 * radius / (double) pixHalfSize);
-        wrapper.setHalfSize(pixHalfSize);
-        wrapper.setOutputFolder(getDEMOutputBasePath().toFile());
-        processAndWait(wrapper);
-        DEMKey key=postProcessAndCreate(wrapper);
-        fire(new DEMCreatedEvent(this, key));
-        return key;
-    }
 
 
 }
