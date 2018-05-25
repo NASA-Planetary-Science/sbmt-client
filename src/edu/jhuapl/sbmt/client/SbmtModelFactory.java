@@ -97,7 +97,7 @@ public class SbmtModelFactory
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
 
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
@@ -226,16 +226,20 @@ public class SbmtModelFactory
             throw new RuntimeException("Unable to access data for model " + config.getUniqueName());
         }
 
+        SmallBodyModel result = null;
         ShapeModelBody name = config.body;
         ShapeModelType author = config.author;
 
-        if (ShapeModelType.GASKELL == author ||
-                ((ShapeModelType.EXPERIMENTAL == author || ShapeModelType.BLENDER == author) && ShapeModelBody.DEIMOS != name))
+        if (ShapeModelType.GASKELL == author || ((ShapeModelType.EXPERIMENTAL == author || ShapeModelType.BLENDER == author) && ShapeModelBody.DEIMOS != name))
         {
             if (ShapeModelBody.EROS == name)
-                return new Eros(config);
+            {
+                result = new Eros(config);
+            }
             else if (ShapeModelBody.ITOKAWA == name)
-                return new Itokawa(config);
+            {
+                result = new Itokawa(config);
+            }
             else if (ShapeModelBody.TEMPEL_1 == name)
             {
                 String[] names = {
@@ -245,71 +249,84 @@ public class SbmtModelFactory
                         config.rootDirOnServer + "/ver64q.vtk.gz",
                 };
 
-                return new SimpleSmallBody(config, names, paths);
+                result = new SimpleSmallBody(config, names, paths);
             }
             else if (ShapeModelBody.RQ36 == name)
             {
-                if (config.version.equals("V4")) {
-                    return new BennuV4(config);
-                } else {
-                    return new Bennu(config);
+                if (config.version.equals("V4"))
+                {
+                    result = new BennuV4(config);
+                }
+                else
+                {
+                    result = new Bennu(config);
                 }
             }
             else
             {
                 if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
                 {
-                    return new Sbmt2SimpleSmallBody(config);
+                    result = new Sbmt2SimpleSmallBody(config);
                 }
-                String[] names = {
-                        name + " low",
-                        name + " med",
-                        name + " high",
-                        name + " very high"
-                };
-                String[] paths = {
-                        config.rootDirOnServer + "/ver64q.vtk.gz",
-                        config.rootDirOnServer + "/ver128q.vtk.gz",
-                        config.rootDirOnServer + "/ver256q.vtk.gz",
-                        config.rootDirOnServer + "/ver512q.vtk.gz"
-                };
+                else
+                {
+                    String[] names = {
+                            name + " low",
+                            name + " med",
+                            name + " high",
+                            name + " very high"
+                    };
+                    String[] paths = {
+                            config.rootDirOnServer + "/ver64q.vtk.gz",
+                            config.rootDirOnServer + "/ver128q.vtk.gz",
+                            config.rootDirOnServer + "/ver256q.vtk.gz",
+                            config.rootDirOnServer + "/ver512q.vtk.gz"
+                    };
 
-                return new SimpleSmallBody(config, names, paths);
+                    result = new SimpleSmallBody(config, names, paths);
+                }
             }
         }
         else if (ShapeModelType.THOMAS == author)
         {
             if (ShapeModelBody.EROS == name)
-                return new ErosThomas(config);
+                result = new ErosThomas(config);
             else if (ShapeModelBody.VESTA == name)
-                return new VestaOld(config);
+                result = new VestaOld(config);
         }
         else if (ShapeModelType.JORDA == author)
         {
             if (ShapeModelBody.LUTETIA == name)
-                return new Lutetia(config);
+                result = new Lutetia(config);
         }
         else if (ShapeModelType.DLR == author)
         {
             if (ShapeModelBody._67P == name)
-                return new CG(config);
+                result = new CG(config);
         }
         else if (ShapeModelType.CUSTOM == author)
         {
-            return new CustomShapeModel(config);
+            result = new CustomShapeModel(config);
         }
 
-        if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+        if (result == null)
         {
-            return new Sbmt2SimpleSmallBody(config);
+            if (config.rootDirOnServer.toLowerCase().equals(config.rootDirOnServer))
+            {
+                result = new Sbmt2SimpleSmallBody(config);
+            }
+            else
+            {
+                result = new SimpleSmallBody(config);
+            }
         }
 
-        return new SimpleSmallBody(config);
+        return result;
     }
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
         ShapeModelType author = config.author;
 
         if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
