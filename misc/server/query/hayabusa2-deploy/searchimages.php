@@ -1,5 +1,7 @@
 <?php
-
+//
+// ** HAYABUSA2_DEPLOY Version **
+//
 // Get posted data that we know the keys to
 $imagesDatabase=$_POST['imagesDatabase'];
 $cubesDatabase=$_POST['cubesDatabase'];
@@ -61,7 +63,7 @@ else
 $username="sbmt";
 $password="Hyb24Ever!";
 $database="sbmt";
-$host="hyb2sbmt.jhuapl.edu:3306";
+$host="hyb2sbmt.u-aizu.ac.jp:3306";
 
 
 $link = mysqli_connect($host,$username,$password,$database);
