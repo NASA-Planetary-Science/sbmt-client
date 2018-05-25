@@ -12,6 +12,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
+import edu.jhuapl.sbmt.model.bennu.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamV4Image;
@@ -248,7 +249,11 @@ public class SbmtModelFactory
             }
             else if (ShapeModelBody.RQ36 == name)
             {
-                return new Bennu(config);
+                if (config.version.equals("V4")) {
+                    return new BennuV4(config);
+                } else {
+                    return new Bennu(config);
+                }
             }
             else
             {

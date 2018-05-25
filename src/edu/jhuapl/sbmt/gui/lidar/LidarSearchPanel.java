@@ -753,7 +753,9 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
         sourceComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Default" }));
 
-        fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "Binary", "OLA Level 2" }));
+        fileTypeComboBox.setModel(new DefaultComboBoxModel(TrackFileType.names()));
+
+//        fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "Binary", "OLA Level 2" }));
         fileTypeComboBox.setToolTipText("<html>\nTrack file can be in either text or binary format.<br><br>\nIf text, file may contain 3 or more space-delimited columns.<br>\nDepending on the number of columns, the file is interpreted the following way:<br>\n - 3 columns: X, Y, and Z target position. Time and spacecraft position set to zero.<br> \n - 4 columns: time, X, Y, and Z target position. Spacecraft position set to zero.<br>\n - 5 columns: time, X, Y, and Z target position. Spacecraft position set to zero. 5th column ignored.<br>\n - 6 columns: X, Y, Z target position, X, Y, Z spacecraft position. Time set to zero.<br>\n - 7 or more columns: time, X, Y, and Z target position, X, Y, Z spacecraft position. Additional columns ignored.<br>\nNote that time is expressed either as a UTC string such as 2000-04-06T13:19:12.153<br>\nor as a floating point ephemeris time such as 9565219.901.<br>\n<br>\nIf binary, each record must consist of 7 double precision values:<br>\n1. ET<br>\n2. X target<br>\n3. Y target<br>\n4. Z target<br>\n5. X spacecraft position<br>\n6. Y spacecraft position<br>\n7. Z spacecraft position<br>\n");
 
         fileTypeLabel.setText("File Type:");
@@ -1040,12 +1042,17 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             try
             {
                 TrackFileType trackFileType = null;
-                if (fileTypeComboBox.getSelectedItem().equals("Text"))
-                    trackFileType = TrackFileType.TEXT;
-                else if (fileTypeComboBox.getSelectedItem().equals("Binary"))
-                    trackFileType = TrackFileType.BINARY;
-                else if (fileTypeComboBox.getSelectedItem().equals("OLA Level 2"))
-                    trackFileType = TrackFileType.OLA_LEVEL_2;
+                trackFileType = trackFileType.find(fileTypeComboBox.getSelectedItem().toString());
+
+
+//                if (fileTypeComboBox.getSelectedItem().equals("Text"))
+//                    trackFileType = TrackFileType.TEXT;
+//                else if (fileTypeComboBox.getSelectedItem().equals("Binary"))
+//                    trackFileType = TrackFileType.BINARY;
+//                else if (fileTypeComboBox.getSelectedItem().equals("OLA Level 2"))
+//                    trackFileType = TrackFileType.OLA_LEVEL_2;
+//                else if (fileTypeComboBox.getSelectedItem().equals("PLY"))
+//                    trackFileType=TrackFileType.PLY;
                 lidarModel.loadTracksFromFiles(files, trackFileType);
 
                 radialOffsetChanger.reset();

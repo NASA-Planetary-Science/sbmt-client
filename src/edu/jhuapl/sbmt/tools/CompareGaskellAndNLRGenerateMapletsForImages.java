@@ -8,8 +8,8 @@ import java.util.List;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -41,7 +41,7 @@ public class CompareGaskellAndNLRGenerateMapletsForImages
             ) throws Exception
     {
         vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(mapletFile);
-        SmallBodyModel smallBodyModel = new SmallBodyModel(smallBodyPolyData);
+        SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
         MSIImage image = new MSIImage(key, smallBodyModel, true);
 

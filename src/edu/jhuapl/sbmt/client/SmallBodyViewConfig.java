@@ -380,9 +380,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
-            c.rootDirOnServer = "/GASKELL/RQ36_V4";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.rootDirOnServer = "/bennu/bennu-simulated-v4";
+            c.smallBodyLabelPerResolutionLevel = new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] };
+            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -1332,8 +1332,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
-                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
+                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -1344,30 +1344,30 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-//            c.imageSearchFilterNames = new String[]{
-//                    "VSK, Channel 1",
-//                    "VSK, Channel 2",
-//                    "VSK, Channel 3",
-//                    "VIS, Blue",
-//                    "VIS, Minus Blue",
-//                    "VIS, Violet",
-//                    "VIS, Clear",
-//                    "VIS, Green",
-//                    "VIS, Red",
-//            };
-//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-//                    "Phobos 2",
-//                    "Viking Orbiter 1-A",
-//                    "Viking Orbiter 1-B",
-//                    "Viking Orbiter 2-A",
-//                    "Viking Orbiter 2-B",
-//                    "MEX HRSC",
-//                    "MRO HiRISE",
-//                    "MGS MOC"
-//            };
-//            c.hasHierarchicalImageSearch = true;
-//            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VSK, Channel 1",
+                    "VSK, Channel 2",
+                    "VSK, Channel 3",
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                    "Phobos 2",
+                    "Viking Orbiter 1-A",
+                    "Viking Orbiter 1-B",
+                    "Viking Orbiter 2-A",
+                    "Viking Orbiter 2-B",
+                    "MEX HRSC",
+                    "MRO HiRISE",
+                    "MGS MOC"
+            };
+            c.hasHierarchicalImageSearch = true;
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 

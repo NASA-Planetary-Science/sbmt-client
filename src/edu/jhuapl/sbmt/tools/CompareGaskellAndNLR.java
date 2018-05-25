@@ -13,16 +13,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import nom.tam.fits.FitsException;
-
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -38,6 +36,8 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
+
+import nom.tam.fits.FitsException;
 
 
 /**
@@ -459,7 +459,7 @@ public class CompareGaskellAndNLR
                 continue;
             }
             vtkPolyData smallBodyPolyData = PolyDataUtil.loadShapeModel(smallBodyFile);
-            SmallBodyModel smallBodyModel = new SmallBodyModel(smallBodyPolyData);
+            SmallBodyModel smallBodyModel = new SmallBodyModel(key.name, smallBodyPolyData);
 
             MSIImage image = new MSIImage(key, smallBodyModel, true);
 
