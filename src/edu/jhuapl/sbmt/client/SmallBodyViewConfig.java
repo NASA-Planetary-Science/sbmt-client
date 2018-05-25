@@ -1,10 +1,10 @@
 package edu.jhuapl.sbmt.client;
 
-import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
@@ -70,8 +70,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
         c.hasStateHistory = true;
 
@@ -132,13 +130,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
-        c.smallBodyLabelPerResolutionLevel = new String[]{
+        c.setResolution(new String[] {
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
-        };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+        }, new int[]{
                 1708, 7790, 10152, 22540, 89398, 200700
-        };
+        });
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -150,6 +147,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
+        c.setResolution(ImmutableList.of(129600));
 
         configArray.add(c);
 
@@ -161,6 +159,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
+        c.setResolution(ImmutableList.of(56644));
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -174,9 +173,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -234,6 +230,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.OSTRO;
         c.modelLabel = "Ostro et al. (2004)";
         c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
+        c.setResolution(ImmutableList.of(12192));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -244,6 +241,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+
+        c.setResolution(ImmutableList.of(2692));
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
@@ -291,8 +293,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -321,6 +321,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+
             c.density = 1.0;
             c.useMinimumReferencePotential = false;
             c.rotationRate = 0.000407026411379;
@@ -354,6 +361,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
         }
 
         if (Configuration.isAPLVersion())
@@ -367,8 +377,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/bennu/bennu-simulated-v4";
-            c.smallBodyLabelPerResolutionLevel = new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] };
+            c.setResolution(
+                    new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] },
+                    new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] });
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -395,6 +406,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
@@ -427,6 +444,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
             configArray.add(c);
         }
@@ -488,6 +507,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         c.version = "Low resolution";
+        c.setResolution(ImmutableList.of(12796));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -499,6 +519,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         c.version = "High resolution";
+        c.setResolution(ImmutableList.of(39996));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -713,8 +734,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -764,8 +783,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013)";
         c.rootDirOnServer = "/GASKELL/VESTA";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasMapmaker = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -815,8 +832,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -845,15 +860,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.smallBodyLabelPerResolutionLevel = new String[]{
+        c.setResolution(new String[] {
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
                 "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
                 "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-        };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+            }, new int[] {
                 2962, 5824, 11954, 24526, 47784, 98280, 189724,
                 244128, 382620, 784510, 1586194, 3145728
-        };
+            });
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1053,6 +1067,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         // Provided with the delivery in the file aamanifest.txt.
         c.density = 600;
         c.rotationRate = 0.0000323209;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1120,8 +1135,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/deimos/ernst2018";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -1165,8 +1178,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 1.876;
         c.rotationRate = 0.00022803304110600688;
         c.rootDirOnServer = "/GASKELL/PHOBOS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1243,8 +1254,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.BLENDER;
             c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1304,8 +1313,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/phobos/ernst2018";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1586,8 +1593,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013a)";
         c.rootDirOnServer = "/GASKELL/DIONE";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1642,8 +1647,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasColoringData = false;
             configArray.add(c);
         }
@@ -1691,8 +1694,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013b)";
         c.rootDirOnServer = "/GASKELL/MIMAS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1734,8 +1735,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -1806,8 +1805,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/GASKELL/RHEA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasColoringData = false;
             configArray.add(c);
         }
@@ -1820,8 +1817,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013d)";
         c.rootDirOnServer = "/GASKELL/TETHYS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasColoringData = false;
         configArray.add(c);
 
@@ -1835,6 +1830,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/TEMPEL1";
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             configArray.add(c);
         }
 
@@ -1849,8 +1845,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/tempel1/farnham";
         c.shapeModelFileExtension = ".obj";
         // Number of plates found by inspection of files.
-        c.smallBodyLabelPerResolutionLevel = new String[] { "32040 plates" };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 32040 };
+        c.setResolution(new String[] { "32040 plates" }, new int[] { 32040 });
         // Density and rotation rate were provided with delivery manifest.
         c.density = 470.0;
         c.rotationRate = 4.28434129815435E-5;
@@ -1864,6 +1859,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.DUXBURY;
         c.modelLabel = "Farnham et al. (2005)";
         c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
+        c.setResolution(ImmutableList.of(17518));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1876,8 +1872,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
             c.rootDirOnServer = "/GASKELL/67P";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1915,13 +1909,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
-            c.smallBodyLabelPerResolutionLevel = new String[]{
+            c.setResolution(new String[] {
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
-            };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                }, new int[] {
                     17442, 72770, 298442, 1214922, 4895631, 16745283
-            };
+                });
+            c.hasColoringData = false;
             configArray.add(c);
 
             // 67P_V2
@@ -1933,9 +1927,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.version = "V2";
             c.rootDirOnServer = "/GASKELL/67P_V2";
-
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1991,9 +1982,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasCustomBodyCubeSize = true;
             c.customBodyCubeSize = 0.10; // km
 
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
@@ -2045,6 +2033,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        c.setResolution(ImmutableList.of(32040));
         configArray.add(c);
 
 
@@ -2245,8 +2234,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Ernst et al. (in progress)";
         c.rootDirOnServer = "/GASKELL/TELESTO";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2343,8 +2330,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2471,8 +2457,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.OREX;
             c.rootDirOnServer = "/earth/orex";
 //            c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2615,8 +2600,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
             c.hasImageMap=true;
             c.hasColoringData = false;
 
@@ -2713,8 +2697,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.smallBodyLabelPerResolutionLevel = new String[] { "Low (54504 plates)", "High (5450420 plates)" };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 54504, 5450420 };
+            c.setResolution(new String[] { "Low (54504 plates)", "High (5450420 plates)" }, new int[] { 54504, 5450420 });
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
@@ -2779,8 +2762,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
@@ -2823,8 +2804,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/atlas/gaskell";
 //            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
 //            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.smallBodyLabelPerResolutionLevel = new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] };
+            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -2853,8 +2833,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/calypso/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -2874,8 +2852,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/enceladus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasColoringData = false;
             configArray.add(c);
         }
@@ -2896,8 +2872,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/epimetheus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -2924,8 +2898,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/helene/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -2945,8 +2917,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/iapetus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasColoringData = false;
             configArray.add(c);
         }
@@ -2967,8 +2937,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/janus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -2995,8 +2963,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pan/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -3023,8 +2989,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pandora/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -3051,8 +3015,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/prometheus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -3091,6 +3053,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         return BasicImagingInstrument.of(builder.build());
     }
 
+    public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements) {
+    	super(resolutionLabels, resolutionNumberElements);
+    }
+
+    private SmallBodyViewConfig() {
+    	super(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+    }
+
     @Override
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
     {
@@ -3102,8 +3072,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
-        return info.isURLAccessAuthorized() == YesOrNo.YES && (info.isExistsLocally() || info.isExistsOnServer() == YesOrNo.YES);
+        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer("file://" + Configuration.getImportedShapeModelsDir(), getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
+        return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
 
 
