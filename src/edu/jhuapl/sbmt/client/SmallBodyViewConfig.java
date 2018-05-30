@@ -447,6 +447,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
             configArray.add(c);
         }
 
