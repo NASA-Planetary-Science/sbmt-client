@@ -26,13 +26,17 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.state.State;
-import edu.jhuapl.saavtk.state.StateKey;
-import edu.jhuapl.saavtk.state.StateManager;
-import edu.jhuapl.saavtk.state.TrackedStateManager;
-import edu.jhuapl.saavtk.state.Version;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.saavtk.util.SafePaths;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -68,14 +72,14 @@ public class SbmtViewManager extends ViewManager
     // A map of config objects to their indices in the menuEntries list.
     private final Map<ViewConfig, Integer> configMap;
 
-    private final TrackedStateManager stateManager;
+    private final TrackedMetadataManager stateManager;
 
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(statusBar, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
-        this.stateManager = TrackedStateManager.of("ViewManager");
+        this.stateManager = TrackedMetadataManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
     }
 
@@ -175,31 +179,32 @@ public class SbmtViewManager extends ViewManager
     @Override
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        SmallBodyViewConfig config = new SmallBodyViewConfig();
-        config.modelLabel = name;
-        config.customTemporary = temporary;
-        config.author = ShapeModelType.CUSTOM;
-        return new SbmtView(statusBar, config);
+        int numberElements = PolyDataUtil.getVTKPolyDataSize(SafePaths.getString(Configuration.getImportedShapeModelsDir(), name, "model.vtk"));
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(numberElements + " plates"), ImmutableList.<Integer> of(numberElements));
+        customConfig.modelLabel = name;
+        customConfig.customTemporary = temporary;
+        customConfig.author = ShapeModelType.CUSTOM;
+        return new SbmtView(statusBar, customConfig);
     }
 
     @Override
     public void initializeStateManager() {
         if (!stateManager.isRegistered())
         {
-            stateManager.register(new StateManager() {
-                final StateKey<String> currentViewKey = stateManager.getKey("currentView");
+            stateManager.register(new MetadataManager() {
+                final Key<String> currentViewKey = Key.of("currentView");
 
                 @Override
-                public State store()
+                public Metadata store()
                 {
-                    State state = State.of(Version.of(1, 0));
+                    SettableMetadata state = SettableMetadata.of(Version.of(1, 0));
                     View currentView = getCurrentView();
                     state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
                     return state;
                 }
 
                 @Override
-                public void retrieve(State source)
+                public void retrieve(Metadata source)
                 {
                     String uniqueName = source.get(currentViewKey);
                     setCurrentView(getView(uniqueName));

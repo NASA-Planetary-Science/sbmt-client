@@ -242,9 +242,13 @@ public class SbmtRunnable implements Runnable
         switch (mission)
         {
         case APL_INTERNAL:
+        case STAGE_APL_INTERNAL:
+        case TEST_APL_INTERNAL:
             config.enable(true);
             break;
         case PUBLIC_RELEASE:
+        case STAGE_PUBLIC_RELEASE:
+        case TEST_PUBLIC_RELEASE:
             if (
                     !ShapeModelType.HAYABUSA2.equals(config.author) &&
                     !ShapeModelType.OREX.equals(config.author) &&
@@ -300,7 +304,7 @@ public class SbmtRunnable implements Runnable
                 config.enable(true);
             }
             break;
-            default:
+        default:
                 throw new AssertionError();
         }
     }
