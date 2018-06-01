@@ -116,6 +116,16 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public SpectralInstrument[] spectralInstruments = {};
 
+    protected BodyViewConfig(String[] resolutionLabels, int[] resolutionNumberElements)
+    {
+        super(resolutionLabels, resolutionNumberElements);
+    }
+
+    protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
+    {
+        super(resolutionLabels, resolutionNumberElements);
+    }
+
     @Override
     public String getUniqueName()
     {
@@ -278,12 +288,14 @@ public abstract class BodyViewConfig extends ViewConfig
         if (shapeModelFileBaseName == null || shapeModelFileExtension == null) {
             throw new NullPointerException();
         }
-        int numberResolutions = smallBodyLabelPerResolutionLevel != null && smallBodyLabelPerResolutionLevel.length > 0 ? smallBodyLabelPerResolutionLevel.length : 1;
 
-        final String[] modelFiles = new String[numberResolutions];
+        int numberResolutions = getResolutionLabels().size();
+
+        String[] modelFiles = new String[numberResolutions];
         for (int index = 0; index < numberResolutions; ++index) {
             modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
         }
+
         return modelFiles;
     }
 }
