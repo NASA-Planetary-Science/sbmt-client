@@ -13,6 +13,7 @@ package edu.jhuapl.sbmt.gui.spectrum;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -33,10 +34,12 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ListSelectionEvent;
@@ -87,6 +90,10 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     protected IdPair resultIntervalCurrentlyShown = null;
     protected boolean currentlyEditingUserDefinedFunction = false;
     Renderer renderer;
+
+    JButton saveImageListButton = new JButton("Save Spectrum List");
+    JButton saveSelectedImageListButton = new JButton();
+    JButton loadImageListButton = new JButton("Load Spectrum List");
 
     protected final SpectralInstrument instrument;
 
@@ -212,8 +219,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 for (int i=0; i<size; ++i)
                 {
                     String result = spectrumRawResults.get(i);
-                    String spectrum  = new File(result).getName();
-                    out.write(spectrum + " " + nl);
+                    String spectrum  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
+                    out.write(spectrum + ".spect " + nl);
 
 //                    String dtStr = spectrumRawResults.get(i).get(1);  //Spectra don't currently have times in there - this may change in the future
 //                    Date dt = new Date(Long.parseLong(dtStr));
@@ -252,13 +259,14 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                     if (lines.get(i).startsWith("#")) continue;
                     String[] words = lines.get(i).trim().split("\\s+");
                     List<String> result = new ArrayList<String>();
+                    result.add(words[0]);
 //                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
 //                    result.add(name);
 //                    Date dt = sdf.parse(words[1]);
 //                    result.add(String.valueOf(dt.getTime()));
-//                    results.add(result);
+                    results.add(result);
                 }
-
+                setSpectrumSearchResults(results);
 //                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
 
 //                setImageResults(processResults(results));
@@ -766,6 +774,27 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         polygonType3CheckBox = new javax.swing.JCheckBox();
         customFunctionsButton = new javax.swing.JButton();
 
+        saveImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                saveSpectrumListButtonActionPerformed(e);
+            }
+        });
+
+        loadImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                loadSpectrumListButtonActionPerformed(e);
+
+            }
+        });
+
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
                 formComponentHidden(evt);
@@ -1178,10 +1207,30 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 removeAllFootprintsButtonActionPerformed(evt);
             }
         });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(removeAllFootprintsButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(saveImageListButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(loadImageListButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
-        jPanel8.add(removeAllFootprintsButton, gridBagConstraints);
+        jPanel8.add(buttonPanel, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
