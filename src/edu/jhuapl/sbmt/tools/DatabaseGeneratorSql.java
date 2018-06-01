@@ -378,8 +378,8 @@ public class DatabaseGeneratorSql
 
         List<String> files = null;
         try {
-            // if the file path starts with "/project/" then we know we are accessing files from the local file system
-            if (fileList.startsWith("/project/"))
+            // if the file path starts with "/" then we know we are accessing files from the local file system
+            if (fileList.startsWith("/"))
                 files = FileUtil.getFileLinesAsStringList(fileList);
             // otherwise, we try to load the file from the server via HTTP
             else
@@ -479,9 +479,11 @@ public class DatabaseGeneratorSql
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+//                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+//                "ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
@@ -627,8 +629,6 @@ public class DatabaseGeneratorSql
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
 
             String pathToFileList = ri.pathToFileList;
-//            if (!pathToFileList.startsWith("/project/"))
-//                pathToFileList = Configuration.getRootURL() + File.separator + pathToFileList;
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
             generator.run(pathToFileList, mode);
