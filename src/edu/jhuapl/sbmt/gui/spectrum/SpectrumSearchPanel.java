@@ -12,18 +12,24 @@ package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListCellRenderer;
@@ -46,6 +52,7 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
@@ -55,6 +62,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -78,7 +86,6 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     protected String spectrumResultsLabelText = " ";
     protected IdPair resultIntervalCurrentlyShown = null;
     protected boolean currentlyEditingUserDefinedFunction = false;
-
     Renderer renderer;
 
     protected final SpectralInstrument instrument;
@@ -183,6 +190,88 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
             blueComboBox.addItem(fp.GetFunction());
+        }
+    }
+
+    private void saveSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "spectrumlist.txt");
+
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                String nl = System.getProperty("line.separator");
+                out.write("#Spectrum_Name Image_Time_UTC"  + nl);
+                int size = resultList.getModel().getSize();
+                for (int i=0; i<size; ++i)
+                {
+                    String result = spectrumRawResults.get(i);
+                    String spectrum  = new File(result).getName();
+                    out.write(spectrum + " " + nl);
+
+//                    String dtStr = spectrumRawResults.get(i).get(1);  //Spectra don't currently have times in there - this may change in the future
+//                    Date dt = new Date(Long.parseLong(dtStr));
+
+//                    out.write(spectrum + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
+                }
+
+                out.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    if (lines.get(i).startsWith("#")) continue;
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    List<String> result = new ArrayList<String>();
+//                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
+//                    result.add(name);
+//                    Date dt = sdf.parse(words[1]);
+//                    result.add(String.valueOf(dt.getTime()));
+//                    results.add(result);
+                }
+
+//                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+//                setImageResults(processResults(results));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
         }
     }
 
