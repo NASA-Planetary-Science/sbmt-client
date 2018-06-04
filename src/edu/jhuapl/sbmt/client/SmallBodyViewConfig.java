@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -447,6 +448,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
             configArray.add(c);
         }
 
@@ -3072,7 +3077,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer("file://" + Configuration.getImportedShapeModelsDir(), getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
+    	URL importedShapeModelURL = FileCache.createFileURL(Configuration.getImportedShapeModelsDir());
+        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer(importedShapeModelURL, getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
         return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
 

@@ -133,8 +133,8 @@
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool.class"/>
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool$*.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL$*.class"/>
       </fileset>
 
       <manifest>
@@ -183,8 +183,8 @@
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool.class"/>
-        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingTool$*.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.class"/>
+        <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL$*.class"/>
       </fileset>
     
       <manifest>
@@ -217,7 +217,7 @@
             spice-N0065.jar
             "/>
 
-      	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingTool"/>
+      	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
       </manifest>
     </jar>
   </target>
@@ -326,7 +326,7 @@
 	
 	
   <target name="runjar" depends="jar">
-    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingTool" fork="true" maxmemory="1024m">
+    <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL" fork="true" maxmemory="1024m">
       <!--
         <jvmarg value="-Djava.library.path=/project/nearsdc/software/vtk_all_platforms"/>
       -->
