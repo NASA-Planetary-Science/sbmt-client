@@ -131,12 +131,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
-        c.setResolution(new String[] {
+        c.setResolution(ImmutableList.of(
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
-        }, new int[]{
+        ), ImmutableList.of(
                 1708, 7790, 10152, 22540, 89398, 200700
-        });
+        ));
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -378,9 +378,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/bennu/bennu-simulated-v4";
-            c.setResolution(
-                    new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] },
-                    new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] });
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -865,14 +865,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.setResolution(new String[] {
+        c.setResolution(ImmutableList.of(
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
                 "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
                 "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-            }, new int[] {
+            ), ImmutableList.of(
                 2962, 5824, 11954, 24526, 47784, 98280, 189724,
                 244128, 382620, 784510, 1586194, 3145728
-            });
+            ));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1850,7 +1850,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/tempel1/farnham";
         c.shapeModelFileExtension = ".obj";
         // Number of plates found by inspection of files.
-        c.setResolution(new String[] { "32040 plates" }, new int[] { 32040 });
+        c.setResolution(ImmutableList.of("32040 plates"), ImmutableList.of(32040));
         // Density and rotation rate were provided with delivery manifest.
         c.density = 470.0;
         c.rotationRate = 4.28434129815435E-5;
@@ -1914,12 +1914,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
-            c.setResolution(new String[] {
+            c.setResolution(ImmutableList.of(
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
-                }, new int[] {
+                ), ImmutableList.of(
                     17442, 72770, 298442, 1214922, 4895631, 16745283
-                });
+                ));
             c.hasColoringData = false;
             configArray.add(c);
 
@@ -2335,7 +2335,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2462,7 +2462,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.OREX;
             c.rootDirOnServer = "/earth/orex";
 //            c.shapeModelFileExtension = ".obj";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2605,7 +2605,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasImageMap=true;
             c.hasColoringData = false;
 
@@ -2702,7 +2702,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.setResolution(new String[] { "Low (54504 plates)", "High (5450420 plates)" }, new int[] { 54504, 5450420 });
+            c.setResolution(ImmutableList.of("Low (54504 plates)", "High (5450420 plates)" ), ImmutableList.of(54504, 5450420));
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
@@ -2807,9 +2807,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/atlas/gaskell";
-//            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-//            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -3063,7 +3061,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     }
 
     private SmallBodyViewConfig() {
-    	super(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+    	super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
     }
 
     @Override
