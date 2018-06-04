@@ -137,7 +137,7 @@ public class SbmtMultiMissionTool
         return mission;
     }
 
-    static Mission configureMission()
+    public static Mission configureMission()
     {
         if (missionConfigured)
         {
@@ -167,14 +167,14 @@ public class SbmtMultiMissionTool
                 Configuration.setAppTitle("SBMT");
                 break;
             case HAYABUSA2:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1hyb2");
+                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setAppName("sbmthyb2-dev");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
                 break;
             case HAYABUSA2_STAGE:
                 Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-                Configuration.setAppName("sbmt1hyb2-stage");
+                Configuration.setAppName("sbmthyb2-stage");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
                 break;
