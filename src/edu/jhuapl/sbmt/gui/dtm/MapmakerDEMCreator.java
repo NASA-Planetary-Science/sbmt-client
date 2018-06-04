@@ -7,14 +7,14 @@ import java.nio.file.Path;
 import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk2.event.BasicEventSource;
 import edu.jhuapl.saavtk2.task.BasicTask;
 import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.saavtk2.task.TaskFinishedEvent;
 import edu.jhuapl.saavtk2.task.TaskProgressEvent;
 import edu.jhuapl.saavtk2.task.TaskStartedEvent;
-import edu.jhuapl.saavtk2.util.LatLon;
-import edu.jhuapl.saavtk2.util.MathUtil;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
 import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
