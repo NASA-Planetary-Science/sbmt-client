@@ -138,7 +138,7 @@ public class CompareGaskellAndNLR
 
         File file = FileCache.getFileFromServer(path);
 
-        if (file == null)
+        if (!file.exists())
             throw new IOException(path + " could not be loaded");
 
         FileInputStream fs = new FileInputStream(file.getAbsolutePath());
