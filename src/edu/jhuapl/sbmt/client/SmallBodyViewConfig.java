@@ -309,7 +309,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
-                            ImageType.POLYCAM_IMAGE,
+                            ImageType.POLYCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
@@ -317,7 +317,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
-                            ImageType.MAPCAM_IMAGE,
+                            ImageType.MAPCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
@@ -2284,7 +2284,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2302,7 +2302,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2320,7 +2320,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2410,7 +2410,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2428,7 +2428,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
+                        ImageType.POLYCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2446,7 +2446,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
