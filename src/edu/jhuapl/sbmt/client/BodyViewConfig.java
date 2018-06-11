@@ -46,7 +46,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
     public boolean hasHierarchicalImageSearch;
+    public boolean hasHierarchicalSpectraSearch;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
+    public HierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
