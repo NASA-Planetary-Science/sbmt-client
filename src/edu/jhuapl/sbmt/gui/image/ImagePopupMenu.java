@@ -378,6 +378,7 @@ public class ImagePopupMenu extends PopupMenu
                     {
                         imageCollection.removeImage(imageKey);
                         keySet.remove(imageKey);
+                        renderer.setLighting(LightingType.LIGHT_KIT);
                     }
                 }
                 catch (FitsException e1) {

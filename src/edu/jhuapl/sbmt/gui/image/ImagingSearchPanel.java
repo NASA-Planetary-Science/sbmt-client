@@ -60,6 +60,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -3038,7 +3039,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if ((Boolean)resultList.getValueAt(row, mapColumnIndex))
                 loadImages(namePrefix);
             else
+            {
                 unloadImages(namePrefix);
+                renderer.setLighting(LightingType.LIGHT_KIT);
+            }
         }
         else if (e.getColumn() == showFootprintColumnIndex)
         {
