@@ -61,10 +61,14 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
 import altwg.util.PolyDataUtil;
@@ -76,6 +80,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     PickEvent lastPickEvent=null;
     protected CheckBoxTree checkBoxTree;
     protected final SpectralInstrument instrument;
+    SpectraHierarchicalSearchSpecification spectraSpec;
 
     public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
@@ -87,12 +92,12 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
+        spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
 
         // Setup hierarchical image search
         initHierarchicalImageSearch();
 
         initComponents();
-
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -106,6 +111,11 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     private void initComponents()
     {
+        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
+        {
+            view.getDbSearchPanel().setVisible(false);
+        }
+
         view.addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent evt) {
                 formComponentHidden(evt);
@@ -181,6 +191,12 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.getRemoveAllFootprintsButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 removeAllFootprintsButtonActionPerformed(evt);
+            }
+        });
+
+        view.getRemoveAllBoundariesButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                removeAllBoundariesButtonActionPerformed(evt);
             }
         });
 
@@ -263,7 +279,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 for (int i=0; i<view.getResultList().getModel().getSize(); i++)
                 {
-                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
+//                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
+                    Spectrum spectrum=collection.getSpectrum(createSpectrumName(i));
                     if (spectrum == null)
                         continue;
                     if (view.getResultList().isSelectedIndex(i))
@@ -314,6 +331,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void prevButtonActionPerformed(ActionEvent evt)
     {
         IdPair shown = model.getResultIntervalCurrentlyShown();
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
         if (shown == null) return;
 
         // Only get the prev block if there's something left to show.
@@ -326,6 +345,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void nextButtonActionPerformed(ActionEvent evt)
     {
         IdPair shown = model.getResultIntervalCurrentlyShown();
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
+
         if (shown != null)
         {
             // Only get the next block if there's something left to show.
@@ -346,6 +368,13 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
         collection.removeAllSpectra();
+        model.setResultIntervalCurrentlyShown(null);
+    }
+
+    private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
+    {
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
         model.setResultIntervalCurrentlyShown(null);
     }
 
@@ -428,21 +457,29 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
 
                 // Get the selected (camera,filter) pairs
-                productsSelected = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getSelectedCameras();
-                TreeModel tree = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel();
+
+                productsSelected = spectraSpec.getSelectedDatasets();
+                OREXSpectrumInstrumentMetadata<OREXSearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+//                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
+                TreeModel tree = spectraSpec.getTreeModel();
+                List<OREXSearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
                     String name = tree.getChild(tree.getRoot(), selected).toString();
-                    System.out.println(
-                            "SpectrumSearchPanel: submitButtonActionPerformed: name is " + name);
-//                    FixedListSearchMetadata.of(name, String filelist, String datapath, ImageSource pointingSource);
-//                    results.addAll(instrument.getQueryBase().runQuery(Fix))
+                    OREXSearchSpec spec = specs.get(selected);
+                    FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
+                                                                                        spec.getDataListFilename(),
+                                                                                        spec.getDataPath(),
+                                                                                        spec.getDataRootLocation(),
+                                                                                        spec.getSource());
+                    results.addAll(instrument.getQueryBase().runQuery(searchMetadata).getResultlist());
                 }
-                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
             }
             else
             {
-                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+                FixedListQuery query = (FixedListQuery)instrument.getQueryBase();
+                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
             }
             System.out.println(
                     "SpectrumSearchController: submitButtonActionPerformed: results size " + results.size());
@@ -561,7 +598,10 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 //            userDefinedCheckBoxPanel.setVisible(false);
 
             // Create the tree
-            checkBoxTree = new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel());
+            spectraSpec.clearTreeLeaves();
+//            spectraSpec.setRootName(instrument.getDisplayName());
+            spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
+            checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
 
             // Place the tree in the panel
             view.getDataSourcesScrollPane().setViewportView(checkBoxTree);
@@ -591,7 +631,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
-            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " nm");
+            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " cm^-1");
             view.getRedComboBox().addItem(channel);
             view.getGreenComboBox().addItem(channel);
             view.getBlueComboBox().addItem(channel);
@@ -648,7 +688,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
+//                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
+                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(index));
                 spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                 spectrumPopupMenu.setSearchPanel(this);
@@ -774,7 +815,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             try
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
-                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+//                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                collection.addSpectrum(createSpectrumName(i), instrument);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -784,7 +826,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     }
 
 
-    public abstract String createSpectrumName(String currentSpectrumRaw);
+//    public abstract String createSpectrumName(String currentSpectrumRaw);
+    public abstract String createSpectrumName(int index);
 
 
     private void checkValidMinMax(int channel, boolean minimunStateChange)
@@ -893,7 +936,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
                     if (!resultList.getSelectionModel().isSelectedIndex(i))
                     {
-                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+//                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName(i));
                         if (spectrum_ != null)
                             coll.deselect(spectrum_);
                     }
@@ -927,7 +971,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
             else
             {
-                String spectrumFile=createSpectrumName(value.toString());
+//                String spectrumFile=createSpectrumName(value.toString());
+                String spectrumFile=createSpectrumName(index);
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 Spectrum spectrum=collection.getSpectrum(spectrumFile);
                 setBackground(Color.LIGHT_GRAY);

@@ -55,6 +55,8 @@ public class SpectrumSearchView extends JPanel
     protected SpectrumPopupMenu spectrumPopupMenu;
     private JLabel resultsLabel;
     private JPanel resultsLabelPanel;
+    private JButton removeAllBoundariesButton;
+    private JPanel dbSearchPanel;
 
     public SpectrumSearchView()
     {
@@ -67,7 +69,7 @@ public class SpectrumSearchView extends JPanel
         scrollPane.setViewportView(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JPanel dbSearchPanel = new JPanel();
+        dbSearchPanel = new JPanel();
         dbSearchPanel.setBorder(new TitledBorder(null, "Search Parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(dbSearchPanel);
         dbSearchPanel.setLayout(new BoxLayout(dbSearchPanel, BoxLayout.Y_AXIS));
@@ -304,6 +306,9 @@ public class SpectrumSearchView extends JPanel
         removeAllFootprintsButton = new JButton("Remove All Footprints");
         panel_9.add(removeAllFootprintsButton);
 
+        removeAllBoundariesButton = new JButton("Remove All Boundaries");
+        panel_9.add(removeAllBoundariesButton);
+
         JPanel coloringPanel = new JPanel();
         coloringPanel.setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(coloringPanel);
@@ -525,5 +530,11 @@ public class SpectrumSearchView extends JPanel
     }
     public JLabel getResultsLabel() {
         return resultsLabel;
+    }
+    public JButton getRemoveAllBoundariesButton() {
+        return removeAllBoundariesButton;
+    }
+    public JPanel getDbSearchPanel() {
+        return dbSearchPanel;
     }
 }

@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.GregorianCalendar;
@@ -24,8 +25,8 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
@@ -2506,7 +2507,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasHierarchicalSpectraSearch = true;
             try
             {
-                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+                //TODO: eventually point this to a URL
+                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", new File("/Users/steelrj1/Desktop/metadata.json"));
             }
             catch (IOException e)
             {

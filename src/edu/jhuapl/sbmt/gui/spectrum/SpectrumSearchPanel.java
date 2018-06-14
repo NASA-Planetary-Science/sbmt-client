@@ -37,7 +37,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.TreeModel;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -66,10 +65,8 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
 import altwg.util.PolyDataUtil;
 
@@ -1688,20 +1685,20 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                         checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
 
                 // Get the selected (camera,filter) pairs
-                productsSelected = smallBodyConfig.hierarchicalSpectraSearchSpecification.getSelectedCameras();
-                TreeModel tree = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();
-                for (Integer selected : productsSelected)
-                {
-                    String name = tree.getChild(tree.getRoot(), selected).toString();
-                    System.out.println(
-                            "SpectrumSearchPanel: submitButtonActionPerformed: name is " + name);
-//                    FixedListSearchMetadata.of(name, String filelist, String datapath, ImageSource pointingSource);
-//                    results.addAll(instrument.getQueryBase().runQuery(Fix))
-                }
+//                productsSelected = smallBodyConfig.hierarchicalSpectraSearchSpecification.getSelectedCameras();
+//                TreeModel tree = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();
+//                for (Integer selected : productsSelected)
+//                {
+//                    String name = tree.getChild(tree.getRoot(), selected).toString();
+//                    System.out.println(
+//                            "SpectrumSearchPanel: submitButtonActionPerformed: name is " + name);
+////                    FixedListSearchMetadata.of(name, String filelist, String datapath, ImageSource pointingSource);
+////                    results.addAll(instrument.getQueryBase().runQuery(Fix))
+//                }
             }
             else
             {
-                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
             }
 
             setSpectrumSearchResults(results);
