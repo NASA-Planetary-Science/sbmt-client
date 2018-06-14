@@ -390,7 +390,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 }
                 else if (instrument instanceof OVIRS)
                 {
-               JComponent component = new OVIRSSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+               JComponent component = new OVIRSSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                 addTab(instrument.getDisplayName(), component);
                 }
                 else if (instrument instanceof NIRS3)
