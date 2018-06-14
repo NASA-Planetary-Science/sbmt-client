@@ -360,6 +360,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         else
         {
             model.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem())));
+            shown = model.getResultIntervalCurrentlyShown();
             showFootprints(shown);
         }
     }
@@ -367,7 +368,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void removeAllFootprintsButtonActionPerformed(ActionEvent evt)
     {
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-        collection.removeAllSpectra();
+        collection.removeAllSpectraForInstrument(instrument);
         model.setResultIntervalCurrentlyShown(null);
     }
 
