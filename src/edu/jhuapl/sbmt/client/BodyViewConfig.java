@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -48,7 +49,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasHierarchicalImageSearch;
     public boolean hasHierarchicalSpectraSearch;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public HierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
+    public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
