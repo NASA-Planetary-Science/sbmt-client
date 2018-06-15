@@ -57,6 +57,11 @@ public class SpectrumSearchView extends JPanel
     private JPanel resultsLabelPanel;
     private JButton removeAllBoundariesButton;
     private JPanel dbSearchPanel;
+    private JPanel coloringDetailPanel;
+    private JPanel coloringPanel;
+    private JComboBox coloringComboBox;
+    private JPanel emissionAngleColoringPanel;
+    private JPanel rgbColoringPanel;
 
     public SpectrumSearchView()
     {
@@ -309,13 +314,32 @@ public class SpectrumSearchView extends JPanel
         removeAllBoundariesButton = new JButton("Remove All Boundaries");
         panel_9.add(removeAllBoundariesButton);
 
-        JPanel coloringPanel = new JPanel();
+        coloringPanel = new JPanel();
         coloringPanel.setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(coloringPanel);
         coloringPanel.setLayout(new BoxLayout(coloringPanel, BoxLayout.Y_AXIS));
 
+        coloringComboBox = new JComboBox();
+        coloringPanel.add(coloringComboBox);
+
+        coloringDetailPanel = new JPanel();
+        coloringPanel.add(coloringDetailPanel);
+
+                emissionAngleColoringPanel = new JPanel();
+                emissionAngleColoringPanel.setVisible(false);
+                coloringDetailPanel.setLayout(new BoxLayout(coloringDetailPanel, BoxLayout.Y_AXIS));
+                coloringDetailPanel.add(emissionAngleColoringPanel);
+                emissionAngleColoringPanel.setLayout(new BoxLayout(emissionAngleColoringPanel, BoxLayout.X_AXIS));
+
+                        JLabel lblNewLabel_15 = new JLabel("Coloring by Avg Emission Angle (OREX Scalar Ramp, 0 to 90)");
+                        emissionAngleColoringPanel.add(lblNewLabel_15);
+
+        rgbColoringPanel = new JPanel();
+        coloringDetailPanel.add(rgbColoringPanel);
+        rgbColoringPanel.setLayout(new BoxLayout(rgbColoringPanel, BoxLayout.Y_AXIS));
+
         JPanel panel_10 = new JPanel();
-        coloringPanel.add(panel_10);
+        rgbColoringPanel.add(panel_10);
         panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
 
         grayscaleCheckBox = new JCheckBox("Grayscale");
@@ -328,7 +352,7 @@ public class SpectrumSearchView extends JPanel
         panel_10.add(customFunctionsButton);
 
         JPanel panel_11 = new JPanel();
-        coloringPanel.add(panel_11);
+        rgbColoringPanel.add(panel_11);
         panel_11.setLayout(new BoxLayout(panel_11, BoxLayout.X_AXIS));
 
         JLabel lblRed = new JLabel("Red");
@@ -358,7 +382,7 @@ public class SpectrumSearchView extends JPanel
         panel_11.add(redMaxSpinner);
 
         JPanel panel_12 = new JPanel();
-        coloringPanel.add(panel_12);
+        rgbColoringPanel.add(panel_12);
         panel_12.setLayout(new BoxLayout(panel_12, BoxLayout.X_AXIS));
 
         JLabel lblGreen = new JLabel("Green");
@@ -388,7 +412,7 @@ public class SpectrumSearchView extends JPanel
         panel_12.add(greenMaxSpinner);
 
         JPanel panel_13 = new JPanel();
-        coloringPanel.add(panel_13);
+        rgbColoringPanel.add(panel_13);
         panel_13.setLayout(new BoxLayout(panel_13, BoxLayout.X_AXIS));
 
         JLabel lblBlue = new JLabel("Blue");
@@ -536,5 +560,20 @@ public class SpectrumSearchView extends JPanel
     }
     public JPanel getDbSearchPanel() {
         return dbSearchPanel;
+    }
+    public JPanel getColoringDetailPanel() {
+        return coloringDetailPanel;
+    }
+    public JPanel getColoringPanel() {
+        return coloringPanel;
+    }
+    public JComboBox getColoringComboBox() {
+        return coloringComboBox;
+    }
+    public JPanel getEmissionAngleColoringPanel() {
+        return emissionAngleColoringPanel;
+    }
+    public JPanel getRgbColoringPanel() {
+        return rgbColoringPanel;
     }
 }

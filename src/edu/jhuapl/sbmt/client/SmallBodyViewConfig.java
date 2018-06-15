@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.GregorianCalendar;
@@ -2509,7 +2508,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             {
 //                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
                 //TODO: eventually point this to a URL
-                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", new File("/Users/steelrj1/Desktop/metadata.json"));
+                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", "/earth/osirisrex/spectraMetadata.json");
             }
             catch (IOException e)
             {

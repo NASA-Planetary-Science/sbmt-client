@@ -68,6 +68,7 @@ import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
@@ -197,6 +198,12 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.getRemoveAllBoundariesButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 removeAllBoundariesButtonActionPerformed(evt);
+            }
+        });
+
+        view.getColoringComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                coloringComboBoxActionPerformed(evt);
             }
         });
 
@@ -452,7 +459,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             {
                 // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
 //                sumOfProductsSearch = true;
-
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 // Process the user's selections
                 model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
                         checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
@@ -473,7 +480,10 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                                                                                         spec.getDataPath(),
                                                                                         spec.getDataRootLocation(),
                                                                                         spec.getSource());
-                    results.addAll(instrument.getQueryBase().runQuery(searchMetadata).getResultlist());
+
+                    List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
+                    collection.tagSpectraWithMetadata(thisResult, spec);
+                    results.addAll(thisResult);
                 }
 //                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
             }
@@ -485,6 +495,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             System.out.println(
                     "SpectrumSearchController: submitButtonActionPerformed: results size " + results.size());
             setSpectrumSearchResults(results);
+//            SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+//            collection.tagSpectraWithMetadata(results, spec);
+
         }
         catch (Exception e)
         {
@@ -502,6 +515,20 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void resultListMouseReleased(MouseEvent evt)
     {
         maybeShowPopup(evt);
+    }
+
+    private void coloringComboBoxActionPerformed(ActionEvent evt)
+    {
+        JComboBox box = (JComboBox)evt.getSource();
+        String coloringName = box.getSelectedItem().toString();
+        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.setColoringStyleForInstrument(style, instrument);
+        view.getResultList().repaint();
+
+        boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
+        view.getRgbColoringPanel().setVisible(!isEmissionSelected);
+        view.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
@@ -654,6 +681,14 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         }
     }
 
+    protected void setColoringComboBox()
+    {
+        for (SpectrumColoringStyle style : SpectrumColoringStyle.values())
+        {
+            view.getColoringComboBox().addItem(style);
+        }
+    }
+
 
 
     public void mouseClicked(MouseEvent e)
@@ -803,6 +838,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         int startId = idPair.id1;
         int endId = idPair.id2;
 
+        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(view.getColoringComboBox().getSelectedItem().toString());
+
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
 //        model.removeAllSpectra();
 
@@ -817,7 +854,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
 //                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
-                collection.addSpectrum(createSpectrumName(i), instrument);
+                collection.addSpectrum(createSpectrumName(i), instrument, style);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
