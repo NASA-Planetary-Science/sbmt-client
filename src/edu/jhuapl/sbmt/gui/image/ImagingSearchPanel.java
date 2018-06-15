@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -2518,20 +2519,19 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
         {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
-
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
                 searchField = searchByNumberTextField.getText().trim();
-
             GregorianCalendar startDateGreg = new GregorianCalendar();
             GregorianCalendar endDateGreg = new GregorianCalendar();
             startDateGreg.setTime(startDate);
             endDateGreg.setTime(endDate);
             DateTime startDateJoda = new DateTime(
                     startDateGreg.get(GregorianCalendar.YEAR),
-                    startDateGreg.get(GregorianCalendar.MONTH)+1,
+                    startDateGreg.get(GregorianCalendar.MONTH) + 1,
                     startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
                     startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
                     startDateGreg.get(GregorianCalendar.MINUTE),
@@ -2540,20 +2540,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     DateTimeZone.UTC);
             DateTime endDateJoda = new DateTime(
                     endDateGreg.get(GregorianCalendar.YEAR),
-                    endDateGreg.get(GregorianCalendar.MONTH)+1,
+                    endDateGreg.get(GregorianCalendar.MONTH) + 1,
                     endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
                     endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
                     endDateGreg.get(GregorianCalendar.MINUTE),
                     endDateGreg.get(GregorianCalendar.SECOND),
                     endDateGreg.get(GregorianCalendar.MILLISECOND),
                     DateTimeZone.UTC);
-
             TreeSet<Integer> cubeList = null;
-            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-            SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel) modelManager
+                    .getModel(ModelNames.CIRCLE_SELECTION);
+            SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager
+                    .getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+                        .getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -2561,33 +2563,40 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 if (smallBodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-                    cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
+                    smallBodyModel.drawRegularPolygonLowRes(region.center,
+                            region.radius, region.numberOfSides, interiorPoly,
+                            null);
+                    cubeList = smallBodyModel
+                            .getIntersectingCubes(interiorPoly);
                 }
                 else
                 {
-                    cubeList = smallBodyModel.getIntersectingCubes(region.interiorPolyData);
+                    cubeList = smallBodyModel
+                            .getIntersectingCubes(region.interiorPolyData);
                 }
             }
-
-            ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-
+            ImageSource imageSource = ImageSource
+                    .valueOf(((Enum) sourceComboBox.getSelectedItem()).name());
             // Populate camera and filter list differently based on if we are doing sum-of-products or product-of-sums search
             boolean sumOfProductsSearch;
             List<Integer> camerasSelected;
             List<Integer> filtersSelected;
-            if(smallBodyConfig.hasHierarchicalImageSearch)
+            if (smallBodyConfig.hasHierarchicalImageSearch)
             {
                 // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
                 sumOfProductsSearch = true;
 
                 // Process the user's selections
-                smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
-                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+                smallBodyConfig.hierarchicalImageSearchSpecification
+                        .processTreeSelections(
+                                checkBoxTree.getCheckBoxTreeSelectionModel()
+                                        .getSelectionPaths());
 
                 // Get the selected (camera,filter) pairs
-                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
-                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification
+                        .getSelectedCameras();
+                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification
+                        .getSelectedFilters();
             }
             else
             {
@@ -2597,9 +2606,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 // Populate list of selected cameras
                 camerasSelected = new LinkedList<Integer>();
                 int numberOfCameras = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                for (int i=0; i<numberOfCameras; i++)
+                for (int i = 0; i < numberOfCameras; i++)
                 {
-                    if(userDefinedCheckBoxes[i].isSelected())
+                    if (userDefinedCheckBoxes[i].isSelected())
                     {
                         camerasSelected.add(i);
                     }
@@ -2608,128 +2617,115 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 // Populate list of selected filters
                 filtersSelected = new LinkedList<Integer>();
                 int numberOfFilters = getNumberOfFiltersActuallyUsed();
-                for (int i=0; i<numberOfFilters; i++)
+                for (int i = 0; i < numberOfFilters; i++)
                 {
-                    if(filterCheckBoxes[i].isSelected())
-            {
+                    if (filterCheckBoxes[i].isSelected())
+                    {
                         filtersSelected.add(i);
                     }
                 }
             }
-
             // Run queries based on user specifications
             List<List<String>> results = null;
-
             if (instrument.spectralMode == SpectralMode.MULTI)
             {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
-            else
-            {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
-
-            // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
-            // then remove from the list images which are contained in the other list by doing
-            // an additional search.
-            if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
-            {
-                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
-                        "",
-                        startDateJoda,
-                        endDateJoda,
-                        sumOfProductsSearch,
-                        camerasSelected,
+                results = instrument.searchQuery.runQuery("", startDateJoda,
+                        endDateJoda, sumOfProductsSearch, camerasSelected,
                         filtersSelected,
                         Double.parseDouble(fromDistanceTextField.getText()),
                         Double.parseDouble(toDistanceTextField.getText()),
                         Double.parseDouble(fromResolutionTextField.getText()),
                         Double.parseDouble(toResolutionTextField.getText()),
-                        searchField,
-                        null,
+                        searchField, null,
                         Double.parseDouble(fromIncidenceTextField.getText()),
                         Double.parseDouble(toIncidenceTextField.getText()),
                         Double.parseDouble(fromEmissionTextField.getText()),
                         Double.parseDouble(toEmissionTextField.getText()),
                         Double.parseDouble(fromPhaseTextField.getText()),
                         Double.parseDouble(toPhaseTextField.getText()),
-                        cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
+                        cubeList, imageSource,
                         hasLimbComboBox.getSelectedIndex());
+            }
+            else if (instrument.spectralMode == SpectralMode.HYPER)
+            {
+                results = instrument.searchQuery.runQuery("", startDateJoda,
+                        endDateJoda, sumOfProductsSearch, camerasSelected,
+                        filtersSelected,
+                        Double.parseDouble(fromDistanceTextField.getText()),
+                        Double.parseDouble(toDistanceTextField.getText()),
+                        Double.parseDouble(fromResolutionTextField.getText()),
+                        Double.parseDouble(toResolutionTextField.getText()),
+                        searchField, null,
+                        Double.parseDouble(fromIncidenceTextField.getText()),
+                        Double.parseDouble(toIncidenceTextField.getText()),
+                        Double.parseDouble(fromEmissionTextField.getText()),
+                        Double.parseDouble(toEmissionTextField.getText()),
+                        Double.parseDouble(fromPhaseTextField.getText()),
+                        Double.parseDouble(toPhaseTextField.getText()),
+                        cubeList, imageSource,
+                        hasLimbComboBox.getSelectedIndex());
+            }
+            else
+            {
+                results = instrument.searchQuery.runQuery("", startDateJoda,
+                        endDateJoda, sumOfProductsSearch, camerasSelected,
+                        filtersSelected,
+                        Double.parseDouble(fromDistanceTextField.getText()),
+                        Double.parseDouble(toDistanceTextField.getText()),
+                        Double.parseDouble(fromResolutionTextField.getText()),
+                        Double.parseDouble(toResolutionTextField.getText()),
+                        searchField, null,
+                        Double.parseDouble(fromIncidenceTextField.getText()),
+                        Double.parseDouble(toIncidenceTextField.getText()),
+                        Double.parseDouble(fromEmissionTextField.getText()),
+                        Double.parseDouble(toEmissionTextField.getText()),
+                        Double.parseDouble(fromPhaseTextField.getText()),
+                        Double.parseDouble(toPhaseTextField.getText()),
+                        cubeList, imageSource,
+                        hasLimbComboBox.getSelectedIndex());
+            }
+            // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
+            // then remove from the list images which are contained in the other list by doing
+            // an additional search.
+            if (imageSource == ImageSource.SPICE
+                    && excludeGaskellCheckBox.isSelected())
+            {
+                List<List<String>> resultsOtherSource = instrument.searchQuery
+                        .runQuery("", startDateJoda, endDateJoda,
+                                sumOfProductsSearch, camerasSelected,
+                                filtersSelected,
+                                Double.parseDouble(
+                                        fromDistanceTextField.getText()),
+                                Double.parseDouble(
+                                        toDistanceTextField.getText()),
+                                Double.parseDouble(
+                                        fromResolutionTextField.getText()),
+                                Double.parseDouble(
+                                        toResolutionTextField.getText()),
+                                searchField, null,
+                                Double.parseDouble(
+                                        fromIncidenceTextField.getText()),
+                                Double.parseDouble(
+                                        toIncidenceTextField.getText()),
+                                Double.parseDouble(
+                                        fromEmissionTextField.getText()),
+                                Double.parseDouble(
+                                        toEmissionTextField.getText()),
+                                Double.parseDouble(
+                                        fromPhaseTextField.getText()),
+                                Double.parseDouble(toPhaseTextField.getText()),
+                                cubeList,
+                                imageSource == ImageSource.SPICE
+                                        ? ImageSource.GASKELL_UPDATED
+                                        : ImageSource.SPICE,
+                                hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
-                for (int i=0; i<numOtherResults; ++i)
+                for (int i = 0; i < numOtherResults; ++i)
                 {
                     String imageName = resultsOtherSource.get(i).get(0);
                     int numResults = results.size();
-                    for (int j=0; j<numResults; ++j)
+                    for (int j = 0; j < numResults; ++j)
                     {
                         if (results.get(j).get(0).startsWith(imageName))
                         {
@@ -2739,10 +2735,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
                 }
             }
-
             sourceOfLastQuery = imageSource;
-
             setImageResults(processResults(results));
+            setCursor(Cursor.getDefaultCursor());
         }
         catch (Exception e)
         {
