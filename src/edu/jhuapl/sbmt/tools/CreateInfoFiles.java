@@ -1,7 +1,11 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -10,18 +14,22 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.apache.commons.io.FilenameUtils;
 
 import edu.jhuapl.sbmt.model.time.FileUtils;
 
+import altwg.util.FileUtil;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import spice.basic.CSPICE;
 import spice.basic.SpiceErrorException;
 
 /**
- * Utility class containing SPICE data preprocessing routines for SBMT.
- * Primary utilities are createInfoFiles and createTimeHistory.
+ * Class to generate infofiles (SBMT-formatted pointing files).
  *
  * Converted into Java from the C++ routines in misc/programs.
  *
@@ -40,16 +48,16 @@ public class CreateInfoFiles
         CSPICE.furnsh(mk.getAbsolutePath());
     }
 
-    public void processFits(File metakernel, final String sbmtDir, File imageDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, final String sclkKeyword ) throws Exception
+    public void processFits(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, final String sclkKeyword ) throws Exception
     {
-        Vector<TimeTable> imageTable = getFitsImageList(imageDir, sbmtDir, FITS_EXTENSIONS, spacecraftName, sclkKeyword);
-        createInfoFiles(metakernel, sbmtDir, imageDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
+        Vector<ImageInfo> imageTable = getFitsImageList(imageDir, sbmtDir, FITS_EXTENSIONS, spacecraftName, sclkKeyword);
+        createInfoFiles(metakernel, sbmtDir, imageDir, outputDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
 
     }
-    public void processImageTable(File metakernel, final String sbmtDir, File imageDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, File imageTimesFile, TimeFormat timeFormat) throws Exception
+    public void processImageTable(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, File imageTimesFile, TimeFormat timeFormat) throws Exception
     {
-        Vector<TimeTable> imageTable = readTimesFile(imageDir, imageTimesFile, timeFormat);
-        createInfoFiles(metakernel, sbmtDir, imageDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
+        Vector<ImageInfo> imageTable = readTimesFile(imageDir, imageTimesFile, timeFormat, spacecraftName);
+        createInfoFiles(metakernel, sbmtDir, imageDir, outputDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
     }
 
     /**
@@ -59,61 +67,36 @@ public class CreateInfoFiles
      * contains the sbmt-relative path for all of the images processed.
      * @throws Exception
      */
-    public void createInfoFiles(File metakernel, final String sbmtDir, File imageDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, Vector<TimeTable> imageTimes ) throws Exception
+    public void createInfoFiles(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, Vector<ImageInfo> imageTimes ) throws Exception
     {
-        CSPICE.furnsh(metakernel.getAbsolutePath());
+        for (ImageInfo imageInfo : imageTimes)
+        {
+          //Outputs:
+          double[] updir = new double[3];
+          double[] boredir = new double[3];
+          double[] sunPosition = new double[3];
+          double[] scPosition = new double[3];
+          double[] unused = new double[3];
+          double[] frustum = new double[3 * MAX_BOUNDS];
+          //Inputs:
+          double et = imageInfo.et;
+          String utc = CSPICE.et2utc(et, "ISOC", 10);
 
+          getTargetState(    et, "ORX", "BENNU", "IAU_BENNU", "SUN", sunPosition, unused);
+          getSpacecraftState(et, "ORX", "BENNU", "IAU_BENNU", scPosition, unused);
+          getFov(            et, "ORX", "BENNU", "IAU_BENNU", "ORX_OCAMS_MAPCAM", boredir, updir, frustum);
 
+          String fileBaseName = FilenameUtils.getBaseName(imageInfo.imageFile.getName());
+          String infofileName = fileBaseName + ".INFO";
+          File infoFile = new File(outputDir, infofileName);
 
-//        for (unsigned int i=0; i<fitfiles.size(); ++i)
-//        {
-//            reset_c();
-//
-//            String utc;
-//            double et;
-//            double[] scposb = new double[3];
-//            SpiceDouble unused = new double[3];
-//            double boredir = new double[3];
-//            double updir = new double[3];
-//            double frustum = new double[12];
-//            double sunPosition = new double[3];
-//
-//            getEt(fitfiles[i], sclkkey, utc, et, scid);
-//            if (failed_c())
-//                continue;
-//
-//            getSpacecraftState(et, scid, body, scposb, unused);
-//            getTargetState(et, scid, body, "SUN", sunPosition, unused);
-//            getFov(et, scid, body, instr, boredir, updir, frustum);
-//            spiceProc.getSpacecraftState(et, "ORX", "BENNU", "IAU_BENNU", scposb, unused);
-//            spiceProc.getTargetState(    et, "ORX", "BENNU", "IAU_BENNU", "SUN", sunPosition, unused);
-//            spiceProc.getFov(            et, "ORX", "BENNU", "IAU_BENNU", "ORX_OCAMS_MAPCAM", boredir, updir, frustum);
-//            if (failed_c())
-//                continue; //cout?
-//
-//            const size_t last_slash_idx = fitfiles[i].find_last_of("\\/");
-//            if (std::String::npos != last_slash_idx)
-//            {
-//                fitfiles[i].erase(0, last_slash_idx + 1);
-//            }
-//            int length = fitfiles[i].size();
-//            String infofilename = infofilefolder + "/"
-//                    + fitfiles[i].substr(0, length-4) + ".INFO";
-//            saveInfoFile(infofilename, utc, scposb, boredir, updir, frustum, sunPosition);
-//            cout << "created " << infofilename << endl;
-//
-//            fout << fitfiles[i].substr(0, length) << " " << utc << endl;
-//
-//        }
-//        cout << "done." << endl;
-//
-//        return 0;
-
+          saveInfoFile(infoFile, utc, scPosition, boredir, updir, frustum, sunPosition);
+        }
     }
 
-    private Vector<TimeTable> getFitsImageList(File imageDir, final String sbmtDir, final String extensions, final String spacecraftName, final String sclkKeyword) throws Exception
+    private Vector<ImageInfo> getFitsImageList(File imageDir, final String sbmtDir, final String extensions, final String spacecraftName, final String sclkKeyword) throws Exception
     {
-        final Vector<TimeTable> imageTable = new Vector<TimeTable>();
+        final Vector<ImageInfo> imageTable = new Vector<ImageInfo>();
 
         //Generate the file used by DatabaseGeneratorSQL.RunInfo.
         final File imageListFullPath = new File(imageDir.getParent(), "imagelist-fullpath.txt");
@@ -134,7 +117,7 @@ public class CreateInfoFiles
                     try
                     {
                         FileUtils.appendTextToFile(imageList.getAbsolutePath(), path.getFileName() + " " + getFitsUtc(path.toFile(), sclkKeyword, spacecraftName));
-                        imageTable.add(new TimeTable(path.toFile(), getFitsEt(path.toFile(), sclkKeyword, spacecraftName)));
+                        imageTable.add(new ImageInfo(path.toFile(), getFitsEt(path.toFile(), sclkKeyword, spacecraftName)));
                     }
                     catch (Exception e)
                     {
@@ -144,30 +127,47 @@ public class CreateInfoFiles
                 }
                 return FileVisitResult.CONTINUE;
             }
-
         };
         Files.walkFileTree(Paths.get(imageDir.getAbsolutePath()), fitsFileVisitor);
 
         return imageTable;
     }
 
-    //TBD: this is going to be a standalone utility to create an input file to be
-    //ingested by createInfoFiles. It'll look like this:
-    //
-    //<fullpath to rawdata image>/20170922T231949S789_pol_iofL2pan_V008.fit 2017-09-22T23:19:49.789
-    //<fullpath to rawdata image>/20170923T001041S345_pol_iofL2pan_V008.fit 2017-09-23T00:10:41.345
-    //...
-    //
-    public Vector<TimeTable> readTimesFile(File inputDir, File timesFile, TimeFormat timeFormat)
+    public Vector<ImageInfo> readTimesFile(File inputDir, File timesFile, TimeFormat timeFormat, String spacecraftName) throws Exception
     {
-        //TBD move the SimpleFileVisitor code in here
-        return null;
-    }
-
-    public Vector<TimeTable> readFitsData(File inputDir, String sclkString)
-    {
-        //TBD move the SimpleFileVisitor code in here
-        return null;
+        Vector<ImageInfo> imageInfo = new Vector<ImageInfo>();
+        ArrayList<String> list = FileUtil.getFileLinesAsStringList(timesFile.getAbsolutePath());
+        for (String str : list)
+        {
+            if (!str.trim().startsWith("#"))
+            {
+                StringTokenizer tok = new StringTokenizer(str.trim(), " ");
+                String filename = String.valueOf(tok.nextElement());
+                File f = new File(inputDir,filename);
+                double et = Double.NaN;
+                switch (timeFormat)
+                {
+                case et:
+                    et = Double.valueOf(tok.nextElement().toString());
+                    break;
+                case utc:
+                    et = CSPICE.str2et(String.valueOf(tok.nextElement()));
+                    break;
+                case sclk:
+                    int clkid = CSPICE.bodn2c(spacecraftName);
+                    et = CSPICE.scs2e(clkid, String.valueOf(tok.nextElement()));
+                    break;
+                default:
+                    break;
+                }
+                ImageInfo imgInfo = new ImageInfo(f, et);
+                if (!Double.isNaN(et))
+                {
+                    imageInfo.add(imgInfo);
+                }
+            }
+        }
+        return imageInfo;
     }
 
     private enum TimeFormat
@@ -175,13 +175,14 @@ public class CreateInfoFiles
         utc, et, sclk;
     }
 
-    private class TimeTable
+    //Not necessarily an image, can be spectra, e.g.
+    private class ImageInfo
     {
-        File dataFile;
+        File imageFile;
         double et;
-        public TimeTable(File dataFile, double et)
+        public ImageInfo(File imageFile, double et)
         {
-            this.dataFile = dataFile;
+            this.imageFile = imageFile;
             this.et = et;
         }
     }
@@ -209,172 +210,72 @@ public class CreateInfoFiles
         return utc;
     }
 
-//    private Vector<File> createImageList(File imageFolder)
-//    {
-//        File imageList = new File();
-//    }
-//
-//    vector<String> loadFileList(const String& filelist) {
-//        ifstream fin(filelist.c_str());
-//
-//        vector < String > files;
-//
-//        if (fin.is_open()) {
-//            String line;
-//            while (getline(fin, line))
-//                files.push_back(line);
-//        } else {
-//            cerr << "Error: Unable to open file '" << filelist << "'" << endl;
-//            exit(1);
-//        }
-//
-//        return files;
-//    }
-//
-//    void splitFitsHeaderLineIntoKeyAndValue(const String& line, String& key,
-//            String& value) {
-//        key = line.substr(0, 8);
-//        trim(key);
-//        value = line.substr(10);
-//        size_t found = value.find_last_of("/");
-//        if (found != String::npos)
-//            value = value.substr(0, found);
-//        trim(value);
-//        removeSurroundingQuotes(value);
-//        trim(value);
-//    }
-//
-//    void getFieldsFromFitsHeader(const String& labelfilename, String& startmet,
-//            String& stopmet, String& target, int& naxis1, int& naxis2)
-//    {
-//        ifstream fin(labelfilename.c_str());
-//
-//        if (fin.is_open()) {
-//            char buffer[81];
-//            String str;
-//            String key;
-//            String value;
-//
-//            for (int i = 0; i < 100; ++i) {
-//                fin.read(buffer, 80);
-//                buffer[80] = '\0';
-//                str = buffer;
-//                splitFitsHeaderLineIntoKeyAndValue(str, key, value);
-//
-//                if (key == "NAXIS1") {
-//                    naxis1 = atoi(value.c_str());
-//                } else if (key == "NAXIS2") {
-//                    naxis2 = atoi(value.c_str());
-//                } else if (key == "SPCSCLK") {
-//                    startmet = value;
-//                    stopmet = value;
-//                } else if (key == "TARGET") {
-//                    target = value;
-//                }
-//            }
-//        } else {
-//            cerr << "Error: Unable to open file '" << labelfilename << "'" << endl;
-//            exit(1);
-//        }
-//
-//        fin.close();
-//    }
-//
-//    void getStringFieldFromFitsHeader(const String& fitfile,
-//               String key,
-//               String& value )
-//    {
-//        ifstream fin(fitfile.c_str());
-//
-//        if (fin.is_open())
-//        {
-//            String str;
-//            char buffer[81];
-//            String currkey;
-//            String val;
-//            while(true)
-//            {
-//                fin.read(buffer, 80);
-//                buffer[80] = '\0';
-//                str = buffer;
-//                splitFitsHeaderLineIntoKeyAndValue(str, currkey, val);
-//                if (currkey == key)
-//                {
-//                    value = val.c_str();
-//                    break;
-//                }
-//            }
-//        }
-//        else
-//        {
-//            cerr << "Error: Unable to open file '" << fitfile << "'" << endl;
-//            exit(1);
-//        }
-//
-//        fin.close();
-//    }
-//
-//    void saveInfoFile(String filename,
-//                      String utc,
-//                      const double scposb[3],
-//                      const double boredir[3],
-//                      const double updir[3],
-//                      const double frustum[12],
-//                      const double sunpos[3])
-//    {
-//        ofstream fout(filename.c_str());
-//
-//        if (!fout.is_open())
-//        {
-//            cerr << "Error: Unable to open file " << filename << " for writing" << endl;
-//            exit(1);
-//        }
-//
-//        fout.precision(16);
-//
-//        fout << "START_TIME          = " << utc << "\n";
-//        fout << "STOP_TIME           = " << utc << "\n";
-//
-//        fout << "SPACECRAFT_POSITION = ( ";
-//        fout << scientific << scposb[0] << " , ";
-//        fout << scientific << scposb[1] << " , ";
-//        fout << scientific << scposb[2] << " )\n";
-//
-//        fout << "BORESIGHT_DIRECTION = ( ";
-//        fout << scientific << boredir[0] << " , ";
-//        fout << scientific << boredir[1] << " , ";
-//        fout << scientific << boredir[2] << " )\n";
-//
-//        fout << "UP_DIRECTION        = ( ";
-//        fout << scientific << updir[0] << " , ";
-//        fout << scientific << updir[1] << " , ";
-//        fout << scientific << updir[2] << " )\n";
-//
-//        fout << "FRUSTUM1            = ( ";
-//        fout << scientific << frustum[0] << " , ";
-//        fout << scientific << frustum[1] << " , ";
-//        fout << scientific << frustum[2] << " )\n";
-//
-//        fout << "FRUSTUM2            = ( ";
-//        fout << scientific << frustum[3] << " , ";
-//        fout << scientific << frustum[4] << " , ";
-//        fout << scientific << frustum[5] << " )\n";
-//
-//        fout << "FRUSTUM3            = ( ";
-//        fout << scientific << frustum[6] << " , ";
-//        fout << scientific << frustum[7] << " , ";
-//        fout << scientific << frustum[8] << " )\n";
-//
-//        fout << "FRUSTUM4            = ( ";
-//        fout << scientific << frustum[9] << " , ";
-//        fout << scientific << frustum[10] << " , ";
-//        fout << scientific << frustum[11] << " )\n";
-//
-//        fout << "SUN_POSITION_LT     = ( ";
-//        fout << scientific << sunpos[0] << " , ";
-//        fout << scientific << sunpos[1] << " , ";
-//        fout << scientific << sunpos[2] << " )\n";
-//    }
+    private void saveInfoFile(File filename,
+                      String utc,
+                      double scposb[],
+                      double boredir[],
+                      double updir[],
+                      double frustum[],
+                      double sunpos[]) throws IOException
+    {
+        FileOutputStream fs = null;
+        try
+        {
+            fs = new FileOutputStream(filename);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.err.println("Error: Unable to open file " + filename.getAbsolutePath() + " for writing.");
+            return;
+        }
+        OutputStreamWriter osw = new OutputStreamWriter(fs);
+        BufferedWriter out = new BufferedWriter(osw);
+
+        out.write("START_TIME          = " + utc + "\n");
+        out.write("STOP_TIME           = " + utc + "\n");
+
+        out.write("SPACECRAFT_POSITION = ( ");
+        out.write(String.format("%1.16e", scposb[0]) + " , ");
+        out.write(String.format("%1.16e", scposb[1]) + " , ");
+        out.write(String.format("%1.16e", scposb[2]) + " )\n");
+
+        out.write("BORESIGHT_DIRECTION = ( ");
+        out.write(String.format("%1.16e", boredir[0]) + " , ");
+        out.write(String.format("%1.16e", boredir[1]) + " , ");
+        out.write(String.format("%1.16e", boredir[2]) + " )\n");
+
+        out.write("UP_DIRECTION        = ( ");
+        out.write(String.format("%1.16e", updir[0]) + " , ");
+        out.write(String.format("%1.16e", updir[1]) + " , ");
+        out.write(String.format("%1.16e", updir[2]) + " )\n");
+
+        out.write("FRUSTUM1            = ( ");
+        out.write(String.format("%1.16e", frustum[0]) + " , ");
+        out.write(String.format("%1.16e", frustum[1]) + " , ");
+        out.write(String.format("%1.16e", frustum[2]) + " )\n");
+
+        out.write("FRUSTUM2            = ( ");
+        out.write(String.format("%1.16e", frustum[3]) + " , ");
+        out.write(String.format("%1.16e", frustum[4]) + " , ");
+        out.write(String.format("%1.16e", frustum[5]) + " )\n");
+
+        out.write("FRUSTUM3            = ( ");
+        out.write(String.format("%1.16e", frustum[6]) + " , ");
+        out.write(String.format("%1.16e", frustum[7]) + " , ");
+        out.write(String.format("%1.16e", frustum[8]) + " )\n");
+
+        out.write("FRUSTUM4            = ( ");
+        out.write(String.format("%1.16e", frustum[9]) + " , ");
+        out.write(String.format("%1.16e", frustum[10]) + " , ");
+        out.write(String.format("%1.16e", frustum[11]) + " )\n");
+
+        out.write("SUN_POSITION_LT     = ( ");
+        out.write(String.format("%1.16e", sunpos[0]) + " , ");
+        out.write(String.format("%1.16e", sunpos[1]) + " , ");
+        out.write(String.format("%1.16e", sunpos[2]) + " )\n");
+
+        out.close();
+    }
 
     /*
      * This function computes the instrument boresight and frustum vectors in
@@ -772,19 +673,20 @@ public class CreateInfoFiles
         CreateInfoFiles app = new CreateInfoFiles(metakernel);
         if (fits)
         {
-            app.processFits(metakernel, sbmtRelPath, inputFolder, body, bodyFrame, sc, instrFrame, sclkString);
+            app.processFits(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, sclkString);
         }
         else if (timesFile)
         {
-            app.processImageTable(metakernel, sbmtRelPath, inputFolder, body, bodyFrame, sc, instrFrame, timeTableFile, timeFormat);
+            app.processImageTable(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, timeTableFile, timeFormat);
         }
     }
 
     public static void main(String[] args) throws Exception
     {
-        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk");
+        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
         File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
         File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
+        File timeTable = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/timesTableFile.txt");
 
 
 //        CSPICE.furnsh(mk.getAbsolutePath());
@@ -807,6 +709,7 @@ public class CreateInfoFiles
 
 
         String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+//        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
         CreateInfoFiles.execute(testArgs);
     }
 }
