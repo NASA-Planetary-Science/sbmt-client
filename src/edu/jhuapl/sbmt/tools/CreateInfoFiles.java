@@ -117,12 +117,18 @@ public class CreateInfoFiles
                     try
                     {
                         FileUtils.appendTextToFile(imageList.getAbsolutePath(), path.getFileName() + " " + getFitsUtc(path.toFile(), sclkKeyword, spacecraftName));
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println("Error adding " + path.getFileName() + " to image list.");
+                    }
+                    try
+                    {
                         imageTable.add(new ImageInfo(path.toFile(), getFitsEt(path.toFile(), sclkKeyword, spacecraftName)));
                     }
                     catch (Exception e)
                     {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        System.err.println("Error getting time keyword for " + path.getFileName() + ". Infofile will not be generated.");
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -231,8 +237,9 @@ public class CreateInfoFiles
         OutputStreamWriter osw = new OutputStreamWriter(fs);
         BufferedWriter out = new BufferedWriter(osw);
 
-        out.write("START_TIME          = " + utc + "\n");
-        out.write("STOP_TIME           = " + utc + "\n");
+        //Trucate the subseconds field to milliseconds
+        out.write("START_TIME          = " + utc.substring(0, 23) + "\n");
+        out.write("STOP_TIME           = " + utc.substring(0, 23) + "\n");
 
         out.write("SPACECRAFT_POSITION = ( ");
         out.write(String.format("%1.16e", scposb[0]) + " , ");
@@ -387,7 +394,7 @@ public class CreateInfoFiles
         boundssbmt[3][2] = bounds[11];
 
         // transform boresight into body frame.
-        boredir = CSPICE.mxv(inst2bf, bsight);
+        double[] bs = CSPICE.mxv(inst2bf, bsight);
 
         // transform boundary corners into body frame and pack into frustum
         // array.
@@ -408,7 +415,13 @@ public class CreateInfoFiles
         }
 
         /* Then compute the up direction */
-        updir = CSPICE.mxv(inst2bf, tmpvec);
+        double[] up = CSPICE.mxv(inst2bf, tmpvec);
+
+        for (int j = 0; j < 3; j++)
+        {
+            boredir[j] = bs[j];
+            updir[j] = up[j];
+        }
     }
 
     /*
@@ -683,33 +696,19 @@ public class CreateInfoFiles
 
     public static void main(String[] args) throws Exception
     {
+        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
         File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
         File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
+        File timeTable = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/imagelist.txt");
+        //Output folder
         File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
-        File timeTable = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/timesTableFile.txt");
 
+        //Uncomment this to do a test run with FITS data.
+//        String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
 
-//        CSPICE.furnsh(mk.getAbsolutePath());
-//
-//        //Outputs:
-//        double[] updir = new double[3];
-//        double[] boredir = new double[3];
-//        double[] sunPosition = new double[3];
-//        double[] scPosition = new double[3];
-//        double[] unused = new double[3];
-//        double[] frustum = new double[3 * MAX_BOUNDS];
-//        //Inputs:
-//        double et = CSPICE.str2et("2017 SEP 22 23:00:00.000");
-//
-//        spiceProc.getFov(            et, "ORX", "BENNU", "IAU_BENNU", "ORX_OCAMS_MAPCAM", boredir, updir, frustum);
-//        spiceProc.getTargetState(    et, "ORX", "BENNU", "IAU_BENNU", "SUN", sunPosition, unused);
-//        spiceProc.getSpacecraftState(et, "ORX", "BENNU", "IAU_BENNU", scPosition, unused);
-//
-//        spiceProc.processFits(mk, "/earth/polycam/images", imageDir, "BENNU", "IAU_BENNU", "ORX", "ORX_OCAMS_POLYCAM", "SCLK_STR");
+        //Uncomment this to do a test run on generic data. Requires an input file containing data file name and exposure time. See printUsage() for details.
+        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
 
-
-        String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
-//        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
         CreateInfoFiles.execute(testArgs);
     }
 }
