@@ -2634,14 +2634,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
     //TODO make hierarchical search work sbmt1dev-style.
-    //        c.imageSearchFilterNames = new String[]{
-    //                EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
-    //        };
-    //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-    //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
-    //        };
-    //        c.hasHierarchicalImageSearch = true;
-    //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
+//            c.imageSearchFilterNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+//                    EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
@@ -2711,6 +2711,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Re-enable this if/when that issue is addressed.
 //            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
 //            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
+            SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
+            QueryBase queryBaseTir = new FixedListQuery(fileLocatorTir.get(SBMTFileLocator.TOP_PATH).getLocation("") + "/simulated", fileLocatorTir.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+            ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
 
             BasicImagingInstrument oncCam;
             {
@@ -2732,6 +2736,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             }
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
+                    tir
             };
 
             c.hasMapmaker = false;
@@ -2739,7 +2744,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-
+//            c.imageSearchFilterNames = new String[]{
+////                    RyuguHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+////                    RyuguHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new RyuguExperimentalSearchSpecification();
 
             configArray.add(c);
         }
@@ -2758,6 +2770,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
+            SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
+            QueryBase queryBaseTir = new FixedListQuery(fileLocatorTir.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocatorTir.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+            ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
@@ -2773,6 +2789,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
+                    tir
             };
 
             c.hasMapmaker = false;
