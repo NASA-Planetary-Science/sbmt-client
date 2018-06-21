@@ -76,7 +76,7 @@ public class SbmtMultiMissionTool
             if (!Configuration.isMac())
             {
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
-                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
 // uncomment for cross-platform LAF
 //            else

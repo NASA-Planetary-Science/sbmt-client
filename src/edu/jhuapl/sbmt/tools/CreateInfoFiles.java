@@ -704,10 +704,10 @@ public class CreateInfoFiles
         File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
 
         //Uncomment this to do a test run with FITS data.
-//        String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+        String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
 
         //Uncomment this to do a test run on generic data. Requires an input file containing data file name and exposure time. See printUsage() for details.
-        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+//        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
 
         CreateInfoFiles.execute(testArgs);
     }
