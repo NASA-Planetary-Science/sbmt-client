@@ -199,7 +199,7 @@ public class SbmtMultiMissionTool
               Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
               break;
             case OSIRIS_REX_DEPLOY:
-              Configuration.setRootURL("http://uasbmt.lpl.arizona.edu/sbmt");
+              Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
               Configuration.setAppName("sbmt1orex");
               Configuration.setCacheVersion("");
               Configuration.setAppTitle("SBMT/OSIRIS REx");
