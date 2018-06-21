@@ -448,7 +448,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
-            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE))
             {
                 ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }

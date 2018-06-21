@@ -35,6 +35,8 @@ public class SbmtMultiMissionTool
         HAYABUSA2_STAGE("244425c"),
         HAYABUSA2_DEPLOY("355536d"),
         OSIRIS_REX("7cd84586"),
+        OSIRIS_REX_STAGE("7cd84587"),
+        OSIRIS_REX_DEPLOY("7cd84588"),
         STAGE_APL_INTERNAL("f7e441b"),
         STAGE_PUBLIC_RELEASE("8cc8e12"),
         TEST_APL_INTERNAL("fb404a7"),
@@ -186,10 +188,22 @@ public class SbmtMultiMissionTool
                 break;
             case OSIRIS_REX:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1orex");
+                Configuration.setAppName("sbmt1orex-dev");
                 Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/OSIRIS REx");
+                Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
                 break;
+            case OSIRIS_REX_STAGE:
+              Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
+              Configuration.setAppName("sbmt1orex-stage");
+              Configuration.setCacheVersion("");
+              Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
+              break;
+            case OSIRIS_REX_DEPLOY:
+              Configuration.setRootURL("http://uasbmt.lpl.arizona.edu/sbmt");
+              Configuration.setAppName("sbmt1orex");
+              Configuration.setCacheVersion("");
+              Configuration.setAppTitle("SBMT/OSIRIS REx");
+              break;
             default:
                 throw new AssertionError();
         }
@@ -220,6 +234,8 @@ public class SbmtMultiMissionTool
                 splash = new SbmtSplash("resources", "splashLogoHb2.png");
                 break;
             case OSIRIS_REX:
+            case OSIRIS_REX_DEPLOY:
+            case OSIRIS_REX_STAGE:
                 splash = new SbmtSplash("resources", "splashLogoOrex.png");
                 break;
             default:
