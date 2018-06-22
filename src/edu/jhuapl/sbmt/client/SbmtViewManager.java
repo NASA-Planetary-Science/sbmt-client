@@ -34,9 +34,6 @@ import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.saavtk.util.SafePaths;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -179,8 +176,7 @@ public class SbmtViewManager extends ViewManager
     @Override
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        int numberElements = PolyDataUtil.getVTKPolyDataSize(SafePaths.getString(Configuration.getImportedShapeModelsDir(), name, "model.vtk"));
-        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(numberElements + " plates"), ImmutableList.<Integer> of(numberElements));
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
         customConfig.modelLabel = name;
         customConfig.customTemporary = temporary;
         customConfig.author = ShapeModelType.CUSTOM;
