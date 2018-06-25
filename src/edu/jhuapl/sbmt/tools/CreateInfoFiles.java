@@ -48,11 +48,15 @@ public class CreateInfoFiles
         CSPICE.furnsh(mk.getAbsolutePath());
     }
 
-    public void processFits(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, final String sclkKeyword ) throws Exception
+    public void processFitsUTC(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, final String utcKeyword ) throws Exception
     {
-        Vector<ImageInfo> imageTable = getFitsImageList(imageDir, sbmtDir, FITS_EXTENSIONS, spacecraftName, sclkKeyword);
+        Vector<ImageInfo> imageTable = getFitsImageListUTC(imageDir, sbmtDir, FITS_EXTENSIONS, spacecraftName, utcKeyword);
         createInfoFiles(metakernel, sbmtDir, imageDir, outputDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
-
+    }
+    public void processFitsSCLK(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, final String sclkKeyword ) throws Exception
+    {
+        Vector<ImageInfo> imageTable = getFitsImageListSCLK(imageDir, sbmtDir, FITS_EXTENSIONS, spacecraftName, sclkKeyword);
+        createInfoFiles(metakernel, sbmtDir, imageDir, outputDir, body, bodyFrame, spacecraftName, instrFrame, imageTable);
     }
     public void processImageTable(File metakernel, final String sbmtDir, File imageDir, File outputDir, String body, String bodyFrame, final String spacecraftName, String instrFrame, File imageTimesFile, TimeFormat timeFormat) throws Exception
     {
@@ -82,9 +86,9 @@ public class CreateInfoFiles
           double et = imageInfo.et;
           String utc = CSPICE.et2utc(et, "ISOC", 10);
 
-          getTargetState(    et, "ORX", "BENNU", "IAU_BENNU", "SUN", sunPosition, unused);
-          getSpacecraftState(et, "ORX", "BENNU", "IAU_BENNU", scPosition, unused);
-          getFov(            et, "ORX", "BENNU", "IAU_BENNU", "ORX_OCAMS_MAPCAM", boredir, updir, frustum);
+          getTargetState(    et, spacecraftName, body, bodyFrame, "SUN", sunPosition, unused);
+          getSpacecraftState(et, spacecraftName, body, bodyFrame, scPosition, unused);
+          getFov(            et, spacecraftName, body, bodyFrame, instrFrame, boredir, updir, frustum);
 
           String fileBaseName = FilenameUtils.getBaseName(imageInfo.imageFile.getName());
           String infofileName = fileBaseName + ".INFO";
@@ -94,7 +98,7 @@ public class CreateInfoFiles
         }
     }
 
-    private Vector<ImageInfo> getFitsImageList(File imageDir, final String sbmtDir, final String extensions, final String spacecraftName, final String sclkKeyword) throws Exception
+    private Vector<ImageInfo> getFitsImageListSCLK(File imageDir, final String sbmtDir, final String extensions, final String spacecraftName, final String sclkKeyword) throws Exception
     {
         final Vector<ImageInfo> imageTable = new Vector<ImageInfo>();
 
@@ -105,7 +109,7 @@ public class CreateInfoFiles
         final File imageList = new File(imageDir.getParent(), "imagelist.txt");
         org.apache.commons.io.FileUtils.deleteQuietly(imageList);
 
-        SimpleFileVisitor<Path> fitsFileVisitor = new SimpleFileVisitor<Path>()
+        SimpleFileVisitor<Path> fitsFileVisitorSCLK = new SimpleFileVisitor<Path>()
         {
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
@@ -120,7 +124,8 @@ public class CreateInfoFiles
                     }
                     catch (Exception e)
                     {
-                        System.err.println("Error adding " + path.getFileName() + " to image list.");
+                        System.err.println(e.getMessage());
+                        System.err.println("Did not add " + path.getFileName() + " to image list.");
                     }
                     try
                     {
@@ -134,7 +139,53 @@ public class CreateInfoFiles
                 return FileVisitResult.CONTINUE;
             }
         };
-        Files.walkFileTree(Paths.get(imageDir.getAbsolutePath()), fitsFileVisitor);
+        Files.walkFileTree(Paths.get(imageDir.getAbsolutePath()), fitsFileVisitorSCLK);
+
+        return imageTable;
+    }
+    private Vector<ImageInfo> getFitsImageListUTC(File imageDir, final String sbmtDir, final String extensions, final String spacecraftName, final String utcKeyword) throws Exception
+    {
+        final Vector<ImageInfo> imageTable = new Vector<ImageInfo>();
+
+        //Generate the file used by DatabaseGeneratorSQL.RunInfo.
+        final File imageListFullPath = new File(imageDir.getParent(), "imagelist-fullpath.txt");
+        org.apache.commons.io.FileUtils.deleteQuietly(imageListFullPath);
+        //Generate the file used by FixedListQuery.
+        final File imageList = new File(imageDir.getParent(), "imagelist.txt");
+        org.apache.commons.io.FileUtils.deleteQuietly(imageList);
+
+        SimpleFileVisitor<Path> fitsFileVisitorSCLK = new SimpleFileVisitor<Path>()
+        {
+            @Override
+            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException
+            {
+                PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.{" + extensions + "}");
+                if (pathMatcher.matches(path))
+                {
+                    FileUtils.appendTextToFile(imageListFullPath.getAbsolutePath(), sbmtDir + "/" + path.getFileName());
+                    try
+                    {
+                        FileUtils.appendTextToFile(imageList.getAbsolutePath(), path.getFileName() + " " + getFitsUtc(path.toFile(), utcKeyword, spacecraftName));
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println(e.getMessage());
+                        System.err.println("Did not add " + path.getFileName() + " to image list.");
+                    }
+                    try
+                    {
+                        imageTable.add(new ImageInfo(path.toFile(), CSPICE.str2et(getFitsUtc(path.toFile(), utcKeyword, spacecraftName))));
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println("Error getting time keyword for " + path.getFileName() + ". Infofile will not be generated.");
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+        };
+        Files.walkFileTree(Paths.get(imageDir.getAbsolutePath()), fitsFileVisitorSCLK);
 
         return imageTable;
     }
@@ -193,27 +244,66 @@ public class CreateInfoFiles
         }
     }
 
+    /**
+     * Returns an ET given a FITS file that contains an SCLK time keyword.
+     */
     private double getFitsEt(File fitsFile, String sclkKeyword, String spacecraftName) throws Exception
     {
         int clockID = CSPICE.bodn2c(spacecraftName);
 
-        Fits thisFits = new Fits(fitsFile);
-        BasicHDU thisHDU = thisFits.getHDU(0);
-        String clockString = thisHDU.getHeader().getStringValue(sclkKeyword);
-        thisFits.close();
-
-        // SCLK_STR= '3/0559394223.31' / Spacecraft clock string
-        double et = CSPICE.scs2e(clockID, clockString);
-        String utc = CSPICE.et2utc(et, "ISOC", 3);
-
-        return et;
+        String clockString = getFitsValueforKeyword(fitsFile, sclkKeyword);
+        if (clockString != null)
+        {
+            // SCLK_STR= '3/0559394223.31' / Spacecraft clock string
+            double et = CSPICE.scs2e(clockID, clockString);
+            String utc = CSPICE.et2utc(et, "ISOC", 3);
+            return et;
+        }
+        throw new Exception("Error getting exposure time from FITS header for file " + fitsFile.getAbsolutePath());
     }
-    private String getFitsUtc(File fitsFile, String sclkKeyword, String spacecraftName) throws Exception
-    {
-        double et = getFitsEt(fitsFile, sclkKeyword, spacecraftName);
-        String utc = CSPICE.et2utc(et, "ISOC", 3);
 
+    /**
+     * Returns a UTC given a FITS file that contains a UTC time keyword.
+     */
+    private String getFitsUtc(File fitsFile, String utcKeyword, String spacecraftName) throws Exception
+    {
+        String utc = getFitsValueforKeyword(fitsFile, utcKeyword);
         return utc;
+    }
+
+    /**
+     * Returns the value from the FITS file for the input keyword.
+     */
+    private String getFitsValueforKeyword(File fitsFile, String keyword) throws Exception
+    {
+        Fits thisFits = new Fits(fitsFile);
+        thisFits.read();
+        int numFitsHeaders = thisFits.getNumberOfHDUs();
+        BasicHDU thisHDU = null;
+        for (int i = 0; i < numFitsHeaders; i++)
+        {
+            try
+            {
+                thisHDU = thisFits.getHDU(i);
+                if (thisHDU != null)
+                {
+                    String value = thisHDU.getHeader().getStringValue(keyword);
+                    if (value != null)
+                    {
+                        thisFits.close();
+                        return value;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //do nothing, try next header
+                System.err.println(e.getMessage());
+            }
+        }
+
+        thisFits.close();
+        throw new Exception("Error value from FITS header for keyword " + keyword + " from file " + fitsFile.getAbsolutePath());
     }
 
     private void saveInfoFile(File filename,
@@ -528,30 +618,40 @@ public class CreateInfoFiles
         String o = "\nThis program generates infofiles (SBMT-formatted SPICE pointing) for the input\n"
                 + "data files. It also creates an imagelist.txt file for SBMT's FixedListQuery, and\n"
                 + "an imagelist-fullpath.txt file for SBMT's DatabaseGeneratorSQL.RunInfo for FITS data.\n\n"
-                + "Usage: CreateInfoFiles.sh <required-option> <input-folder> <output-folder> <metakernel> <sbmt-folder> <sc-name> <instrument-frame> <body-name> <body-frame>\n\n"
+                + "Usage: CreateInfoFiles.sh <required-time-switch> <input-folder> <output-folder> <metakernel> <sbmt-folder> <sc-name> <instrument-frame> <body-name> <body-frame>\n\n"
                 + "Where:\n"
+                + "  <required-time-switch>    This required command-line switch is described in more detail below.\n"
+                + "                            It is used to specify the exposure time for the input data.\n"
                 + "  <input-folder>            Path to the data for which to create infofiles.\n"
                 + "  <output-folder>           Path to folder in which to place generated infofiles and\n"
                 + "                            image lists.\n"
                 + "  <sbmt-folder>             Path relative to /project/sbmt2/data. This is the path where\n"
                 + "                            the data will reside on the sbmt server for this instrument.\n"
                 + "                            For example, \"/earth/polycam/images\". This is used only to\n"
-                + "                            create the image lists.\n"
+                + "                            create the output image lists.\n"
                 + "  <sc-name>                 SPICE name for the spacecraft, found in the frames kernel. This\n"
                 + "                            is not the same as the name of the spacecraft frame. A list of\n"
                 + "                            valid spacecraft names can be found in the NAIF IDs required reading.\n"
-                + "  <instrument-frame>        SPICE name for the reference frame of the observing instrument."
+                + "  <instrument-frame>        SPICE name for the reference frame of the observing instrument.\n"
                 + "                            This can be found in the frames kernel.\n"
                 + "  <body-name>               SPICE name of the body. A list of valid body names can be found\n"
                 + "                            in the NAIF IDs required reading.\n"
                 + "  <body-frame>              SPICE name of the body-fixed reference frame. This is generally\n"
                 + "                            found in the frames kernel or the PCK kernel.\n"
-                + "One of the following two options is required:\n"
-                + "  <-f sclkKeyword>          The input data is in FITS format and the FITS header\n"
-                + "                            contains a SPICE SCLK (spacecraft clock) keyword whose\n"
-                + "                            value is the exposure time. This keyword is passed on the\n"
-                + "                            command line. In this case, all FITS files in the input\n"
-                + "                            folder will be processed.\n"
+                + "One of the following two command line switches is required for specifying the exposure time(s)\n"
+                + "of the input data:\n"
+                + "  <-s sclkKeyword>          The input data is in FITS format and the FITS header\n"
+                + "                            contains a keyword whose value is the exposure time in SPICE SCLK \n"
+                + "                            (spacecraft clock) time. This keyword is passed on the command line.\n"
+                + "                            In this case, all FITS files in the input folder will be processed.\n"
+                + "  <-u utcTimeKeyword>       The input data is in FITS format and the FITS header\n"
+                + "                            contains a keyword whose value is the exposure time in UTC. This \n"
+                + "                            keyword is passed on the command line.\n"
+                + "                            In this case, all FITS files in the input folder will be processed.\n"
+//                + "  <-e etKeyword>            The input data is in FITS format and the FITS header contains a\n"
+//                + "                            keyword whose value is the exposure time in ET. This keyword is \n"
+//                + "                            passed on the command line.\n"
+//                + "                            In this case, all FITS files in the input folder will be processed.\n"
                 + "  <-t timesFile timeFormat> Data files and exposure times are listed in input timesFile.\n"
                 + "                            The first column contains the data file name and the second\n"
                 + "                            column contains the exposure time in one of three valid time\n"
@@ -566,10 +666,14 @@ public class CreateInfoFiles
                 + "                                et   - a double-precision ephemeris time\n"
                 + "                                sclk - a SPICE-recognized mission-dependent spacecraft clock string\n"
                 + "                            In the example above, the time format is utc.\n"
-                + "                            For more information, refer to NAIF's SPICE time documentation.\n"
+                + "                            For more information, refer to NAIF's SPICE time documentation.\n\n"
                 + "Examples: \n"
-                + "CreateInfoFiles.sh -f SCLK_STR               /project/sbmtpipeline/rawdata/test/images /project/sbmtpipeline/rawdata/test/infofiles /project/sbmtpipeline/rawdata/test/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk /project/sbmt2/data ORX ORX_OCAMS_POLYCAM BENNU IAU_BENNU\n"
-                + "CreateInfoFiles.sh -t imageTimesFile.txt utc /project/sbmtpipeline/rawdata/test/images /project/sbmtpipeline/rawdata/test/infofiles /project/sbmtpipeline/rawdata/test/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk /project/sbmt2/data ORX ORX_OTES          BENNU IAU_BENNU\n\n";
+                + "Create infofiles for Osiris-REx POLYCAM FITS images (reads FITS header for exposure time):\n"
+                + "   CreateInfoFiles.sh -s SCLK_STR               /project/sbmtpipeline/rawdata/test/images /project/sbmtpipeline/rawdata/test/infofiles /project/sbmtpipeline/rawdata/test/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk /earth/polycam/images           ORX ORX_OCAMS_POLYCAM BENNU IAU_BENNU\n"
+                + "Create infofiles for Osiris-REx POLYCAM FITS images as a generic data source (reads input file for exposure time):\n"
+                + "   CreateInfoFiles.sh -t imageTimesFile.txt utc /project/sbmtpipeline/rawdata/test/images /project/sbmtpipeline/rawdata/test/infofiles /project/sbmtpipeline/rawdata/test/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk /earth/osirisrex/otes/infofiles ORX ORX_OTES          BENNU IAU_BENNU\n"
+                + "Create infofiles for Hayabusa2 simulated FITS images as a generic data source (reads input file for exposure time):\n"
+                + "   CreateInfoFiles.sh -f DATE-OBS               /project/sbmtpipeline/rawdata/test/images /project/sbmtpipeline/rawdata/test/infofiles /project/sbmtpipeline/rawdata/test/kernels/spoc-digest-2017-10-05T22_05_46.366Z.mk /project/sbmt2/data ORX ORX_OTES          BENNU IAU_BENNU\n\n";
         System.out.println(o);
     }
 
@@ -580,6 +684,9 @@ public class CreateInfoFiles
         boolean fits = false;
         boolean timesFile = false;
         String sclkString = null;
+        String utcString = null;
+        boolean fitsContainsSclk = false;
+        boolean fitsContainsUTC = false;
         File timeTableFile = null;
         TimeFormat timeFormat = null;
         File metakernel = null;
@@ -592,9 +699,15 @@ public class CreateInfoFiles
         int i;
         for (i = 0; i < args.length; ++i)
         {
-            if (args[i].equals("-f"))
+            if (args[i].equals("-s"))
             {
                 fits = true;
+                fitsContainsSclk = true;
+            }
+            else if (args[i].equals("-u"))
+            {
+                fits = true;
+                fitsContainsUTC = true;
             }
             else if (args[i].equals("-t"))
             {
@@ -638,7 +751,14 @@ public class CreateInfoFiles
         //Parse the arguments
         if (fits)
         {
-            sclkString = String.valueOf(args[i++]);
+            if (fitsContainsSclk)
+            {
+                sclkString = String.valueOf(args[i++]);
+            }
+            else if (fitsContainsUTC)
+            {
+                utcString = String.valueOf(args[i++]);
+            }
         }
         else if (timesFile)
         {
@@ -679,23 +799,104 @@ public class CreateInfoFiles
         }
         if (fits)
         {
-            System.err.println("    " + sclkString + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
+            if (fitsContainsSclk)
+            {
+                System.err.println("    " + sclkString + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
+            }
+            else if (fitsContainsUTC)
+            {
+                System.err.println("    " + utcString + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
+            }
             System.err.println("    " + metakernel + " "  + sbmtRelPath + " " + sc + " " + instrFrame + " " + body + " " + bodyFrame);
         }
 
         CreateInfoFiles app = new CreateInfoFiles(metakernel);
         if (fits)
         {
-            app.processFits(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, sclkString);
+            if (fitsContainsSclk)
+            {
+                app.processFitsSCLK(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, sclkString);
+            }
+            else if (fitsContainsUTC)
+            {
+                app.processFitsUTC(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, utcString);
+            }
         }
         else if (timesFile)
         {
             app.processImageTable(metakernel, sbmtRelPath, inputFolder, outputFolder, body, bodyFrame, sc, instrFrame, timeTableFile, timeFormat);
         }
+
+        System.out.println("Wrote infofiles to " + outputFolder.getAbsolutePath());
     }
 
-    public static void main(String[] args) throws Exception
+    /**************************************************************************
+     *
+     * Unit tests below this line.
+     *
+     **************************************************************************/
+
+    /**
+     * Test run to print usage.
+     *
+     * @throws Exception
+     */
+    public static void doUsageTest() throws Exception
     {
+        System.err.println("---------------------------------------------------------------------");
+        System.err.println("-- Unit test, print usage                                          --");
+        System.err.println("---------------------------------------------------------------------");
+        String[] testArgs = {};
+        CreateInfoFiles.execute(testArgs);
+    }
+    /**
+     * Test run with Hayabusa2 ONC FITS images (reads FITS header for exposure time).
+     *
+     * @throws Exception
+     */
+    public static void doHayabusa2FitsTest() throws Exception
+    {
+        System.err.println("---------------------------------------------------------------------");
+        System.err.println("-- Unit test, Hayabusa2 ONC FITS                                   --");
+        System.err.println("---------------------------------------------------------------------");
+        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
+        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/hayabusa2RyuguTruth/kernels/mk/hyb2_lss_truth.tm");
+        File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/hayabusa2RyuguTruth/onc/images/l2a");
+        //Output folder
+        File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/hayabusa2RyuguTruth/onc/infofiles");
+
+        String[] testArgs = {"-u", "DATE-OBS", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/ryugu/truth/imaging", "HAYABUSA2", "HAYABUSA2_ONC-T", "RYUGU", "RYUGU_FIXED"};
+        CreateInfoFiles.execute(testArgs);
+    }
+    /**
+     * Test run with Osiris-REx POLYCAM FITS images (reads FITS header for exposure time).
+     *
+     * @throws Exception
+     */
+    public static void doOsirisRexFitsTest() throws Exception
+    {
+        System.err.println("---------------------------------------------------------------------");
+        System.err.println("-- Unit test, Osiris-REx Polycam FITS                              --");
+        System.err.println("---------------------------------------------------------------------");
+        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
+        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
+        File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
+        //Output folder
+        File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
+
+        String[] testArgs = {"-s", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/earth/polycam/images", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+        CreateInfoFiles.execute(testArgs);
+    }
+    /**
+     * Test run with Osiris-REx POLYCAM FITS images a generic data source (does not read FITS header for exposure time).
+     *
+     * @throws Exception
+     */
+    public static void doOsirisRexGenericTest() throws Exception
+    {
+        System.err.println("---------------------------------------------------------------------");
+        System.err.println("-- Unit test, Osiris-REx Polycam generic image list                --");
+        System.err.println("---------------------------------------------------------------------");
         //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
         File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
         File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
@@ -703,12 +904,15 @@ public class CreateInfoFiles
         //Output folder
         File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
 
-        //Uncomment this to do a test run with FITS data.
-        String[] testArgs = {"-f", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
-
-        //Uncomment this to do a test run on generic data. Requires an input file containing data file name and exposure time. See printUsage() for details.
-//        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
-
+        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
         CreateInfoFiles.execute(testArgs);
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+//        CreateInfoFiles.doOsirisRexFitsTest();
+//        CreateInfoFiles.doOsirisRexGenericTest();
+        CreateInfoFiles.doHayabusa2FitsTest();
+//        CreateInfoFiles.doUsageTest();
     }
 }
