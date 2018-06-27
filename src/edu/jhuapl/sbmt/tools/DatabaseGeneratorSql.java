@@ -557,7 +557,7 @@ public class DatabaseGeneratorSql
         String appName = "neartool";
         String cacheVersion = "2";
         boolean aplVersion = true;
-        String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
+        String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
 
         boolean appendTables = false;
         boolean modifyMain = false;
@@ -568,7 +568,7 @@ public class DatabaseGeneratorSql
         {
             if (args[i].equals("--root-url"))
             {
-                rootURL = args[++i];
+                rootURL = FileCache.createURL(args[++i]).toString();
             }
             else if (args[i].equals("--append-tables"))
             {
