@@ -5,19 +5,13 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
 
 import edu.jhuapl.saavtk.gui.MainWindow;
-import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.DirectoryChooser;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
-import edu.jhuapl.saavtk.gui.menu.HelpMenu;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -40,36 +34,24 @@ public class SbmtMainWindow extends MainWindow
     {
 
         FileMenu menu=super.createFileMenu(rootPanel);
-        JMenu saveImagesMenu=new JMenu("Save visible images to...");
-        saveImagesMenu.add(new JMenuItem(new SaveImagesAsSTLAction()));
-        menu.add(new JSeparator());
-        menu.add(saveImagesMenu);
+//        JMenu saveImagesMenu=new JMenu("Save mapped images to...");
+//        saveImagesMenu.add(new JMenuItem(new SaveImagesAsSTLAction()));
+//        menu.add(new JSeparator());
+//        menu.add(saveImagesMenu);
         return menu;
 
     }
 
     @Override
-    protected ViewManager createViewManager(StatusBar statusBar, MainWindow mainWindow, String tempCustomShapeModelPath)
+    protected ViewManager createViewManager(StatusBar statusBar, String tempCustomShapeModelPath)
     {
         return new SbmtViewManager(statusBar, this, tempCustomShapeModelPath);
-    }
-
-    @Override
-    protected ViewMenu createViewMenu(ViewManager viewManager, RecentlyViewed recentsMenu)
-    {
-        return new SbmtViewMenu((SbmtViewManager) viewManager, recentsMenu);
     }
 
     @Override
     protected ImageIcon createImageIcon()
     {
         return new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
-    }
-
-    @Override
-    protected HelpMenu createHelpMenu(ViewManager rootPanel)
-    {
-        return new SbmtHelpMenu(rootPanel);
     }
 
     private class SaveImagesAsSTLAction extends AbstractAction
@@ -86,9 +68,13 @@ public class SbmtMainWindow extends MainWindow
 
             try
             {
+                System.out.println(
+                        "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: file " + file);
                 if (file != null)
                 {
                     ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
+                    System.out.println(
+                            "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
                     for (Image image : collection.getImages())
                     {
                         System.out.println(image.getImageName());

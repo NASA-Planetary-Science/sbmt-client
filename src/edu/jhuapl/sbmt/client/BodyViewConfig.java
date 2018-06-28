@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -97,7 +96,7 @@ public abstract class BodyViewConfig extends ViewConfig
         "Very High (3145728 plates)"
     };
 
-    static public final int[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
+    static public final Integer[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
         49152,
         196608,
         786432,
@@ -117,6 +116,12 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public SpectralInstrument[] spectralInstruments = {};
 
+    protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
+    {
+        super(resolutionLabels, resolutionNumberElements);
+    }
+
+    @Override
     public String getUniqueName()
     {
         if (ShapeModelType.CUSTOM == author)
@@ -166,30 +171,6 @@ public abstract class BodyViewConfig extends ViewConfig
         return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
     }
 
-    @Override
-    public String getPathRepresentation()
-    {
-        if (ShapeModelType.CUSTOM == author)
-        {
-            return Configuration.getAppTitle() + " - " + ShapeModelType.CUSTOM + " > " + modelLabel;
-        }
-        else
-        {
-            String path = type.str;
-            if (population != null)
-                path += " > " + population;
-            path += " > " + body;
-            if (dataUsed != null)
-                path += " > " + dataUsed;
-            if (author != null)
-                path += " > " + author;
-            if (version != null)
-                path += " (" + version + ")";
-            return Configuration.getAppTitle() + " - " + path;
-        }
-    }
-
-//
     // methods
     //
      /**
@@ -302,12 +283,14 @@ public abstract class BodyViewConfig extends ViewConfig
         if (shapeModelFileBaseName == null || shapeModelFileExtension == null) {
             throw new NullPointerException();
         }
-        int numberResolutions = smallBodyLabelPerResolutionLevel != null && smallBodyLabelPerResolutionLevel.length > 0 ? smallBodyLabelPerResolutionLevel.length : 1;
 
-        final String[] modelFiles = new String[numberResolutions];
+        int numberResolutions = getResolutionLabels().size();
+
+        String[] modelFiles = new String[numberResolutions];
         for (int index = 0; index < numberResolutions; ++index) {
             modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
         }
+
         return modelFiles;
     }
 }

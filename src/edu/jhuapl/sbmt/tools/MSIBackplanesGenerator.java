@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
@@ -43,10 +43,10 @@ public class MSIBackplanesGenerator
     boolean overwrite = false;
     public void printUsage()
     {
-        String o = "This program generates blackplanes for a list of MSI image files using the"
-                + "Eros V1 shape model at highest resolution and with GASKELL pointing. It also"
+        String o = "This program generates blackplanes for a list of MSI image files using the\n"
+                + "Eros V1 shape model at highest resolution and with GASKELL pointing. It also\n"
                 + "generates PDS version 4 labels for each backplanes file.\n"
-                + "Usage: MSIBackplanesGenerator [options] <root-dir> <image-list> <output-folder> <finish-folder>\n\n"
+                + "Usage: MSIBackplanesGenerator.sh [options] <root-dir> <image-list> <output-folder> <finish-folder>\n\n"
                 + "Where:\n"
                 + "  <root-dir>               Path to the scripts that run the SBMT standalone java tools.\n"
                 + "  <image-list>             Path to file listing the images to use. Images are\n"
@@ -168,7 +168,7 @@ public class MSIBackplanesGenerator
             if (!(image.trim().startsWith("#")) && image.trim().length() > 0)
             {
                 //Generate the backplanes for this image
-                String command = String.format(rootDir + File.separator + "BackplanesGenerator -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
+                String command = String.format(rootDir + File.separator + "BackplanesGenerator.sh -c " + camera.name() + " -r " + resolution + " -f -s -p " + ptg.name() + " " + body.name() + " %s %s", image, outputFolder);
 //                System.err.println("MSIBackplanesGenerator.java, Command sent to command list is: " + command);
                 commandList.add(command);
 

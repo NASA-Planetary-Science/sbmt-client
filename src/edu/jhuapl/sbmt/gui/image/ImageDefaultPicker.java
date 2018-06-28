@@ -19,9 +19,9 @@ import vtk.vtkPropCollection;
 import vtk.vtkRenderer;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.AxisType;
 import edu.jhuapl.saavtk.gui.StatusBar;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.AxisType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -346,11 +346,11 @@ public class ImageDefaultPicker extends DefaultPicker
                 radStr = " " + radStr;
             radStr += " km";
 
-            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Distance: " + distanceStr + " ");
+            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
         }
         else
         {
-            statusBar.setRightText("Distance: " + distanceStr + " ");
+            statusBar.setRightText("Range: " + distanceStr + " ");
         }
     }
 

@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -15,14 +19,26 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.gui.Console;
+import edu.jhuapl.saavtk.gui.RecentlyViewed;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
-import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
+import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 
 public class SbmtViewManager extends ViewManager
 {
+    private static final long serialVersionUID = 1L;
+
     // These two collections are used to maintain a sorted hierarchical order for
     // small bodies.
     // A comprehensive list of all possible small bodies in canonical order. Note that this
@@ -53,12 +69,45 @@ public class SbmtViewManager extends ViewManager
     // A map of config objects to their indices in the menuEntries list.
     private final Map<ViewConfig, Integer> configMap;
 
+    private final TrackedMetadataManager stateManager;
+
     public SbmtViewManager(StatusBar statusBar, Frame frame, String tempCustomShapeModelPath)
     {
         super(statusBar, frame, tempCustomShapeModelPath);
         this.menuEntries = Lists.newArrayList();
         this.configMap = Maps.newHashMap();
+        this.stateManager = TrackedMetadataManager.of("ViewManager");
         setupViews(); // Must be called before this view manager is used.
+    }
+
+    @Override
+    protected void createMenus(JMenuBar menuBar) {
+        fileMenu = new FileMenu(this, ImmutableList.of("sbmt"));
+        fileMenu.setMnemonic('F');
+        menuBar.add(fileMenu);
+
+        recentsMenu = new RecentlyViewed(this);
+        viewMenu = new SbmtViewMenu(this, recentsMenu);
+        viewMenu.setMnemonic('V');
+
+        menuBar.add(viewMenu);
+
+        favoritesMenu = new FavoritesMenu(this);
+
+        JMenuItem passwordMenu = createPasswordMenu();
+
+        viewMenu.add(new JSeparator());
+        viewMenu.add(favoritesMenu);
+        viewMenu.add(passwordMenu);
+        viewMenu.add(new JSeparator());
+        viewMenu.add(recentsMenu);
+
+        Console.addConsoleMenu(menuBar);
+
+        helpMenu = new SbmtHelpMenu(this);
+        helpMenu.setMnemonic('H');
+        menuBar.add(helpMenu);
+
     }
 
     @Override
@@ -69,7 +118,7 @@ public class SbmtViewManager extends ViewManager
         ViewConfig config = view.getConfig();
         if (!config.isEnabled()) return;
         List<View> builtInViews = getBuiltInViews();
-        if (builtInViews.contains(config)) return; // View was already added.
+        if (builtInViews.contains(view)) return; // View was already added.
 
         // Ensure that this view's body has a canonical position in the master list of bodies.
         // This is important for the algorithm below, which requires all bodies to be named in SMALL_BODY_LIST.
@@ -118,18 +167,46 @@ public class SbmtViewManager extends ViewManager
     {
         for (ViewConfig config: SmallBodyViewConfig.getBuiltInConfigs())
         {
-            addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
+//            System.out.println(config.getUniqueName());
+            //if (config.getUniqueName().equals("Gaskell/25143 Itokawa"))
+                addBuiltInView(new SbmtView(statusBar, (SmallBodyViewConfig)config));
         }
     }
 
     @Override
-    public View createCustomView(StatusBar statusBar, String name, boolean temporary)
+    protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        SmallBodyViewConfig config = new SmallBodyViewConfig();
-        config.modelLabel = name;
-        config.customTemporary = temporary;
-        config.author = ShapeModelType.CUSTOM;
-        return new SbmtView(statusBar, config);
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
+        customConfig.modelLabel = name;
+        customConfig.customTemporary = temporary;
+        customConfig.author = ShapeModelType.CUSTOM;
+        return new SbmtView(statusBar, customConfig);
+    }
+
+    @Override
+    public void initializeStateManager() {
+        if (!stateManager.isRegistered())
+        {
+            stateManager.register(new MetadataManager() {
+                final Key<String> currentViewKey = Key.of("currentView");
+
+                @Override
+                public Metadata store()
+                {
+                    SettableMetadata state = SettableMetadata.of(Version.of(1, 0));
+                    View currentView = getCurrentView();
+                    state.put(currentViewKey, currentView != null ? currentView.getUniqueName() : null);
+                    return state;
+                }
+
+                @Override
+                public void retrieve(Metadata source)
+                {
+                    String uniqueName = source.get(currentViewKey);
+                    setCurrentView(getView(uniqueName));
+                }
+            });
+        }
     }
 
     /**
@@ -282,10 +359,10 @@ public class SbmtViewManager extends ViewManager
         private static final Map<ShapeModelBody, Comparator<ViewConfig>> CUSTOM_COMPARATORS = Maps.newHashMap();
 
         static {
-            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOKE_GASKELL_COMPARATOR);
-            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.EPIMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.JANUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PANDORA, THOMAS_STOOKE_GASKELL_COMPARATOR);
+            CUSTOM_COMPARATORS.put(ShapeModelBody.PROMETHEUS, THOMAS_STOOKE_GASKELL_COMPARATOR);
             CUSTOM_COMPARATORS.put(ShapeModelBody.TOUTATIS, TOUTATIS_COMPARATOR);
         }
 
@@ -351,7 +428,7 @@ public class SbmtViewManager extends ViewManager
 
             if (result == 0)
             {
-                throw new AssertionError();
+                throw new AssertionError("Two models have the same designation: " + config1.toString());
             }
             return result;
         }
@@ -503,8 +580,8 @@ public class SbmtViewManager extends ViewManager
             ));
 
     private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
-            ShapeModelType.TRUTH,
             ShapeModelType.GASKELL,
+            ShapeModelType.TRUTH,
             ShapeModelType.THOMAS,
             ShapeModelType.STOOKE,
             ShapeModelType.HUDSON,
@@ -532,7 +609,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.GASKELL
             ));
 
-    private static final Comparator<ViewConfig> THOMAS_STOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {
+    private static final Comparator<ViewConfig> THOMAS_STOOKE_GASKELL_COMPARATOR = new Comparator<ViewConfig>() {
 
         @Override
         public int compare(ViewConfig o1, ViewConfig o2)
@@ -735,4 +812,5 @@ public class SbmtViewManager extends ViewManager
         }
         return builder.build();
     }
+
 }

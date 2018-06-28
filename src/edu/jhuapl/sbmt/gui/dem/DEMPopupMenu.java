@@ -16,26 +16,31 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
+import vtk.vtkCamera;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.gui.Renderer;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+
+import nom.tam.fits.FitsException;
 
 
 public class DEMPopupMenu extends PopupMenu
@@ -47,6 +52,7 @@ public class DEMPopupMenu extends PopupMenu
     private List<DEMKey> demKeys = new ArrayList<DEMKey>();
     private JMenuItem mapDEMMenuItem;
     private JMenuItem mapBoundaryMenuItem;
+    private JMenuItem centerDemMenuItem;
     private JMenuItem showDEMInfoMenuItem;
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem changeOpacityMenuItem;
@@ -84,12 +90,17 @@ public class DEMPopupMenu extends PopupMenu
         mapBoundaryMenuItem.setText("Map DEM Boundary");
         this.add(mapBoundaryMenuItem);
 
+        centerDemMenuItem = new JMenuItem(new CenterDemAction());
+        centerDemMenuItem.setText("Center DEM in Window");
+
+        this.add(centerDemMenuItem);
+
         showDEMInfoMenuItem = new JMenuItem(new ShowInfoAction());
         showDEMInfoMenuItem.setText("Properties...");
         this.add(showDEMInfoMenuItem);
 
         saveToDiskMenuItem = new JMenuItem(new SaveDEMAction());
-        saveToDiskMenuItem.setText("Save Original FITS File...");
+        saveToDiskMenuItem.setText("Save FITS File...");
         this.add(saveToDiskMenuItem);
 
         changeOpacityMenuItem = new JMenuItem(new ChangeOpacityAction());
@@ -219,6 +230,8 @@ public class DEMPopupMenu extends PopupMenu
             }
         }
 
+        centerDemMenuItem.setEnabled(enableHideImage);
+
         mapDEMMenuItem.setSelected(selectMapImage);
         mapDEMMenuItem.setEnabled(enableMapImage);
         mapBoundaryMenuItem.setSelected(selectMapBoundary);
@@ -259,6 +272,102 @@ public class DEMPopupMenu extends PopupMenu
 
             updateMenuItems();
         }
+    }
+
+    public class CenterDemAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if (demKeys.size() != 1)
+                return;
+
+            DEMKey demKey = demKeys.get(0);
+            DEM dem=demCollection.getDEM(demKey);
+
+            vtkCamera cam=renderer.getRenderWindowPanel().getActiveCamera();
+
+            // Find center of DEM. Arbitrarily create an origin exactly opposite this center.
+            final double[] centerArray = dem.getCenter();
+            final double[] origin = new double[] { -centerArray[0], -centerArray[1], -centerArray[2] };
+
+            // Figure out roughly the size of the DEM and from it compute a maximum radius
+            // in angle space for a circle centered on the DEM, perpendicular to the
+            // "center" array computed above.
+            final Vector3D center = new Vector3D(centerArray);
+            final double mPerKm = 1000.;
+            final double maximumRadius = dem.getScale() * dem.getHalfSize() / mPerKm;
+            final double maximumAngle = maximumRadius / (center.getNorm() * 2.);
+
+            // Find vectors roughly along the DEM surface, roughly oriented by latitude/longitude.
+            Vector3D latVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, true);
+            Vector3D lonVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, false);
+
+            // Compute a normal from these two vectors.
+            Vector3D normal = lonVec.crossProduct(latVec).normalize();
+
+            cam.SetFocalPoint(centerArray);
+            cam.SetPosition(center.add(normal.scalarMultiply(2. * dem.getBoundingBoxDiagonalLength())).toArray());
+            cam.SetViewUp(lonVec.crossProduct(normal).normalize().toArray());
+            renderer.getRenderWindowPanel().resetCameraClippingRange();
+            renderer.getRenderWindowPanel().Render();
+
+            updateMenuItems();
+        }
+    }
+
+    private Vector3D findPointNearToCenter(DEM dem, final double[] origin, final double [] center, final double maximumAngle, boolean alongLat)
+    {
+        final int maxIterations = 10;
+        LatLon centerLatLon = MathUtil.reclat(center);
+
+        double [] point0 = new double[] { 0., 0., 0. };
+        double angle = maximumAngle;
+        boolean foundMatch = false;
+        for (int index = 0; index < maxIterations; ++index)
+        {
+            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
+            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point0) >= 0)
+            {
+                foundMatch = true;
+                break;
+            }
+            angle *= .5;
+        }
+
+        if (!foundMatch)
+        {
+            point0 = center;
+        }
+
+        double [] point1 = new double[] { 0., 0., 0. };
+        angle = -maximumAngle;
+        foundMatch = false;
+        for (int index = 0; index < maxIterations; ++index)
+        {
+            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
+            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point1) >= 0)
+            {
+                foundMatch = true;
+                break;
+            }
+            angle *= .5;
+        }
+
+        if (!foundMatch)
+        {
+            point1 = center;
+        }
+
+        if (point0 == point1)
+        {
+            return null;
+        }
+        return new Vector3D(point1).subtract(new Vector3D(point0));
+    }
+
+    private LatLon getDirToTry(final LatLon centerLatLon, double angle, boolean alongLat)
+    {
+        return alongLat ? new LatLon(centerLatLon.lat + angle, centerLatLon.lon) : new LatLon(centerLatLon.lat, centerLatLon.lon + angle);
     }
 
     private class MapBoundaryAction extends AbstractAction
@@ -306,9 +415,15 @@ public class DEMPopupMenu extends PopupMenu
                 else
                 {
                     // No view currently exists, create one and associate it to the DEM
-                    macroDEM.setView(new DEMView(demKey, demCollection, smallBodyModel));
+                    DEMView view=new DEMView(demKey, demCollection, smallBodyModel);
+                    macroDEM.setView(view);
+
+                    // ugh... this is a hack to get the renderer to wake up and look at the DEM, otherwise it is by default looking at the origin and the user might think that there is a bug since the DEM is usually not visible from that viewpoint
+                    // ....  It would be nice if instead we could call getRenderer().resetCamera() but there is some synchronization issue between the 3d view and DEM actors that breaks this approach -- so just making the camera at least look in the direction of the DEM seems to get around the issue for now -- zimmemi1
+                    view.getRenderer().getRenderWindowPanel().getActiveCamera().SetFocalPoint(macroDEM.getBoundingBox().getCenterPoint());
                 }
                 updateMenuItems();
+
             }
             catch (FitsException e1) {
                 e1.printStackTrace();

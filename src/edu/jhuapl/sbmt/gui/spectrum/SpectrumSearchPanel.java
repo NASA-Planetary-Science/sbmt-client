@@ -10,25 +10,42 @@
  */
 package edu.jhuapl.sbmt.gui.spectrum;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -38,8 +55,9 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
-import edu.jhuapl.saavtk.gui.Renderer;
-import edu.jhuapl.saavtk.gui.Renderer.LightingType;
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -47,6 +65,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -70,8 +89,11 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     protected String spectrumResultsLabelText = " ";
     protected IdPair resultIntervalCurrentlyShown = null;
     protected boolean currentlyEditingUserDefinedFunction = false;
-
     Renderer renderer;
+
+    JButton saveImageListButton = new JButton("Save Spectrum List");
+    JButton saveSelectedImageListButton = new JButton();
+    JButton loadImageListButton = new JButton("Load Spectrum List");
 
     protected final SpectralInstrument instrument;
 
@@ -98,6 +120,30 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         renderer.addKeyListener(this);
         this.renderer=renderer;
 
+
+        resultList.setCellRenderer(new MyListCellRenderer());
+
+        resultList.addListSelectionListener(new ListSelectionListener()
+        {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (e.getValueIsAdjusting())
+                    return;
+                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    Spectrum spectrum=model.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                    if (spectrum == null)
+                        continue;
+                    if (resultList.isSelectedIndex(i))
+                        model.select(spectrum);
+                    else
+                        model.deselect(spectrum);
+                }
+            }
+        });
 
     }
 
@@ -151,6 +197,89 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
             blueComboBox.addItem(fp.GetFunction());
+        }
+    }
+
+    private void saveSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "spectrumlist.txt");
+
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                String nl = System.getProperty("line.separator");
+                out.write("#Spectrum_Name Image_Time_UTC"  + nl);
+                int size = resultList.getModel().getSize();
+                for (int i=0; i<size; ++i)
+                {
+                    String result = spectrumRawResults.get(i);
+                    String spectrum  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
+                    out.write(spectrum + ".spect " + nl);
+
+//                    String dtStr = spectrumRawResults.get(i).get(1);  //Spectra don't currently have times in there - this may change in the future
+//                    Date dt = new Date(Long.parseLong(dtStr));
+
+//                    out.write(spectrum + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
+                }
+
+                out.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    if (lines.get(i).startsWith("#")) continue;
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    List<String> result = new ArrayList<String>();
+                    result.add(words[0]);
+//                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
+//                    result.add(name);
+//                    Date dt = sdf.parse(words[1]);
+//                    result.add(String.valueOf(dt.getTime()));
+                    results.add(result);
+                }
+                setSpectrumSearchResults(results);
+//                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+//                setImageResults(processResults(results));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
         }
     }
 
@@ -236,10 +365,23 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     @Override
     public void keyPressed(KeyEvent e)
     {
+        // 2018-02-08 JP. Turn this method into a no-op for now. The reason is that
+        // currently all listeners respond to all key strokes, and VTK keyboard events
+        // do not have a means to determine their source, so there is no way for listeners
+        // to be more selective. The result is, e.g., if one types "s", statistics windows show
+        // up even if we're not looking at a spectrum tab.
+        //
+        // Leave it in the code (don't comment it out) so Eclipse can find references to this,
+        // and so that we don't unknowingly break this code.
+        boolean disableKeyResponses = true;
+        if (disableKeyResponses) return;
+
         if (e.getKeyChar()=='a')
         {
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            renderer.removeKeyListener(this);
             model.toggleSelectAll();
+            renderer.addKeyListener(this);
         }
         else if (e.getKeyChar()=='s')
         {
@@ -295,7 +437,6 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
             SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             model.setOffset(model.getOffset()+body.getBoundingBoxDiagonalLength()/50);
-            System.out.println(model.getOffset());
         }
         else if (e.getKeyChar()=='-')
         {
@@ -318,7 +459,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         int endId = idPair.id2;
 
         SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        model.removeAllSpectra();
+//        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -402,17 +543,22 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex(), redComboBox.getSelectedIndex()},
                     new double[]{redMinVal, redMinVal, redMinVal},
-                    new double[]{redMaxVal, redMaxVal, redMaxVal});
+                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+                    instrument);
         }
         else
         {
             model.setChannelColoring(
                     new int[]{redComboBox.getSelectedIndex(), greenComboBox.getSelectedIndex(), blueComboBox.getSelectedIndex()},
                     new double[]{redMinVal, greenMinVal, blueMinVal},
-                    new double[]{redMaxVal, greenMaxVal, blueMaxVal});
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+                    instrument);
         }
-    }
 
+
+
+    }
+    PickEvent lastPickEvent=null;
 
     @Override
     public void propertyChange(PropertyChangeEvent evt)
@@ -420,16 +566,46 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
+
+
             Model model = modelManager.getModel(e.getPickedProp());
             if (model instanceof SpectraCollection)
             {
                 SpectraCollection coll=(SpectraCollection)model;
-                MouseEvent event=e.getMouseEvent();
-                if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
+                String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                Spectrum spectrum=coll.getSpectrum(name);
+                if (spectrum==null)
+                    return;
+                //MouseEvent event=e.getMouseEvent();
+                //if (event.getButton()==MouseEvent.BUTTON1 && event.isShiftDown())
+                //{
+                //    String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                //    coll.toggleSelect(coll.getSpectrum(name));
+               // }
+
+                resultList.getSelectionModel().clearSelection();
+                for (int i=0; i<resultList.getModel().getSize(); i++)
                 {
-                    String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
-                    coll.toggleSelect(coll.getSpectrum(name));
+                    if (FilenameUtils.getBaseName(name).equals(resultList.getModel().getElementAt(i)))
+                    {
+                        resultList.getSelectionModel().setSelectionInterval(i, i);
+                        resultList.ensureIndexIsVisible(i);
+                        coll.select(coll.getSpectrum(name));//.setShowOutline(true);
+                    }
                 }
+
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    if (!resultList.getSelectionModel().isSelectedIndex(i))
+                    {
+                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                        if (spectrum_ != null)
+                            coll.deselect(spectrum_);
+                    }
+                }
+                resultList.repaint();
+
+
 
 /*                int idx = -1;
                 int size = imageRawResults.size();
@@ -455,8 +631,55 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                         resultList.scrollRectToVisible(cellBounds);
                 }*/
             }
+       }
+        else
+        {
+            resultList.repaint();
         }
 
+    }
+
+
+    class MyListCellRenderer extends DefaultListCellRenderer  {
+
+        public MyListCellRenderer() {
+            setOpaque(true);
+        }
+
+        public Component getListCellRendererComponent(JList paramlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            //setText(value.toString());
+            JLabel label = (JLabel) super.getListCellRendererComponent(paramlist, value, index, isSelected, cellHasFocus);
+            label.setOpaque(true /* was isSelected */); // Highlight only when selected
+            if(isSelected) { // I faked a match for the second index, put you matching condition here.
+                label.setBackground(Color.YELLOW);
+                label.setEnabled(false);
+            }
+            else
+            {
+            String spectrumFile=createSpectrumName(value.toString());
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            Spectrum spectrum=model.getSpectrum(spectrumFile);
+            setBackground(Color.LIGHT_GRAY);
+            if (spectrum==null)
+                setForeground(Color.black);
+            else
+            {
+                double[] color=spectrum.getChannelColor();
+                for (int i=0; i<3; i++)
+                {
+                    if (color[i]>1)
+                        color[i]=1;
+                    if (color[i]<0)
+                        color[i]=0;
+                }
+                setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
+
+//                setBackground(paramlist.getBackground());
+            }
+            }
+
+            return label;
+        }
     }
 
 
@@ -550,6 +773,27 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         polygonType2CheckBox = new javax.swing.JCheckBox();
         polygonType3CheckBox = new javax.swing.JCheckBox();
         customFunctionsButton = new javax.swing.JButton();
+
+        saveImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                saveSpectrumListButtonActionPerformed(e);
+            }
+        });
+
+        loadImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                loadSpectrumListButtonActionPerformed(e);
+
+            }
+        });
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
@@ -963,10 +1207,30 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 removeAllFootprintsButtonActionPerformed(evt);
             }
         });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(removeAllFootprintsButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(saveImageListButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(loadImageListButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
-        jPanel8.add(removeAllFootprintsButton, gridBagConstraints);
+        jPanel8.add(buttonPanel, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
@@ -1431,6 +1695,8 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         resultIntervalCurrentlyShown = null;
     }//GEN-LAST:event_removeAllFootprintsButtonActionPerformed
 
+    protected TreeSet<Integer> cubeList = null;
+
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
@@ -1472,7 +1738,9 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                     endDateGreg.get(GregorianCalendar.MILLISECOND),
                     DateTimeZone.UTC);
 
-            TreeSet<Integer> cubeList = null;
+//            TreeSet<Integer> cubeList = null;
+            if (cubeList != null)
+                cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
@@ -1623,7 +1891,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     }//GEN-LAST:event_numberOfFootprintsComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JComboBox blueComboBox;
+    protected JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
     private javax.swing.JLabel blueMaxLabel;
     protected javax.swing.JSpinner blueMaxSpinner;
@@ -1646,7 +1914,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JLabel fromPhaseLabel;
     private javax.swing.JFormattedTextField fromPhaseTextField;
     private javax.swing.JCheckBox grayscaleCheckBox;
-    protected javax.swing.JComboBox greenComboBox;
+    protected JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
     private javax.swing.JLabel greenMaxLabel;
     protected javax.swing.JSpinner greenMaxSpinner;
@@ -1676,13 +1944,13 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton nextButton;
-    protected javax.swing.JComboBox numberOfFootprintsComboBox;
+    protected JComboBox numberOfFootprintsComboBox;
     private javax.swing.JCheckBox polygonType0CheckBox;
     private javax.swing.JCheckBox polygonType1CheckBox;
     private javax.swing.JCheckBox polygonType2CheckBox;
     private javax.swing.JCheckBox polygonType3CheckBox;
     private javax.swing.JButton prevButton;
-    protected javax.swing.JComboBox redComboBox;
+    protected JComboBox redComboBox;
     private javax.swing.JLabel redLabel;
     private javax.swing.JLabel redMaxLabel;
     protected javax.swing.JSpinner redMaxSpinner;

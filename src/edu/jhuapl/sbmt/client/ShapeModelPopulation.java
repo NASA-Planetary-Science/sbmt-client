@@ -3,14 +3,14 @@ package edu.jhuapl.sbmt.client;
 // Populations
 public enum ShapeModelPopulation
 {
-    MARS("Mars"),
-    JUPITER("Jupiter"),
-    SATURN("Saturn"),
-    NEPTUNE("Neptune"),
+    MARS("Mars System"),
+    JUPITER("Jupiter System"),
+    SATURN("Saturn System"),
+    NEPTUNE("Neptune System"),
     NEO("Near-Earth"),
     MAIN_BELT("Main Belt"),
-    PLUTO("Pluto"),
-    EARTH("Earth");
+    PLUTO("Pluto System"),
+    EARTH("Earth System");
 
     final private String str;
     private ShapeModelPopulation(String str)

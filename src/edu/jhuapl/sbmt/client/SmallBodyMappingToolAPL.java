@@ -1,10 +1,13 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.File;
-import java.util.List;
+import java.nio.file.Path;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.SafePaths;
 
 
 /**
@@ -16,15 +19,25 @@ public class SmallBodyMappingToolAPL
 {
     public static void main(String[] args)
     {
-        Configuration.setAPLVersion(true);
-
-        if (Configuration.getAppName() == null)
+        String opSysName = System.getProperty("os.name").toLowerCase();
+        if (opSysName.contains("mac"))
         {
-            SmallBodyMappingTool.configureMission();
+            // to set the name of the app in the Mac App menu:
+            System.setProperty("apple.awt.application.name", "Small Body Mapping Tool");
+            //to show the menu bar at the top of the screen:
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+//            // to show a more mac-like file dialog box
+//            System.setProperty("apple.awt.fileDialogForDirectories", "true");
         }
 
-        String username = null;
-        String password = null;
+        if (SbmtMultiMissionTool.getOption(args, "--debug") != null)
+        {
+            Debug.setEnabled(true);
+        }
+
+        Configuration.setAPLVersion(true);
+
+        SbmtMultiMissionTool.configureMission();
 
         try
         {
@@ -32,47 +45,18 @@ public class SmallBodyMappingToolAPL
             // containing the runsbmt script.
             String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
             String parent = new File(jarLocation).getParentFile().getParent();
-            String[] passwordFilesToTry = {
-                    Configuration.getApplicationDataDir() + File.separator + "password.txt",
-                    parent + File.separator + "password.txt"
-            };
+            ImmutableList<Path> passwordFilesToTry = ImmutableList.of(
+                    SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"),
+                    SafePaths.get(parent, "password.txt")
+            );
 
-            for (String passwordFile : passwordFilesToTry)
-            {
-                if (new File(passwordFile).exists())
-                {
-                    List<String> credentials = FileUtil.getFileLinesAsStringList(passwordFile);
-                    if (credentials.size() >= 2)
-                    {
-                        String user = credentials.get(0);
-                        String pass = credentials.get(1);
-
-                        if (user != null && user.trim().length() > 0 && !user.trim().toLowerCase().contains("replace-with-") &&
-                            pass != null && pass.trim().length() > 0)
-                        {
-                            username = user.trim();
-                            password = pass.trim();
-                            break;
-                        }
-                    }
-                }
-            }
+            Configuration.setupPasswordAuthentication(Configuration.getDataRootURL(), "DO_NOT_DELETE.TXT", passwordFilesToTry);
         }
-        catch (Exception e)
+        catch (@SuppressWarnings("unused") Exception e)
         {
-        }
-
-        if (username != null && password != null)
-        {
-            Configuration.setupPasswordAuthentication(username, password);
-        }
-        else
-        {
-            System.out.println("Warning: no correctly formatted password file found. "
-                    + "Continuing without password. Certain functionality may not work.");
         }
 
         // Call the public version's main function
-        SmallBodyMappingTool.main(args);
+        SbmtMultiMissionTool.main(args);
     }
 }

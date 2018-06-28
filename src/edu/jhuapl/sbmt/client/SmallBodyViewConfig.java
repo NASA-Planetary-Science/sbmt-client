@@ -1,16 +1,16 @@
 package edu.jhuapl.sbmt.client;
 
-import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.FileInfo;
@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -70,8 +71,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Gaskell (2008)";
         c.rootDirOnServer = "/GASKELL/EROS";
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasImageMap = true;
         c.hasStateHistory = true;
 
@@ -80,7 +79,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         SpectralMode.MONO,
                         new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
                         ImageType.MSI_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
+                        new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
                         Instrument.MSI
                         )
         };
@@ -132,13 +131,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
-        c.smallBodyLabelPerResolutionLevel = new String[]{
+        c.setResolution(ImmutableList.of(
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
-        };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+        ), ImmutableList.of(
                 1708, 7790, 10152, 22540, 89398, 200700
-        };
+        ));
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -150,6 +148,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
+        c.setResolution(ImmutableList.of(129600));
 
         configArray.add(c);
 
@@ -161,6 +160,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
+        c.setResolution(ImmutableList.of(56644));
         configArray.add(c);
 
         // Gaskell Itokawa
@@ -174,9 +174,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -234,6 +231,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.OSTRO;
         c.modelLabel = "Ostro et al. (2004)";
         c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
+        c.setResolution(ImmutableList.of(12192));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -244,6 +242,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
         c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+
+        c.hasStateHistory = true;
+        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+
+        c.setResolution(ImmutableList.of(2692));
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
@@ -291,8 +294,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -321,6 +322,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+
             c.density = 1.0;
             c.useMinimumReferencePotential = false;
             c.rotationRate = 0.000407026411379;
@@ -354,6 +362,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
         }
 
         if (Configuration.isAPLVersion())
@@ -366,9 +377,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
-            c.rootDirOnServer = "/GASKELL/RQ36_V4";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.rootDirOnServer = "/bennu/bennu-simulated-v4";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -395,6 +407,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             Instrument.MAPCAM
                             )
             };
+
+//            c.hasSpectralData = true;
+//            c.spectralInstruments=new SpectralInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
             c.density = 1.26;
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
@@ -427,7 +445,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
 
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
             configArray.add(c);
         }
 
@@ -488,6 +512,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
         c.version = "Low resolution";
+        c.setResolution(ImmutableList.of(12796));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -499,6 +524,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
         c.version = "High resolution";
+        c.setResolution(ImmutableList.of(39996));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -713,8 +739,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/CERES";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
             c.hasMapmaker = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -764,8 +788,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013)";
         c.rootDirOnServer = "/GASKELL/VESTA";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
         c.hasMapmaker = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -815,8 +837,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "SPC";
             c.rootDirOnServer = "/GASKELL/LUTETIA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -845,15 +865,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.smallBodyLabelPerResolutionLevel = new String[]{
+        c.setResolution(ImmutableList.of(
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
                 "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
                 "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-        };
-        c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+            ), ImmutableList.of(
                 2962, 5824, 11954, 24526, 47784, 98280, 189724,
                 244128, 382620, 784510, 1586194, 3145728
-        };
+            ));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -918,15 +937,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/IDA/243ida.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "ida/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 2600.;
+        c.rotationRate = 0.0003766655;
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -966,6 +989,22 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This new model was delivered on 2018-03-08.
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.MATHILDE;
+        c.type = BodyType.ASTEROID;
+        c.population = ShapeModelPopulation.MAIN_BELT;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "mathilde/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 1300.;
+        c.rotationRate = 0.0000041780;
+        c.hasImageMap = true;
+        configArray.add(c);
+
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
@@ -994,15 +1033,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
+        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.MAIN_BELT;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/GASPRA/951gaspra.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "gaspra/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 2700.;
+        c.rotationRate = 0.0002478;
         c.hasImageMap = true;
         configArray.add(c);
 
@@ -1016,15 +1059,20 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
         configArray.add(c);
 
+        // This model was delivered on 2018-03-08 to replace the existing model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/HALLEY/1682q1halley.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/halley/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        // Provided with the delivery in the file aamanifest.txt.
+        c.density = 600;
+        c.rotationRate = 0.0000323209;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1035,8 +1083,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
-        c.hasStateHistory = true;
-        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
+//        c.hasStateHistory = true;
+//        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
         c.hasImageMap = true;
         configArray.add(c);
@@ -1048,8 +1096,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.EXPERIMENTAL;
-            c.modelLabel = "Ernst et al. (in progress)";
+            c.author = ShapeModelType.BLENDER;
+            c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
             c.hasImageMap = true;
 
@@ -1076,6 +1124,50 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
+//            configArray.add(c);
+
+        }
+
+        // Latest Gaskell Deimos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.DEIMOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.rootDirOnServer = "/deimos/ernst2018";
+            c.shapeModelFileExtension = ".obj";
+            c.hasImageMap = true;
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+//                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"),
+                            ImageType.DEIMOS_IMAGE,
+                            new ImageSource[]{ ImageSource.GASKELL },
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
+                            )
+            };
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
+//            c.imageSearchFilterNames = new String[]{
+//                    "VIS, Blue",
+//                    "VIS, Minus Blue",
+//                    "VIS, Violet",
+//                    "VIS, Clear",
+//                    "VIS, Green",
+//                    "VIS, Red",
+//            };
+//
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
+            c.imageSearchDefaultMaxResolution = 800.0;
             configArray.add(c);
 
         }
@@ -1091,8 +1183,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 1.876;
         c.rotationRate = 0.00022803304110600688;
         c.rootDirOnServer = "/GASKELL/PHOBOS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1137,6 +1227,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.MOLA;
 
+        // MOLA search is disabled for now. See LidarPanel class.
         c.hasHypertreeBasedLidarSearch=true;
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
@@ -1165,11 +1256,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.MARS;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.EXPERIMENTAL;
-            c.modelLabel = "Ernst et al. (in progress)";
+            c.author = ShapeModelType.BLENDER;
+            c.modelLabel = "OLD Ernst et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1213,6 +1302,86 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDataSourceMap=Maps.newHashMap();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
+
+//            configArray.add(c);
+        }
+
+        // Latest Gaskell Phobos (experimental)
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.PHOBOS;
+            c.type = BodyType.PLANETS_AND_SATELLITES;
+            c.population = ShapeModelPopulation.MARS;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.EXPERIMENTAL;
+            c.modelLabel = "Ernst et al. (in progress)";
+            c.rootDirOnServer = "/phobos/ernst2018";
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
+                            ImageType.PHOBOS_IMAGE,
+                            new ImageSource[]{ ImageSource.GASKELL },
+                            Instrument.IMAGING_DATA,
+                            0.,
+                            "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
+                            )
+            };
+
+            c.hasMapmaker = true;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
+            c.imageSearchFilterNames = new String[]{
+                    "VSK, Channel 1",
+                    "VSK, Channel 2",
+                    "VSK, Channel 3",
+                    "VIS, Blue",
+                    "VIS, Minus Blue",
+                    "VIS, Violet",
+                    "VIS, Clear",
+                    "VIS, Green",
+                    "VIS, Red",
+            };
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+                    "Phobos 2",
+                    "Viking Orbiter 1-A",
+                    "Viking Orbiter 1-B",
+                    "Viking Orbiter 2-A",
+                    "Viking Orbiter 2-B",
+                    "MEX HRSC",
+                    "MRO HiRISE",
+                    "MGS MOC"
+            };
+            c.hasHierarchicalImageSearch = true;
+            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+            c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasLidarData = true;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
+            c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+            c.lidarBrowseIsLidarInSphericalCoordinates = true;
+            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+            c.lidarBrowseIsTimeInET = true;
+            c.lidarBrowseTimeIndex = 5;
+            c.lidarBrowseNoiseIndex = -1;
+            c.lidarBrowseIsRangeExplicitInData = true;
+            c.lidarBrowseRangeIndex = 3;
+            c.lidarBrowseFileListResourcePath = "/GASKELL/PHOBOS/MOLA/allMolaFiles.txt";
+            c.lidarBrowseNumberHeaderLines = 1;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarOffsetScale = 0.025;
+            c.lidarInstrumentName = Instrument.MOLA;
+
+            // MOLA search is disabled for now. See LidarPanel class.
+            c.hasHypertreeBasedLidarSearch=true;
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
             configArray.add(c);
         }
@@ -1275,7 +1444,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.STOOKE;
             // 2017-12-20: this name will be correct when "the new model" has been brought in.
-            // c.customName = "Stooke (2016)";
+            // c.modelLabel = "Stooke (2016)";
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
@@ -1429,8 +1598,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013a)";
         c.rootDirOnServer = "/GASKELL/DIONE";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1448,6 +1615,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1458,17 +1626,20 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
+        // Model stooke2016 delivered 2018-03-06.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EPIMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/epimetheus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1481,8 +1652,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/HYPERION";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -1494,6 +1664,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1504,6 +1675,20 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
+        c.hasColoringData = false;
+        configArray.add(c);
+
+        // Model stooke2016 delivered 2018-03-06.
+        c = new SmallBodyViewConfig();
+        c.body = ShapeModelBody.JANUS;
+        c.type = BodyType.PLANETS_AND_SATELLITES;
+        c.population = ShapeModelPopulation.SATURN;
+        c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+        c.author = ShapeModelType.STOOKE;
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/janus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1514,8 +1699,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013b)";
         c.rootDirOnServer = "/GASKELL/MIMAS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -1533,17 +1716,20 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
+        // Model stooke2016 delivered 2018-03-06.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PANDORA;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/PANDORA/s17pandora.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/pandora/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1554,8 +1740,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
 
         c.imagingInstruments = new ImagingInstrument[] {
@@ -1574,6 +1758,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1583,7 +1768,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
@@ -1596,21 +1781,23 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
+        // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
         //  configArray.add(c);
 
+        // Model stooke2016 delivered 2018-03-06.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PROMETHEUS;
         c.type = BodyType.PLANETS_AND_SATELLITES;
         c.population = ShapeModelPopulation.SATURN;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Stooke (2016)";
-        c.rootDirOnServer = "/STOOKE/PROMETHEUS/s16prometheus.llr.gz";
+        c.modelLabel = "Stooke (2016)";
+        c.rootDirOnServer = "/prometheus/stooke2016";
+        c.shapeModelFileExtension = ".obj";
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1623,8 +1810,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/GASKELL/RHEA";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -1636,8 +1822,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell (2013d)";
         c.rootDirOnServer = "/GASKELL/TETHYS";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1650,18 +1835,25 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/TEMPEL1";
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             configArray.add(c);
         }
 
+        // An update was delivered to this model on 2018-02-22.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = BodyType.COMETS;
         c.population = null;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
-        // c.customName = "Farnham and Thomas (2013)";
-        c.rootDirOnServer = "/THOMAS/TEMPEL1/tempel1_cart.t1.gz";
+        c.modelLabel = "Farnham and Thomas (2013)";
+        c.rootDirOnServer = "/tempel1/farnham";
+        c.shapeModelFileExtension = ".obj";
+        // Number of plates found by inspection of files.
+        c.setResolution(ImmutableList.of("32040 plates"), ImmutableList.of(32040));
+        // Density and rotation rate were provided with delivery manifest.
+        c.density = 470.0;
+        c.rotationRate = 4.28434129815435E-5;
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1672,6 +1864,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.DUXBURY;
         c.modelLabel = "Farnham et al. (2005)";
         c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
+        c.setResolution(ImmutableList.of(17518));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -1684,8 +1877,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
             c.rootDirOnServer = "/GASKELL/67P";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1723,13 +1914,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
-            c.smallBodyLabelPerResolutionLevel = new String[]{
+            c.setResolution(ImmutableList.of(
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
-            };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[]{
+                ), ImmutableList.of(
                     17442, 72770, 298442, 1214922, 4895631, 16745283
-            };
+                ));
+            c.hasColoringData = false;
             configArray.add(c);
 
             // 67P_V2
@@ -1741,9 +1932,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.version = "V2";
             c.rootDirOnServer = "/GASKELL/67P_V2";
-
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -1799,9 +1987,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasCustomBodyCubeSize = true;
             c.customBodyCubeSize = 0.10; // km
 
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
@@ -1853,6 +2038,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        c.setResolution(ImmutableList.of(32040));
         configArray.add(c);
 
 
@@ -1864,7 +2050,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.modelLabel = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2017)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -1911,7 +2097,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = null;
-            c.modelLabel = "Nimmo et al. (2016)";
+            c.modelLabel = "Nimmo et al. (2017)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
@@ -2053,8 +2239,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Ernst et al. (in progress)";
         c.rootDirOnServer = "/GASKELL/TELESTO";
-        c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-        c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2072,6 +2256,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+        c.hasColoringData = false;
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -2150,8 +2335,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2195,7 +2379,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            configArray.add(c);
+            // 2017-12-21: exclude this body/model for now, but do not comment out anything else in
+            // this block so that Eclipse updates will continue to keep this code intact.
+            //  configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
@@ -2211,7 +2397,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.EARTH.name()).build();
 
 
-            // Set up shape model -- one will suffice.
+            // Set up shape model -- one will suffice. Note the "orex" here must be kept exactly as it is; that is what the directory is named in the data area.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("orex", ShapeModelDataUsed.WGS84).build();
             BasicImagingInstrument mapCam;
             {
@@ -2276,8 +2462,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.OREX;
             c.rootDirOnServer = "/earth/orex";
 //            c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2397,7 +2582,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
           {
               // Set up images.
               SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
-              QueryBase queryBase = new FixedListQuery("/" + fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), "/" + fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+              QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
               Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                       Instrument.TIR,
                       SpectralMode.MONO,
@@ -2420,8 +2605,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.HAYABUSA2;
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, 0, 1);
-            c.smallBodyNumberOfPlatesPerResolutionLevel = Arrays.copyOfRange(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION, 0, 1);
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasImageMap=true;
             c.hasColoringData = false;
 
@@ -2447,8 +2631,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //                };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
     //TODO make hierarchical search work sbmt1dev-style.
     //        c.imageSearchFilterNames = new String[]{
     //                EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
@@ -2466,7 +2650,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     {
                             new NIRS3()
                     };
-
 
             configArray.add(c);
         }
@@ -2493,40 +2676,49 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = new String[] { "High" };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { 5450419 };
+
+            c.setResolution(ImmutableList.of("Low (54504 plates)", "High (5450420 plates)" ), ImmutableList.of(54504, 5450420));
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.IMAGING_DATA,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.ONC_TRUTH_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
 
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }
@@ -2542,24 +2734,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", null, ".SUM", ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.IMAGING_DATA,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.GASKELL },
-                        fileLocator,
-                        ImageType.ONC_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2567,11 +2743,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
-            c.modelLabel = "H2 Simulated Gaskell";
+            c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
             c.shapeModelFileExtension = ".obj";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/gaskell/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
@@ -2581,8 +2755,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasMapmaker = false;
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 7, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 1, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
@@ -2593,9 +2767,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2626,7 +2800,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelBody.ATLAS.name(),
                     BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.SATURN.name()).build();
-            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
+            ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.ATLAS;
@@ -2636,16 +2811,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/atlas/gaskell";
-//            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-//            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.smallBodyLabelPerResolutionLevel = new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] };
-            c.smallBodyNumberOfPlatesPerResolutionLevel = new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] };
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 5, 7, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 3, 13, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
+            c.imageSearchDefaultMaxResolution = 5000.0;
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2665,14 +2840,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/calypso/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 23, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 1, 14, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2685,9 +2859,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/enceladus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2707,14 +2879,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/epimetheus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2734,14 +2905,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/helene/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2754,9 +2924,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell (in progress)";
             c.rootDirOnServer = "/iapetus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2776,14 +2944,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/janus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2803,14 +2970,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pan/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2830,14 +2996,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/pandora/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 4, 20, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 11, 19, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
 
@@ -2857,22 +3022,30 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/prometheus/gaskell";
-            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2006, 3, 29, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 2, 7, 0, 0, 0).getTime();
+            c.hasColoringData = false;
             configArray.add(c);
         }
     }
 
-    // SBMT1-style helper method.
+    // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType) {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
         QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
+        SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
+        return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
+    }
+
+    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
         Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
                 instrument,
                 SpectralMode.MONO,
@@ -2887,6 +3060,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         return BasicImagingInstrument.of(builder.build());
     }
 
+    public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements) {
+    	super(resolutionLabels, resolutionNumberElements);
+    }
+
+    private SmallBodyViewConfig() {
+    	super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+    }
+
     @Override
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
     {
@@ -2898,8 +3079,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        FileInfo info = FileCache.getFileInfoFromServer(serverPath(""));
-        return info.isURLAccessAuthorized() == YesOrNo.YES;
+        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : "";
+        FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
+        return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
 
 

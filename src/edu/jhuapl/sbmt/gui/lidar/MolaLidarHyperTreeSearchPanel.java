@@ -8,7 +8,7 @@ import com.google.common.base.Stopwatch;
 import vtk.vtkCubeSource;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -19,10 +19,11 @@ import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
 
-public class MolaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
 
@@ -73,9 +74,9 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currentl
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(this);
+        lidarModel.removePropertyChangeListener(propertyChangeListener);
 
-        selectRegionButton.setSelected(false);
+        view.getSelectRegionButton().setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
@@ -141,9 +142,9 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currentl
             }*/
 
         System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(this);
-        radialOffsetChanger.setModel(lidarModel);
-        radialOffsetChanger.setOffsetScale(lidarModel.getOffsetScale());
+        lidarModel.addPropertyChangeListener(propertyChangeListener);
+        view.getRadialOffsetSlider().setModel(lidarModel);
+        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
         lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
@@ -154,9 +155,9 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchPanel  // currentl
 
         Picker.setPickingEnabled(false);
 
-        ((MolaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(this);
+        ((MolaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        radialOffsetChanger.reset();
+        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();

@@ -10,7 +10,7 @@ import vtk.vtkProp;
 import vtk.vtkPropCollection;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -72,6 +72,7 @@ public class LidarShiftPicker extends Picker
         double[] selectedPoint = lidarModel.getSelectedPoint();
         if (selectedPoint != null)
         {
+            int selectedTrackIndex = lidarModel.getTrackIdFromSelectedPoint();
             int pickSucceeded = doPick(e, smallBodyPicker, renWin);
             if (pickSucceeded == 1)
             {
@@ -86,7 +87,7 @@ public class LidarShiftPicker extends Picker
                             pickPosition[1]-selectedPoint[1],
                             pickPosition[2]-selectedPoint[2]};
 
-                    lidarModel.setTranslation(shift);
+                    lidarModel.setTranslation(shift, selectedTrackIndex);
                 }
             }
         }

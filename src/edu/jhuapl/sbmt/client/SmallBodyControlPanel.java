@@ -38,8 +38,6 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         super(modelManager, bodyName);
         this.imageChangeListeners = Lists.newArrayList();
         this.currentImageMapKey = null;
-        if (getColoringComboBox().getItemCount()>0)
-            getColoringComboBox().setSelectedIndex(0);
     }
 
     private ImageKey createImageMapKey()
@@ -48,6 +46,7 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         return new ImageKey(name, ImageSource.IMAGE_MAP);
     }
 
+    @Override
     protected void showImageMap(boolean show)
     {
         PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
@@ -111,7 +110,8 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         }
     }
 
-    public void stateChanged(ChangeEvent e)
+    @Override
+    public void stateChanged(@SuppressWarnings("unused") ChangeEvent e)
     {
         ImageCollection imageCollection =
                 (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
@@ -130,12 +130,14 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
     // should be overridden, changing it here to just call the base class method. If someone
     // ever remembers why this method exists, they can resurrect it easily enough, though in that
     // case, need to be sure it correctly supersedes the CURRENT VERSION of the base class code.
+    @Override
     public void itemStateChanged(ItemEvent e)
     {
         super.itemStateChanged(e);
     }
 
 
+    @Override
     protected void addAdditionalStatisticsToLabel()
     {
         PolyhedralModel smallBodyModel = getModelManager().getPolyhedralModel();
@@ -176,6 +178,7 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
             final int originalScrollBarValue = getScrollPane().getVerticalScrollBar().getValue();
             SwingUtilities.invokeLater(new Runnable()
             {
+                @Override
                 public void run()
                 {
                     getScrollPane().getVerticalScrollBar().setValue(originalScrollBarValue);
@@ -192,19 +195,6 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         }
     }
 
-     private void removeListeners(Image image) {
-        List<OpacityChangeListener> removeMe = Lists.newArrayList();
-        for (OpacityChangeListener listener: imageChangeListeners) {
-            if (listener.image == image) {
-                image.removePropertyChangeListener(listener);
-                removeMe.add(listener);
-            }
-        }
-        for (OpacityChangeListener listener: removeMe) {
-            imageChangeListeners.remove(listener);
-        }
-    }
-
     private class OpacityChangeListener implements PropertyChangeListener {
         private final Image image;
 
@@ -214,7 +204,7 @@ public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
         }
 
         @Override
-        public void propertyChange(PropertyChangeEvent evt)
+        public void propertyChange(@SuppressWarnings("unused") PropertyChangeEvent evt)
         {
             getImageMapOpacitySpinner().setValue(image.getOpacity());
         }

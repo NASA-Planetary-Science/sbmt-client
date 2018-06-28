@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
-import edu.jhuapl.saavtk.gui.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -20,8 +20,8 @@ public class TrackPanel extends LidarSearchPanel
         super(polyhedralModelConfig, modelManager, pickManager, renderer);
         hideSearchControls();
 
-        if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"));
-            fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OLA Level 2", "Text" }));
+        //if (polyhedralModelConfig.getUniqueName().equals("Gaskell/Bennu (V3 Image)"));
+        //    fileTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "OLA Level 2", "Text"}));
 
     }
 
