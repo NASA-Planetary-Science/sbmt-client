@@ -1,0 +1,15 @@
+# Format:
+# m h dom mon dow command
+#
+# Old Pluto data processing pipeline, left here for reference in case we want to turn it back on again
+# 
+# 5 1 * * * /project/nearsdc/nh-sbmt/nh-sbmt-update.sh > /project/nearsdc/nh-sbmt/crontab-output.txt 2>&1
+# 
+# Ceres data, turned off for now because it is only returning errors, presumably due to changes in data locations
+#
+# 0 2 * * * /project/sbmtpipeline/sbmt/cron/update_ceres_fc_images.cron.sh
+# 
+# 
+# Ryugu data, coming in daily from the Aizu server in Japan 
+# 
+52 16 * * * /project/sbmtpipeline/deliveries-hyb2/ryugu/download-ryugu-data.sh >> /project/sbmtpipeline/deliveries-hyb2/ryugu/logs/ryugu-cronlog.txt 2>&1
