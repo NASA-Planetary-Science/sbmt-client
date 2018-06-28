@@ -16,9 +16,13 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
@@ -374,15 +378,33 @@ public class DatabaseGeneratorSql
 
         List<String> files = null;
         try {
-            files = FileUtil.getFileLinesAsStringList(fileList);
+            // if the file path starts with "/" then we know we are accessing files from the local file system
+            if (fileList.startsWith("/"))
+                files = FileUtil.getFileLinesAsStringList(fileList);
+            // otherwise, we try to load the file from the server via HTTP
+            else
+                files = FileCache.getFileLinesFromServerAsStringList(fileList);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
         }
 
+//        System.out.println("Generating database for the following image files:");
+//        for (String file : files)
+//            System.out.println(file);
+
+        String dburl = null;
+        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
+            dburl = "hyb2sbmt.jhuapl.edu";
+        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+            dburl = "hyb2sbmt.u-aizu.ac.jp";
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2)
+            dburl = "sd-mysql.jhuapl.edu";
+
         try
         {
-            db = new SqlManager(null);
+            db = new SqlManager(dburl);
+            System.out.println("Connected to database: " + dburl);
         }
         catch (Exception ex1) {
             ex1.printStackTrace();
@@ -447,18 +469,24 @@ public class DatabaseGeneratorSql
 //        IO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.IO, null),
 //                "/project/nearsdc/data/NEWHORIZONS/IO/IMAGING/imagelist-fullpath.txt"),
         RQ36_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
-                "/project/nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
+                "nearsdc/data/GASKELL/RQ36_V3/MAPCAM/imagelist-fullpath.txt", "RQ36_MAP"),
         RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
         RQ36V4_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
-               "/project/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
+               "/project/sbmt2/sbmt/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
         RQ36V4_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
-                "/project/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
+                "/project/sbmt2/sbmt/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
-        RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+        RYUGU_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+//                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+//                "ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+        RYUGU_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
                 "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
@@ -525,28 +553,34 @@ public class DatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
-        Configuration.setAppName("neartool");
-        Configuration.setCacheVersion("2");
-        Configuration.setAPLVersion(true);
-        SmallBodyViewConfig.initialize();
-        System.setProperty("java.awt.headless", "true");
-
+        // default configuration parameters
+        String appName = "neartool";
+        String cacheVersion = "2";
+        boolean aplVersion = true;
         String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
-        Configuration.setRootURL(rootURL);
 
         boolean appendTables = false;
         boolean modifyMain = false;
 
+        // modify configuration parameters with command line args
         int i = 0;
-        for (; i < args.length; ++i) {
-            if (args[i].equals("--root-url")) {
+        for (; i < args.length; ++i)
+        {
+            if (args[i].equals("--root-url"))
+            {
                 rootURL = args[++i];
             }
-            else if (args[i].equals("--append-tables")){
+            else if (args[i].equals("--append-tables"))
+            {
                 appendTables = true;
             }
-            else if (args[i].equals("--modify-main")){
+            else if (args[i].equals("--modify-main"))
+            {
                 modifyMain = true;
+            }
+            else if (args[i].equals("--debug"))
+            {
+                Debug.setEnabled(true);
             }
             else {
                 // We've encountered something that is not an option, must be at the args
@@ -560,6 +594,24 @@ public class DatabaseGeneratorSql
         if (args.length - i != numberRequiredArgs)
             usage();
 
+        // basic default configuration, most of these will be overwritten by the configureMission() method
+//        Configuration.setAppName(appName);
+        Configuration.setCacheVersion(cacheVersion);
+        Configuration.setAPLVersion(aplVersion);
+        Configuration.setRootURL(rootURL);
+
+        SbmtMultiMissionTool.configureMission();
+
+        // authentication
+        Authenticator.authenticate();
+
+        // initialize view config
+        SmallBodyViewConfig.initialize();
+
+        // VTK
+        System.setProperty("java.awt.headless", "true");
+        NativeLibraryLoader.loadVtkLibrariesHeadless();
+
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
@@ -569,14 +621,17 @@ public class DatabaseGeneratorSql
         else
             runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
 
-        // VTK and authentication
-        NativeLibraryLoader.loadVtkLibrariesHeadless();
-        Authenticator.authenticate();
+        Mission mission = SbmtMultiMissionTool.getMission();
+        System.out.println("Mission: " + mission);
 
         for (RunInfo ri : runInfos)
         {
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
-            generator.run(ri.pathToFileList, mode);
+
+            String pathToFileList = ri.pathToFileList;
+
+            System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
+            generator.run(pathToFileList, mode);
         }
     }
 }

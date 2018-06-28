@@ -12,21 +12,29 @@ package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -50,6 +58,7 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
@@ -59,6 +68,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -86,6 +96,11 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
     SmallBodyViewConfig smallBodyConfig;
     Renderer renderer;
     protected CheckBoxTree checkBoxTree;
+
+    JButton saveImageListButton = new JButton("Save Spectrum List");
+    JButton saveSelectedImageListButton = new JButton();
+    JButton loadImageListButton = new JButton("Load Spectrum List");
+
     protected final SpectralInstrument instrument;
     protected JScrollPane hierarchicalSearchScrollPane = new JScrollPane();
 
@@ -218,6 +233,89 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             redComboBox.addItem(fp.GetFunction());
             greenComboBox.addItem(fp.GetFunction());
             blueComboBox.addItem(fp.GetFunction());
+        }
+    }
+
+    private void saveSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showSaveDialog(this, "Select File", "spectrumlist.txt");
+
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                BufferedWriter out = new BufferedWriter(fstream);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                String nl = System.getProperty("line.separator");
+                out.write("#Spectrum_Name Image_Time_UTC"  + nl);
+                int size = resultList.getModel().getSize();
+                for (int i=0; i<size; ++i)
+                {
+                    String result = spectrumRawResults.get(i);
+                    String spectrum  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
+                    out.write(spectrum + ".spect " + nl);
+
+//                    String dtStr = spectrumRawResults.get(i).get(1);  //Spectra don't currently have times in there - this may change in the future
+//                    Date dt = new Date(Long.parseLong(dtStr));
+
+//                    out.write(spectrum + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
+                }
+
+                out.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showOpenDialog(this, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    if (lines.get(i).startsWith("#")) continue;
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    List<String> result = new ArrayList<String>();
+                    result.add(words[0]);
+//                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
+//                    result.add(name);
+//                    Date dt = sdf.parse(words[1]);
+//                    result.add(String.valueOf(dt.getTime()));
+                    results.add(result);
+                }
+                setSpectrumSearchResults(results);
+//                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+
+//                setImageResults(processResults(results));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
         }
     }
 
@@ -712,6 +810,27 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
         polygonType3CheckBox = new javax.swing.JCheckBox();
         customFunctionsButton = new javax.swing.JButton();
 
+        saveImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                saveSpectrumListButtonActionPerformed(e);
+            }
+        });
+
+        loadImageListButton.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                loadSpectrumListButtonActionPerformed(e);
+
+            }
+        });
+
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
                 formComponentHidden(evt);
@@ -1138,10 +1257,30 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 removeAllFootprintsButtonActionPerformed(evt);
             }
         });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(removeAllFootprintsButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(saveImageListButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        buttonPanel.add(loadImageListButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
-        jPanel8.add(removeAllFootprintsButton, gridBagConstraints);
+        jPanel8.add(buttonPanel, gridBagConstraints);
 
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
