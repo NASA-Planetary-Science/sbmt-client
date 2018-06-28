@@ -1,0 +1,1043 @@
+package edu.jhuapl.sbmt.gui.spectrum;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TreeSet;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.tree.TreeModel;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
+import com.jidesoft.swing.CheckBoxTree;
+
+import vtk.vtkActor;
+import vtk.vtkFunctionParser;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataNormals;
+
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
+
+import altwg.util.PolyDataUtil;
+
+public abstract class SpectrumSearchController implements PropertyChangeListener, MouseListener, KeyListener
+{
+    protected SpectrumSearchView view;
+    protected SpectrumSearchModel model;
+    PickEvent lastPickEvent=null;
+    protected CheckBoxTree checkBoxTree;
+    protected final SpectralInstrument instrument;
+    SpectraHierarchicalSearchSpecification spectraSpec;
+
+    public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
+            SbmtInfoWindowManager infoPanelManager,
+            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
+    {
+        this.view = new SpectrumSearchView();
+        this.model = new SpectrumSearchModel(smallBodyConfig, modelManager, pickManager, renderer);
+        this.instrument=instrument;
+
+        view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
+        view.getSpectrumPopupMenu().addPropertyChangeListener(this);
+        spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
+
+        // Setup hierarchical image search
+        initHierarchicalImageSearch();
+
+        initComponents();
+
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+        renderer.addKeyListener(this);
+        model.setRenderer(renderer);
+//        this.renderer=renderer;
+
+
+
+    }
+
+    private void initComponents()
+    {
+        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
+        {
+            view.getDbSearchPanel().setVisible(false);
+        }
+
+        view.addComponentListener(new ComponentAdapter() {
+            public void componentHidden(ComponentEvent evt) {
+                formComponentHidden(evt);
+            }
+        });
+
+        view.getStartSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                startSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getEndSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                endSpinnerStateChanged(evt);
+            }
+        });
+
+        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+        {
+            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+        }
+
+        view.getClearRegionButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearRegionButtonActionPerformed(evt);
+            }
+        });
+
+        view.getSubmitButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+
+        view.getSelectRegionButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                selectRegionButtonActionPerformed(evt);
+            }
+        });
+
+        view.getResultList().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent evt) {
+                resultListMousePressed(evt);
+            }
+            public void mouseReleased(MouseEvent evt) {
+                resultListMouseReleased(evt);
+            }
+        });
+        view.getResultsScrollPanel().setViewportView(view.getResultList());
+
+        view.getNumberOfFootprintsComboBox().setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", " " }));
+
+        view.getNumberOfFootprintsComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                numberOfFootprintsComboBoxActionPerformed(evt);
+            }
+        });
+
+        view.getPrevButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                prevButtonActionPerformed(evt);
+            }
+        });
+
+        view.getNextButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
+
+        view.getRemoveAllFootprintsButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                removeAllFootprintsButtonActionPerformed(evt);
+            }
+        });
+
+        view.getRemoveAllBoundariesButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                removeAllBoundariesButtonActionPerformed(evt);
+            }
+        });
+
+        view.getColoringComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                coloringComboBoxActionPerformed(evt);
+            }
+        });
+
+        view.getRedComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                redComboBoxActionPerformed(evt);
+            }
+        });
+
+        view.getRedMaxSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                redMaxSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getRedMinSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                redMinSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getGreenComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                greenComboBoxActionPerformed(evt);
+            }
+        });
+
+        view.getGreenMaxSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                greenMaxSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getGreenMinSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                greenMinSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getBlueComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                blueComboBoxActionPerformed(evt);
+            }
+        });
+
+        view.getBlueMaxSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                blueMaxSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getBlueMinSpinner().addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent evt) {
+                blueMinSpinnerStateChanged(evt);
+            }
+        });
+
+        view.getGrayscaleCheckBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                grayscaleCheckBoxActionPerformed(evt);
+            }
+        });
+
+        view.getCustomFunctionsButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                customFunctionsButtonActionPerformed(evt);
+            }
+        });
+
+        view.getResultList().setCellRenderer(new MyListCellRenderer());
+
+        view.getResultList().addListSelectionListener(new ListSelectionListener()
+        {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (e.getValueIsAdjusting())
+                    return;
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+                for (int i=0; i<view.getResultList().getModel().getSize(); i++)
+                {
+//                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
+                    Spectrum spectrum=collection.getSpectrum(createSpectrumName(i));
+                    if (spectrum == null)
+                        continue;
+                    if (view.getResultList().isSelectedIndex(i))
+                        collection.select(spectrum);
+                    else
+                        collection.deselect(spectrum);
+                }
+            }
+        });
+
+        postInitComponents();
+    }
+
+    private void formComponentHidden(ComponentEvent evt)
+    {
+        view.getSelectRegionButton().setSelected(false);
+        model.getPickManager().setPickMode(PickMode.DEFAULT);
+    }
+
+    private void startSpinnerStateChanged(ChangeEvent evt)
+    {
+        Date date = ((SpinnerDateModel)view.getStartSpinner().getModel()).getDate();
+        if (date != null)
+            model.setStartDate(date);
+    }
+
+    private void endSpinnerStateChanged(ChangeEvent evt)
+    {
+        Date date = ((SpinnerDateModel)view.getEndSpinner().getModel()).getDate();
+        if (date != null)
+            model.setEndDate(date);
+    }
+
+    private void selectRegionButtonActionPerformed(ActionEvent evt)
+    {
+        if (view.getSelectRegionButton().isSelected())
+            model.getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
+        else
+            model.getPickManager().setPickMode(PickMode.DEFAULT);
+    }
+
+    private void clearRegionButtonActionPerformed(ActionEvent evt)
+    {
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+        selectionModel.removeAllStructures();
+    }
+
+    private void prevButtonActionPerformed(ActionEvent evt)
+    {
+        IdPair shown = model.getResultIntervalCurrentlyShown();
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
+        if (shown == null) return;
+
+        // Only get the prev block if there's something left to show.
+        if (shown.id1 <= 0) return;
+
+        shown.prevBlock(Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem()));
+        showFootprints(shown);
+    }
+
+    private void nextButtonActionPerformed(ActionEvent evt)
+    {
+        IdPair shown = model.getResultIntervalCurrentlyShown();
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
+
+        if (shown != null)
+        {
+            // Only get the next block if there's something left to show.
+            if (shown.id2 < view.getResultList().getModel().getSize())
+            {
+                shown.nextBlock(Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem()));
+                showFootprints(shown);
+            }
+        }
+        else
+        {
+            model.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem())));
+            shown = model.getResultIntervalCurrentlyShown();
+            showFootprints(shown);
+        }
+    }
+
+    private void removeAllFootprintsButtonActionPerformed(ActionEvent evt)
+    {
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.removeAllSpectraForInstrument(instrument);
+        model.setResultIntervalCurrentlyShown(null);
+    }
+
+    private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
+    {
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.deselectAll();
+        model.setResultIntervalCurrentlyShown(null);
+    }
+
+    protected TreeSet<Integer> cubeList = null;
+
+    private void submitButtonActionPerformed(ActionEvent evt)
+    {
+        try
+        {
+            view.getSelectRegionButton().setSelected(false);
+            model.getPickManager().setPickMode(PickMode.DEFAULT);
+
+//            List<Integer> polygonTypesChecked = new ArrayList<Integer>();
+
+//            if (polygonType0CheckBox.isSelected())
+//                polygonTypesChecked.add(0);
+//            if (polygonType1CheckBox.isSelected())
+//                polygonTypesChecked.add(1);
+//            if (polygonType2CheckBox.isSelected())
+//                polygonTypesChecked.add(2);
+//            if (polygonType3CheckBox.isSelected())
+//                polygonTypesChecked.add(3);
+
+            GregorianCalendar startDateGreg = new GregorianCalendar();
+            GregorianCalendar endDateGreg = new GregorianCalendar();
+            startDateGreg.setTime(model.getStartDate());
+            endDateGreg.setTime(model.getEndDate());
+            DateTime startDateJoda = new DateTime(
+                    startDateGreg.get(GregorianCalendar.YEAR),
+                    startDateGreg.get(GregorianCalendar.MONTH)+1,
+                    startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                    startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                    startDateGreg.get(GregorianCalendar.MINUTE),
+                    startDateGreg.get(GregorianCalendar.SECOND),
+                    startDateGreg.get(GregorianCalendar.MILLISECOND),
+                    DateTimeZone.UTC);
+            DateTime endDateJoda = new DateTime(
+                    endDateGreg.get(GregorianCalendar.YEAR),
+                    endDateGreg.get(GregorianCalendar.MONTH)+1,
+                    endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                    endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                    endDateGreg.get(GregorianCalendar.MINUTE),
+                    endDateGreg.get(GregorianCalendar.SECOND),
+                    endDateGreg.get(GregorianCalendar.MILLISECOND),
+                    DateTimeZone.UTC);
+
+//            TreeSet<Integer> cubeList = null;
+            if (cubeList != null)
+                cubeList.clear();
+            AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+            SmallBodyModel bodyModel = (SmallBodyModel)model.getModelManager().getModel(ModelNames.SMALL_BODY);
+            if (selectionModel.getNumberOfStructures() > 0)
+            {
+                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+
+                // Always use the lowest resolution model for getting the intersection cubes list.
+                // Therefore, if the selection region was created using a higher resolution model,
+                // we need to recompute the selection region using the low res model.
+                if (bodyModel.getModelResolution() > 0)
+                {
+                    vtkPolyData interiorPoly = new vtkPolyData();
+                    bodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    cubeList = bodyModel.getIntersectingCubes(interiorPoly);
+                }
+                else
+                {
+                    cubeList = bodyModel.getIntersectingCubes(region.interiorPolyData);
+                }
+            }
+
+            List<Integer> productsSelected;
+            List<List<String>> results = new ArrayList<List<String>>();
+            if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+            {
+                // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
+//                sumOfProductsSearch = true;
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+                // Process the user's selections
+                model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+
+                // Get the selected (camera,filter) pairs
+
+                productsSelected = spectraSpec.getSelectedDatasets();
+                OREXSpectrumInstrumentMetadata<OREXSearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+//                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
+                TreeModel tree = spectraSpec.getTreeModel();
+                List<OREXSearchSpec> specs = instrumentMetadata.getSpecs();
+                for (Integer selected : productsSelected)
+                {
+                    String name = tree.getChild(tree.getRoot(), selected).toString();
+                    OREXSearchSpec spec = specs.get(selected);
+                    FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
+                                                                                        spec.getDataListFilename(),
+                                                                                        spec.getDataPath(),
+                                                                                        spec.getDataRootLocation(),
+                                                                                        spec.getSource());
+
+                    List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
+                    collection.tagSpectraWithMetadata(thisResult, spec);
+                    results.addAll(thisResult);
+                }
+//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+            }
+            else
+            {
+                FixedListQuery query = (FixedListQuery)instrument.getQueryBase();
+                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+            }
+            System.out.println(
+                    "SpectrumSearchController: submitButtonActionPerformed: results size " + results.size());
+            setSpectrumSearchResults(results);
+//            SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+//            collection.tagSpectraWithMetadata(results, spec);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.out.println(e);
+            return;
+        }
+    }
+
+    private void resultListMousePressed(MouseEvent evt)
+    {
+        maybeShowPopup(evt);
+    }
+
+    private void resultListMouseReleased(MouseEvent evt)
+    {
+        maybeShowPopup(evt);
+    }
+
+    private void coloringComboBoxActionPerformed(ActionEvent evt)
+    {
+        JComboBox box = (JComboBox)evt.getSource();
+        String coloringName = box.getSelectedItem().toString();
+        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.setColoringStyleForInstrument(style, instrument);
+        view.getResultList().repaint();
+
+        boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
+        view.getRgbColoringPanel().setVisible(!isEmissionSelected);
+        view.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
+    }
+
+    private void redComboBoxActionPerformed(ActionEvent evt) {
+        updateColoring();
+    }
+
+    private void greenComboBoxActionPerformed(ActionEvent evt) {
+        updateColoring();
+    }
+
+    private void blueComboBoxActionPerformed(ActionEvent evt) {
+        updateColoring();
+    }
+
+    private void redMinSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(0, true);
+        updateColoring();
+    }
+
+    private void greenMinSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(1, true);
+        updateColoring();
+    }
+
+    private void blueMinSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(2, true);
+        updateColoring();
+    }
+
+    private void redMaxSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(0, false);
+        updateColoring();
+    }
+
+    private void greenMaxSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(1, false);
+        updateColoring();
+    }
+
+    private void blueMaxSpinnerStateChanged(ChangeEvent evt) {
+        checkValidMinMax(2, false);
+        updateColoring();
+    }
+
+    private void grayscaleCheckBoxActionPerformed(ActionEvent evt) {
+        boolean enableColor = !view.getGrayscaleCheckBox().isSelected();
+
+//        redLabel.setVisible(enableColor);
+//        greenLabel.setVisible(enableColor);
+        view.getGreenComboBox().setVisible(enableColor);
+//        greenMinLabel.setVisible(enableColor);
+        view.getGreenMinSpinner().setVisible(enableColor);
+//        greenMaxLabel.setVisible(enableColor);
+        view.getGreenMaxSpinner().setVisible(enableColor);
+//        blueLabel.setVisible(enableColor);
+        view.getBlueComboBox().setVisible(enableColor);
+//        blueMinLabel.setVisible(enableColor);
+        view.getBlueMinSpinner().setVisible(enableColor);
+//        blueMaxLabel.setVisible(enableColor);
+        view.getBlueMaxSpinner().setVisible(enableColor);
+
+        updateColoring();
+    }
+
+    private void customFunctionsButtonActionPerformed(ActionEvent evt) {
+        SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
+                JOptionPane.getFrameForComponent(view),
+                new JComboBox[]{view.getRedComboBox(), view.getGreenComboBox(), view.getBlueComboBox()}, instrument);
+        model.setCurrentlyEditingUserDefinedFunction(true);
+        customFunctionsPanel.setVisible(true);
+        model.setCurrentlyEditingUserDefinedFunction(false);
+        updateColoring();
+    }
+
+    private void numberOfFootprintsComboBoxActionPerformed(ActionEvent evt) {
+        IdPair shown = model.getResultIntervalCurrentlyShown();
+        if (shown == null) return;
+
+        // Only update if there's been a change in what is selected
+        int newMaxId = shown.id1 + Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem());
+        if (newMaxId != shown.id2)
+        {
+            shown.id2 = newMaxId;
+            showFootprints(shown);
+        }
+    }
+
+    protected void initHierarchicalImageSearch()
+    {
+        // Show/hide panels depending on whether this body has hierarchical image search capabilities
+        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+        {
+            // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
+//            filterCheckBoxPanel.setVisible(false);
+//            userDefinedCheckBoxPanel.setVisible(false);
+
+            // Create the tree
+            spectraSpec.clearTreeLeaves();
+//            spectraSpec.setRootName(instrument.getDisplayName());
+            spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
+            checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
+
+            // Place the tree in the panel
+            view.getDataSourcesScrollPane().setViewportView(checkBoxTree);
+        }
+        else
+        {
+            // No hierarchical search capabilities, hide the scroll pane
+            view.getDataSourcesScrollPane().setVisible(false);
+        }
+    }
+
+    private void postInitComponents()
+    {
+        //startDate = getDefaultStartDate();
+        ((SpinnerDateModel)view.getStartSpinner().getModel()).setValue(model.getStartDate());
+        //endDate = getDefaultEndDate();
+        ((SpinnerDateModel)view.getEndSpinner().getModel()).setValue(model.getEndDate());
+
+        //toDistanceTextField.setValue(getDefaultMaxSpacecraftDistance());
+
+//        polygonType3CheckBox.setVisible(false);
+
+//       setupComboBoxes();
+    }
+
+    protected void setupComboBoxes()
+    {
+        for (int i=1; i<=instrument.getBandCenters().length; ++i)
+        {
+            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " cm^-1");
+            view.getRedComboBox().addItem(channel);
+            view.getGreenComboBox().addItem(channel);
+            view.getBlueComboBox().addItem(channel);
+        }
+
+        String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
+        for (int i=0; i<derivedParameters.length; ++i)
+        {
+            view.getRedComboBox().addItem(derivedParameters[i]);
+            view.getGreenComboBox().addItem(derivedParameters[i]);
+            view.getBlueComboBox().addItem(derivedParameters[i]);
+        }
+
+        for (vtkFunctionParser fp: instrument.getSpectrumMath().getAllUserDefinedDerivedParameters())
+        {
+            view.getRedComboBox().addItem(fp.GetFunction());
+            view.getGreenComboBox().addItem(fp.GetFunction());
+            view.getBlueComboBox().addItem(fp.GetFunction());
+        }
+    }
+
+    protected void setColoringComboBox()
+    {
+        for (SpectrumColoringStyle style : SpectrumColoringStyle.values())
+        {
+            view.getColoringComboBox().addItem(style);
+        }
+    }
+
+
+
+    public void mouseClicked(MouseEvent e)
+    {
+    }
+
+    public void mouseEntered(MouseEvent e)
+    {
+    }
+
+    public void mouseExited(MouseEvent e)
+    {
+    }
+
+    public void mousePressed(MouseEvent e)
+    {
+        maybeShowPopup(e);
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+        maybeShowPopup(e);
+    }
+
+    private void maybeShowPopup(MouseEvent e)
+    {
+        JList resultList = view.getResultList();
+        SpectrumPopupMenu spectrumPopupMenu = view.getSpectrumPopupMenu();
+        if (e.isPopupTrigger())
+        {
+            int index = resultList.locationToIndex(e.getPoint());
+
+            if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
+            {
+                resultList.setSelectedIndex(index);
+//                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
+                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(index));
+                spectrumPopupMenu.setInstrument(instrument);
+                spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                spectrumPopupMenu.setSearchPanel(this);
+            }
+        }
+    }
+
+
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        // 2018-02-08 JP. Turn this method into a no-op for now. The reason is that
+        // currently all listeners respond to all key strokes, and VTK keyboard events
+        // do not have a means to determine their source, so there is no way for listeners
+        // to be more selective. The result is, e.g., if one types "s", statistics windows show
+        // up even if we're not looking at a spectrum tab.
+        //
+        // Leave it in the code (don't comment it out) so Eclipse can find references to this,
+        // and so that we don't unknowingly break this code.
+        boolean disableKeyResponses = true;
+        if (disableKeyResponses) return;
+        ModelManager modelManager = model.getModelManager();
+        Renderer renderer = model.getRenderer();
+
+        if (e.getKeyChar()=='a')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            renderer.removeKeyListener(this);
+            model.toggleSelectAll();
+            renderer.addKeyListener(this);
+        }
+        else if (e.getKeyChar()=='s')
+        {
+            view.getSpectrumPopupMenu().showStatisticsWindow();
+        }
+        else if (e.getKeyChar()=='i' || e.getKeyChar()=='v')    // 'i' sets the lighting direction based on time of a single NIS spectrum, and 'v' looks from just above the footprint toward the sun
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            List<Spectrum> selection=model.getSelectedSpectra();
+            if (selection.size()!=1)
+            {
+                JOptionPane.showMessageDialog(view, "Please select only one spectrum to specify lighting or viewpoint");
+                return;
+            }
+            Spectrum spectrum=selection.get(0);
+            renderer.setLighting(LightingType.FIXEDLIGHT);
+            Path fullPath=Paths.get(spectrum.getFullPath());
+            Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
+            //Vector3D toSunVector=getToSunUnitVector(relativePath.toString());
+            renderer.setFixedLightDirection(spectrum.getToSunUnitVector()); // the fixed light direction points to the light
+            if (e.getKeyChar()=='v')
+            {
+                Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
+                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                //
+                vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
+                normalsFilter.SetInputData(spectrum.getUnshiftedFootprint());
+                normalsFilter.SetComputeCellNormals(0);
+                normalsFilter.SetComputePointNormals(1);
+                normalsFilter.SplittingOff();
+                normalsFilter.Update();
+                Vector3D upVector=new Vector3D(PolyDataUtil.computePolyDataNormal(normalsFilter.GetOutput())).normalize();  // TODO: fix this for degenerate cases, i.e. normal parallel to to-sun direction
+                double viewHeight=0.01; // km
+                Vector3D cameraPosition=footprintCenter.add(upVector.scalarMultiply(viewHeight));
+                double lookLength=footprintCenter.subtract(cameraPosition).getNorm();
+                Vector3D focalPoint=cameraPosition.add((new Vector3D(spectrum.getToSunUnitVector())).scalarMultiply(lookLength));
+                //
+                renderer.setCameraOrientation(cameraPosition.toArray(), focalPoint.toArray(), renderer.getRenderWindowPanel().getActiveCamera().GetViewUp(), renderer.getCameraViewAngle());
+            }
+        }
+        else if (e.getKeyChar()=='h')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            model.decreaseFootprintSeparation(0.001);
+        }
+        else if (e.getKeyChar()=='H')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            model.increaseFootprintSeparation(0.001);
+        }
+        else if (e.getKeyChar()=='+')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            model.setOffset(model.getOffset()+body.getBoundingBoxDiagonalLength()/50);
+        }
+        else if (e.getKeyChar()=='-')
+        {
+            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+            SmallBodyModel body=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+            model.setOffset(model.getOffset()-body.getBoundingBoxDiagonalLength()/50);
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    protected void showFootprints(IdPair idPair)
+    {
+        int startId = idPair.id1;
+        int endId = idPair.id2;
+
+        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(view.getColoringComboBox().getSelectedItem().toString());
+
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+//        model.removeAllSpectra();
+
+        for (int i=startId; i<endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if(i >= model.getSpectrumRawResults().size())
+                break;
+
+            try
+            {
+                String currentSpectrum = model.getSpectrumRawResults().get(i);
+//                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                collection.addSpectrum(createSpectrumName(i), instrument, style);
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+        updateColoring();
+    }
+
+
+//    public abstract String createSpectrumName(String currentSpectrumRaw);
+    public abstract String createSpectrumName(int index);
+
+
+    private void checkValidMinMax(int channel, boolean minimunStateChange)
+    {
+        JSpinner minSpinner = null;
+        JSpinner maxSpinner = null;
+
+        if (channel == 0)
+        {
+            minSpinner = view.getRedMinSpinner();
+            maxSpinner = view.getRedMaxSpinner();
+        }
+        else if (channel == 1)
+        {
+            minSpinner = view.getGreenMinSpinner();
+            maxSpinner = view.getGreenMaxSpinner();
+        }
+        else if (channel == 2)
+        {
+            minSpinner = view.getBlueMinSpinner();
+            maxSpinner = view.getBlueMaxSpinner();
+        }
+
+        Double minVal = (Double)minSpinner.getValue();
+        Double maxVal = (Double)maxSpinner.getValue();
+        if (minVal > maxVal)
+        {
+            if (minimunStateChange)
+                minSpinner.setValue(maxSpinner.getValue());
+            else
+                maxSpinner.setValue(minSpinner.getValue());
+        }
+    }
+
+    protected void updateColoring()
+    {
+        // If we are currently editing user defined functions
+        // (i.e. the dialog is open), do not update the coloring
+        // since we may be in an inconsistent state.
+        if (model.isCurrentlyEditingUserDefinedFunction())
+            return;
+
+
+        Double redMinVal = (Double)view.getRedMinSpinner().getValue();
+        Double redMaxVal = (Double)view.getRedMaxSpinner().getValue();
+
+        Double greenMinVal = (Double)view.getGreenMinSpinner().getValue();
+        Double greenMaxVal = (Double)view.getGreenMaxSpinner().getValue();
+
+        Double blueMinVal = (Double)view.getBlueMinSpinner().getValue();
+        Double blueMaxVal = (Double)view.getBlueMaxSpinner().getValue();
+
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        if (view.getGrayscaleCheckBox().isSelected())
+        {
+            collection.setChannelColoring(
+                    new int[]{view.getRedComboBox().getSelectedIndex(), view.getRedComboBox().getSelectedIndex(), view.getRedComboBox().getSelectedIndex()},
+                    new double[]{redMinVal, redMinVal, redMinVal},
+                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+                    instrument);
+        }
+        else
+        {
+            collection.setChannelColoring(
+                    new int[]{view.getRedComboBox().getSelectedIndex(), view.getGreenComboBox().getSelectedIndex(), view.getBlueComboBox().getSelectedIndex()},
+                    new double[]{redMinVal, greenMinVal, blueMinVal},
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+                    instrument);
+        }
+
+
+
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        JList resultList = view.getResultList();
+
+        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+        {
+            PickEvent e = (PickEvent)evt.getNewValue();
+
+
+            Model spectraModel = model.getModelManager().getModel(e.getPickedProp());
+            if (spectraModel instanceof SpectraCollection)
+            {
+                SpectraCollection coll=(SpectraCollection)spectraModel;
+                String name = coll.getSpectrumName((vtkActor)e.getPickedProp());
+                Spectrum spectrum=coll.getSpectrum(name);
+                if (spectrum==null)
+                    return;
+
+                resultList.getSelectionModel().clearSelection();
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    if (FilenameUtils.getBaseName(name).equals(resultList.getModel().getElementAt(i)))
+                    {
+                        resultList.getSelectionModel().setSelectionInterval(i, i);
+                        resultList.ensureIndexIsVisible(i);
+                        coll.select(coll.getSpectrum(name));//.setShowOutline(true);
+                    }
+                }
+
+                for (int i=0; i<resultList.getModel().getSize(); i++)
+                {
+                    if (!resultList.getSelectionModel().isSelectedIndex(i))
+                    {
+//                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName(i));
+                        if (spectrum_ != null)
+                            coll.deselect(spectrum_);
+                    }
+                }
+                resultList.repaint();
+            }
+       }
+        else
+        {
+            resultList.repaint();
+        }
+
+    }
+
+
+    class MyListCellRenderer extends DefaultListCellRenderer
+    {
+        public MyListCellRenderer()
+        {
+            setOpaque(true);
+        }
+
+        public Component getListCellRendererComponent(JList paramlist, Object value, int index, boolean isSelected, boolean cellHasFocus)
+        {
+            //setText(value.toString());
+            JLabel label = (JLabel) super.getListCellRendererComponent(paramlist, value, index, isSelected, cellHasFocus);
+            label.setOpaque(true /* was isSelected */); // Highlight only when selected
+            if(isSelected) { // I faked a match for the second index, put you matching condition here.
+                label.setBackground(Color.YELLOW);
+                label.setEnabled(false);
+            }
+            else
+            {
+//                String spectrumFile=createSpectrumName(value.toString());
+                String spectrumFile=createSpectrumName(index);
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+                Spectrum spectrum=collection.getSpectrum(spectrumFile);
+                setBackground(Color.LIGHT_GRAY);
+                if (spectrum==null)
+                    setForeground(Color.black);
+                else
+                {
+                    double[] color=spectrum.getChannelColor();
+                    for (int i=0; i<3; i++)
+                    {
+                        if (color[i]>1)
+                            color[i]=1;
+                        if (color[i]<0)
+                            color[i]=0;
+                    }
+                    setForeground(new Color((float)color[0],(float)color[1],(float)color[2]));
+                }
+            }
+            return label;
+        }
+    }
+
+    protected abstract void setSpectrumSearchResults(List<List<String>> results);
+
+    public SpectrumSearchView getView()
+    {
+        return view;
+    }
+
+}

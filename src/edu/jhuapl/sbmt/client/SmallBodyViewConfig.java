@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -34,9 +37,9 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.query.FixedListQuery;
-import edu.jhuapl.sbmt.query.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -2500,7 +2503,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
-    //        c.hasHierarchicalImageSearch = true;
+//            c.hasHierarchicalImageSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
+            try
+            {
+//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+                //TODO: eventually point this to a URL
+                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", "/earth/osirisrex/spectraMetadata.json");
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;

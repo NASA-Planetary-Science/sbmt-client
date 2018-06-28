@@ -67,9 +67,9 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     ComputeStatisticsTask task;
     JProgressBar statisticsProgressBar=new JProgressBar(0,100);
 
-    SpectrumSearchPanel searchPanel;
+    SpectrumSearchController searchPanel;
 
-    public void setSearchPanel(SpectrumSearchPanel searchPanel)
+    public void setSearchPanel(SpectrumSearchController searchPanel)
     {
         this.searchPanel=searchPanel;
     }
