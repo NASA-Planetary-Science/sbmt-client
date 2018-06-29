@@ -5,17 +5,51 @@
 # Description:    Test version of script for transforming delivered JAXA data into
 #                 rawdata format
 #-------------------------------------------------------------------------------
-# Note: bodyName, deliveredVersion, deliveredModelName, processingVersion and destModelName need to be configured for each model
+# Note: bodyName, deliveredVersion, deliveredModelName, processingVersion and processingModelName need to be configured for each model
 
+pipelineTop="/project/sbmtpipeline"
 bodyName="ryugu"
-deliveredVersion="20180628"
+
 deliveredModelName="JAXA-001"
-processingVersion="20180628"
-destModelName="jaxa-001"
+if [ "$#" -gt 0 ]
+then
+  deliveredModelName=$1
+fi
+
+deliveredVersion="20180628"
+if [ $# -gt 1 ]
+then
+  deliveredVersion=$2
+fi
+
+processingModelName=`echo "$deliveredModelName" | sed 's/.*/\L&/'`
+if [ "$#" -gt 2 ]
+then
+  processingModelName=$3
+fi
+
+processingVersion=$deliveredVersion
+if [ "$#" -gt 3 ]
+then
+  processingVersion=$4
+fi
+
+deliveriesTop="$pipelineTop/deliveries"
+fromHyb2=`expr "$processingModelName" : 'jaxa.*'`
+echo $fromHyb2
+if [ $fromHyb2 -gt 0 ]
+then
+  deliveriesTop=$deliveriesTop'-hyb2'
+fi
+
+echo "Deliveries Top: " $deliveriesTop
+echo "Body name: " $bodyName
+echo "Delivered version: " $deliveredVersion
+echo "Delivered model name: " $deliveredModelName
+echo "Processing version: " $processingVersion
+echo "Processing model name: " $processingModelName
 
 legacyTop="/project/sbmt2/sbmt/nearsdc/data"
-pipelineTop="/project/sbmtpipeline"
-deliveriesTop="$pipelineTop/deliveries-hyb2"
 rawTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
@@ -25,7 +59,7 @@ importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 log="logs/delivery2rawdata-model.log"
 
-srcTop="$deliveriesTop/$bodyName/$deliveredVersion/"
+srcTop="$deliveriesTop/$bodyName/$deliveredVersion"
 destTop="$rawTop/$bodyName/$processingVersion"
 #-------------------------------------------------------------------------------
 
@@ -80,16 +114,15 @@ doRsyncDir() (
 #-------------------------------------------------------------------------------
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
-echo "--------------------------------------------------------------------------------" >> $log 2>&1
-echo "Begin `date`" >> $log 2>&1
+# echo "--------------------------------------------------------------------------------" >> $log 2>&1
+# echo "Begin `date`" >> $log 2>&1
 
 # Import everything from the 20180411 delivery.
-doRsyncDir $srcTop/$deliveredModelName $destTop/$destModelName
+# echo $srcTop/$deliveredModelName $destTop/$processingModelName
+doRsyncDir $srcTop/$deliveredModelName $destTop/$processingModelName
 
-# Import older shape and coloring files from the legacy area.
-#$createDirIfNecessary $destTop/GASKELL/RQ36_V4
-#$rsyncCmd $legacyTop/GASKELL/RQ36_V4/*.vtk.gz $destTop/GASKELL/RQ36_V4/
-#$rsyncCmd $legacyTop/GASKELL/RQ36_V4/*.fits.gz $destTop/GASKELL/RQ36_V4/
+# fix any bad permissions
+$scriptDir/data-permissions.pl $destTop/$processingModelName
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1

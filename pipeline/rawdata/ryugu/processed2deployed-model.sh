@@ -5,16 +5,23 @@
 # Description: Test version of script for transforming processed JAXA data into
 #              deployed data format
 #-------------------------------------------------------------------------------
-# Note: bodyName, deliveredVersion, deliveredModel, processingVersion and destModelName need to be configured for each model
+# Note: bodyName, deliveredVersion, deliveredModel, processingVersion and processingModelName need to be configured for each model
 
-bodyName="ryugu"
-deliveredVersion="20180628"
-deliveredModel="truth"
-processingVersion="20180628"
-destModelName="jaxa-001"
-
-legacyTop="/project/sbmt2/sbmt/nearsdc/data"
 pipelineTop="/project/sbmtpipeline"
+bodyName="ryugu"
+
+processingModelName="jaxa-001"
+if [ "$#" -gt 0 ]
+then
+  processingModelName=$1
+fi
+
+processingVersion="20180628"
+if [ "$#" -gt 1 ]
+then
+  processingVersion=$2
+fi
+
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 
@@ -80,10 +87,13 @@ doRsyncDir() (
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
 
-echo "Source: " $srcTop/$processingVersion/$destModelName
-echo "Dest: " $destTop/$destModelName-$processingVersion
+echo "Source: " $srcTop/$processingVersion/$processingModelName
+echo "Dest: " $destTop/$processingModelName-$processingVersion
 
-doRsyncDir $srcTop/$processingVersion/$destModelName $destTop/$destModelName-$processingVersion
+doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
+
+# fix any bad permissions
+$scriptDir/data-permissions.pl $destTop/$processingModelName-$processingVersion
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1

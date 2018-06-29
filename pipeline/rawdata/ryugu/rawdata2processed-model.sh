@@ -5,16 +5,30 @@
 # Description: Test version of script for transforming raw JAXA data into
 #              processed format
 #-------------------------------------------------------------------------------
-# Note: bodyName, deliveredVersion, rawdataModelName, processingVersion and processedModelName need to be configured for each model
+# Note: bodyName, deliveredVersion, rawdataModelName, processingVersion and processingModelName need to be configured for each model
 
+pipelineTop="/project/sbmtpipeline"
 bodyName="ryugu"
-deliveredVersion="20180628"
+
 rawdataModelName="jaxa-001"
+if [ "$#" -gt 0 ]
+then
+  rawdataModelName=$1
+fi
+
 processingVersion="20180628"
-processedModelName="jaxa-001"
+if [ "$#" -gt 1 ]
+then
+  processingVersion=$2
+fi
+
+processingModelName=$rawdataModelName
+
+echo "Body name: " $bodyName
+echo "Processing model name: " $processingModelName
+echo "Processing version: " $processingVersion
 
 legacyTop="/project/sbmt2/sbmt/nearsdc/data"
-pipelineTop="/project/sbmtpipeline"
 deliveriesTop="$pipelineTop/deliveries"
 rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
@@ -180,21 +194,25 @@ generateInfoFiles() (
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
 
-echo "Source Top: " $srcTop
-echo "Dest Top: " $destTop
+echo "Source Top: " $srcTop/$processingModelName
+echo "Dest Top: " $destTop/$processingModelName
 
-createDirIfNecessary $destTop/$processedModelName/shape
-createDirIfNecessary $destTop/$processedModelName/coloring
-# createDirIfNecessary $destTop/$processedModelName/onc
+createDirIfNecessary $destTop/$processingModelName/shape
+createDirIfNecessary $destTop/$processingModelName/coloring
 
-doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processedModelName/shape/
-gzip -f $destTop/$processedModelName/shape/*.obj
+doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
+gzip -f $destTop/$processingModelName/shape/*.obj
 
-doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processedModelName/coloring/
-gzip -f $destTop/$processedModelName/coloring/*.fits
+doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
+gzip -f $destTop/$processingModelName/coloring/*.fits
 
-# doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processedModelName/onc
+# echo $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
+# createDirIfNecessary $destTop/$processingModelName/onc
+# doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
 # generateInfoFiles $srcTop/$rawdataModelName $srcTop/$rawdataModelName $srcTop/$rawdataModelName/spice/kernels/mk/hyb2_lss_truth.tm RYUGU
+
+# fix any bad permissions
+$scriptDir/data-permissions.pl $destTop/$processingModelName                                      
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "End `date`" >> $log 2>&1
