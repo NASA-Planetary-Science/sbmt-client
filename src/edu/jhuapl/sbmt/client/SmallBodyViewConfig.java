@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -34,9 +36,9 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.query.FixedListQuery;
-import edu.jhuapl.sbmt.query.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -2500,7 +2502,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
-    //        c.hasHierarchicalImageSearch = true;
+//            c.hasHierarchicalImageSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
+            try
+            {
+//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+                //TODO: eventually point this to a URL
+                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", "/earth/osirisrex/spectraMetadata.json");
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
@@ -2602,7 +2616,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
-            c.author = ShapeModelType.HAYABUSA2;
+            c.author = ShapeModelType.JAXA_001;
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
@@ -2671,7 +2685,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.TRUTH;
             c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
@@ -2741,7 +2755,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
@@ -2788,7 +2802,84 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
-        // Standard Gaskell shape model may be described once.
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/shared/imaging", "ryugu", "/ryugu/shared/imaging/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_001;
+            c.modelLabel = "JAXA 001";
+            c.rootDirOnServer = "/ryugu/jaxa-001";
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+            c.shapeModelFileExtension = ".obj";
+
+            //            c.hasStateHistory = true;
+//            c.timeHistoryFile = "/ryugu/jaxa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 6, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.LASER;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+
+            configArray.add(c);
+        }
+
+       // Standard Gaskell shape model may be described once.
         final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
 
         // Gaskell images only.

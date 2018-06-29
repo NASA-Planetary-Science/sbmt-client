@@ -250,7 +250,7 @@ public class SbmtRunnable implements Runnable
         case STAGE_PUBLIC_RELEASE:
         case TEST_PUBLIC_RELEASE:
             if (
-                    !ShapeModelType.HAYABUSA2.equals(config.author) &&
+                    !ShapeModelType.JAXA_001.equals(config.author) &&
                     !ShapeModelType.OREX.equals(config.author) &&
                     !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
                     !ShapeModelBody.RYUGU.equals(config.body) &&
@@ -264,7 +264,7 @@ public class SbmtRunnable implements Runnable
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
                     ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -275,7 +275,7 @@ public class SbmtRunnable implements Runnable
             if (
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -286,7 +286,7 @@ public class SbmtRunnable implements Runnable
             if (
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
