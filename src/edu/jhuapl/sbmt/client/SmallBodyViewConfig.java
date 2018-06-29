@@ -396,14 +396,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY", "/GASKELL/RQ36_V4/POLYCAM/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP", "/GASKELL/RQ36_V4/MAPCAM/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.MAPCAM
@@ -428,9 +428,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -440,7 +440,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseOutgoingIntensityIndex = 98;
             c.lidarBrowseReceivedIntensityIndex = 106;
             c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
+//            c.lidarBrowseFileListResourcePath =  c.rootDirOnServer + "/ola/browse/default/fileList.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
@@ -448,7 +448,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarOffsetScale = 0.0005;
 
             c.hasStateHistory = true;
-            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
+            c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
 
             if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
             {
@@ -2617,6 +2617,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
             c.author = ShapeModelType.JAXA_001;
+            c.modelLabel = "Haybusa2-testing";
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
@@ -3170,7 +3171,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : "";
+        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
         FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
         return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
