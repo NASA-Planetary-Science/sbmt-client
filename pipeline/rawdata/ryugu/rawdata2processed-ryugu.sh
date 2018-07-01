@@ -5,7 +5,14 @@
 # Description: Test version of script for transforming raw JAXA data into
 #              processed format
 #-------------------------------------------------------------------------------
-# Note: bodyName, deliveredVersion, rawdataModelName, processingVersion and processingModelName need to be configured for each model
+
+# usage
+if [ "$#" -eq 0 ]
+then
+  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processed-date> [ <processed-model-name> <processed-date> ]"
+  echo "Shared data usage: rawdata2processed-ryugu.sh shared"
+  exit 1
+fi
 
 pipelineTop="/project/sbmtpipeline"
 bodyName="ryugu"
@@ -24,9 +31,15 @@ fi
 
 processingModelName=$rawdataModelName
 
-echo "Body name: " $bodyName
-echo "Processing model name: " $processingModelName
-echo "Processing version: " $processingVersion
+if [ $processingModelName = "shared" ]
+then                                                                                              
+   processingVersion="latest"
+fi                                                                                                
+                                                                                                  
+
+echo "Body name:$bodyName"
+echo "Processing model name:$processingModelName"
+echo "Processing version:$processingVersion"
 
 legacyTop="/project/sbmt2/sbmt/nearsdc/data"
 deliveriesTop="$pipelineTop/deliveries"
@@ -37,10 +50,16 @@ deployedTop="/project/sbmt2/sbmt/data/bodies"
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
-log="logs/rawdata2processed-model.log"
 
 srcTop="$rawdataTop/$bodyName/$processingVersion"
 destTop="$processedTop/$bodyName/$processingVersion"
+
+log="$srcTop/logs/rawdata2processed-model.log"
+
+# echo "Source Top: " $srcTop                                                                       
+# echo "Dest Top: " $destTop                                                                        
+# echo "Log file: " $log
+
 #-------------------------------------------------------------------------------
 
 # Create a directory if it doesn't already exist.
@@ -65,7 +84,7 @@ createDirIfNecessary() (
 doRsync() (
   src=$1
   dest=$2
-  echo "--------------------------------------------------------------------------------" >> $log 2>&1
+#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
 
   # Make sure source directories end in a slash.
   if test -d $src; then
@@ -77,7 +96,8 @@ doRsync() (
   if test $? -ne 0; then
     exit 1;
   fi
-  echo "--------------------------------------------------------------------------------" >> $log 2>&1
+  echo "" >> $log 2>&1
+#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
 )
 
 # Perform an rsync from the source to the destination. Both must be directories.
@@ -191,20 +211,50 @@ generateInfoFiles() (
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
+echo "Starting rawdata2processed-ryugu.sh script (log file: $log)"
+mkdir -p $destTop                                                                                 
+                                                                                                  
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
 
-echo "Source Top: " $srcTop/$processingModelName
-echo "Dest Top: " $destTop/$processingModelName
+# echo "Source Top: " $srcTop/$processingModelName
+# echo "Dest Top: " $destTop/$processingModelName
 
-createDirIfNecessary $destTop/$processingModelName/shape
-createDirIfNecessary $destTop/$processingModelName/coloring
+if [ $processingModelName = "shared" ]
+then
+   # if the model name is "shared" then we only copy over the new shared data
+   createDirIfNecessary $destTop/shared
+   createDirIfNecessary $destTop/shared/onc
 
-doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
-gzip -f $destTop/$processingModelName/shape/*.obj
+   for dateDir in `ls $srcTop/shared/onc`
+   do
+     echo Rsyncing image files from $srcTop/shared/onc/$dateDir... >> $log 2>&1
+     doRsyncDir $srcTop/shared/onc/$dateDir $destTop/shared/onc/images
 
-doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
-gzip -f $destTop/$processingModelName/coloring/*.fits
+     # remove extranious html files
+     rm -f $destTop/shared/onc/images/index.html*
+
+     # fix any bad permissions
+     $scriptDir/data-permissions.pl $destTop/shared/onc/images
+
+   done
+else
+   createDirIfNecessary $destTop/$processingModelName/shape
+   createDirIfNecessary $destTop/$processingModelName/coloring
+   createDirIfNecessary $destTop/$processingModelName/onc
+
+   doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
+   gzip -f $destTop/$processingModelName/shape/*.obj
+
+   doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
+   gzip -f $destTop/$processingModelName/coloring/*.fits
+
+   doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc/
+
+   # fix any bad permissions
+   $scriptDir/data-permissions.pl $destTop/$processingModelName
+
+fi
 
 # echo $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
 # createDirIfNecessary $destTop/$processingModelName/onc
@@ -218,3 +268,5 @@ echo "--------------------------------------------------------------------------
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
+echo "Finished rawdata2processed-ryugu.sh script"
+

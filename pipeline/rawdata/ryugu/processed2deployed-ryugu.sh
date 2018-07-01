@@ -5,7 +5,14 @@
 # Description: Test version of script for transforming processed JAXA data into
 #              deployed data format
 #-------------------------------------------------------------------------------
-# Note: bodyName, deliveredVersion, deliveredModel, processingVersion and processingModelName need to be configured for each model
+
+# usage
+if [ "$#" -eq 0 ]
+then
+  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processed-date> [ <processed-model-name> <processed-date> ]"
+  echo "Shared data usage: processed2deployed-ryugu.sh shared"
+  exit 1
+fi
 
 pipelineTop="/project/sbmtpipeline"
 bodyName="ryugu"
@@ -22,16 +29,31 @@ then
   processingVersion=$2
 fi
 
+if [ $processingModelName = "shared" ]
+then
+  processingVersion="latest"
+fi
+
+echo "Processing Model Name: " $processingModelName
+echo "Processing Version: " $processingVersion
+
+rawTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
-log="logs/processed2deployed-shape.log"
+
+log="$rawTop/$bodyName/$processingVersion/logs/processed2deployed-ryugu.log"
 
 srcTop="$processedTop/$bodyName"
 destTop="$deployedTop/$bodyName"
+
+echo "srcTop: $srcTop"
+echo "destTop: $destTop"
+echo "log: $log"
+
 #-------------------------------------------------------------------------------
 
 # Create a directory if it doesn't already exist.
@@ -84,17 +106,37 @@ doRsyncDir() (
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
+echo "Starting processed2deployed-ryugu.sh script (log file: $log)"
+
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
 
-echo "Source: " $srcTop/$processingVersion/$processingModelName
-echo "Dest: " $destTop/$processingModelName-$processingVersion
+if [ $processingModelName = "shared" ]
+then
 
-doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
+  createDirIfNecessary $destTop/shared
 
-# fix any bad permissions
-$scriptDir/data-permissions.pl $destTop/$processingModelName-$processingVersion
+  echo Rsyncing $srcTop/latest/shared to $destTop/shared... >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared $destTop/shared
+
+  # fix any bad permissions
+#  $scriptDir/data-permissions.pl $destTop/shared
+else
+
+  echo Rsyncing $srcTop/$processingVersion/$processingModelName to $destTop/$processingModelName-$processingVersion... >> $log 2>&1
+
+  doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
+
+  # set the soft link to the shared onc directory
+  ln -s ../../shared/onc/images $destTop/$processingModelName-$processingVersion/onc/images
+
+  # fix any bad permissions
+  $scriptDir/data-permissions.pl $destTop/$processingModelName-$processingVersion
+
+fi
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
+echo "Finished processed2deployed-ryugu.sh script"
+
