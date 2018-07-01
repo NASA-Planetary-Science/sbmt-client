@@ -143,7 +143,7 @@ public class DatabaseGeneratorSql
             ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -480,10 +480,8 @@ public class DatabaseGeneratorSql
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/var/www/sbmt/sbmt/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-//                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
                 "/var/www/sbmt/sbmt/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
-//                "ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
         RYUGU_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
@@ -554,8 +552,8 @@ public class DatabaseGeneratorSql
     public static void main(String[] args) throws IOException
     {
         // default configuration parameters
-        String appName = "neartool";
-        String cacheVersion = "2";
+//        String appName = "neartool";
+//        String cacheVersion = "2";
         boolean aplVersion = true;
         String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
 
@@ -596,7 +594,7 @@ public class DatabaseGeneratorSql
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
 //        Configuration.setAppName(appName);
-        Configuration.setCacheVersion(cacheVersion);
+//        Configuration.setCacheVersion(cacheVersion);
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
 
