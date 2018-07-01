@@ -2844,7 +2844,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2:
+                case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
                     ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());

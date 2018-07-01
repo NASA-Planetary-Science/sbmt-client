@@ -398,7 +398,7 @@ public class DatabaseGeneratorSql
             dburl = "hyb2sbmt.jhuapl.edu";
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2)
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEV)
             dburl = "sd-mysql.jhuapl.edu";
 
         try
