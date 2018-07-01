@@ -2812,7 +2812,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
-            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA", ShapeModelDataUsed.IMAGE_BASED).build();
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-001", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-001/onc", "ryugu", "/ryugu/jaxa-001/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
