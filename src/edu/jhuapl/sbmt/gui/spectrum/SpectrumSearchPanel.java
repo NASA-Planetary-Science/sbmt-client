@@ -40,6 +40,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ListSelectionEvent;
@@ -49,6 +50,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
 import vtk.vtkFunctionParser;
@@ -70,6 +73,7 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
@@ -77,7 +81,7 @@ import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import altwg.util.PolyDataUtil;
 
 
-public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements MouseListener, PropertyChangeListener, KeyListener
+public abstract class SpectrumSearchPanel extends JPanel implements MouseListener, PropertyChangeListener, KeyListener
 {
     protected final ModelManager modelManager;
     protected final PickManager pickManager;
@@ -89,28 +93,34 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
     protected String spectrumResultsLabelText = " ";
     protected IdPair resultIntervalCurrentlyShown = null;
     protected boolean currentlyEditingUserDefinedFunction = false;
+    SmallBodyViewConfig smallBodyConfig;
     Renderer renderer;
+    protected CheckBoxTree checkBoxTree;
 
     JButton saveImageListButton = new JButton("Save Spectrum List");
     JButton saveSelectedImageListButton = new JButton();
     JButton loadImageListButton = new JButton("Load Spectrum List");
 
     protected final SpectralInstrument instrument;
-
+    protected JScrollPane hierarchicalSearchScrollPane = new JScrollPane();
 
 
 
     /** Creates new form NISSearchPanel */
-    public SpectrumSearchPanel(final ModelManager modelManager,
+    public SpectrumSearchPanel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
     {
+        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager;
         this.instrument=instrument;
 
         spectrumPopupMenu = new SpectrumPopupMenu(this.modelManager, infoPanelManager, renderer);
         spectrumPopupMenu.addPropertyChangeListener(this);
+
+        // Setup hierarchical image search
+        initHierarchicalImageSearch();
 
         initComponents();
 
@@ -145,6 +155,32 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
             }
         });
 
+
+
+
+    }
+
+ // Sets up everything related to hierarchical image searches
+    protected void initHierarchicalImageSearch()
+    {
+        // Show/hide panels depending on whether this body has hierarchical image search capabilities
+        if(smallBodyConfig.hasHierarchicalSpectraSearch)
+        {
+            // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
+//            filterCheckBoxPanel.setVisible(false);
+//            userDefinedCheckBoxPanel.setVisible(false);
+
+            // Create the tree
+            checkBoxTree = new CheckBoxTree(smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel());
+
+            // Place the tree in the panel
+            this.hierarchicalSearchScrollPane.setViewportView(checkBoxTree);
+        }
+        else
+        {
+            // No hierarchical search capabilities, hide the scroll pane
+            hierarchicalSearchScrollPane.setVisible(false);
+        }
     }
 
 
@@ -350,7 +386,7 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(spectrumRawResults.get(index)));
                 spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                spectrumPopupMenu.setSearchPanel(this);
+//                spectrumPopupMenu.setSearchPanel(this);
             }
         }
     }
@@ -859,6 +895,20 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         jPanel8.add(jPanel1, gridBagConstraints);
+
+        if(smallBodyConfig.hasHierarchicalSpectraSearch)
+        {
+            hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(300, 200));
+            gridBagConstraints = new java.awt.GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 2;
+            gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+            jPanel8.add(hierarchicalSearchScrollPane, gridBagConstraints);
+
+            smallBodyConfig.hierarchicalSpectraSearchSpecification.processTreeSelections(
+                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+        }
 
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -1762,28 +1812,33 @@ public abstract class SpectrumSearchPanel extends javax.swing.JPanel implements 
                 }
             }
 
-            List<List<String>> results = instrument.getQueryBase().runQuery(
-                    null,
-                    startDateJoda,
-                    endDateJoda,
-                    false,
-                    null,
-                    null,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    0.0,
-                    0.0,
-                    null,
-                    polygonTypesChecked,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    null,
-                    -1);
+            List<Integer> productsSelected;
+            List<List<String>> results = new ArrayList<List<String>>();
+            if(smallBodyConfig.hasHierarchicalSpectraSearch)
+            {
+                // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
+//                sumOfProductsSearch = true;
+
+                // Process the user's selections
+                smallBodyConfig.hierarchicalSpectraSearchSpecification.processTreeSelections(
+                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+
+                // Get the selected (camera,filter) pairs
+//                productsSelected = smallBodyConfig.hierarchicalSpectraSearchSpecification.getSelectedCameras();
+//                TreeModel tree = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();
+//                for (Integer selected : productsSelected)
+//                {
+//                    String name = tree.getChild(tree.getRoot(), selected).toString();
+//                    System.out.println(
+//                            "SpectrumSearchPanel: submitButtonActionPerformed: name is " + name);
+////                    FixedListSearchMetadata.of(name, String filelist, String datapath, ImageSource pointingSource);
+////                    results.addAll(instrument.getQueryBase().runQuery(Fix))
+//                }
+            }
+            else
+            {
+//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+            }
 
             setSpectrumSearchResults(results);
         }
