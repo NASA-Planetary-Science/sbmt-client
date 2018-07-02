@@ -53,6 +53,7 @@ import javax.swing.table.TableCellRenderer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -75,7 +76,6 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -89,6 +89,10 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQueryBase;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
@@ -2611,118 +2615,175 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int i=0; i<numberOfFilters; i++)
                 {
                     if(filterCheckBoxes[i].isSelected())
-            {
+                    {
                         filtersSelected.add(i);
                     }
                 }
             }
 
-            // Run queries based on user specifications
             List<List<String>> results = null;
-
-            if (instrument.spectralMode == SpectralMode.MULTI)
+            if (instrument.searchQuery instanceof FixedListQueryBase)
             {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
+                FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
             }
             else
             {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
+
+                // Run queries based on user specifications
+                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        searchField, null,
+                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        sumOfProductsSearch, camerasSelected, filtersSelected,
+                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+
+                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
             }
+
+            //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
+//            if (instrument.spectralMode == SpectralMode.MULTI)
+//            {
+//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+//                        searchField, null,
+//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+//                        sumOfProductsSearch, camerasSelected, filtersSelected,
+//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+//
+//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+//
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
+//            else if (instrument.spectralMode == SpectralMode.HYPER)
+//            {
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
+//            else
+//            {
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
 
             // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing
             // an additional search.
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
-                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
-                        "",
-                        startDateJoda,
-                        endDateJoda,
-                        sumOfProductsSearch,
-                        camerasSelected,
-                        filtersSelected,
-                        Double.parseDouble(fromDistanceTextField.getText()),
-                        Double.parseDouble(toDistanceTextField.getText()),
-                        Double.parseDouble(fromResolutionTextField.getText()),
-                        Double.parseDouble(toResolutionTextField.getText()),
-                        searchField,
-                        null,
-                        Double.parseDouble(fromIncidenceTextField.getText()),
-                        Double.parseDouble(toIncidenceTextField.getText()),
-                        Double.parseDouble(fromEmissionTextField.getText()),
-                        Double.parseDouble(toEmissionTextField.getText()),
-                        Double.parseDouble(fromPhaseTextField.getText()),
-                        Double.parseDouble(toPhaseTextField.getText()),
-                        cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
-                        hasLimbComboBox.getSelectedIndex());
+                List<List<String>> resultsOtherSource = null;
+                if (instrument.searchQuery instanceof FixedListQueryBase)
+                {
+                    FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                }
+                else
+                {
+
+                    ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            searchField, null,
+                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            sumOfProductsSearch, camerasSelected, filtersSelected,
+                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
+
+                        resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
+
+                }
+
+
+//                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
+//                        "",
+//                        startDateJoda,
+//                        endDateJoda,
+//                        sumOfProductsSearch,
+//                        camerasSelected,
+//                        filtersSelected,
+//                        Double.parseDouble(fromDistanceTextField.getText()),
+//                        Double.parseDouble(toDistanceTextField.getText()),
+//                        Double.parseDouble(fromResolutionTextField.getText()),
+//                        Double.parseDouble(toResolutionTextField.getText()),
+//                        searchField,
+//                        null,
+//                        Double.parseDouble(fromIncidenceTextField.getText()),
+//                        Double.parseDouble(toIncidenceTextField.getText()),
+//                        Double.parseDouble(fromEmissionTextField.getText()),
+//                        Double.parseDouble(toEmissionTextField.getText()),
+//                        Double.parseDouble(fromPhaseTextField.getText()),
+//                        Double.parseDouble(toPhaseTextField.getText()),
+//                        cubeList,
+//                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
+//                        hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
                 for (int i=0; i<numOtherResults; ++i)

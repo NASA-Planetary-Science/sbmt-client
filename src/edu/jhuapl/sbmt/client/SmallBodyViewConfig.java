@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -34,9 +37,9 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.query.FixedListQuery;
-import edu.jhuapl.sbmt.query.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -2500,7 +2503,19 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
-    //        c.hasHierarchicalImageSearch = true;
+//            c.hasHierarchicalImageSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
+            try
+            {
+//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+                //TODO: eventually point this to a URL
+                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", "/earth/osirisrex/spectraMetadata.json");
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
@@ -2651,31 +2666,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new NIRS3()
                     };
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.LASER;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
             configArray.add(c);
         }
 
@@ -2707,29 +2697,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
 
-            // This version would enable image search but this seems to hang, possibly because of the very high resolution of the model.
-            // Re-enable this if/when that issue is addressed.
-//            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
-//            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.ONC,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.ONC_TRUTH_IMAGE);
-
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
             };
@@ -2740,6 +2710,30 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }
@@ -2780,6 +2774,31 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
 
             configArray.add(c);
         }
