@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,8 +62,8 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
-import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.InstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.SearchSpec;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -94,7 +95,15 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
-
+        try
+        {
+            spectraSpec.loadMetadata();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Setup hierarchical image search
         initHierarchicalImageSearch();
 
@@ -467,14 +476,14 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
-                OREXSpectrumInstrumentMetadata<OREXSearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
 //                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
                 TreeModel tree = spectraSpec.getTreeModel();
-                List<OREXSearchSpec> specs = instrumentMetadata.getSpecs();
+                List<SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
                     String name = tree.getChild(tree.getRoot(), selected).toString();
-                    OREXSearchSpec spec = specs.get(selected);
+                    SearchSpec spec = specs.get(selected);
                     FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
                                                                                         spec.getDataListFilename(),
                                                                                         spec.getDataPath(),
