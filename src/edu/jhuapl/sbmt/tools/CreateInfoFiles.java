@@ -25,6 +25,7 @@ import edu.jhuapl.sbmt.model.time.FileUtils;
 import altwg.util.FileUtil;
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.PaddingException;
 import spice.basic.CSPICE;
 import spice.basic.SpiceErrorException;
 
@@ -164,16 +165,18 @@ public class CreateInfoFiles
         }
         catch (Exception e)
         {
-            System.err.println(e.getMessage());
             System.err.println("Did not add " + path.getFileName() + " to image list.");
+            System.err.println(e.getMessage());
         }
         try
         {
             imageTable.add(new ImageInfo(path.toFile(), getFitsEt(path.toFile(), sclkKeyword, spacecraftName)));
+//            System.err.println("FITS SCLK: " + getFitsEt(path.toFile(), sclkKeyword, spacecraftName) + ", converted: " + CSPICE.timout(getFitsEt(path.toFile(), sclkKeyword, spacecraftName), TIME_FORMAT));
         }
         catch (Exception e)
         {
-            System.err.println("Error getting time keyword for " + path.getFileName() + ". Infofile will not be generated.");
+            System.err.println("Error getting SCLK time keyword," + sclkKeyword + ", for " + path.getFileName() + ". Infofile will not be generated.");
+            e.printStackTrace();
         }
     }
 
@@ -192,17 +195,18 @@ public class CreateInfoFiles
         }
         catch (Exception e)
         {
-            System.err.println(e.getMessage());
             System.err.println("Did not add " + path.getFileName() + " to image list.");
+            System.err.println(e.getMessage());
         }
         try
         {
             imageTable.add(new ImageInfo(path.toFile(), CSPICE.str2et(getValueforFitsKeyword(path.toFile(), utcKeyword))));
-            System.err.println("FITS utc: " + getValueforFitsKeyword(path.toFile(), utcKeyword) + ", converted: " + CSPICE.timout(CSPICE.str2et(getValueforFitsKeyword(path.toFile(), utcKeyword)), TIME_FORMAT));
+//            System.err.println("FITS utc: " + getValueforFitsKeyword(path.toFile(), utcKeyword) + ", converted: " + CSPICE.timout(CSPICE.str2et(getValueforFitsKeyword(path.toFile(), utcKeyword)), TIME_FORMAT));
         }
         catch (Exception e)
         {
-            System.err.println("Error getting time keyword for " + path.getFileName() + ". Infofile will not be generated.");
+            System.err.println("Error getting UTC time keyword," + utcKeyword + ", for " + path.getFileName() + ". Infofile will not be generated.");
+            e.printStackTrace();
         }
     }
 
@@ -316,7 +320,16 @@ public class CreateInfoFiles
     private String getValueforFitsKeyword(File fitsFile, String keyword) throws Exception
     {
         Fits thisFits = new Fits(fitsFile);
-        thisFits.read();
+        try
+        {
+            thisFits.read();
+        }
+        catch (PaddingException e)
+        {
+            //Incorrectly formatted FITS file, try again.
+            thisFits.addHDU(e.getTruncatedHDU());
+            thisFits.read(); // read again all HDUs including the truncated HDU
+        }
         int numFitsHeaders = thisFits.getNumberOfHDUs();
         BasicHDU thisHDU = null;
         for (int i = 0; i < numFitsHeaders; i++)
@@ -337,6 +350,7 @@ public class CreateInfoFiles
             catch (Exception e)
             {
                 //do nothing, try next header
+                System.err.println("Exception caught reading header " + i + " of " + numFitsHeaders + " for time keyword " + keyword + ":");
                 System.err.println(e.getMessage());
             }
         }
@@ -827,17 +841,17 @@ public class CreateInfoFiles
             outputFolder.mkdirs();
         }
 
-        System.err.println("Debug. Arguments:");
-        if (timesFile)
-        {
-            System.err.println("    " + timeTableFile.getAbsolutePath() + " " + timeFormat + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
-            System.err.println("    " + metakernel + " "  + sbmtRelPath + " " + sc + " " + instrFrame + " " + body + " " + bodyFrame);
-        }
-        if (fits)
-        {
-            System.err.println("    " + fitsTimeFmt + " " + fitsTimeKeyword + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
-            System.err.println("    " + metakernel + " "  + sbmtRelPath + " " + sc + " " + instrFrame + " " + body + " " + bodyFrame);
-        }
+//        System.err.println("Debug. Program arguments are");
+//        if (timesFile)
+//        {
+//            System.err.println("    " + timeTableFile.getAbsolutePath() + " " + timeFormat + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
+//            System.err.println("    " + metakernel + " "  + sbmtRelPath + " " + sc + " " + instrFrame + " " + body + " " + bodyFrame);
+//        }
+//        if (fits)
+//        {
+//            System.err.println("    " + fitsTimeFmt + " " + fitsTimeKeyword + " " + inputFolder.getAbsolutePath() + " " + outputFolder.getAbsolutePath());
+//            System.err.println("    " + metakernel + " "  + sbmtRelPath + " " + sc + " " + instrFrame + " " + body + " " + bodyFrame);
+//        }
 
         CreateInfoFiles app = new CreateInfoFiles(metakernel);
         if (fits)
@@ -926,6 +940,26 @@ public class CreateInfoFiles
         String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/ryugu/truth/imaging/dummyPath", "HAYABUSA2", "HAYABUSA2_ONC-T", "RYUGU", "RYUGU_FIXED"};
         CreateInfoFiles.execute(testArgs);
     }
+    /**
+     * Test run with ORX POLYCAM Earth FITS images (reads FITS header for observation time).
+     *
+     * @throws Exception
+     */
+    public static void doOrxTest() throws Exception
+    {
+        System.err.println("---------------------------------------------------------------------");
+        System.err.println("-- Unit test, Osiris-REx Polycam FITS                              --");
+        System.err.println("---------------------------------------------------------------------");
+        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
+        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
+        File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
+        //Output folder
+        File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
+
+        String[] testArgs = {"-s", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/earth/polycam/images", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+//        String[] testArgs = {"-u", "DATE_OBS", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/earth/polycam/images", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+        CreateInfoFiles.execute(testArgs);
+    }
 
     public static void main(String[] args) throws Exception
     {
@@ -934,6 +968,7 @@ public class CreateInfoFiles
 //        CreateInfoFiles.doHayabusa2FitsTest2(); //Tested, verified
 //        CreateInfoFiles.doHayabusa2GenericTest(); //Tested, verified
 //        CreateInfoFiles.doUsageTest(); //Tested, verified
+//        CreateInfoFiles.doOrxTest();
 
         //Server run:
         execute(args);
