@@ -490,7 +490,7 @@ public class DatabaseGeneratorSql
         RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
         PHOBOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelType.EXPERIMENTAL),
