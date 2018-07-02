@@ -872,7 +872,7 @@ public class CreateInfoFiles
         CreateInfoFiles.execute(testArgs);
     }
     /**
-     * Test run with Hayabusa2 ONC FITS images (reads FITS header for observation time).
+     * Test run with Hayabusa2 ONC Truth FITS images (reads FITS header for observation time).
      *
      * @throws Exception
      */
@@ -881,7 +881,6 @@ public class CreateInfoFiles
         System.err.println("---------------------------------------------------------------------");
         System.err.println("-- Unit test, Hayabusa2 ONC FITS                                   --");
         System.err.println("---------------------------------------------------------------------");
-        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
         File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/hayabusa2RyuguTruth/kernels/mk/hyb2_lss_truth.tm");
         File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/hayabusa2RyuguTruth/onc/images2/l2a");
         //Output folder
@@ -891,51 +890,49 @@ public class CreateInfoFiles
         CreateInfoFiles.execute(testArgs);
     }
     /**
-     * Test run with Osiris-REx POLYCAM FITS images (reads FITS header for observation time).
+     * Test run with Hayabusa2 ONC Flight FITS images (reads FITS header for observation time).
      *
      * @throws Exception
      */
-    public static void doOsirisRexFitsTest() throws Exception
+    public static void doHayabusa2FitsTest2() throws Exception
     {
         System.err.println("---------------------------------------------------------------------");
-        System.err.println("-- Unit test, Osiris-REx Polycam FITS                              --");
+        System.err.println("-- Unit test, Hayabusa2 ONC FITS                                   --");
         System.err.println("---------------------------------------------------------------------");
-        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
-        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
-        File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
+        File mk = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/hyb2_approach_v20180627T073241_SPC.tm");
+        File imageDir = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/images");
         //Output folder
-        File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
+        File infofileDir = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/infofiles_hyb2_approach_v20180627T073241_SPC_tm_JAVA");
 
-        String[] testArgs = {"-s", "SCLK_STR", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/earth/polycam/images", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+        String[] testArgs = {"-u", "DATE-OBS", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/ryugu/truth/imaging/dummyPath", "HAYABUSA2", "HAYABUSA2_ONC-T", "RYUGU", "RYUGU_FIXED"};
         CreateInfoFiles.execute(testArgs);
     }
     /**
-     * Test run with Osiris-REx POLYCAM FITS images a generic data source (does not read FITS header for observation time).
+     * Test run with Hayabusa2 ONC Flight FITS images as a generic data source (does not read FITS header for observation time).
      *
      * @throws Exception
      */
-    public static void doOsirisRexGenericTest() throws Exception
+    public static void doHayabusa2GenericTest() throws Exception
     {
         System.err.println("---------------------------------------------------------------------");
-        System.err.println("-- Unit test, Osiris-REx Polycam generic image list                --");
+        System.err.println("-- Unit test, Hayabusa2 ONC FITS                                   --");
         System.err.println("---------------------------------------------------------------------");
-        //Input files. Pulled from the sbmt2 data server and sbmtpipeline rawdata.
-        File mk = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/kernels/spoc-digest-2017-10-28T13_15_48.608Z.mk");
-        File imageDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/images");
-        File timeTable = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/imagelist.txt");
+        File mk = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/hyb2_approach_v20180627T073241_SPC.tm");
+        File imageDir = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/images");
+        File timeTable = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/imagelist.txt");
         //Output folder
-        File infofileDir = new File("C:/Users/nguyel1/Projects/SBMT/data/createInfoFiles/orxEarth/polycam/infofiles");
+        File infofileDir = new File("C:/Users/nguyel1/Projects/Hayabusa2/20180627_shapeModelVerification/infofiles_hyb2_approach_v20180627T073241_SPC_tm_JAVA_TIMETABLE");
 
-        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/project/sbmt2/data", "ORX", "ORX_OCAMS_POLYCAM", "BENNU", "IAU_BENNU"};
+        String[] testArgs = {"-t", timeTable.getAbsolutePath(), "utc", imageDir.getAbsolutePath(), infofileDir.getAbsolutePath(), mk.getAbsolutePath(), "/ryugu/truth/imaging/dummyPath", "HAYABUSA2", "HAYABUSA2_ONC-T", "RYUGU", "RYUGU_FIXED"};
         CreateInfoFiles.execute(testArgs);
     }
 
     public static void main(String[] args) throws Exception
     {
         //Unit tests, comment for server run:
-//        CreateInfoFiles.doOsirisRexFitsTest();
-//        CreateInfoFiles.doOsirisRexGenericTest();
-        CreateInfoFiles.doHayabusa2FitsTest(); //Tested, verified
+//        CreateInfoFiles.doHayabusa2FitsTest(); //Tested, verified
+//        CreateInfoFiles.doHayabusa2FitsTest2(); //Tested, verified
+//        CreateInfoFiles.doHayabusa2GenericTest(); //Tested, verified
 //        CreateInfoFiles.doUsageTest(); //Tested, verified
 
         //Server run:
