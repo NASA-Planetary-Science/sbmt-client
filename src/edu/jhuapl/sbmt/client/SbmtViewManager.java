@@ -34,9 +34,6 @@ import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.PolyDataUtil;
-import edu.jhuapl.saavtk.util.SafePaths;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -179,8 +176,7 @@ public class SbmtViewManager extends ViewManager
     @Override
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        int numberElements = PolyDataUtil.getVTKPolyDataSize(SafePaths.getString(Configuration.getImportedShapeModelsDir(), name, "model.vtk"));
-        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(numberElements + " plates"), ImmutableList.<Integer> of(numberElements));
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
         customConfig.modelLabel = name;
         customConfig.customTemporary = temporary;
         customConfig.author = ShapeModelType.CUSTOM;
@@ -411,6 +407,14 @@ public class SbmtViewManager extends ViewManager
                 result = customComparator.compare(config1, config2);
             }
 
+            if (result == 0) {
+                if (config1 instanceof SmallBodyViewConfig && config2 instanceof SmallBodyViewConfig) {
+                    SmallBodyViewConfig smallBodyConfig1 = (SmallBodyViewConfig) config1;
+                    SmallBodyViewConfig smallBodyConfig2 = (SmallBodyViewConfig) config2;
+                    result = DATA_USED_COMPARATOR.compare(smallBodyConfig1.dataUsed, smallBodyConfig2.dataUsed);
+                }
+            }
+
             if (result == 0)
             {
                 result = STANDARD_AUTHOR_COMPARATOR.compare(config1.author, config2.author);
@@ -583,6 +587,16 @@ public class SbmtViewManager extends ViewManager
             null
             ));
 
+    private static final Comparator<ShapeModelDataUsed> DATA_USED_COMPARATOR = new Comparator<ShapeModelDataUsed>() {
+
+        @Override
+        public int compare(ShapeModelDataUsed o1, ShapeModelDataUsed o2)
+        {
+            return o1.compareTo(o2);
+        }
+
+    };
+
     private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
             ShapeModelType.GASKELL,
             ShapeModelType.TRUTH,
@@ -602,7 +616,8 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.CARRY,
             ShapeModelType.DLR,
             ShapeModelType.OREX,
-            ShapeModelType.HAYABUSA2,
+            ShapeModelType.JAXA_001,
+            ShapeModelType.NASA_001,
             ShapeModelType.BLENDER,
             null
             ));
