@@ -2504,11 +2504,15 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        };
 //            c.hasHierarchicalImageSearch = true;
             c.hasHierarchicalSpectraSearch = true;
+            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
             try
             {
 //                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
                 //TODO: eventually point this to a URL
-                c.hierarchicalSpectraSearchSpecification = new OREXSpectrumInstrumentMetadataIO("OREX", "/earth/osirisrex/spectraMetadata.json");
+                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+                specIO.setPathString(c.spectrumMetadataFile);
+                c.hierarchicalSpectraSearchSpecification = specIO;
+
             }
             catch (IOException e)
             {
