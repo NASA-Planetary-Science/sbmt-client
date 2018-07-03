@@ -159,6 +159,7 @@ public class CreateInfoFiles
      */
     private void visitFitsFileWithSclkKeyword(Path path, Vector<ImageInfo> imageTable, final String spacecraftName, final String sclkKeyword, File imageList) throws IOException
     {
+
         try
         {
             FileUtils.appendTextToFile(imageList.getAbsolutePath(), path.getFileName() + " " + getFitsUtc(path.toFile(), sclkKeyword, spacecraftName));
@@ -189,6 +190,8 @@ public class CreateInfoFiles
      */
     private void visitFitsFileWithUtcKeyword(Path path, Vector<ImageInfo> imageTable, final String spacecraftName, final String utcKeyword, File imageList) throws IOException
     {
+        System.out.println(
+                "CreateInfoFiles: visitFitsFileWithSclkKeyword: SCLK keyword is " + utcKeyword);
         try
         {
             FileUtils.appendTextToFile(imageList.getAbsolutePath(), path.getFileName() + " " + getValueforFitsKeyword(path.toFile(), utcKeyword));
@@ -971,6 +974,8 @@ public class CreateInfoFiles
 //        CreateInfoFiles.doOrxTest();
 
         //Server run:
-        execute(args);
+        String[] testArgs = {"-s", "SCLK_STR", "/Users/steelrj1/Desktop/images", "/Users/steelrj1/Desktop/infofiles", "/Users/steelrj1/Desktop/kernels2/spoc-digest-2017-10-05T22_05_46.366Z.mk", "/earth/orex/imaging/dummyPath", "ORX", "ORX_OCAMS_POLYCAM", "EARTH", "IAU_EARTH"};
+
+        execute(testArgs);
     }
 }
