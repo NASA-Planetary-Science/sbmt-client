@@ -31,7 +31,7 @@ public class SbmtMultiMissionTool
     {
         APL_INTERNAL("b1bc7ed"),
         PUBLIC_RELEASE("3ee38f0"),
-        HAYABUSA2("133314b"),
+        HAYABUSA2_DEV("133314b"),
         HAYABUSA2_STAGE("244425c"),
         HAYABUSA2_DEPLOY("355536d"),
         OSIRIS_REX("7cd84586"),
@@ -166,8 +166,9 @@ public class SbmtMultiMissionTool
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
                 break;
-            case HAYABUSA2:
+            case HAYABUSA2_DEV:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
                 Configuration.setAppName("sbmthyb2-dev");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
@@ -210,7 +211,7 @@ public class SbmtMultiMissionTool
             case TEST_PUBLIC_RELEASE:
                 splash = new SbmtSplash("resources", "splashLogo.png");
                 break;
-            case HAYABUSA2:
+            case HAYABUSA2_DEV:
                 splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
                 break;
             case HAYABUSA2_STAGE:
