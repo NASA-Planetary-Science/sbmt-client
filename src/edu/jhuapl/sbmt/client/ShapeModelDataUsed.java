@@ -9,6 +9,7 @@ public enum ShapeModelDataUsed
     RADAR_BASED("Radar-based"),
     WGS84("WGS84"),
     TRIAXIAL("Triaxial"),
+    SIMULATED("Simulated"),
     ;
 
     final private String str;
