@@ -208,8 +208,10 @@ public class SbmtModelFactory
               return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
                 return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.instrument.type == ImageType.ONC_IMAGE)
+            else if (key.imageType == ImageType.ONC_IMAGE)
                 return new ONCImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.ONC_TRUTH_IMAGE)
+                return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }
