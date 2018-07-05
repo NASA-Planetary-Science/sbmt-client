@@ -202,6 +202,16 @@ public class SbmtModelFactory
                 return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MAPCAM_V3_IMAGE)
                 return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.POLYCAM_V4_IMAGE)
+                return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MAPCAM_V4_IMAGE)
+                return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.POLYCAM_FLIGHT_IMAGE)
+                return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.SAMCAM_FLIGHT_IMAGE)
+                return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MAPCAM_FLIGHT_IMAGE)
+                return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)
