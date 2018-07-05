@@ -415,7 +415,9 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Lineament", component);
             }
 
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+
+            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
 
 
             JTabbedPane customDataPane=new JTabbedPane();

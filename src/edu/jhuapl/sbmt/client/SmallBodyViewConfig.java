@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
