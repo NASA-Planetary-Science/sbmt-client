@@ -134,7 +134,8 @@ you would like the new CK kernel file to have. For example:
 msopck msopcksetup msopckinputdata ckfile
 
 The file ckfile will be generated which is the CK kernel file storing
-the orientation of the spacecraft relative to J2000.
+the orientation of the spacecraft relative to the asteroid body-fixed
+frame.
 
 Note that if you want to rerun this program, make sure to delete the
 CK file first since the msopck program simply appends to this file
@@ -149,6 +150,7 @@ and run it, for example, like this:
 mkspk -setup mkspksetup -input mkspkinputdata -output spkfile
 
 The file spkfile will be generated which is the SPK kernel file.
+Vectors in the SPK are in the asteroid body-fixed frame.
 
 Note that if you want to rerun this program, make sure to delete the
 SPK file first since the mkspk program simply appends to this file
