@@ -632,13 +632,15 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     private void saveSpectrumListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(view, "Select File", "spectrumlist.txt");
-
+        String metadataFilename = model.getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
         if (file != null)
         {
             try
             {
                 FileWriter fstream = new FileWriter(file);
+                FileWriter fstream2 = new FileWriter(metadataFilename);
                 BufferedWriter out = new BufferedWriter(fstream);
+                BufferedWriter out2 = new BufferedWriter(fstream2);
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -646,14 +648,20 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 String nl = System.getProperty("line.separator");
                 out.write("#Spectrum_Name Image_Time_UTC"  + nl);
                 int size = model.getSpectrumRawResults().size();
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+
                 for (int i=0; i<size; ++i)
                 {
-                    String result = model.getSpectrumRawResults().get(i);
-                    String spectrum  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
-                    out.write(spectrum + nl);
+//                    String result = model.getSpectrumRawResults().get(i);
+                    String result = createSpectrumName(i);
+                    String spectrumPath  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
+                    out.write(spectrumPath + nl);
+                    SearchSpec spectrumSpec = collection.getSearchSpec(spectrumPath);
+                    spectrumSpec.toFile(out2);
                 }
 
                 out.close();
+                out2.close();
             }
             catch (Exception e)
             {
@@ -669,6 +677,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     private void loadSpectrumListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showOpenDialog(view, "Select File");
+        String metadataFilename = model.getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
+        File file2 = new File(metadataFilename);
 
         if (file != null)
         {
@@ -679,6 +689,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                 List<List<String>> results = new ArrayList<List<String>>();
                 List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                List<String> lines2 = FileUtil.getFileLinesAsStringList(file2.getAbsolutePath());
                 for (int i=0; i<lines.size(); ++i)
                 {
                     if (lines.get(i).startsWith("#")) continue;
@@ -688,6 +699,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     results.add(result);
                 }
                 setSpectrumSearchResults(results);
+
+                populateSpectrumMetadata(lines2);
             }
             catch (Exception e)
             {
@@ -700,6 +713,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
         }
     }
+
+    abstract protected void populateSpectrumMetadata(List<String> lines);
 
     private void customFunctionsButtonActionPerformed(ActionEvent evt) {
         SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(
