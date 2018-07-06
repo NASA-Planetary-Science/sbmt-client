@@ -62,6 +62,8 @@ public class SpectrumSearchView extends JPanel
     private JComboBox coloringComboBox;
     private JPanel emissionAngleColoringPanel;
     private JPanel rgbColoringPanel;
+    private JButton saveSpectraListButton;
+    private JButton loadSpectraListButton;
 
     public SpectrumSearchView()
     {
@@ -307,12 +309,27 @@ public class SpectrumSearchView extends JPanel
 
         JPanel panel_9 = new JPanel();
         resultsPanel.add(panel_9);
+        panel_9.setLayout(new BoxLayout(panel_9, BoxLayout.Y_AXIS));
+
+        JPanel panel_15 = new JPanel();
+        panel_9.add(panel_15);
+        panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
+
+        saveSpectraListButton = new JButton("Save Spectra");
+        panel_15.add(saveSpectraListButton);
+
+        loadSpectraListButton = new JButton("Load Spectra");
+        panel_15.add(loadSpectraListButton);
+
+        JPanel panel_14 = new JPanel();
+        panel_9.add(panel_14);
+        panel_14.setLayout(new BoxLayout(panel_14, BoxLayout.X_AXIS));
 
         removeAllFootprintsButton = new JButton("Remove All Footprints");
-        panel_9.add(removeAllFootprintsButton);
+        panel_14.add(removeAllFootprintsButton);
 
         removeAllBoundariesButton = new JButton("Remove All Boundaries");
-        panel_9.add(removeAllBoundariesButton);
+        panel_14.add(removeAllBoundariesButton);
 
         coloringPanel = new JPanel();
         coloringPanel.setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -575,5 +592,11 @@ public class SpectrumSearchView extends JPanel
     }
     public JPanel getRgbColoringPanel() {
         return rgbColoringPanel;
+    }
+    public JButton getSaveSpectraListButton() {
+        return saveSpectraListButton;
+    }
+    public JButton getLoadSpectraListButton() {
+        return loadSpectraListButton;
     }
 }
