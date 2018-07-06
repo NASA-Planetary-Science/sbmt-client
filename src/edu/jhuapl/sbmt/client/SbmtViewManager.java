@@ -722,6 +722,7 @@ public class SbmtViewManager extends ViewManager
                 "2100 Ra-Shalom",
                 "4179 Toutatis (High resolution)",
                 "4179 Toutatis (Low resolution)",
+                "4179 Toutatis",
                 "4660 Nereus",
                 "4769 Castalia",
                 "4486 Mithra",
