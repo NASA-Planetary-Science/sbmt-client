@@ -173,7 +173,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell et al. (2008)";
-        c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
@@ -512,22 +511,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
-        c.version = "Low resolution";
-        c.setResolution(ImmutableList.of(12796));
+        c.rootDirOnServer = "/toutatis/hudson/";
+        c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"),
+                ImmutableList.of(12796, 39996));
         configArray.add(c);
 
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS;
-        c.type = BodyType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelType.HUDSON;
-        c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
-        c.version = "High resolution";
-        c.setResolution(ImmutableList.of(39996));
-        configArray.add(c);
+
+//       c = new SmallBodyViewConfig();
+//       c.body = ShapeModelBody.TOUTATIS;
+//       c.type = BodyType.ASTEROID;
+//       c.population = ShapeModelPopulation.NEO;
+//       c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+//       c.author = ShapeModelType.HUDSON;
+//       c.modelLabel = "Hudson et al. (2004)";
+//       c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+//       c.version = "High resolution";
+//       c.setResolution(ImmutableList.of(39996));
+//       configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MITHRA;
