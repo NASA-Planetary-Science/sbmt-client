@@ -1,3 +1,3 @@
 # Website version use "internal" or "public"
-WEBVERSION  := hayabusa2
+WEBVERSION  := orex
 include ${SBMTROOT}/config/Makefiles/Website.Targets
