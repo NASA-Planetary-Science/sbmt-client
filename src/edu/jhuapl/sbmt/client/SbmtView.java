@@ -424,7 +424,7 @@ public class SbmtView extends View implements PropertyChangeListener
             customDataPane.setBorder(BorderFactory.createEmptyBorder());
             addTab("Custom Data", customDataPane);
 
-            if (!getPolyhedralModelConfig().customTemporary)
+//            if (!getPolyhedralModelConfig().customTemporary)
             {
                 ImagingInstrument instrument = null;
                 for (ImagingInstrument i : getPolyhedralModelConfig().imagingInstruments)

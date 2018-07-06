@@ -143,7 +143,7 @@ public class DatabaseGeneratorSql
             ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -398,7 +398,7 @@ public class DatabaseGeneratorSql
             dburl = "hyb2sbmt.jhuapl.edu";
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2)
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEV)
             dburl = "sd-mysql.jhuapl.edu";
 
         try
@@ -473,21 +473,24 @@ public class DatabaseGeneratorSql
         RQ36_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V3"),
                 "/project/nearsdc/data/GASKELL/RQ36_V3/POLYCAM/imagelist-fullpath.txt", "RQ36_POLY"),
         RQ36V4_MAP(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
-               "/project/sbmt2/sbmt/nearsdc/data/GASKELL/RQ36_V4/MAPCAM/imagelist-fullpath.txt", "RQ36V4_MAP"),
+                "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/mapcam/imagelist-fullpath.txt", "RQ36V4_MAP"),
         RQ36V4_POLY(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL, "V4"),
-                "/project/sbmt2/sbmt/nearsdc/data/GASKELL/RQ36_V4/POLYCAM/imagelist-fullpath.txt", "RQ36V4_POLY"),
+                "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
-        RYUGU_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/var/www/sbmt/sbmt/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-//                "ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/var/www/sbmt/sbmt/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
-//                "ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu"),
+        RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu"),
+        RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
+        RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
+        // This is the reference model; use this one for flight data.
+        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
         PHOBOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelType.EXPERIMENTAL),
@@ -554,10 +557,10 @@ public class DatabaseGeneratorSql
     public static void main(String[] args) throws IOException
     {
         // default configuration parameters
-        String appName = "neartool";
-        String cacheVersion = "2";
+//        String appName = "neartool";
+//        String cacheVersion = "2";
         boolean aplVersion = true;
-        String rootURL = "file:///disks/d0180/htdocs-sbmt/internal/sbmt";
+        String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
 
         boolean appendTables = false;
         boolean modifyMain = false;
@@ -568,7 +571,7 @@ public class DatabaseGeneratorSql
         {
             if (args[i].equals("--root-url"))
             {
-                rootURL = args[++i];
+                rootURL = FileCache.createURL(args[++i]).toString();
             }
             else if (args[i].equals("--append-tables"))
             {
@@ -596,7 +599,7 @@ public class DatabaseGeneratorSql
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
 //        Configuration.setAppName(appName);
-        Configuration.setCacheVersion(cacheVersion);
+//        Configuration.setCacheVersion(cacheVersion);
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
 

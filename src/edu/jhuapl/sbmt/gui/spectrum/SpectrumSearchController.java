@@ -13,13 +13,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListCellRenderer;
@@ -47,6 +53,7 @@ import vtk.vtkFunctionParser;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
@@ -56,13 +63,14 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
-import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.InstrumentMetadata;
+import edu.jhuapl.sbmt.model.bennu.SearchSpec;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -94,7 +102,15 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
-
+        try
+        {
+            spectraSpec.loadMetadata();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Setup hierarchical image search
         initHierarchicalImageSearch();
 
@@ -116,6 +132,27 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         {
             view.getDbSearchPanel().setVisible(false);
         }
+
+        view.getSaveSpectraListButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                saveSpectrumListButtonActionPerformed(e);
+            }
+        });
+
+        view.getLoadSpectraListButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                loadSpectrumListButtonActionPerformed(e);
+
+            }
+        });
 
         view.addComponentListener(new ComponentAdapter() {
             public void componentHidden(ComponentEvent evt) {
@@ -467,14 +504,14 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
-                OREXSpectrumInstrumentMetadata<OREXSearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
 //                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
                 TreeModel tree = spectraSpec.getTreeModel();
-                List<OREXSearchSpec> specs = instrumentMetadata.getSpecs();
+                List<SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
                     String name = tree.getChild(tree.getRoot(), selected).toString();
-                    OREXSearchSpec spec = specs.get(selected);
+                    SearchSpec spec = specs.get(selected);
                     FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
                                                                                         spec.getDataListFilename(),
                                                                                         spec.getDataPath(),
@@ -592,6 +629,92 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         updateColoring();
     }
+
+    private void saveSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showSaveDialog(view, "Select File", "spectrumlist.txt");
+        String metadataFilename = model.getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
+        if (file != null)
+        {
+            try
+            {
+                FileWriter fstream = new FileWriter(file);
+                FileWriter fstream2 = new FileWriter(metadataFilename);
+                BufferedWriter out = new BufferedWriter(fstream);
+                BufferedWriter out2 = new BufferedWriter(fstream2);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                String nl = System.getProperty("line.separator");
+                out.write("#Spectrum_Name Image_Time_UTC"  + nl);
+                int size = model.getSpectrumRawResults().size();
+                SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+
+                for (int i=0; i<size; ++i)
+                {
+//                    String result = model.getSpectrumRawResults().get(i);
+                    String result = createSpectrumName(i);
+                    String spectrumPath  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
+                    out.write(spectrumPath + nl);
+                    SearchSpec spectrumSpec = collection.getSearchSpec(spectrumPath);
+                    spectrumSpec.toFile(out2);
+                }
+
+                out.close();
+                out2.close();
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(view),
+                        "There was an error saving the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadSpectrumListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showOpenDialog(view, "Select File");
+        String metadataFilename = model.getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
+        File file2 = new File(metadataFilename);
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                List<String> lines2 = FileUtil.getFileLinesAsStringList(file2.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    if (lines.get(i).startsWith("#")) continue;
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    List<String> result = new ArrayList<String>();
+                    result.add(words[0]);
+                    results.add(result);
+                }
+                setSpectrumSearchResults(results);
+
+                populateSpectrumMetadata(lines2);
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(view),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+    }
+
+    abstract protected void populateSpectrumMetadata(List<String> lines);
 
     private void customFunctionsButtonActionPerformed(ActionEvent evt) {
         SpectrumMathPanel customFunctionsPanel = new SpectrumMathPanel(

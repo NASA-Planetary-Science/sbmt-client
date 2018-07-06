@@ -61,6 +61,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -90,6 +91,9 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQueryBase;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
@@ -2618,19 +2622,28 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
             }
 
-            // Run queries based on user specifications
             List<List<String>> results = null;
-            ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                    Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-                    searchField, null,
-                    Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                    Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                    Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                    sumOfProductsSearch, camerasSelected, filtersSelected,
-                    Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-                    cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+            if (instrument.searchQuery instanceof FixedListQueryBase)
+            {
+                FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+            }
+            else
+            {
 
-            results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+                // Run queries based on user specifications
+                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        searchField, null,
+                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        sumOfProductsSearch, camerasSelected, filtersSelected,
+                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+
+                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+            }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
 //            if (instrument.spectralMode == SpectralMode.MULTI)
@@ -2726,17 +2739,29 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             // an additional search.
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
-                ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-                        searchField, null,
-                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                        sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-                        cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
+                List<List<String>> resultsOtherSource = null;
+                if (instrument.searchQuery instanceof FixedListQueryBase)
+                {
+                    FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                }
+                else
+                {
 
-                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
+                    ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            searchField, null,
+                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            sumOfProductsSearch, camerasSelected, filtersSelected,
+                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
+
+                        resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
+
+                }
+
 
 //                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
 //                        "",
@@ -3075,7 +3100,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if ((Boolean)resultList.getValueAt(row, mapColumnIndex))
                 loadImages(namePrefix);
             else
+            {
                 unloadImages(namePrefix);
+                renderer.setLighting(LightingType.LIGHT_KIT);
+            }
         }
         else if (e.getColumn() == showFootprintColumnIndex)
         {
