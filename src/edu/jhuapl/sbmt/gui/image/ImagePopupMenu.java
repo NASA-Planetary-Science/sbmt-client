@@ -56,6 +56,7 @@ public class ImagePopupMenu extends PopupMenu
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private List<ImageKey> imageKeys = new ArrayList<Image.ImageKey>();
+    private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -216,6 +217,7 @@ public class ImagePopupMenu extends PopupMenu
         boolean selectShowFrustum = true;
         boolean enableShowFrustum = true;
         boolean enableSimulateLighting = false;
+        boolean simulateLightingOn = false;
         boolean enableChangeOpacity = false;
         boolean selectHideImage = true;
         boolean enableHideImage = true;
@@ -256,10 +258,14 @@ public class ImagePopupMenu extends PopupMenu
             if (containsImage)
             {
                 Image image = imageCollection.getImage(imageKey);
+                //imageCollection.addImage(imageKey);
+                PerspectiveImage pImage = (PerspectiveImage)imageCollection.getImage(imageKey);
+                //image.setShowFrustum(showFrustumMenuItem.isSelected());
                 if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
                     selectShowFrustum = false;
                 if (imageKeys.size() == 1)
                     enableSimulateLighting = true;
+                    simulateLightingOn = pImage.isSimulatingLighingOn();
                 if (image.isVisible())
                     selectHideImage = false;
             }
@@ -270,6 +276,12 @@ public class ImagePopupMenu extends PopupMenu
                 selectHideImage = false;
                 enableHideImage = false;
             }
+
+//            System.out.println("Image collection: " + imageCollection.getImages().iterator());
+//            System.out.println("Image keys: " + imageKeys.size());
+//            System.out.println("KetSet: " + keySet.size());
+//            System.out.println("key info: " + imageKeys.get(0).source + imageKeys.get(0).name + imageKeys.get(0).band);
+
 
             if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
             {
@@ -340,6 +352,7 @@ public class ImagePopupMenu extends PopupMenu
         showFrustumMenuItem.setEnabled(enableShowFrustum);
         exportENVIImageMenuItem.setEnabled(enableSaveToDisk);
         simulateLightingMenuItem.setEnabled(enableSimulateLighting);
+        simulateLightingMenuItem.setSelected(simulateLightingOn);
         changeOpacityMenuItem.setEnabled(enableChangeOpacity);
         hideImageMenuItem.setSelected(selectHideImage);
         hideImageMenuItem.setEnabled(enableHideImage);
@@ -356,9 +369,17 @@ public class ImagePopupMenu extends PopupMenu
                 try
                 {
                     if (mapImageMenuItem.isSelected())
+                    {
                         imageCollection.addImage(imageKey);
+                        keySet.add(imageKey);
+                    }
+
                     else
+                    {
                         imageCollection.removeImage(imageKey);
+                        keySet.remove(imageKey);
+                        renderer.setLighting(LightingType.LIGHT_KIT);
+                    }
                 }
                 catch (FitsException e1) {
                     e1.printStackTrace();
@@ -773,15 +794,26 @@ public class ImagePopupMenu extends PopupMenu
                     double[] sunDir = image.getSunVector();
                     renderer.setFixedLightDirection(sunDir);
                     renderer.setLighting(LightingType.FIXEDLIGHT);
+
+                    // uncheck simulate lighting for all mapped images
+                    PerspectiveImage pImage;
+                    for(Image tempImage : imageCollection.getImages())
+                    {
+                        pImage = (PerspectiveImage)tempImage;
+                        pImage.setSimulateLighting(false);
+                    }
                 }
                 else
                 {
                     System.out.println("Simulate Lighting Off");
-                    renderer.setLighting(origLightingType);
-                    renderer.setLightIntensity(origLightIntensity);
-                    renderer.setFixedLightPosition(origLightPosition);
+                    renderer.setLighting(LightingType.LIGHT_KIT);
+//                    renderer.setLighting(origLightingType);
+//                    renderer.setLightIntensity(origLightIntensity);
+//                    renderer.setFixedLightPosition(origLightPosition);
                 }
             }
+            image.setSimulateLighting(simulateLightingMenuItem.isSelected());
+            updateMenuItems();
         }
     }
 

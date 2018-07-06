@@ -31,7 +31,7 @@ public class SbmtMultiMissionTool
     {
         APL_INTERNAL("b1bc7ed"),
         PUBLIC_RELEASE("3ee38f0"),
-        HAYABUSA2("133314b"),
+        HAYABUSA2_DEV("133314b"),
         HAYABUSA2_STAGE("244425c"),
         HAYABUSA2_DEPLOY("355536d"),
         OSIRIS_REX("7cd84586"),
@@ -78,7 +78,7 @@ public class SbmtMultiMissionTool
             if (!Configuration.isMac())
             {
                 UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
-                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
             }
 // uncomment for cross-platform LAF
 //            else
@@ -139,7 +139,7 @@ public class SbmtMultiMissionTool
         return mission;
     }
 
-    static Mission configureMission()
+    public static Mission configureMission()
     {
         if (missionConfigured)
         {
@@ -168,15 +168,16 @@ public class SbmtMultiMissionTool
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
                 break;
-            case HAYABUSA2:
+            case HAYABUSA2_DEV:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1hyb2");
+                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+                Configuration.setAppName("sbmthyb2-dev");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
                 break;
             case HAYABUSA2_STAGE:
                 Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-                Configuration.setAppName("sbmt1hyb2-stage");
+                Configuration.setAppName("sbmthyb2-stage");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
                 break;
@@ -224,7 +225,7 @@ public class SbmtMultiMissionTool
             case TEST_PUBLIC_RELEASE:
                 splash = new SbmtSplash("resources", "splashLogo.png");
                 break;
-            case HAYABUSA2:
+            case HAYABUSA2_DEV:
                 splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
                 break;
             case HAYABUSA2_STAGE:
