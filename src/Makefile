@@ -153,7 +153,7 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${int_mac_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/**/*.jar ${int_mac_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt-natives-macosx-universal.jar ${int_mac_sbmt_lib_dir}
@@ -175,7 +175,7 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_linux_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${int_linux_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/**/*.jar ${int_linux_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt-natives-linux-amd64.jar ${int_linux_sbmt_lib_dir}
@@ -196,7 +196,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		@echo "Making $@"
 		@mkdir -p ${int_win_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${int_win_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${int_win_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/**/*.jar ${int_win_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${int_win_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${int_win_sbmt_lib_dir}
@@ -218,7 +218,7 @@ ${pub_mac_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_mac_sbmt_lib_dir}
 		cp ${top_level_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
-		cp ${saavtk_dir}/lib/*.jar ${pub_mac_sbmt_lib_dir}
+		cp ${saavtk_dir}/lib/**/*.jar ${pub_mac_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${pub_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_mac_sbmt_lib_dir}
 		cp ${jogl_dir}/jogl-all.jar ${pub_mac_sbmt_lib_dir}
@@ -237,7 +237,7 @@ ${pub_mac_zip} : ${NEARJAR}
 ${pub_linux_zip} : ${NEARJAR} 
 		@echo "Making $@"
 		@mkdir -p ${pub_linux_sbmt_lib_dir}
-		cp ${top_level_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
+		cp ${top_level_dir}/lib/**/*.jar ${pub_linux_sbmt_lib_dir}
 		cp ${saavtk_dir}/lib/*.jar ${pub_linux_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${pub_linux_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_linux_sbmt_lib_dir}
@@ -258,7 +258,7 @@ ${pub_linux_zip} : ${NEARJAR}
 ${pub_win_zip} : ${NEARJAR}
 		@echo "Making $@"
 		@mkdir -p ${pub_win_sbmt_lib_dir}
-		cp ${top_level_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
+		cp ${top_level_dir}/lib/**/*.jar ${pub_win_sbmt_lib_dir}
 		cp ${saavtk_dir}/lib/*.jar ${pub_win_sbmt_lib_dir}
 		cp ${vtk_dir}/*.jar ${pub_win_sbmt_lib_dir}
 		cp ${jogl_dir}/gluegen-rt.jar ${pub_win_sbmt_lib_dir}
