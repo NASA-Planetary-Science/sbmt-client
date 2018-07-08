@@ -782,7 +782,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
-            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " cm^-1");
+            String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
             view.getRedComboBox().addItem(channel);
             view.getGreenComboBox().addItem(channel);
             view.getBlueComboBox().addItem(channel);
