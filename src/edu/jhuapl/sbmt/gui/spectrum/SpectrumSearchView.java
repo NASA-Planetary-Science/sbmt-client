@@ -315,10 +315,10 @@ public class SpectrumSearchView extends JPanel
         panel_9.add(panel_15);
         panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
 
-        saveSpectraListButton = new JButton("Save Spectra");
+        saveSpectraListButton = new JButton("Save List");
         panel_15.add(saveSpectraListButton);
 
-        loadSpectraListButton = new JButton("Load Spectra");
+        loadSpectraListButton = new JButton("Load List");
         panel_15.add(loadSpectraListButton);
 
         JPanel panel_14 = new JPanel();
