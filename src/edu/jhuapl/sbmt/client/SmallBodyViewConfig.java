@@ -2503,7 +2503,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
 //            c.hasHierarchicalImageSearch = true;
-            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = true;
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
             try
             {
