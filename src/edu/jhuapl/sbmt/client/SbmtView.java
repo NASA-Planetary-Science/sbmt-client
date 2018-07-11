@@ -142,19 +142,19 @@ public class SbmtView extends View implements PropertyChangeListener
     @Override
     public String getDisplayName()
     {
-    	String result = "";
-    	SmallBodyViewConfig config = getPolyhedralModelConfig();
-    	if (config.modelLabel != null)
-    	    result = config.modelLabel;
-    	else if (config.author == null)
-    	    result = config.body.toString();
-    	else
-    	    result = config.author.toString();
+        String result = "";
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
+        if (config.modelLabel != null)
+            result = config.modelLabel;
+        else if (config.author == null)
+            result = config.body.toString();
+        else
+            result = config.author.toString();
 
-    	if (config.version != null)
-    	    result = result + " (" + config.version + ")";
+        if (config.version != null)
+            result = result + " (" + config.version + ")";
 
-    	return result;
+        return result;
     }
 
     @Override

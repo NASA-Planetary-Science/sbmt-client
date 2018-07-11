@@ -173,7 +173,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell et al. (2008)";
-        c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
@@ -311,7 +310,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
-                            ImageType.POLYCAM_IMAGE,
+                            ImageType.POLYCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
@@ -319,7 +318,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
-                            ImageType.MAPCAM_IMAGE,
+                            ImageType.MAPCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
@@ -450,7 +449,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
 
-            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE))
             {
                 ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }
@@ -512,22 +512,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
-        c.version = "Low resolution";
-        c.setResolution(ImmutableList.of(12796));
+        c.rootDirOnServer = "/toutatis/hudson/";
+        c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"),
+                ImmutableList.of(12796, 39996));
         configArray.add(c);
 
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS;
-        c.type = BodyType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelType.HUDSON;
-        c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
-        c.version = "High resolution";
-        c.setResolution(ImmutableList.of(39996));
-        configArray.add(c);
+
+//       c = new SmallBodyViewConfig();
+//       c.body = ShapeModelBody.TOUTATIS;
+//       c.type = BodyType.ASTEROID;
+//       c.population = ShapeModelPopulation.NEO;
+//       c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+//       c.author = ShapeModelType.HUDSON;
+//       c.modelLabel = "Hudson et al. (2004)";
+//       c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+//       c.version = "High resolution";
+//       c.setResolution(ImmutableList.of(39996));
+//       configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MITHRA;
@@ -2286,7 +2288,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2304,7 +2306,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2322,7 +2324,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2412,7 +2414,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2430,7 +2432,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
+                        ImageType.POLYCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2448,7 +2450,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);

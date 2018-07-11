@@ -55,6 +55,10 @@ public class FSHyperTreeSkeleton
         {
             return path;
         }
+
+        public double[] getBounds() {
+            return bounds;
+        }
     }
 
     public FSHyperTreeSkeleton(Path dataSourcePath)  // data source path defines where the .lidar file representing the tree structure resides; basepath is its parent
@@ -190,8 +194,9 @@ public class FSHyperTreeSkeleton
 
     private void getLeavesIntersectingBoundingBox(Node node, double[] searchBounds, TreeSet<Integer> pathList)
     {
-        if (node.intersects(searchBounds) && node.isLeaf)
+        if (node.intersects(searchBounds) && node.isLeaf) {
             pathList.add(node.id);
+        }
         for (int i=0; i<16; i++)
             if (node.children[i]!=null)
                 getLeavesIntersectingBoundingBox(node.children[i],searchBounds,pathList);
