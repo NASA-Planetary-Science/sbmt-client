@@ -407,6 +407,14 @@ public class SbmtViewManager extends ViewManager
                 result = customComparator.compare(config1, config2);
             }
 
+            if (result == 0) {
+                if (config1 instanceof SmallBodyViewConfig && config2 instanceof SmallBodyViewConfig) {
+                    SmallBodyViewConfig smallBodyConfig1 = (SmallBodyViewConfig) config1;
+                    SmallBodyViewConfig smallBodyConfig2 = (SmallBodyViewConfig) config2;
+                    result = DATA_USED_COMPARATOR.compare(smallBodyConfig1.dataUsed, smallBodyConfig2.dataUsed);
+                }
+            }
+
             if (result == 0)
             {
                 result = STANDARD_AUTHOR_COMPARATOR.compare(config1.author, config2.author);
@@ -579,6 +587,16 @@ public class SbmtViewManager extends ViewManager
             null
             ));
 
+    private static final Comparator<ShapeModelDataUsed> DATA_USED_COMPARATOR = new Comparator<ShapeModelDataUsed>() {
+
+        @Override
+        public int compare(ShapeModelDataUsed o1, ShapeModelDataUsed o2)
+        {
+            return o1.compareTo(o2);
+        }
+
+    };
+
     private static final OrderedComparator<ShapeModelType> STANDARD_AUTHOR_COMPARATOR = OrderedComparator.of(Lists.newArrayList(
             ShapeModelType.GASKELL,
             ShapeModelType.TRUTH,
@@ -598,7 +616,8 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.CARRY,
             ShapeModelType.DLR,
             ShapeModelType.OREX,
-            ShapeModelType.HAYABUSA2,
+            ShapeModelType.JAXA_001,
+            ShapeModelType.NASA_001,
             ShapeModelType.BLENDER,
             null
             ));
@@ -703,6 +722,7 @@ public class SbmtViewManager extends ViewManager
                 "2100 Ra-Shalom",
                 "4179 Toutatis (High resolution)",
                 "4179 Toutatis (Low resolution)",
+                "4179 Toutatis",
                 "4660 Nereus",
                 "4769 Castalia",
                 "4486 Mithra",

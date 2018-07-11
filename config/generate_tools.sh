@@ -44,13 +44,13 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
         echo 'HEADLESS=""'                                                                    >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     fi
     echo 'MEMSIZE=""'                                                                         >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo 'if [ "$(uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo 'if [ "$(/bin/uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/mac64:$LD_LIBRARY_PATH"'    >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    MEMSIZE=`sysctl hw.memsize | awk '\''{print int($2/1024)}'\''`'                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo 'elif [ "$(uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo 'elif [ "$(/bin/uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"'  >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 #    echo '    MEMSIZE=`grep MemTotal /proc/meminfo | awk '\''{print $2}'\''`'                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo '    MEMSIZE="$(grep MemTotal /proc/meminfo | awk '\''{print $2}'\'')"'              >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    MEMSIZE="$(/bin/grep MemTotal /proc/meminfo | awk '\''{print $2}'\'')"'              >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'else'                                                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     COMMAND="Unsupported operating system, exiting script $JAVA_TOOL.sh"
     echo "    echo $COMMAND"                                                                  >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
@@ -58,9 +58,9 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 
 
-    echo 'if [ "$(uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo 'if [ "$(/bin/uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/mac64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \$@" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo 'elif [ "$(uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo 'elif [ "$(/bin/uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \$@" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 

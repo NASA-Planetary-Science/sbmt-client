@@ -382,23 +382,23 @@ public class SbmtView extends View implements PropertyChangeListener
         {
             if (instrument instanceof NIS)
             {
-            JComponent component = new NISSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            JComponent component = new NISSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
             addTab(instrument.getDisplayName(), component);
             }
             else
                 if (instrument instanceof OTES)
                 {
-               JComponent component = new OTESSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+               JComponent component = new OTESSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                 addTab(instrument.getDisplayName(), component);
                 }
                 else if (instrument instanceof OVIRS)
                 {
-               JComponent component = new OVIRSSearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+               JComponent component = new OVIRSSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                 addTab(instrument.getDisplayName(), component);
                 }
                 else if (instrument instanceof NIRS3)
                     {
-                    JComponent component = new NIRS3SearchPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                    JComponent component = new NIRS3SearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
                     addTab(instrument.getDisplayName(), component);
                     }
 
@@ -418,14 +418,16 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Lineament", component);
             }
 
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+
+            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
 
 
             JTabbedPane customDataPane=new JTabbedPane();
             customDataPane.setBorder(BorderFactory.createEmptyBorder());
             addTab("Custom Data", customDataPane);
 
-            if (!getPolyhedralModelConfig().customTemporary)
+//            if (!getPolyhedralModelConfig().customTemporary)
             {
                 ImagingInstrument instrument = null;
                 for (ImagingInstrument i : getPolyhedralModelConfig().imagingInstruments)
