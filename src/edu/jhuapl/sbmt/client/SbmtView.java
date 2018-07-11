@@ -25,7 +25,6 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -69,7 +68,6 @@ import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.ImageSearchDataCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
@@ -144,19 +142,19 @@ public class SbmtView extends View implements PropertyChangeListener
     @Override
     public String getDisplayName()
     {
-    	String result = "";
-    	SmallBodyViewConfig config = getPolyhedralModelConfig();
-    	if (config.modelLabel != null)
-    	    result = config.modelLabel;
-    	else if (config.author == null)
-    	    result = config.body.toString();
-    	else
-    	    result = config.author.toString();
+        String result = "";
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
+        if (config.modelLabel != null)
+            result = config.modelLabel;
+        else if (config.author == null)
+            result = config.body.toString();
+        else
+            result = config.author.toString();
 
-    	if (config.version != null)
-    	    result = result + " (" + config.version + ")";
+        if (config.version != null)
+            result = result + " (" + config.version + ")";
 
-    	return result;
+        return result;
     }
 
     @Override
@@ -185,7 +183,6 @@ public class SbmtView extends View implements PropertyChangeListener
             {
                 allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
                 allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-                allModels.put(ModelNames.IMAGES_HYPERTREE_SEARCH, new ImageSearchDataCollection(smallBodyModel));
                 allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
             }
 
@@ -418,9 +415,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Lineament", component);
             }
 
-
-            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
 
 
             JTabbedPane customDataPane=new JTabbedPane();
