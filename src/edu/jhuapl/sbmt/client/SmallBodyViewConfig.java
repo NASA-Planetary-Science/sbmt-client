@@ -2820,8 +2820,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-001", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-001/onc", "/ryugu/jaxa-001/onc/gallery" , true);
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase queryBaseOnc = new FixedListQuery("/ryugu/jaxa-001/onc", "/ryugu/jaxa-001/onc/gallery" , false);
+            QueryBase queryBaseTir = new FixedListQuery("/ryugu/jaxa-001/tir", false);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBaseOnc, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] {ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2834,11 +2836,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.shapeModelFileExtension = ".obj";
 
-            //            c.hasStateHistory = true;
-//            c.timeHistoryFile = "/ryugu/jaxa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    oncCam,
+                    oncCam, tirCam
             };
 
             c.hasMapmaker = false;
