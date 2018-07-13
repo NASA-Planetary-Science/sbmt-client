@@ -173,6 +173,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell et al. (2008)";
+        c.rootDirOnServer = "/GASKELL/ITOKAWA";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
