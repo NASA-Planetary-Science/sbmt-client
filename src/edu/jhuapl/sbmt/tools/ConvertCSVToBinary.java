@@ -64,7 +64,6 @@ public class ConvertCSVToBinary {
                         for(int i = 1; i<info.length; i++){
                         	writeBinary(info[i], (lineLength * lineNum) + 25 + (i-1)*8);
                         }
-                        System.out.println("Processed line: " + lineNum);
                 	}
                 	lineNum++;
                 }
@@ -75,7 +74,7 @@ public class ConvertCSVToBinary {
             e.printStackTrace();
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("Time: " + (endTime - startTime)/1000);
+        System.out.println("Time: " + (endTime - startTime)/1000 + " seconds");
 
         //
         // reads binary file and displays all time data
