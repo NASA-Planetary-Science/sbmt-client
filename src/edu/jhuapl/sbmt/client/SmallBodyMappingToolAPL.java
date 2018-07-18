@@ -1,12 +1,17 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Path;
+
+import javax.swing.JOptionPane;
 
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.SafePaths;
 
 
@@ -39,21 +44,27 @@ public class SmallBodyMappingToolAPL
 
         SbmtMultiMissionTool.configureMission();
 
+        URL dataRootUrl = Configuration.getDataRootURL();
         try
         {
-            // First try to see if there's a password.txt file in ~/.neartool. Then try the folder
-            // containing the runsbmt script.
+        	// Just try to hit the server itself first.
+            FileCache.getFileInfoFromServer(dataRootUrl.toString());
+
+            // Set up two locations to check for passwords: in the installed location or in the user's home directory.
             String jarLocation = SmallBodyMappingToolAPL.class.getProtectionDomain().getCodeSource().getLocation().getPath();
             String parent = new File(jarLocation).getParentFile().getParent();
             ImmutableList<Path> passwordFilesToTry = ImmutableList.of(
                     SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"),
                     SafePaths.get(parent, "password.txt")
-            );
+                    );
 
-            Configuration.setupPasswordAuthentication(Configuration.getDataRootURL(), "DO_NOT_DELETE.TXT", passwordFilesToTry);
+            Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
         }
-        catch (@SuppressWarnings("unused") Exception e)
+        catch (NoInternetAccessException e)
         {
+            e.printStackTrace();
+            FileCache.setOfflineMode(true, Configuration.getCacheDir());
+            JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
         }
 
         // Call the public version's main function
