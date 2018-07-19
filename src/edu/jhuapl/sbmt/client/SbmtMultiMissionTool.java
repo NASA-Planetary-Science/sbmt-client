@@ -18,337 +18,343 @@ import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
  * This class contains the "main" function called at the start of the program.
- * This class sets up the top level window and other initialization.
- * The main function may take one optional argument. If there are no
- * arguments specified, then the tool starts up as usual showing Eros
- * by default. If one argument is specified, it is assumed to be a path
- * to a temporary shape model which is then loaded as a custom view
- * though it is not retained the next time the tool starts.
+ * This class sets up the top level window and other initialization. The main
+ * function may take one optional argument. If there are no arguments specified,
+ * then the tool starts up as usual showing Eros by default. If one argument is
+ * specified, it is assumed to be a path to a temporary shape model which is
+ * then loaded as a custom view though it is not retained the next time the tool
+ * starts.
  */
 public class SbmtMultiMissionTool
 {
 
-    public enum Mission
-    {
-        APL_INTERNAL("b1bc7ed"),
-        PUBLIC_RELEASE("3ee38f0"),
-        HAYABUSA2_DEV("133314b"),
-        HAYABUSA2_STAGE("244425c"),
-        HAYABUSA2_DEPLOY("355536d"),
-        OSIRIS_REX("7cd84586"),
-        OSIRIS_REX_STAGE("7cd84587"),
-        OSIRIS_REX_DEPLOY("7cd84588"),
-        OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
-        STAGE_APL_INTERNAL("f7e441b"),
-        STAGE_PUBLIC_RELEASE("8cc8e12"),
-        TEST_APL_INTERNAL("fb404a7"),
-        TEST_PUBLIC_RELEASE("a1a32b4"),
-        ;
-        private final String hashedName;
+	public enum Mission
+	{
+		APL_INTERNAL("b1bc7ed"),
+		PUBLIC_RELEASE("3ee38f0"),
+		HAYABUSA2_DEV("133314b"),
+		HAYABUSA2_STAGE("244425c"),
+		HAYABUSA2_DEPLOY("355536d"),
+		OSIRIS_REX("7cd84586"),
+		OSIRIS_REX_STAGE("7cd84587"),
+		OSIRIS_REX_DEPLOY("7cd84588"),
+		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
+		STAGE_APL_INTERNAL("f7e441b"),
+		STAGE_PUBLIC_RELEASE("8cc8e12"),
+		TEST_APL_INTERNAL("fb404a7"),
+		TEST_PUBLIC_RELEASE("a1a32b4"),
+		;
+		private final String hashedName;
 
-        Mission(String hashedName)
-        {
-            this.hashedName = hashedName;
-        }
+		Mission(String hashedName)
+		{
+			this.hashedName = hashedName;
+		}
 
-        String getHashedName()
-        {
-            return hashedName;
-        }
-    }
+		String getHashedName()
+		{
+			return hashedName;
+		}
+	}
 
-    // DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
-    // This field is used during the build process to "hard-wire" a release to point to a specific server.
-    private static final Mission RELEASED_MISSION = null;
-    private static Mission mission = RELEASED_MISSION;
-    private static boolean missionConfigured = false;
+	// DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
+	// This field is used during the build process to "hard-wire" a release to point to a specific server.
+	private static final Mission RELEASED_MISSION = null;
+	private static Mission mission = RELEASED_MISSION;
+	private static boolean missionConfigured = false;
 
-    static
-    {
-        if (Configuration.isMac())
-        {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
-            OSXAdapter.setDockIconImage(erosIcon.getImage());
-        }
-    }
+	static
+	{
+		if (Configuration.isMac())
+		{
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
+			OSXAdapter.setDockIconImage(erosIcon.getImage());
+		}
+	}
 
-    public static Mission getMission()
-    {
-        if (mission == null)
-        {
-            // Note that System.getProperty is inconsistent with regard to whether it includes quote marks.
-            // To be sure the mission identifier is processed consistently, exclude all non-word characters.
-            String missionIdentifier = System.getProperty("edu.jhuapl.sbmt.mission").replaceAll("\\W+", "");
-            if (missionIdentifier == null)
-            {
-                throw new IllegalArgumentException("Mission was not specified at build time or run time");
-            }
-            try
-            {
-                // First see if provided mission identifier matches the enumeration
-                // name.
-                mission = Mission.valueOf(missionIdentifier);
-            }
-            catch (IllegalArgumentException e)
-            {
-                // No mission identifier with that natural enumeration name,
-                // so see if instead this is a hashed mission identifier.
-                for (Mission each: Mission.values())
-                {
-                    if (each.getHashedName().equalsIgnoreCase(missionIdentifier))
-                    {
-                        mission = each;
-                        break;
-                    }
-                }
-                if (mission == null)
-                {
-                    throw new IllegalArgumentException("Invalid mission identifier specified at run time: " + missionIdentifier, e);
-                }
-            }
-        }
+	public static Mission getMission()
+	{
+		if (mission == null)
+		{
+			// Note that System.getProperty is inconsistent with regard to whether it includes quote marks.
+			// To be sure the mission identifier is processed consistently, exclude all non-word characters.
+			String missionIdentifier = System.getProperty("edu.jhuapl.sbmt.mission").replaceAll("\\W+", "");
+			if (missionIdentifier == null)
+			{
+				throw new IllegalArgumentException("Mission was not specified at build time or run time");
+			}
+			try
+			{
+				// First see if provided mission identifier matches the enumeration
+				// name.
+				mission = Mission.valueOf(missionIdentifier);
+			}
+			catch (IllegalArgumentException e)
+			{
+				// No mission identifier with that natural enumeration name,
+				// so see if instead this is a hashed mission identifier.
+				for (Mission each : Mission.values())
+				{
+					if (each.getHashedName().equalsIgnoreCase(missionIdentifier))
+					{
+						mission = each;
+						break;
+					}
+				}
+				if (mission == null)
+				{
+					throw new IllegalArgumentException("Invalid mission identifier specified at run time: " + missionIdentifier, e);
+				}
+			}
+		}
 
-        return mission;
-    }
+		return mission;
+	}
 
-    public static Mission configureMission()
-    {
-        if (missionConfigured)
-        {
-            return mission;
-        }
-        Mission mission = getMission();
-        switch (mission)
-        {
-        case APL_INTERNAL:
-        case PUBLIC_RELEASE:
-            Configuration.setAppName("sbmt");
-            Configuration.setCacheVersion("2");
-            Configuration.setAppTitle("SBMT");
-            break;
-        case STAGE_APL_INTERNAL:
-        case STAGE_PUBLIC_RELEASE:
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
-            Configuration.setAppName("sbmt");
-            Configuration.setCacheVersion("2");
-            Configuration.setAppTitle("SBMT");
-            break;
-        case TEST_APL_INTERNAL:
-        case TEST_PUBLIC_RELEASE:
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-            Configuration.setAppName("sbmt");
-            Configuration.setCacheVersion("2");
-            Configuration.setAppTitle("SBMT");
-            break;
-        case HAYABUSA2_DEV:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-            Configuration.setAppName("sbmthyb2-dev");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
-            break;
-        case HAYABUSA2_STAGE:
-            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-            Configuration.setAppName("sbmthyb2-stage");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-            break;
-        case HAYABUSA2_DEPLOY:
-            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-            Configuration.setAppName("sbmthyb2");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/Hayabusa2");
-            break;
-        case OSIRIS_REX:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-            Configuration.setAppName("sbmt1orex-dev");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
-            break;
-        case OSIRIS_REX_STAGE:
-            Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
-            Configuration.setAppName("sbmt1orex-stage");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
-            break;
-        case OSIRIS_REX_MIRROR_DEPLOY:
-            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
-            Configuration.setAppName("sbmt1orex-mirror");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
-            break;
-        case OSIRIS_REX_DEPLOY:
-            Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
-            Configuration.setAppName("sbmt1orex");
-            Configuration.setCacheVersion("");
-            Configuration.setAppTitle("SBMT/OSIRIS REx");
-            break;
-        default:
-            throw new AssertionError();
-        }
-        missionConfigured = true;
-        return mission;
-    }
+	public static Mission configureMission()
+	{
+		if (missionConfigured)
+		{
+			return mission;
+		}
+		Mission mission = getMission();
+		switch (mission)
+		{
+		case APL_INTERNAL:
+		case PUBLIC_RELEASE:
+			Configuration.setAppName("sbmt");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
+		case STAGE_APL_INTERNAL:
+		case STAGE_PUBLIC_RELEASE:
+			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+			Configuration.setAppName("sbmt");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
+		case TEST_APL_INTERNAL:
+		case TEST_PUBLIC_RELEASE:
+			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+			Configuration.setAppName("sbmt");
+			Configuration.setCacheVersion("2");
+			Configuration.setAppTitle("SBMT");
+			break;
+		case HAYABUSA2_DEV:
+			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+			Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+			Configuration.setAppName("sbmthyb2-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+			break;
+		case HAYABUSA2_STAGE:
+			Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+			Configuration.setAppName("sbmthyb2-stage");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+			break;
+		case HAYABUSA2_DEPLOY:
+			Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+			Configuration.setAppName("sbmthyb2");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/Hayabusa2");
+			break;
+		case OSIRIS_REX:
+			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+			Configuration.setAppName("sbmt1orex-dev");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+			break;
+		case OSIRIS_REX_STAGE:
+			Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
+			Configuration.setAppName("sbmt1orex-stage");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
+			break;
+		case OSIRIS_REX_MIRROR_DEPLOY:
+			//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+			Configuration.setAppName("sbmt1orex-mirror");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+			break;
+		case OSIRIS_REX_DEPLOY:
+			Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
+			Configuration.setAppName("sbmt1orex");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/OSIRIS REx");
+			break;
+		default:
+			throw new AssertionError();
+		}
+		missionConfigured = true;
+		return mission;
+	}
 
-    protected static void setupLookAndFeel()
-    {
-        if (!Configuration.isMac())
-        {
-            try
-            {
-                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
-                //                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-                // uncomment for cross-platform LAF
-                //            else
-                //                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+	protected static void setupLookAndFeel()
+	{
+		if (!Configuration.isMac())
+		{
+			try
+			{
+				UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
+				//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+				// uncomment for cross-platform LAF
+				//            else
+				//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                try
-                {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
-                catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1)
-                {
-                    throw new RuntimeException(e1);
-                }
-            }
-        }
-    }
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				try
+				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				}
+				catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1)
+				{
+					throw new RuntimeException(e1);
+				}
+			}
+		}
+	}
 
-    protected static SbmtSplash createSplash(Mission mission)
-    {
-        SbmtSplash splash = null;
-        switch (mission)
-        {
-        case APL_INTERNAL:
-        case PUBLIC_RELEASE:
-        case STAGE_APL_INTERNAL:
-        case STAGE_PUBLIC_RELEASE:
-        case TEST_APL_INTERNAL:
-        case TEST_PUBLIC_RELEASE:
-            splash = new SbmtSplash("resources", "splashLogo.png");
-            break;
-        case HAYABUSA2_DEV:
-            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-            break;
-        case HAYABUSA2_STAGE:
-            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-            break;
-        case HAYABUSA2_DEPLOY:
-            splash = new SbmtSplash("resources", "splashLogoHb2.png");
-            break;
-        case OSIRIS_REX:
-        case OSIRIS_REX_DEPLOY:
-        case OSIRIS_REX_MIRROR_DEPLOY:
-        case OSIRIS_REX_STAGE:
-            splash = new SbmtSplash("resources", "splashLogoOrex.png");
-            break;
-        default:
-            throw new AssertionError();
-        }
-        return splash;
-    }
+	protected static SbmtSplash createSplash(Mission mission)
+	{
+		SbmtSplash splash = null;
+		switch (mission)
+		{
+		case APL_INTERNAL:
+		case PUBLIC_RELEASE:
+		case STAGE_APL_INTERNAL:
+		case STAGE_PUBLIC_RELEASE:
+		case TEST_APL_INTERNAL:
+		case TEST_PUBLIC_RELEASE:
+			splash = new SbmtSplash("resources", "splashLogo.png");
+			break;
+		case HAYABUSA2_DEV:
+			splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+			break;
+		case HAYABUSA2_STAGE:
+			splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+			break;
+		case HAYABUSA2_DEPLOY:
+			splash = new SbmtSplash("resources", "splashLogoHb2.png");
+			break;
+		case OSIRIS_REX:
+		case OSIRIS_REX_DEPLOY:
+		case OSIRIS_REX_MIRROR_DEPLOY:
+		case OSIRIS_REX_STAGE:
+			splash = new SbmtSplash("resources", "splashLogoOrex.png");
+			break;
+		default:
+			throw new AssertionError();
+		}
+		return splash;
+	}
 
-    protected static String getOption(String[] args, String option)
-    {
-        for (String arg : args)
-        {
-            arg = arg.toLowerCase();
-            option = option.toLowerCase();
-            if (arg.startsWith(option + "="))
-            {
-                return arg.substring(option.length() + 1);
-            }
-            else if (arg.startsWith(option))
-            {
-                return arg.substring(option.length());
-            }
-        }
-        return null;
-    }
+	protected static String getOption(String[] args, String option)
+	{
+		for (String arg : args)
+		{
+			arg = arg.toLowerCase();
+			option = option.toLowerCase();
+			if (arg.startsWith(option + "="))
+			{
+				return arg.substring(option.length() + 1);
+			}
+			else if (arg.startsWith(option))
+			{
+				return arg.substring(option.length());
+			}
+		}
+		return null;
+	}
 
-    private boolean clearCache;
-    private boolean redirectStreams;
-    private String tempShapeModelPath;
+	private boolean clearCache;
+	private boolean redirectStreams;
+	private String tempShapeModelPath;
 
-    protected SbmtMultiMissionTool()
-    {
-        this.clearCache = false;
-        this.redirectStreams = true;
-        this.tempShapeModelPath = null;
-    }
+	protected SbmtMultiMissionTool()
+	{
+		this.clearCache = false;
+		this.redirectStreams = true;
+		this.tempShapeModelPath = null;
+	}
 
-    public void run(String[] args)
-    {
-        processArguments(args);
+	public void run(String[] args)
+	{
+		processArguments(args);
 
-        // Display splash screen.
-        SbmtSplash splash = createSplash(mission);
-        splash.setAlwaysOnTop(true);
-        splash.validate();
-        splash.setVisible(true);
+		// Display splash screen.
+		SbmtSplash splash = createSplash(mission);
+		splash.setAlwaysOnTop(true);
+		splash.validate();
+		splash.setVisible(true);
 
-        // Start up the client.
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new SbmtRunnable(args));
+		// Start up the client.
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.execute(new SbmtRunnable(args));
 
-        // Kill the splash screen after a suitable pause.
-        try
-        {
-            Thread.sleep(6000);
-        }
-        catch (InterruptedException e)
-        {
-            throw new RuntimeException(e);
-        }
-        finally
-        {
-            splash.setVisible(false);
-        }
-    }
+		// Kill the splash screen after a suitable pause.
+		try
+		{
+			Thread.sleep(6000);
+		}
+		catch (InterruptedException e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			splash.setVisible(false);
+		}
+	}
 
-    protected void processArguments(String[] args) {
-        // Get options.
-        redirectStreams = getOption(args, "--no-stream-redirect") == null;
-        clearCache = getOption(args, "--auto-clear-cache") != null;
-        SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
+	protected void processArguments(String[] args)
+	{
+		// Get options.
+		redirectStreams = getOption(args, "--no-stream-redirect") == null;
+		clearCache = getOption(args, "--auto-clear-cache") != null;
+		SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
 
-        // Get other arguments.
-        tempShapeModelPath = null;
-        for (String arg : args)
-        {
-            if (!arg.startsWith("-"))
-            {
-                // First non-option is an optional shape model path.
-                tempShapeModelPath = arg;
-                // No other non-option arguments.
-                break;
-            }
-        }
-    }
+		// Get other arguments.
+		tempShapeModelPath = null;
+		for (String arg : args)
+		{
+			if (!arg.startsWith("-"))
+			{
+				// First non-option is an optional shape model path.
+				tempShapeModelPath = arg;
+				// No other non-option arguments.
+				break;
+			}
+		}
+	}
 
-    public static void main(String[] args)
-    {
-        try
-        {
-            setupLookAndFeel();
+	protected void setUpStreams()
+	{
 
-            // The following line appears to be needed on some systems to prevent server redirect errors.
-            CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+	}
 
-            configureMission();
+	public static void main(String[] args)
+	{
+		try
+		{
+			setupLookAndFeel();
 
-            SbmtMultiMissionTool tool = new SbmtMultiMissionTool();
-            tool.run(args);
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-        }
-    }
+			// The following line appears to be needed on some systems to prevent server redirect errors.
+			CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
+			configureMission();
+
+			SbmtMultiMissionTool tool = new SbmtMultiMissionTool();
+			tool.run(args);
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+		}
+	}
 
 }
