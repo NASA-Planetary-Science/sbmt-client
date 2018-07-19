@@ -219,11 +219,19 @@ public class SbmtMultiMissionTool
         return mission;
     }
 
-    protected static SbmtSplash createSplash(Mission mission)
+    static SbmtSplash createSplash(Mission mission)
     {
         SbmtSplash splash = null;
         switch (mission)
         {
+            case APL_INTERNAL:
+            case PUBLIC_RELEASE:
+            case STAGE_APL_INTERNAL:
+            case STAGE_PUBLIC_RELEASE:
+            case TEST_APL_INTERNAL:
+            case TEST_PUBLIC_RELEASE:
+                splash = new SbmtSplash("resources", "splashLogo.png");
+                break;
             case HAYABUSA2_DEV:
                 splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
                 break;
@@ -239,15 +247,8 @@ public class SbmtMultiMissionTool
             case OSIRIS_REX_STAGE:
                 splash = new SbmtSplash("resources", "splashLogoOrex.png");
                 break;
-            case APL_INTERNAL:
-            case PUBLIC_RELEASE:
-            case STAGE_APL_INTERNAL:
-            case STAGE_PUBLIC_RELEASE:
-            case TEST_APL_INTERNAL:
-            case TEST_PUBLIC_RELEASE:
             default:
-                splash = new SbmtSplash("resources", "splashLogo.png");
-                break;
+                throw new AssertionError();
         }
         return splash;
     }
