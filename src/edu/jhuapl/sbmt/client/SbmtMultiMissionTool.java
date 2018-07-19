@@ -72,35 +72,6 @@ public class SbmtMultiMissionTool
         }
     }
 
-    protected static void setupLookAndFeel()
-    {
-        try
-        {
-            if (!Configuration.isMac())
-            {
-                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
-//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            }
-// uncomment for cross-platform LAF
-//            else
-//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-
-            try
-            {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            }
-            catch (Exception e1)
-            {
-                e1.printStackTrace();
-            }
-        }
-    }
-
     public static Mission getMission()
     {
         if (mission == null)
@@ -219,6 +190,35 @@ public class SbmtMultiMissionTool
         return mission;
     }
 
+    protected static void setupLookAndFeel()
+    {
+        try
+        {
+            if (!Configuration.isMac())
+            {
+                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
+//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+            }
+// uncomment for cross-platform LAF
+//            else
+//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+
+            try
+            {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+            catch (Exception e1)
+            {
+                e1.printStackTrace();
+            }
+        }
+    }
+
     protected static SbmtSplash createSplash(Mission mission)
     {
         SbmtSplash splash = null;
@@ -253,7 +253,7 @@ public class SbmtMultiMissionTool
         return splash;
     }
 
-    public static String getOption(String[] args, String option)
+    protected static String getOption(String[] args, String option)
     {
         for (String arg : args)
         {
@@ -273,9 +273,9 @@ public class SbmtMultiMissionTool
 
     public static void main(final String[] args)
     {
-        Mission mission = SbmtMultiMissionTool.configureMission();
-
         setupLookAndFeel();
+
+        Mission mission = configureMission();
 
 
         /*if(!startPopup)   INITIALIZES THE START SCREEN
