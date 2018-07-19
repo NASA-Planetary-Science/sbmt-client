@@ -219,7 +219,7 @@ public class SbmtMultiMissionTool
         return mission;
     }
 
-    static SbmtSplash createSplash(Mission mission)
+    protected static SbmtSplash createSplash(Mission mission)
     {
         SbmtSplash splash = null;
         switch (mission)
