@@ -2917,7 +2917,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new FixedListQuery("/ryugu/nasa-002/onc");
+            QueryBase queryBase = new FixedListQuery("/ryugu/nasa-002/onc", false);
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             c = new SmallBodyViewConfig();
