@@ -89,7 +89,6 @@ public class BoundedObjectHyperTreeGenerator
             for (int i=0; i<node.getNumberOfChildren(); i++)
                 if (node.childExists(i))
                 {
-//                    System.out.println(node.getChild(i).getPath());
                     expandNode((BoundedObjectHyperTreeNode)node.getChild(i));
                 }
         }
@@ -139,12 +138,10 @@ public class BoundedObjectHyperTreeGenerator
     private static void printUsage()
     {
         System.out.println("Arguments:");
-        System.out.println("  (1) ");
+        System.out.println("  (1) Filename of bounding box info");
         System.out.println("  (2) output directory to build the search tree in");
-        System.out.println("  (3) ");
-        System.out.println("  (4) max number of open output files");
-        System.out.println("  (5) ");
-        System.out.println("  (6) instrument name (options are )");
+        System.out.println("  (3) max number of open output files");
+        System.out.println("  (4) max number of items per leaf");
     }
 
 
@@ -159,18 +156,16 @@ public class BoundedObjectHyperTreeGenerator
         //String inputDirectoryString=args[0];    // "/Volumes/dumbledore/sbmt/OLA"
         String inputFile = args[0];
         String outputDirectoryString=args[1];   // "/Volumes/dumbledore/sbmt/ola_hypertree"
-        double dataFileMBLimit=Double.valueOf(args[2]); // 1
-        int maxNumOpenOutputFiles=Integer.valueOf(args[3]);   // 32
+        int maxNumOpenOutputFiles=Integer.valueOf(args[2]);   // 32
 
         System.out.println("Input file = "+ inputFile);
         System.out.println("Output tree location = "+outputDirectoryString);
-        System.out.println("Data file MB limit = "+dataFileMBLimit);
         System.out.println("Max # open output files = "+maxNumOpenOutputFiles);
 
 //        NativeLibraryLoader.loadVtkLibrariesHeadless();
         Path outputDirectory=Paths.get(outputDirectoryString);
 
-        int maxObjectsPerLeaf = 13;
+        int maxObjectsPerLeaf = Integer.parseInt(args[3]);
         DataOutputStreamPool pool=new DataOutputStreamPool(maxNumOpenOutputFiles);
 
 
@@ -191,8 +186,8 @@ public class BoundedObjectHyperTreeGenerator
 
         // TODO min and max dimensions for hyperbox around body
         double today = new Date().getTime();
-        double[] min = {-17.565, -8.28392, -6.07243, -Double.MAX_VALUE};
-        double[] max = {15.0934, 8.60042, 5.8865, today};
+        double[] min = {-6378.13720703125, -6378.13720703125, -6356.75244140625, -Double.MAX_VALUE};
+        double[] max = { 6378.13720703125 , 6378.13720703125, 6356.75244140625, today};
         HyperBox hbox = new HyperBox(min, max);
         BoundedObjectHyperTreeGenerator generator = new BoundedObjectHyperTreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
 
