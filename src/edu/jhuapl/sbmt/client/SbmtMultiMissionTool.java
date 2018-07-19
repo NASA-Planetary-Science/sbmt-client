@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.looks.LookUtils;
 
@@ -120,71 +121,71 @@ public class SbmtMultiMissionTool
         Mission mission = getMission();
         switch (mission)
         {
-            case APL_INTERNAL:
-            case PUBLIC_RELEASE:
-                Configuration.setAppName("sbmt");
-                Configuration.setCacheVersion("2");
-                Configuration.setAppTitle("SBMT");
-                break;
-            case STAGE_APL_INTERNAL:
-            case STAGE_PUBLIC_RELEASE:
-                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
-                Configuration.setAppName("sbmt");
-                Configuration.setCacheVersion("2");
-                Configuration.setAppTitle("SBMT");
-                break;
-            case TEST_APL_INTERNAL:
-            case TEST_PUBLIC_RELEASE:
-                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-                Configuration.setAppName("sbmt");
-                Configuration.setCacheVersion("2");
-                Configuration.setAppTitle("SBMT");
-                break;
-            case HAYABUSA2_DEV:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
-                Configuration.setAppName("sbmthyb2-dev");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
-                break;
-            case HAYABUSA2_STAGE:
-                Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
-                Configuration.setAppName("sbmthyb2-stage");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
-                break;
-            case HAYABUSA2_DEPLOY:
-                Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
-                Configuration.setAppName("sbmthyb2");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/Hayabusa2");
-                break;
-            case OSIRIS_REX:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
-                Configuration.setAppName("sbmt1orex-dev");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
-                break;
-            case OSIRIS_REX_STAGE:
-              Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
-              Configuration.setAppName("sbmt1orex-stage");
-              Configuration.setCacheVersion("");
-              Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
-              break;
-            case OSIRIS_REX_MIRROR_DEPLOY:
-//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
-                Configuration.setAppName("sbmt1orex-mirror");
-                Configuration.setCacheVersion("");
-                Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
-                break;
-            case OSIRIS_REX_DEPLOY:
-              Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
-              Configuration.setAppName("sbmt1orex");
-              Configuration.setCacheVersion("");
-              Configuration.setAppTitle("SBMT/OSIRIS REx");
-              break;
-            default:
-                throw new AssertionError();
+        case APL_INTERNAL:
+        case PUBLIC_RELEASE:
+            Configuration.setAppName("sbmt");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle("SBMT");
+            break;
+        case STAGE_APL_INTERNAL:
+        case STAGE_PUBLIC_RELEASE:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/stage");
+            Configuration.setAppName("sbmt");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle("SBMT");
+            break;
+        case TEST_APL_INTERNAL:
+        case TEST_PUBLIC_RELEASE:
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmt");
+            Configuration.setCacheVersion("2");
+            Configuration.setAppTitle("SBMT");
+            break;
+        case HAYABUSA2_DEV:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/multi-mission/test");
+            Configuration.setAppName("sbmthyb2-dev");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+            break;
+        case HAYABUSA2_STAGE:
+            Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmthyb2-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2-Stage");
+            break;
+        case HAYABUSA2_DEPLOY:
+            Configuration.setRootURL("http://hyb2sbmt.u-aizu.ac.jp/sbmt");
+            Configuration.setAppName("sbmthyb2");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/Hayabusa2");
+            break;
+        case OSIRIS_REX:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
+            Configuration.setAppName("sbmt1orex-dev");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Dev");
+            break;
+        case OSIRIS_REX_STAGE:
+            Configuration.setRootURL("http://orexsbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1orex-stage");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
+            break;
+        case OSIRIS_REX_MIRROR_DEPLOY:
+            //                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+            Configuration.setAppName("sbmt1orex-mirror");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+            break;
+        case OSIRIS_REX_DEPLOY:
+            Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
+            Configuration.setAppName("sbmt1orex");
+            Configuration.setCacheVersion("");
+            Configuration.setAppTitle("SBMT/OSIRIS REx");
+            break;
+        default:
+            throw new AssertionError();
         }
         missionConfigured = true;
         return mission;
@@ -192,29 +193,28 @@ public class SbmtMultiMissionTool
 
     protected static void setupLookAndFeel()
     {
-        try
+        if (!Configuration.isMac())
         {
-            if (!Configuration.isMac())
-            {
-                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
-//                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            }
-// uncomment for cross-platform LAF
-//            else
-//                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-
             try
             {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                UIManager.put("ClassLoader", LookUtils.class.getClassLoader());
+                //                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+                // uncomment for cross-platform LAF
+                //            else
+                //                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
             }
-            catch (Exception e1)
+            catch (Exception e)
             {
-                e1.printStackTrace();
+                e.printStackTrace();
+                try
+                {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                }
+                catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1)
+                {
+                    throw new RuntimeException(e1);
+                }
             }
         }
     }
@@ -224,31 +224,31 @@ public class SbmtMultiMissionTool
         SbmtSplash splash = null;
         switch (mission)
         {
-            case APL_INTERNAL:
-            case PUBLIC_RELEASE:
-            case STAGE_APL_INTERNAL:
-            case STAGE_PUBLIC_RELEASE:
-            case TEST_APL_INTERNAL:
-            case TEST_PUBLIC_RELEASE:
-                splash = new SbmtSplash("resources", "splashLogo.png");
-                break;
-            case HAYABUSA2_DEV:
-                splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-                break;
-            case HAYABUSA2_STAGE:
-                splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-                break;
-            case HAYABUSA2_DEPLOY:
-                splash = new SbmtSplash("resources", "splashLogoHb2.png");
-                break;
-            case OSIRIS_REX:
-            case OSIRIS_REX_DEPLOY:
-            case OSIRIS_REX_MIRROR_DEPLOY:
-            case OSIRIS_REX_STAGE:
-                splash = new SbmtSplash("resources", "splashLogoOrex.png");
-                break;
-            default:
-                throw new AssertionError();
+        case APL_INTERNAL:
+        case PUBLIC_RELEASE:
+        case STAGE_APL_INTERNAL:
+        case STAGE_PUBLIC_RELEASE:
+        case TEST_APL_INTERNAL:
+        case TEST_PUBLIC_RELEASE:
+            splash = new SbmtSplash("resources", "splashLogo.png");
+            break;
+        case HAYABUSA2_DEV:
+            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+            break;
+        case HAYABUSA2_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+            break;
+        case HAYABUSA2_DEPLOY:
+            splash = new SbmtSplash("resources", "splashLogoHb2.png");
+            break;
+        case OSIRIS_REX:
+        case OSIRIS_REX_DEPLOY:
+        case OSIRIS_REX_MIRROR_DEPLOY:
+        case OSIRIS_REX_STAGE:
+            splash = new SbmtSplash("resources", "splashLogoOrex.png");
+            break;
+        default:
+            throw new AssertionError();
         }
         return splash;
     }
@@ -271,48 +271,84 @@ public class SbmtMultiMissionTool
         return null;
     }
 
-    protected final String[] args;
+    private boolean clearCache;
+    private boolean redirectStreams;
+    private String tempShapeModelPath;
 
-    protected SbmtMultiMissionTool(String[] args)
+    protected SbmtMultiMissionTool()
     {
-        this.args = args;
+        this.clearCache = false;
+        this.redirectStreams = true;
+        this.tempShapeModelPath = null;
     }
 
-    public void run()
+    public void run(String[] args)
+    {
+        processArguments(args);
+
+        // Display splash screen.
+        SbmtSplash splash = createSplash(mission);
+        splash.setAlwaysOnTop(true);
+        splash.validate();
+        splash.setVisible(true);
+
+        // Start up the client.
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new SbmtRunnable(args));
+
+        // Kill the splash screen after a suitable pause.
+        try
+        {
+            Thread.sleep(6000);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            splash.setVisible(false);
+        }
+    }
+
+    protected void processArguments(String[] args) {
+        // Get options.
+        redirectStreams = getOption(args, "--no-stream-redirect") == null;
+        clearCache = getOption(args, "--auto-clear-cache") != null;
+        SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
+
+        // Get other arguments.
+        tempShapeModelPath = null;
+        for (String arg : args)
+        {
+            if (!arg.startsWith("-"))
+            {
+                // First non-option is an optional shape model path.
+                tempShapeModelPath = arg;
+                // No other non-option arguments.
+                break;
+            }
+        }
+    }
+
+    public static void main(String[] args)
     {
         try
         {
-            // Display splash screen.
-            SbmtSplash splash = createSplash(mission);
-            splash.setAlwaysOnTop(true);
-            splash.validate();
-            splash.setVisible(true);
+            setupLookAndFeel();
 
-            // Start up the client.
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(new SbmtRunnable(args));
+            // The following line appears to be needed on some systems to prevent server redirect errors.
+            CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
-            // Kill the splash screen after a suitable pause.
-            Thread.sleep(6000);
-            splash.setVisible(false);
+            configureMission();
+
+            SbmtMultiMissionTool tool = new SbmtMultiMissionTool();
+            tool.run(args);
         }
-        catch (Exception e)
+        catch (Throwable t)
         {
-            e.printStackTrace();
+            t.printStackTrace();
         }
-    }
-
-    public static void main(final String[] args)
-    {
-        setupLookAndFeel();
-
-        // The following line appears to be needed on some systems to prevent server redirect errors.
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-
-        configureMission();
-
-        SbmtMultiMissionTool tool = new SbmtMultiMissionTool(args);
-        tool.run();
     }
 
 }
