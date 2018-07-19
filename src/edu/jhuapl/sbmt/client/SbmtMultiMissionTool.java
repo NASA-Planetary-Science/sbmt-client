@@ -72,7 +72,7 @@ public class SbmtMultiMissionTool
         }
     }
 
-    static void setupLookAndFeel()
+    protected static void setupLookAndFeel()
     {
         try
         {
