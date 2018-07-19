@@ -1,8 +1,12 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,8 +16,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.jgoodies.looks.LookUtils;
 
+import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -42,8 +48,7 @@ public class SbmtMultiMissionTool
 		STAGE_APL_INTERNAL("f7e441b"),
 		STAGE_PUBLIC_RELEASE("8cc8e12"),
 		TEST_APL_INTERNAL("fb404a7"),
-		TEST_PUBLIC_RELEASE("a1a32b4"),
-		;
+		TEST_PUBLIC_RELEASE("a1a32b4");
 		private final String hashedName;
 
 		Mission(String hashedName)
@@ -56,6 +61,11 @@ public class SbmtMultiMissionTool
 			return hashedName;
 		}
 	}
+
+	private static final String OUTPUT_FILE_NAME = "sbmtLogFile.txt";
+	private static final PrintStream SAVED_OUT = System.out;
+	private static final PrintStream SAVED_ERR = System.err;
+	private static PrintStream outputStream = null;
 
 	// DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
 	// This field is used during the build process to "hard-wire" a release to point to a specific server.
@@ -191,6 +201,23 @@ public class SbmtMultiMissionTool
 		return mission;
 	}
 
+	public static void shutDown()
+	{
+		boolean showConsole = Console.isConfigured();
+		if (showConsole)
+		{
+			System.err.println("Close this console window to exit.");
+			Console.showStandaloneConsole();
+		}
+
+		restoreStreams();
+
+		if (!showConsole)
+		{
+			System.exit(1);
+		}
+	}
+
 	protected static void setupLookAndFeel()
 	{
 		if (!Configuration.isMac())
@@ -271,20 +298,35 @@ public class SbmtMultiMissionTool
 		return null;
 	}
 
+	protected static void restoreStreams()
+	{
+		if (outputStream != null)
+		{
+			System.setErr(SAVED_ERR);
+			System.setOut(SAVED_OUT);
+			outputStream.close();
+			outputStream = null;
+		}
+	}
+
 	private boolean clearCache;
 	private boolean redirectStreams;
-	private String tempShapeModelPath;
+	private String initialShapeModelPath;
 
 	protected SbmtMultiMissionTool()
 	{
 		this.clearCache = false;
 		this.redirectStreams = true;
-		this.tempShapeModelPath = null;
+		this.initialShapeModelPath = null;
 	}
 
-	public void run(String[] args)
+	public void run(String[] args) throws IOException, InterruptedException
 	{
 		processArguments(args);
+
+		setUpStreams();
+
+		clearCache();
 
 		// Display splash screen.
 		SbmtSplash splash = createSplash(mission);
@@ -292,18 +334,19 @@ public class SbmtMultiMissionTool
 		splash.validate();
 		splash.setVisible(true);
 
+		if (Console.isEnabled())
+		{
+			Console.showStandaloneConsole();
+		}
+
 		// Start up the client.
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.execute(new SbmtRunnable(args));
+		executor.execute(new SbmtRunnable(initialShapeModelPath));
 
 		// Kill the splash screen after a suitable pause.
 		try
 		{
 			Thread.sleep(6000);
-		}
-		catch (InterruptedException e)
-		{
-			throw new RuntimeException(e);
 		}
 		finally
 		{
@@ -319,28 +362,50 @@ public class SbmtMultiMissionTool
 		SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
 
 		// Get other arguments.
-		tempShapeModelPath = null;
+		initialShapeModelPath = null;
 		for (String arg : args)
 		{
 			if (!arg.startsWith("-"))
 			{
 				// First non-option is an optional shape model path.
-				tempShapeModelPath = arg;
+				initialShapeModelPath = arg;
 				// No other non-option arguments.
 				break;
 			}
 		}
 	}
 
-	protected void setUpStreams()
+	protected void setUpStreams() throws IOException
 	{
+		if (outputStream != null)
+		{
+			throw new IllegalStateException("Cannot call setUpStreams more than once");
+		}
 
+		if (redirectStreams)
+		{
+			Path outputFilePath = SafePaths.get(Configuration.getApplicationDataDir(), OUTPUT_FILE_NAME);
+			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
+			System.setOut(outputStream);
+			System.setErr(outputStream);
+			Console.configure(true, outputStream);
+		}
+	}
+
+	protected void clearCache()
+	{
+		if (clearCache)
+		{
+			Configuration.clearCache();
+		}
 	}
 
 	public static void main(String[] args)
 	{
+		SbmtMultiMissionTool tool = null;
 		try
 		{
+			// Global (static) initializations.
 			setupLookAndFeel();
 
 			// The following line appears to be needed on some systems to prevent server redirect errors.
@@ -348,12 +413,14 @@ public class SbmtMultiMissionTool
 
 			configureMission();
 
-			SbmtMultiMissionTool tool = new SbmtMultiMissionTool();
+			tool = new SbmtMultiMissionTool();
 			tool.run(args);
 		}
-		catch (Throwable t)
+		catch (Throwable throwable)
 		{
-			t.printStackTrace();
+			throwable.printStackTrace();
+			System.err.println("\nFatal error during launch. Please review the information above.");
+			shutDown();
 		}
 	}
 
