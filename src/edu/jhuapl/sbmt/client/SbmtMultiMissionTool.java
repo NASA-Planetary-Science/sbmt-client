@@ -1,24 +1,31 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
@@ -73,6 +80,8 @@ public class SbmtMultiMissionTool
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
 
+	private static boolean enableAuthentication;
+
 	static
 	{
 		if (Configuration.isMac())
@@ -81,6 +90,11 @@ public class SbmtMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			OSXAdapter.setDockIconImage(erosIcon.getImage());
 		}
+	}
+
+	public static void setEnableAuthentication(boolean enableAuthentication)
+	{
+		SbmtMultiMissionTool.enableAuthentication = enableAuthentication;
 	}
 
 	public static Mission getMission()
@@ -326,6 +340,8 @@ public class SbmtMultiMissionTool
 
 		setUpStreams();
 
+		setUpAuthentication();
+
 		clearCache();
 
 		// Display splash screen.
@@ -360,6 +376,10 @@ public class SbmtMultiMissionTool
 		redirectStreams = getOption(args, "--no-stream-redirect") == null;
 		clearCache = getOption(args, "--auto-clear-cache") != null;
 		SmallBodyViewConfig.betaMode = getOption(args, "--beta") != null;
+		if (getOption(args, "--debug") != null)
+		{
+			Debug.setEnabled(true);
+		}
 
 		// Get other arguments.
 		initialShapeModelPath = null;
@@ -397,6 +417,32 @@ public class SbmtMultiMissionTool
 		if (clearCache)
 		{
 			Configuration.clearCache();
+		}
+	}
+
+	protected void setUpAuthentication()
+	{
+		if (enableAuthentication)
+		{
+			URL dataRootUrl = Configuration.getDataRootURL();
+			try
+			{
+				// Just try to hit the server itself first.
+				FileCache.getFileInfoFromServer(dataRootUrl.toString());
+
+				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
+				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				String parent = new File(jarLocation).getParentFile().getParent();
+				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"), SafePaths.get(parent, "password.txt"));
+
+				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+			}
+			catch (NoInternetAccessException e)
+			{
+				e.printStackTrace();
+				FileCache.setOfflineMode(true, Configuration.getCacheDir());
+				JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 	}
 
