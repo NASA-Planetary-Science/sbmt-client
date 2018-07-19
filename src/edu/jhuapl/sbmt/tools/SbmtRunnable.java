@@ -108,15 +108,23 @@ public class SbmtRunnable implements Runnable
 		{
 			System.out.println("Tool started in debug mode; diagnostic output is enabled.");
 		}
-		System.out.println("Using server at " + Configuration.getDataRootURL());
-		if (Configuration.wasUserPasswordAccepted())
+		if (FileCache.getOfflineMode())
 		{
-			System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
+			System.out.println("\nTool started in offline mode; skipping password authentication.");
+			System.out.println("Some models, data, and/or features may not be available.");
 		}
 		else
 		{
-			System.out.println("\nNo user name and password entered. Some models may not be available.");
-			System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
+			System.out.println("\nUsing server at " + Configuration.getDataRootURL());
+			if (Configuration.wasUserPasswordAccepted())
+			{
+				System.out.println("\nValid user name and password entered. Access may be granted to some restricted models.");
+			}
+			else
+			{
+				System.out.println("\nNo user name and password entered. Some models may not be available.");
+				System.out.println("You may update your user name and pasword on the Body -> Update Password menu.");
+			}
 		}
 		if (Console.isConfigured())
 		{
