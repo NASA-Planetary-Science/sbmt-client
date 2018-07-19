@@ -111,7 +111,7 @@ public class SbmtRunnable implements Runnable
 		if (FileCache.getOfflineMode())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");
-			System.out.println("Some models, data, and/or features may not be available.");
+			System.out.println("Only cached models and data will be available.");
 		}
 		else
 		{
