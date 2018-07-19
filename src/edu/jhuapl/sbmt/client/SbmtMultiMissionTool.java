@@ -253,19 +253,19 @@ public class SbmtMultiMissionTool
         return splash;
     }
 
-    public static String getOption(String[] args, String optionPrefix)
+    public static String getOption(String[] args, String option)
     {
         for (String arg : args)
         {
             arg = arg.toLowerCase();
-            optionPrefix = optionPrefix.toLowerCase();
-            if (arg.startsWith(optionPrefix + "="))
+            option = option.toLowerCase();
+            if (arg.startsWith(option + "="))
             {
-                return arg.substring(optionPrefix.length() + 1);
+                return arg.substring(option.length() + 1);
             }
-            else if (arg.startsWith(optionPrefix))
+            else if (arg.startsWith(option))
             {
-                return arg.substring(optionPrefix.length());
+                return arg.substring(option.length());
             }
         }
         return null;
