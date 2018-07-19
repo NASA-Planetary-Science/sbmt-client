@@ -275,25 +275,19 @@ public class SbmtMultiMissionTool
     {
         setupLookAndFeel();
 
-        Mission mission = configureMission();
-
-
-        /*if(!startPopup)   INITIALIZES THE START SCREEN
-        {
-            startPopup=true;
-            new StartScreen();
-        }*/
         // The following line appears to be needed on some systems to prevent server redirect errors.
         CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
 
+        Mission mission = configureMission();
+
         try
         {
-            // set up splash screen
+            // Display splash screen.
             SbmtSplash splash = createSplash(mission);
             splash.setAlwaysOnTop(true);
-            splash.setVisible(true);
             splash.validate();
-            splash.repaint();
+            splash.setVisible(true);
+
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(new SbmtRunnable(args));
             Thread.sleep(8000);
