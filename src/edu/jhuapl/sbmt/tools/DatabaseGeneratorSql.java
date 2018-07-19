@@ -479,18 +479,21 @@ public class DatabaseGeneratorSql
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
         RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu"),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/imagelist-fullpath.txt", "ryugu",
+                "data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt"),
         RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu"),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/imagelist-fullpath.txt", "ryugu",
+                "data/ryugu/truth/onc/simulated-imagelist-fullpath.txt"),
         RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
         RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
+
         // This is the reference model; use this one for flight data.
-        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
+        RYUGU_FLIGHT(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-002/onc/imagelist-fullpath.txt", "ryugu",
+                "data/ryugu/gaskell/onc/imagelist-fullpath.txt"),
+
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
         PHOBOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelType.EXPERIMENTAL),
@@ -503,12 +506,14 @@ public class DatabaseGeneratorSql
         public final SmallBodyViewConfig config;
         public final String pathToFileList;
         public final String databasePrefix;
+        public final String remotePathToFileList;
 
         private RunInfo(SmallBodyViewConfig config, String pathToFileList)
         {
             this.config = config;
             this.pathToFileList = pathToFileList;
             this.databasePrefix = config.body.toString().toLowerCase();
+            this.remotePathToFileList = null;
         }
 
         private RunInfo(SmallBodyViewConfig config, String pathToFileList, String databasePrefix)
@@ -516,6 +521,15 @@ public class DatabaseGeneratorSql
             this.config = config;
             this.pathToFileList = pathToFileList;
             this.databasePrefix = databasePrefix;
+            this.remotePathToFileList = null;
+        }
+
+        private RunInfo(SmallBodyViewConfig config, String pathToFileList, String databasePrefix, String remotePathToFileList)
+        {
+            this.config = config;
+            this.pathToFileList = pathToFileList;
+            this.databasePrefix = databasePrefix;
+            this.remotePathToFileList = remotePathToFileList;
         }
     }
 
@@ -564,6 +578,7 @@ public class DatabaseGeneratorSql
 
         boolean appendTables = false;
         boolean modifyMain = false;
+        boolean remote = false;
 
         // modify configuration parameters with command line args
         int i = 0;
@@ -585,6 +600,10 @@ public class DatabaseGeneratorSql
             {
                 Debug.setEnabled(true);
             }
+            else if (args[i].equals("--remote"))
+            {
+                remote = true;
+            }
             else {
                 // We've encountered something that is not an option, must be at the args
                 break;
@@ -594,7 +613,7 @@ public class DatabaseGeneratorSql
         // There must be numRequiredArgs arguments remaining after the options.
         // Otherwise abort.
         int numberRequiredArgs = 2;
-        if (args.length - i != numberRequiredArgs)
+        if (args.length - i < numberRequiredArgs)
             usage();
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
@@ -632,6 +651,11 @@ public class DatabaseGeneratorSql
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
 
             String pathToFileList = ri.pathToFileList;
+            if (remote)
+            {
+                if (ri.remotePathToFileList != null)
+                    pathToFileList = ri.remotePathToFileList;
+            }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
             generator.run(pathToFileList, mode);
