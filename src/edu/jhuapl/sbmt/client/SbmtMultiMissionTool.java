@@ -271,15 +271,15 @@ public class SbmtMultiMissionTool
         return null;
     }
 
-    public static void main(final String[] args)
+    protected final String[] args;
+
+    protected SbmtMultiMissionTool(String[] args)
     {
-        setupLookAndFeel();
+        this.args = args;
+    }
 
-        // The following line appears to be needed on some systems to prevent server redirect errors.
-        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-
-        Mission mission = configureMission();
-
+    public void run()
+    {
         try
         {
             // Display splash screen.
@@ -288,15 +288,31 @@ public class SbmtMultiMissionTool
             splash.validate();
             splash.setVisible(true);
 
+            // Start up the client.
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(new SbmtRunnable(args));
-            Thread.sleep(8000);
+
+            // Kill the splash screen after a suitable pause.
+            Thread.sleep(6000);
             splash.setVisible(false);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
+    }
+
+    public static void main(final String[] args)
+    {
+        setupLookAndFeel();
+
+        // The following line appears to be needed on some systems to prevent server redirect errors.
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
+        configureMission();
+
+        SbmtMultiMissionTool tool = new SbmtMultiMissionTool(args);
+        tool.run();
     }
 
 }
