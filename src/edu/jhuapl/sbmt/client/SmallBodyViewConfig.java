@@ -2859,31 +2859,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     break;
             }
 
-//            c.hasLidarData=true;
-//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-//            c.lidarInstrumentName = Instrument.LASER;
-//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
-//            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
-//            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
-//
-//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-//            c.lidarBrowseTimeIndex = 26;
-//            c.lidarBrowseNoiseIndex = 62;
-//            c.lidarBrowseOutgoingIntensityIndex = 98;
-//            c.lidarBrowseReceivedIntensityIndex = 106;
-//            c.lidarBrowseIntensityEnabled = true;
-//            c.lidarBrowseNumberHeaderLines = 0;
-//            c.lidarBrowseIsInMeters = true;
-//            c.lidarBrowseIsBinary = true;
-//            c.lidarBrowseBinaryRecordSize = 186;
-//            c.lidarOffsetScale = 0.0005;
-
             configArray.add(c);
         }
 
@@ -2929,30 +2904,50 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-//            c.hasLidarData=true;
-//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-//            c.lidarInstrumentName = Instrument.LASER;
-//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
-//            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
-//            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
-//
-//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-//            c.lidarBrowseTimeIndex = 26;
-//            c.lidarBrowseNoiseIndex = 62;
-//            c.lidarBrowseOutgoingIntensityIndex = 98;
-//            c.lidarBrowseReceivedIntensityIndex = 106;
-//            c.lidarBrowseIntensityEnabled = true;
-//            c.lidarBrowseNumberHeaderLines = 0;
-//            c.lidarBrowseIsInMeters = true;
-//            c.lidarBrowseIsBinary = true;
-//            c.lidarBrowseBinaryRecordSize = 186;
-//            c.lidarOffsetScale = 0.0005;
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new FixedListQuery("/ryugu/nasa-002/onc");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.NASA_002;
+            c.modelLabel = "NASA-002";
+            c.rootDirOnServer = "/ryugu/nasa-002";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            //            c.hasStateHistory = true;
+//            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
 
             configArray.add(c);
         }

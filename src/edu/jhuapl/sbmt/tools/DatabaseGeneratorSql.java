@@ -492,7 +492,14 @@ public class DatabaseGeneratorSql
         // This is the reference model; use this one for flight data.
         RYUGU_FLIGHT(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-002/onc/imagelist-fullpath.txt", "ryugu",
-                "data/ryugu/gaskell/onc/imagelist-fullpath.txt"),
+                "ryugu/nasa-002/onc/imagelist-fullpath.txt"),
+
+        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
+        RYUGU_NASA_002_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc/imagelist-fullpath.txt", "ryugu_flight"),
 
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
