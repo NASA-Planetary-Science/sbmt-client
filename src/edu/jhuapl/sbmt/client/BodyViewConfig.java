@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -46,7 +47,10 @@ public abstract class BodyViewConfig extends ViewConfig
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
     public boolean hasHierarchicalImageSearch;
+    public boolean hasHierarchicalSpectraSearch;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
+    public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
+    public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
@@ -96,7 +100,7 @@ public abstract class BodyViewConfig extends ViewConfig
         "Very High (3145728 plates)"
     };
 
-    static public final int[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
+    static public final Integer[] DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION = {
         49152,
         196608,
         786432,
@@ -115,11 +119,6 @@ public abstract class BodyViewConfig extends ViewConfig
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
     public SpectralInstrument[] spectralInstruments = {};
-
-    protected BodyViewConfig(String[] resolutionLabels, int[] resolutionNumberElements)
-    {
-        super(resolutionLabels, resolutionNumberElements);
-    }
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {

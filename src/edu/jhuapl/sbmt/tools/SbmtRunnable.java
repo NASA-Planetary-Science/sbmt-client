@@ -250,7 +250,8 @@ public class SbmtRunnable implements Runnable
         case STAGE_PUBLIC_RELEASE:
         case TEST_PUBLIC_RELEASE:
             if (
-                    !ShapeModelType.HAYABUSA2.equals(config.author) &&
+                    !ShapeModelType.JAXA_001.equals(config.author) &&
+                    !ShapeModelType.NASA_001.equals(config.author) &&
                     !ShapeModelType.OREX.equals(config.author) &&
                     !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
                     !ShapeModelBody.RYUGU.equals(config.body) &&
@@ -260,11 +261,12 @@ public class SbmtRunnable implements Runnable
                 config.enable(true);
             }
             break;
-        case HAYABUSA2:
+        case HAYABUSA2_DEV:
             if (
                     ShapeModelBody.EROS.equals(config.body) ||
                     ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
+                    ShapeModelType.NASA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -275,7 +277,8 @@ public class SbmtRunnable implements Runnable
             if (
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.NASA_001.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -286,7 +289,8 @@ public class SbmtRunnable implements Runnable
             if (
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
-                    ShapeModelType.HAYABUSA2.equals(config.author) ||
+                    ShapeModelType.NASA_001.equals(config.author) ||
+                    ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -294,6 +298,9 @@ public class SbmtRunnable implements Runnable
             }
             break;
         case OSIRIS_REX:
+        case OSIRIS_REX_DEPLOY:
+        case OSIRIS_REX_MIRROR_DEPLOY:
+        case OSIRIS_REX_STAGE:
             if (
                     ShapeModelBody.RQ36.equals(config.body) ||
                     ShapeModelBody.EROS.equals(config.body) ||

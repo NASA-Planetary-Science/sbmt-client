@@ -44,6 +44,8 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 
 
 /**
@@ -62,7 +64,7 @@ public class SqlManager
     private Connection conn;                                                //our connnection to the db - presist for life of program
 
     // we dont want this garbage collected until we are done
-    public SqlManager(String db_file_name_prefix) throws Exception    // note more general exception
+    public SqlManager(String dbFileNamePrefix) throws Exception    // note more general exception
     {
         // connect to the database.   This will load the db files and start the
         // database if it is not alread running.
@@ -85,15 +87,22 @@ public class SqlManager
             return;
         }
 
-       List<String> credentials = FileUtil.getFileLinesAsStringList(
-               Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
+       List<String> credentials = FileUtil.getFileLinesAsStringList(Configuration.getApplicationDataDir() + File.separator + "mysql-login.txt");
        String username = credentials.get(0);
        String password = credentials.get(1);
 
        //conn = DriverManager.getConnection("jdbc:hsqldb:file:" + db_file_name_prefix, "sa", "");
-        conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" +
-        "user=" + username + "&password=" + password);
-
+       if (dbFileNamePrefix == null)
+           conn = DriverManager.getConnection("jdbc:mysql://sd-mysql.jhuapl.edu:3306/near?" + "user=" + username + "&password=" + password);
+       else
+       {
+           String dbname = "near";
+           if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE || SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+               dbname = "sbmt";
+           String dbpath = "jdbc:mysql://" + dbFileNamePrefix + ":3306/" + dbname + "?" + "user=" + username + "&password=" + password;
+           System.out.println("Connecting to dbpath: " + dbpath);
+           conn = DriverManager.getConnection(dbpath);
+       }
     }
 
     public SqlManager(String driver, String connectionString) throws Exception

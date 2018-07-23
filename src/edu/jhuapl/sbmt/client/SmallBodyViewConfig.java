@@ -1,6 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,8 +23,10 @@ import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -34,9 +36,9 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.query.FixedListQuery;
-import edu.jhuapl.sbmt.query.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -131,12 +133,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/THOMAS/EROS";
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
-        c.setResolution(new String[] {
+        c.setResolution(ImmutableList.of(
                 "1708 plates", "7790 plates", "10152 plates",
                 "22540 plates", "89398 plates", "200700 plates"
-        }, new int[]{
+        ), ImmutableList.of(
                 1708, 7790, 10152, 22540, 89398, 200700
-        });
+        ));
         c.hasMapmaker = false;
         configArray.add(c);
 
@@ -309,7 +311,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
-                            ImageType.POLYCAM_IMAGE,
+                            ImageType.POLYCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
@@ -317,7 +319,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
                             //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
-                            ImageType.MAPCAM_IMAGE,
+                            ImageType.MAPCAM_V3_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
@@ -378,9 +380,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/bennu/bennu-simulated-v4";
-            c.setResolution(
-                    new String[] { "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3] },
-                    new int[] { 12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3] });
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -394,14 +396,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/POLYCAM", "RQ36V4_POLY", "/GASKELL/RQ36_V4/POLYCAM/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V4/MAPCAM", "RQ36V4_MAP", "/GASKELL/RQ36_V4/MAPCAM/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_V4_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.MAPCAM
@@ -426,9 +428,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V4/OLA/browse/Phase07_OB/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -438,7 +440,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseOutgoingIntensityIndex = 98;
             c.lidarBrowseReceivedIntensityIndex = 106;
             c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseFileListResourcePath = "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt";
+//            c.lidarBrowseFileListResourcePath =  c.rootDirOnServer + "/ola/browse/default/fileList.txt";
             c.lidarBrowseNumberHeaderLines = 0;
             c.lidarBrowseIsInMeters = true;
             c.lidarBrowseIsBinary = true;
@@ -446,9 +448,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarOffsetScale = 0.0005;
 
             c.hasStateHistory = true;
-            c.timeHistoryFile = "/GASKELL/RQ36_V4/history/timeHistory.bth";
+            c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
 
-            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX)
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
                 ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }
@@ -510,22 +513,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS/4179toutatis.obj.gz";
-        c.version = "Low resolution";
-        c.setResolution(ImmutableList.of(12796));
+        c.rootDirOnServer = "/toutatis/hudson/";
+        c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"),
+                ImmutableList.of(12796, 39996));
         configArray.add(c);
 
-        c = new SmallBodyViewConfig();
-        c.body = ShapeModelBody.TOUTATIS;
-        c.type = BodyType.ASTEROID;
-        c.population = ShapeModelPopulation.NEO;
-        c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
-        c.author = ShapeModelType.HUDSON;
-        c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
-        c.version = "High resolution";
-        c.setResolution(ImmutableList.of(39996));
-        configArray.add(c);
+
+//       c = new SmallBodyViewConfig();
+//       c.body = ShapeModelBody.TOUTATIS;
+//       c.type = BodyType.ASTEROID;
+//       c.population = ShapeModelPopulation.NEO;
+//       c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
+//       c.author = ShapeModelType.HUDSON;
+//       c.modelLabel = "Hudson et al. (2004)";
+//       c.rootDirOnServer = "/HUDSON/TOUTATIS2/4179toutatis2.obj.gz";
+//       c.version = "High resolution";
+//       c.setResolution(ImmutableList.of(39996));
+//       configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.MITHRA;
@@ -865,14 +870,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.setResolution(new String[] {
+        c.setResolution(ImmutableList.of(
                 "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
                 "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
                 "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-            }, new int[] {
+            ), ImmutableList.of(
                 2962, 5824, 11954, 24526, 47784, 98280, 189724,
                 244128, 382620, 784510, 1586194, 3145728
-            });
+            ));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -1850,7 +1855,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.rootDirOnServer = "/tempel1/farnham";
         c.shapeModelFileExtension = ".obj";
         // Number of plates found by inspection of files.
-        c.setResolution(new String[] { "32040 plates" }, new int[] { 32040 });
+        c.setResolution(ImmutableList.of("32040 plates"), ImmutableList.of(32040));
         // Density and rotation rate were provided with delivery manifest.
         c.density = 470.0;
         c.rotationRate = 4.28434129815435E-5;
@@ -1914,12 +1919,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rootDirOnServer = "/DLR/67P";
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
-            c.setResolution(new String[] {
+            c.setResolution(ImmutableList.of(
                     "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
                     "4895631 plates ", "16745283 plates "
-                }, new int[] {
+                ), ImmutableList.of(
                     17442, 72770, 298442, 1214922, 4895631, 16745283
-                });
+                ));
             c.hasColoringData = false;
             configArray.add(c);
 
@@ -2284,7 +2289,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2302,7 +2307,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2320,7 +2325,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2335,7 +2340,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.BLENDER;
             c.rootDirOnServer = "/earth/osirisrex";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2410,7 +2415,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                        ImageType.MAPCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2428,7 +2433,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
+                        ImageType.POLYCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2446,7 +2451,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                        ImageType.SAMCAM_FLIGHT_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2462,7 +2467,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.OREX;
             c.rootDirOnServer = "/earth/orex";
 //            c.shapeModelFileExtension = ".obj";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
             c.hasImageMap=true;
 
@@ -2500,7 +2505,23 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
-    //        c.hasHierarchicalImageSearch = true;
+//            c.hasHierarchicalImageSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
+            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
+            try
+            {
+//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
+                //TODO: eventually point this to a URL
+                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+                specIO.setPathString(c.spectrumMetadataFile);
+                c.hierarchicalSpectraSearchSpecification = specIO;
+
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
     //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
@@ -2602,10 +2623,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
-            c.author = ShapeModelType.HAYABUSA2;
+            c.author = ShapeModelType.JAXA_001;
+            c.modelLabel = "Haybusa2-testing";
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasImageMap=true;
             c.hasColoringData = false;
 
@@ -2651,31 +2673,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new NIRS3()
                     };
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.LASER;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
             configArray.add(c);
         }
 
@@ -2696,13 +2693,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.TRUTH;
             c.modelLabel = "H2 Simulated Truth";
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.setResolution(new String[] { "Low (54504 plates)", "High (5450420 plates)" }, new int[] { 54504, 5450420 });
+            c.setResolution(ImmutableList.of("Low (54504 plates)", "High (5450420 plates)" ), ImmutableList.of(54504, 5450420));
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
@@ -2716,24 +2713,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
 
-            BasicImagingInstrument oncCam;
-            {
-                // Set up images.
-                SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.IMAGING_DATA, ".fit", ".INFO", null, ".jpeg");
-                QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.ONC,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.ONC_TRUTH_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/onc", "ryugu_sim", "/ryugu/truth/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
 
-                // Put it all together in a session.
-                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-                oncCam = BasicImagingInstrument.of(builder.build());
-            }
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
                     tir
@@ -2744,14 +2726,33 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-//            c.imageSearchFilterNames = new String[]{
-////                    RyuguHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
-//            };
-//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-////                    RyuguHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
-//            };
-//            c.hasHierarchicalImageSearch = true;
-//            c.hierarchicalImageSearchSpecification = new RyuguExperimentalSearchSpecification();
+
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
 
             configArray.add(c);
         }
@@ -2767,7 +2768,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/imaging", "ryugu", "/ryugu/gaskell/imaging/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/gaskell/onc", "ryugu_sim", "/ryugu/gaskell/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
 
             SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
@@ -2778,7 +2779,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "H2 Simulated SPC";
             c.rootDirOnServer = "/ryugu/gaskell";
@@ -2798,10 +2799,182 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
             configArray.add(c);
         }
 
-        // Standard Gaskell shape model may be described once.
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-001", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-001/onc", "ryugu_flight", "/ryugu/jaxa-001/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_001;
+            c.modelLabel = "JAXA-001";
+            c.rootDirOnServer = "/ryugu/jaxa-001";
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+            c.shapeModelFileExtension = ".obj";
+
+            //            c.hasStateHistory = true;
+//            c.timeHistoryFile = "/ryugu/jaxa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.LASER;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-001", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/nasa-001/onc", "ryugu_flight", "/ryugu/nasa-001/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.NASA_001;
+            c.modelLabel = "NASA-001";
+            c.rootDirOnServer = "/ryugu/nasa-001";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            //            c.hasStateHistory = true;
+//            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam,
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.LASER;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+
+            configArray.add(c);
+        }
+
+       // Standard Gaskell shape model may be described once.
         final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
 
         // Gaskell images only.
@@ -2824,9 +2997,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Ernst et al. (in progress)";
             c.rootDirOnServer = "/atlas/gaskell";
-//            c.smallBodyLabelPerResolutionLevel = DEFAULT_GASKELL_LABELS_PER_RESOLUTION;
-//            c.smallBodyNumberOfPlatesPerResolutionLevel = DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION;
-            c.setResolution(new String[] { DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0] }, new int[] { DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0] });
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
 
             c.imagingInstruments = new ImagingInstrument[] {
                     imagingInstrument
@@ -3080,7 +3251,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
     }
 
     private SmallBodyViewConfig() {
-    	super(DEFAULT_GASKELL_LABELS_PER_RESOLUTION, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION);
+    	super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
     }
 
     @Override
@@ -3094,8 +3265,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
     @Override
     public boolean isAccessible()
     {
-    	URL importedShapeModelURL = FileCache.createFileURL(Configuration.getImportedShapeModelsDir());
-        FileInfo info = ShapeModelType.CUSTOM.equals(author) ? FileCache.getFileInfoFromServer(importedShapeModelURL, getShapeModelName()): FileCache.getFileInfoFromServer(serverPath(""));
+        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
+        FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
         return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
 
