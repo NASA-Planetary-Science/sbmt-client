@@ -51,6 +51,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -75,8 +76,14 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
+import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
 import altwg.util.PolyDataUtil;
 
@@ -1837,7 +1844,25 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             }
             else
             {
-//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+                QueryBase queryType = instrument.getQueryBase();
+                if (queryType instanceof FixedListQuery)
+                {
+                    FixedListQuery query = (FixedListQuery)queryType;
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                }
+                else
+                {
+                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            "", polygonTypesChecked,
+                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            cubeList);
+
+                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+                    results = query.runQuery(searchMetadata).getResultlist();
+                }
             }
 
             setSpectrumSearchResults(results);
