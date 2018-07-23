@@ -303,6 +303,7 @@ public class SbmtRunnable implements Runnable
             break;
         case OSIRIS_REX:
         case OSIRIS_REX_DEPLOY:
+        case OSIRIS_REX_MIRROR_DEPLOY:
         case OSIRIS_REX_STAGE:
             if (
                     ShapeModelBody.RQ36.equals(config.body) ||

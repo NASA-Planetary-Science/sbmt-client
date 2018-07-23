@@ -46,6 +46,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -77,6 +78,9 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
+import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
@@ -526,11 +530,26 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
             else
             {
-                FixedListQuery query = (FixedListQuery)instrument.getQueryBase();
-                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                QueryBase queryType = instrument.getQueryBase();
+                if (queryType instanceof FixedListQuery)
+                {
+                    FixedListQuery query = (FixedListQuery)queryType;
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                }
+                else
+                {
+                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(view.getFromDistanceTextField().getText()), Double.valueOf(view.getToDistanceTextField().getText())),
+                            "", null,   //TODO: reinstate polygon types here
+                            Ranges.closed(Double.valueOf(view.getFromIncidenceTextField().getText()), Double.valueOf(view.getToIncidenceTextField().getText())),
+                            Ranges.closed(Double.valueOf(view.getFromEmissionTextField().getText()), Double.valueOf(view.getToEmissionTextField().getText())),
+                            Ranges.closed(Double.valueOf(view.getFromPhaseTextField().getText()), Double.valueOf(view.getToPhaseTextField().getText())),
+                            cubeList);
+
+                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+                    results = query.runQuery(searchMetadata).getResultlist();
+                }
             }
-            System.out.println(
-                    "SpectrumSearchController: submitButtonActionPerformed: results size " + results.size());
             setSpectrumSearchResults(results);
 //            SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
 //            collection.tagSpectraWithMetadata(results, spec);
