@@ -92,7 +92,6 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
@@ -2623,10 +2622,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             List<List<String>> results = null;
-            if (instrument.searchQuery instanceof FixedListQueryBase)
+            if (instrument.searchQuery instanceof FixedListQuery)
             {
                 FixedListQuery query = (FixedListQuery)instrument.searchQuery;
-                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), imageSource)).getResultlist();
             }
             else
             {
@@ -2740,10 +2739,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
                 List<List<String>> resultsOtherSource = null;
-                if (instrument.searchQuery instanceof FixedListQueryBase)
+                if (instrument.searchQuery instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)instrument.searchQuery;
-                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), imageSource)).getResultlist();
                 }
                 else
                 {

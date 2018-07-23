@@ -618,6 +618,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.OREX,
             ShapeModelType.JAXA_001,
             ShapeModelType.NASA_001,
+            ShapeModelType.NASA_002,
             ShapeModelType.BLENDER,
             null
             ));

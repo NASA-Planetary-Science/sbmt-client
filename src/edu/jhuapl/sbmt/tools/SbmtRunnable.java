@@ -252,6 +252,7 @@ public class SbmtRunnable implements Runnable
             if (
                     !ShapeModelType.JAXA_001.equals(config.author) &&
                     !ShapeModelType.NASA_001.equals(config.author) &&
+                    !ShapeModelType.NASA_002.equals(config.author) &&
                     !ShapeModelType.OREX.equals(config.author) &&
                     !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author)) &&
                     !ShapeModelBody.RYUGU.equals(config.body) &&
@@ -267,6 +268,7 @@ public class SbmtRunnable implements Runnable
                     ShapeModelBody.ITOKAWA.equals(config.body) ||
                     ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelType.NASA_001.equals(config.author) ||
+                    ShapeModelType.NASA_002.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
             {
@@ -278,6 +280,7 @@ public class SbmtRunnable implements Runnable
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
                     ShapeModelType.NASA_001.equals(config.author) ||
+                    ShapeModelType.NASA_002.equals(config.author) ||
                     ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
@@ -290,6 +293,7 @@ public class SbmtRunnable implements Runnable
 //                    ShapeModelBody.EROS.equals(config.body) ||
 //                    ShapeModelBody.ITOKAWA.equals(config.body) ||
                     ShapeModelType.NASA_001.equals(config.author) ||
+                    ShapeModelType.NASA_002.equals(config.author) ||
                     ShapeModelType.JAXA_001.equals(config.author) ||
                     ShapeModelBody.RYUGU.equals(config.body)
                )
