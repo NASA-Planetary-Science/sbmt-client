@@ -973,9 +973,11 @@ public class CreateInfoFiles
 //        CreateInfoFiles.doUsageTest(); //Tested, verified
 //        CreateInfoFiles.doOrxTest();
 
+    	//Developer verifier test:
+//        String[] testArgs = {"-s", "SCLK_STR", "/Users/steelrj1/Desktop/images", "/Users/steelrj1/Desktop/infofiles", "/Users/steelrj1/Desktop/kernels2/spoc-digest-2017-10-05T22_05_46.366Z.mk", "/earth/orex/imaging/dummyPath", "ORX", "ORX_OCAMS_POLYCAM", "EARTH", "IAU_EARTH"};
+//        execute(testArgs);
+        
         //Server run:
-        String[] testArgs = {"-s", "SCLK_STR", "/Users/steelrj1/Desktop/images", "/Users/steelrj1/Desktop/infofiles", "/Users/steelrj1/Desktop/kernels2/spoc-digest-2017-10-05T22_05_46.366Z.mk", "/earth/orex/imaging/dummyPath", "ORX", "ORX_OCAMS_POLYCAM", "EARTH", "IAU_EARTH"};
-
-        execute(testArgs);
+        execute(args);
     }
 }
