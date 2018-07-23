@@ -2919,7 +2919,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-002/onc", "/ryugu/nasa-002/onc/gallery", false);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/gallery", false);
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
