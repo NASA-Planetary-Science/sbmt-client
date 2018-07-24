@@ -38,6 +38,7 @@ public class DatabaseGeneratorSql
     private SmallBodyViewConfig smallBodyConfig;
     private String betaSuffix = "_beta";
     private String databasePrefix;
+    private String databaseSuffix = "_test";
     private boolean appendTables;
     private boolean modifyMain;
 
@@ -359,7 +360,7 @@ public class DatabaseGeneratorSql
         if(modifyMain){
             return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName() + betaSuffix;
+            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName() + databaseSuffix;
         }
     }
 
@@ -368,13 +369,23 @@ public class DatabaseGeneratorSql
         if(modifyMain){
             return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName() + betaSuffix;
+            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName() + databaseSuffix;
         }
     }
 
     public void run(String fileList, ImageSource source) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+        
+        if (!fileList.endsWith(".txt"))
+        {
+            if (source == ImageSource.GASKELL)
+                fileList = fileList + File.separator + "imagelist-fullpath-sum.txt";
+            else if (source == ImageSource.SPICE)
+                fileList = fileList + File.separator + "imagelist-fullpath-info.txt";
+            else
+                throw new IOException("Image Source is neither type GASKELL or type SPICE");
+        }
 
         List<String> files = null;
         try {
@@ -478,28 +489,42 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
+
+
+        // Ryugu Simulated SPC Model (on staging and deployed servers)
         RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/imagelist-fullpath.txt", "ryugu",
-                "data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt"),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc", "ryugu_sim",
+                "data/ryugu/gaskell/onc"),
+        // Ryugu Simulated Truth Model (on staging and deployed servers)
         RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/imagelist-fullpath.txt", "ryugu",
-                "data/ryugu/truth/onc/simulated-imagelist-fullpath.txt"),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/", "ryugu_sim",
+                "data/ryugu/truth/onc"),
+
+        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
         RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc", "ryugu_sim",
+                "data/ryugu/gaskell/onc"),
+        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
         RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc", "ryugu_sim",
+                "data/ryugu/truth/onc"),
 
-        // This is the reference model; use this one for flight data.
-        RYUGU_FLIGHT(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-002/onc/imagelist-fullpath.txt", "ryugu",
-                "ryugu/nasa-002/onc/imagelist-fullpath.txt"),
+        // Ryugu Shared Flight INFOFILE Images (on APL server)
+//        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/shared/onc", "ryugu_shared",
+//                "ryugu/shared/onc"),
 
+        // Ryugu Model-specific Flight SUMFILE Images (on APL server)
         RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc", "ryugu_jaxa001",
+                "ryugu/jaxa-001/onc"),
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001",
+                "ryugu/nasa-001/onc"),
         RYUGU_NASA_002_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc/imagelist-fullpath.txt", "ryugu_flight"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+
 
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
