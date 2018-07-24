@@ -2918,8 +2918,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new FixedListQuery("/ryugu/nasa-002/onc");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL }, ImageType.ONC_IMAGE);
+            QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-002/onc", "/ryugu/nasa-002/onc/gallery", false);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/gallery", false);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
@@ -2938,8 +2940,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    oncCam,
+                    oncCam, tirCam
             };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/nasa-002/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
