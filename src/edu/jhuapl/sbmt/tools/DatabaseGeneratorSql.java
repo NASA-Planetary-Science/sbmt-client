@@ -38,7 +38,7 @@ public class DatabaseGeneratorSql
     private SmallBodyViewConfig smallBodyConfig;
     private String betaSuffix = "_beta";
     private String databasePrefix;
-    private String databaseSuffix = "_test";
+    private String databaseSuffix = "";
     private boolean appendTables;
     private boolean modifyMain;
 
@@ -376,7 +376,7 @@ public class DatabaseGeneratorSql
     public void run(String fileList, ImageSource source) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
-        
+
         if (!fileList.endsWith(".txt"))
         {
             if (source == ImageSource.GASKELL)
