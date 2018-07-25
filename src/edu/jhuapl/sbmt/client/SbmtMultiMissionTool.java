@@ -161,6 +161,7 @@ public class SbmtMultiMissionTool
                 Configuration.setAppName("sbmt");
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
+                Configuration.setDatabaseSuffix("_stage");
                 break;
             case TEST_APL_INTERNAL:
             case TEST_PUBLIC_RELEASE:
@@ -168,6 +169,7 @@ public class SbmtMultiMissionTool
                 Configuration.setAppName("sbmt");
                 Configuration.setCacheVersion("2");
                 Configuration.setAppTitle("SBMT");
+                Configuration.setDatabaseSuffix("_test");
                 break;
             case HAYABUSA2_DEV:
 //                Configuration.setRootURL("http://sbmt.jhuapl.edu/internal/sbmt");
@@ -175,6 +177,7 @@ public class SbmtMultiMissionTool
                 Configuration.setAppName("sbmthyb2-dev");
                 Configuration.setCacheVersion("");
                 Configuration.setAppTitle("SBMT/Hayabusa2-Dev");
+                Configuration.setDatabaseSuffix("_test");
                 break;
             case HAYABUSA2_STAGE:
                 Configuration.setRootURL("http://hyb2sbmt.jhuapl.edu/sbmt");
