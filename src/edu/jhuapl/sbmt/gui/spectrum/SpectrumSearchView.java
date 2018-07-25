@@ -19,6 +19,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.border.TitledBorder;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+
 public class SpectrumSearchView extends JPanel
 {
     private JSpinner startSpinner;
@@ -64,9 +71,22 @@ public class SpectrumSearchView extends JPanel
     private JPanel rgbColoringPanel;
     private JButton saveSpectraListButton;
     private JButton loadSpectraListButton;
+    private PickManager pickManager;
+    private SmallBodyViewConfig smallBodyConfig;
+    private ModelManager modelManager;
+    private Renderer renderer;
+    private SpectralInstrument instrument;
 
-    public SpectrumSearchView()
+    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument)
     {
+
+        this.smallBodyConfig = smallBodyConfig;
+        this.modelManager = modelManager;
+        this.pickManager = pickManager2;
+        this.renderer = renderer;
+        this.instrument = instrument;
+
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         resultList = new JList();
         JScrollPane scrollPane = new JScrollPane();
@@ -261,6 +281,17 @@ public class SpectrumSearchView extends JPanel
         panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.X_AXIS));
 
         selectRegionButton = new JButton("Select Region");
+        selectRegionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!selectRegionButton.isSelected()) {
+                    selectRegionButton.setSelected(true);
+                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+                } else {
+                    selectRegionButton.setSelected(false);
+                    pickManager.setPickMode(PickMode.DEFAULT);
+                }
+            }
+        });
         panel_7.add(selectRegionButton);
 
         clearRegionButton = new JButton("Clear Region");
@@ -599,4 +630,13 @@ public class SpectrumSearchView extends JPanel
     public JButton getLoadSpectraListButton() {
         return loadSpectraListButton;
     }
+
+
+    private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
+    {//GEN-HEADEREND:event_selectRegionButtonActionPerformed
+        if (selectRegionButton.isSelected())
+            pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+        else
+            pickManager.setPickMode(PickMode.DEFAULT);
+    }//GEN-LAST:event_selectRegionButtonActionPerformed
 }

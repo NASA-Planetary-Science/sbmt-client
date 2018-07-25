@@ -200,7 +200,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
+            allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }

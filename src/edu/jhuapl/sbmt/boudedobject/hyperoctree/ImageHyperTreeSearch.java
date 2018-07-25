@@ -52,7 +52,7 @@ public class ImageHyperTreeSearch
 
         // read in the skeleton
         ImageSearchDataCollection imageModel = new ImageSearchDataCollection(null);
-        imageModel.addDatasourceSkeleton("ErosTest", "/Users/osheacm1/Documents/SAA/testHypertree/dataSource.image");
+        imageModel.addDatasourceSkeleton("ErosTest", "/Users/osheacm1/Documents/SAA/SBMT/testHypertree/dataSource.image");
         imageModel.setCurrentDatasourceSkeleton("ErosTest");
         imageModel.readSkeleton();
         FSHyperTreeSkeleton skeleton = imageModel.getCurrentSkeleton();

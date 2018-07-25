@@ -62,6 +62,7 @@ import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
+import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
@@ -365,13 +366,18 @@ public class SbmtModelFactory
         return new LineamentModel();
     }
 
-    static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel)
+    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
     {
+        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+
         ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
         ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
         String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
 
-        return new SpectraCollection(smallBodyModel);
+        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+
+        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+        return models;
     }
 
     static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)

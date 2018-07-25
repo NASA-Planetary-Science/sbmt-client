@@ -52,8 +52,10 @@ public abstract class BodyViewConfig extends ViewConfig
     public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
-    public boolean hasHypertreeBasedLidarSearch=false;
     public boolean hasHypertreeBasedSpectraSearch=false;
+    public Map<String, String> spectraSearchDataSourceMap=Maps.newHashMap();
+
+    public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
