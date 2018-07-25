@@ -16,7 +16,7 @@
 <booleanAttribute key="org.eclipse.jdt.debug.ui.CONSIDER_INHERITED_MAIN" value="true"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--beta --no-stream-redirect --debug --auto-clear-cache"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--beta --debug --auto-clear-cache"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64  -Xmx4096M -Dedu.jhuapl.sbmt.mission=“TEST_APL_INTERNAL”"/>
 </launchConfiguration>
