@@ -266,8 +266,10 @@ public class ImagePopupMenu extends PopupMenu
                     if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
                         selectShowFrustum = false;
                     if (imageKeys.size() == 1)
+                    {
                         enableSimulateLighting = true;
                         simulateLightingOn = pImage.isSimulatingLighingOn();
+                    }
                     if (image.isVisible())
                         selectHideImage = false;
                 } else
