@@ -363,6 +363,7 @@ public class ImagePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
         showFrustumMenuItem.setSelected(selectShowFrustum);
         showFrustumMenuItem.setEnabled(enableShowFrustum);
+        exportInfofileMenuItem.setEnabled(enableSaveToDisk);
         exportENVIImageMenuItem.setEnabled(enableSaveToDisk);
         simulateLightingMenuItem.setEnabled(enableSimulateLighting);
         simulateLightingMenuItem.setSelected(simulateLightingOn);
