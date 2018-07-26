@@ -723,35 +723,37 @@ public class ImagePopupMenu extends PopupMenu
         {
             for (ImageKey imageKey : imageKeys)
             {
-                try
+                if (imageCollection.getImage(imageKey) instanceof PerspectiveImage)
                 {
-                    imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                    String fullPathName = image.getFitFileFullPath();
-                    if (fullPathName == null)
-                        fullPathName = image.getPngFileFullPath();
-                    String imageFileName = new File(fullPathName).getName();
-
-
-                    String defaultFileName = null;
-                    if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
-
-                    File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
-                    if (file == null)
+                    try
                     {
-                        return;
+                        imageCollection.addImage(imageKey);
+                        PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
+                        String fullPathName = image.getFitFileFullPath();
+                        if (fullPathName == null)
+                            fullPathName = image.getPngFileFullPath();
+                        String imageFileName = new File(fullPathName).getName();
+
+                        String defaultFileName = null;
+                        if (imageFileName != null)
+                            defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+
+                        File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
+                        if (file == null)
+                        {
+                            return;
+                        }
+
+                        String filename = file.getAbsolutePath();
+
+                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+
+                        image.saveImageInfo(filename);
                     }
-
-                    String filename = file.getAbsolutePath();
-
-                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
-
-                    image.saveImageInfo(filename);
-                }
-                catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             }
 
