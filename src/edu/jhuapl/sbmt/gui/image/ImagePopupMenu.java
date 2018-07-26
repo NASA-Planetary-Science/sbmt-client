@@ -56,7 +56,7 @@ public class ImagePopupMenu extends PopupMenu
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private List<ImageKey> imageKeys = new ArrayList<Image.ImageKey>();
-    private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
+    //private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -259,15 +259,26 @@ public class ImagePopupMenu extends PopupMenu
             {
                 Image image = imageCollection.getImage(imageKey);
                 //imageCollection.addImage(imageKey);
-                PerspectiveImage pImage = (PerspectiveImage)imageCollection.getImage(imageKey);
-                //image.setShowFrustum(showFrustumMenuItem.isSelected());
-                if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
-                    selectShowFrustum = false;
-                if (imageKeys.size() == 1)
-                    enableSimulateLighting = true;
-                    simulateLightingOn = pImage.isSimulatingLighingOn();
-                if (image.isVisible())
-                    selectHideImage = false;
+                if ( image instanceof PerspectiveImage )
+                {
+                    PerspectiveImage pImage = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    //image.setShowFrustum(showFrustumMenuItem.isSelected());
+                    if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                        selectShowFrustum = false;
+                    if (imageKeys.size() == 1)
+                        enableSimulateLighting = true;
+                        simulateLightingOn = pImage.isSimulatingLighingOn();
+                    if (image.isVisible())
+                        selectHideImage = false;
+                } else
+                {
+                    if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                        selectShowFrustum = false;
+                    if (imageKeys.size() == 1)
+                        enableSimulateLighting = true;
+                    if (image.isVisible())
+                        selectHideImage = false;
+                }
             }
             else
             {
@@ -371,13 +382,13 @@ public class ImagePopupMenu extends PopupMenu
                     if (mapImageMenuItem.isSelected())
                     {
                         imageCollection.addImage(imageKey);
-                        keySet.add(imageKey);
+                        //keySet.add(imageKey);
                     }
 
                     else
                     {
                         imageCollection.removeImage(imageKey);
-                        keySet.remove(imageKey);
+                        //keySet.remove(imageKey);
                         renderer.setLighting(LightingType.LIGHT_KIT);
                     }
                 }
@@ -799,8 +810,11 @@ public class ImagePopupMenu extends PopupMenu
                     PerspectiveImage pImage;
                     for(Image tempImage : imageCollection.getImages())
                     {
-                        pImage = (PerspectiveImage)tempImage;
-                        pImage.setSimulateLighting(false);
+                        if (tempImage instanceof PerspectiveImage)
+                        {
+                            pImage = (PerspectiveImage) tempImage;
+                            pImage.setSimulateLighting(false);
+                        }
                     }
                 }
                 else
