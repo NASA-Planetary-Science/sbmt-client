@@ -13,11 +13,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,12 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
@@ -41,6 +34,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ChangeEvent;
@@ -55,9 +49,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
-import vtk.vtkCubeSource;
 import vtk.vtkFunctionParser;
-import vtk.vtkPolyData;
 import vtk.vtkPolyDataNormals;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
@@ -70,19 +62,12 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.boudedobject.hyperoctree.BoundedObjectHyperTreeNode;
-import edu.jhuapl.sbmt.boudedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
-import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.model.bennu.InstrumentMetadata;
 import edu.jhuapl.sbmt.model.bennu.SearchSpec;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
@@ -98,7 +83,7 @@ import edu.jhuapl.sbmt.util.TimeUtil;
 
 import altwg.util.PolyDataUtil;
 
-public abstract class SpectrumSearchController implements PropertyChangeListener, MouseListener, KeyListener
+public abstract class SpectrumBrowsePanel extends JPanel implements PropertyChangeListener, MouseListener, KeyListener
 {
     protected SpectrumSearchView view;
     protected SpectrumSearchModel model;
@@ -108,7 +93,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     SpectraHierarchicalSearchSpecification spectraSpec;
     private PickManager pickManager;
 
-    public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
+    public SpectrumBrowsePanel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
     {
@@ -149,7 +134,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
         {
-//            view.getDbSearchPanel().setVisible(false);
+            view.getDbSearchPanel().setVisible(false);
         }
 
         view.getSaveSpectraListButton().addActionListener(new ActionListener()
@@ -493,141 +478,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     results.addAll(thisResult);
                 }
 //                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
-            }
-            else if (model.getSmallBodyConfig().hasHypertreeBasedSpectraSearch)
-            {
-
-                String spectraDatasourceName = "";
-                if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
-                    if (view.getL2Button().isSelected()) // either L2 or L3 for OTES
-                        spectraDatasourceName = "OTES_L2";
-                    else
-                        spectraDatasourceName = "OTES_L3";
-                }
-                else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) { // only L3 for OVIRS currently
-                    spectraDatasourceName = "OVIRS_L3";
-                }
-
-
-                this.spectraModel = (SpectraSearchDataCollection)modelManager.getModel(ModelNames.SPECTRA_HYPERTREE_SEARCH);
-                String spectraDatasourcePath = spectraModel.getSpectraDataSourceMap().get(spectraDatasourceName);
-//                System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-                System.out.println("Current Spectra Datasource Name: " + spectraDatasourceName);
-                System.out.println("Current Spectra Datasource Path: " + spectraDatasourcePath);
-
-               spectraModel.addDatasourceSkeleton(spectraDatasourceName, spectraDatasourcePath);
-               spectraModel.setCurrentDatasourceSkeleton(spectraDatasourceName);
-               spectraModel.readSkeleton();
-               FSHyperTreeSkeleton skeleton = spectraModel.getCurrentSkeleton();
-
-               double[] selectionRegionCenter = null;
-               double selectionRegionRadius = 0.0;
-
-               AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-               SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-               AbstractEllipsePolygonModel.EllipsePolygon region=null;
-               vtkPolyData interiorPoly=new vtkPolyData();
-               if (selectionModel.getNumberOfStructures() > 0)
-               {
-                   region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-                   selectionRegionCenter = region.center;
-                   selectionRegionRadius = region.radius;
-
-
-                   // Always use the lowest resolution model for getting the intersection cubes list.
-                   // Therefore, if the selection region was created using a higher resolution model,
-                   // we need to recompute the selection region using the low res model.
-                   if (smallBodyModel.getModelResolution() > 0)
-                       smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
-                   else
-                       interiorPoly=region.interiorPolyData;
-
-               }
-               else
-               {
-                   vtkCubeSource box=new vtkCubeSource();
-                   double[] bboxBounds=smallBodyModel.getBoundingBox().getBounds();
-                   BoundingBox bbox=new BoundingBox(bboxBounds);
-                   bbox.increaseSize(0.01);
-                   box.SetBounds(bbox.getBounds());
-                   box.Update();
-                   interiorPoly.DeepCopy(box.GetOutput());
-               }
-
-               Set<String> files = new HashSet<String>();
-               HashMap<String, HyperBoundedObject> fileSpecMap = new HashMap<String, HyperBoundedObject>();
-               double[] times = new double[] {startTime, endTime};
-               TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), times);
-               double[] bounds = interiorPoly.GetBounds();
-               HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0]}, new double[]{bounds[1], bounds[3], bounds[5], times[1]});
-
-               for (Integer cubeid : cubeList)
-               {
-                   System.out.println("cubeId: " + cubeid);
-                   Node currNode = skeleton.getNodeById(cubeid);
-                   Path path = currNode.getPath();
-                   Path dataPath = path.resolve("data");
-                   DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
-                   try
-                   {
-                       while (instream.available() > 0) {
-                           HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream);
-                           int fileNum = obj.getFileNum();
-                           Map<Integer, String> fileMap = skeleton.getFileMap();
-                           String file = fileMap.get(fileNum);
-                           if (files.add(file)) {
-                               fileSpecMap.put(file, obj);
-                           }
-                       }
-                   }
-                   catch (IOException e)
-                   {
-                       // TODO Auto-generated catch block
-                       e.printStackTrace();
-                   }
-
-               }
-
-               for (String file : files) {
-                   System.out.println(file);
-               }
-
-               ArrayList<String> intFiles = new ArrayList<String>();
-
-               // NOW CHECK WHICH SPECTRA ACTUALLY INTERSECT REGION
-               for (String fi : files) {
-                   HyperBoundedObject spec = fileSpecMap.get(fi);
-                   HyperBox bbox = spec.getBbox();
-                   try
-                   {
-                       if (hbb.intersects(bbox)) {
-                           intFiles.add(fi);
-                       }
-                   }
-                   catch (HyperException e)
-                   {
-                       // TODO Auto-generated catch block
-                       e.printStackTrace();
-                   }
-               }
-
-               // print final list of images that intersect region
-               List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way?
-               System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
-               for (String file : intFiles) {
-                   System.out.println(file);
-                   ArrayList<String> currList = new ArrayList<String>();
-                   currList.add(file);
-                   listoflist.add(currList);
-               }
-
-
-
-               results = listoflist;
-
-
-
-
             }
             else
             {

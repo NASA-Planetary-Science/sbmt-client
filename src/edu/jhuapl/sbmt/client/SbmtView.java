@@ -55,10 +55,10 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
@@ -385,8 +385,9 @@ public class SbmtView extends View implements PropertyChangeListener
             else
                 if (instrument instanceof OTES)
                 {
-               JComponent component = new OTESSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
-                addTab(instrument.getDisplayName(), component);
+                    JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+//               JComponent component = new OTESSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
+                    addTab(instrument.getDisplayName(), component);
                 }
                 else if (instrument instanceof OVIRS)
                 {
