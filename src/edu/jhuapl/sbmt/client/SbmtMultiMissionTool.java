@@ -37,6 +37,7 @@ public class SbmtMultiMissionTool
         OSIRIS_REX("7cd84586"),
         OSIRIS_REX_STAGE("7cd84587"),
         OSIRIS_REX_DEPLOY("7cd84588"),
+        OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
         STAGE_APL_INTERNAL("f7e441b"),
         STAGE_PUBLIC_RELEASE("8cc8e12"),
         TEST_APL_INTERNAL("fb404a7"),
@@ -199,6 +200,12 @@ public class SbmtMultiMissionTool
               Configuration.setCacheVersion("");
               Configuration.setAppTitle("SBMT/OSIRIS REx-Stage");
               break;
+            case OSIRIS_REX_MIRROR_DEPLOY:
+//                Configuration.setRootURL("http://sbmt.jhuapl.edu/sbmt");
+                Configuration.setAppName("sbmt1orex-mirror");
+                Configuration.setCacheVersion("");
+                Configuration.setAppTitle("SBMT/OSIRIS REx APL Mirror");
+                break;
             case OSIRIS_REX_DEPLOY:
               Configuration.setRootURL("https://uasbmt.lpl.arizona.edu/sbmt");
               Configuration.setAppName("sbmt1orex");
@@ -236,6 +243,7 @@ public class SbmtMultiMissionTool
                 break;
             case OSIRIS_REX:
             case OSIRIS_REX_DEPLOY:
+            case OSIRIS_REX_MIRROR_DEPLOY:
             case OSIRIS_REX_STAGE:
                 splash = new SbmtSplash("resources", "splashLogoOrex.png");
                 break;

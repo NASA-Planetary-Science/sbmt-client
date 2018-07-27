@@ -223,6 +223,8 @@ public class SbmtModelFactory
                 return new ONCImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.ONC_TRUTH_IMAGE)
                 return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.TIR_IMAGE)
+                return new TIRImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }

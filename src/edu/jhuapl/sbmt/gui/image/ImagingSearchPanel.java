@@ -70,6 +70,9 @@ import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache.FileInfo;
+import edu.jhuapl.saavtk.util.FileCache.FileInfo.YesOrNo;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
@@ -92,7 +95,6 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
-import edu.jhuapl.sbmt.query.fixedlist.FixedListQueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
@@ -2622,28 +2624,42 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
             }
 
+
+            String imageListName = "imagelist.txt";
+            if (imageSource.equals(ImageSource.SPICE))
+                imageListName = "imagelist-info.txt";
+            else if (imageSource.equals(ImageSource.GASKELL))
+                imageListName = "imagelist-sum.txt";
+
             List<List<String>> results = null;
-            if (instrument.searchQuery instanceof FixedListQueryBase)
-            {
-                FixedListQuery query = (FixedListQuery)instrument.searchQuery;
-                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
-            }
-            else
+            if (instrument.searchQuery instanceof FixedListQuery)
             {
 
-                // Run queries based on user specifications
-                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-                        searchField, null,
-                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                        sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
-
-                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+                    FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+                    FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
+                    if (!info.isExistsOnServer().equals(YesOrNo.YES))
+                    {
+                        System.out.println("Could not find " + imageListName + ". Using imagelist.txt instead");
+                        imageListName = "imagelist.txt";
+                    }
+                    results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", imageListName, "images", query.getRootPath(), imageSource)).getResultlist();
             }
+//            else
+//            {
+//
+//                // Run queries based on user specifications
+//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+//                        searchField, null,
+//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+//                        sumOfProductsSearch, camerasSelected, filtersSelected,
+//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+//
+//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+//            }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
 //            if (instrument.spectralMode == SpectralMode.MULTI)
@@ -2740,10 +2756,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
                 List<List<String>> resultsOtherSource = null;
-                if (instrument.searchQuery instanceof FixedListQueryBase)
+                if (instrument.searchQuery instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)instrument.searchQuery;
-                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt", "images", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+//                    FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
+//                    if (!info.isExistsOnServer().equals(YesOrNo.YES))
+//                    {
+//                        System.out.println("Could not find " + imageListName + ". Using imagelist.txt instead");
+//                        imageListName = "imagelist.txt";
+//                    }
+                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist.txt" /*imageListName*/, "images", query.getRootPath(), imageSource)).getResultlist();
                 }
                 else
                 {
