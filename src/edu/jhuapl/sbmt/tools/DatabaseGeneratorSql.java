@@ -515,7 +515,7 @@ public class DatabaseGeneratorSql
 //                "ryugu/shared/onc"),
 
         // Ryugu Model-specific Flight SUMFILE Images (on APL server)
-        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
+        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc", "ryugu_jaxa001",
                 "ryugu/jaxa-001/onc"),
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),

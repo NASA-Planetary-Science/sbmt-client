@@ -192,7 +192,7 @@ public class SbmtRunnable implements Runnable
 			if (ShapeModelBody.EROS.equals(config.body)
 					|| ShapeModelBody.ITOKAWA.equals(config.body)
 					|| ShapeModelBody.RYUGU.equals(config.body)
-					|| (ShapeModelBody.EARTH.equals(config.body) && ShapeModelType.JAXA_001.equals(config.author)))
+					|| (ShapeModelBody.EARTH.equals(config.body) && ShapeModelType.JAXA_SFM_v20180627.equals(config.author)))
 			{
 				config.enable(true);
 			}

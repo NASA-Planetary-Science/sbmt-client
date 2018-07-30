@@ -127,8 +127,21 @@ else
 
   doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
 
-  # set the soft link to the shared onc directory
-  ln -s ../../shared/onc/images $destTop/$processingModelName-$processingVersion/onc/images
+  if [ -d "$srcTop/$processingVersion/$processingModelName/onc" ]
+  then 
+    # set the soft link to the shared onc directory
+    ln -s ../../shared/onc/images $destTop/$processingModelName-$processingVersion/onc/images
+    ln -s ../../shared/onc/gallery $destTop/$processingModelName-$processingVersion/onc/gallery
+    ln -s ../../shared/onc/imagelist-info.txt $destTop/$processingModelName-$processingVersion/onc/imagelist-info.txt
+    ln -s ../../shared/onc/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/onc/imagelist-fullpath-info.txt
+    ln -s ../../shared/onc/infofiles $destTop/$processingModelName-$processingVersion/onc/infofiles
+    ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+    ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
+  else
+    ln -s ../shared/onc $destTop/$processingModelName-$processingVersion/onc
+    ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+    ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
+  fi
 
   # fix any bad permissions
   $scriptDir/data-permissions.pl $destTop/$processingModelName-$processingVersion
