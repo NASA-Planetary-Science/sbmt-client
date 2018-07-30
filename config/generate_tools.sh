@@ -59,9 +59,9 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
 
 
     echo 'if [ "$(/bin/uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/mac64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \$@" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/mac64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'elif [ "$(/bin/uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \$@" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 
 
