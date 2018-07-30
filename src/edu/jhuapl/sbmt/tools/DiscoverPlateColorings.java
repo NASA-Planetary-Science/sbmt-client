@@ -19,8 +19,8 @@ import edu.jhuapl.saavtk.util.SafePaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
 import edu.jhuapl.saavtk.util.file.DataFileReader;
 import edu.jhuapl.saavtk.util.file.DataObjectInfo;
+import edu.jhuapl.saavtk.util.file.DataObjectInfo.InfoRow;
 import edu.jhuapl.saavtk.util.file.TableInfo;
-import edu.jhuapl.saavtk.util.file.DataObjectInfo.InfoElements;
 import edu.jhuapl.saavtk.util.file.TableInfo.ColumnInfo;
 
 public class DiscoverPlateColorings
@@ -146,7 +146,7 @@ public class DiscoverPlateColorings
 
 	protected String getMapName(DataObjectInfo objectInfo)
 	{
-		for (InfoElements info : objectInfo.getDescription().get())
+        for (InfoRow info : objectInfo.getDescription().get())
 		{
 			List<String> stringList = info.get();
 			if (MAP_NAME.equalsIgnoreCase(stringList.get(0)))
