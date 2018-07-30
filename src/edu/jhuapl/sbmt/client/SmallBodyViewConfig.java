@@ -2506,16 +2506,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
     //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
     //        };
 //            c.hasHierarchicalImageSearch = true;
-//            c.hasHierarchicalSpectraSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
           c.spectraSearchDataSourceMap.put("OTES_L2","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/otes_l2/hypertree/dataSource.spectra");
           c.spectraSearchDataSourceMap.put("OTES_L3","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/otes_l3/hypertree/dataSource.spectra");
           c.spectraSearchDataSourceMap.put("OVIRS_L3","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3/hypertree/dataSource.spectra");
-
-
-
-//            c.spectraSearchDataSourceMap.put("L2","/project/sbmtpipeline/processed/osirisrex/earthflyby/otes_l2/treeTest719/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
             try
             {

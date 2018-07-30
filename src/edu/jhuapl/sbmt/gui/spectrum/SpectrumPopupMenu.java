@@ -498,10 +498,5 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     }
 
-    public void setSearchPanel(SpectrumBrowsePanel spectrumBrowsePanel)
-    {
-        // TODO Auto-generated method stub
-
-    }
 
 }

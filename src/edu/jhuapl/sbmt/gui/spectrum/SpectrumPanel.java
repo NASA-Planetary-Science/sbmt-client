@@ -27,20 +27,19 @@ public class SpectrumPanel extends JTabbedPane
     {
         setBorder(BorderFactory.createEmptyBorder());
 
-        SpectrumBrowsePanel spectrumBrowsePanel;
         SpectrumSearchController spectrumSearchController;
-
+        SpectrumSearchController spectrumBrowseController;
 
         if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
-            spectrumSearchController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument);
-//            spectrumBrowsePanel = new OTESBrowsePanel();
-//            addTab("Browse", spectrumBrowsePanel.getView());
+            spectrumSearchController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
+            spectrumBrowseController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
+            addTab("Browse", spectrumBrowseController.getView());
             addTab("Search", spectrumSearchController.getView());
         }
         else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) {
-            spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument);
-            spectrumBrowsePanel = new OVIRSBrowsePanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument);
-            addTab("Browse", spectrumBrowsePanel.getView());
+            spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
+            spectrumBrowseController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
+            addTab("Browse", spectrumBrowseController.getView());
             addTab("Search", spectrumSearchController.getView());
         }
 

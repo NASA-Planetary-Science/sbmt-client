@@ -51,6 +51,8 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
@@ -104,23 +106,29 @@ import altwg.util.PolyDataUtil;
 
 public abstract class SpectrumSearchController implements PropertyChangeListener, MouseListener, KeyListener
 {
-    protected SpectrumSearchView view;
+    protected SpectrumView view;
     protected SpectrumSearchModel model;
     PickEvent lastPickEvent=null;
     protected CheckBoxTree checkBoxTree;
     protected final SpectralInstrument instrument;
     SpectraHierarchicalSearchSpecification spectraSpec;
     private PickManager pickManager;
+    private boolean isSearchView;
 
     public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
+            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument, boolean search)
     {
         this.pickManager = pickManager;
         this.modelManager = modelManager;
-        this.view = new SpectrumSearchView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
         this.model = new SpectrumSearchModel(smallBodyConfig, modelManager, pickManager, renderer);
         this.instrument=instrument;
+        this.isSearchView = search;
+        if (search)
+            this.view = new SpectrumSearchView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
+        else
+            this.view = new SpectrumBrowseView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
+
 
         view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
@@ -134,8 +142,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        // Setup hierarchical image search
-        initHierarchicalImageSearch();
+
+        if (!search)
+            initHierarchicalImageSearch(); // only set up hierarchical search on browse pane
 
         initComponents();
 
@@ -143,7 +152,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         renderer.addKeyListener(this);
         model.setRenderer(renderer);
-//        this.renderer=renderer;
+        //        this.renderer=renderer;
 
 
 
@@ -151,10 +160,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     private void initComponents()
     {
-        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
-        {
-//            view.getDbSearchPanel().setVisible(false);
-        }
 
         view.getSaveSpectraListButton().addActionListener(new ActionListener()
         {
@@ -183,41 +188,46 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
         });
 
-        view.getStartSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                startSpinnerStateChanged(evt);
-            }
-        });
-
-        view.getEndSpinner().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent evt) {
-                endSpinnerStateChanged(evt);
-            }
-        });
-
         if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
         {
-            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
-                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+            if (!isSearchView)
+                model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
         }
 
+
+
         view.getClearRegionButton().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                clearRegionButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(ActionEvent evt) {
+                    clearRegionButtonActionPerformed(evt);
+                }
+            });
 
         view.getSubmitButton().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                submitButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(ActionEvent evt) {
+                    submitButtonActionPerformed(evt);
+                }
+            });
 
         view.getSelectRegionButton().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                selectRegionButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(ActionEvent evt) {
+                    selectRegionButtonActionPerformed(evt);
+                }
+            });
+
+        if (view instanceof SpectrumSearchView) {
+            ((SpectrumSearchView) view).getStartSpinner().addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent evt) {
+                    startSpinnerStateChanged(evt);
+                }
+            });
+
+            ((SpectrumSearchView) view).getEndSpinner().addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent evt) {
+                    endSpinnerStateChanged(evt);
+                }
+            });
+        }
 
         view.getResultList().addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
@@ -346,7 +356,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 for (int i=0; i<view.getResultList().getModel().getSize(); i++)
                 {
-//                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
+                    //                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
                     Spectrum spectrum=collection.getSpectrum(createSpectrumName(i));
                     if (spectrum == null)
                         continue;
@@ -357,36 +367,42 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 }
             }
         });
-
-        postInitComponents();
     }
 
     private void formComponentHidden(ComponentEvent evt)
     {
-        view.getSelectRegionButton().setSelected(false);
+        if (view instanceof SpectrumSearchView) {
+            ((SpectrumSearchView)view).getSelectRegionButton().setSelected(false);
+        }
         model.getPickManager().setPickMode(PickMode.DEFAULT);
     }
 
     private void startSpinnerStateChanged(ChangeEvent evt)
     {
-        Date date = ((SpinnerDateModel)view.getStartSpinner().getModel()).getDate();
-        if (date != null)
-            model.setStartDate(date);
+        if (view instanceof SpectrumSearchView) {
+            Date date = ((SpinnerDateModel)((SpectrumSearchView)view).getStartSpinner().getModel()).getDate();
+            if (date != null)
+                model.setStartDate(date);
+        }
     }
 
     private void endSpinnerStateChanged(ChangeEvent evt)
     {
-        Date date = ((SpinnerDateModel)view.getEndSpinner().getModel()).getDate();
-        if (date != null)
-            model.setEndDate(date);
+        if (view instanceof SpectrumSearchView) {
+            Date date = ((SpinnerDateModel)((SpectrumSearchView)view).getEndSpinner().getModel()).getDate();
+            if (date != null)
+                model.setEndDate(date);
+        }
     }
 
     private void selectRegionButtonActionPerformed(ActionEvent evt)
     {
-        if (view.getSelectRegionButton().isSelected())
-            model.getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
-        else
-            model.getPickManager().setPickMode(PickMode.DEFAULT);
+        if (view instanceof SpectrumSearchView) {
+            if ( ((SpectrumSearchView)view).getSelectRegionButton().isSelected())
+                model.getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
+            else
+                model.getPickManager().setPickMode(PickMode.DEFAULT);
+        }
     }
 
     private void clearRegionButtonActionPerformed(ActionEvent evt)
@@ -452,20 +468,210 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     private void submitButtonActionPerformed(ActionEvent evt)
     {
-        try
-        {
-            view.getSelectRegionButton().setSelected(false);
-            model.getPickManager().setPickMode(PickMode.DEFAULT);
+        List<Integer> productsSelected;
+        List<List<String>> results = new ArrayList<List<String>>();
 
-            GregorianCalendar startDateGreg = new GregorianCalendar();
-            GregorianCalendar endDateGreg = new GregorianCalendar();
-            startDateGreg.setTime(model.getStartDate());
-            endDateGreg.setTime(model.getEndDate());
-            double startTime = model.getStartDate().getTime();
-            double endTime = model.getEndDate().getTime();
+        if (view instanceof SpectrumSearchView) { // only submitting for searches
+            try
+            {
 
-            List<Integer> productsSelected;
-            List<List<String>> results = new ArrayList<List<String>>();
+                ((SpectrumSearchView)view).getSelectRegionButton().setSelected(false);
+                model.getPickManager().setPickMode(PickMode.DEFAULT);
+
+                GregorianCalendar startDateGreg = new GregorianCalendar();
+                GregorianCalendar endDateGreg = new GregorianCalendar();
+                startDateGreg.setTime(model.getStartDate());
+                endDateGreg.setTime(model.getEndDate());
+                double startTime = model.getStartDate().getTime();
+                double endTime = model.getEndDate().getTime();
+
+                DateTime startDateJoda = new DateTime(
+                        startDateGreg.get(GregorianCalendar.YEAR),
+                        startDateGreg.get(GregorianCalendar.MONTH)+1,
+                        startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                        startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                        startDateGreg.get(GregorianCalendar.MINUTE),
+                        startDateGreg.get(GregorianCalendar.SECOND),
+                        startDateGreg.get(GregorianCalendar.MILLISECOND),
+                        DateTimeZone.UTC);
+                DateTime endDateJoda = new DateTime(
+                        endDateGreg.get(GregorianCalendar.YEAR),
+                        endDateGreg.get(GregorianCalendar.MONTH)+1,
+                        endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                        endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                        endDateGreg.get(GregorianCalendar.MINUTE),
+                        endDateGreg.get(GregorianCalendar.SECOND),
+                        endDateGreg.get(GregorianCalendar.MILLISECOND),
+                        DateTimeZone.UTC);
+
+
+                if (model.getSmallBodyConfig().hasHypertreeBasedSpectraSearch)
+                {
+
+                    String spectraDatasourceName = "";
+                    if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
+                        if (((SpectrumSearchView)view).getL2Button().isSelected()) // either L2 or L3 for OTES
+                            spectraDatasourceName = "OTES_L2";
+                        else
+                            spectraDatasourceName = "OTES_L3";
+                    }
+                    else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) { // only L3 for OVIRS currently
+                        spectraDatasourceName = "OVIRS_L3";
+                    }
+
+
+                    this.spectraModel = (SpectraSearchDataCollection)modelManager.getModel(ModelNames.SPECTRA_HYPERTREE_SEARCH);
+                    String spectraDatasourcePath = spectraModel.getSpectraDataSourceMap().get(spectraDatasourceName);
+                    //                System.out.println("Current Lidar Datasource Index : " + lidarIndex);
+                    System.out.println("Current Spectra Datasource Name: " + spectraDatasourceName);
+                    System.out.println("Current Spectra Datasource Path: " + spectraDatasourcePath);
+
+                    spectraModel.addDatasourceSkeleton(spectraDatasourceName, spectraDatasourcePath);
+                    spectraModel.setCurrentDatasourceSkeleton(spectraDatasourceName);
+                    spectraModel.readSkeleton();
+                    FSHyperTreeSkeleton skeleton = spectraModel.getCurrentSkeleton();
+
+                    double[] selectionRegionCenter = null;
+                    double selectionRegionRadius = 0.0;
+
+                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                    SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                    AbstractEllipsePolygonModel.EllipsePolygon region=null;
+                    vtkPolyData interiorPoly=new vtkPolyData();
+                    if (selectionModel.getNumberOfStructures() > 0)
+                    {
+                        region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                        selectionRegionCenter = region.center;
+                        selectionRegionRadius = region.radius;
+
+
+                        // Always use the lowest resolution model for getting the intersection cubes list.
+                        // Therefore, if the selection region was created using a higher resolution model,
+                        // we need to recompute the selection region using the low res model.
+                        if (smallBodyModel.getModelResolution() > 0)
+                            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                        else
+                            interiorPoly=region.interiorPolyData;
+
+                    }
+                    else
+                    {
+                        vtkCubeSource box=new vtkCubeSource();
+                        double[] bboxBounds=smallBodyModel.getBoundingBox().getBounds();
+                        BoundingBox bbox=new BoundingBox(bboxBounds);
+                        bbox.increaseSize(0.01);
+                        box.SetBounds(bbox.getBounds());
+                        box.Update();
+                        interiorPoly.DeepCopy(box.GetOutput());
+                    }
+
+                    Set<String> files = new HashSet<String>();
+                    HashMap<String, HyperBoundedObject> fileSpecMap = new HashMap<String, HyperBoundedObject>();
+                    double[] times = new double[] {startTime, endTime};
+                    TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), times);
+                    double[] bounds = interiorPoly.GetBounds();
+                    HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0]}, new double[]{bounds[1], bounds[3], bounds[5], times[1]});
+
+                    for (Integer cubeid : cubeList)
+                    {
+                        System.out.println("cubeId: " + cubeid);
+                        Node currNode = skeleton.getNodeById(cubeid);
+                        Path path = currNode.getPath();
+                        Path dataPath = path.resolve("data");
+                        DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
+                        try
+                        {
+                            while (instream.available() > 0) {
+                                HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream);
+                                int fileNum = obj.getFileNum();
+                                Map<Integer, String> fileMap = skeleton.getFileMap();
+                                String file = fileMap.get(fileNum);
+                                if (files.add(file)) {
+                                    fileSpecMap.put(file, obj);
+                                }
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    for (String file : files) {
+                        System.out.println(file);
+                    }
+
+                    ArrayList<String> intFiles = new ArrayList<String>();
+
+                    // NOW CHECK WHICH SPECTRA ACTUALLY INTERSECT REGION
+                    for (String fi : files) {
+                        HyperBoundedObject spec = fileSpecMap.get(fi);
+                        HyperBox bbox = spec.getBbox();
+                        try
+                        {
+                            if (hbb.intersects(bbox)) {
+                                intFiles.add(fi);
+                            }
+                        }
+                        catch (HyperException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // print final list of images that intersect region
+                    List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way?
+                    System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
+                    for (String file : intFiles) {
+                        System.out.println(file);
+                        ArrayList<String> currList = new ArrayList<String>();
+                        currList.add(file);
+                        listoflist.add(currList);
+                    }
+
+
+
+                    results = listoflist;
+
+
+
+
+                }
+                else
+                {
+                    QueryBase queryType = instrument.getQueryBase();
+                    if (queryType instanceof FixedListQuery)
+                    {
+                        FixedListQuery query = (FixedListQuery)queryType;
+                        results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    }
+                    else
+                    {
+                        SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                                Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromDistanceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToDistanceTextField().getText())),
+                                "", null,   //TODO: reinstate polygon types here
+                                Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromIncidenceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToIncidenceTextField().getText())),
+                                Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromEmissionTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToEmissionTextField().getText())),
+                                Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromPhaseTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToPhaseTextField().getText())),
+                                cubeList);
+
+                        DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+                        results = query.runQuery(searchMetadata).getResultlist();
+                    }
+                }
+                setSpectrumSearchResults(results);
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                System.out.println(e);
+                return;
+            }
+        } else if (view instanceof SpectrumBrowseView) {
             if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
             {
                 // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
@@ -496,175 +702,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     collection.tagSpectraWithMetadata(thisResult, spec);
                     results.addAll(thisResult);
                 }
-//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
+                setSpectrumSearchResults(results);
             }
-            else if (model.getSmallBodyConfig().hasHypertreeBasedSpectraSearch)
-            {
-
-                String spectraDatasourceName = "";
-                if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
-                    if (view.getL2Button().isSelected()) // either L2 or L3 for OTES
-                        spectraDatasourceName = "OTES_L2";
-                    else
-                        spectraDatasourceName = "OTES_L3";
-                }
-                else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) { // only L3 for OVIRS currently
-                    spectraDatasourceName = "OVIRS_L3";
-                }
-
-
-                this.spectraModel = (SpectraSearchDataCollection)modelManager.getModel(ModelNames.SPECTRA_HYPERTREE_SEARCH);
-                String spectraDatasourcePath = spectraModel.getSpectraDataSourceMap().get(spectraDatasourceName);
-//                System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-                System.out.println("Current Spectra Datasource Name: " + spectraDatasourceName);
-                System.out.println("Current Spectra Datasource Path: " + spectraDatasourcePath);
-
-               spectraModel.addDatasourceSkeleton(spectraDatasourceName, spectraDatasourcePath);
-               spectraModel.setCurrentDatasourceSkeleton(spectraDatasourceName);
-               spectraModel.readSkeleton();
-               FSHyperTreeSkeleton skeleton = spectraModel.getCurrentSkeleton();
-
-               double[] selectionRegionCenter = null;
-               double selectionRegionRadius = 0.0;
-
-               AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-               SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-               AbstractEllipsePolygonModel.EllipsePolygon region=null;
-               vtkPolyData interiorPoly=new vtkPolyData();
-               if (selectionModel.getNumberOfStructures() > 0)
-               {
-                   region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-                   selectionRegionCenter = region.center;
-                   selectionRegionRadius = region.radius;
-
-
-                   // Always use the lowest resolution model for getting the intersection cubes list.
-                   // Therefore, if the selection region was created using a higher resolution model,
-                   // we need to recompute the selection region using the low res model.
-                   if (smallBodyModel.getModelResolution() > 0)
-                       smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
-                   else
-                       interiorPoly=region.interiorPolyData;
-
-               }
-               else
-               {
-                   vtkCubeSource box=new vtkCubeSource();
-                   double[] bboxBounds=smallBodyModel.getBoundingBox().getBounds();
-                   BoundingBox bbox=new BoundingBox(bboxBounds);
-                   bbox.increaseSize(0.01);
-                   box.SetBounds(bbox.getBounds());
-                   box.Update();
-                   interiorPoly.DeepCopy(box.GetOutput());
-               }
-
-               Set<String> files = new HashSet<String>();
-               HashMap<String, HyperBoundedObject> fileSpecMap = new HashMap<String, HyperBoundedObject>();
-               double[] times = new double[] {startTime, endTime};
-               TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), times);
-               double[] bounds = interiorPoly.GetBounds();
-               HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0]}, new double[]{bounds[1], bounds[3], bounds[5], times[1]});
-
-               for (Integer cubeid : cubeList)
-               {
-                   System.out.println("cubeId: " + cubeid);
-                   Node currNode = skeleton.getNodeById(cubeid);
-                   Path path = currNode.getPath();
-                   Path dataPath = path.resolve("data");
-                   DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
-                   try
-                   {
-                       while (instream.available() > 0) {
-                           HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream);
-                           int fileNum = obj.getFileNum();
-                           Map<Integer, String> fileMap = skeleton.getFileMap();
-                           String file = fileMap.get(fileNum);
-                           if (files.add(file)) {
-                               fileSpecMap.put(file, obj);
-                           }
-                       }
-                   }
-                   catch (IOException e)
-                   {
-                       // TODO Auto-generated catch block
-                       e.printStackTrace();
-                   }
-
-               }
-
-               for (String file : files) {
-                   System.out.println(file);
-               }
-
-               ArrayList<String> intFiles = new ArrayList<String>();
-
-               // NOW CHECK WHICH SPECTRA ACTUALLY INTERSECT REGION
-               for (String fi : files) {
-                   HyperBoundedObject spec = fileSpecMap.get(fi);
-                   HyperBox bbox = spec.getBbox();
-                   try
-                   {
-                       if (hbb.intersects(bbox)) {
-                           intFiles.add(fi);
-                       }
-                   }
-                   catch (HyperException e)
-                   {
-                       // TODO Auto-generated catch block
-                       e.printStackTrace();
-                   }
-               }
-
-               // print final list of images that intersect region
-               List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way?
-               System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
-               for (String file : intFiles) {
-                   System.out.println(file);
-                   ArrayList<String> currList = new ArrayList<String>();
-                   currList.add(file);
-                   listoflist.add(currList);
-               }
-
-
-
-               results = listoflist;
-
-
-
-
-            }
-            else
-            {
-                QueryBase queryType = instrument.getQueryBase();
-                if (queryType instanceof FixedListQuery)
-                {
-                    FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
-                }
-                else
-                {
-                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                            Ranges.closed(Double.valueOf(view.getFromDistanceTextField().getText()), Double.valueOf(view.getToDistanceTextField().getText())),
-                            "", null,   //TODO: reinstate polygon types here
-                            Ranges.closed(Double.valueOf(view.getFromIncidenceTextField().getText()), Double.valueOf(view.getToIncidenceTextField().getText())),
-                            Ranges.closed(Double.valueOf(view.getFromEmissionTextField().getText()), Double.valueOf(view.getToEmissionTextField().getText())),
-                            Ranges.closed(Double.valueOf(view.getFromPhaseTextField().getText()), Double.valueOf(view.getToPhaseTextField().getText())),
-                            cubeList);
-
-                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
-                    results = query.runQuery(searchMetadata).getResultlist();
-                }
-            }
-            setSpectrumSearchResults(results);
-//            SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-//            collection.tagSpectraWithMetadata(results, spec);
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.out.println(e);
-            return;
         }
     }
 
@@ -745,18 +784,18 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void grayscaleCheckBoxActionPerformed(ActionEvent evt) {
         boolean enableColor = !view.getGrayscaleCheckBox().isSelected();
 
-//        redLabel.setVisible(enableColor);
-//        greenLabel.setVisible(enableColor);
+        //        redLabel.setVisible(enableColor);
+        //        greenLabel.setVisible(enableColor);
         view.getGreenComboBox().setVisible(enableColor);
-//        greenMinLabel.setVisible(enableColor);
+        //        greenMinLabel.setVisible(enableColor);
         view.getGreenMinSpinner().setVisible(enableColor);
-//        greenMaxLabel.setVisible(enableColor);
+        //        greenMaxLabel.setVisible(enableColor);
         view.getGreenMaxSpinner().setVisible(enableColor);
-//        blueLabel.setVisible(enableColor);
+        //        blueLabel.setVisible(enableColor);
         view.getBlueComboBox().setVisible(enableColor);
-//        blueMinLabel.setVisible(enableColor);
+        //        blueMinLabel.setVisible(enableColor);
         view.getBlueMinSpinner().setVisible(enableColor);
-//        blueMaxLabel.setVisible(enableColor);
+        //        blueMaxLabel.setVisible(enableColor);
         view.getBlueMaxSpinner().setVisible(enableColor);
 
         updateColoring();
@@ -784,7 +823,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                 for (int i=0; i<size; ++i)
                 {
-//                    String result = model.getSpectrumRawResults().get(i);
+                    //                    String result = model.getSpectrumRawResults().get(i);
                     String result = createSpectrumName(i);
                     String spectrumPath  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
                     out.write(spectrumPath + nl);
@@ -873,41 +912,31 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     protected void initHierarchicalImageSearch()
     {
-        // Show/hide panels depending on whether this body has hierarchical image search capabilities
-        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
-        {
-            // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
-//            filterCheckBoxPanel.setVisible(false);
-//            userDefinedCheckBoxPanel.setVisible(false);
+        if (view instanceof SpectrumBrowseView) {
+            SpectrumBrowseView browseView = (SpectrumBrowseView) view;
+            // Show/hide panels depending on whether this body has hierarchical image search capabilities
+            if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+            {
 
-            // Create the tree
-            spectraSpec.clearTreeLeaves();
-//            spectraSpec.setRootName(instrument.getDisplayName());
-            spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
-            checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
+                // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
+                //            filterCheckBoxPanel.setVisible(false);
+                //            userDefinedCheckBoxPanel.setVisible(false);
 
-            // Place the tree in the panel
-            view.getDataSourcesScrollPane().setViewportView(checkBoxTree);
+                // Create the tree
+                spectraSpec.clearTreeLeaves();
+                //            spectraSpec.setRootName(instrument.getDisplayName());
+                spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
+                checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
+
+                // Place the tree in the panel
+                browseView.getDataSourcesScrollPane().setViewportView(checkBoxTree);
+            }
+            else
+            {
+                // No hierarchical search capabilities, hide the scroll pane
+                browseView.getDataSourcesScrollPane().setVisible(false);
+            }
         }
-        else
-        {
-            // No hierarchical search capabilities, hide the scroll pane
-            view.getDataSourcesScrollPane().setVisible(false);
-        }
-    }
-
-    private void postInitComponents()
-    {
-        //startDate = getDefaultStartDate();
-        ((SpinnerDateModel)view.getStartSpinner().getModel()).setValue(model.getStartDate());
-        //endDate = getDefaultEndDate();
-        ((SpinnerDateModel)view.getEndSpinner().getModel()).setValue(model.getEndDate());
-
-        //toDistanceTextField.setValue(getDefaultMaxSpacecraftDistance());
-
-//        polygonType3CheckBox.setVisible(false);
-
-//       setupComboBoxes();
     }
 
     protected void setupComboBoxes()
@@ -979,7 +1008,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-//                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
+                //                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(index));
                 spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -1096,7 +1125,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(view.getColoringComboBox().getSelectedItem().toString());
 
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-//        model.removeAllSpectra();
+        //        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -1108,7 +1137,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             try
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
-//                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                //                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
                 collection.addSpectrum(createSpectrumName(i), instrument, style);
             }
             catch (IOException e1) {
@@ -1119,7 +1148,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     }
 
 
-//    public abstract String createSpectrumName(String currentSpectrumRaw);
+    //    public abstract String createSpectrumName(String currentSpectrumRaw);
     public abstract String createSpectrumName(int index);
 
 
@@ -1229,7 +1258,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
                     if (!resultList.getSelectionModel().isSelectedIndex(i))
                     {
-//                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+                        //                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
                         Spectrum spectrum_=coll.getSpectrum(createSpectrumName(i));
                         if (spectrum_ != null)
                             coll.deselect(spectrum_);
@@ -1237,7 +1266,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 }
                 resultList.repaint();
             }
-       }
+        }
         else
         {
             resultList.repaint();
@@ -1264,7 +1293,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
             else
             {
-//                String spectrumFile=createSpectrumName(value.toString());
+                //                String spectrumFile=createSpectrumName(value.toString());
                 String spectrumFile=createSpectrumName(index);
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 Spectrum spectrum=collection.getSpectrum(spectrumFile);
@@ -1290,7 +1319,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     protected abstract void setSpectrumSearchResults(List<List<String>> results);
 
-    public SpectrumSearchView getView()
+    public SpectrumView getView()
     {
         return view;
     }
