@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 
 import edu.jhuapl.saavtk.metadata.FixedMetadata;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.query.SearchMetadata;
@@ -105,6 +106,11 @@ public class GenericPhpQuery extends DatabaseQueryBase
         {
             imagesDatabase += "_beta";
             cubesDatabase += "_beta";
+        }
+        else
+        {
+            imagesDatabase += Configuration.getDatabaseSuffix();
+            cubesDatabase += Configuration.getDatabaseSuffix();
         }
 
         try

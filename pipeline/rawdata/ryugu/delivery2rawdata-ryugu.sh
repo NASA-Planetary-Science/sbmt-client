@@ -41,7 +41,6 @@ if [ "$#" -gt 3 ]
 then
   processingVersion=$4
 fi
-
   
 # determine the deliveries directory
 deliveriesTop="$pipelineTop/deliveries"
@@ -59,6 +58,8 @@ then
   deliveriesTop=$deliveriesTop'-hyb2'
   processingVersion="latest"
   deliveredVersion="latest"
+  #latestDateDir=``ls | sort -r | head -1`/kernels/mk`
+  #latestKernel=`ls $latestDateDir/hyb2_approach_v*.tm | sort -r | head -1`
 fi
 
 echo "Delivered version: " $deliveredVersion
@@ -153,17 +154,40 @@ then
    # if the model name is "shared" then we only copy over the new shared data
    createDirIfNecessary $destTop/shared
    createDirIfNecessary $destTop/shared/onc
+   createDirIfNecessary $destTop/shared/spice
+   createDirIfNecessary $destTop/shared/onc/images
+   createDirIfNecessary $destTop/shared/tir
 
    for dateDir in `ls $srcTop/onc/FromONC_CoI_Server`
    do
      echo Rsyncing image files from ryugu/latest/onc/FromONC_CoI_Server/$dateDir... >> $log 2>&1
      doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/images
+     echo copying kernels
+     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
+     echo done with job
    done
+
+   for dateDir in `ls $srcTop/onc/Approach`
+   do
+     if [ "$dateDir" -gt  20180615 ] 
+     then
+	echo Rsyncing image files from ryugu/latest/onc/Approach/$dateDir/L2a
+        doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/$dateDir
+	doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/images
+     fi
+   done
+
+   for tirDir in `ls -d $srcTop/tir/l2a/*/`
+   do
+     echo $tirDir
+     doRsync $tirDir/ $destTop/shared/tir/images
+   done
+
 else
    # otherwise, assume this is model data and copy over into a new model
    createDirIfNecessary $destTop/$processingModelName/shape
    createDirIfNecessary $destTop/$processingModelName/coloring
-   createDirIfNecessary $destTop/$processingModelName/onc
 
    # copy the manifest as a backup
    doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
@@ -174,13 +198,18 @@ else
    # copy the coloring files
    doRsyncDir $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
-   # copy the onc imaging files
-   doRsyncDir $srcTop/$deliveredModelName/imaging $destTop/$processingModelName/onc
+   if [ -d "$srcTop/$deliveredModelName/imaging" ] 
+   then
+     createDirIfNecessary $destTop/$processingModelName/onc
+
+     # copy the onc imaging files
+     doRsyncDir $srcTop/$deliveredModelName/imaging $destTop/$processingModelName/onc
+   fi
 fi
 
 
 # fix any bad permissions
-$scriptDir/data-permissions.pl $destTop/$processingModelName
+#$scriptDir/data-permissions.pl $destTop/$processingModelName
 
 
 echo "End `date`" >> $log 2>&1
