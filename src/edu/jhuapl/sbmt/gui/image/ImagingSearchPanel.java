@@ -2644,22 +2644,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
                     results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", imageListName, "images", query.getRootPath(), imageSource)).getResultlist();
             }
-//            else
-//            {
-//
-//                // Run queries based on user specifications
-//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-//                        searchField, null,
-//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-//                        sumOfProductsSearch, camerasSelected, filtersSelected,
-//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
-//
-//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
-//            }
+            else
+            {
+
+                // Run queries based on user specifications
+                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        searchField, null,
+                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        sumOfProductsSearch, camerasSelected, filtersSelected,
+                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+
+                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+            }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
 //            if (instrument.spectralMode == SpectralMode.MULTI)
