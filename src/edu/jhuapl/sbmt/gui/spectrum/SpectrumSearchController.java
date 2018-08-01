@@ -74,6 +74,7 @@ import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
@@ -516,7 +517,10 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                             spectraDatasourceName = "OTES_L3";
                     }
                     else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) { // only L3 for OVIRS currently
-                        spectraDatasourceName = "OVIRS_L3";
+                        if (((SpectrumSearchView)view).getIFButton().isSelected()) // either L2 or L3 for OTES
+                            spectraDatasourceName = "OVIRS_IF";
+                        else
+                            spectraDatasourceName = "OVIRS_REF";
                     }
 
 
@@ -578,7 +582,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         Node currNode = skeleton.getNodeById(cubeid);
                         Path path = currNode.getPath();
                         Path dataPath = path.resolve("data");
-                        DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(dataPath.toFile())));
+                        DataInputStream instream= new DataInputStream(new BufferedInputStream(new FileInputStream(FileCache.getFileFromServer(dataPath.toString()))));
                         try
                         {
                             while (instream.available() > 0) {
@@ -622,7 +626,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         }
                     }
 
-                    // print final list of images that intersect region
+                    // final list of spectra that intersect region
                     List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way?
                     System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
                     for (String file : intFiles) {

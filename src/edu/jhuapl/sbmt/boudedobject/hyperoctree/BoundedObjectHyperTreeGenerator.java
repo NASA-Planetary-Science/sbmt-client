@@ -140,14 +140,13 @@ public class BoundedObjectHyperTreeGenerator
         System.out.println("Arguments:");
         System.out.println("  (1) Filename of bounding box info");
         System.out.println("  (2) output directory to build the search tree in");
-        System.out.println("  (3) max number of open output files");
         System.out.println("  (4) max number of items per leaf");
     }
 
 
     public static void main(String[] args) throws IOException, HyperException
     {
-        if (args.length!=4)
+        if (args.length!=3)
         {
             printUsage();
             return;
@@ -156,7 +155,7 @@ public class BoundedObjectHyperTreeGenerator
         //String inputDirectoryString=args[0];    // "/Volumes/dumbledore/sbmt/OLA"
         String inputFile = args[0];
         String outputDirectoryString=args[1];   // "/Volumes/dumbledore/sbmt/ola_hypertree"
-        int maxNumOpenOutputFiles=Integer.valueOf(args[2]);   // 32
+        int maxNumOpenOutputFiles=32;
 
         System.out.println("Input file = "+ inputFile);
         System.out.println("Output tree location = "+outputDirectoryString);

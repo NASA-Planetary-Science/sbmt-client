@@ -125,14 +125,14 @@ public class SbmtRunnable implements Runnable
 
 ///////////////////////// temporary ///////////
 
-
+//
 //SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EARTH, ShapeModelType.OREX);
 //SmallBodyModel earth = SbmtModelFactory.createSmallBodyModel(config);
 //BoundingBox bb = earth.getBoundingBox();
 //
 //
 //
-//String filename = "/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3_files.txt";
+//String filename = "/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3reff_files.txt";
 //FileWriter fw;
 //try
 //{
@@ -140,7 +140,7 @@ public class SbmtRunnable implements Runnable
 //
 //BufferedWriter bw = new BufferedWriter(fw);
 //
-//String inputDir  = "/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3/infofiles/";
+//String inputDir  = "/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3reff/infofiles/";
 //File[] infoFiles = new File(inputDir).listFiles();
 //
 //int iFile = 0;
@@ -213,7 +213,7 @@ public class SbmtRunnable implements Runnable
 //// TODO Auto-generated catch block
 //e.printStackTrace();
 //}
-
+//
 
 
 

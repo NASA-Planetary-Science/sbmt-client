@@ -24,6 +24,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class SpectrumSearchView extends SpectrumView
@@ -60,6 +61,8 @@ public class SpectrumSearchView extends SpectrumView
     private JPanel rgbColoringPanel;
     private JRadioButton L3btn;
     private JRadioButton L2btn;
+    private JRadioButton ifbtn;
+    private JRadioButton refbtn;
 
     public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument)
     {
@@ -254,7 +257,7 @@ public class SpectrumSearchView extends SpectrumView
             dbSearchPanel.add(panel_16);
             panel_16.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-            JLabel lblOtesLevel = new JLabel("OTES LEVEL");
+            JLabel lblOtesLevel = new JLabel("OTES TYPE");
             panel_16.add(lblOtesLevel);
 
             L2btn = new JRadioButton("L2");
@@ -268,6 +271,27 @@ public class SpectrumSearchView extends SpectrumView
             ButtonGroup group = new ButtonGroup();
             group.add(L2btn);
             group.add(L3btn);
+        }
+        if (instrument instanceof OVIRS) {
+            // add L2 vs L3 checkbox
+            JPanel panel_16 = new JPanel();
+            dbSearchPanel.add(panel_16);
+            panel_16.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+            JLabel lblOvirs = new JLabel("OVIRS TYPE");
+            panel_16.add(lblOvirs);
+
+            ifbtn = new JRadioButton("IF");
+            ifbtn.setSelected(true);
+            panel_16.add(ifbtn);
+
+            refbtn = new JRadioButton("REF");
+            refbtn.setSelected(false);
+            panel_16.add(refbtn);
+
+            ButtonGroup group = new ButtonGroup();
+            group.add(ifbtn);
+            group.add(refbtn);
         }
 
 
@@ -518,6 +542,11 @@ public class SpectrumSearchView extends SpectrumView
     public JFormattedTextField getToPhaseTextField()
     {
         return fromPhaseTextField;
+    }
+
+    public JRadioButton getIFButton()
+    {
+        return ifbtn;
     }
 
 

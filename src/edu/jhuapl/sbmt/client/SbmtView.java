@@ -13,7 +13,6 @@ import vtk.vtkCamera;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.metadata.Key;
@@ -416,7 +415,8 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Lineament", component);
             }
 
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+            // TODO - this was broken when I pulled from sbmt1dev
+//            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
 
 
             JTabbedPane customDataPane=new JTabbedPane();

@@ -2509,9 +2509,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-          c.spectraSearchDataSourceMap.put("OTES_L2","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/otes_l2/hypertree/dataSource.spectra");
-          c.spectraSearchDataSourceMap.put("OTES_L3","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/otes_l3/hypertree/dataSource.spectra");
-          c.spectraSearchDataSourceMap.put("OVIRS_L3","/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/ovirs_l3/hypertree/dataSource.spectra");
+          c.spectraSearchDataSourceMap.put("OTES_L2","/earth/osirisrex/otes/l2/hypertree/dataSource.spectra");
+          c.spectraSearchDataSourceMap.put("OTES_L3","/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
+          c.spectraSearchDataSourceMap.put("OVIRS_IF","/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
+          c.spectraSearchDataSourceMap.put("OVIRS_REF","/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
             try
             {
@@ -2537,7 +2538,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         {
             //
             // Earth, Hayabusa2 WGS84 version
-            //
+            //:
 
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
