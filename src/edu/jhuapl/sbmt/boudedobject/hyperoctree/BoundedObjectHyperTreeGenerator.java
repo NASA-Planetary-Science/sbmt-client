@@ -183,8 +183,10 @@ public class BoundedObjectHyperTreeGenerator
         }
 
 
-        // TODO min and max dimensions for hyperbox around body
+        // TODO min and max dimensions for hyperbox around body - currently set to earth bounds.
+        // need a way to pass bounds or name of body to find bounds
         double today = new Date().getTime();
+        // EARTH bounds:
         double[] min = {-6378.13720703125, -6378.13720703125, -6356.75244140625, -Double.MAX_VALUE};
         double[] max = { 6378.13720703125 , 6378.13720703125, 6356.75244140625, today};
         HyperBox hbox = new HyperBox(min, max);
