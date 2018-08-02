@@ -328,15 +328,18 @@ then
      rm -f $destTop/shared/onc/images/index.html*
      
      # fix any bad permissions
-     #$scriptDir/data-permissions.pl $destTop/shared/onc/images
+     $scriptDir/data-permissions.pl $destTop/shared/onc/images
 
    done
 
    # edits metakernel so that the correct path value is write in the metakernel file
    editKernel 
  
-   # generates info files for ONC
+   # generates info files for ONC-T
    generateInfoFiles $srcTop/shared $destTop/shared $latestKernel RYUGU onc "HAYABUSA2_ONC-T"
+
+   # generates info files for ONC-W1
+   generateInfoFiles $srcTop/shared $destTop/shared $latestKernel RYUGU onc "HAYABUSA2_ONC-W1"
 
    # generates gallery for ONC
    generateGallery "*.fit" $srcTop/shared/onc/images $destTop/shared/onc/gallery $bodyName $destTop/shared/onc/imagelist.txt 
@@ -351,17 +354,19 @@ then
    generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist.txt
 
    # deletes existing timeHistory files and generates a new one
-   generateTimeHistory 
+   generateTimeHistory
+
+   rm -f $destTop/shared/onc/HAYABUSA2*
 
 else
    createDirIfNecessary $destTop/$processingModelName/shape
    createDirIfNecessary $destTop/$processingModelName/coloring
-   #createDirIfNecessary $destTop/$processingModelName/onc
-   #createDirIfNecessary $destTop/$processingModelName/onc/images
-   #createDirIfNecessary $destTop/$processingModelName/onc/gallery
-   #createDirIfNecessary $destTop/$processingModelName/tir
-   #createDirIfNecessary $destTop/$processingModelName/tir/images
-   #createDirIfNecessary $destTop/$processingModelName/tir/gallery
+   createDirIfNecessary $destTop/$processingModelName/onc
+   createDirIfNecessary $destTop/$processingModelName/onc/images
+   createDirIfNecessary $destTop/$processingModelName/onc/gallery
+   createDirIfNecessary $destTop/$processingModelName/tir
+   createDirIfNecessary $destTop/$processingModelName/tir/images
+   createDirIfNecessary $destTop/$processingModelName/tir/gallery
 
    doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    gzip -f $destTop/$processingModelName/shape/*.obj
@@ -370,16 +375,16 @@ else
    gzip -f $destTop/$processingModelName/coloring/*.fits
 
    # generates info files for ONC
-   #generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU onc "HAYABUSA2_ONC-T"
+   generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU onc "HAYABUSA2_ONC-T"
 
    # generates gallery for ONC
-   #generateGallery "*.fit" $srcTop/shared/onc/images $destTop/$processingModelName/onc/gallery $bodyName $destTop/$rawdataModelName/onc/imagelist-info.txt 
+   generateGallery "*.fit" $srcTop/shared/onc/images $destTop/$processingModelName/onc/gallery $bodyName $destTop/$rawdataModelName/onc/imagelist-info.txt 
 
    # generates info files for TIR
-   #generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU tir "HAYABUSA2_TIR-S"
+   generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU tir "HAYABUSA2_TIR-S"
 
    # generates gallery for TIR
-   #generateGallery "*.fit" $srcTop/shared/tir/images $destTop/$processingModelName/tir/gallery $bodyName $destTop/$rawdataModelName/tir/imagelist-info.txt
+   generateGallery "*.fit" $srcTop/shared/tir/images $destTop/$processingModelName/tir/gallery $bodyName $destTop/$rawdataModelName/tir/imagelist-info.txt
    
    if [ -d "$srcTop/$rawdataModelName/onc" ]
    then
@@ -402,12 +407,12 @@ else
 fi
 
 # echo $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
-# createDirIfNecessary $destTop/$processingModelName/onc
-# doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
-# generateInfoFiles $srcTop/$rawdataModelName $srcTop/$rawdataModelName $srcTop/$rawdataModelName/spice/kernels/mk/hyb2_lss_truth.tm RYUGU
+createDirIfNecessary $destTop/$processingModelName/onc
+doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
+generateInfoFiles $srcTop/$rawdataModelName $srcTop/$rawdataModelName $srcTop/$rawdataModelName/spice/kernels/mk/hyb2_lss_truth.tm RYUGU
 
 # fix any bad permissions
-#$scriptDir/data-permissions.pl $destTop/$processingModelName                                      
+$scriptDir/data-permissions.pl $destTop/$processingModelName                                      
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "End `date`" >> $log 2>&1

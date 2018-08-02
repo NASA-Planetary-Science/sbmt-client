@@ -158,6 +158,26 @@ then
    createDirIfNecessary $destTop/shared/onc/images
    createDirIfNecessary $destTop/shared/tir
 
+   for dateDir in `ls $srcTop/onc/Box-C`
+   do
+     echo Rsyncing image files from ryugu/latest/onc/Box-C/$dateDir... >> $log 2>&1
+     doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/images
+     echo copying kernels
+     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
+     echo done with job
+   done
+
+   for dateDir in `ls $srcTop/onc/Box-A`
+   do
+     echo Rsyncing image files from ryugu/latest/onc/Box-A/$dateDir... >> $log 2>&1
+     doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/images
+     echo copying kernels
+     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
+     echo done with job
+   done
+
    for dateDir in `ls $srcTop/onc/FromONC_CoI_Server`
    do
      echo Rsyncing image files from ryugu/latest/onc/FromONC_CoI_Server/$dateDir... >> $log 2>&1
@@ -209,7 +229,7 @@ fi
 
 
 # fix any bad permissions
-#$scriptDir/data-permissions.pl $destTop/$processingModelName
+$scriptDir/data-permissions.pl $destTop/$processingModelName
 
 
 echo "End `date`" >> $log 2>&1
