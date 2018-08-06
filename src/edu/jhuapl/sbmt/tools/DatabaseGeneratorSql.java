@@ -516,11 +516,21 @@ public class DatabaseGeneratorSql
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/shared/onc", "ryugu_shared",
 //                "ryugu/shared/onc"),
 
-        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
+        // Ryugu Model-specific Flight Images (on Aizu server)
+        RYUGU_JAXA_001(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-001/onc", "ryugu_jaxa001",
+                "ryugu/jaxa-001/onc"),
+        RYUGU_NASA_001(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/onc", "ryugu_nasa001",
+                "ryugu/nasa-001/onc"),
+        RYUGU_NASA_002(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
                 "ryugu/nasa-002/onc"),
 
-        // Ryugu Model-specific Flight SUMFILE Images (on APL server)
+        // Ryugu Model-specific Flight Images (on APL server)
         RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc", "ryugu_jaxa001",
                 "ryugu/jaxa-001/onc"),
@@ -528,6 +538,9 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001",
                 "ryugu/nasa-001/onc"),
         RYUGU_NASA_002_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
                 "ryugu/nasa-002/onc"),
 
