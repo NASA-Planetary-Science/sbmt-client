@@ -41,20 +41,60 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
             SmallBodyViewConfig c = (SmallBodyViewConfig)config;
             Key<SettableMetadata> metadata = Key.of(config.getUniqueName());
             SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-            configMetadata.put(body, c.body);
-            configMetadata.put(type, c.type);
+            write(body, c.body, configMetadata);
+            write(type, c.type, configMetadata);
+            write(population, c.population, configMetadata);
+            write(dataUsed, c.dataUsed, configMetadata);
+            write(author, c.author, configMetadata);
+            write(rootDirOnServer, c.rootDirOnServer, configMetadata);
+            write(timeHistoryFile, c.timeHistoryFile, configMetadata);
+            write(hasImageMap, c.hasImageMap, configMetadata);
+            write(hasStateHistory, c.hasStateHistory, configMetadata);
 
+            write(hasLidarData, c.hasLidarData, configMetadata);
+            write(hasMapmaker, c.hasMapmaker, configMetadata);
+            write(hasSpectralData, c.hasSpectralData, configMetadata);
+            write(hasLineamentData, c.hasLineamentData, configMetadata);
+
+            write(imageSearchDefaultStartDate, c.imageSearchDefaultStartDate, configMetadata);
+            write(imageSearchDefaultEndDate, c.imageSearchDefaultEndDate, configMetadata);
+            write(imageSearchFilterNames, c.imageSearchFilterNames, configMetadata);
+            write(imageSearchUserDefinedCheckBoxesNames, c.imageSearchUserDefinedCheckBoxesNames, configMetadata);
+            write(imageSearchDefaultMaxSpacecraftDistance, c.imageSearchDefaultMaxSpacecraftDistance, configMetadata);
+            write(imageSearchDefaultMaxResolution, c.imageSearchDefaultMaxResolution, configMetadata);
+
+            write(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
+            write(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
+            write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
+            write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
+
+            write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
+            write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+            write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
+            write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
+            write(lidarBrowseFileListResourcePath, c.lidarBrowseFileListResourcePath, configMetadata);
+            write(lidarBrowseNumberHeaderLines, c.lidarBrowseNumberHeaderLines, configMetadata);
+            write(lidarBrowseIsInMeters, c.lidarBrowseIsInMeters, configMetadata);
+            write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
+            write(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
 
             result.put(metadata, configMetadata);
         }
         return result;
     }
 
+    private <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
+    {
+        if (value != null)
+        {
+            configMetadata.put(key, value);
+        }
+    }
+
     @Override
     public void retrieve(Metadata source)
     {
         // TODO Auto-generated method stub
-
     }
 
     final Key<ShapeModelBody> body = Key.of("body");
