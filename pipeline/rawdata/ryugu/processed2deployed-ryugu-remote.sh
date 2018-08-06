@@ -49,7 +49,7 @@ echo "Processing Model Name: " $processingModelName
 echo "Processing Version:    " $processingVersion
 echo "Deployment Target:     " $deployTarget
 
-exit 0
+# exit 0
 
 
 rawTop="$pipelineTop/rawdata"
@@ -59,7 +59,7 @@ deployedTop="/project/sbmt2/sbmt/data/bodies"
 if [ $deployTarget = "aizu" ]
 then
   deployedTop="sbmt@hyb2sbmt.u-aizu.ac.jp:/var/www/sbmt/sbmt/data"
-elsif [ $deployTarget = "stage" ]
+elif [ $deployTarget = "stage" ]
 then
   deployedTop="sbmt@hyb2sbmt.jhuapl.edu:/var/www/sbmt/sbmt/data"
 fi
@@ -76,6 +76,8 @@ destTop="$deployedTop/$bodyName"
 echo "srcTop: $srcTop"
 echo "destTop: $destTop"
 echo "log: $log"
+
+# exit 0
 
 #-------------------------------------------------------------------------------
 
@@ -142,8 +144,24 @@ then
     createDirIfNecessary $destTop/shared
   fi
 
-  echo Rsyncing $srcTop/latest/shared to $destTop/shared... # >> $log 2>&1
-  doRsyncDir $srcTop/latest/shared $destTop/shared
+#  echo Rsyncing "$srcTop/latest/shared/onc/imagelist*.txt" to $destTop/shared/onc/ # >> $log 2>&1
+  doRsyncDir "$srcTop/latest/shared/onc/imagelist-info.txt" $destTop/shared/onc/
+  doRsyncDir "$srcTop/latest/shared/onc/imagelist-fullpath-info.txt" $destTop/shared/onc/
+
+  echo Rsyncing $srcTop/latest/shared/onc/infofiles/ to $destTop/shared/onc/infofiles/... # >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared/onc/infofiles/ $destTop/shared/onc/infofiles/
+
+  echo Rsyncing $srcTop/latest/shared/onc/images/ to $destTop/shared/onc/images/... # >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared/onc/images/ $destTop/shared/onc/images/
+
+  echo Rsyncing $srcTop/latest/shared/onc/gallery/ to $destTop/shared/onc/gallery/... # >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared/onc/gallery/ $destTop/shared/onc/gallery/
+
+  echo Rsyncing $srcTop/latest/shared/tir/ to $destTop/shared/tir/... # >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared/tir/ $destTop/shared/tir/
+
+  echo Rsyncing $srcTop/latest/shared/history/ to $destTop/shared/history/... # >> $log 2>&1
+  doRsyncDir $srcTop/latest/shared/history/ $destTop/shared/history/
 
   # fix any bad permissions
   if [ $deployTarget = "apl" ]
