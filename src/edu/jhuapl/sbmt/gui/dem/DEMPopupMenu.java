@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -24,6 +25,7 @@ import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
@@ -38,6 +40,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataExporter;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
@@ -582,6 +585,19 @@ public class DEMPopupMenu extends PopupMenu
                 writer.SetFileTypeToBinary();
                 writer.SetInputData(demPolydata);
                 writer.Write();
+
+                //write out copy of current model's smallbody view config here
+                Vector<ViewConfig> config = new Vector<ViewConfig>();
+                config.add(smallBodyModel.getConfig());
+                try
+                {
+                    new SmallBodyViewConfigMetadataExporter(new Vector<ViewConfig>(config)).write(new File(demFilename.substring(0, demFilename.length()-3) + "json"));
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
 
                 ShapeModelImporterDialog dialog = new ShapeModelImporterDialog(null);
 
