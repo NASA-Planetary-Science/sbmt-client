@@ -626,6 +626,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         }
                     }
 
+                    // NOW FIND SPECTRA THAT MATCH OTHER PARAMETERS
+
+
                     // final list of spectra that intersect region
                     List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way?
                     System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");

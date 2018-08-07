@@ -136,6 +136,7 @@ public class BoundedObjectHyperTreeNode
         DataInputStream instream=new DataInputStream(new BufferedInputStream(new FileInputStream(getDataFilePath().toFile())));
         while (instream.available()>0) // for every object in the node
         {
+            // TODO how does this know what the dimensions are??
             HyperBoundedObject obj = createNewBoundedObject(instream);
 
             for (int i=0; i<getNumberOfChildren() ; i++)
