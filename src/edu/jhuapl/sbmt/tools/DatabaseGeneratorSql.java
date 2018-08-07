@@ -478,6 +478,13 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
+//        RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
+//        RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
+        RYUGU_TIR_SIMULATED_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+                "/project/sbmt2/data/ryugu/truth/simulated/tir/imagelist-fullpath.txt", "ryugu"),
+
         RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu"),
         RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
@@ -491,8 +498,10 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
+
         RYUGU_NASA_002_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc/imagelist-fullpath.txt", "ryugu_flight"),
+
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
         PHOBOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PHOBOS, ShapeModelType.EXPERIMENTAL),
