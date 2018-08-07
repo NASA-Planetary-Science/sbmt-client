@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -2525,6 +2526,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
         {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
@@ -2827,6 +2829,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             sourceOfLastQuery = imageSource;
 
             setImageResults(processResults(results));
+            setCursor(Cursor.getDefaultCursor());
         }
         catch (Exception e)
         {
