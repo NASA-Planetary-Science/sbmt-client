@@ -18,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.border.TitledBorder;
 
+import org.joda.time.DateTime;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
@@ -64,7 +66,7 @@ public class SpectrumSearchView extends SpectrumView
     private JRadioButton ifbtn;
     private JRadioButton refbtn;
 
-    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument)
+    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
     {
 
         super(smallBodyConfig, modelManager, pickManager2, renderer, instrument);
@@ -87,7 +89,9 @@ public class SpectrumSearchView extends SpectrumView
         panel_1.add(horizontalGlue);
 
         startSpinner = new JSpinner();
-        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        DateTime start = new DateTime(2017, 1, 1, 0, 0, 0, 0);
+        model.setStartDate(start.toDate());
+        startSpinner.setModel(new javax.swing.SpinnerDateModel(start.toDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
         startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         startSpinner.setPreferredSize(new java.awt.Dimension(200, 22));
@@ -105,7 +109,9 @@ public class SpectrumSearchView extends SpectrumView
         panel_2.add(horizontalGlue_1);
 
         endSpinner = new JSpinner();
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132462800000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        DateTime end = new DateTime(2017, 12, 31, 0, 0, 0, 0);
+        model.setEndDate(end.toDate());
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(end.toDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
         endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
         endSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         endSpinner.setPreferredSize(new java.awt.Dimension(200, 22));

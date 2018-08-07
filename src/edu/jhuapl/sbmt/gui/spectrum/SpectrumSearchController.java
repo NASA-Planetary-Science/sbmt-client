@@ -126,7 +126,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         this.instrument=instrument;
         this.isSearchView = search;
         if (search)
-            this.view = new SpectrumSearchView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
+            this.view = new SpectrumSearchView(smallBodyConfig, modelManager, pickManager, renderer, instrument, model);
         else
             this.view = new SpectrumBrowseView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
 
