@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.Frame;
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -177,6 +179,28 @@ public class SbmtViewManager extends ViewManager
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
         SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
+        customConfig.modelLabel = name;
+        customConfig.customTemporary = temporary;
+        customConfig.author = ShapeModelType.CUSTOM;
+        return new SbmtView(statusBar, customConfig);
+    }
+
+    @Override
+    protected View createCustomView(StatusBar statusBar, String name,
+            boolean temporary, File metadata)
+    {
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
+        SmallBodyViewConfigMetadataExporter customConfigImporter = new SmallBodyViewConfigMetadataExporter();
+        try
+        {
+            customConfigImporter.read(metadata, name, customConfig);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         customConfig.modelLabel = name;
         customConfig.customTemporary = temporary;
         customConfig.author = ShapeModelType.CUSTOM;

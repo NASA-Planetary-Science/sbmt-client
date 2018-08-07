@@ -69,6 +69,9 @@ public class DEMPopupMenu extends PopupMenu
     private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
     private Renderer renderer;
+    private String demFilename;
+    private Vector<ViewConfig> config;
+    private ShapeModelImporterDialog dialog;
 
     /**
      *
@@ -167,6 +170,7 @@ public class DEMPopupMenu extends PopupMenu
         boolean selectHideImage = true;
         boolean enableHideImage = true;
         boolean enableBoundaryColor = true;
+        boolean enableExport = false;
 
         for (DEMKey demKey : demKeys)
         {
@@ -243,6 +247,7 @@ public class DEMPopupMenu extends PopupMenu
         }
 
         centerDemMenuItem.setEnabled(enableHideImage);
+        exportCustomModelItem.setEnabled(enableHideImage);
 
         mapDEMMenuItem.setSelected(selectMapImage);
         mapDEMMenuItem.setEnabled(enableMapImage);
@@ -574,7 +579,7 @@ public class DEMPopupMenu extends PopupMenu
             if (dem != null)
             {
                 vtkPolyData demPolydata = dem.getDem();
-                String demFilename = dem.getKey().fileName;
+                demFilename = dem.getKey().fileName;
                 System.out.println(
                         "DEMPopupMenu.ExportCustomModelAction: actionPerformed: filename is " + demFilename);
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
@@ -587,22 +592,37 @@ public class DEMPopupMenu extends PopupMenu
                 writer.Write();
 
                 //write out copy of current model's smallbody view config here
-                Vector<ViewConfig> config = new Vector<ViewConfig>();
+                config = new Vector<ViewConfig>();
                 config.add(smallBodyModel.getConfig());
-                try
-                {
-                    new SmallBodyViewConfigMetadataExporter(new Vector<ViewConfig>(config)).write(new File(demFilename.substring(0, demFilename.length()-3) + "json"));
-                }
-                catch (IOException e1)
-                {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
 
-                ShapeModelImporterDialog dialog = new ShapeModelImporterDialog(null);
+
+                dialog = new ShapeModelImporterDialog(null);
 
                 dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                dialog.beforeOKRunner = new Runnable()
+                {
+                    final String filename = demFilename;
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            System.out.println(
+                                    "DEMPopupMenu.ExportCustomModelAction: actionPerformed: writing to " + demFilename.substring(0, demFilename.length()-3) + "json");
+                            new SmallBodyViewConfigMetadataExporter(new Vector<ViewConfig>(config)).write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                        }
+                        catch (IOException e1)
+                        {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                };
+
+
                 dialog.show();
+
+
                 this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", dialog.getNameOfImportedShapeModel());
             }
         }

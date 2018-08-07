@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.metadata.FixedMetadata;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
@@ -21,66 +23,94 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
 {
     private List<ViewConfig> configs;
 
+    public SmallBodyViewConfigMetadataExporter()
+    {
+        this.configs = new Vector<ViewConfig>();
+    }
+
     public SmallBodyViewConfigMetadataExporter(List<ViewConfig> configs)
     {
         this.configs = configs;
     }
 
-    public void write(File file) throws IOException
+    public void write(File file, String metadataID) throws IOException
     {
-        Serializers.serialize("Test", store(), file);
+        Serializers.serialize(metadataID, store(), file);
+    }
+
+    public void read(File file, String metadataID, SmallBodyViewConfig config) throws IOException
+    {
+        System.out.println("SmallBodyViewConfigMetadataExporter: read: reading " + metadataID + " from " + file.getAbsolutePath());
+        FixedMetadata metadata = Serializers.deserialize(file, metadataID);
+        System.out.println("SmallBodyViewConfigMetadataExporter: read: " + metadata.get(metadata.getKeys().get(0)).toString());
+        configs.add(config);
+        retrieve(metadata);
+//        retrieve((SettableMetadata)metadata.get(metadata.getKeys().get(0)));
+    }
+
+    private SettableMetadata storeConfig(ViewConfig config)
+    {
+        SmallBodyViewConfig c = (SmallBodyViewConfig)config;
+        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        writeEnum(body, c.body, configMetadata);
+        writeEnum(type, c.type, configMetadata);
+        writeEnum(population, c.population, configMetadata);
+        writeEnum(dataUsed, c.dataUsed, configMetadata);
+        writeEnum(author, c.author, configMetadata);
+        write(rootDirOnServer, c.rootDirOnServer, configMetadata);
+        write(timeHistoryFile, c.timeHistoryFile, configMetadata);
+        write(hasImageMap, c.hasImageMap, configMetadata);
+        write(hasStateHistory, c.hasStateHistory, configMetadata);
+
+        write(hasLidarData, c.hasLidarData, configMetadata);
+        write(hasMapmaker, c.hasMapmaker, configMetadata);
+        write(hasSpectralData, c.hasSpectralData, configMetadata);
+        write(hasLineamentData, c.hasLineamentData, configMetadata);
+
+        writeDate(imageSearchDefaultStartDate, c.imageSearchDefaultStartDate, configMetadata);
+        writeDate(imageSearchDefaultEndDate, c.imageSearchDefaultEndDate, configMetadata);
+//        write(imageSearchFilterNames, c.imageSearchFilterNames, configMetadata);
+//        write(imageSearchUserDefinedCheckBoxesNames, c.imageSearchUserDefinedCheckBoxesNames, configMetadata);
+        write(imageSearchDefaultMaxSpacecraftDistance, c.imageSearchDefaultMaxSpacecraftDistance, configMetadata);
+        write(imageSearchDefaultMaxResolution, c.imageSearchDefaultMaxResolution, configMetadata);
+
+        writeDate(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
+        writeDate(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
+        write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
+        write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
+
+//        write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
+        write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+        write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
+        write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
+        write(lidarBrowseFileListResourcePath, c.lidarBrowseFileListResourcePath, configMetadata);
+        write(lidarBrowseNumberHeaderLines, c.lidarBrowseNumberHeaderLines, configMetadata);
+        write(lidarBrowseIsInMeters, c.lidarBrowseIsInMeters, configMetadata);
+        write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
+        writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
+        return configMetadata;
     }
 
     @Override
     public Metadata store()
     {
         List<ViewConfig> builtInConfigs = configs;
-        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-        for (ViewConfig config : builtInConfigs)
+        if (builtInConfigs.size() == 1)
         {
-            SmallBodyViewConfig c = (SmallBodyViewConfig)config;
-            Key<SettableMetadata> metadata = Key.of(config.getUniqueName());
-            SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-            write(body, c.body, configMetadata);
-            write(type, c.type, configMetadata);
-            write(population, c.population, configMetadata);
-            write(dataUsed, c.dataUsed, configMetadata);
-            write(author, c.author, configMetadata);
-            write(rootDirOnServer, c.rootDirOnServer, configMetadata);
-            write(timeHistoryFile, c.timeHistoryFile, configMetadata);
-            write(hasImageMap, c.hasImageMap, configMetadata);
-            write(hasStateHistory, c.hasStateHistory, configMetadata);
-
-            write(hasLidarData, c.hasLidarData, configMetadata);
-            write(hasMapmaker, c.hasMapmaker, configMetadata);
-            write(hasSpectralData, c.hasSpectralData, configMetadata);
-            write(hasLineamentData, c.hasLineamentData, configMetadata);
-
-            write(imageSearchDefaultStartDate, c.imageSearchDefaultStartDate, configMetadata);
-            write(imageSearchDefaultEndDate, c.imageSearchDefaultEndDate, configMetadata);
-            write(imageSearchFilterNames, c.imageSearchFilterNames, configMetadata);
-            write(imageSearchUserDefinedCheckBoxesNames, c.imageSearchUserDefinedCheckBoxesNames, configMetadata);
-            write(imageSearchDefaultMaxSpacecraftDistance, c.imageSearchDefaultMaxSpacecraftDistance, configMetadata);
-            write(imageSearchDefaultMaxResolution, c.imageSearchDefaultMaxResolution, configMetadata);
-
-            write(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
-            write(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
-            write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
-            write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
-
-            write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
-            write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
-            write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
-            write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
-            write(lidarBrowseFileListResourcePath, c.lidarBrowseFileListResourcePath, configMetadata);
-            write(lidarBrowseNumberHeaderLines, c.lidarBrowseNumberHeaderLines, configMetadata);
-            write(lidarBrowseIsInMeters, c.lidarBrowseIsInMeters, configMetadata);
-            write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
-            write(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
-
-            result.put(metadata, configMetadata);
+            SettableMetadata configMetadata = storeConfig(builtInConfigs.get(0));
+            return configMetadata;
         }
-        return result;
+        else
+        {
+            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+            for (ViewConfig config : builtInConfigs)
+            {
+                SettableMetadata configMetadata = storeConfig(config);
+                Key<SettableMetadata> metadata = Key.of(config.getUniqueName());
+                result.put(metadata, configMetadata);
+            }
+            return result;
+        }
     }
 
     private <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
@@ -91,17 +121,88 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
         }
     }
 
-    @Override
-    public void retrieve(Metadata source)
+    private <T> void writeEnum(Key<String> key, Enum value, SettableMetadata configMetadata)
     {
-        // TODO Auto-generated method stub
+        if (value != null)
+        {
+            configMetadata.put(key, value.name());
+        }
     }
 
-    final Key<ShapeModelBody> body = Key.of("body");
-    final Key<BodyType> type = Key.of("type");
-    final Key<ShapeModelPopulation> population = Key.of("population");
-    final Key<ShapeModelDataUsed> dataUsed = Key.of("dataUsed");
-    final Key<ShapeModelType> author = Key.of("author");
+    private <T> void writeDate(Key<Long> key, Date value, SettableMetadata configMetadata)
+    {
+        if (value != null)
+        {
+            configMetadata.put(key, value.getTime());
+        }
+    }
+
+    private <T> T read(Key<T> key, Metadata configMetadata)
+    {
+        T value = configMetadata.get(key);
+        if (value != null)
+            return value;
+        return null;
+    }
+
+    @Override
+    public void retrieve(Metadata configMetadata)
+    {
+        SmallBodyViewConfig c = (SmallBodyViewConfig)configs.get(0);
+        c.body = ShapeModelBody.valueOf(""+read(body, configMetadata));
+        c.type = BodyType.valueOf(""+read(type, configMetadata));
+        c.population = ShapeModelPopulation.valueOf(""+read(population, configMetadata));
+        c.dataUsed =ShapeModelDataUsed.valueOf(""+read(dataUsed, configMetadata));
+        c.author = ShapeModelType.valueOf(""+read(author, configMetadata));
+        c.rootDirOnServer = read(rootDirOnServer, configMetadata);
+        c.timeHistoryFile = read(timeHistoryFile, configMetadata);
+        c.hasImageMap = read(hasImageMap, configMetadata);
+        c.hasStateHistory = read(hasStateHistory, configMetadata);
+
+        c.hasLidarData = read(hasLidarData, configMetadata);
+        c.hasMapmaker = read(hasMapmaker, configMetadata);
+        c.hasSpectralData = read(hasSpectralData, configMetadata);
+        c.hasLineamentData = read(hasLineamentData, configMetadata);
+
+        System.out.println(
+                "SmallBodyViewConfigMetadataExporter: retrieve: date " + read(imageSearchDefaultStartDate, configMetadata));
+        c.imageSearchDefaultStartDate = new Date(read(imageSearchDefaultStartDate, configMetadata));
+        c.imageSearchDefaultEndDate = new Date(read(imageSearchDefaultEndDate, configMetadata));
+//        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
+//        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
+        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
+        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
+
+        c.lidarSearchDefaultStartDate = new Date(read(lidarSearchDefaultStartDate, configMetadata));
+        c.lidarSearchDefaultEndDate = new Date(read(lidarSearchDefaultEndDate, configMetadata));
+        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
+        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
+
+//        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
+        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
+        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
+        c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
+        c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
+        c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
+        c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
+        c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
+
+//        configs.add(config);
+    }
+
+    public List<ViewConfig> getConfigs()
+    {
+        System.out.println(
+                "SmallBodyViewConfigMetadataExporter: getConfigs: configs size is " + configs.size());
+        return configs;
+    }
+
+    final Key<String> body = Key.of("body");
+    final Key<String> type = Key.of("type");
+    final Key<String> population = Key.of("population");
+    final Key<String> dataUsed = Key.of("dataUsed");
+    final Key<String> author = Key.of("author");
     final Key<String> modelLabel = Key.of("author");
     final Key<String> rootDirOnServer = Key.of("rootDirOnServer");
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
@@ -116,15 +217,15 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
     final Key<Boolean> hasSpectralData = Key.of("hasSpectralData");
     final Key<Boolean> hasLineamentData = Key.of("hasLineamentData");
 
-    final Key<Date> imageSearchDefaultStartDate = Key.of("imageSearchDefaultStartDate");
-    final Key<Date> imageSearchDefaultEndDate = Key.of("imageSearchDefaultEndDate");
+    final Key<Long> imageSearchDefaultStartDate = Key.of("imageSearchDefaultStartDate");
+    final Key<Long> imageSearchDefaultEndDate = Key.of("imageSearchDefaultEndDate");
     final Key<String[]> imageSearchFilterNames = Key.of("imageSearchFilterNames");
     final Key<String[]> imageSearchUserDefinedCheckBoxesNames = Key.of("imageSearchUserDefinedCheckBoxesNames");
     final Key<Double> imageSearchDefaultMaxSpacecraftDistance = Key.of("imageSearchDefaultMaxSpacecraftDistance");
     final Key<Double> imageSearchDefaultMaxResolution = Key.of("imageSearchDefaultMaxResolution");
 
-    final Key<Date> lidarSearchDefaultStartDate = Key.of("lidarSearchDefaultStartDate");
-    final Key<Date> lidarSearchDefaultEndDate = Key.of("lidarSearchDefaultEndDate");
+    final Key<Long> lidarSearchDefaultStartDate = Key.of("lidarSearchDefaultStartDate");
+    final Key<Long> lidarSearchDefaultEndDate = Key.of("lidarSearchDefaultEndDate");
 
     final Key<Map> lidarSearchDataSourceMap = Key.of("lidarSearchDataSourceMap");
     final Key<Map> lidarBrowseDataSourceMap = Key.of("lidarBrowseDataSourceMap");
@@ -139,7 +240,7 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
     final Key<Integer> lidarBrowseNumberHeaderLines = Key.of("lidarBrowseNumberHeaderLines");
     final Key<Boolean> lidarBrowseIsInMeters = Key.of("lidarBrowseIsInMeters");
     final Key<Double> lidarOffsetScale = Key.of("lidarOffsetScale");
-    final Key<Instrument> lidarInstrumentName = Key.of("lidarInstrumentName");
+    final Key<String> lidarInstrumentName = Key.of("lidarInstrumentName");
 
 
 

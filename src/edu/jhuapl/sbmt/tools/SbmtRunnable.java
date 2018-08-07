@@ -89,7 +89,7 @@ public class SbmtRunnable implements Runnable
                 Configuration.clearCache();
             }
             SmallBodyViewConfig.initialize();
-            new SmallBodyViewConfigMetadataExporter(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"));
+            new SmallBodyViewConfigMetadataExporter(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
 
             configureMissionBodies(mission);
 
