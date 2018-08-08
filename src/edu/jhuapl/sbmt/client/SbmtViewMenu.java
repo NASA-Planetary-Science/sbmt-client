@@ -1,5 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
+import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +11,15 @@ import javax.swing.JMenuItem;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.RecentlyViewed;
+import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
+import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.Properties;
 
 public class SbmtViewMenu extends ViewMenu
 {
@@ -17,6 +27,8 @@ public class SbmtViewMenu extends ViewMenu
     {
         // Note the base class constructor calls addMenuItem.
         super("Body", viewManager, viewed);
+        ShapeModelImporterDialog.pcl = SbmtViewMenu.this;
+
     }
 
     @Override
@@ -73,5 +85,35 @@ public class SbmtViewMenu extends ViewMenu
         }
         parentMenu.add(mi);
         mi.setEnabled(config.isAccessible());
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (Properties.CUSTOM_MODEL_ADDED.equals(evt.getPropertyName()))
+        {
+            String name = (String) evt.getNewValue();
+            File modelDir = new File(Configuration.getImportedShapeModelsDir() + File.separator + name);
+            View view = null;
+            if (new File(modelDir, "model.vtk").isFile())
+            {
+                if (new File(modelDir, "model.json").isFile())
+                {
+                    view = getRootPanel().createCustomView(modelDir.getName(), false, new File(modelDir, "model.json"));
+                    getRootPanel().addMetadataBackedCustomView(view);
+                }
+                else
+                {
+                    view = getRootPanel().addCustomView(name);
+                }
+            }
+
+            addCustomMenuItem(view);
+            reloadCustomMenuItems();
+        }
+        else 
+        {
+            super.propertyChange(evt);
+        }
     }
 }

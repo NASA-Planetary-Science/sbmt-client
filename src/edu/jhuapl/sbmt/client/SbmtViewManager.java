@@ -186,8 +186,7 @@ public class SbmtViewManager extends ViewManager
     }
 
     @Override
-    protected View createCustomView(StatusBar statusBar, String name,
-            boolean temporary, File metadata)
+    public View createCustomView(String name, boolean temporary, File metadata)
     {
         SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
         SmallBodyViewConfigMetadataIO customConfigImporter = new SmallBodyViewConfigMetadataIO();
@@ -204,6 +203,16 @@ public class SbmtViewManager extends ViewManager
         customConfig.modelLabel = name;
         customConfig.customTemporary = temporary;
         customConfig.author = ShapeModelType.CUSTOM;
+        //write this back out with the new metadata data changes to denote the customization
+        try
+        {
+            customConfigImporter.write(metadata, name);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return new SbmtView(statusBar, customConfig);
     }
 

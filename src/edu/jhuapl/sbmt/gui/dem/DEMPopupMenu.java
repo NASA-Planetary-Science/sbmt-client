@@ -32,6 +32,7 @@ import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
 import edu.jhuapl.saavtk.util.ColorUtil;
@@ -579,6 +580,7 @@ public class DEMPopupMenu extends PopupMenu
             {
                 vtkPolyData demPolydata = dem.getDem();
                 demFilename = dem.getKey().fileName;
+
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
                 writer.SetFileName(demFilename.substring(0, demFilename.length()-3) + "vtk");
                 writer.SetFileTypeToBinary();
@@ -601,10 +603,14 @@ public class DEMPopupMenu extends PopupMenu
                     {
                         try
                         {
+                            SmallBodyViewConfig config2 = (SmallBodyViewConfig)(config.get(0));
+                            config2.modelLabel = dialog.getNameOfImportedShapeModel();
+                            config2.customTemporary = false;
+                            config2.author = ShapeModelType.CUSTOM;
                             SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
                             metadataIO.write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
                             SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
-                            dialog.setDisplayName(config.body + " / " + dialog.getNameOfImportedShapeModel());
+                            dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
                         }
                         catch (IOException e1)
                         {
