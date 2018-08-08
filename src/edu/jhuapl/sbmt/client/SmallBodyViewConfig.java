@@ -2873,7 +2873,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
-                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
                 default:
                     break;
             }
@@ -3041,7 +3041,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
                 default:
                     break;
             }
