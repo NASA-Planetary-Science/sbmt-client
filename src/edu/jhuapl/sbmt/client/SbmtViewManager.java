@@ -32,8 +32,8 @@ import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 
