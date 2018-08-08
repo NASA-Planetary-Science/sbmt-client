@@ -40,7 +40,8 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataExporter;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
@@ -574,18 +575,11 @@ public class DEMPopupMenu extends PopupMenu
             DEMKey demKey = demKeys.get(0);
 
             DEM dem = demCollection.getDEM(demKey);
-            System.out.println(
-                    "DEMPopupMenu.ExportCustomModelAction: actionPerformed: dem is " + dem);
             if (dem != null)
             {
                 vtkPolyData demPolydata = dem.getDem();
                 demFilename = dem.getKey().fileName;
-                System.out.println(
-                        "DEMPopupMenu.ExportCustomModelAction: actionPerformed: filename is " + demFilename);
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
-                File path = new File(demFilename).getParentFile();
-                System.out.println(
-                        "DEMPopupMenu.ExportCustomModelAction: actionPerformed: parent path is " + path.getAbsolutePath());
                 writer.SetFileName(demFilename.substring(0, demFilename.length()-3) + "vtk");
                 writer.SetFileTypeToBinary();
                 writer.SetInputData(demPolydata);
@@ -607,9 +601,10 @@ public class DEMPopupMenu extends PopupMenu
                     {
                         try
                         {
-                            System.out.println(
-                                    "DEMPopupMenu.ExportCustomModelAction: actionPerformed: writing to " + demFilename.substring(0, demFilename.length()-3) + "json");
-                            new SmallBodyViewConfigMetadataExporter(new Vector<ViewConfig>(config)).write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                            SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
+                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                            SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
+                            dialog.setDisplayName(config.body + " / " + dialog.getNameOfImportedShapeModel());
                         }
                         catch (IOException e1)
                         {

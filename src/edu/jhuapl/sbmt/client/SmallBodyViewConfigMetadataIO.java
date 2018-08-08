@@ -19,16 +19,16 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
-public class SmallBodyViewConfigMetadataExporter implements MetadataManager
+public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
     private List<ViewConfig> configs;
 
-    public SmallBodyViewConfigMetadataExporter()
+    public SmallBodyViewConfigMetadataIO()
     {
         this.configs = new Vector<ViewConfig>();
     }
 
-    public SmallBodyViewConfigMetadataExporter(List<ViewConfig> configs)
+    public SmallBodyViewConfigMetadataIO(List<ViewConfig> configs)
     {
         this.configs = configs;
     }
@@ -40,12 +40,9 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
 
     public void read(File file, String metadataID, SmallBodyViewConfig config) throws IOException
     {
-        System.out.println("SmallBodyViewConfigMetadataExporter: read: reading " + metadataID + " from " + file.getAbsolutePath());
         FixedMetadata metadata = Serializers.deserialize(file, metadataID);
-        System.out.println("SmallBodyViewConfigMetadataExporter: read: " + metadata.get(metadata.getKeys().get(0)).toString());
         configs.add(config);
         retrieve(metadata);
-//        retrieve((SettableMetadata)metadata.get(metadata.getKeys().get(0)));
     }
 
     private SettableMetadata storeConfig(ViewConfig config)
@@ -69,8 +66,8 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
 
         writeDate(imageSearchDefaultStartDate, c.imageSearchDefaultStartDate, configMetadata);
         writeDate(imageSearchDefaultEndDate, c.imageSearchDefaultEndDate, configMetadata);
-//        write(imageSearchFilterNames, c.imageSearchFilterNames, configMetadata);
-//        write(imageSearchUserDefinedCheckBoxesNames, c.imageSearchUserDefinedCheckBoxesNames, configMetadata);
+        write(imageSearchFilterNames, c.imageSearchFilterNames, configMetadata);
+        write(imageSearchUserDefinedCheckBoxesNames, c.imageSearchUserDefinedCheckBoxesNames, configMetadata);
         write(imageSearchDefaultMaxSpacecraftDistance, c.imageSearchDefaultMaxSpacecraftDistance, configMetadata);
         write(imageSearchDefaultMaxResolution, c.imageSearchDefaultMaxResolution, configMetadata);
 
@@ -79,7 +76,7 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
         write(lidarSearchDataSourceMap, c.lidarSearchDataSourceMap, configMetadata);
         write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
 
-//        write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
+        write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
         write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
         write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
         write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
@@ -164,12 +161,10 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
         c.hasSpectralData = read(hasSpectralData, configMetadata);
         c.hasLineamentData = read(hasLineamentData, configMetadata);
 
-        System.out.println(
-                "SmallBodyViewConfigMetadataExporter: retrieve: date " + read(imageSearchDefaultStartDate, configMetadata));
         c.imageSearchDefaultStartDate = new Date(read(imageSearchDefaultStartDate, configMetadata));
         c.imageSearchDefaultEndDate = new Date(read(imageSearchDefaultEndDate, configMetadata));
-//        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
-//        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
+        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
+        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
         c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
         c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
 
@@ -178,7 +173,7 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
         c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
         c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
-//        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
+        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
         c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
         c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
         c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
@@ -193,8 +188,6 @@ public class SmallBodyViewConfigMetadataExporter implements MetadataManager
 
     public List<ViewConfig> getConfigs()
     {
-        System.out.println(
-                "SmallBodyViewConfigMetadataExporter: getConfigs: configs size is " + configs.size());
         return configs;
     }
 

@@ -190,7 +190,7 @@ public class SbmtViewManager extends ViewManager
             boolean temporary, File metadata)
     {
         SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
-        SmallBodyViewConfigMetadataExporter customConfigImporter = new SmallBodyViewConfigMetadataExporter();
+        SmallBodyViewConfigMetadataIO customConfigImporter = new SmallBodyViewConfigMetadataIO();
         try
         {
             customConfigImporter.read(metadata, name, customConfig);
