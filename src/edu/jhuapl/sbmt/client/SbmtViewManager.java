@@ -622,7 +622,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.JAXA_SFM_v20180804,
             ShapeModelType.JAXA_SPC_v20180705,
             ShapeModelType.JAXA_SPC_v20180717,
-            ShapeModelType.JAXA_SPC_v20180719,
+            ShapeModelType.JAXA_SPC_v20180719_2,
             ShapeModelType.JAXA_SPC_v20180731,
             ShapeModelType.NASA_001,
             ShapeModelType.NASA_002,
