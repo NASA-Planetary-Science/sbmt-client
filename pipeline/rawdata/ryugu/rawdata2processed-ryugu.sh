@@ -38,7 +38,6 @@ then
    processingVersion="latest"
 fi                                                                                                
                                                                                                   
-
 echo "Body name:$bodyName"
 echo "Processing model name:$processingModelName"
 echo "Processing version:$processingVersion"
@@ -59,9 +58,14 @@ javaCmd="/project/nearsdc/software/java/x86_64/latest/bin/java"
 srcTop="$rawdataTop/$bodyName/$processingVersion"
 destTop="$processedTop/$bodyName/$processingVersion"
 
+releaseDir="$srcTop/$processingModelName"
+export SBMTROOT="$releaseDir/sbmt"
+export SAAVTKROOT="$releaseDir/saavtk"
+
 if [ $processingModelName = "shared" ]
 then
-   latestMKDir=$srcTop/shared/spice/`ls $srcTop/shared/spice | sort -r | head -1`/kernels/mk
+   latestMKDir=$srcTop/shared/spice/kernels/mk
+   #`ls $srcTop/shared/spice | sort -r | head -1`/kernels/mk
    latestKernel=`ls $latestMKDir/hyb2_analysis_v*.tm | sort -r | head -1`
    echo $latestMKDir
    echo $latestKernel
@@ -265,7 +269,8 @@ generateTimeHistory() (
   echo End Time: $endTime
   makeTimeHistory='$timeHistoryDir/timeHistory $bodyNameCaps $spacecraftName $latestKernel "$startTime" "$endTime"'
   eval $makeTimeHistory
-  mv $spacecraftName\_$bodyNameCaps\_timeHistory.csv $timeHistoryDir/$spacecraftName\_$bodyNameCaps\_timeHistory.csv
+  echo before move
+  mv $spacecraftName\_$bodyNameCaps\_timeHistory.csv $destTop/shared/"history"
   echo Made time History
 
   # removes existing timeHistory.bth file and generates a new one
@@ -274,7 +279,7 @@ generateTimeHistory() (
      rm $destTop/shared/"history"/timeHistory.bth
      echo Removed existing timeHistory.bth file
   fi
-  convertToBinary="$javaCmd -cp $scriptDir/ ConvertCSVToBinary $timeHistoryDir/$spacecraftName\_$bodyNameCaps\_timeHistory.csv $destTop/shared/"history"/timeHistory.bth"
+  convertToBinary="$javaCmd -cp $scriptDir/ ConvertCSVToBinary $destTop/shared/"history"/$spacecraftName\_$bodyNameCaps\_timeHistory.csv $destTop/shared/"history"/timeHistory.bth"
   eval $convertToBinary
   echo Done converting to binary file
 )
@@ -291,7 +296,7 @@ generateGallery() (
 discoverPlateColorings() (
   $scriptDir/"ls"-pc.sh $destTop/$processingModelName/coloring
   modelName=`echo $processingModelName | sed 's:\([^v20]*\):\U\1:'` 
-  $scriptDir/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$modelName/162173 Ryugu"
+  $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$modelName/162173 Ryugu"
   #$makeColorings
 )
 
@@ -314,23 +319,29 @@ then
    createDirIfNecessary $destTop/shared
    createDirIfNecessary $destTop/shared/onc
    createDirIfNecessary $destTop/shared/onc/images
+   createDirIfNecessary $destTop/shared/onc/infofiles
    createDirIfNecessary $destTop/shared/onc/gallery
    createDirIfNecessary $destTop/shared/"history"
    createDirIfNecessary $destTop/shared/tir
    createDirIfNecessary $destTop/shared/tir/images
 
-   for dateDir in `ls $srcTop/shared/onc`
-   do
-     echo Rsyncing image files from $srcTop/shared/onc/$dateDir... >> $log 2>&1
-     doRsyncDir $srcTop/shared/onc/$dateDir $destTop/shared/onc/images
+#   for dateDir in `ls $srcTop/shared/onc`
+#   do
+#     echo Rsyncing image files from $srcTop/shared/onc/$dateDir... >> $log 2>&1
+#     doRsyncDir $srcTop/shared/onc/images $destTop/shared/onc/images
 
      # remove extraneous html files
-     rm -f $destTop/shared/onc/images/index.html*
+#     rm -f $destTop/shared/onc/images/index.html*
      
      # fix any bad permissions
-     $scriptDir/data-permissions.pl $destTop/shared/onc/images
+     #$scriptDir/data-permissions.pl $destTop/shared/onc/images
 
-   done
+#   done
+
+   doRsyncDir $srcTop/shared/onc/images $destTop/shared/onc/images
+
+   # remove extraneous html files
+   rm -f $destTop/shared/onc/images/index.html*
 
    # edits metakernel so that the correct path value is write in the metakernel file
    editKernel 
@@ -341,8 +352,17 @@ then
    # generates info files for ONC-W1
    generateInfoFiles $srcTop/shared $destTop/shared $latestKernel RYUGU onc "HAYABUSA2_ONC-W1"
 
+   cat $destTop/shared/onc/"HAYABUSA2_ONC-W1-info.txt" >> $destTop/shared/onc/"HAYABUSA2_ONC-T-info.txt"
+   mv $destTop/shared/onc/"HAYABUSA2_ONC-T-info.txt" $destTop/shared/onc/"imagelist-info.txt"
+
+   cat $destTop/shared/onc/"HAYABUSA2_ONC-W1-fullpath-info.txt" >> $destTop/shared/onc/"HAYABUSA2_ONC-T-fullpath-info.txt"
+   mv $destTop/shared/onc/"HAYABUSA2_ONC-T-fullpath-info.txt" $destTop/shared/onc/"imagelist-fullpath-info.txt"
+
+   mv $destTop/shared/onc/"HAYABUSA2_ONC-W1-infofiles"/*.INFO $destTop/shared/onc/infofiles
+   mv $destTop/shared/onc/"HAYABUSA2_ONC-T-infofiles"/*.INFO $destTop/shared/onc/infofiles
+
    # generates gallery for ONC
-   generateGallery "*.fit" $srcTop/shared/onc/images $destTop/shared/onc/gallery $bodyName $destTop/shared/onc/imagelist.txt 
+   generateGallery "*.fit" $srcTop/shared/onc/images $destTop/shared/onc/gallery $bodyName $destTop/shared/onc/imagelist-info.txt
    
    # copy over TIR images 
    doRsyncDir $srcTop/shared/tir/images $destTop/shared/tir/images
@@ -351,41 +371,28 @@ then
    generateInfoFiles $srcTop/shared $destTop/shared $latestKernel RYUGU tir "HAYABUSA2_TIR-S"
 
    # generates gallery for TIR
-   generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist.txt
+   generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist-info.txt
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory
-
-   rm -f $destTop/shared/onc/HAYABUSA2*
+   
+   rm -rf $destTop/shared/onc/HAYABUSA2*
+   rm -rf $destTop/shared/onc/*Files.txt
+   rm -rf $destTop/shared/tir/*Files.txt
+   rm -rf $destTop/shared/"history"/$spacecraftName*
 
 else
    createDirIfNecessary $destTop/$processingModelName/shape
-   createDirIfNecessary $destTop/$processingModelName/coloring
-   createDirIfNecessary $destTop/$processingModelName/onc
-   createDirIfNecessary $destTop/$processingModelName/onc/images
-   createDirIfNecessary $destTop/$processingModelName/onc/gallery
-   createDirIfNecessary $destTop/$processingModelName/tir
-   createDirIfNecessary $destTop/$processingModelName/tir/images
-   createDirIfNecessary $destTop/$processingModelName/tir/gallery
+   #createDirIfNecessary $destTop/$processingModelName/onc
+   #createDirIfNecessary $destTop/$processingModelName/onc/images
+   #createDirIfNecessary $destTop/$processingModelName/onc/gallery
+   #createDirIfNecessary $destTop/$processingModelName/tir
+   #createDirIfNecessary $destTop/$processingModelName/tir/images
+   #createDirIfNecessary $destTop/$processingModelName/tir/gallery
 
    doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    gzip -f $destTop/$processingModelName/shape/*.obj
 
-   doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
-   gzip -f $destTop/$processingModelName/coloring/*.fits
-
-   # generates info files for ONC
-   generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU onc "HAYABUSA2_ONC-T"
-
-   # generates gallery for ONC
-   generateGallery "*.fit" $srcTop/shared/onc/images $destTop/$processingModelName/onc/gallery $bodyName $destTop/$rawdataModelName/onc/imagelist-info.txt 
-
-   # generates info files for TIR
-   generateInfoFiles $srcTop/shared $destTop/$processingModelName $latestKernel RYUGU tir "HAYABUSA2_TIR-S"
-
-   # generates gallery for TIR
-   generateGallery "*.fit" $srcTop/shared/tir/images $destTop/$processingModelName/tir/gallery $bodyName $destTop/$rawdataModelName/tir/imagelist-info.txt
-   
    if [ -d "$srcTop/$rawdataModelName/onc" ]
    then
      echo Beginning sumfile processing
@@ -399,17 +406,20 @@ else
      echo Finished sumfile processing
    fi
 
-   discoverPlateColorings
+   if [ -d "$srcTop/$rawdataModelName/coloring" ] 
+   then
+      echo discovering plate colorings
+      createDirIfNecessary $destTop/$processingModelName/coloring
+      doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
+      gzip -f $destTop/$processingModelName/coloring/*.fits
+      discoverPlateColorings
+      echo finished processing plate colorings
+   fi
 
    # fix any bad permissions
    $scriptDir/data-permissions.pl $destTop/$processingModelName
 
 fi
-
-# echo $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
-createDirIfNecessary $destTop/$processingModelName/onc
-doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc
-generateInfoFiles $srcTop/$rawdataModelName $srcTop/$rawdataModelName $srcTop/$rawdataModelName/spice/kernels/mk/hyb2_lss_truth.tm RYUGU
 
 # fix any bad permissions
 $scriptDir/data-permissions.pl $destTop/$processingModelName                                      

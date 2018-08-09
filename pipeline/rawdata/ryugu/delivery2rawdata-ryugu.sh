@@ -158,34 +158,29 @@ then
    createDirIfNecessary $destTop/shared/onc/images
    createDirIfNecessary $destTop/shared/tir
 
+   echo copying kernels
+   doRsyncDir $srcTop/spice/ $destTop/shared/spice/
+   echo done with job
+
    for dateDir in `ls $srcTop/onc/Box-C`
    do
      echo Rsyncing image files from ryugu/latest/onc/Box-C/$dateDir... >> $log 2>&1
-     doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/images
-     echo copying kernels
-     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
-     echo done with job
+     #doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/Box-C/$dateDir/L2a/*.fit $destTop/shared/onc/images
    done
 
    for dateDir in `ls $srcTop/onc/Box-A`
    do
      echo Rsyncing image files from ryugu/latest/onc/Box-A/$dateDir... >> $log 2>&1
-     doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/images
-     echo copying kernels
-     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
-     echo done with job
+     #doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/Box-A/$dateDir/L2a/*.fit $destTop/shared/onc/images
    done
 
    for dateDir in `ls $srcTop/onc/FromONC_CoI_Server`
    do
      echo Rsyncing image files from ryugu/latest/onc/FromONC_CoI_Server/$dateDir... >> $log 2>&1
-     doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/images
-     echo copying kernels
-     doRsyncDir $srcTop/spice/ $destTop/shared/spice/$dateDir
-     echo done with job
+     #doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/$dateDir
+     doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/.*.fit $destTop/shared/onc/images
    done
 
    for dateDir in `ls $srcTop/onc/Approach`
@@ -193,30 +188,26 @@ then
      if [ "$dateDir" -gt  20180615 ] 
      then
 	echo Rsyncing image files from ryugu/latest/onc/Approach/$dateDir/L2a
-        doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/$dateDir
-	doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/images
+        #doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/$dateDir
+	doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/*.fit $destTop/shared/onc/images
      fi
    done
 
    for tirDir in `ls -d $srcTop/tir/l2a/*/`
    do
      echo $tirDir
-     doRsync $tirDir/ $destTop/shared/tir/images
+     doRsync $tirDir/ $destTop/shared/tir/images/*.fit
    done
 
 else
    # otherwise, assume this is model data and copy over into a new model
    createDirIfNecessary $destTop/$processingModelName/shape
-   createDirIfNecessary $destTop/$processingModelName/coloring
 
    # copy the manifest as a backup
    doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
    # copy the shape model
    doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
-
-   # copy the coloring files
-   doRsyncDir $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
    if [ -d "$srcTop/$deliveredModelName/imaging" ] 
    then
@@ -225,12 +216,25 @@ else
      # copy the onc imaging files
      doRsyncDir $srcTop/$deliveredModelName/imaging $destTop/$processingModelName/onc
    fi
+
+   if [ -d "$srcTop/$deliveredModelName/coloring" ]
+   then
+     createDirIfNecessary $destTop/$processingModelName/coloring
+
+     # copy the coloring files
+     doRsyncDir $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
+   fi
 fi
 
 
 # fix any bad permissions
+echo fixing permissions
 $scriptDir/data-permissions.pl $destTop/$processingModelName
 
+echo removing unused files
+rm -rf $destTop/shared/onc/images/*.tgz
+rm -rf $destTop/shared/onc/images/*.d
+rm -rf $destTop/shared/onc/images/index.html*
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
