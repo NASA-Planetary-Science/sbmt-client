@@ -2838,7 +2838,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180627", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180627/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180627/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -2892,7 +2892,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180714", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180714/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180714/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -2948,7 +2948,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180725_2", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180725-2/tir", "/ryugu/jaxa-sfm-v20180725-2/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3004,7 +3004,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180804", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180804/onc", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
             //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/onc", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/tir", "/ryugu/jaxa-sfm-v20180804/tir/gallery", false);
@@ -3061,7 +3061,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180705", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180705/onc", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180705/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180705/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180705/tir", "/ryugu/jaxa-spc-v20180705/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3118,7 +3118,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180717", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180717/onc", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180717/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180717/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180717/tir", "/ryugu/jaxa-spc-v20180717/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3175,7 +3175,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180719_2", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180719-2/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180719-2/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180719-2/tir", "/ryugu/jaxa-spc-v20180719-2/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3233,7 +3233,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180731", ShapeModelDataUsed.IMAGE_BASED).build();
 
             //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/onc", "/ryugu/jaxa-spc-v20180731/onc/gallery");
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180731/onc", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180731/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180731/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/tir", "/ryugu/jaxa-spc-v20180731/tir/gallery", false);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3335,7 +3335,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-002/onc", "ryugu_nasa002", "/ryugu/nasa-002/onc/gallery");
+            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-002/onc", "ryugu_nasa002", "ryugu_nasa002", "/ryugu/nasa-002/onc/gallery");
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/gallery", false);
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -3385,7 +3385,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
+            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
             //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc", "/ryugu/nasa-003/onc/gallery");
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-003/tir", "/ryugu/nasa-003/tir/gallery", false);
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
