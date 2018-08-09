@@ -17,6 +17,7 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
@@ -58,6 +59,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
+
+        writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
         write(hasMapmaker, c.hasMapmaker, configMetadata);
@@ -134,6 +137,35 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
     }
 
+    private <T> void writeMetadataArray(Key<Metadata[]> key, MetadataManager[] values, SettableMetadata configMetadata)
+    {
+        if (values != null)
+        {
+            Metadata[] data = new Metadata[values.length];
+            int i=0;
+            for (MetadataManager val : values) data[i] = val.store();
+            configMetadata.put(key, data);
+        }
+    }
+
+    private Metadata[] readMetadataArray(Key<Metadata[]> key, Metadata configMetadata)
+    {
+        System.out.println(
+                "SmallBodyViewConfigMetadataIO: readMetadataArray: key is " + key);
+        System.out.println(
+                "SmallBodyViewConfigMetadataIO: readMetadataArray: configMetadata " + configMetadata);
+        Metadata[] values = configMetadata.get(key);
+        System.out.println(
+                "SmallBodyViewConfigMetadataIO: readMetadataArray: values is " + values);
+        if (values != null)
+        {
+            System.out.println(
+                    "SmallBodyViewConfigMetadataIO: readMetadataArray: returning values length " + values.length);
+            return values;
+        }
+        return null;
+    }
+
     private <T> T read(Key<T> key, Metadata configMetadata)
     {
         T value = configMetadata.get(key);
@@ -155,6 +187,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
+
+        Metadata[] imagingMetadata = readMetadataArray(imagingInstruments, configMetadata);
+        System.out.println("SmallBodyViewConfigMetadataIO: retrieve: number of imaging metadata " + imagingMetadata.length);
+        c.imagingInstruments = new ImagingInstrument[imagingMetadata.length];
+        int i=0;
+        for (Metadata data : imagingMetadata)
+        {
+            ImagingInstrument inst = new ImagingInstrument();
+            inst.retrieve(data);
+            c.imagingInstruments[i++] = inst;
+        }
 
         c.hasLidarData = read(hasLidarData, configMetadata);
         c.hasMapmaker = read(hasMapmaker, configMetadata);
@@ -203,6 +246,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
 
     //capture imaging instruments here
+    final Key<Metadata[]> imagingInstruments = Key.of("imagingInstruments");
+
+
     //capture spectral instruments here
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
