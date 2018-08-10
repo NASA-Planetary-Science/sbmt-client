@@ -62,13 +62,16 @@ then
 elif [ $deployTarget = "stage" ]
 then
   deployedTop="sbmt@hyb2sbmt.jhuapl.edu:/var/www/sbmt/sbmt/data"
+else
+  echo "Only allowed values for deploy target are: aizu and stage"
+  exit 1
 fi
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
-log="$rawTop/$bodyName/$processingVersion/logs/processed2deployed-ryugu.log"
+log="$rawTop/$bodyName/$processingVersion/logs/processed2deployed-ryugu-remote.log"
 
 srcTop="$processedTop/$bodyName"
 destTop="$deployedTop/$bodyName"

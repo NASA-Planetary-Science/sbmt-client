@@ -161,45 +161,87 @@ then
    echo copying kernels
    doRsyncDir $srcTop/spice/ $destTop/shared/spice/
    echo done with job
+   
+   # *** All of these images are copied from their respective l2a (L2a) directories. ***
 
+   # copies over .fit files from the Box-C directory in deliveries-hyb2
    for dateDir in `ls $srcTop/onc/Box-C`
    do
      echo Rsyncing image files from ryugu/latest/onc/Box-C/$dateDir... >> $log 2>&1
-     #doRsyncDir $srcTop/onc/Box-C/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/Box-C/$dateDir/L2a/*.fit $destTop/shared/onc/images
+     for imageName in `ls $srcTop/onc/Box-C/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       doRsync $imageName $destTop/shared/onc/images
+     done
    done
 
+   # copies over .fit files from the Box-A directory in deliveries-hyb2
    for dateDir in `ls $srcTop/onc/Box-A`
    do
      echo Rsyncing image files from ryugu/latest/onc/Box-A/$dateDir... >> $log 2>&1
-     #doRsyncDir $srcTop/onc/Box-A/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/Box-A/$dateDir/L2a/*.fit $destTop/shared/onc/images
+     for imageName in `ls $srcTop/onc/Box-A/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       doRsync $imageName $destTop/shared/onc/images
+     done
    done
 
+   # copies over .fit files from the MidAlt directory in deliveries-hyb2
+   for dateDir in `ls $srcTop/onc/MidAlt`
+   do
+     echo Rsyncing image files from ryugu/latest/onc/MidAlt/$dateDir... >> $log 2>&1
+     for imageName in `ls $srcTop/onc/MidAlt/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       doRsync $imageName $destTop/shared/onc/images
+     done
+   done
+
+   # copies over .fit files from the Gravity directory in deliveries-hyb2
+   for dateDir in `ls $srcTop/onc/Gravity`
+   do
+     echo Rsyncing image files from ryugu/latest/onc/Gravity/$dateDir... >> $log 2>&1
+     for imageName in `ls $srcTop/onc/Gravity/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       doRsync $imageName $destTop/shared/onc/images
+     done
+   done
+
+   # copies over .fit files from the FromONC_CoI_Server directory in deliveries-hyb2
    for dateDir in `ls $srcTop/onc/FromONC_CoI_Server`
    do
      echo Rsyncing image files from ryugu/latest/onc/FromONC_CoI_Server/$dateDir... >> $log 2>&1
-     #doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/$dateDir
-     doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/.*.fit $destTop/shared/onc/images
+     for imageName in `ls $srcTop/onc/FromONC_CoI_Server/$dateDir/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       #doRsyncDir $srcTop/onc/FromONC_CoI_Server/$dateDir/ $destTop/shared/onc/$dateDir #*** don't uncomment old code ***
+       doRsync $imageName $destTop/shared/onc/images
+     done
    done
 
+   # copies over .fit files from the Approach directory in deliveries-hyb2
    for dateDir in `ls $srcTop/onc/Approach`
    do
      if [ "$dateDir" -gt  20180615 ] 
      then
 	echo Rsyncing image files from ryugu/latest/onc/Approach/$dateDir/L2a
-        #doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/ $destTop/shared/onc/$dateDir
-	doRsyncDir $srcTop/onc/Approach/$dateDir/L2a/*.fit $destTop/shared/onc/images
+        for imageName in `ls $srcTop/onc/Approach/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+        do
+          doRsync $imageName $destTop/shared/onc/images
+        done
      fi
    done
 
+   # copies over .fit files from the tir/l2a directory in deliveries-hyb2
    for tirDir in `ls -d $srcTop/tir/l2a/*/`
    do
      echo $tirDir
-     doRsync $tirDir/ $destTop/shared/tir/images/*.fit
+     for imageName in `ls $tirDir/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+     do
+       doRsync $imageName $destTop/shared/tir/images/
+     done
    done
 
 else
+   #echo $srcTop/$deliveredModelName/ Rawdata: $destTop/$processingModelName/ #*** don't uncomment old code ***
+   #doRsyncDir $srcTop/$deliveredModelName/* $destTop/$processingModelName/ #*** don't uncomment old code ***
+
    # otherwise, assume this is model data and copy over into a new model
    createDirIfNecessary $destTop/$processingModelName/shape
 
@@ -209,12 +251,28 @@ else
    # copy the shape model
    doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
 
-   if [ -d "$srcTop/$deliveredModelName/imaging" ] 
+   if [ -d "$srcTop/$deliveredModelName/onc" ] 
    then
      createDirIfNecessary $destTop/$processingModelName/onc
 
      # copy the onc imaging files
-     doRsyncDir $srcTop/$deliveredModelName/imaging $destTop/$processingModelName/onc
+     doRsyncDir $srcTop/$deliveredModelName/onc $destTop/$processingModelName/onc
+   fi
+
+   if [ -d "$srcTop/$deliveredModelName/tir" ]
+   then
+     createDirIfNecessary $destTop/$processingModelName/tir
+
+     # copy the tir imaging files
+     doRsyncDir $srcTop/$deliveredModelName/tir $destTop/$processingModelName/tir
+   fi
+
+   if [ -d "$srcTop/$deliveredModelName/nirs3" ]
+   then
+     createDirIfNecessary $destTop/$processingModelName/nirs3
+
+     # copy the nirs3 imaging files
+     doRsyncDir $srcTop/$deliveredModelName/nirs3 $destTop/$processingModelName/nirs3
    fi
 
    if [ -d "$srcTop/$deliveredModelName/coloring" ]

@@ -126,7 +126,8 @@ else
   echo Rsyncing $srcTop/$processingVersion/$processingModelName to $destTop/$processingModelName-$processingVersion... >> $log 2>&1
 
   doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
-
+  
+  # if there are sum files make the following links, else (no images delivered) make links to onc and tir *** CANNOT HANDLE TIR SUMFILES, ONYL WORKS WITH ONC SUMFILES ***
   if [ -d "$srcTop/$processingVersion/$processingModelName/onc" ]
   then 
     # set the soft link to the shared onc directory
