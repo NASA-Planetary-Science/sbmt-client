@@ -29,11 +29,13 @@ public class BoundedObjectHyperTreeGenerator
     final HyperBox bbox;
     final int maxNumberOfOpenOutputFiles;
     final DataOutputStreamPool pool;
-    private BoundedObjectHyperTreeNode root;
-    private long totalObjectsWritten = 0;
+    BoundedObjectHyperTreeNode root;
+    long totalObjectsWritten = 0;
 
 
-    private BiMap<String, Integer> fileMap = HashBiMap.create();
+    BiMap<String, Integer> fileMap = HashBiMap.create();
+
+
 
     public BoundedObjectHyperTreeGenerator(Path outputDirectory, int maxObjectsPerLeaf, HyperBox bbox, int maxNumberOfOpenOutputFiles, DataOutputStreamPool pool)
     {
@@ -42,10 +44,8 @@ public class BoundedObjectHyperTreeGenerator
         this.maxNumberOfOpenOutputFiles = maxNumberOfOpenOutputFiles;
         this.bbox = bbox; // bounding box of body
         this.pool = pool;
-        setRoot(new BoundedObjectHyperTreeNode(null, outputDirectory, bbox, maxObjectsPerLeaf,pool));
+        root = new BoundedObjectHyperTreeNode(null, outputDirectory, bbox, maxObjectsPerLeaf,pool);
     }
-
-
 
     private void addAllObjectsFromFile(String inputPath) throws HyperException, IOException
     {
@@ -64,10 +64,10 @@ public class BoundedObjectHyperTreeGenerator
                             new double[]{Double.parseDouble(toks[2]), Double.parseDouble(toks[4]), Double.parseDouble(toks[6]), maxT});
 
                     int objId = objName.hashCode();
-                    getFileMap().put(objName, objId);
+                    fileMap.put(objName, objId);
                     HyperBoundedObject obj = new HyperBoundedObject(objName, objId, objBBox);
-                    getRoot().add(obj);
-                    setTotalObjectsWritten(getTotalObjectsWritten() + 1);
+                    root.add(obj);
+                    totalObjectsWritten++;
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -81,7 +81,7 @@ public class BoundedObjectHyperTreeGenerator
 
     public void expand() throws HyperException, IOException
     {
-        expandNode(getRoot());
+        expandNode(root);
     }
 
     public void expandNode(BoundedObjectHyperTreeNode node) throws HyperException, IOException
@@ -100,7 +100,7 @@ public class BoundedObjectHyperTreeGenerator
     public void commit() throws IOException
     {
         pool.closeAllStreams();// close any files that are still open
-        finalCommit(getRoot());
+        finalCommit(root);
     }
 
     void finalCommit(BoundedObjectHyperTreeNode node) throws IOException
@@ -125,7 +125,7 @@ public class BoundedObjectHyperTreeGenerator
     public List<BoundedObjectHyperTreeNode> getAllNonEmptyLeafNodes()
     {
         List<BoundedObjectHyperTreeNode> nodeList=Lists.newArrayList();
-        getAllNonEmptyLeafNodes(getRoot(), nodeList);
+        getAllNonEmptyLeafNodes(root, nodeList);
         return nodeList;
     }
 
@@ -141,15 +141,17 @@ public class BoundedObjectHyperTreeGenerator
     private static void printUsage()
     {
         System.out.println("Arguments:");
-        System.out.println("  (1) Filename of bounding box info");
-        System.out.println("  (2) output directory to build the search tree in");
-        System.out.println("  (3) max number of items per leaf");
+        System.out.println("   (1)   Filename of bounding box info");
+        System.out.println("   (2)   output directory to build the search tree in");
+        System.out.println("   (3)   max number of items per leaf");
+        System.out.println("   (4)   type of object: 'IMAGE' or 'SPECTRA'");
+        System.out.println("  (5-10) bounding box of the body: xmin xmax ymin ymax zmin zmax");
     }
 
 
     public static void main(String[] args) throws IOException, HyperException
     {
-        if (args.length!=3)
+        if (args.length!=9)
         {
             printUsage();
             return;
@@ -164,7 +166,7 @@ public class BoundedObjectHyperTreeGenerator
         System.out.println("Output tree location = "+outputDirectoryString);
         System.out.println("Max # open output files = "+maxNumOpenOutputFiles);
 
-        //        NativeLibraryLoader.loadVtkLibrariesHeadless();
+//        NativeLibraryLoader.loadVtkLibrariesHeadless();
         Path outputDirectory=Paths.get(outputDirectoryString);
 
         int maxObjectsPerLeaf = Integer.parseInt(args[2]);
@@ -186,23 +188,26 @@ public class BoundedObjectHyperTreeGenerator
         }
 
 
-        // TODO min and max dimensions for hyperbox around body - currently set to earth bounds.
-        // need a way to pass bounds or name of body to find bounds
         double today = new Date().getTime();
-        // EARTH bounds:
-        double[] min = {-6378.13720703125, -6378.13720703125, -6356.75244140625, -Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE};
-        double[] max = { 6378.13720703125 , 6378.13720703125, 6356.75244140625, today, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE};
+        // bounds from input
+        double[] min = {Double.parseDouble(args[4]), Double.parseDouble(args[6]), Double.parseDouble(args[8]), -Double.MAX_VALUE};
+        double[] max = {Double.parseDouble(args[5]), Double.parseDouble(args[7]), Double.parseDouble(args[9]), today};
         HyperBox hbox = new HyperBox(min, max);
 
-
-        SpectrumHypertreeGenerator generator = new SpectrumHypertreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
+        BoundedObjectHyperTreeGenerator generator;
+        if (args[3].equalsIgnoreCase("SPECTRA")) {
+            generator = new SpectrumHypertreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
+        }
+        else {
+            generator = new BoundedObjectHyperTreeGenerator(outputDirectory, maxObjectsPerLeaf, hbox, maxNumOpenOutputFiles, pool);
+        }
 
         generator.addAllObjectsFromFile(inputFile);
         Path fileMapPath = outputDirectory.resolve("fileMap.txt");
         System.out.print("Writing file map to "+fileMapPath+"... ");
         FileWriter writer = new FileWriter(fileMapPath.toFile());
-        for (int i : generator.getFileMap().inverse().keySet())
-            writer.write(i+" "+generator.getFileMap().inverse().get(i)+"\n");
+        for (int i : generator.fileMap.inverse().keySet())
+            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
         writer.close();
         System.out.println("Done.");
 
@@ -214,17 +219,16 @@ public class BoundedObjectHyperTreeGenerator
         generator.commit(); // clean up any empty or open data files
 
 
-        //        Path fileMapPath = outputDirectory.resolve("fileMap.txt");
-        //        System.out.print("Writing file map to "+fileMapPath+"... ");
-        //        FileWriter writer = new FileWriter(fileMapPath.toFile());
-        //        for (int i : generator.fileMap.inverse().keySet())
-        //            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
-        //        writer.close();
-        //        System.out.println("Done.");
+//        Path fileMapPath = outputDirectory.resolve("fileMap.txt");
+//        System.out.print("Writing file map to "+fileMapPath+"... ");
+//        FileWriter writer = new FileWriter(fileMapPath.toFile());
+//        for (int i : generator.fileMap.inverse().keySet())
+//            writer.write(i+" "+generator.fileMap.inverse().get(i)+"\n");
+//        writer.close();
+//        System.out.println("Done.");
     }
 
-    public BiMap<String, Integer> getFileMap()
-    {
+    public BiMap<String, Integer> getFileMap() {
         return fileMap;
     }
 
@@ -232,10 +236,7 @@ public class BoundedObjectHyperTreeGenerator
     {
         return root;
     }
-    private void setRoot(BoundedObjectHyperTreeNode boundedObjectHyperTreeNode)
-    {
-        this.root = boundedObjectHyperTreeNode;
-    }
+
     public long getTotalObjectsWritten()
     {
         return totalObjectsWritten;
@@ -245,6 +246,5 @@ public class BoundedObjectHyperTreeGenerator
     {
         this.totalObjectsWritten = totalObjectsWritten;
     }
-
 
 }
