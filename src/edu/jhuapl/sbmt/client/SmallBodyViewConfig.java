@@ -2873,7 +2873,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
-                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
                 default:
                     break;
             }
@@ -3042,7 +3042,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
                 default:
                     break;
             }
@@ -3353,9 +3353,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = "/ryugu/nasa-002/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
-
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
@@ -3383,8 +3380,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
-            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-003", ShapeModelDataUsed.IMAGE_BASED).build();
 
+            // NOTE THE FOLLOWING LINE IS NOT A TYPO: THIRD ARGUMENT SHOULD BE ryugu_nasa002, not ryugu_nasa003.
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
             //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc", "/ryugu/nasa-003/onc/gallery");
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-003/tir", "/ryugu/nasa-003/tir/gallery", false);
@@ -3404,15 +3402,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
-            c.hasStateHistory = true;
-            c.timeHistoryFile = "/ryugu/nasa-003/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
-
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
             c.hasStateHistory = true;
-            c.timeHistoryFile = "/ryugu/nasa-002/history/timeHistory.bth";
+            c.timeHistoryFile = "/ryugu/nasa-003/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
