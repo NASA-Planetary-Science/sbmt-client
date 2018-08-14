@@ -11,7 +11,7 @@
 # run_java_program.sh edu.jhuapl.near.tools.SmallBodyMappingTool
 
 
-VTK_LIB_DIR=$SBMTROOT/lib/mac64
+VTK_LIB_DIR=$SBMTROOT/lib/linux64
 
 export DYLD_LIBRARY_PATH="$VTK_LIB_DIR:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$VTK_LIB_DIR:$LD_LIBRARY_PATH"
@@ -19,7 +19,7 @@ export LD_LIBRARY_PATH="$VTK_LIB_DIR:$LD_LIBRARY_PATH"
 DIR=`dirname "$0"`
 TOP_DIR=$SBMTROOT
 
-JAR_FILES="$TOP_DIR/build/jar/near-apl.jar"
+JAR_FILES="$TOP_DIR/build/jar/near.jar"
 for f in $TOP_DIR/lib/*.jar ; do
     JAR_FILES="$JAR_FILES:$f"
 done
