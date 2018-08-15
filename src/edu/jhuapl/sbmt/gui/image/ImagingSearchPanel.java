@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -2525,6 +2526,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
         {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
@@ -2632,6 +2634,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 imageListName = "imagelist-sum.txt";
 
             List<List<String>> results = null;
+            System.out.println(
+                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
             if (instrument.searchQuery instanceof FixedListQuery)
             {
 
@@ -2644,22 +2648,22 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
                     results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", imageListName, "images", query.getRootPath(), imageSource)).getResultlist();
             }
-//            else
-//            {
-//
-//                // Run queries based on user specifications
-//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-//                        searchField, null,
-//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-//                        sumOfProductsSearch, camerasSelected, filtersSelected,
-//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
-//
-//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
-//            }
+            else
+            {
+
+                // Run queries based on user specifications
+                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        searchField, null,
+                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        sumOfProductsSearch, camerasSelected, filtersSelected,
+                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+
+                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+            }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
 //            if (instrument.spectralMode == SpectralMode.MULTI)
@@ -2827,6 +2831,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             sourceOfLastQuery = imageSource;
 
             setImageResults(processResults(results));
+            setCursor(Cursor.getDefaultCursor());
         }
         catch (Exception e)
         {
@@ -2842,7 +2847,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+        for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
+        {
+            ImageSource source = ImageSource.valueOf(((Enum)sourceComboBox.getItemAt(i)).name());
+            if (source == ImageSource.GASKELL_UPDATED)
+            {
+                excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+            }
+        }
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
 
     private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed

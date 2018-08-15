@@ -3,6 +3,33 @@
 %
 
 # Release Notes
+
+### August 15, 2018 (SBMT-0.5.5)
+
+- Updated the way the Tool behaves if user is not connected to the internet when the SBMT starts.
+- Fixed bug with structures not displaying and repositioning correctly on the body.
+- Fixed bug that prevented users on Windows machine from passing shape models to the SBMT using the command line
+- Fixed bugs with plate coloring visualization
+- Fixed bugs with custom images functionality 
+
+### July 13, 2018 (SBMT-0.5.1)
+
+- Fixed a problem with EROS NIS Database searches
+
+### July 10, 2018 (SBMT-0.5.0)
+
+#### General
+- Added ability for the user to return the SBMT to the same state it was in previously (i.e., to open the SBMT with same shape model and view as the user previously was using)
+- Added ability to read in a csv file that contains ancillary plate coloring data
+- Fixed bugs with plate coloring saving
+- Fixed bugs with custom images functionality
+- Fixed bugs in the camera menu.
+ 
+#### OREX:
+- Fixed bugs with displaying and saving OTES and OVIRS spectra
+- Fixed bugs with loading LIDAR tracks with similar times
+- Fixed bug that led to SBMT returning search results on the wrong part of the body for OCAMS data
+
 ### June 15, 2018
 -   Deployment to SPOC
 
