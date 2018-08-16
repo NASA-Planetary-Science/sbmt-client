@@ -4,6 +4,10 @@
 
 # Release Notes
 
+### August 16, 2018 (SBMT-0.5.5.1)
+
+- Fixed a startup problem crash when the preferences file didn't exist
+
 ### August 15, 2018 (SBMT-0.5.5)
 
 #### General
