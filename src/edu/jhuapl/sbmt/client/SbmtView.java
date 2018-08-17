@@ -55,6 +55,7 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
@@ -434,6 +435,13 @@ public class SbmtView extends View implements PropertyChangeListener
                 }
 
                 customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+            }
+
+            if (getPolyhedralModelConfig().spectralInstruments.length > 0)
+            {
+                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
+                customDataPane.addTab("Spectra", new CustomSpectrumPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+
             }
 
 //            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
