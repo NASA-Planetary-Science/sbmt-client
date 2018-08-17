@@ -25,4 +25,5 @@ TYP=$(echo "$TYPE" | tr '[:upper:]' '[:lower:]')
 BOD=$(echo "$BODY" | tr '[:upper:]' '[:lower:]')
 mkdir /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree
 mv temp_hypertree/* /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree/
+rm -rf temp_hypertree/
 # add mission as argument? Won't always be osirisrex
