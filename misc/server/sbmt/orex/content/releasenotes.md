@@ -4,6 +4,10 @@
 
 # Release Notes
 
+### August 16, 2018 (SBMT-0.5.5.1)
+
+- Fixed a startup problem crash when the preferences file didn't exist
+
 ### August 15, 2018 (SBMT-0.5.5)
 
 - Updated the way the Tool behaves if user is not connected to the internet when the SBMT starts.
