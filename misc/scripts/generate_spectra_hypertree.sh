@@ -18,5 +18,10 @@ BODY=$3
 # remove the temp files and copy the tree to actual paths
 rm -f bounds_*.bounds
 
-# move hypertree to actual location
-
+# copy hypertree to actual location
+INS=$(echo "$INSTRUMENT" | tr '[:upper:]' '[:lower:]')
+TYP=$(echo "$TYPE" | tr '[:upper:]' '[:lower:]')
+BOD=$(echo "$BODY" | tr '[:upper:]' '[:lower:]')
+mkdir /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree
+mv temp_hypertree/* /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree/
+# add mission as argument? Won't always be osirisrex
