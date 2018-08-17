@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.boudedobject.hyperoctree;
+package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

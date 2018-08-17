@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.boudedobject.hyperoctree;
+package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,6 +17,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.lidar.DataOutputStreamPool;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
@@ -151,7 +152,7 @@ public class BoundedObjectHyperTreeGenerator
 
     public static void main(String[] args) throws IOException, HyperException
     {
-        if (args.length!=9)
+        if (args.length!=10)
         {
             printUsage();
             return;
@@ -159,7 +160,7 @@ public class BoundedObjectHyperTreeGenerator
 
         //String inputDirectoryString=args[0];    // "/Volumes/dumbledore/sbmt/OLA"
         String inputFile = args[0];
-        String outputDirectoryString=args[1];   // "/Volumes/dumbledore/sbmt/ola_hypertree"
+        String outputDirectoryString = FileCache.getFileInfoFromServer(args[1]).getFile().toString();   // "/Volumes/dumbledore/sbmt/ola_hypertree"
         int maxNumOpenOutputFiles=32;
 
         System.out.println("Input file = "+ inputFile);
@@ -167,7 +168,7 @@ public class BoundedObjectHyperTreeGenerator
         System.out.println("Max # open output files = "+maxNumOpenOutputFiles);
 
 //        NativeLibraryLoader.loadVtkLibrariesHeadless();
-        Path outputDirectory=Paths.get(outputDirectoryString);
+        Path outputDirectory = Paths.get(outputDirectoryString);
 
         int maxObjectsPerLeaf = Integer.parseInt(args[2]);
         DataOutputStreamPool pool=new DataOutputStreamPool(maxNumOpenOutputFiles);

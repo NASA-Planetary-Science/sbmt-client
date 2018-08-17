@@ -1,5 +1,5 @@
 
-package edu.jhuapl.sbmt.boudedobject.hyperoctree;
+package edu.jhuapl.sbmt.model.boundedobject.hyperoctree;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -22,17 +22,15 @@ import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
-import edu.jhuapl.sbmt.model.image.ImageSearchDataCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 
-public class ImageHyperTreeSearch
+public class SpectraHyperTreeSearchTest
 {
 
     public static void main(String[] args) throws HyperDimensionMismatchException, FileNotFoundException {
-//        String start = "2000-02-16T10:00:00";
-//        String end = "2000-02-16T12:00:00";
-//
-        String start = "2000-02-16T10:00:00";
-        String end = "2000-02-21T06:32:28.795";
+
+        String start = "2017-09-22T23:35:00.000";
+        String end = "2017-09-22T23:40:00.000";
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         double minT = 0;
@@ -50,20 +48,20 @@ public class ImageHyperTreeSearch
 
 
 
+
         // read in the skeleton
-        ImageSearchDataCollection imageModel = new ImageSearchDataCollection(null);
-        imageModel.addDatasourceSkeleton("ErosTest", "/Users/osheacm1/Documents/SAA/SBMT/testHypertree/dataSource.image");
-        imageModel.setCurrentDatasourceSkeleton("ErosTest");
-        imageModel.readSkeleton();
-        FSHyperTreeSkeleton skeleton = imageModel.getCurrentSkeleton();
+        SpectraSearchDataCollection spectraModel = new SpectraSearchDataCollection(null);
+        spectraModel.addDatasourceSkeleton("EarthOTEStest", "/Users/osheacm1/Documents/SAA/SBMT/testSpectrum/treeTest719/dataSource.spectra");
+        spectraModel.setCurrentDatasourceSkeleton("EarthOTEStest");
+        spectraModel.readSkeleton();
+        FSHyperTreeSkeleton skeleton = spectraModel.getCurrentSkeleton();
 
         Set<Integer> cubeList = null;
 
-        BoundingBox bb = new BoundingBox(new double[]{-17.6, -3.5, -3, 9, -6, 3});
-        HyperBox hbb = new HyperBox(new double[]{-17.6, -3, -6, minT}, new double[]{-3.5, 9, 3, maxT});
-//        BoundingBox bb = new BoundingBox(new double[]{-5, -3.5, -3, 1, -6, 3});
+        BoundingBox bb = new BoundingBox(new double[]{-6000, 800, -4000, 3000, 1000, 8000});
+        HyperBox hbb = new HyperBox(new double[]{-6000, -4000, 1000, minT}, new double[]{800, 3000, 8000, maxT});
 
-        cubeList = ((ImageSearchDataCollection)imageModel).getLeavesIntersectingBoundingBox(bb, new double[]{minT, maxT});
+        cubeList = ((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(bb, new double[]{minT, maxT});
 
         Set<String> files = new HashSet<String>();
         HashMap<String, HyperBoundedObject> fileImgMap = new HashMap<String, HyperBoundedObject>();
@@ -102,11 +100,8 @@ public class ImageHyperTreeSearch
 
         ArrayList<String> intFiles = new ArrayList<String>();
 
-        // NOW CHECK WHICH IMAGES ACTUALLY INTERSECT REGION
+        // NOW CHECK WHICH SPECTRA ACTUALLY INTERSECT REGION
         for (String fi : files) {
-            if (fi.equals("M0126109227F4_2P_IOF_DBL") || fi.equals("M0126108375F4_2P_IOF_DBL")) {
-                int a = 5;
-            }
             HyperBoundedObject img = fileImgMap.get(fi);
             HyperBox bbox = img.getBbox();
             try
