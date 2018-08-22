@@ -22,3 +22,4 @@ for f in $TOP_DIR/lib/*.jar ; do
 done
 
 java "-Djava.library.path=$VTK_LIB_DIR" -cp "$JAR_FILES" $@
+  
