@@ -8,7 +8,7 @@
 # that has been built using "make release"
 
 
-VTK_LIB_DIR=$SBMTROOT/build/dist/internal/linux64/sbmt/lib/linux64
+VTK_LIB_DIR=$SBMTROOT/lib/linux64
 
 export DYLD_LIBRARY_PATH="$VTK_LIB_DIR:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$VTK_LIB_DIR:$LD_LIBRARY_PATH"
