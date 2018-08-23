@@ -38,6 +38,7 @@ public class DatabaseGeneratorSql
     private SmallBodyViewConfig smallBodyConfig;
     private String betaSuffix = "_beta";
     private String databasePrefix;
+    private String databaseSuffix = "";
     private boolean appendTables;
     private boolean modifyMain;
 
@@ -359,7 +360,7 @@ public class DatabaseGeneratorSql
         if(modifyMain){
             return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName() + betaSuffix;
+            return databasePrefix.toLowerCase() + "images_" + source.getDatabaseTableName() + databaseSuffix;
         }
     }
 
@@ -368,13 +369,23 @@ public class DatabaseGeneratorSql
         if(modifyMain){
             return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName();
         }else{
-            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName() + betaSuffix;
+            return databasePrefix.toLowerCase() + "cubes_" + source.getDatabaseTableName() + databaseSuffix;
         }
     }
 
     public void run(String fileList, ImageSource source) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
+
+        if (!fileList.endsWith(".txt"))
+        {
+            if (source == ImageSource.GASKELL)
+                fileList = fileList + File.separator + "imagelist-fullpath-sum.txt";
+            else if (source == ImageSource.SPICE)
+                fileList = fileList + File.separator + "imagelist-fullpath-info.txt";
+            else
+                throw new IOException("Image Source is neither type GASKELL or type SPICE");
+        }
 
         List<String> files = null;
         try {
@@ -478,29 +489,133 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
-//        RYUGU(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-//                "/project/sbmt2/data/ryugu/gaskell/imaging/imagelist-fullpath.txt", "ryugu"),
-//        RYUGU_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-//                "/project/sbmt2/data/ryugu/truth/imaging/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_TIR_SIMULATED_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+
+        //
+        // Ryugu
+        //
+		RYUGU_TIR_SIMULATED_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/ryugu/truth/simulated/tir/imagelist-fullpath.txt", "ryugu"),
 
+        // Ryugu Simulated SPC Model (on staging and deployed servers)
         RYUGU_SIM_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu"),
+                "/var/www/sbmt/sbmt/data/ryugu/gaskell/onc", "ryugu_sim",
+                "data/ryugu/gaskell/onc"),
+        // Ryugu Simulated Truth Model (on staging and deployed servers)
         RYUGU_SIM_TRUTH(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu"),
-        RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
-        RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc/simulated-imagelist-fullpath.txt", "ryugu_sim"),
-        // This is the reference model; use this one for flight data.
-        RYUGU_JAXA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-001/onc/imagelist-fullpath.txt", "ryugu"),
-        RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc/imagelist-fullpath.txt", "ryugu_flight"),
+                "/var/www/sbmt/sbmt/data/ryugu/truth/onc/", "ryugu_sim",
+                "data/ryugu/truth/onc"),
 
+        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
+        RYUGU_SIM_SPC_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/onc", "ryugu_sim",
+                "data/ryugu/gaskell/onc"),
+        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
+        RYUGU_SIM_TRUTH_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/onc", "ryugu_sim",
+                "data/ryugu/truth/onc"),
+
+        // Ryugu Shared Flight INFOFILE Images (on APL server)
+//        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/shared/onc", "ryugu_shared",
+//                "ryugu/shared/onc"),
+
+        // Ryugu Model-specific Flight Images (on Aizu server)
+        JAXA_SFM_V20180627(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627",
+                "ryugu/jaxa-sfm-v20180627/onc"),
+
+        JAXA_SPC_V20180705(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705",
+                "ryugu/jaxa-spc-v20180705/onc"),
+
+        JAXA_SFM_V20180714(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180714",
+                "ryugu/jaxa-sfm-v20180714/onc"),
+
+        JAXA_SPC_V20180717(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717",
+                "ryugu/jaxa-spc-v20180717/onc"),
+
+        JAXA_SPC_V20180719_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192",
+                "ryugu/jaxa-spc-v20180719-2/onc"),
+
+        JAXA_SFM_V20180725_2(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252",
+                "ryugu/jaxa-sfm-v20180725-2/onc"),
+
+        JAXA_SPC_V20180731(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731",
+                "ryugu/jaxa-spc-v20180731/onc"),
+
+        JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
+                "ryugu/jaxa-sfm-v20180804/onc"),
+
+
+        RYUGU_NASA_001(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/onc", "ryugu_nasa001",
+                "ryugu/nasa-001/onc"),
+        RYUGU_NASA_002(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+        RYUGU_NASA_003(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-003/onc", "ryugu_nasa003",
+                "ryugu/nasa-002/onc"),
+
+        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+
+        // Ryugu Model-specific Flight Images (on APL server)
+        JAXA_SFM_V20180627_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627",
+                "ryugu/jaxa-sfm-v20180627/onc"),
+
+        JAXA_SPC_V20180705_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705",
+                "ryugu/jaxa-spc-v20180705/onc"),
+
+        JAXA_SFM_V20180714_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180714",
+                "ryugu/jaxa-sfm-v20180714/onc"),
+
+        JAXA_SPC_V20180717_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717",
+                "ryugu/jaxa-spc-v20180717/onc"),
+
+        JAXA_SPC_V20180719_2_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192",
+                "ryugu/jaxa-spc-v20180719-2/onc"),
+
+        JAXA_SFM_V20180725_2_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252",
+                "ryugu/jaxa-sfm-v20180725-2/onc"),
+
+        JAXA_SPC_V20180731_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731",
+                "ryugu/jaxa-spc-v20180731/onc"),
+
+        JAXA_SFM_V20180804_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
+                "ryugu/jaxa-sfm-v20180804/onc"),
+
+
+        RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001",
+                "ryugu/nasa-001/onc"),
         RYUGU_NASA_002_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc/imagelist-fullpath.txt", "ryugu_flight"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+        RYUGU_NASA_003_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/onc", "ryugu_nasa003",
+                "ryugu/nasa-002/onc"),
+
+        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
+                "ryugu/nasa-002/onc"),
+
+
 
         ATLAS(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.ATLAS, ShapeModelType.GASKELL),
                 "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
@@ -514,12 +629,14 @@ public class DatabaseGeneratorSql
         public final SmallBodyViewConfig config;
         public final String pathToFileList;
         public final String databasePrefix;
+        public final String remotePathToFileList;
 
         private RunInfo(SmallBodyViewConfig config, String pathToFileList)
         {
             this.config = config;
             this.pathToFileList = pathToFileList;
             this.databasePrefix = config.body.toString().toLowerCase();
+            this.remotePathToFileList = null;
         }
 
         private RunInfo(SmallBodyViewConfig config, String pathToFileList, String databasePrefix)
@@ -527,6 +644,15 @@ public class DatabaseGeneratorSql
             this.config = config;
             this.pathToFileList = pathToFileList;
             this.databasePrefix = databasePrefix;
+            this.remotePathToFileList = null;
+        }
+
+        private RunInfo(SmallBodyViewConfig config, String pathToFileList, String databasePrefix, String remotePathToFileList)
+        {
+            this.config = config;
+            this.pathToFileList = pathToFileList;
+            this.databasePrefix = databasePrefix;
+            this.remotePathToFileList = remotePathToFileList;
         }
     }
 
@@ -575,6 +701,7 @@ public class DatabaseGeneratorSql
 
         boolean appendTables = false;
         boolean modifyMain = false;
+        boolean remote = false;
 
         // modify configuration parameters with command line args
         int i = 0;
@@ -596,6 +723,10 @@ public class DatabaseGeneratorSql
             {
                 Debug.setEnabled(true);
             }
+            else if (args[i].equals("--remote"))
+            {
+                remote = true;
+            }
             else {
                 // We've encountered something that is not an option, must be at the args
                 break;
@@ -605,7 +736,7 @@ public class DatabaseGeneratorSql
         // There must be numRequiredArgs arguments remaining after the options.
         // Otherwise abort.
         int numberRequiredArgs = 2;
-        if (args.length - i != numberRequiredArgs)
+        if (args.length - i < numberRequiredArgs)
             usage();
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
@@ -643,6 +774,11 @@ public class DatabaseGeneratorSql
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
 
             String pathToFileList = ri.pathToFileList;
+            if (remote)
+            {
+                if (ri.remotePathToFileList != null)
+                    pathToFileList = ri.remotePathToFileList;
+            }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
             generator.run(pathToFileList, mode);

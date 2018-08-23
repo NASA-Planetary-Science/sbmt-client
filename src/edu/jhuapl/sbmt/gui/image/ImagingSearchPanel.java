@@ -2635,6 +2635,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 imageListName = "imagelist-sum.txt";
 
             List<List<String>> results = null;
+            System.out.println(
+                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
             if (instrument.searchQuery instanceof FixedListQuery)
             {
 
@@ -2846,7 +2848,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+        for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
+        {
+            ImageSource source = ImageSource.valueOf(((Enum)sourceComboBox.getItemAt(i)).name());
+            if (source == ImageSource.GASKELL_UPDATED)
+            {
+                excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+            }
+        }
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
 
     private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed
