@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/sbmt/src/edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.java"/>
+<listEntry value="/sbmt/src/edu/jhuapl/sbmt/tools/DatabaseGeneratorSql.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -15,8 +15,8 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.debug.ui.CONSIDER_INHERITED_MAIN" value="true"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--no-stream-redirect --debug"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.DatabaseGeneratorSql"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--debug --remote --append-tables SPICE RYUGU_SHARED_APL"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64  -Xmx4096M -Dedu.jhuapl.sbmt.mission=&quot;HAYABUSA2_DEV&quot;"/>
 </launchConfiguration>
