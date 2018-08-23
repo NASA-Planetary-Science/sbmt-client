@@ -3,10 +3,10 @@
     // Get posted data that we know the keys to
     $imagesDatabase=$_POST['imagesDatabase'];
     
-    $username="nearuser";
-    $password="n3ar!usr";
-    $database="near";
-    $host="sd-mysql.jhuapl.edu:3306";
+	$username="sbmt";
+	$password="Hyb24Ever!";
+	$database="sbmt";
+	$host="hyb2sbmt.jhuapl.edu:3306";
     
     $link = mysql_connect($host,$username,$password);
     if (!$link)
