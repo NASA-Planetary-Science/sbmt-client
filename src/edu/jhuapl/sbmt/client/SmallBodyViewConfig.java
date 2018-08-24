@@ -24,18 +24,15 @@ import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
-import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -90,8 +87,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.hasMapmaker = true;
 
         c.hasSpectralData = true;
-        c.spectralInstruments=new SpectralInstrument[]{
-                new NIS()
+        c.spectralInstruments=new BasicSpectrumInstrument[]{
+                new BasicSpectrumInstrument(SpectraType.NIS_SPECTRA),
         };
 
         c.hasLineamentData = true;
@@ -220,7 +217,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
 
-        c.spectralInstruments=new SpectralInstrument[]{};
+        c.spectralInstruments=new BasicSpectrumInstrument[]{};
 
         configArray.add(c);
 
@@ -2365,9 +2362,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 
                 c.hasSpectralData=true;
-                c.spectralInstruments=new SpectralInstrument[] {
-                        new OTES(),
-                        new OVIRS()
+                c.spectralInstruments=new BasicSpectrumInstrument[] {
+
+                        new BasicSpectrumInstrument(SpectraType.OTES_SPECTRA),
+                        new BasicSpectrumInstrument(SpectraType.OVIRS_SPECTRA)
+
+
+//                        new OTES(),
+//                        new OVIRS()
                 };
 
             c.hasMapmaker = false;
@@ -2488,8 +2490,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 };
 
                 c.hasSpectralData=true;
-                c.spectralInstruments=new SpectralInstrument[] {
-                        new OTES(),new OVIRS()
+                c.spectralInstruments=new BasicSpectrumInstrument[] {
+                        new BasicSpectrumInstrument(SpectraType.OTES_SPECTRA),
+                        new BasicSpectrumInstrument(SpectraType.OVIRS_SPECTRA)
                 };
 
                 c.hasStateHistory = true;
@@ -2668,9 +2671,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasSpectralData=true;
-            c.spectralInstruments=new SpectralInstrument[]
+            c.spectralInstruments=new BasicSpectrumInstrument[]
                     {
-                            new NIRS3()
+                        new BasicSpectrumInstrument(SpectraType.NIRS3_SPECTRA),
                     };
 
             configArray.add(c);

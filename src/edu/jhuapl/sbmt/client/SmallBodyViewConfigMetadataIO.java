@@ -19,6 +19,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
@@ -61,6 +62,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(hasStateHistory, c.hasStateHistory, configMetadata);
 
         writeMetadataArray(imagingInstruments, c.imagingInstruments, configMetadata);
+
+        writeMetadataArray(spectralInstruments, c.spectralInstruments, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
         write(hasMapmaker, c.hasMapmaker, configMetadata);
@@ -143,7 +146,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         {
             Metadata[] data = new Metadata[values.length];
             int i=0;
-            for (MetadataManager val : values) data[i] = val.store();
+            for (MetadataManager val : values) data[i++] = val.store();
             configMetadata.put(key, data);
         }
     }
@@ -199,6 +202,16 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             c.imagingInstruments[i++] = inst;
         }
 
+        Metadata[] spectralMetadata = readMetadataArray(spectralInstruments, configMetadata);
+        c.spectralInstruments = new BasicSpectrumInstrument[spectralMetadata.length];
+        i=0;
+        for (Metadata data : spectralMetadata)
+        {
+            BasicSpectrumInstrument inst = new BasicSpectrumInstrument();
+            inst.retrieve(data);
+            c.spectralInstruments[i++] = inst;
+        }
+
         c.hasLidarData = read(hasLidarData, configMetadata);
         c.hasMapmaker = read(hasMapmaker, configMetadata);
         c.hasSpectralData = read(hasSpectralData, configMetadata);
@@ -250,6 +263,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
 
     //capture spectral instruments here
+    final Key<Metadata[]> spectralInstruments = Key.of("spectralInstruments");
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
     final Key<Boolean> hasMapmaker = Key.of("hasMapmaker");

@@ -219,6 +219,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
 
     protected void setupComboBoxes()
     {
+        System.out.println("SpectrumSearchPanel: setupComboBoxes: instrument is " + instrument.getBandCenters());
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " nm");

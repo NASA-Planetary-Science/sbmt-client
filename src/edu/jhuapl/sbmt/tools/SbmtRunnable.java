@@ -31,7 +31,6 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 
 public class SbmtRunnable implements Runnable
 {
@@ -89,7 +88,7 @@ public class SbmtRunnable implements Runnable
                 Configuration.clearCache();
             }
             SmallBodyViewConfig.initialize();
-            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
+//            new SmallBodyViewConfigMetadataIO(SmallBodyViewConfig.getBuiltInConfigs()).write(new File("/Users/steelrj1/Desktop/test.json"), "Test");
 
             configureMissionBodies(mission);
 
