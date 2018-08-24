@@ -153,17 +153,9 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     private Metadata[] readMetadataArray(Key<Metadata[]> key, Metadata configMetadata)
     {
-        System.out.println(
-                "SmallBodyViewConfigMetadataIO: readMetadataArray: key is " + key);
-        System.out.println(
-                "SmallBodyViewConfigMetadataIO: readMetadataArray: configMetadata " + configMetadata);
         Metadata[] values = configMetadata.get(key);
-        System.out.println(
-                "SmallBodyViewConfigMetadataIO: readMetadataArray: values is " + values);
         if (values != null)
         {
-            System.out.println(
-                    "SmallBodyViewConfigMetadataIO: readMetadataArray: returning values length " + values.length);
             return values;
         }
         return null;
@@ -192,7 +184,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.hasStateHistory = read(hasStateHistory, configMetadata);
 
         Metadata[] imagingMetadata = readMetadataArray(imagingInstruments, configMetadata);
-        System.out.println("SmallBodyViewConfigMetadataIO: retrieve: number of imaging metadata " + imagingMetadata.length);
         c.imagingInstruments = new ImagingInstrument[imagingMetadata.length];
         int i=0;
         for (Metadata data : imagingMetadata)
@@ -239,7 +230,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
         c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
 
-//        configs.add(config);
     }
 
     public List<ViewConfig> getConfigs()
@@ -294,103 +284,5 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> lidarBrowseIsInMeters = Key.of("lidarBrowseIsInMeters");
     final Key<Double> lidarOffsetScale = Key.of("lidarOffsetScale");
     final Key<String> lidarInstrumentName = Key.of("lidarInstrumentName");
-
-
-
-
-//    c.body = ShapeModelBody.EROS;
-//    c.type = BodyType.ASTEROID;
-//    c.population = ShapeModelPopulation.NEO;
-//    c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-//    c.author = ShapeModelType.GASKELL;
-//    c.modelLabel = "Gaskell (2008)";
-//    c.rootDirOnServer = "/GASKELL/EROS";
-//    c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
-//    c.hasImageMap = true;
-//    c.hasStateHistory = true;
-//
-//    c.imagingInstruments = new ImagingInstrument[] {
-//            new ImagingInstrument(
-//                    SpectralMode.MONO,
-//                    new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
-//                    ImageType.MSI_IMAGE,
-//                    new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
-//                    Instrument.MSI
-//                    )
-//    };
-//
-//    c.hasLidarData = true;
-//    c.hasMapmaker = true;
-//
-//    c.hasSpectralData = true;
-//    c.spectralInstruments=new SpectralInstrument[]{
-//            new NIS()
-//    };
-//
-//    c.hasLineamentData = true;
-//    c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
-//    c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-//    c.imageSearchFilterNames = new String[]{
-//            "Filter 1 (550 nm)",
-//            "Filter 2 (450 nm)",
-//            "Filter 3 (760 nm)",
-//            "Filter 4 (950 nm)",
-//            "Filter 5 (900 nm)",
-//            "Filter 6 (1000 nm)",
-//            "Filter 7 (1050 nm)"
-//    };
-//    c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
-//    c.imageSearchDefaultMaxSpacecraftDistance = 1000.0;
-//    c.imageSearchDefaultMaxResolution = 50.0;
-//    c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
-//    c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-//    c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-//    c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//    c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
-//    c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
-//    c.lidarBrowseSpacecraftIndices = new int[]{8, 9, 10};
-//  c.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
-//  c.lidarBrowseTimeIndex = 4;
-//  c.lidarBrowseNoiseIndex = 7;
-//  c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/NlrFiles.txt";
-//  c.lidarBrowseNumberHeaderLines = 2;
-//  c.lidarBrowseIsInMeters = true;
-//  c.lidarOffsetScale = 0.025;
-//  c.lidarInstrumentName = Instrument.NLR;
-
-
-//
-//    @Override
-//    public Metadata store()
-//    {
-//        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-//        result.put(initializedKey, isInitialized());
-//        Renderer localRenderer = SbmtView.this.getRenderer();
-//        if (localRenderer != null) {
-//            RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-//            vtkCamera camera = panel.getActiveCamera();
-//            result.put(positionKey, camera.GetPosition());
-//            result.put(upKey, camera.GetViewUp());
-//        }
-//        return result;
-//    }
-//
-//    @Override
-//    public void retrieve(Metadata state)
-//    {
-//        if (state.get(initializedKey)) {
-//            initialize();
-//            Renderer localRenderer = SbmtView.this.getRenderer();
-//            if (localRenderer != null)
-//            {
-//                RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-//                vtkCamera camera = panel.getActiveCamera();
-//                camera.SetPosition(state.get(positionKey));
-//                camera.SetViewUp(state.get(upKey));
-//                panel.resetCameraClippingRange();
-//                panel.Render();
-//            }
-//        }
-//    }
 
 }
