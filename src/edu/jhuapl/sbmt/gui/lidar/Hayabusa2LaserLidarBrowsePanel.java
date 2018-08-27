@@ -12,10 +12,10 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
-public class LaserLidarBrowsePanel extends LidarBrowsePanel
+public class Hayabusa2LaserLidarBrowsePanel extends LidarBrowsePanel
 {
 
-    public LaserLidarBrowsePanel(ModelManager modelManager, SmallBodyViewConfig smallBodyConfig)
+    public Hayabusa2LaserLidarBrowsePanel(ModelManager modelManager, SmallBodyViewConfig smallBodyConfig)
     {
         super(modelManager);
         String datasourceName="Hayabusa2";
