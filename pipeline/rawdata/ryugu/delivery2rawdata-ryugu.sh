@@ -157,6 +157,7 @@ then
    createDirIfNecessary $destTop/shared/spice
    createDirIfNecessary $destTop/shared/onc/images
    createDirIfNecessary $destTop/shared/tir
+   createDirIfNecessary $destTop/shared/lidar
 
    echo copying kernels
    doRsyncDir $srcTop/spice/ $destTop/shared/spice/
@@ -237,6 +238,20 @@ then
        doRsync $imageName $destTop/shared/tir/images/
      done
    done
+   
+   # copies over .csv files from the lidar/ directory in deliveries-hyb2.  They match the following file patterns: hyb2_ldr_l2_aocsm_topo_ts* hyb2_ldr_l2_hk_topo_ts*
+   for lidarDir in `ls -d $srcTop/lidar/`
+   do
+     echo $lidarDir
+     for lidarName in `ls $lidarDir/hyb2_ldr_l2_aocsm_topo_ts*` # doRsync cannot handle *.fit so a second for loop is needed to pass the specific name
+     do
+       doRsync $lidarName $destTop/shared/lidar/browse/
+     done
+     for lidarName in `ls $lidarDir/hyb2_ldr_l2_hk_topo_ts*` # doRsync cannot handle *.fit so a second for loop is needed to pass the specific name
+     do
+       doRsync $lidarName $destTop/shared/lidar/browse/
+     done
+   done
 
 else
    #echo $srcTop/$deliveredModelName/ Rawdata: $destTop/$processingModelName/ #*** don't uncomment old code ***
@@ -281,6 +296,14 @@ else
 
      # copy the coloring files
      doRsyncDir $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
+   fi
+   
+    if [ -d "$srcTop/$deliveredModelName/lidar" ]
+   then
+     createDirIfNecessary $destTop/$processingModelName/lidar
+
+     # copy the coloring files
+     doRsyncDir $srcTop/$deliveredModelName/lidar $destTop/$processingModelName/lidar
    fi
 fi
 

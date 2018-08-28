@@ -220,7 +220,26 @@ processImager() (
   done
 )
 
-# gnerates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
+# Copies over the files from rawdata and amkes fileList.txt file containing body relative path followed by start and stop time of track in ET
+processLidarBrowse() (
+	lidarDir=$1
+	if test -e $lidarDir/fileList.txt; then
+     rm $lidarDir/fileList.txt
+  	fi
+  	
+  	if test -e $lidarDir/listing.txt; then
+     rm $lidarDir/listing.txt
+  	fi
+  	
+  	listingCMD = `ls -1 > $lidarDir/listing.txt`
+  	$listingCMD
+  	
+	CMD="$scriptDir/generateInfoFiles.sh $lidarDir/listing.txt $lidarDir/fileList.txt"
+  	$CMD 
+
+)
+
+# generates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
 processMakeSumfiles() (
   imageDir=$1
   instrument=`basename $imageDir`
@@ -400,6 +419,10 @@ then
    # generates gallery for TIRi
    # takes 5 parameters [*.fileExtension] [image-source] [gallery-destination] [body-name-lowercase] [path-of-imagelist-info.txt]
    generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist-info.txt
+   
+   # generates fileList for LIDAR
+   # takes 1 parameters [lidar-source] 
+   processLidarBrowse $srcTop/shared/lidar/browse
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory

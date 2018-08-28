@@ -138,10 +138,12 @@ else
     ln -s ../../shared/onc/infofiles $destTop/$processingModelName-$processingVersion/onc/infofiles
     ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
     ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
+    ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
   else
     ln -s ../shared/onc $destTop/$processingModelName-$processingVersion/onc
     ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
     ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
+    ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
   fi
 
   # fix any bad permissions
