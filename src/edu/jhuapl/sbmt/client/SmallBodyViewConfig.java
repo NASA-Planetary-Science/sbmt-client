@@ -1324,8 +1324,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
-//                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
+//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
+                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
                             ImageType.PHOBOS_IMAGE,
                             new ImageSource[]{ ImageSource.GASKELL },
                             Instrument.IMAGING_DATA,
@@ -1337,29 +1337,29 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 8, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
-                    "VSK, Channel 1",
-                    "VSK, Channel 2",
-                    "VSK, Channel 3",
-                    "VIS, Blue",
-                    "VIS, Minus Blue",
-                    "VIS, Violet",
-                    "VIS, Clear",
-                    "VIS, Green",
-                    "VIS, Red",
-            };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-                    "Phobos 2",
-                    "Viking Orbiter 1-A",
-                    "Viking Orbiter 1-B",
-                    "Viking Orbiter 2-A",
-                    "Viking Orbiter 2-B",
-                    "MEX HRSC",
-                    "MRO HiRISE",
-                    "MGS MOC"
-            };
-            c.hasHierarchicalImageSearch = true;
-            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
+//            c.imageSearchFilterNames = new String[]{
+//                    "VSK, Channel 1",
+//                    "VSK, Channel 2",
+//                    "VSK, Channel 3",
+//                    "VIS, Blue",
+//                    "VIS, Minus Blue",
+//                    "VIS, Violet",
+//                    "VIS, Clear",
+//                    "VIS, Green",
+//                    "VIS, Red",
+//            };
+//            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+//                    "Phobos 2",
+//                    "Viking Orbiter 1-A",
+//                    "Viking Orbiter 1-B",
+//                    "Viking Orbiter 2-A",
+//                    "Viking Orbiter 2-B",
+//                    "MEX HRSC",
+//                    "MRO HiRISE",
+//                    "MGS MOC"
+//            };
+//            c.hasHierarchicalImageSearch = true;
+//            c.hierarchicalImageSearchSpecification = new PhobosExperimentalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
@@ -2626,7 +2626,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.PLANETS_AND_SATELLITES;
             c.population = ShapeModelPopulation.EARTH;
             c.dataUsed = ShapeModelDataUsed.WGS84;
-            c.author = ShapeModelType.JAXA_001;
+            c.author = ShapeModelType.JAXA_SFM_v20180627;
             c.modelLabel = "Haybusa2-testing";
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
@@ -2839,27 +2839,198 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
-            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-001", ShapeModelDataUsed.IMAGE_BASED).build();
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180627", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-001/onc", "ryugu_flight", "/ryugu/jaxa-001/onc/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180627/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.RYUGU;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.JAXA_001;
-            c.modelLabel = "JAXA-001";
-            c.rootDirOnServer = "/ryugu/jaxa-001";
+            c.author = ShapeModelType.JAXA_SFM_v20180627;
+            c.modelLabel = "JAXA-SFM-v20180627";
+            c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180627";
             c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.shapeModelFileExtension = ".obj";
 
-            //            c.hasStateHistory = true;
-//            c.timeHistoryFile = "/ryugu/jaxa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-sfm-v20180627/history/timeHistory.bth";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    oncCam,
+                    oncCam, tirCam
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+//                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180714", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180714/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SFM_v20180714;
+            c.modelLabel = "JAXA-SFM-v20180714";
+            c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180714";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-sfm-v20180714/history/timeHistory.bth";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180725_2", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180725-2/tir", "/ryugu/jaxa-sfm-v20180725-2/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SFM_v20180725_2;
+            c.modelLabel = "JAXA-SFM-v20180725_2";
+            c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180725-2";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-sfm-v20180725-2/history/timeHistory.bth";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180804", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
+            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/onc", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/tir", "/ryugu/jaxa-sfm-v20180804/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SFM_v20180804;
+            c.modelLabel = "JAXA-SFM-v20180804";
+            c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180804";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-sfm-v20180804/history/timeHistory.bth";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
             };
 
             c.hasMapmaker = false;
@@ -2880,6 +3051,235 @@ public class SmallBodyViewConfig extends BodyViewConfig
             }
 
             configArray.add(c);
+        }
+
+      if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180705", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180705/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180705/tir", "/ryugu/jaxa-spc-v20180705/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SPC_v20180705;
+            c.modelLabel = "JAXA-SPC-v20180705";
+            c.rootDirOnServer = "/ryugu/jaxa-spc-v20180705";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-spc-v20180705/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
+            }
+
+            configArray.add(c);
+
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180717", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180717/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180717/tir", "/ryugu/jaxa-spc-v20180717/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SPC_v20180717;
+            c.modelLabel = "JAXA-SPC-v20180717";
+            c.rootDirOnServer = "/ryugu/jaxa-spc-v20180717";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-spc-v20180717/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
+            }
+
+            configArray.add(c);
+
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180719_2", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180719-2/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180719-2/tir", "/ryugu/jaxa-spc-v20180719-2/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SPC_v20180719_2;
+            c.modelLabel = "JAXA-SPC-v20180719_2";
+            c.rootDirOnServer = "/ryugu/jaxa-spc-v20180719-2";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-spc-v20180719-2/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
+            }
+
+            configArray.add(c);
+
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180731", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/onc", "/ryugu/jaxa-spc-v20180731/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180731/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/tir", "/ryugu/jaxa-spc-v20180731/tir/gallery", false);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SPC_v20180731;
+            c.modelLabel = "JAXA-SPC-v20180731";
+            c.rootDirOnServer = "/ryugu/jaxa-spc-v20180731";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-spc-v20180731/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
+                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
+            }
+
+            configArray.add(c);
+
         }
 
         if (Configuration.isAPLVersion())
@@ -2938,7 +3338,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-002/onc", "/ryugu/nasa-002/onc/gallery", false);
+            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-002/onc", "ryugu_nasa002", "ryugu_nasa002", "/ryugu/nasa-002/onc/gallery");
             QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/gallery", false);
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -2956,15 +3356,61 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
-            //            c.hasStateHistory = true;
-//            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
-
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/nasa-002/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1500.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-003", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            // NOTE THE FOLLOWING LINE IS NOT A TYPO: THIRD ARGUMENT SHOULD BE ryugu_nasa002, not ryugu_nasa003.
+            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
+            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc", "/ryugu/nasa-003/onc/gallery");
+            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-003/tir", "/ryugu/nasa-003/tir/gallery", false);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.NASA_003;
+            c.modelLabel = "NASA-003";
+            c.rootDirOnServer = "/ryugu/nasa-003";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/nasa-003/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();

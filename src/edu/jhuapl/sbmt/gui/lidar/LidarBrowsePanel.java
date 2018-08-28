@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -142,8 +143,9 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                     {
                         if (showHideButton.getText().startsWith("Show"))
                         {
-                            lidarModel.addLidarData(((LidarDataFileSpec)lidarResultListModel.get(index)).path);
-
+                            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                            lidarModel.addLidarData(((LidarDataFileSpec) lidarResultListModel.get(index)).path);
+                            setCursor(Cursor.getDefaultCursor());
                             showHideButton.setText("Remove");
                         }
                         else

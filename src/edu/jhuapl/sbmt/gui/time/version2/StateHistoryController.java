@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.gui.time.version2;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -174,29 +175,34 @@ public class StateHistoryController implements TableModelListener, ItemListener,
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Date beginTime = (Date) view.getStartTimeSpinner().getModel().getValue();
-                Date stopTime = (Date) view.getStopTimeSpinner().getModel().getValue();
-                double total = (stopTime.getTime()-beginTime.getTime())/ (24.0 * 60.0 * 60.0 * 1000.0);
+                view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                Date beginTime = (Date) view.getStartTimeSpinner().getModel()
+                        .getValue();
+                Date stopTime = (Date) view.getStopTimeSpinner().getModel()
+                        .getValue();
+                double total = (stopTime.getTime() - beginTime.getTime())
+                        / (24.0 * 60.0 * 60.0 * 1000.0);
                 DateTime dtStart = new DateTime(beginTime);
                 DateTime dtEnd = new DateTime(stopTime);
                 DateTime dtStart2 = ISODateTimeFormat.dateTimeParser()
                         .parseDateTime(dtStart.toString());
                 DateTime dtEnd2 = ISODateTimeFormat.dateTimeParser()
                         .parseDateTime(dtEnd.toString());
-
                 // TODO check key generation
                 // generate random stateHistoryKey to use for this interval
                 StateHistoryKey key = new StateHistoryKey(runs);
-                StateHistoryModel newInterval = new StateHistoryModel(key, dtStart2, dtEnd2, bodyModel, renderer);
-
-                if(newInterval.createNewTimeInterval(StateHistoryController.this, total, "") > 0) {
+                StateHistoryModel newInterval = new StateHistoryModel(key,
+                        dtStart2, dtEnd2, bodyModel, renderer);
+                if (newInterval.createNewTimeInterval(
+                        StateHistoryController.this, total, "") > 0)
+                {
                     view.getTable().addInterval(newInterval, renderer);
-//                    timeTablePanel.addIntervalToTable(newInterval, renderer);
+                    //                    timeTablePanel.addIntervalToTable(newInterval, renderer);
                 }
-
                 // once we add an interval, enable the view options
-//                view.getViewControlPanel().setEnabled(true);
+                //                view.getViewControlPanel().setEnabled(true);
                 setViewControlPanelEnabled(true);
+                view.setCursor(Cursor.getDefaultCursor());
             }
         });
     }
@@ -665,10 +671,12 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 StateHistoryModel currentRun = runs.getCurrentRun();
                 if (currentRun != null)
                 {
+                    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     DateTime startTime = currentRun.getStartTime();
                     DateTime endTime = currentRun.getEndTime();
-                    currentRun.saveAnimation(StateHistoryController.this, "" + startTime, "" + endTime);
-
+                    currentRun.saveAnimation(StateHistoryController.this,
+                            "" + startTime, "" + endTime);
+                    view.setCursor(Cursor.getDefaultCursor());
 //                    currentRun.saveAnimation(StateHistoryController.this, view.getStartTimeSpinner().getModel().getValue().toString(), view.getStopTimeSpinner().getModel().getValue().toString());
                 }else
                 {
