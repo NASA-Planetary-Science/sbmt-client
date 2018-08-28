@@ -18,5 +18,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.jhuapl.sbmt.tools.DatabaseGeneratorSql"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--debug GASKELL RYUGU_SPC"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="sbmt"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64  -Xmx4096M -Dedu.jhuapl.sbmt.mission=&quot;355536d&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=../saavtk/lib/vtk6.3/mac64  -Xmx4096M -Dedu.jhuapl.sbmt.mission=&quot;HAYABUSA2_DEPLOY&quot;"/>
 </launchConfiguration>

@@ -56,7 +56,7 @@ public class ImagePopupMenu extends PopupMenu
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
     private List<ImageKey> imageKeys = new ArrayList<Image.ImageKey>();
-    private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
+    //private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
     private JMenuItem showImageInfoMenuItem;
@@ -259,15 +259,28 @@ public class ImagePopupMenu extends PopupMenu
             {
                 Image image = imageCollection.getImage(imageKey);
                 //imageCollection.addImage(imageKey);
-                PerspectiveImage pImage = (PerspectiveImage)imageCollection.getImage(imageKey);
-                //image.setShowFrustum(showFrustumMenuItem.isSelected());
-                if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
-                    selectShowFrustum = false;
-                if (imageKeys.size() == 1)
-                    enableSimulateLighting = true;
-                    simulateLightingOn = pImage.isSimulatingLighingOn();
-                if (image.isVisible())
-                    selectHideImage = false;
+                if ( image instanceof PerspectiveImage )
+                {
+                    PerspectiveImage pImage = (PerspectiveImage)imageCollection.getImage(imageKey);
+                    //image.setShowFrustum(showFrustumMenuItem.isSelected());
+                    if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                        selectShowFrustum = false;
+                    if (imageKeys.size() == 1)
+                    {
+                        enableSimulateLighting = true;
+                        simulateLightingOn = pImage.isSimulatingLighingOn();
+                    }
+                    if (image.isVisible())
+                        selectHideImage = false;
+                } else
+                {
+                    if (!(image instanceof PerspectiveImage) || !((PerspectiveImage)image).isFrustumShowing())
+                        selectShowFrustum = false;
+                    if (imageKeys.size() == 1)
+                        enableSimulateLighting = true;
+                    if (image.isVisible())
+                        selectHideImage = false;
+                }
             }
             else
             {
@@ -350,6 +363,7 @@ public class ImagePopupMenu extends PopupMenu
         changeNormalOffsetMenuItem.setEnabled(enableChangeNormalOffset);
         showFrustumMenuItem.setSelected(selectShowFrustum);
         showFrustumMenuItem.setEnabled(enableShowFrustum);
+        exportInfofileMenuItem.setEnabled(enableSaveToDisk);
         exportENVIImageMenuItem.setEnabled(enableSaveToDisk);
         simulateLightingMenuItem.setEnabled(enableSimulateLighting);
         simulateLightingMenuItem.setSelected(simulateLightingOn);
@@ -371,13 +385,13 @@ public class ImagePopupMenu extends PopupMenu
                     if (mapImageMenuItem.isSelected())
                     {
                         imageCollection.addImage(imageKey);
-                        keySet.add(imageKey);
+                        //keySet.add(imageKey);
                     }
 
                     else
                     {
                         imageCollection.removeImage(imageKey);
-                        keySet.remove(imageKey);
+                        //keySet.remove(imageKey);
                         renderer.setLighting(LightingType.LIGHT_KIT);
                     }
                 }
@@ -709,35 +723,37 @@ public class ImagePopupMenu extends PopupMenu
         {
             for (ImageKey imageKey : imageKeys)
             {
-                try
+                if (imageCollection.getImage(imageKey) instanceof PerspectiveImage)
                 {
-                    imageCollection.addImage(imageKey);
-                    PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                    String fullPathName = image.getFitFileFullPath();
-                    if (fullPathName == null)
-                        fullPathName = image.getPngFileFullPath();
-                    String imageFileName = new File(fullPathName).getName();
-
-
-                    String defaultFileName = null;
-                    if (imageFileName != null)
-                        defaultFileName = imageFileName.substring(0, imageFileName.length()-3) + "INFO";
-
-                    File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
-                    if (file == null)
+                    try
                     {
-                        return;
+                        imageCollection.addImage(imageKey);
+                        PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
+                        String fullPathName = image.getFitFileFullPath();
+                        if (fullPathName == null)
+                            fullPathName = image.getPngFileFullPath();
+                        String imageFileName = new File(fullPathName).getName();
+
+                        String defaultFileName = null;
+                        if (imageFileName != null)
+                            defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+
+                        File file = CustomFileChooser.showSaveDialog(invoker, "Save INFO file as...", defaultFileName);
+                        if (file == null)
+                        {
+                            return;
+                        }
+
+                        String filename = file.getAbsolutePath();
+
+                        System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
+
+                        image.saveImageInfo(filename);
                     }
-
-                    String filename = file.getAbsolutePath();
-
-                    System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
-
-                    image.saveImageInfo(filename);
-                }
-                catch (Exception ex)
-                {
-                    ex.printStackTrace();
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
             }
 
@@ -799,8 +815,11 @@ public class ImagePopupMenu extends PopupMenu
                     PerspectiveImage pImage;
                     for(Image tempImage : imageCollection.getImages())
                     {
-                        pImage = (PerspectiveImage)tempImage;
-                        pImage.setSimulateLighting(false);
+                        if (tempImage instanceof PerspectiveImage)
+                        {
+                            pImage = (PerspectiveImage) tempImage;
+                            pImage.setSimulateLighting(false);
+                        }
                     }
                 }
                 else
