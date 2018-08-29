@@ -2634,8 +2634,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 imageListName = "imagelist-sum.txt";
 
             List<List<String>> results = null;
-            System.out.println(
-                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
+//            System.out.println(
+//                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
             if (instrument.searchQuery instanceof FixedListQuery)
             {
 
