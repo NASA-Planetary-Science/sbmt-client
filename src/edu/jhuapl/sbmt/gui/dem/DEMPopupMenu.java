@@ -589,7 +589,7 @@ public class DEMPopupMenu extends PopupMenu
 
                 //write out copy of current model's smallbody view config here
                 config = new Vector<ViewConfig>();
-                config.add(smallBodyModel.getConfig());
+                config.add(smallBodyModel.getConfig().clone());
 
 
                 dialog = new ShapeModelImporterDialog(null);

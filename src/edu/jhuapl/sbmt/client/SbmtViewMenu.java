@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.client;
 
 import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +14,6 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
 
@@ -111,7 +107,7 @@ public class SbmtViewMenu extends ViewMenu
             addCustomMenuItem(view);
             reloadCustomMenuItems();
         }
-        else 
+        else
         {
             super.propertyChange(evt);
         }
