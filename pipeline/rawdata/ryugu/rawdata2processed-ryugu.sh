@@ -231,7 +231,7 @@ processLidarBrowse() (
      rm $lidarDir/listing.txt
   	fi
   	
-  	listingCMD = `ls -1 $lidarDir/*.csv > $lidarDir/listing.txt`
+  	listingCMD=`ls -1 $lidarDir/*.csv > $lidarDir/listing.txt`
   	$listingCMD
   	
 	CMD="$scriptDir/create_lidar_filelist $lidarDir/listing.txt $lidarDir/fileList.txt $latestKernel"
@@ -421,8 +421,8 @@ then
    generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist-info.txt
    
    # generates fileList for LIDAR
-   # takes 3 parameters [lidar-sourcefile] [lidar-destination-filelist] [latestkernel] 
-   processLidarBrowse $srcTop/shared/lidar/browse
+   # takes 1 parameters [lidar-sourcefile]
+   processLidarBrowse $srcTop/shared/lidar/browse/
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory
