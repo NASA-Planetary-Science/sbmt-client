@@ -586,7 +586,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         try
                         {
                             while (instream.available() > 0) {
-                                HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream);
+                                HyperBoundedObject obj = BoundedObjectHyperTreeNode.createNewBoundedObject(instream, 8);
                                 int fileNum = obj.getFileNum();
                                 Map<Integer, String> fileMap = skeleton.getFileMap();
                                 String file = fileMap.get(fileNum);
