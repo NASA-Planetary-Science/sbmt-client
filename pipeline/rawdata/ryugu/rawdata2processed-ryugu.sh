@@ -9,7 +9,7 @@
 # Usage
 if [ "$#" -lt 2 ]
 then
-  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processed-date> [ <processed-model-name> <processed-date> ]"
+  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version>"
   echo "Shared data usage: rawdata2processed-ryugu.sh shared"
   exit 1
 fi
@@ -265,7 +265,9 @@ processImager() {
     chmod -x $destGalleryDir/*
   fi
 
-# Do we need this?
+# Do we need this? Yes, this script may be run more than once to update
+# an area that was already processed. If that happens, the image list may
+# have duplicates.
   removeDuplicates $destImageList
   removeDuplicates $destImageListFullPath
 }
@@ -569,9 +571,9 @@ else
    #createDirIfNecessary $destTop/$processingModelName/tir/images
    #createDirIfNecessary $destTop/$processingModelName/tir/gallery
 
-	# Process the shape models.
-	doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
-	doGzipDirIfNecessary $destTop/$processingModelName/shape
+   # Process the shape models.
+   doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
+   doGzipDirIfNecessary $destTop/$processingModelName/shape
 
    # processes ONC sumfiles *** CANNOT PROCESS TIR SUMFILES ***
    if [ -d "$srcTop/$rawdataModelName/onc" ]
@@ -597,6 +599,7 @@ else
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
      
+     # James to Josh: this should use doGzipDir.
       # gzips the coloring files
       gzip -f $destTop/$processingModelName/coloring/*.fits
 
@@ -605,11 +608,14 @@ else
       echo finished processing plate colorings
    fi
 
+   # James to Josh: don't need it both here and below, but see note below.
    # fix any bad permissions
    $scriptDir/data-permissions.pl $destTop/$processingModelName
 
 fi
 
+# James to Josh: like in delivery2rawdata.sh, should this one go away and then we put a shared-specific version above at
+# the end of the "if" body?
 # Correct permissions.
 echo Correcting permissions >> $log 2>&1
 $scriptDir/data-permissions.pl $destTop/$processingModelName

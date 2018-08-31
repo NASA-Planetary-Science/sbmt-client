@@ -9,7 +9,7 @@
 # Usage
 if [ "$#" -lt 2 ]
 then
-  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processed-date> [ <processed-model-name> <processed-date> ]"
+  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processing-version> <database-table-name>"
   echo "Shared data usage: processed2deployed-ryugu.sh shared"
   exit 1
 fi
@@ -154,6 +154,7 @@ then
   echo Rsyncing $srcTop/latest/shared to $destTop/shared... >> $log 2>&1
   doRsyncDir $srcTop/latest/shared $destTop/shared
 
+  # James to Josh: should run $scriptDir/sbmt2-data-permissions.pl here on ... all of shared?
   # fix any bad permissions
 #  $scriptDir/data-permissions.pl $destTop/shared
 else
@@ -187,6 +188,8 @@ else
   # if there are sum files make the following links, else (no images delivered) make links to onc and tir *** CANNOT HANDLE TIR SUMFILES, ONYL WORKS WITH ONC SUMFILES ***
   if [ -d "$srcTop/$processingVersion/$processingModelName/onc" ]
   then 
+    # James to Josh: these should be checked for success. Probably need a new function for
+    # doMakeLink or some such.
     # set the soft link to the shared onc directory
     ln -s ../../shared/onc/images $destTop/$processingModelName-$processingVersion/onc/images
     ln -s ../../shared/onc/gallery $destTop/$processingModelName-$processingVersion/onc/gallery

@@ -9,7 +9,7 @@
 # Usage
 if [ "$#" -lt 2 ]
 then
-  echo "Model data usage:  delivered2rawdata-ryugu.sh <delivered-model-name> <delivered-date> [ <processed-model-name> <processed-date> ]"
+  echo "Model data usage:  delivered2rawdata-ryugu.sh <delivered-model-name> <delivered-version> [ <processed-model-name> <processing-version> ]"
   echo "Shared data usage: delivered2rawdata-ryugu.sh shared"
   exit 1
 fi
@@ -59,10 +59,8 @@ echo "Processing model name: " $processingModelName
 
 
 
-legacyTop="/project/sbmt2/sbmt/nearsdc/data"
 rawTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
-deployedTop="/project/sbmt2/sbmt/data/bodies"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
@@ -189,7 +187,7 @@ checkoutCodeIfNecessary() (
 )
 
 # Runs in a sub-shell. Indicates success by touching a marker file.
-buildCodeIfNecessary() {
+buildCodeIfNecessary() (
   markerFile="$srcTop/make-release-succeeded.txt"
   if test ! -f $markerFile;  then
     cd $srcTop/sbmt >> $log 2>&1
@@ -219,7 +217,7 @@ buildCodeIfNecessary() {
   else
     echo "Marker file $markerFile exists already; skipping build step" >> $log 2>&1
   fi
-}
+)
 
 
 #-------------------------------------------------------------------------------
@@ -443,6 +441,9 @@ else
 fi
 
 
+# James note to Josh: should this be pulled into the else case (not shared/latest) and then
+# should there be a different invocation in the if block (shared/latest)? This takes a long
+# time to run if one does it on $destTop directly, so don't want to just do that.
 # fix any bad permissions
 echo fixing permissions
 $scriptDir/data-permissions.pl $destTop/$processingModelName
