@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -94,6 +95,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
@@ -2650,19 +2652,28 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
             else
             {
+                //first check to see if the file list exists - that is our security proxy to access the database
+                FileInfo info = FileCache.getFileInfoFromServer(((GenericPhpQuery)instrument.searchQuery).getRootPath() + "/" + imageListName);
+                if (info.isExistsOnServer() == YesOrNo.YES)
+                {
 
-                // Run queries based on user specifications
-                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-                        searchField, null,
-                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-                        sumOfProductsSearch, camerasSelected, filtersSelected,
-                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+                    // Run queries based on user specifications
+                    ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            searchField, null,
+                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            sumOfProductsSearch, camerasSelected, filtersSelected,
+                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
 
-                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+                    results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+                }
+                else    //can't access file list via htaccess restrictions; returning empty result list
+                {
+                    results = new Vector<List<String>>();
+                }
             }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
