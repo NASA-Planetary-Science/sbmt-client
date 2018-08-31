@@ -6,43 +6,33 @@
 #                 rawdata format
 #-------------------------------------------------------------------------------
 
-# usage
-if [ "$#" -eq 0 ]
+# Usage
+if [ "$#" -lt 2 ]
 then
   echo "Model data usage:  delivered2rawdata-ryugu.sh <delivered-model-name> <delivered-date> [ <processed-model-name> <processed-date> ]"
   echo "Shared data usage: delivered2rawdata-ryugu.sh shared"
   exit 1
 fi
 
-# command line parameters
-pipelineTop="/project/sbmtpipeline"
-bodyName="ryugu"
-
-deliveredModelName="JAXA-001"
-if [ "$#" -gt 0 ]
-then
-  deliveredModelName=$1
-fi
-
-deliveredVersion="20180628"
-if [ $# -gt 1 ]
-then
-  deliveredVersion=$2
-fi
-
-processingModelName=`echo "$deliveredModelName" | sed 's/.*/\L&/'`
-if [ "$#" -gt 2 ]
+# Command line parameters
+deliveredModelName=$1
+deliveredVersion=$2
+if [ "$#" -ge 3 ]
 then
   processingModelName=$3
+else
+  processingModelName=$deliveredModelName
 fi
-
-processingVersion=$deliveredVersion
-if [ "$#" -gt 3 ]
+if [ "$#" -ge 4 ]
 then
   processingVersion=$4
+else
+  processingVersion=$deliveredVersion
 fi
-  
-# determine the deliveries directory
+
+bodyName="ryugu"
+
+pipelineTop="/project/sbmtpipeline"
 deliveriesTop="$pipelineTop/deliveries"
 
 # models that start with "jaxa" are assumed to be from the -hyb2 delivery directory
@@ -67,6 +57,8 @@ echo "Delivered model name: " $deliveredModelName
 echo "Processing version: " $processingVersion
 echo "Processing model name: " $processingModelName
 
+
+
 legacyTop="/project/sbmt2/sbmt/nearsdc/data"
 rawTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
@@ -78,18 +70,19 @@ rsyncCmd='rsync -rlptgDH --copy-links'
 
 srcTop="$deliveriesTop/$bodyName/$deliveredVersion"
 destTop="$rawTop/$bodyName/$processingVersion"
-log="$destTop/logs/delivery2rawdata-model.log"
 
-# echo "Source Top: " $srcTop
-# echo "Dest Top: " $destTop
+releaseDir="$destTop"
+
+logDir="$destTop/logs"
+log="$logDir/delivery2rawdata.log"
 
 #-------------------------------------------------------------------------------
 
 # Create a directory if it doesn't already exist.
-createDirIfNecessary() (
+createDirIfNecessary() {
   dir="$1"
   if test "x$dir" = x; then
-    echo "createDirIfNecessary: missing/blank directory." >> $log 2>&1
+    echo "createDirIfNecessary: missing/blank directory argument." >> $log 2>&1
     exit 1
   fi
 
@@ -101,13 +94,12 @@ createDirIfNecessary() (
       exit 1
     fi
   fi
-)
+}
 
 # Perform an rsync from the source to the destination.
-doRsync() (
+doRsync() {
   src=$1
   dest=$2
-#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
 
   # Make sure source directories end in a slash.
   if test -d $src; then
@@ -117,35 +109,154 @@ doRsync() (
   echo nice time $rsyncCmd $src $dest >> $log 2>&1
   nice time $rsyncCmd $src $dest >> $log 2>&1
   if test $? -ne 0; then
-    exit 1;
+    echo "Failed to rsync $src $dest" >> $log 2>&1
+    exit 1
   fi
-#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
+
   echo "" >> $log 2>&1
-)
+}
 
 # Perform an rsync from the source to the destination. Both must be directories.
-# TODO add error checking.
-doRsyncDir() (
+doRsyncDir() {
   src=$1
   dest=$2
-#  echo "Source: " $src
-#  echo "Dest: " $dest
+  if test ! -e $src; then
+    echo "Source $src does not exist" >> $log 2>&1
+    exit 1
+  fi
+  if test ! -d $src; then
+    echo "Source $src is unexpectedly not a directory." >> $log 2>&1
+    exit 1
+  fi
+  if test -e $dest -a ! -d $dest; then
+    echo "Destination $dest exists but is unexpectedly not a directory." >> $log 2>&1
+    exit 1
+  fi
   createDirIfNecessary $dest
   doRsync $src $dest
+}
+
+# Perform an rsync from a source directory to the destination, but only if the
+# source directory exists.
+doRsyncDirIfNecessary() {
+  src=$1
+  dest=$2
+  if test -e $src; then
+    doRsyncDir $src $dest
+  fi
+}
+
+makeLogDir() {
+  if test -e $logDir -a ! -d $logDir; then
+    echo "Log directory $logDir exists but is not a directory." >&2
+    exit 1
+  fi
+  mkdir -p $logDir
+  if test $? -ne 0; then
+    echo "Cannot create log directory $logDir." >&2
+    exit 1
+  fi
+}
+
+# Runs in a sub-shell. Indicates success by touching a marker file.
+checkoutCodeIfNecessary() (
+  markerFile="$srcTop/git-succeeded.txt"
+  if test ! -f $markerFile;  then
+    cd $srcTop >> $log 2>&1
+    chgrp sbmtsw .
+    chmod 2775 .
+    if test $? -ne 0; then
+      echo "Unable to checkout code in directory $srcTop" >> $log 2>&1
+      exit 1
+    fi
+    echo "In directory $srcTop" >> $log 2>&1
+    echo "git clone http://hardin:8080/scm/git/vtk/saavtk --branch saavtk1dev" >> $log 2>&1
+    git clone http://hardin:8080/scm/git/vtk/saavtk --branch saavtk1dev >> $log 2>&1
+    if test $? -ne 0; then
+      echo "Unable to git clone saavtk" >> $log 2>&1
+      exit 1
+    fi
+    echo "git clone http://hardin:8080/scm/git/sbmt --branch sbmt1dev" >> $log 2>&1
+    git clone http://hardin:8080/scm/git/sbmt --branch sbmt1dev >> $log 2>&1
+    if test $? -ne 0; then
+      echo "Unable to git clone sbmt" >> $log 2>&1
+      exit 1
+    fi
+    touch $markerFile
+  else
+    echo "Marker file $markerFile exists already; skipping git clone commands" >> $log 2>&1
+  fi
 )
+
+# Runs in a sub-shell. Indicates success by touching a marker file.
+buildCodeIfNecessary() {
+  markerFile="$srcTop/make-release-succeeded.txt"
+  if test ! -f $markerFile;  then
+    cd $srcTop/sbmt >> $log 2>&1
+    chgrp sbmtsw .
+    chmod 2775 .
+    if test $? -ne 0; then
+      echo "Unable to build code in directory $srcTop/sbmt" >> $log 2>&1
+      exit 1
+    fi
+
+    # Before building, need to set the released mission.
+    $SBMTROOT/misc/scripts/set-released-mission.sh APL_INTERNAL
+    if test $? -ne 0; then
+      echo "Setting the released mission failed in directory $srcTop/sbmt" >> $log 2>&1
+      exit 1
+    fi
+
+    # Capture this step in its own log file.
+    echo "Building code in $srcTop/sbmt; see log $srcTop/sbmt/make-release.txt" >> $log 2>&1
+    make release > make-release.txt 2>&1
+    if test $? -ne 0; then
+      echo "Make release failed in directory $srcTop/sbmt" >> $log 2>&1
+      exit 1
+    fi
+
+    touch $markerFile
+  else
+    echo "Marker file $markerFile exists already; skipping build step" >> $log 2>&1
+  fi
+}
+
 
 #-------------------------------------------------------------------------------
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
+if test `whoami` = sbmt; then
+  echo "Run this script while logged in as yourself." >&2
+  exit 1
+fi
+
+# Confirm the source directory points somewhere.
+if test ! -d $srcTop/$deliveredModelName; then
+  echo "Error: source directory $srcTop/$deliveredModelName does not exist" >&2
+  exit 1
+fi
+
+export SBMTROOT="$releaseDir/sbmt"
+export SAAVTKROOT="$releaseDir/saavtk"
+
 echo "Starting deliveries2rawdata-ryugu.sh script (log file: $log)"
-mkdir -p $destTop
-mkdir -p $destTop/logs
-# fix any bad permissions
-$scriptDir/data-permissions.pl $destTop/logs
+
+makeLogDir
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
+
+# Check out and build code.
+checkoutCodeIfNecessary
+if test $? -ne 0; then
+  exit 1
+fi
+buildCodeIfNecessary
+if test $? -ne 0; then
+  exit 1
+fi
+
 
 # Import everything from the delivery directory
 
@@ -254,6 +365,27 @@ then
    done
 
 else
+	
+	manifest="aamanifest.txt"
+	if test ! -f $srcTop/$deliveredModelName/$manifest; then
+  		echo "No manifest $srcTop/$deliveredModelName/$manifest" >> $log 2>&1
+  		exit 1
+	fi
+
+	if test ! -d $destTop/$processingModelName; then
+  		mkdir -p $destTop/$processingModelName
+  		if test $? -ne 0; then
+    		echo "Cannot create destination directory $destTop/$processingModelName" >> $log 2>&1
+    		exit 1
+  		fi
+	fi
+
+   # Confirm the source directory points somewhere.
+   if test ! -d $srcTop/$deliveredModelName; then
+     echo "Error: directory $srcTop/$deliveredModelName does not exist" >&2
+     exit 1
+   fi
+
    #echo $srcTop/$deliveredModelName/ Rawdata: $destTop/$processingModelName/ #*** don't uncomment old code ***
    #doRsyncDir $srcTop/$deliveredModelName/* $destTop/$processingModelName/ #*** don't uncomment old code ***
 
@@ -265,6 +397,9 @@ else
 
    # copy the shape model
    doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
+   
+   # Copy coloring files
+	doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
    if [ -d "$srcTop/$deliveredModelName/onc" ] 
    then
