@@ -27,7 +27,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
@@ -65,9 +64,6 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo.YesOrNo;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
@@ -84,7 +80,6 @@ import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
-import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
@@ -539,29 +534,20 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
-                    //first check to see if the file list exists - that is our security proxy to access the database
-                    FileInfo info = FileCache.getFileInfoFromServer(((GenericPhpQuery)queryType).getRootPath() + "/" + "spectrumlist.txt");
-                    if (info.isExistsOnServer() == YesOrNo.YES)
-                    {
-                        SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-                                Ranges.closed(Double.valueOf(view.getFromDistanceTextField().getText()), Double.valueOf(view.getToDistanceTextField().getText())),
-                                "", null,   //TODO: reinstate polygon types here
-                                Ranges.closed(Double.valueOf(view.getFromIncidenceTextField().getText()), Double.valueOf(view.getToIncidenceTextField().getText())),
-                                Ranges.closed(Double.valueOf(view.getFromEmissionTextField().getText()), Double.valueOf(view.getToEmissionTextField().getText())),
-                                Ranges.closed(Double.valueOf(view.getFromPhaseTextField().getText()), Double.valueOf(view.getToPhaseTextField().getText())),
-                                cubeList);
+                    SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(view.getFromDistanceTextField().getText()), Double.valueOf(view.getToDistanceTextField().getText())),
+                            "", null,   //TODO: reinstate polygon types here
+                            Ranges.closed(Double.valueOf(view.getFromIncidenceTextField().getText()), Double.valueOf(view.getToIncidenceTextField().getText())),
+                            Ranges.closed(Double.valueOf(view.getFromEmissionTextField().getText()), Double.valueOf(view.getToEmissionTextField().getText())),
+                            Ranges.closed(Double.valueOf(view.getFromPhaseTextField().getText()), Double.valueOf(view.getToPhaseTextField().getText())),
+                            cubeList);
 
-                        DatabaseQueryBase query = (DatabaseQueryBase)queryType;
-                        results = query.runQuery(searchMetadata).getResultlist();
-                    }
-                    else    //can't access file list via htaccess restrictions; returning empty result list
-                    {
-                        results = new Vector<List<String>>();
-                    }
+                    DatabaseQueryBase query = (DatabaseQueryBase)queryType;
+                    results = query.runQuery(searchMetadata).getResultlist();
                 }
             }
             setSpectrumSearchResults(results);
