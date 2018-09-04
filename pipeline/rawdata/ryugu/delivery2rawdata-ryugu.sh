@@ -275,44 +275,44 @@ then
    # *** All of these images are copied from their respective l2a (L2a) directories. ***
 
    # copies over .fit files from the Box-C directory in deliveries-hyb2
-   for dateDir in `ls $srcTop/onc/Box-C`
-   do
-     echo Rsyncing image files from ryugu/latest/onc/Box-C/$dateDir... >> $log 2>&1
-     for imageName in `ls $srcTop/onc/Box-C/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
-     do
-       doRsync $imageName $destTop/shared/onc/images
-     done
-   done
+   #for dateDir in `ls $srcTop/onc/Box-C`
+   #do
+   #  echo Rsyncing image files from ryugu/latest/onc/Box-C/$dateDir... >> $log 2>&1
+   #  for imageName in `ls $srcTop/onc/Box-C/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+   #  do
+   #    doRsync $imageName $destTop/shared/onc/images
+   #  done
+   #done
 
    # copies over .fit files from the Box-A directory in deliveries-hyb2
-   for dateDir in `ls $srcTop/onc/Box-A`
-   do
-     echo Rsyncing image files from ryugu/latest/onc/Box-A/$dateDir... >> $log 2>&1
-     for imageName in `ls $srcTop/onc/Box-A/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
-     do
-       doRsync $imageName $destTop/shared/onc/images
-     done
-   done
+   #for dateDir in `ls $srcTop/onc/Box-A`
+   #do
+   #  echo Rsyncing image files from ryugu/latest/onc/Box-A/$dateDir... >> $log 2>&1
+   #  for imageName in `ls $srcTop/onc/Box-A/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+   #  do
+   #    doRsync $imageName $destTop/shared/onc/images
+   #  done
+   #done
 
    # copies over .fit files from the MidAlt directory in deliveries-hyb2
-   for dateDir in `ls $srcTop/onc/MidAlt`
-   do
-     echo Rsyncing image files from ryugu/latest/onc/MidAlt/$dateDir... >> $log 2>&1
-     for imageName in `ls $srcTop/onc/MidAlt/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
-     do
-       doRsync $imageName $destTop/shared/onc/images
-     done
-   done
+   #for dateDir in `ls $srcTop/onc/MidAlt`
+   #do
+   #  echo Rsyncing image files from ryugu/latest/onc/MidAlt/$dateDir... >> $log 2>&1
+   #  for imageName in `ls $srcTop/onc/MidAlt/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+   #  do
+   #    doRsync $imageName $destTop/shared/onc/images
+   #  done
+   #done
 
    # copies over .fit files from the Gravity directory in deliveries-hyb2
-   for dateDir in `ls $srcTop/onc/Gravity`
-   do
-     echo Rsyncing image files from ryugu/latest/onc/Gravity/$dateDir... >> $log 2>&1
-     for imageName in `ls $srcTop/onc/Gravity/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
-     do
-       doRsync $imageName $destTop/shared/onc/images
-     done
-   done
+   #for dateDir in `ls $srcTop/onc/Gravity`
+   #do
+   #  echo Rsyncing image files from ryugu/latest/onc/Gravity/$dateDir... >> $log 2>&1
+   #  for imageName in `ls $srcTop/onc/Gravity/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+   #  do
+   #    doRsync $imageName $destTop/shared/onc/images
+   #  done
+   #done
 
    # copies over .fit files from the FromONC_CoI_Server directory in deliveries-hyb2
    for dateDir in `ls $srcTop/onc/FromONC_CoI_Server`
@@ -326,17 +326,17 @@ then
    done
 
    # copies over .fit files from the Approach directory in deliveries-hyb2
-   for dateDir in `ls $srcTop/onc/Approach`
-   do
-     if [ "$dateDir" -gt  20180615 ] 
-     then
-	echo Rsyncing image files from ryugu/latest/onc/Approach/$dateDir/L2a
-        for imageName in `ls $srcTop/onc/Approach/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
-        do
-          doRsync $imageName $destTop/shared/onc/images
-        done
-     fi
-   done
+   #for dateDir in `ls $srcTop/onc/Approach`
+   #do
+   #  if [ "$dateDir" -gt  20180615 ] 
+   #  then
+   #	echo Rsyncing image files from ryugu/latest/onc/Approach/$dateDir/L2a
+   #     for imageName in `ls $srcTop/onc/Approach/$dateDir/L2a/*.fit` # doRsync cannot handle *.fit so a seocnd for loop is needed to pass the specific name
+   #     do
+   #       doRsync $imageName $destTop/shared/onc/images
+   #     done
+   #  fi
+   #done
 
    # copies over .fit files from the tir/l2a directory in deliveries-hyb2
    for tirDir in `ls -d $srcTop/tir/l2a/*/`
