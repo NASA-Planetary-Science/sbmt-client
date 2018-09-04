@@ -572,9 +572,15 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     Set<String> files = new HashSet<String>();
                     HashMap<String, HyperBoundedObject> fileSpecMap = new HashMap<String, HyperBoundedObject>();
                     double[] times = new double[] {startTime, endTime};
-                    TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), times);
+                    double[] spectraLims = new double[] {
+                            Double.valueOf(((SpectrumSearchView)view).getFromEmissionTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToEmissionTextField().getText()),
+                            Double.valueOf(((SpectrumSearchView)view).getFromIncidenceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToIncidenceTextField().getText()),
+                            Double.valueOf(((SpectrumSearchView)view).getFromPhaseTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToPhaseTextField().getText()),
+                            Double.valueOf(((SpectrumSearchView)view).getFromDistanceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToDistanceTextField().getText())};
                     double[] bounds = interiorPoly.GetBounds();
-                    HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0]}, new double[]{bounds[1], bounds[3], bounds[5], times[1]});
+                    TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(bounds), times, spectraLims);
+                    HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0], spectraLims[0], spectraLims[2], spectraLims[4], spectraLims[6]},
+                            new double[]{bounds[1], bounds[3], bounds[5], times[1], spectraLims[1], spectraLims[3], spectraLims[5], spectraLims[7]});
 
                     for (Integer cubeid : cubeList)
                     {
@@ -625,8 +631,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                             e.printStackTrace();
                         }
                     }
-
-                    // NOW FIND SPECTRA THAT MATCH OTHER PARAMETERS
 
 
                     // final list of spectra that intersect region

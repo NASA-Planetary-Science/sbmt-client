@@ -132,7 +132,7 @@ public class SpectrumSearchView extends SpectrumView
         fromDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromDistanceTextField.setPreferredSize(new Dimension(0, 22));
         fromDistanceTextField.setText("0");
-        fromDistanceTextField.setEnabled(false);
+//        fromDistanceTextField.setEnabled(false);
         fromDistanceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromDistanceTextField.getPreferredSize().height) );
 
         panel_3.add(fromDistanceTextField);
@@ -143,7 +143,7 @@ public class SpectrumSearchView extends SpectrumView
         toDistanceTextField = new JFormattedTextField();
         toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toDistanceTextField.setText("100");
-        toDistanceTextField.setEnabled(false);
+//        toDistanceTextField.setEnabled(false);
         toDistanceTextField.setPreferredSize(new Dimension(0, 22));
         toDistanceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toDistanceTextField.getPreferredSize().height) );
 
@@ -165,7 +165,7 @@ public class SpectrumSearchView extends SpectrumView
         fromIncidenceTextField = new JFormattedTextField();
         fromIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromIncidenceTextField.setText("0");
-        fromIncidenceTextField.setEnabled(false);
+//        fromIncidenceTextField.setEnabled(false);
         fromIncidenceTextField.setPreferredSize(new Dimension(0, 22));
         fromIncidenceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromIncidenceTextField.getPreferredSize().height) );
 
@@ -178,7 +178,7 @@ public class SpectrumSearchView extends SpectrumView
         toIncidenceTextField.setPreferredSize(new Dimension(0, 22));
         toIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toIncidenceTextField.setText("180");
-        toIncidenceTextField.setEnabled(false);
+//        toIncidenceTextField.setEnabled(false);
         toIncidenceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toIncidenceTextField.getPreferredSize().height) );
 
         panel_4.add(toIncidenceTextField);
@@ -199,7 +199,7 @@ public class SpectrumSearchView extends SpectrumView
         fromEmissionTextField = new JFormattedTextField();
         fromEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromEmissionTextField.setText("0");
-        fromEmissionTextField.setEnabled(false);
+//        fromEmissionTextField.setEnabled(false);
         fromEmissionTextField.setPreferredSize(new Dimension(0, 22));
         fromEmissionTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromEmissionTextField.getPreferredSize().height) );
 
@@ -211,7 +211,7 @@ public class SpectrumSearchView extends SpectrumView
         toEmissionTextField = new JFormattedTextField();
         toEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toEmissionTextField.setText("180");
-        toEmissionTextField.setEnabled(false);
+//        toEmissionTextField.setEnabled(false);
         toEmissionTextField.setPreferredSize(new Dimension(0, 22));
         toEmissionTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toEmissionTextField.getPreferredSize().height) );
 
@@ -236,7 +236,7 @@ public class SpectrumSearchView extends SpectrumView
         fromPhaseTextField.setPreferredSize(new Dimension(0, 22));
         fromPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromPhaseTextField.setText("0");
-        fromPhaseTextField.setEnabled(false);
+//        fromPhaseTextField.setEnabled(false);
         fromPhaseTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromPhaseTextField.getPreferredSize().height) );
 
         panel_6.add(fromPhaseTextField);
@@ -247,7 +247,7 @@ public class SpectrumSearchView extends SpectrumView
         toPhaseTextField = new JFormattedTextField();
         toPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toPhaseTextField.setText("180");
-        toPhaseTextField.setEnabled(false);
+//        toPhaseTextField.setEnabled(false);
         toPhaseTextField.setPreferredSize(new Dimension(0, 22));
         toPhaseTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toPhaseTextField.getPreferredSize().height) );
 
@@ -532,22 +532,22 @@ public class SpectrumSearchView extends SpectrumView
     }
     public JFormattedTextField getToDistanceTextField()
     {
-        return fromDistanceTextField;
+        return toDistanceTextField;
     }
 
     public JFormattedTextField getToEmissionTextField()
     {
-        return fromEmissionTextField;
+        return toEmissionTextField;
     }
     public JFormattedTextField getToIncidenceTextField()
     {
-        return fromIncidenceTextField;
+        return toIncidenceTextField;
     }
 
 
     public JFormattedTextField getToPhaseTextField()
     {
-        return fromPhaseTextField;
+        return toPhaseTextField;
     }
 
     public JRadioButton getIFButton()
