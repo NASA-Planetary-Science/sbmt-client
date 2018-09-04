@@ -23,6 +23,8 @@ rm -f bounds_*.bounds
 INS=$(echo "$INSTRUMENT" | tr '[:upper:]' '[:lower:]')
 TYP=$(echo "$TYPE" | tr '[:upper:]' '[:lower:]')
 BOD=$(echo "$BODY" | tr '[:upper:]' '[:lower:]')
+# remove old hypertree directory and make new one
+rm -rf /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree
 mkdir /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree
 mv temp_hypertree/* /project/sbmt2/sbmt/data/servers/multi-mission/test/$BOD/osirisrex/$INS/$TYP/hypertree/
 rm -rf temp_hypertree/
