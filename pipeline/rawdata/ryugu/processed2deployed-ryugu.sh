@@ -9,7 +9,7 @@
 # Usage
 if [ "$#" -lt 2 ]
 then
-  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processing-version> <database-table-name>"
+  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processing-version> [ <database-table-name> ]"
   echo "Shared data usage: processed2deployed-ryugu.sh shared"
   exit 1
 fi
@@ -19,6 +19,7 @@ processingModelName=$1
 processingVersion=$2
 
 bodyName="ryugu"
+# Optional third argument is database table base name.
 dbTableBaseName=$3
 
 pipelineTop="/project/sbmtpipeline"
@@ -206,15 +207,19 @@ else
   fi
 fi
 
-if test -d $srcTop/$processingVersion/$processingModelName/imaging; then
-  echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
-  nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
-  if test $? -ne 0; then
-    echo "Error while updating database." >> $log 2>&1
-    exit 1
+if test -d $srcTop/$processingVersion/$processingModelName/onc; then
+  if test "x$dbTableBaseName" != x; then
+    echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
+    nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
+    if test $? -ne 0; then
+      echo "Error while updating database." >> $log 2>&1
+      exit 1
+    fi
+  else
+    echo "Found directory for ONC data, but no database table root name supplied on the command line. Skipping database generation." >> $log 2>&1
   fi
 else
-  echo "No images found; skipping database generation." >> $log 2>&1
+  echo "Did not find directory for ONC data. Skipping database generation." >> $log 2>&1
 fi
 
 echo "End `date`" >> $log 2>&1
