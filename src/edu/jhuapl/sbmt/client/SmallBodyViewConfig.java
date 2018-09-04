@@ -3409,6 +3409,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     oncCam, tirCam
             };
 
+
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 0;
+            c.imageSearchDefaultMaxResolution = 0;
+
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/nasa-003/history/timeHistory.bth";
 
@@ -3419,6 +3425,24 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
+
+            //lidar
+            c.hasLidarData = false;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Default", "");
+            c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
+            c.lidarBrowseSpacecraftIndices = new int[]{8, 9, 10};
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
+            c.lidarBrowseTimeIndex = 4;
+            c.lidarBrowseNoiseIndex = 7;
+            c.lidarBrowseFileListResourcePath = "";
+            c.lidarBrowseNumberHeaderLines = 2;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarOffsetScale = 0.025;
+            c.lidarInstrumentName = Instrument.LASER;
 
             configArray.add(c);
         }
