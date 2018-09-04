@@ -362,6 +362,9 @@ then
      done
    done
 
+   echo fixing permissions
+   scriptDir/data-permissions.pl $destTop/shared
+   
 else
 	
 	manifest="aamanifest.txt"
@@ -438,15 +441,11 @@ else
      # copy the coloring files
      doRsyncDir $srcTop/$deliveredModelName/lidar $destTop/$processingModelName/lidar
    fi
+   
+   echo fixing permissions
+   scriptDir/data-permissions.pl $destTop/$processingModelName
 fi
 
-
-# James note to Josh: should this be pulled into the else case (not shared/latest) and then
-# should there be a different invocation in the if block (shared/latest)? This takes a long
-# time to run if one does it on $destTop directly, so don't want to just do that.
-# fix any bad permissions
-echo fixing permissions
-$scriptDir/data-permissions.pl $destTop/$processingModelName
 
 echo removing unused files
 rm -rf $destTop/shared/onc/images/*.tgz

@@ -265,9 +265,6 @@ processImager() {
     chmod -x $destGalleryDir/*
   fi
 
-# Do we need this? Yes, this script may be run more than once to update
-# an area that was already processed. If that happens, the image list may
-# have duplicates.
   removeDuplicates $destImageList
   removeDuplicates $destImageListFullPath
 }
@@ -561,6 +558,9 @@ then
    rm -rf $destTop/shared/onc/*Files.txt
    rm -rf $destTop/shared/tir/*Files.txt
    rm -rf $destTop/shared/"history"/$spacecraftName*
+   
+   echo Correcting permissions >> $log 2>&1
+   $scriptDir/data-permissions.pl $destTop/shared
 
 else
    createDirIfNecessary $destTop/$processingModelName/shape
@@ -599,26 +599,19 @@ else
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
      
-     # James to Josh: this should use doGzipDir.
       # gzips the coloring files
-      gzip -f $destTop/$processingModelName/coloring/*.fits
+      doGzipDir $destTop/$processingModelName/coloring/*.fits
 
       # runs James' java tool, DiscoverPlateColorings, that class ues an intermediate script, ls-pc.sh which is located in /project/sbmt2/sbmt/scripts
       discoverPlateColorings
       echo finished processing plate colorings
    fi
 
-   # James to Josh: don't need it both here and below, but see note below.
    # fix any bad permissions
+   echo Correcting permissions >> $log 2>&1
    $scriptDir/data-permissions.pl $destTop/$processingModelName
 
 fi
-
-# James to Josh: like in delivery2rawdata.sh, should this one go away and then we put a shared-specific version above at
-# the end of the "if" body?
-# Correct permissions.
-echo Correcting permissions >> $log 2>&1
-$scriptDir/data-permissions.pl $destTop/$processingModelName
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "End `date`" >> $log 2>&1

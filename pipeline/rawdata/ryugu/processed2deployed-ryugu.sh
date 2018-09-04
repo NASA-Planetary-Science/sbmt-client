@@ -154,9 +154,8 @@ then
   echo Rsyncing $srcTop/latest/shared to $destTop/shared... >> $log 2>&1
   doRsyncDir $srcTop/latest/shared $destTop/shared
 
-  # James to Josh: should run $scriptDir/sbmt2-data-permissions.pl here on ... all of shared?
   # fix any bad permissions
-#  $scriptDir/data-permissions.pl $destTop/shared
+  $scriptDir/sbmt2-data-permissions.pl $destTop/shared
 else
 
   echo Rsyncing $srcTop/$processingVersion/$processingModelName to $destTop/$processingModelName-$processingVersion... >> $log 2>&1
