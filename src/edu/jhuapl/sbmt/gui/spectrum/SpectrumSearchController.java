@@ -81,7 +81,6 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton.Node;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException;
@@ -89,6 +88,7 @@ import edu.jhuapl.sbmt.model.bennu.InstrumentMetadata;
 import edu.jhuapl.sbmt.model.bennu.SearchSpec;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNode;
+import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -533,7 +533,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     spectraModel.addDatasourceSkeleton(spectraDatasourceName, spectraDatasourcePath);
                     spectraModel.setCurrentDatasourceSkeleton(spectraDatasourceName);
                     spectraModel.readSkeleton();
-                    FSHyperTreeSkeleton skeleton = spectraModel.getCurrentSkeleton();
+                    BoundedObjectHyperTreeSkeleton skeleton = (BoundedObjectHyperTreeSkeleton) spectraModel.getCurrentSkeleton();
 
                     double[] selectionRegionCenter = null;
                     double selectionRegionRadius = 0.0;
