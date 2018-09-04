@@ -11,7 +11,7 @@ MAX=$4
 ./run-on-linux.sh edu.jhuapl.sbmt.model.spectrum.hypertree.SpectrumBoundsCalculator $INSTRUMENT $TYPE $BODY > calculateBounds.log
 
 # generate the hypertree
-./run-on-linux.sh edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeGenerator $INSTRUMENT $TYPE $BODY $MAX TEST > generateTree.log
+./run-on-linux.sh edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeGenerator $INSTRUMENT $TYPE $BODY $MAX SPECTRA > generateTree.log
 
 #condense the hypertree into a bounds file .spectra
 ./run-on-linux.sh edu.jhuapl.sbmt.model.spectrum.hypertree.SpectrumHypertreeCondenser > condenseTree.log
