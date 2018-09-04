@@ -629,115 +629,115 @@ public class DatabaseGeneratorSql
          * Hayabusa 2 - TIR images at Aizu
          ********************************/
 
-        // Ryugu Model-specific Flight Images (on Aizu server) - ONC
-        JAXA_SFM_V20180627_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
-                "ryugu/jaxa-sfm-v20180627/tir"),
+//        // Ryugu Model-specific Flight Images (on Aizu server) - TIR
+//        JAXA_SFM_V20180627_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
+//                "ryugu/jaxa-sfm-v20180627/tir"),
+//
+//        JAXA_SPC_V20180705_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
+//                "ryugu/jaxa-spc-v20180705/tir"),
+//
+//        JAXA_SFM_V20180714_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
+//                "ryugu/jaxa-sfm-v20180714/tir"),
+//
+//        JAXA_SPC_V20180717_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
+//                "ryugu/jaxa-spc-v20180717/tir"),
+//
+//        JAXA_SPC_V20180719_2_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
+//                "ryugu/jaxa-spc-v20180719-2/tir"),
+//
+//        JAXA_SFM_V20180725_2_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
+//                "ryugu/jaxa-sfm-v20180725-2/tir"),
+//
+//        JAXA_SPC_V20180731_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
+//                "ryugu/jaxa-spc-v20180731/tir"),
+//
+//        JAXA_SFM_V20180804_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+//                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
+//                "ryugu/jaxa-sfm-v20180804/tir"),
+//
+//
+//        RYUGU_NASA_001_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
+//                "ryugu/nasa-001/tir"),
+//        RYUGU_NASA_002_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
+//                "ryugu/nasa-002/tir"),
+//        RYUGU_NASA_003_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+//                "/var/www/sbmt/sbmt/data/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
+//                "ryugu/nasa-002/tir"),
 
-        JAXA_SPC_V20180705_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
-                "ryugu/jaxa-spc-v20180705/tir"),
-
-        JAXA_SFM_V20180714_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
-                "ryugu/jaxa-sfm-v20180714/tir"),
-
-        JAXA_SPC_V20180717_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
-                "ryugu/jaxa-spc-v20180717/tir"),
-
-        JAXA_SPC_V20180719_2_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
-                "ryugu/jaxa-spc-v20180719-2/tir"),
-
-        JAXA_SFM_V20180725_2_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
-                "ryugu/jaxa-sfm-v20180725-2/tir"),
-
-        JAXA_SPC_V20180731_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
-                "ryugu/jaxa-spc-v20180731/tir"),
-
-        JAXA_SFM_V20180804_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
-                "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
-                "ryugu/jaxa-sfm-v20180804/tir"),
-
-
-        RYUGU_NASA_001_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
-                "ryugu/nasa-001/tir"),
-        RYUGU_NASA_002_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
-        RYUGU_NASA_003_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
                 "/var/www/sbmt/sbmt/data/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
-                "ryugu/nasa-002/tir"),
-
-        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
+                "ryugu/nasa-003/tir"),
 
 
         /********************************
          * Hayabusa 2 - TIR images at APL
          ********************************/
-        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
-        RYUGU_SIM_SPC_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/tir", "ryugu_sim_tir",
-                "ryugu/gaskell/tir"),
-        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
-        RYUGU_SIM_TRUTH_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/tir", "ryugu_sim_tir",
-                "ryugu/truth/tir"),
+//        // Ryugu Simulated SPC Model SUMFILE Images (on APL server)
+//        RYUGU_SIM_SPC_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.GASKELL),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/gaskell/tir", "ryugu_sim_tir",
+//                "ryugu/gaskell/tir"),
+//        // Ryugu Simulated SPC Model INFOFILE Images (on APL server)
+//        RYUGU_SIM_TRUTH_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.TRUTH),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/truth/tir", "ryugu_sim_tir",
+//                "ryugu/truth/tir"),
+//
+//
+//     // Ryugu Model-specific Flight Images (on APL server)
+//        JAXA_SFM_V20180627_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
+//                "ryugu/jaxa-sfm-v20180627/tir"),
+//
+//        JAXA_SPC_V20180705_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
+//                "ryugu/jaxa-spc-v20180705/tir"),
+//
+//        JAXA_SFM_V20180714_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
+//                "ryugu/jaxa-sfm-v20180714/tir"),
+//
+//        JAXA_SPC_V20180717_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
+//                "ryugu/jaxa-spc-v20180717/tir"),
+//
+//        JAXA_SPC_V20180719_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
+//                "ryugu/jaxa-spc-v20180719-2/tir"),
+//
+//        JAXA_SFM_V20180725_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
+//                "ryugu/jaxa-sfm-v20180725-2/tir"),
+//
+//        JAXA_SPC_V20180731_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
+//                "ryugu/jaxa-spc-v20180731/tir"),
+//
+//        JAXA_SFM_V20180804_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
+//                "ryugu/jaxa-sfm-v20180804/tir"),
+//
+//
+//        RYUGU_NASA_001_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
+//                "ryugu/nasa-001/tir"),
+//        RYUGU_NASA_002_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
+//                "ryugu/nasa-002/tir"),
+//        RYUGU_NASA_003_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+//                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
+//                "ryugu/nasa-002/tir"),
 
-
-     // Ryugu Model-specific Flight Images (on APL server)
-        JAXA_SFM_V20180627_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180627),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir",
-                "ryugu/jaxa-sfm-v20180627/tir"),
-
-        JAXA_SPC_V20180705_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180705),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir",
-                "ryugu/jaxa-spc-v20180705/tir"),
-
-        JAXA_SFM_V20180714_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180714),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir",
-                "ryugu/jaxa-sfm-v20180714/tir"),
-
-        JAXA_SPC_V20180717_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180717),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir",
-                "ryugu/jaxa-spc-v20180717/tir"),
-
-        JAXA_SPC_V20180719_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180719_2),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir",
-                "ryugu/jaxa-spc-v20180719-2/tir"),
-
-        JAXA_SFM_V20180725_2_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180725_2),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir",
-                "ryugu/jaxa-sfm-v20180725-2/tir"),
-
-        JAXA_SPC_V20180731_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180731),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir",
-                "ryugu/jaxa-spc-v20180731/tir"),
-
-        JAXA_SFM_V20180804_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir",
-                "ryugu/jaxa-sfm-v20180804/tir"),
-
-
-        RYUGU_NASA_001_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/tir", "ryugu_nasa001_tir",
-                "ryugu/nasa-001/tir"),
-        RYUGU_NASA_002_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
-        RYUGU_NASA_003_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
+        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
-                "ryugu/nasa-002/tir"),
-
-        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
+                "ryugu/nasa-003/tir"),
 
 
 
