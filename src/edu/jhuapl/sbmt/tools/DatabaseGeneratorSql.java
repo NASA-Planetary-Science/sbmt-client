@@ -674,8 +674,8 @@ public class DatabaseGeneratorSql
 //                "ryugu/nasa-002/tir"),
 
         RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
-                "ryugu/nasa-003/tir"),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
+                "ryugu/nasa-002/tir"),
 
 
         /********************************
@@ -736,8 +736,8 @@ public class DatabaseGeneratorSql
 //                "ryugu/nasa-002/tir"),
 
         RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir",
-                "ryugu/nasa-003/tir"),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
+                "ryugu/nasa-002/tir"),
 
 
 
@@ -893,8 +893,9 @@ public class DatabaseGeneratorSql
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
 
-        for (RunInfo ri : runInfos)
+//        for (RunInfo ri : runInfos)
         {
+            RunInfo ri = DatabaseGeneratorSql.RunInfo.RYUGU_SHARED_TIR_APL;
             DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
 
             String pathToFileList = ri.pathToFileList;
