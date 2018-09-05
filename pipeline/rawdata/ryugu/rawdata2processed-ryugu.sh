@@ -284,7 +284,7 @@ processLidarBrowse() {
   	listingCMD=`ls -1 $lidarDir/*.csv > $lidarDir/listing.txt`
   	$listingCMD
   	
-	CMD="$scriptDir/create_lidar_filelist $lidarDir/listing.txt $lidarDir/fileList.txt $latestKernel"
+	CMD="$scriptDir/create_lidar_filelist $lidarDir/listing.txt $lidarDir/fileList.txt $latestKernel $bodyName`"
   	$CMD 
 
 }
