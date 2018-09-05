@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -20,13 +21,18 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
 import vtk.vtkCamera;
+import vtk.vtkPolyData;
+import vtk.vtkPolyDataWriter;
 import vtk.vtkProp;
 
+import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
+import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 //import edu.jhuapl.near.popupmenus.ImagePopupMenu.ShowInfoAction;
 import edu.jhuapl.saavtk.util.ColorUtil;
@@ -34,6 +40,9 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
@@ -57,10 +66,14 @@ public class DEMPopupMenu extends PopupMenu
     private JMenuItem saveToDiskMenuItem;
     private JMenuItem changeOpacityMenuItem;
     private JMenuItem hideDEMMenuItem;
+    private JMenuItem exportCustomModelItem;
     private JMenu colorMenu;
     private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
     private JMenuItem customColorMenuItem;
     private Renderer renderer;
+    private String demFilename;
+    private Vector<ViewConfig> config;
+    private ShapeModelImporterDialog dialog;
 
     /**
      *
@@ -125,6 +138,10 @@ public class DEMPopupMenu extends PopupMenu
         customColorMenuItem.setText("Custom...");
         colorMenu.add(customColorMenuItem);
 
+        exportCustomModelItem = new JMenuItem(new ExportCustomModelAction());
+        exportCustomModelItem.setText("Export as Custom Model");
+        this.add(exportCustomModelItem);
+
     }
 
     public void setCurrentDEM(DEMKey key)
@@ -155,6 +172,7 @@ public class DEMPopupMenu extends PopupMenu
         boolean selectHideImage = true;
         boolean enableHideImage = true;
         boolean enableBoundaryColor = true;
+        boolean enableExport = false;
 
         for (DEMKey demKey : demKeys)
         {
@@ -231,6 +249,7 @@ public class DEMPopupMenu extends PopupMenu
         }
 
         centerDemMenuItem.setEnabled(enableHideImage);
+        exportCustomModelItem.setEnabled(enableHideImage);
 
         mapDEMMenuItem.setSelected(selectMapImage);
         mapDEMMenuItem.setEnabled(enableMapImage);
@@ -544,6 +563,71 @@ public class DEMPopupMenu extends PopupMenu
                 }
             }
         }
+    }
+
+    private class ExportCustomModelAction extends AbstractAction
+    {
+
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+//            if (demKeys.size() != 1)
+//                return;
+            DEMKey demKey = demKeys.get(0);
+
+            DEM dem = demCollection.getDEM(demKey);
+            if (dem != null)
+            {
+                vtkPolyData demPolydata = dem.getDem();
+                demFilename = dem.getKey().fileName;
+
+                vtkPolyDataWriter writer = new vtkPolyDataWriter();
+                writer.SetFileName(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                writer.SetFileTypeToBinary();
+                writer.SetInputData(demPolydata);
+                writer.Write();
+
+                //write out copy of current model's smallbody view config here
+                config = new Vector<ViewConfig>();
+                config.add(smallBodyModel.getConfig().clone());
+
+
+                dialog = new ShapeModelImporterDialog(null);
+
+                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                dialog.beforeOKRunner = new Runnable()
+                {
+                    final String filename = demFilename;
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            SmallBodyViewConfig config2 = (SmallBodyViewConfig)(config.get(0));
+                            config2.modelLabel = dialog.getNameOfImportedShapeModel();
+                            config2.customTemporary = false;
+                            config2.author = ShapeModelType.CUSTOM;
+                            SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
+                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                            SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
+                            dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
+                        }
+                        catch (IOException e1)
+                        {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                };
+
+
+                dialog.show();
+
+
+                this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", dialog.getNameOfImportedShapeModel());
+            }
+        }
+
     }
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
