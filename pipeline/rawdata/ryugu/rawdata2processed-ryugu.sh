@@ -486,6 +486,7 @@ then
    createDirIfNecessary $destTop/shared/"history"
    createDirIfNecessary $destTop/shared/tir
    createDirIfNecessary $destTop/shared/tir/images
+   createDirIfNecessary $destTop/shared/lidar
 
 
 #*** don't uncomment old code ***
