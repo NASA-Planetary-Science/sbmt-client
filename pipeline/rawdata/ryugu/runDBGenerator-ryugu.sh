@@ -49,11 +49,12 @@ dbRootUrl="file:///disks/d0180/htdocs-sbmt/internal/multi-mission/test"
 if test -d $srcTop/$processingVersion/$processingModelName/$instrumentName; then
   if test "x$dbTableBaseName" != x; then
     echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
-    nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
-    if test $? -ne 0; then
-      echo "Error while updating database." >> $log 2>&1
-      exit 1
-    fi
+    #echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
+    #nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
+    #if test $? -ne 0; then
+    #  echo "Error while updating database." >> $log 2>&1
+    #  exit 1
+    #fi
   else
     echo "Found directory for $instrumentName data, but no database table root name supplied on the command line. Skipping database generation." >> $log 2>&1
   fi
