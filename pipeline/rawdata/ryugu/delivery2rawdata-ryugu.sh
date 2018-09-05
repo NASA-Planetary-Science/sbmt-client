@@ -229,10 +229,13 @@ if test `whoami` = sbmt; then
   exit 1
 fi
 
-# Confirm the source directory points somewhere.
-if test ! -d $srcTop/$deliveredModelName; then
-  echo "Error: source directory $srcTop/$deliveredModelName does not exist" >&2
-  exit 1
+# Confirm the source directory points somewhere for MODELS
+if [ $deliveredModelName != "shared" ]
+then
+	if test ! -d $srcTop/$deliveredModelName; then
+	  echo "Error: source directory $srcTop/$deliveredModelName does not exist" >&2
+	  exit 1
+	fi
 fi
 
 export SBMTROOT="$releaseDir/sbmt"
