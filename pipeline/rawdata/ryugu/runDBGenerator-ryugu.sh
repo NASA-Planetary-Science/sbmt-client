@@ -34,6 +34,7 @@ echo "Processing Model Name: " $processingModelName
 echo "Processing Version: " $processingVersion
 
 bodyName="ryugu"
+rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$bodyName"
