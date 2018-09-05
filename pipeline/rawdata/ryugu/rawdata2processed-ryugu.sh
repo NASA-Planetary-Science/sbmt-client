@@ -529,6 +529,8 @@ then
 
    cat $destTop/shared/onc/"HAYABUSA2_ONC-W1-fullpath-info.txt" >> $destTop/shared/onc/"HAYABUSA2_ONC-T-fullpath-info.txt"
    mv $destTop/shared/onc/"HAYABUSA2_ONC-T-fullpath-info.txt" $destTop/shared/onc/"imagelist-fullpath-info.txt"
+   
+   sed -i 's/latest\///g' $destTop/shared/onc/imagelist-fullpath-info.txt
 
    # combines the generated infofiles for the 2 camera types into one infofiles directory
    mv $destTop/shared/onc/"HAYABUSA2_ONC-W1-infofiles"/*.INFO $destTop/shared/onc/infofiles
@@ -544,6 +546,7 @@ then
    # generates info files for TIRi
    # takes 6 parameters, [source-dir] [dest-dir] [most-updated-kernel] [body-name-uppercase] [camera-name-informal] [camera-name-formal]
    generateInfoFiles $srcTop/shared $destTop/shared $latestKernel RYUGU tir "HAYABUSA2_TIR-S"
+   sed -i 's/latest\///g' $destTop/shared/tir/imagelist-fullpath-info.txt
 
    # generates gallery for TIRi
    # takes 5 parameters [*.fileExtension] [image-source] [gallery-destination] [body-name-lowercase] [path-of-imagelist-info.txt]
