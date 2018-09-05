@@ -41,14 +41,16 @@ public class DatabaseGeneratorSql
     private String databaseSuffix = "";
     private boolean appendTables;
     private boolean modifyMain;
+    private int cameraIndex;
 
 
-    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain)
+    public DatabaseGeneratorSql(SmallBodyViewConfig smallBodyConfig, String databasePrefix, boolean appendTables, boolean modifyMain, int cameraIndex)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.databasePrefix = databasePrefix;
         this.appendTables = appendTables;
         this.modifyMain = modifyMain;
+        this.cameraIndex = cameraIndex;
     }
 
     private void createTables(String tableName)
@@ -197,7 +199,7 @@ public class DatabaseGeneratorSql
             String keyName = filename;
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[0]);
+            ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
             PerspectiveImage image = null;
 
             try
@@ -827,6 +829,8 @@ public class DatabaseGeneratorSql
         boolean modifyMain = false;
         boolean remote = false;
 
+        int cameraIndex = 0;
+
         // modify configuration parameters with command line args
         int i = 0;
         for (; i < args.length; ++i)
@@ -850,6 +854,10 @@ public class DatabaseGeneratorSql
             else if (args[i].equals("--remote"))
             {
                 remote = true;
+            }
+            else if (args[i].equals("--cameraIndex"))
+            {
+                cameraIndex = Integer.parseInt(args[++i]);
             }
             else {
                 // We've encountered something that is not an option, must be at the args
@@ -893,10 +901,9 @@ public class DatabaseGeneratorSql
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
 
-//        for (RunInfo ri : runInfos)
+        for (RunInfo ri : runInfos)
         {
-            RunInfo ri = DatabaseGeneratorSql.RunInfo.RYUGU_SHARED_TIR_APL;
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain);
+            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
 
             String pathToFileList = ri.pathToFileList;
             if (remote)

@@ -9,8 +9,8 @@
 # Usage
 if [ "$#" -lt 4 ]
 then
-  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <pointingType (GASKELL or SPICE)> shared"	
-  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <pointingType (GASKELL or SPICE)> <model-name> <processing-version>"	
+  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> shared"	
+  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> <model-name> <processing-version>"	
   echo "Example: runDBGenerator-ryugu.sh tir RYUGU_SHARED_TIR_APL SPICE shared "
   exit 1
 fi
@@ -18,8 +18,9 @@ fi
 # Command line parameters
 instrumentName=$1
 dbTableBaseName=$2
-pointingType=$3
-processingModelName=$4
+cameraIndex=$3
+pointingType=$4
+processingModelName=$5
 
 pipelineTop="/project/sbmtpipeline"
 
@@ -27,7 +28,7 @@ processingVersion="latest"
 
 if [ $processingModelName != "shared" ]
 then
-  processingVersion=$5
+  processingVersion=$6
 fi
 
 echo "Processing Model Name: " $processingModelName
@@ -60,8 +61,8 @@ echo "Begin `date`" >> $log 2>&1
 
 if test -d $srcTop/$processingVersion/$processingModelName/$instrumentName; then
   if test "x$dbTableBaseName" != x; then
-    echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
-    nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
+    echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl --cameraIndex $cameraIndex $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
+    nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl --cameraIndex $cameraIndex $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
     if test $? -ne 0; then
       echo "Error while updating database." >> $log 2>&1
       exit 1
