@@ -52,7 +52,7 @@ log="$logDir/processed2deployed.log"
 
 if test -d $srcTop/$processingVersion/$processingModelName/$instrumentName; then
   if test "x$dbTableBaseName" != x; then
-    echo "$releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
+    echo "$releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1"
     #echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
     #nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl $pointingType $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
     #if test $? -ne 0; then
