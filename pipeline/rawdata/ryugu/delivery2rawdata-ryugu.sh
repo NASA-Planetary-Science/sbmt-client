@@ -367,7 +367,7 @@ then
    done
 
    echo fixing permissions
-   scriptDir/data-permissions.pl $destTop/shared
+   $scriptDir/data-permissions.pl $destTop/shared
    
 else
 	
@@ -447,7 +447,7 @@ else
    fi
    
    echo fixing permissions
-   scriptDir/data-permissions.pl $destTop/$processingModelName
+   $scriptDir/data-permissions.pl $destTop/$processingModelName
 fi
 
 
