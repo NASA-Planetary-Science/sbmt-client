@@ -64,7 +64,8 @@ processedTop="$pipelineTop/processed"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
-rsyncCmd='rsync -rlptgDH --copy-links'
+#rsyncCmd='rsync -rlptgDH --copy-links'
+rsyncCmd='rsync -rltgDH --copy-links'
 
 srcTop="$deliveriesTop/$bodyName/$deliveredVersion"
 destTop="$rawTop/$bodyName/$processingVersion"

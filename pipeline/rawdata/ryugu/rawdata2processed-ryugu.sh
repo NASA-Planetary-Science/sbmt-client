@@ -41,7 +41,8 @@ processedTop="$pipelineTop/processed"
 scriptDir="/project/sbmt2/sbmt/scripts"
 timeHistoryDir="$pipelineTop/timeHistory"
 importCmd="$scriptDir/import.sh"
-rsyncCmd='rsync -rlptgDH --copy-links'
+#rsyncCmd='rsync -rlptgDH --copy-links'
+rsyncCmd='rsync -rltgDH --copy-links'
 briefPgrm="/project/nearsdc/software/spice/cspice/exe/brief"
 javaCmd="/project/nearsdc/software/java/x86_64/latest/bin/java"
 
