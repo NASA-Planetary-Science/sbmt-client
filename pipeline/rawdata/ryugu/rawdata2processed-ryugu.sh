@@ -487,6 +487,7 @@ then
    createDirIfNecessary $destTop/shared/tir
    createDirIfNecessary $destTop/shared/tir/images
    createDirIfNecessary $destTop/shared/lidar
+   createDirIfNecessary $destTop/shared/lidar/browse
 
 
 #*** don't uncomment old code ***
