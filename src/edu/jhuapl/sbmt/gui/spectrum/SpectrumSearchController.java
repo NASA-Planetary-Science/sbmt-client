@@ -534,7 +534,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
