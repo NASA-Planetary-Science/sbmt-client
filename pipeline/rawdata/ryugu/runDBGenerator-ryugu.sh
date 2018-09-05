@@ -17,7 +17,7 @@ fi
 
 # Command line parameters
 instrumentName=$1
-databaseTableBaseName=$2
+dbTableBaseName=$2
 pointingType=$3
 processingModelName=$4
 
