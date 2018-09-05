@@ -47,6 +47,8 @@ destTop="$deployedTop/$bodyName"
 
 dbRootUrl="file:///disks/d0180/htdocs-sbmt/internal/multi-mission/test"
 
+releaseDir="$rawdataTop/$bodyName/$processingVersion"
+
 logDir="$rawdataTop/$bodyName/$processingVersion/logs"
 log="$logDir/processed2deployed.log"
 
