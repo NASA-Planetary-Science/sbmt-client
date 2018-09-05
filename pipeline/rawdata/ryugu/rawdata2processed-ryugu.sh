@@ -547,9 +547,12 @@ then
    # takes 5 parameters [*.fileExtension] [image-source] [gallery-destination] [body-name-lowercase] [path-of-imagelist-info.txt]
    generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist-info.txt
    
+    # copy over LIDAR data from rawdata to processed
+   doRsyncDir $srcTop/shared/lidar/browse $destTop/shared/lidar/browse
+   
    # generates fileList for LIDAR
    # takes 1 parameters [lidar-sourcefile]
-   processLidarBrowse $srcTop/shared/lidar/browse/
+   processLidarBrowse $destTop/shared/lidar/browse/
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory
