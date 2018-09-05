@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 1 ]
 then
   echo "Model data usage:  delivered2rawdata-ryugu.sh <delivered-model-name> <delivered-version> [ <processed-model-name> <processing-version> ]"
   echo "Shared data usage: delivered2rawdata-ryugu.sh shared"
