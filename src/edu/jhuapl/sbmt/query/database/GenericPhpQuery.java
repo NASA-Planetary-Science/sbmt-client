@@ -16,6 +16,7 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.SearchMetadata;
 import edu.jhuapl.sbmt.query.SearchResultsMetadata;
 
@@ -150,6 +151,9 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
             double maxScDistance = Math.max(startDistance, stopDistance);
             double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
             double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
+
+            boolean tableExists = QueryBase.checkForDatabaseTable(imagesDatabase);
+            if (!tableExists) throw new Exception();
 
             HashMap<String, String> args = new HashMap<>();
             args.put("imagesDatabase", imagesDatabase);
