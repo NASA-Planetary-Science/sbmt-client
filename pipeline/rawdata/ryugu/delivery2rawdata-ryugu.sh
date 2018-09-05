@@ -249,10 +249,10 @@ echo "--------------------------------------------------------------------------
 echo "Begin `date`" >> $log 2>&1
 
 # Check out and build code.
-checkoutCodeIfNecessary
-if test $? -ne 0; then
-  exit 1
-fi
+#checkoutCodeIfNecessary
+#if test $? -ne 0; then
+#  exit 1
+#fi
 buildCodeIfNecessary
 if test $? -ne 0; then
   exit 1
