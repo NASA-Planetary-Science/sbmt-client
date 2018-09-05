@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,6 +38,7 @@ import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
 
+import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -56,6 +59,7 @@ import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
@@ -65,7 +69,7 @@ import edu.jhuapl.sbmt.model.dem.DEMCollection;
 
 import nom.tam.fits.FitsException;
 
-public class DEMView extends JFrame implements WindowListener
+public class DEMView extends JFrame implements PropertyChangeListener, WindowListener
 {
     private JButton newButton;
     private JToggleButton editButton;
@@ -77,11 +81,12 @@ public class DEMView extends JFrame implements WindowListener
     private DEMPlot plot;
     private int currentColorIndex = 0;
     private int numColors;
-    private JComboBox coloringTypeComboBox;
+    private JComboBox<?> coloringTypeComboBox;
     private DEM dem;
     private DEMKey key;
     private DEMCollection demCollection;
     private Renderer renderer;
+    private Colorbar refColorbar;
     private JButton scaleColoringButton;
     private boolean syncColoring;
 
@@ -156,6 +161,8 @@ public class DEMView extends JFrame implements WindowListener
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
+        refColorbar = new Colorbar(renderer);
+
         JPanel panel = new JPanel(new BorderLayout());
 
         plot = new DEMPlot(lineModel, dem, macroDEM.getColoringIndex());
@@ -182,6 +189,9 @@ public class DEMView extends JFrame implements WindowListener
         setVisible(true);
 
         setSize(600, 300);
+
+        // Register for events of interest
+        dem.addPropertyChangeListener(this);
     }
 
     private void createMenus()
@@ -238,7 +248,7 @@ public class DEMView extends JFrame implements WindowListener
         }
         coloringOptions[numColors] = "No coloring";
 
-        coloringTypeComboBox = new JComboBox(coloringOptions);
+        coloringTypeComboBox = new JComboBox<>(coloringOptions);
         coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
         coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
         coloringTypeComboBox.addActionListener(new ActionListener()
@@ -410,6 +420,35 @@ public class DEMView extends JFrame implements WindowListener
         panel.add(loadButton);
 
         return panel;
+    }
+
+    /**
+     * Helper method to configure the Colorbar.
+     */
+    private void doConfigureColorbar()
+    {
+        // Disable the Colorbar if it is not needed
+        if (dem.isColoringDataAvailable() == false || dem.getColoringIndex() < 0)
+        {
+            refColorbar.setVisible(false);
+            return;
+        }
+
+        // Customize the Colorbar to reflect the dem model
+        if (!refColorbar.isVisible())
+            refColorbar.setVisible(true);
+
+        refColorbar.setColormap(dem.getColormap());
+        int index = dem.getColoringIndex();
+        String title = dem.getColoringName(index).trim();
+        String units = dem.getColoringUnits(index).trim();
+        if (units != null && !units.isEmpty())
+            title += " (" + units + ")";
+        refColorbar.setTitle(title);
+
+        if (renderer.getRenderWindowPanel().getRenderer().HasViewProp(refColorbar.getActor())==0)
+            renderer.getRenderWindowPanel().getRenderer().AddActor(refColorbar.getActor());
+        refColorbar.getActor().SetNumberOfLabels(dem.getColormap().getNumberOfLabels());
     }
 
     private int[] getNextColor()
@@ -719,6 +758,17 @@ public class DEMView extends JFrame implements WindowListener
             }
         }
 
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent aEvent)
+    {
+        // Configure the Colorbar whenever the model has changed
+        if (aEvent.getPropertyName().equals(Properties.MODEL_CHANGED))
+            doConfigureColorbar();
+
+        // Force a repaint
+        renderer.getRenderWindowPanel().Render();
     }
 
     @Override
