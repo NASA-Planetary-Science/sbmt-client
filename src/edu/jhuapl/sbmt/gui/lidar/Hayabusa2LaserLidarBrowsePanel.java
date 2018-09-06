@@ -25,6 +25,7 @@ public class Hayabusa2LaserLidarBrowsePanel extends LidarBrowsePanel
 
     public void repopulate(String browseFileList, String datasourceName)
     {
+        System.out.println("Hayabusa2LaserLidarBrowsePanel: repopulate: repopulating");
         lidarResultListModel.clear();
 
         File listFile=FileCache.getFileFromServer(browseFileList);
@@ -39,6 +40,8 @@ public class Hayabusa2LaserLidarBrowsePanel extends LidarBrowsePanel
                 LidarDataFileSpec spec=new LidarDataFileSpec();
                 spec.path=filename;
                 spec.name=Paths.get(filename).getFileName().toString();
+                System.out.println(
+                        "Hayabusa2LaserLidarBrowsePanel: repopulate: start time is " + startTime + " and utc time is " + TimeUtil.et2str(startTime));
                 spec.comment=TimeUtil.et2str(startTime)+" - "+TimeUtil.et2str(endTime);
                 //System.out.println(spec.comment);
                 lidarResultListModel.addElement(spec);
