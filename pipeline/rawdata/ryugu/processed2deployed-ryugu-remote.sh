@@ -47,7 +47,7 @@ fi
 
 echo "Deployment Target:     " $deployTarget
 
-rawTop="$pipelineTop/rawdata"
+rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 
@@ -80,7 +80,7 @@ log="$logDir/processed2deployed-ryugu-remote.log"
 createDirIfNecessary() {
   dir="$1"
   if test "x$dir" = x; then
-    echo "createDirIfNecessary: missing/blank directory." >> $log 2>&1
+    echo "createDirIfNecessary: missing/blank directory argument." >> $log 2>&1
     exit 1
   fi
 
@@ -115,7 +115,6 @@ doRsync() {
 }
 
 # Perform an rsync from the source to the destination. Both must be directories.
-# TODO add error checking.
 doRsyncDir() {
   src=$1
   dest=$2
