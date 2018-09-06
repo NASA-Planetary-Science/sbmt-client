@@ -9,7 +9,7 @@
 # Usage
 if [ "$#" -lt 1 ]
 then
-  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processing-version> [ <database-table-name> ]"
+  echo "Model data usage:  processed2deployed-ryugu.sh <model-name> <processing-version>"
   echo "Shared data usage: processed2deployed-ryugu.sh shared"
   exit 1
 fi
@@ -19,8 +19,6 @@ processingModelName=$1
 processingVersion=$2
 
 bodyName="ryugu"
-# Optional third argument is database table base name.
-dbTableBaseName=$3
 
 pipelineTop="/project/sbmtpipeline"
 

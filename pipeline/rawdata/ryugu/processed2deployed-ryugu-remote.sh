@@ -14,9 +14,21 @@ then
   exit 1
 fi
 
-pipelineTop="/project/sbmtpipeline"
+# Command line parameters
+processingModelName=$1
+processingVersion=$2
+
 bodyName="ryugu"
 
+pipelineTop="/project/sbmtpipeline"
+
+if [ $processingModelName = "shared" ]
+then
+  processingVersion="latest"
+fi
+
+echo "Processing Model Name: " $processingModelName
+echo "Processing Version: " $processingVersion
 
 processingModelName="jaxa-001"
 if [ "$#" -gt 0 ]
@@ -48,8 +60,6 @@ fi
 echo "Processing Model Name: " $processingModelName
 echo "Processing Version:    " $processingVersion
 echo "Deployment Target:     " $deployTarget
-
-# exit 0
 
 
 rawTop="$pipelineTop/rawdata"
