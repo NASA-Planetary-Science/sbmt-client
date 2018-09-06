@@ -25,7 +25,6 @@ public class Hayabusa2LaserLidarBrowsePanel extends LidarBrowsePanel
 
     public void repopulate(String browseFileList, String datasourceName)
     {
-        System.out.println("Hayabusa2LaserLidarBrowsePanel: repopulate: repopulating");
         lidarResultListModel.clear();
 
         File listFile=FileCache.getFileFromServer(browseFileList);
