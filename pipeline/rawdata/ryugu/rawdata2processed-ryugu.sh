@@ -558,6 +558,7 @@ then
    # generates fileList for LIDAR
    # takes 1 parameters [lidar-sourcefile]
    processLidarBrowse $destTop/shared/lidar/browse/
+   sed -i 's/latest\///g' $destTop/shared/lidar/browse/fileList.txt
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory
