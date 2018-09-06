@@ -618,7 +618,7 @@ public class DatabaseGeneratorSql
                 "ryugu/nasa-002/onc"),
         RYUGU_NASA_003_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/onc", "ryugu_nasa003",
-                "ryugu/nasa-002/onc"),
+                "ryugu/nasa-003/onc"),
 
         RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
