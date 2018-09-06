@@ -6,31 +6,17 @@
 #              processed format
 #-------------------------------------------------------------------------------
 
-# usage
-if [ "$#" -eq 0 ]
+# Usage
+if [ "$#" -lt 2 ]
 then
-  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processed-date> [ <processed-model-name> <processed-date> ]"
+  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version>"
   echo "Shared data usage: rawdata2processed-ryugu.sh shared"
   exit 1
 fi
 
-pipelineTop="/project/sbmtpipeline"
-bodyName="ryugu"
-bodyNameCaps="RYUGU"
-spacecraftName="HAYABUSA2"
-
-rawdataModelName="jaxa-001"
-if [ "$#" -gt 0 ]
-then
-  rawdataModelName=$1
-fi
-
-processingVersion="20180628"
-if [ "$#" -gt 1 ]
-then
-  processingVersion=$2
-fi
-
+# Command line parameters
+rawdataModelName=$1
+processingVersion=$2
 processingModelName=$rawdataModelName
 
 if [ $processingModelName = "shared" ]
@@ -42,16 +28,21 @@ echo "Body name:$bodyName"
 echo "Processing model name:$processingModelName"
 echo "Processing version:$processingVersion"
 
-legacyTop="/project/sbmt2/sbmt/nearsdc/data"
-deliveriesTop="$pipelineTop/deliveries"
+
+bodyName="ryugu"
+bodyNameCaps="RYUGU"
+spacecraftName="HAYABUSA2"
+
+pipelineTop="/project/sbmtpipeline"
+
 rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
-deployedTop="/project/sbmt2/sbmt/data/bodies"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 timeHistoryDir="$pipelineTop/timeHistory"
 importCmd="$scriptDir/import.sh"
-rsyncCmd='rsync -rlptgDH --copy-links'
+#rsyncCmd='rsync -rlptgDH --copy-links'
+rsyncCmd='rsync -rltgDH --copy-links'
 briefPgrm="/project/nearsdc/software/spice/cspice/exe/brief"
 javaCmd="/project/nearsdc/software/java/x86_64/latest/bin/java"
 
@@ -59,8 +50,6 @@ srcTop="$rawdataTop/$bodyName/$processingVersion"
 destTop="$processedTop/$bodyName/$processingVersion"
 
 releaseDir="$srcTop/$processingModelName"
-export SBMTROOT="$releaseDir/sbmt"
-export SAAVTKROOT="$releaseDir/saavtk"
 
 # figures out what the latest kernel is for use in many of the processing methods
 if [ $processingModelName = "shared" ]
@@ -72,7 +61,8 @@ then
    echo $latestKernel
 fi 
 
-log="$srcTop/logs/rawdata2processed-model.log"
+logDir="$srcTop/logs"
+log="$logDir/rawdata2processed.log"
 
 # echo "Source Top: " $srcTop                                                                       
 # echo "Dest Top: " $destTop                                                                        
@@ -81,10 +71,10 @@ log="$srcTop/logs/rawdata2processed-model.log"
 #-------------------------------------------------------------------------------
 
 # Create a directory if it doesn't already exist.
-createDirIfNecessary() (
+createDirIfNecessary() {
   dir="$1"
   if test "x$dir" = x; then
-    echo "createDirIfNecessary: missing/blank directory." >> $log 2>&1
+    echo "createDirIfNecessary: missing/blank directory argument." >> $log 2>&1
     exit 1
   fi
 
@@ -96,39 +86,86 @@ createDirIfNecessary() (
       exit 1
     fi
   fi
-)
+}
 
 # Perform an rsync from the source to the destination.
-doRsync() (
+doRsync() {
   src=$1
   dest=$2
-#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
 
   # Make sure source directories end in a slash.
   if test -d $src; then
-    src=`echo $src | sed -e 's:/*$:/:'`
+    src=`echo $src | sed 's:/*$:/:'`
   fi
 
   echo nice time $rsyncCmd $src $dest >> $log 2>&1
   nice time $rsyncCmd $src $dest >> $log 2>&1
   if test $? -ne 0; then
-    exit 1;
+    echo "Failed to rsync $src $dest" >> $log 2>&1
+    exit 1
   fi
+
   echo "" >> $log 2>&1
-#  echo "--------------------------------------------------------------------------------" >> $log 2>&1
-)
+}
 
 # Perform an rsync from the source to the destination. Both must be directories.
-# TODO add error checking.
-doRsyncDir() (
+doRsyncDir() {
   src=$1
   dest=$2
+  if test ! -e $src; then
+    echo "Source $src does not exist" >> $log 2>&1
+    exit 1
+  fi
+  if test ! -d $src; then
+    echo "Source $src is unexpectedly not a directory." >> $log 2>&1
+    exit 1
+  fi
+  if test -e $dest -a ! -d $dest; then
+    echo "Destination $dest exists but is unexpectedly not a directory." >> $log 2>&1
+    exit 1
+  fi
   createDirIfNecessary $dest
   doRsync $src $dest
-)
+}
+
+# Perform an rsync from a source directory to the destination, but only if the
+# source directory exists.
+doRsyncDirIfNecessary() {
+  src=$1
+  dest=$2
+  if test -e $src; then
+    doRsyncDir $src $dest
+  fi
+}
+
+removeDuplicates() {
+  file=$1
+  if test "x$file" = x; then
+    echo "removeDuplicates was called but missing its argument, the file from which to remove duplicates." >> $log 2>&1
+    exit 1
+  fi
+  if test ! -f $file; then
+    echo "removeDuplicates: file $file does not exist." >> $log 2>&1
+    exit 1
+  fi
+  mv $file $file.in
+  if test $? -ne 0; then
+    echo "removeDuplicates: unable to rename file $file." >> $log 2>&1
+    exit 1
+  fi
+  sort -u $file.in > $file
+  if test $? -ne 0; then
+    echo "removeDuplicates: unable to remove duplicate lines from file $file." >> $log 2>&1
+    exit 1
+  fi
+  rm -f $file.in
+}
 
 # Process images/sumfiles from source to destination.
-processImager() (
+# Arguments: src-imaging-directory src-image-list-file dest-imaging-directory dest-prefix
+#            (First three are full paths, last one is the string stuck in before the
+#            file name in the output imagelist-fullpath.txt file).
+processImager() {
   srcImager="$1"
   if test "x$srcImager" = x; then
     echo "processImager: missing source imager (directory) argument." >> $log 2>&1
@@ -176,14 +213,14 @@ processImager() (
   destImageListFullPath="$destImager/imagelist-fullpath-sum.txt"
   destGalleryDir="$destImager/gallery"
 
-  for fileToMatch in `cat $srcImageList | sed -e 's:.*/::'`; do
-    imageFileRoot=`echo $fileToMatch | sed -e 's:\.fits\?$::i'`
+  for fileToMatch in `cat $srcImageList | sed 's:.*/::'`; do
+    imageFileRoot=`echo $fileToMatch | sed 's:\.fits\?$::i'`
     srcImageFile=`ls $srcImageDir/$fileToMatch 2> /dev/null`
     if test "x$srcImageFile" != x; then
       srcSumFileRoot=$imageFileRoot
       srcSumFile=`ls $srcSumFileDir/$srcSumFileRoot.* 2> /dev/null`
       if test "x$srcSumFile" = x; then
-        srcSumFileRoot=`echo $imageFileRoot | sed -e 's:_::g'`
+        srcSumFileRoot=`echo $imageFileRoot | sed 's:_::g'`
         srcSumFile=`ls $srcSumFileDir/$srcSumFileRoot.* 2> /dev/null`
       fi
       if test "x$srcSumFile" != x; then
@@ -192,15 +229,15 @@ processImager() (
         destSumFileRoot=$imageFileRoot
         destImageFile="$destImageDir/$imageFileRoot.FIT"
         destSumFile="$destSumFileDir/$destSumFileRoot.SUM"
-  
-        destDir=`echo $destImageFile | sed -e 's:[^/][^/]*$::'`
+
+        destDir=`echo $destImageFile | sed 's:[^/][^/]*$::'`
         createDirIfNecessary $destDir
         doRsync $srcImageFile $destImageFile
-  
-        destDir=`echo $destSumFile | sed -e 's:[^/][^/]*$::'`
+
+        destDir=`echo $destSumFile | sed 's:[^/][^/]*$::'`
         createDirIfNecessary $destDir
         doRsync $srcSumFile $destSumFile
-  
+
         srcGalleryFiles=`ls $srcGalleryDir/$imageFileRoot.* 2> /dev/null`
         if test "x$srcGalleryFiles" != x; then
           createDirIfNecessary $destGalleryDir
@@ -218,10 +255,42 @@ processImager() (
       echo "processImager: could not find image matching $fileToMatch" >> $log 2>&1
     fi
   done
-)
 
-# gnerates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
-processMakeSumfiles() (
+  if test -d $destImageDir; then
+    chmod -x $destImageDir/*
+  fi
+  if test -d $destSumFileDir; then
+    chmod -x $destSumFileDir/*
+  fi
+  if test -d $destGalleryDir; then
+    chmod -x $destGalleryDir/*
+  fi
+
+  removeDuplicates $destImageList
+  removeDuplicates $destImageListFullPath
+}
+
+# Copies over the files from rawdata and amkes fileList.txt file containing body relative path followed by start and stop time of track in ET
+processLidarBrowse() {
+	lidarDir=$1
+	if test -e $lidarDir/fileList.txt; then
+     rm $lidarDir/fileList.txt
+  	fi
+  	
+  	if test -e $lidarDir/listing.txt; then
+     rm $lidarDir/listing.txt
+  	fi
+  	
+  	listingCMD=`ls -1 $lidarDir/*.csv > $lidarDir/listing.txt`
+  	$listingCMD
+  	
+	CMD="$scriptDir/create_lidar_filelist $lidarDir/listing.txt $lidarDir/fileList.txt $latestKernel"
+  	$CMD 
+
+}
+
+# generates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
+processMakeSumfiles() {
   imageDir=$1
   instrument=`basename $imageDir`
 
@@ -230,7 +299,7 @@ processMakeSumfiles() (
      rm $imageDir/imagelist-fullpath-sum.txt
   fi
   fullpath=/$bodyName/$processingModelName/$instrument/images/
-  awk '{print $8}' $imageDir/make_sumfiles.in | sed -e "s:^:$fullpath:" > $imageDir/imagelist-fullpath-sum.txt
+  awk '{print $8}' $imageDir/make_sumfiles.in | sed "s:^:$fullpath:" > $imageDir/imagelist-fullpath-sum.txt
 
 
   # write imagelist-sum.txt
@@ -241,14 +310,14 @@ processMakeSumfiles() (
   for line in $fileNames
   do
      # extracts the time from the file name
-     fileTime=`echo $line | sed -e 's:[^_]*_[^_]*_::' | sed -e 's:\(.*[0-9][0-9][0-9][0-9]\).*:\1:' |
-     sed -e 's:\(..\)$:\:\1:' | sed -e 's:\(..\:\):\:\1:' | sed -e 's:_:T:' | sed -e 's:\(..T\):-\1:' | sed -e 's:\(..-\):-\1:'`
+     fileTime=`echo $line | sed 's:[^_]*_[^_]*_::' | sed 's:\(.*[0-9][0-9][0-9][0-9]\).*:\1:' |
+     sed 's:\(..\)$:\:\1:' | sed 's:\(..\:\):\:\1:' | sed 's:_:T:' | sed 's:\(..T\):-\1:' | sed 's:\(..-\):-\1:'`
      echo "$line $fileTime" >> $imageDir/imagelist-sum.txt
   done
-)
+}
 
 # edits the PATH SYMBOL in all the kernels in shared/spice/kernels/mk directory with the path to the metakernel
-editKernel() (
+editKernel() {
   echo Editing metakernel to have correct path value 
   for metaKernel in $latestMKDir/*.tm
   do
@@ -257,20 +326,20 @@ editKernel() (
     sed -i "s#\(PATH_VALUES *= *\).*#\1( '$kernelsDir' ) #" $metaKernel
   done
   echo Finished editing metakernels
-)
+}
 
 # called the generateInfoFiles.sh script in /project/sbmt2/sbmt/scripts and generates the INFO files, that script also uses creat_info_files, located in the scripts dir as well.
-generateInfoFiles() (
+generateInfoFiles() {
   CMD="$scriptDir/generateInfoFiles.sh $1 $2 $3 $4 $5 $6"
   $CMD   
-)
+}
 
 # generates the CVS time history (later removed by this script) and the final timeHistory.bth
 # the c++ code that generates the csv is located in projects/sbmtpipeline/timeHistory. there are 3 scripts, getFov.c getSpacecraftState.c and getTargetState.c 
 # had to be modified specifically for Ryugu (IAU_RYUGU_FIXED). If those need to be edited, do so and run comple.c (in the timeHistory directory) and a new c++ program will be generated
 # the ConvertCSVToBinary.class is located in /project/sbmt2/sbmt/scripts 
 # Lillian can have more information
-generateTimeHistory() (
+generateTimeHistory() {
   # Finds the appropriate start and endTime and generates the .csv file
   startTime=`$briefPgrm -t $latestKernel | grep $spacecraftName | head -1 | cut -f 3-7 -d' '`
   endTime=`$briefPgrm -t $latestKernel | grep $spacecraftName | tail -1 | sed 's/^.*2018/2018/'`
@@ -295,39 +364,116 @@ generateTimeHistory() (
   convertToBinary="$javaCmd -cp $scriptDir/ ConvertCSVToBinary $destTop/shared/"history"/$spacecraftName\_$bodyNameCaps\_timeHistory.csv $destTop/shared/"history"/timeHistory.bth"
   eval $convertToBinary
   echo Done converting to binary file
-)
+}
 
 # makes the gallery using 2 scripts, fits2thumbnails.py and make_gallery_webpage.py, both located in /project/sbmt2/sbmt/scripts
-generateGallery() (
+generateGallery() {
   echo Start gallery generation
   F2T="python $scriptDir/fits2thumbnails.py $2 $3"
   makeWebpage="python $scriptDir/make_gallery_webpage.py $1 $2 $3 $4 $5"
   $F2T
   $makeWebpage
   echo End gallery generation
-)
+}
 
-# runs ls-pc.sh and DiscoverPlateColorings.sh which is linked to a java tool. This uses code in a release that must be made in the directory containing the model. Ask James for guidance
-# essentially a release must be made in the model and this code uses that to keep control of changes over time.
-discoverPlateColorings() (
-  $scriptDir/"ls"-pc.sh $destTop/$processingModelName/coloring
-  modelName=`echo $processingModelName | sed 's:\([^v20]*\):\U\1:'` 
-  $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$modelName/162173 Ryugu"
-  #$makeColorings
-)
+# Runs ls-pc.sh and DiscoverPlateColorings.sh, which is linked to a java tool.
+discoverPlateColorings() {
+  coloringDir=$destTop/$processingModelName/coloring
+  if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
+    "$scriptDir/ls-pc.sh" $coloringDir
+    if test `grep -c . $coloringDir/coloringlist.txt` -eq 0; then
+      echo "No coloring files found in $coloringDir" >> $log 2>&1
+      exit 1
+    fi
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$modelName/162173 Ryugu" >> $log 2>&1
+    if test $? -ne 0; then
+      echo "Failed to generate plate coloring metadata" >> $log 2>&1
+      exit 1
+    fi
+    rm -f $destTop/$processingModelName/coloring/coloringlist.txt* >> $log 2>&1
+  else
+    echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata" >> $log 2>&1
+  fi
+}
+
+makeLogDir() {
+  if test -e $logDir -a ! -d $logDir; then
+    echo "Log directory $logDir exists but is not a directory." >&2
+    exit 1
+  fi
+  mkdir -p $logDir
+  if test $? -ne 0; then
+    echo "Cannot create log directory $logDir." >&2
+    exit 1
+  fi
+}
+
+doGzipDir() {
+  dir=$1
+  if test "x$dir" = x; then
+    echo "Cannot gzip files in missing/blank directory." >> $log 2>&1
+    exit 1
+  fi
+  if test ! -d $dir; then
+    echo "Cannot gzip files in $dir: not a directory." >> $log 2>&1
+    exit 1
+  fi
+  for file in $dir/*; do
+    if test -f $file; then
+      if test `file $file 2>&1 | grep -ic gzip` -eq 0; then
+        gzip -cf $file > $file.gz  2>> $log
+        if test $? -ne 0; then
+          echo "Problem gzipping file $file" >> $log 2>&1
+          exit 1
+        fi
+        rm -f $file 2>> $log
+      fi
+    fi
+  done
+}
+
+doGzipDirIfNecessary() {
+  dir=$1
+  if test "x$dir" = x; then
+    echo "Cannot gzip files in missing/blank directory." >> $log 2>&1
+    exit 1
+  fi
+  if test -d $dir; then
+    doGzipDir $dir
+  fi
+}
+
+
 
 #-------------------------------------------------------------------------------
 # MAIN SCRIPT STARTS HERE.
 #-------------------------------------------------------------------------------
 
+if test `whoami` = sbmt; then
+  echo "Run this script while logged in as yourself." >&2
+  exit 1
+fi
+
+# Confirm the source directory points somewhere.
+if test ! -d $srcTop/$rawdataModelName; then
+  echo "Error: source directory $srcTop/$rawdataModelName does not exist" >&2
+  exit 1
+fi
+
+# Do everything in the rawdata directory except as required.
+cd $srcTop/$rawdataModelName
+if test $? -ne 0; then
+  echo "Unable to cd $srcTop/$rawdataModelName. Cannot continue" >&2
+  exit 1
+fi
+
 echo "Starting rawdata2processed-ryugu.sh script (log file: $log)"
 mkdir -p $destTop                                                                                 
-                                                                                                  
+                        
+makeLogDir
+
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
-
-# echo "Source Top: " $srcTop/$processingModelName
-# echo "Dest Top: " $destTop/$processingModelName
 
 if [ $processingModelName = "shared" ]
 then
@@ -400,6 +546,10 @@ then
    # generates gallery for TIRi
    # takes 5 parameters [*.fileExtension] [image-source] [gallery-destination] [body-name-lowercase] [path-of-imagelist-info.txt]
    generateGallery "*.fit" $srcTop/shared/tir/images $destTop/shared/tir/gallery $bodyName $destTop/shared/tir/imagelist-info.txt
+   
+   # generates fileList for LIDAR
+   # takes 1 parameters [lidar-sourcefile]
+   processLidarBrowse $srcTop/shared/lidar/browse/
 
    # deletes existing timeHistory files and generates a new one
    generateTimeHistory
@@ -409,6 +559,9 @@ then
    rm -rf $destTop/shared/onc/*Files.txt
    rm -rf $destTop/shared/tir/*Files.txt
    rm -rf $destTop/shared/"history"/$spacecraftName*
+   
+   echo Correcting permissions >> $log 2>&1
+   $scriptDir/data-permissions.pl $destTop/shared
 
 else
    createDirIfNecessary $destTop/$processingModelName/shape
@@ -419,9 +572,9 @@ else
    #createDirIfNecessary $destTop/$processingModelName/tir/images
    #createDirIfNecessary $destTop/$processingModelName/tir/gallery
 
-   # copies over the shape models and gzips them
-   doRsync $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
-   gzip -f $destTop/$processingModelName/shape/*.obj
+   # Process the shape models.
+   doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
+   doGzipDirIfNecessary $destTop/$processingModelName/shape
 
    # processes ONC sumfiles *** CANNOT PROCESS TIR SUMFILES ***
    if [ -d "$srcTop/$rawdataModelName/onc" ]
@@ -447,8 +600,8 @@ else
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
      
-      # gzips the colroing files
-      gzip -f $destTop/$processingModelName/coloring/*.fits
+      # gzips the coloring files
+      doGzipDir $destTop/$processingModelName/coloring/*.fits
 
       # runs James' java tool, DiscoverPlateColorings, that class ues an intermediate script, ls-pc.sh which is located in /project/sbmt2/sbmt/scripts
       discoverPlateColorings
@@ -456,12 +609,10 @@ else
    fi
 
    # fix any bad permissions
+   echo Correcting permissions >> $log 2>&1
    $scriptDir/data-permissions.pl $destTop/$processingModelName
 
 fi
-
-# fix any bad permissions
-$scriptDir/data-permissions.pl $destTop/$processingModelName                                      
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "End `date`" >> $log 2>&1
