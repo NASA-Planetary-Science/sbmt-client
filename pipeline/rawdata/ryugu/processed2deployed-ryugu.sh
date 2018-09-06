@@ -43,10 +43,6 @@ rsyncCmd='rsync -rltgDH --copy-links'
 srcTop="$processedTop/$bodyName"
 destTop="$deployedTop/$bodyName"
 
-dbRootUrl="file:///disks/d0180/htdocs-sbmt/internal/multi-mission/test"
-
-releaseDir="$rawdataTop/$bodyName/$processingVersion"
-
 logDir="$rawdataTop/$bodyName/$processingVersion/logs"
 log="$logDir/processed2deployed.log"
 
@@ -205,21 +201,6 @@ else
     ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
   fi
 fi
-
-#if test -d $srcTop/$processingVersion/$processingModelName/onc; then
-#  if test "x$dbTableBaseName" != x; then
-#    echo "nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1" >> $log 2>&1
-#    nice $releaseDir/sbmt/bin/DatabaseGeneratorSql.sh --root-url $dbRootUrl GASKELL $dbTableBaseName > $logDir/DatabaseGeneratorSql.log 2>&1
-#    if test $? -ne 0; then
-#      echo "Error while updating database." >> $log 2>&1
-#      exit 1
-#    fi
-#  else
-#    echo "Found directory for ONC data, but no database table root name supplied on the command line. Skipping database generation." >> $log 2>&1
-#  fi
-#else
-#  echo "Did not find directory for ONC data. Skipping database generation." >> $log 2>&1
-#fi
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
