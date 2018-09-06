@@ -2690,7 +2690,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
+//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
 
@@ -2774,9 +2774,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2851,9 +2851,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -3539,9 +3539,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = "/ryugu/shared/laser/browse/fileList.txt";
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
