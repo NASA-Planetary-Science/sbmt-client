@@ -99,6 +99,7 @@ public class SbmtMultiMissionTool
 
 	public static Mission getMission()
 	{
+	    System.out.println("SbmtMultiMissionTool: getMission: released mission is " + RELEASED_MISSION);
 	    System.out.println("SbmtMultiMissionTool: getMission: mission is " + mission);
 		if (mission == null)
 		{
@@ -145,6 +146,7 @@ public class SbmtMultiMissionTool
 		    System.out.println("SbmtMultiMissionTool: configureMission: mission already configured " + mission);
 			return mission;
 		}
+		System.out.println("SbmtMultiMissionTool: configureMission: not configured, finding mission");
 		Mission mission = getMission();
 	    System.out.println("SbmtMultiMissionTool: configureMission: switching to " + mission);
 
