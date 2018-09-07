@@ -41,6 +41,7 @@ import vtk.vtkObject;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -62,7 +63,6 @@ import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
-import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
@@ -86,6 +86,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private DEMKey key;
     private DEMCollection demCollection;
     private Renderer renderer;
+    private ScaleDataRangeDialog scaleDataDialog;
     private Colorbar refColorbar;
     private JButton scaleColoringButton;
     private boolean syncColoring;
@@ -275,6 +276,11 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                         scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
                         plot.setColoringIndex(index);
+
+                        // Reset the primary model's coloring range to the defaults
+                        double[] tmpArr = dem.getDefaultColoringRange(index);
+                        dem.setCurrentColoringRange(index, tmpArr);
+
                         if(syncColoring)
                         {
                             // Get the macroDEM
@@ -316,8 +322,11 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         {
             public void actionPerformed(ActionEvent e)
             {
-                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem,demCollection.getDEM(key),syncColoring);
-                scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
+                // Lazy init
+                if (scaleDataDialog == null)
+                    scaleDataDialog = new ScaleDataRangeDialog(JOptionPane.getFrameForComponent(scaleColoringButton));
+
+                scaleDataDialog.setModelConfiguration(dem, demCollection.getDEM(key), syncColoring);
                 scaleDataDialog.setVisible(true);
             }
         });
