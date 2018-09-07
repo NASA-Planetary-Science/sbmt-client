@@ -99,6 +99,7 @@ public class SbmtMultiMissionTool
 
 	public static Mission getMission()
 	{
+	    System.out.println("SbmtMultiMissionTool: getMission: mission is " + mission);
 		if (mission == null)
 		{
 			// Note that System.getProperty is inconsistent with regard to whether it includes quote marks.
