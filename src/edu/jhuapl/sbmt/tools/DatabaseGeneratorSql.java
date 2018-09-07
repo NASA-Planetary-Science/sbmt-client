@@ -874,10 +874,8 @@ public class DatabaseGeneratorSql
         // basic default configuration, most of these will be overwritten by the configureMission() method
 //        Configuration.setAppName(appName);
 //        Configuration.setCacheVersion(cacheVersion);
-        System.out.println("DatabaseGeneratorSql: main: property1 is " + System.getProperty("edu.jhuapl.sbmt.mission"));
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
-        System.out.println("DatabaseGeneratorSql: main: property2 is " + System.getProperty("edu.jhuapl.sbmt.mission"));
 
         SbmtMultiMissionTool.configureMission();
 
