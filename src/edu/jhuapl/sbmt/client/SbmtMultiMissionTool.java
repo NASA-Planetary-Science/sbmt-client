@@ -143,6 +143,7 @@ public class SbmtMultiMissionTool
 			return mission;
 		}
 		Mission mission = getMission();
+
 		switch (mission)
 		{
 		case APL_INTERNAL:

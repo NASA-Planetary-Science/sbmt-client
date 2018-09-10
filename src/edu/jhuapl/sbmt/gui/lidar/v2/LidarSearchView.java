@@ -132,7 +132,7 @@ public class LidarSearchView extends JPanel
 
         searchPropertiesPanel.add(minTrackSizeTextField);
 
-        JLabel lblNewLabel_1 = new JLabel("Track Separaton (sec):");
+        JLabel lblNewLabel_1 = new JLabel("Track Separation (sec):");
         searchPropertiesPanel.add(lblNewLabel_1);
 
         trackSeparationTextField = new JFormattedTextField();
