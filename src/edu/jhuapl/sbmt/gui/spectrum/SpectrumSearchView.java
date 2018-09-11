@@ -287,11 +287,11 @@ public class SpectrumSearchView extends SpectrumView
             JLabel lblOvirs = new JLabel("OVIRS TYPE");
             panel_16.add(lblOvirs);
 
-            ifbtn = new JRadioButton("IF");
+            ifbtn = new JRadioButton("I/F");
             ifbtn.setSelected(true);
             panel_16.add(ifbtn);
 
-            refbtn = new JRadioButton("REF");
+            refbtn = new JRadioButton("REFF");
             refbtn.setSelected(false);
             panel_16.add(refbtn);
 
