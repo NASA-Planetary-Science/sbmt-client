@@ -142,7 +142,7 @@ public class SpectrumSearchView extends SpectrumView
 
         toDistanceTextField = new JFormattedTextField();
         toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
-        toDistanceTextField.setText("200000");
+        toDistanceTextField.setText("5000000");
 //        toDistanceTextField.setEnabled(false);
         toDistanceTextField.setPreferredSize(new Dimension(0, 22));
         toDistanceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toDistanceTextField.getPreferredSize().height) );
