@@ -535,6 +535,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     spectraModel.readSkeleton();
                     BoundedObjectHyperTreeSkeleton skeleton = (BoundedObjectHyperTreeSkeleton) spectraModel.getCurrentSkeleton();
 
+
                     double[] selectionRegionCenter = null;
                     double selectionRegionRadius = 0.0;
 
@@ -581,9 +582,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     TreeSet<Integer> cubeList=((SpectraSearchDataCollection)spectraModel).getLeavesIntersectingBoundingBox(new BoundingBox(bounds), times, spectraLims);
                     HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0], spectraLims[0], spectraLims[2], spectraLims[4], spectraLims[6]},
                             new double[]{bounds[1], bounds[3], bounds[5], times[1], spectraLims[1], spectraLims[3], spectraLims[5], spectraLims[7]});
-//                    TreeSet<Integer> cubeList=spectraModel.getLeavesIntersectingBoundingBox(new BoundingBox(bounds), times);
-//                    HyperBox hbb = new HyperBox(new double[]{bounds[0], bounds[2], bounds[4], times[0]},
-//                            new double[]{bounds[1], bounds[3], bounds[5], times[1]});
 
                     for (Integer cubeid : cubeList)
                     {
@@ -637,6 +635,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
 
                     // final list of spectra that intersect region
+                    // create a list of lists for the reults
                     List<List<String>> listoflist = new ArrayList<List<String>>(intFiles.size()); // why is results formatted this way? (list of list)
                     System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
                     for (String file : intFiles) {
