@@ -63,6 +63,11 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -135,6 +140,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
 
+    private MetadataManager stateManager;
 
     protected ModelManager getModelManager()
     {
@@ -158,6 +164,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         this.pickManager = pickManager;
 
         this.instrument = instrument;
+        this.stateManager = null;
     }
 
     public ImagingSearchPanel init()
@@ -209,6 +216,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         final List<List<String>> emptyList = new ArrayList<>();
             setImageResults(emptyList);
 
+        initializeStateManager();
 
         return this;
     }
@@ -325,7 +333,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
         enableGallery = instrument.searchQuery.getGalleryPath() != null;
         ImageSource imageSources[] = instrument.searchImageSources;
-        DefaultComboBoxModel sourceComboBoxModel = new DefaultComboBoxModel(imageSources);
+        DefaultComboBoxModel<ImageSource> sourceComboBoxModel = new DefaultComboBoxModel<>(imageSources);
         sourceComboBox.setModel(sourceComboBoxModel);
 
         boolean showSourceLabelAndComboBox = true; //imageSources.length > 1 ? true : false;
@@ -1035,7 +1043,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         endDateLabel = new javax.swing.JLabel();
         endSpinner = new javax.swing.JSpinner();
         sourceLabel = new javax.swing.JLabel();
-        sourceComboBox = new javax.swing.JComboBox();
+        sourceComboBox = new javax.swing.JComboBox<>();
         excludeGaskellCheckBox = new javax.swing.JCheckBox();
         filterCheckBoxPanel = new javax.swing.JPanel();
         filter1CheckBox = new javax.swing.JCheckBox();
@@ -1088,7 +1096,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         endPhaseLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         searchByFilenameCheckBox = new javax.swing.JCheckBox();
-        searchByNumberTextField = new javax.swing.JFormattedTextField();
+        searchByFilenameTextField = new javax.swing.JFormattedTextField();
         jPanel5 = new javax.swing.JPanel();
         clearRegionButton = new javax.swing.JButton();
         submitButton = new javax.swing.JButton();
@@ -1714,14 +1722,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel4.add(searchByFilenameCheckBox, gridBagConstraints);
 
-        searchByNumberTextField.setEnabled(false);
+        searchByFilenameTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.ipadx = 122;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
-        jPanel4.add(searchByNumberTextField, gridBagConstraints);
+        jPanel4.add(searchByFilenameTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -2326,7 +2334,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void searchByFilenameCheckBoxItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_searchByFilenameCheckBoxItemStateChanged
     {//GEN-HEADEREND:event_searchByFilenameCheckBoxItemStateChanged
         boolean enable = evt.getStateChange() == ItemEvent.SELECTED;
-        searchByNumberTextField.setEnabled(enable);
+        searchByFilenameTextField.setEnabled(enable);
         startDateLabel.setEnabled(!enable);
         startSpinner.setEnabled(!enable);
         endDateLabel.setEnabled(!enable);
@@ -2530,7 +2538,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             String searchField = null;
             if (searchByFilenameCheckBox.isSelected())
-                searchField = searchByNumberTextField.getText().trim();
+                searchField = searchByFilenameTextField.getText().trim();
 
             GregorianCalendar startDateGreg = new GregorianCalendar();
             GregorianCalendar endDateGreg = new GregorianCalendar();
@@ -2577,7 +2585,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
             }
 
-            ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+            ImageSource imageSource = (ImageSource) sourceComboBox.getSelectedItem();
 
             // Populate camera and filter list differently based on if we are doing sum-of-products or product-of-sums search
             boolean sumOfProductsSearch;
@@ -2644,7 +2652,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         sumOfProductsSearch, camerasSelected, filtersSelected,
                         Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                         cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
- 
+
                 results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
            }
 
@@ -2829,10 +2837,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
-        ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+        ImageSource imageSource = (ImageSource) sourceComboBox.getSelectedItem();
         for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
         {
-            ImageSource source = ImageSource.valueOf(((Enum)sourceComboBox.getItemAt(i)).name());
+            ImageSource source = sourceComboBox.getItemAt(i);
             if (source == ImageSource.GASKELL_UPDATED)
             {
                 excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
@@ -2916,7 +2924,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     results.add(result);
                 }
 
-                sourceOfLastQuery = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
+                sourceOfLastQuery = (ImageSource) sourceComboBox.getSelectedItem();
 
                 setImageResults(processResults(results));
             }
@@ -3293,6 +3301,86 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             return resultList;
         }
 
+        public void initializeStateManager()
+        {
+            if (stateManager == null) {
+                stateManager = new MetadataManager() {
+                    final Key<String> pointingKey = Key.of("pointing");
+                    final Key<Date> startDateKey = Key.of("startDate");
+                    final Key<Date> endDateKey = Key.of("endDate");
+                    final Key<String> limbSelectedKey = Key.of("limb");
+                    final Key<Double> fromDistanceKey = Key.of("fromDistance");
+                    final Key<Double> toDistanceKey = Key.of("toDistance");
+                    final Key<Double> fromResolutionKey = Key.of("fromResolution");
+                    final Key<Double> toResolutionKey = Key.of("toResolution");
+                    final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
+                    final Key<Double> toIncidenceKey = Key.of("toIncidence");
+                    final Key<Double> fromEmissionKey = Key.of("fromEmission");
+                    final Key<Double> toEmissionKey = Key.of("toEmission");
+                    final Key<Double> fromPhaseKey = Key.of("fromPhase");
+                    final Key<Double> toPhaseKey = Key.of("toPhase");
+                    final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
+                    final Key<String> searchByFileNameKey = Key.of("searchByFileName");
+
+                    @Override
+                    public Metadata store()
+                    {
+                        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+
+                        ImageSource selectedItem = (ImageSource) sourceComboBox.getSelectedItem();
+                        result.put(pointingKey, selectedItem != null ? selectedItem.name() : null);
+
+                        result.put(startDateKey, (Date) startSpinner.getValue());
+                        result.put(endDateKey, (Date) endSpinner.getValue());
+                        result.put(limbSelectedKey, (String) hasLimbComboBox.getSelectedItem());
+                        result.put(fromDistanceKey, Double.valueOf(fromDistanceTextField.getText()));
+                        result.put(toDistanceKey, Double.valueOf(toDistanceTextField.getText()));
+                        result.put(fromResolutionKey, Double.valueOf(fromResolutionTextField.getText()));
+                        result.put(toResolutionKey, Double.valueOf(toResolutionTextField.getText()));
+                        result.put(fromIncidenceKey, Double.valueOf(fromIncidenceTextField.getText()));
+                        result.put(toIncidenceKey, Double.valueOf(toIncidenceTextField.getText()));
+                        result.put(fromEmissionKey, Double.valueOf(fromEmissionTextField.getText()));
+                        result.put(toEmissionKey, Double.valueOf(toEmissionTextField.getText()));
+                        result.put(fromPhaseKey, Double.valueOf(fromPhaseTextField.getText()));
+                        result.put(toPhaseKey, Double.valueOf(toPhaseTextField.getText()));
+                        result.put(searchByFileNameEnabledKey, searchByFilenameCheckBox.isSelected());
+                        result.put(searchByFileNameKey, searchByFilenameTextField.getText());
+
+                        return result;
+                    }
+
+                    @Override
+                    public void retrieve(Metadata source)
+                    {
+                        String pointing = source.get(pointingKey);
+                        sourceComboBox.setSelectedItem(pointing != null ? ImageSource.valueOf(pointing) : null);
+
+                        startSpinner.setValue(source.get(startDateKey));
+                        endSpinner.setValue(source.get(endDateKey));
+                        hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
+                        fromDistanceTextField.setValue(source.get(fromDistanceKey));
+                        toDistanceTextField.setValue(source.get(toDistanceKey));
+                        fromResolutionTextField.setValue(source.get(fromResolutionKey));
+                        toResolutionTextField.setValue(source.get(toResolutionKey));
+                        fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
+                        toIncidenceTextField.setValue(source.get(toIncidenceKey));
+                        fromEmissionTextField.setValue(source.get(fromEmissionKey));
+                        toEmissionTextField.setValue(source.get(toEmissionKey));
+                        fromPhaseTextField.setValue(source.get(fromPhaseKey));
+                        toPhaseTextField.setValue(source.get(toPhaseKey));
+                        searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
+                        searchByFilenameTextField.setText(source.get(searchByFileNameKey));
+                   }
+
+                };
+            }
+        }
+
+        public MetadataManager getMetadataManager()
+        {
+            return stateManager;
+        }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
     private javax.swing.JComboBox blueComboBox;
@@ -3345,7 +3433,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton greenButton;
     private javax.swing.JComboBox greenComboBox;
     private javax.swing.JLabel greenLabel;
-    private javax.swing.JComboBox hasLimbComboBox;
+    private javax.swing.JComboBox<String> hasLimbComboBox;
     private javax.swing.JLabel hasLimbLabel;
     private javax.swing.JScrollPane hierarchicalSearchScrollPane;
     private javax.swing.JList imageCubesDisplayedList;
@@ -3393,9 +3481,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private javax.swing.JButton saveImageListButton;
     private javax.swing.JButton saveSelectedImageListButton;
     private javax.swing.JCheckBox searchByFilenameCheckBox;
-    private javax.swing.JFormattedTextField searchByNumberTextField;
+    private javax.swing.JFormattedTextField searchByFilenameTextField;
     private javax.swing.JToggleButton selectRegionButton;
-    private javax.swing.JComboBox sourceComboBox;
+    private javax.swing.JComboBox<ImageSource> sourceComboBox;
     private javax.swing.JLabel sourceLabel;
     private javax.swing.JLabel startDateLabel;
     private javax.swing.JSpinner startSpinner;
