@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
@@ -54,6 +55,7 @@ import javax.swing.table.TableCellRenderer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
@@ -3321,6 +3323,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     final Key<Double> toPhaseKey = Key.of("toPhase");
                     final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
                     final Key<String> searchByFileNameKey = Key.of("searchByFileName");
+                    final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
+                    final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
 
                     @Override
                     public Metadata store()
@@ -3346,6 +3350,36 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         result.put(searchByFileNameEnabledKey, searchByFilenameCheckBox.isSelected());
                         result.put(searchByFileNameKey, searchByFilenameTextField.getText());
 
+                        int numberFilters = 0;
+
+                        // Regular filters.
+                        numberFilters = getNumberOfFiltersActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+                            }
+                            result.put(filterMapKey, filterBuilder.build());
+                        }
+
+                        // User-defined checkboxes.
+                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                            }
+                            result.put(userCheckBoxMapKey, filterBuilder.build());
+                        }
+
                         return result;
                     }
 
@@ -3370,8 +3404,41 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         toPhaseTextField.setValue(source.get(toPhaseKey));
                         searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
                         searchByFilenameTextField.setText(source.get(searchByFileNameKey));
-                   }
 
+                        int numberFilters = 0;
+
+                        // Regular filters.
+                        numberFilters = getNumberOfFiltersActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            Map<String, Boolean> filterMap = source.get(filterMapKey);
+                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                Boolean filterSelected = filterMap.get(filterNames[index]);
+                                if (filterSelected != null)
+                                {
+                                    filterCheckBoxes[index].setSelected(filterSelected);
+                                }
+                            }
+                        }
+
+                        // User-defined checkboxes.
+                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                Boolean filterSelected = filterMap.get(filterNames[index]);
+                                if (filterSelected != null)
+                                {
+                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
+                                }
+                            }
+                        }
+                    }
                 };
             }
         }
