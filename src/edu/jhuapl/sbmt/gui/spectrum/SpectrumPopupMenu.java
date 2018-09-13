@@ -37,12 +37,12 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatistics.Sample;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 
 
 public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListener
@@ -85,6 +85,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
+        System.out.println("SpectrumPopupMenu: setInstrument:instance is " +  getClass().getName() + "@" + Integer.toHexString(this.hashCode()));
         this.modelManager = modelManager;
         this.infoPanelManager = infoPanelManager;
         this.renderer=renderer;
@@ -185,6 +186,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     public void setInstrument(SpectralInstrument instrument)
     {
+        System.out.println("SpectrumPopupMenu: setInstrument: setting instrument to " + instrument + " " + getClass().getName() + "@" + Integer.toHexString(this.hashCode()));
         this.instrument=instrument;
     }
 
@@ -197,6 +199,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
                 {
+                    System.out.println(
+                            "SpectrumPopupMenu.ShowRemoveIn3DAction: actionPerformed: instrument is " + instrument + " " + SpectrumPopupMenu.this.getClass().getName() + "@" + Integer.toHexString(SpectrumPopupMenu.this.hashCode()));
                     model.addSpectrum(currentSpectrum, instrument);
                     if (searchPanel!=null)
                         searchPanel.updateColoring();

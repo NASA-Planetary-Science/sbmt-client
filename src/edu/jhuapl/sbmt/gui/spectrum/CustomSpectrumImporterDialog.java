@@ -15,13 +15,10 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import vtk.vtkImageReader2;
-import vtk.vtkImageReader2Factory;
-
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.util.VtkENVIReader;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 
 public class CustomSpectrumImporterDialog extends javax.swing.JDialog
@@ -44,6 +41,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
       public String spectrumfilename = ""; // filename of image on disk
       public String sumfilename = "null"; // filename of sumfile on disk
       public String infofilename = "null"; // filename of infofile on disk
+      public SpectraType spectraType = null;
     }
 
 //    public static class ImageInfo
@@ -153,9 +151,9 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 
     public ProjectionType getSelectedProjectionType()
     {
-        if (cylindricalProjectionRadioButton.isSelected())
-            return ProjectionType.CYLINDRICAL;
-        else
+//        if (cylindricalProjectionRadioButton.isSelected())
+//            return ProjectionType.CYLINDRICAL;
+//        else
             return ProjectionType.PERSPECTIVE;
     }
 
@@ -178,8 +176,8 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 //        else if (perspectiveProjectionRadioButton.isSelected())
 //        {
 //            info.projectionType = ProjectionType.PERSPECTIVE;
-//            info.sumfilename = sumfilePathTextField.getText();
-//            info.infofilename = infofilePathTextField.getText();
+            info.sumfilename = sumfilePathTextField.getText();
+            info.infofilename = infofilePathTextField.getText();
 //            if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
 //                info.sumfilename = null;
 //            if (LEAVE_UNMODIFIED.equals(info.infofilename) || info.infofilename == null || info.infofilename.isEmpty())
@@ -193,7 +191,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 //        info.name = imageNameTextField.getText();
 //        if ((info.name == null || info.name.isEmpty()) && info.spectrumfilename != null)
 //            info.name = new File(info.spectrumfilename).getName();
-
+        info.spectraType = (SpectraType)spectrumTypeComboBox.getSelectedItem();
         return info;
     }
 
@@ -224,64 +222,64 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         if (imageName.contains(","))
             return "Name may not contain commas.";
 
-        if (cylindricalProjectionRadioButton.isSelected())
-        {
-            if (!isEditMode) // (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
-            {
-                // Check first to see if it is a natively supported image
-                boolean supportedCustomFormat = false;
-
-                // Check if this image is any of the custom supported formats
-                if(VtkENVIReader.isENVIFilename(spectrumPath))
-                {
-                    // Both header and binary files must exist
-                    if(VtkENVIReader.checkFilesExist(spectrumPath))
-                    {
-                        // SBMT supports ENVI
-                        supportedCustomFormat = true;
-                    }
-                    else
-                    {
-                        // Error message
-                        return "Was not able to locate a corresponding .hdr file for ENVI image binary";
-                    }
-                }
-
-                // Otherwise, try to see if VTK natively supports
-                if(!supportedCustomFormat)
-                {
-                    vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                    vtkImageReader2 imageReader = imageFactory.CreateImageReader2(spectrumPath);
-                    if (imageReader == null)
-                        return "The format of the specified image is not supported.";
-                }
-            }
-
-            try
-            {
-                double lllat = Double.parseDouble(lllatFormattedTextField.getText());
-                double urlat = Double.parseDouble(urlatFormattedTextField.getText());
-                Double.parseDouble(lllonFormattedTextField.getText());
-                Double.parseDouble(urlonFormattedTextField.getText());
-
-                if (lllat < -90.0 || lllat > 90.0 || urlat < -90.0 || urlat > 90.0)
-                    return "Latitudes must be between -90 and +90.";
-                if (lllat >= urlat)
-                    return "Upper right latitude must be greater than lower left latitude.";
-
-                if (!isEllipsoid)
-                {
-                    if ( (lllat < 1.0 && lllat > 0.0) || (lllat > -1.0 && lllat < 0.0) ||
-                            (urlat < 1.0 && urlat > 0.0) || (urlat > -1.0 && urlat < 0.0) )
-                        return "For non-ellipsoidal shape models, latitudes must be (in degrees) either 0, greater than +1, or less then -1.";
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                return "An error occurred parsing one of the required fields.";
-            }
-        }
-        else
+//        if (cylindricalProjectionRadioButton.isSelected())
+//        {
+//            if (!isEditMode) // (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED))
+//            {
+//                // Check first to see if it is a natively supported image
+//                boolean supportedCustomFormat = false;
+//
+//                // Check if this image is any of the custom supported formats
+//                if(VtkENVIReader.isENVIFilename(spectrumPath))
+//                {
+//                    // Both header and binary files must exist
+//                    if(VtkENVIReader.checkFilesExist(spectrumPath))
+//                    {
+//                        // SBMT supports ENVI
+//                        supportedCustomFormat = true;
+//                    }
+//                    else
+//                    {
+//                        // Error message
+//                        return "Was not able to locate a corresponding .hdr file for ENVI image binary";
+//                    }
+//                }
+//
+//                // Otherwise, try to see if VTK natively supports
+//                if(!supportedCustomFormat)
+//                {
+//                    vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+//                    vtkImageReader2 imageReader = imageFactory.CreateImageReader2(spectrumPath);
+//                    if (imageReader == null)
+//                        return "The format of the specified image is not supported.";
+//                }
+//            }
+//
+//            try
+//            {
+//                double lllat = Double.parseDouble(lllatFormattedTextField.getText());
+//                double urlat = Double.parseDouble(urlatFormattedTextField.getText());
+//                Double.parseDouble(lllonFormattedTextField.getText());
+//                Double.parseDouble(urlonFormattedTextField.getText());
+//
+//                if (lllat < -90.0 || lllat > 90.0 || urlat < -90.0 || urlat > 90.0)
+//                    return "Latitudes must be between -90 and +90.";
+//                if (lllat >= urlat)
+//                    return "Upper right latitude must be greater than lower left latitude.";
+//
+//                if (!isEllipsoid)
+//                {
+//                    if ( (lllat < 1.0 && lllat > 0.0) || (lllat > -1.0 && lllat < 0.0) ||
+//                            (urlat < 1.0 && urlat > 0.0) || (urlat > -1.0 && urlat < 0.0) )
+//                        return "For non-ellipsoidal shape models, latitudes must be (in degrees) either 0, greater than +1, or less then -1.";
+//                }
+//            }
+//            catch (NumberFormatException e)
+//            {
+//                return "An error occurred parsing one of the required fields.";
+//            }
+//        }
+//        else
         {
             String sumfilePath = sumfilePathTextField.getText();
             if (sumfilePath == null)
@@ -327,23 +325,24 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 
     private void updateEnabledItems()
     {
-        boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
-        lllatLabel.setEnabled(cylindrical);
-        lllatFormattedTextField.setEnabled(cylindrical);
-        lllonLabel.setEnabled(cylindrical);
-        lllonFormattedTextField.setEnabled(cylindrical);
-        urlatLabel.setEnabled(cylindrical);
-        urlatFormattedTextField.setEnabled(cylindrical);
-        urlonLabel.setEnabled(cylindrical);
-        urlonFormattedTextField.setEnabled(cylindrical);
+//        boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
+//        lllatLabel.setEnabled(cylindrical);
+//        lllatFormattedTextField.setEnabled(cylindrical);
+//        lllonLabel.setEnabled(cylindrical);
+//        lllonFormattedTextField.setEnabled(cylindrical);
+//        urlatLabel.setEnabled(cylindrical);
+//        urlatFormattedTextField.setEnabled(cylindrical);
+//        urlonLabel.setEnabled(cylindrical);
+//        urlonFormattedTextField.setEnabled(cylindrical);
+        boolean cylindrical = false;
         infofilePathLabel.setEnabled(!cylindrical);
         infofilePathTextField.setEnabled(!cylindrical && !isEditMode);
         sumfilePathLabel.setEnabled(!cylindrical);
         sumfilePathTextField.setEnabled(!cylindrical && !isEditMode);
 
         boolean generic = spectrumTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
-        imageFlipComboBox.setEnabled(generic && !cylindrical);
-        imageRotateComboBox.setEnabled(generic && !cylindrical);
+//        imageFlipComboBox.setEnabled(generic && !cylindrical);
+//        imageRotateComboBox.setEnabled(generic && !cylindrical);
     }
 
     /** This method is called from within the constructor to
@@ -360,18 +359,18 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         spectrumPathLabel = new javax.swing.JLabel();
         spectrumPathTextField = new javax.swing.JTextField();
         browseSpectrumButton = new javax.swing.JButton();
-        lllatLabel = new javax.swing.JLabel();
-        lllonLabel = new javax.swing.JLabel();
-        urlatLabel = new javax.swing.JLabel();
-        urlonLabel = new javax.swing.JLabel();
+//        lllatLabel = new javax.swing.JLabel();
+//        lllonLabel = new javax.swing.JLabel();
+//        urlatLabel = new javax.swing.JLabel();
+//        urlonLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
-        lllatFormattedTextField = new javax.swing.JFormattedTextField();
-        lllonFormattedTextField = new javax.swing.JFormattedTextField();
-        urlatFormattedTextField = new javax.swing.JFormattedTextField();
-        urlonFormattedTextField = new javax.swing.JFormattedTextField();
-        cylindricalProjectionRadioButton = new javax.swing.JRadioButton();
+//        lllatFormattedTextField = new javax.swing.JFormattedTextField();
+//        lllonFormattedTextField = new javax.swing.JFormattedTextField();
+//        urlatFormattedTextField = new javax.swing.JFormattedTextField();
+//        urlonFormattedTextField = new javax.swing.JFormattedTextField();
+//        cylindricalProjectionRadioButton = new javax.swing.JRadioButton();
         perspectiveProjectionRadioButton = new javax.swing.JRadioButton();
         infofilePathLabel = new javax.swing.JLabel();
         browseInfofileButton = new javax.swing.JButton();
@@ -383,10 +382,10 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         browseSumfileButton = new javax.swing.JButton();
         spectrumTypeLabel = new javax.swing.JLabel();
         spectrumTypeComboBox = new javax.swing.JComboBox();
-        imageRotateLabel = new javax.swing.JLabel();
-        imageFlipLabel = new javax.swing.JLabel();
-        imageRotateComboBox = new javax.swing.JComboBox();
-        imageFlipComboBox = new javax.swing.JComboBox();
+//        imageRotateLabel = new javax.swing.JLabel();
+//        imageFlipLabel = new javax.swing.JLabel();
+//        imageRotateComboBox = new javax.swing.JComboBox();
+//        imageFlipComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -421,37 +420,37 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 5);
         getContentPane().add(browseSpectrumButton, gridBagConstraints);
 
-        lllatLabel.setText("Lower Left Latitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(lllatLabel, gridBagConstraints);
-
-        lllonLabel.setText("Lower Left Longitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(lllonLabel, gridBagConstraints);
-
-        urlatLabel.setText("Upper Right Latitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(urlatLabel, gridBagConstraints);
-
-        urlonLabel.setText("Upper Right Longitude");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(urlonLabel, gridBagConstraints);
+//        lllatLabel.setText("Lower Left Latitude");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 6;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+//        getContentPane().add(lllatLabel, gridBagConstraints);
+//
+//        lllonLabel.setText("Lower Left Longitude");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 7;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+//        getContentPane().add(lllonLabel, gridBagConstraints);
+//
+//        urlatLabel.setText("Upper Right Latitude");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 8;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+//        getContentPane().add(urlatLabel, gridBagConstraints);
+//
+//        urlonLabel.setText("Upper Right Longitude");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 9;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+//        getContentPane().add(urlonLabel, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -489,60 +488,60 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        lllatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        lllatFormattedTextField.setText("-90");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(lllatFormattedTextField, gridBagConstraints);
+//        lllatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+//        lllatFormattedTextField.setText("-90");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 6;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.ipadx = 60;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+//        getContentPane().add(lllatFormattedTextField, gridBagConstraints);
+//
+//        lllonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+//        lllonFormattedTextField.setText("0");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 7;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.ipadx = 60;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+//        getContentPane().add(lllonFormattedTextField, gridBagConstraints);
+//
+//        urlatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+//        urlatFormattedTextField.setText("90");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 8;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.ipadx = 60;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+//        getContentPane().add(urlatFormattedTextField, gridBagConstraints);
+//
+//        urlonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
+//        urlonFormattedTextField.setText("360");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 9;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.ipadx = 60;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
+//        getContentPane().add(urlonFormattedTextField, gridBagConstraints);
 
-        lllonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        lllonFormattedTextField.setText("0");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(lllonFormattedTextField, gridBagConstraints);
-
-        urlatFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        urlatFormattedTextField.setText("90");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(urlatFormattedTextField, gridBagConstraints);
-
-        urlonFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.########"))));
-        urlonFormattedTextField.setText("360");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 60;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 0);
-        getContentPane().add(urlonFormattedTextField, gridBagConstraints);
-
-        projectionButtonGroup.add(cylindricalProjectionRadioButton);
-        cylindricalProjectionRadioButton.setSelected(true);
-        cylindricalProjectionRadioButton.setText("Simple Cylindrical Projection");
-        cylindricalProjectionRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cylindricalProjectionRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
-        getContentPane().add(cylindricalProjectionRadioButton, gridBagConstraints);
+//        projectionButtonGroup.add(cylindricalProjectionRadioButton);
+//        cylindricalProjectionRadioButton.setSelected(true);
+//        cylindricalProjectionRadioButton.setText("Simple Cylindrical Projection");
+//        cylindricalProjectionRadioButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                cylindricalProjectionRadioButtonActionPerformed(evt);
+//            }
+//        });
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 5;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+//        gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
+//        getContentPane().add(cylindricalProjectionRadioButton, gridBagConstraints);
 
         projectionButtonGroup.add(perspectiveProjectionRadioButton);
         perspectiveProjectionRadioButton.setText("Perspective Projection");
@@ -641,7 +640,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(spectrumTypeLabel, gridBagConstraints);
 
-        spectrumTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+        spectrumTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(SpectraType.values()));
         spectrumTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 imageTypeComboBoxActionPerformed(evt);
@@ -653,38 +652,38 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(spectrumTypeComboBox, gridBagConstraints);
-
-        imageRotateLabel.setText("Image Rotate");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
-        getContentPane().add(imageRotateLabel, gridBagConstraints);
-
-        imageFlipLabel.setText("Image Flip");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
-        getContentPane().add(imageFlipLabel, gridBagConstraints);
-
-        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
-        getContentPane().add(imageRotateComboBox, gridBagConstraints);
-
-        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
-        getContentPane().add(imageFlipComboBox, gridBagConstraints);
+//
+//        imageRotateLabel.setText("Image Rotate");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 3;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+//        getContentPane().add(imageRotateLabel, gridBagConstraints);
+//
+//        imageFlipLabel.setText("Image Flip");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 4;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+//        getContentPane().add(imageFlipLabel, gridBagConstraints);
+//
+//        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 3;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+//        getContentPane().add(imageRotateComboBox, gridBagConstraints);
+//
+//        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 1;
+//        gridBagConstraints.gridy = 4;
+//        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+//        gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
+//        getContentPane().add(imageFlipComboBox, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -701,22 +700,22 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         spectrumPathTextField.setText(filename);
 
         String imageFileName = file.getName();
-        if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
-        {
-//            ImageType[] allImageTypes = ImageType.values();
-//            ImageType currentImageType = instrument != null ? instrument.type : ImageType.GENERIC_IMAGE;
-//            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
-//            imageTypeComboBox.setSelectedItem(currentImageType);
-//
-//            boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
-//            boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
-//            imageFlipComboBox.setEnabled(generic && !cylindrical);
-//            imageRotateComboBox.setEnabled(generic && !cylindrical);
-        }
-        else
-        {
-            spectrumTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
-        }
+//        if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
+//        {
+////            ImageType[] allImageTypes = ImageType.values();
+////            ImageType currentImageType = instrument != null ? instrument.type : ImageType.GENERIC_IMAGE;
+////            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
+////            imageTypeComboBox.setSelectedItem(currentImageType);
+////
+////            boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
+////            boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
+////            imageFlipComboBox.setEnabled(generic && !cylindrical);
+////            imageRotateComboBox.setEnabled(generic && !cylindrical);
+//        }
+//        else
+//        {
+//            spectrumTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+//        }
 
         spectrumNameTextField.setText(imageFileName);
 
@@ -792,32 +791,32 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
     private javax.swing.JButton browseInfofileButton;
     private javax.swing.JButton browseSumfileButton;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JRadioButton cylindricalProjectionRadioButton;
-    private javax.swing.JComboBox imageFlipComboBox;
-    private javax.swing.JLabel imageFlipLabel;
+//    private javax.swing.JRadioButton cylindricalProjectionRadioButton;
+//    private javax.swing.JComboBox imageFlipComboBox;
+//    private javax.swing.JLabel imageFlipLabel;
     private javax.swing.JLabel spectrumLabel;
     private javax.swing.JTextField spectrumNameTextField;
     private javax.swing.JLabel spectrumPathLabel;
     private javax.swing.JTextField spectrumPathTextField;
-    private javax.swing.JComboBox imageRotateComboBox;
-    private javax.swing.JLabel imageRotateLabel;
+//    private javax.swing.JComboBox imageRotateComboBox;
+//    private javax.swing.JLabel imageRotateLabel;
     private javax.swing.JComboBox spectrumTypeComboBox;
     private javax.swing.JLabel spectrumTypeLabel;
     private javax.swing.JLabel infofilePathLabel;
     private javax.swing.JTextField infofilePathTextField;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JFormattedTextField lllatFormattedTextField;
-    private javax.swing.JLabel lllatLabel;
-    private javax.swing.JFormattedTextField lllonFormattedTextField;
-    private javax.swing.JLabel lllonLabel;
+//    private javax.swing.JFormattedTextField lllatFormattedTextField;
+//    private javax.swing.JLabel lllatLabel;
+//    private javax.swing.JFormattedTextField lllonFormattedTextField;
+//    private javax.swing.JLabel lllonLabel;
     private javax.swing.JButton okButton;
     private javax.swing.JRadioButton perspectiveProjectionRadioButton;
     private javax.swing.ButtonGroup projectionButtonGroup;
     private javax.swing.JLabel sumfilePathLabel;
     private javax.swing.JTextField sumfilePathTextField;
-    private javax.swing.JFormattedTextField urlatFormattedTextField;
-    private javax.swing.JLabel urlatLabel;
-    private javax.swing.JFormattedTextField urlonFormattedTextField;
-    private javax.swing.JLabel urlonLabel;
+//    private javax.swing.JFormattedTextField urlatFormattedTextField;
+//    private javax.swing.JLabel urlatLabel;
+//    private javax.swing.JFormattedTextField urlonFormattedTextField;
+//    private javax.swing.JLabel urlonLabel;
     // End of variables declaration//GEN-END:variables
 }

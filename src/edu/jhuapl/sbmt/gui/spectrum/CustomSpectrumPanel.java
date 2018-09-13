@@ -27,15 +27,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -43,13 +40,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.google.common.io.Files;
-
 import vtk.vtkActor;
-import vtk.vtkAlgorithmOutput;
-import vtk.vtkImageReader2;
-import vtk.vtkImageReader2Factory;
-import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
@@ -64,38 +55,29 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ImageInfo;
-import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.gui.image.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
-import edu.jhuapl.sbmt.model.image.CylindricalImage;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
-import edu.jhuapl.sbmt.util.VtkENVIReader;
-
-import nom.tam.fits.FitsException;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 
 public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
 
     private ModelManager modelManager;
-    private ImagePopupMenu imagePopupMenu;
+    private SpectrumPopupMenu spectrumPopupMenu;
     private SbmtInfoWindowManager infoPanelManager;
     private SbmtSpectrumWindowManager spectrumPanelManager;
     final PickManager pickManager;
     Renderer renderer;
     private SpectralInstrument instrument;
-    int numImagesInCollection = -1;
+    int numSpectraInCollection = -1;
 
     private boolean initialized = false;
 
@@ -117,9 +99,9 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         return modelManager;
     }
 
-    protected ModelNames getImageCollectionModelName()
+    protected ModelNames getSpectraCollectionModelName()
     {
-        return ModelNames.IMAGES;
+        return ModelNames.SPECTRA;
     }
 
     protected ModelNames getModelName()
@@ -127,12 +109,12 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         return ModelNames.SMALL_BODY;
     }
 
-    private ModelNames getImageBoundaryCollectionModelName()
+    private ModelNames getSpectraBoundaryCollectionModelName()
     {
-        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
+        return ModelNames.CIRCLE_SELECTION;
     }
 
-    /** Creates new form CustomImageLoaderPanel */
+    /** Creates new form CustomSpectrumLoaderPanel */
     public CustomSpectrumPanel(
             final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
@@ -154,7 +136,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 
 //        pickManager.getDefaultPicker().addPropertyChangeListener(this);
 //
-//        imageList.setModel(new DefaultListModel());
+//        spectraList.setModel(new DefaultListModel());
 //
 //        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 //        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
@@ -179,7 +161,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 
     protected void initExtraComponents()
     {
-        imageList.setModel(new DefaultListModel());
+        spectraList.setModel(new DefaultListModel());
 
     }
 
@@ -191,15 +173,17 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         initExtraComponents();
         populateMonochromePanel(monochromePanel);
 
+//        spectraList.setModel(new DefaultListModel());
+
 //        ImageCollection images = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 //        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES);
 //        imagePopupMenu = new ImagePopupMenu(images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
 
 //        postInitComponents(instrument);
 
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+        SpectraCollection images = (SpectraCollection)modelManager.getModel(getSpectraCollectionModelName());
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getSpectraBoundaryCollectionModelName());
+        spectrumPopupMenu = new SpectrumPopupMenu(modelManager, infoPanelManager, renderer);
 
 
 //        boundaries.addPropertyChangeListener(this);
@@ -215,7 +199,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
             {
                 try
                 {
-                    initializeImageList();
+                    initializeSpectraList();
                 }
                 catch (IOException e1)
                 {
@@ -224,7 +208,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
             }
         });
 
-        imageList.addListSelectionListener(this);
+        spectraList.addListSelectionListener(this);
 
         return this;
     }
@@ -313,77 +297,80 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         return modelManager.getPolyhedralModel().getConfigFilename();
     }
 
-    private void initializeImageList() throws IOException
+    private void initializeSpectraList() throws IOException
     {
         if (initialized)
             return;
 
         MapUtil configMap = new MapUtil(getConfigFilename());
 
-        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
+//        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
         {
             boolean needToUpgradeConfigFile = false;
-            String[] imageNames = configMap.getAsArray(Image.IMAGE_NAMES);
-            String[] imageFilenames = configMap.getAsArray(Image.IMAGE_FILENAMES);
-            String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
-            String[] imageTypes = configMap.getAsArray(Image.IMAGE_TYPES);
-            String[] imageRotations = configMap.getAsArray(Image.IMAGE_ROTATIONS);
-            String[] imageFlips = configMap.getAsArray(Image.IMAGE_FLIPS);
-            if (imageFilenames == null)
-            {
-                // for backwards compatibility
-                imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
-                imageNames = new String[imageFilenames.length];
-                projectionTypes = new String[imageFilenames.length];
-                imageTypes = new String[imageFilenames.length];
-                imageRotations = new String[imageFilenames.length];
-                imageFlips = new String[imageFilenames.length];
-                for (int i=0; i<imageFilenames.length; ++i)
-                {
-                    imageNames[i] = new File(imageFilenames[i]).getName();
-                    imageFilenames[i] = "image" + i + ".png";
-                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
-                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
-                    imageRotations[i] = Double.toString(0.0);
-                    imageFlips[i] = "None";
-                }
-
-                // Mark that we need to upgrade config file to latest version
-                // which we'll do at end of function.
-                needToUpgradeConfigFile = true;
-            }
-            double[] lllats = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LATITUDES);
-            double[] lllons = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LONGITUDES);
-            double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
-            double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
+            String[] spectrumNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
+            String[] spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
+//            String[] projectionTypes = configMap.getAsArray(Spectrum.PROJECTION_TYPES);
+            String[] spectraTypes = configMap.getAsArray(Spectrum.SPECTRUM_TYPES);
+//            String[] imageRotations = configMap.getAsArray(Image.IMAGE_ROTATIONS);
+//            String[] imageFlips = configMap.getAsArray(Image.IMAGE_FLIPS);
+//            if (spectrumFilenames == null)
+//            {
+//                // for backwards compatibility
+//                spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
+//                spectrumNames = new String[spectrumFilenames.length];
+////                projectionTypes = new String[imageFilenames.length];
+//                spectraTypes = new String[spectrumFilenames.length];
+////                imageRotations = new String[imageFilenames.length];
+////                imageFlips = new String[imageFilenames.length];
+//                for (int i=0; i<spectrumFilenames.length; ++i)
+//                {
+//                    spectrumNames[i] = new File(spectrumFilenames[i]).getName();
+//                    spectrumFilenames[i] = "spectrum" + i + ".spect";
+////                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
+////                    spectrumTypes[i] = SpectraType.GENERIC_SPECTRA.toString();
+////                    imageRotations[i] = Double.toString(0.0);
+////                    imageFlips[i] = "None";
+//                }
+//
+//                // Mark that we need to upgrade config file to latest version
+//                // which we'll do at end of function.
+//                needToUpgradeConfigFile = true;
+//            }
+//            double[] lllats = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LATITUDES);
+//            double[] lllons = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LONGITUDES);
+//            double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
+//            double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
             String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
             String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
 
-            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
+//            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
+            int numImages = infofileNames.length;
             for (int i=0; i<numImages; ++i)
             {
-                ImageInfo imageInfo = new ImageInfo();
-                imageInfo.name = imageNames[i];
-                imageInfo.imagefilename = imageFilenames[i];
-                imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
-                imageInfo.imageType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
-                imageInfo.rotation = imageRotations == null ? 0.0 : Double.valueOf(imageRotations[i]);
-                imageInfo.flip = imageFlips == null ? "None" : imageFlips[i];
+                SpectrumInfo spectrumInfo = new SpectrumInfo();
+                spectrumInfo.name = spectrumNames[i];
+                spectrumInfo.spectrumfilename = spectrumFilenames[i];
+//                imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
+                spectrumInfo.spectraType = SpectraType.valueOf(spectraTypes[i]);
+//                imageInfo.rotation = imageRotations == null ? 0.0 : Double.valueOf(imageRotations[i]);
+//                imageInfo.flip = imageFlips == null ? "None" : imageFlips[i];
 
-                if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
+//                if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
+//                {
+//                    imageInfo.lllat = lllats[i];
+//                    imageInfo.lllon = lllons[i];
+//                    imageInfo.urlat = urlats[i];
+//                    imageInfo.urlon = urlons[i];
+//                }
+//                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
                 {
-                    imageInfo.lllat = lllats[i];
-                    imageInfo.lllon = lllons[i];
-                    imageInfo.urlat = urlats[i];
-                    imageInfo.urlon = urlons[i];
-                }
-                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
-                {
-                    imageInfo.sumfilename = sumfileNames[i];
-                    imageInfo.infofilename = infofileNames[i];
+//                    if (sumfileNames.length > 0)
+                        spectrumInfo.sumfilename = sumfileNames[i];
+//                    if (infofileNames.length > 0)
+                        spectrumInfo.infofilename = infofileNames[i];
                 }
 
-                ((DefaultListModel)imageList.getModel()).addElement(imageInfo);
+                ((DefaultListModel)spectraList.getModel()).addElement(spectrumInfo);
             }
 
             if (needToUpgradeConfigFile)
@@ -393,75 +380,79 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         initialized = true;
     }
 
-    private void saveSpectrum(int index, SpectrumInfo oldImageInfo, SpectrumInfo newImageInfo) throws IOException
+    private void saveSpectrum(int index, SpectrumInfo oldSpectrumInfo, SpectrumInfo newSpectrumInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
 
         // If newImageInfo.imagefilename is null, that means we are in edit mode
         // and should continue to use the existing image
-        if (newImageInfo.spectrumfilename == null)
+        if (newSpectrumInfo.spectrumfilename == null)
         {
-            newImageInfo.spectrumfilename = oldImageInfo.spectrumfilename;
+            newSpectrumInfo.spectrumfilename = oldSpectrumInfo.spectrumfilename;
         }
         else
         {
-            // Check if this image is any of the supported formats
-            if(VtkENVIReader.isENVIFilename(newImageInfo.spectrumfilename)){
-                // We were given an ENVI file (binary or header)
-                // Can assume at this point that both binary + header files exist in the same directory
-
-                // Get filenames of the binary and header files
-                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.spectrumfilename);
-                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.spectrumfilename);
-
-                // Rename newImageInfo as that of the binary file
-                newImageInfo.spectrumfilename = "image-" + uuid;
-
-                // Copy over the binary file
-                Files.copy(new File(enviBinaryFilename),
-                        new File(getCustomDataFolder() + File.separator
-                                + newImageInfo.spectrumfilename));
-
-                // Copy over the header file
-                Files.copy(new File(enviHeaderFilename),
-                        new File(getCustomDataFolder() + File.separator
-                                + VtkENVIReader.getHeaderFilename(newImageInfo.spectrumfilename)));
-            }
-            else if(newImageInfo.spectrumfilename.endsWith(".fit") || newImageInfo.spectrumfilename.endsWith(".fits") ||
-                    newImageInfo.spectrumfilename.endsWith(".FIT") || newImageInfo.spectrumfilename.endsWith(".FITS"))
+//            // Check if this image is any of the supported formats
+//            if(VtkENVIReader.isENVIFilename(newImageInfo.spectrumfilename)){
+//                // We were given an ENVI file (binary or header)
+//                // Can assume at this point that both binary + header files exist in the same directory
+//
+//                // Get filenames of the binary and header files
+//                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.spectrumfilename);
+//                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.spectrumfilename);
+//
+//                // Rename newImageInfo as that of the binary file
+//                newImageInfo.spectrumfilename = "image-" + uuid;
+//
+//                // Copy over the binary file
+//                Files.copy(new File(enviBinaryFilename),
+//                        new File(getCustomDataFolder() + File.separator
+//                                + newImageInfo.spectrumfilename));
+//
+//                // Copy over the header file
+//                Files.copy(new File(enviHeaderFilename),
+//                        new File(getCustomDataFolder() + File.separator
+//                                + VtkENVIReader.getHeaderFilename(newImageInfo.spectrumfilename)));
+//            }
+//            else if(newImageInfo.spectrumfilename.endsWith(".fit") || newImageInfo.spectrumfilename.endsWith(".fits") ||
+//                    newImageInfo.spectrumfilename.endsWith(".FIT") || newImageInfo.spectrumfilename.endsWith(".FITS"))
             {
                 // Copy FIT file to cache
-                String newFilename = "image-" + uuid + ".fit";
+                String newFilename = "spectrum-" + uuid + ".spect";
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newImageInfo.spectrumfilename,  newFilepath);
+                FileUtil.copyFile(newSpectrumInfo.spectrumfilename,  newFilepath);
+                String newFileInfoname = "spectrum-" + uuid + ".INFO";
+                String newFileInfopath = getCustomDataFolder() + File.separator + newFileInfoname;
+                FileUtil.copyFile(newSpectrumInfo.infofilename,  newFileInfopath);
                 // Change newImageInfo.imagefilename to the new location of the file
-                newImageInfo.spectrumfilename = newFilename;
+                newSpectrumInfo.spectrumfilename = newFilename;
+                newSpectrumInfo.infofilename = newFileInfoname;
             }
-            else
-            {
-                // Convert native VTK supported image to PNG and save to cache
-                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.spectrumfilename);
-                if (imageReader == null)
-                {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The format of the specified file is not supported.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                imageReader.SetFileName(newImageInfo.spectrumfilename);
-                imageReader.Update();
-
-                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
-                vtkPNGWriter imageWriter = new vtkPNGWriter();
-                imageWriter.SetInputConnection(imageReaderOutput);
-                // We save out the image using a new name that makes use of a UUID
-                newImageInfo.spectrumfilename = "image-" + uuid + ".png";
-                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.spectrumfilename);
-                //imageWriter.SetFileTypeToBinary();
-                imageWriter.Write();
-            }
+//            else
+//            {
+//                // Convert native VTK supported image to PNG and save to cache
+//                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+//                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.spectrumfilename);
+//                if (imageReader == null)
+//                {
+//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                        "The format of the specified file is not supported.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//                imageReader.SetFileName(newImageInfo.spectrumfilename);
+//                imageReader.Update();
+//
+//                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
+//                vtkPNGWriter imageWriter = new vtkPNGWriter();
+//                imageWriter.SetInputConnection(imageReaderOutput);
+//                // We save out the image using a new name that makes use of a UUID
+//                newImageInfo.spectrumfilename = "image-" + uuid + ".png";
+//                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.spectrumfilename);
+//                //imageWriter.SetFileTypeToBinary();
+//                imageWriter.Write();
+//            }
         }
 
 //        // Operations specific for perspective projection type
@@ -497,99 +488,100 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 //            }
 //        }
 
-        DefaultListModel model = (DefaultListModel)imageList.getModel();
+        DefaultListModel model = (DefaultListModel)spectraList.getModel();
         if (index >= model.getSize())
         {
-            model.addElement(newImageInfo);
+            model.addElement(newSpectrumInfo);
         }
         else
         {
-            model.set(index, newImageInfo);
+            model.set(index, newSpectrumInfo);
         }
 
         updateConfigFile();
     }
 
-    /**
-     * This function unmaps the image from the renderer and maps it again,
-     * if it is currently shown.
-     * @throws IOException
-     * @throws FitsException
-     */
-    private void remapImageToRenderer(int index) throws FitsException, IOException
+//    /**
+//     * This function unmaps the image from the renderer and maps it again,
+//     * if it is currently shown.
+//     * @throws IOException
+//     * @throws FitsException
+//     */
+//    private void remapImageToRenderer(int index) throws FitsException, IOException
+//    {
+//        ImageInfo imageInfo = (ImageInfo)((DefaultListModel)spectraList.getModel()).get(index);
+//
+//        // Remove the image from the renderer
+//        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+//        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+//        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//        ImageType imageType = imageInfo.imageType;
+//        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+//        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+//
+//        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
+//
+//        if (imageCollection.containsImage(imageKey))
+//        {
+//            Image image = imageCollection.getImage(imageKey);
+//            boolean visible = image.isVisible();
+//            if (visible)
+//                image.setVisible(false);
+//            imageCollection.removeImage(imageKey);
+//            imageCollection.addImage(imageKey);
+//            if (visible)
+//                image.setVisible(true);
+//        }
+//    }
+
+    private void removeAllSpectraFromRenderer()
     {
-        ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
-
-        // Remove the image from the renderer
-        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        ImageType imageType = imageInfo.imageType;
-        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
-
-        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-
-        if (imageCollection.containsImage(imageKey))
-        {
-            Image image = imageCollection.getImage(imageKey);
-            boolean visible = image.isVisible();
-            if (visible)
-                image.setVisible(false);
-            imageCollection.removeImage(imageKey);
-            imageCollection.addImage(imageKey);
-            if (visible)
-                image.setVisible(true);
-        }
+        SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(ModelNames.IMAGES);
+        spectrumCollection.removeAllSpectra();
+//        (ImageSource.LOCAL_CYLINDRICAL);
+//        spectrumCollection.removeSpectra(ImageSource.LOCAL_PERSPECTIVE);
     }
 
-    private void removeAllImagesFromRenderer()
+    private void removeSpectra(int index)
     {
-        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
-        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
-    }
+        SpectrumInfo spectrumInfo = (SpectrumInfo)((DefaultListModel)spectraList.getModel()).get(index);
 
-    private void removeImage(int index)
-    {
-        ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(index);
-
-        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        String name = getCustomDataFolder() + File.separator + spectrumInfo.spectrumfilename;
         new File(name).delete();
 
         // Remove the image from the renderer
-        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        ImageType imageType = imageInfo.imageType;
-        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+//        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = spectrumInfo.sumfilename != null && !spectrumInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        SpectraType spectraType = spectrumInfo.spectraType;
+//        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(spectrumInfo.rotation, spectrumInfo.flip) : null;
+        SpectrumKey spectrumKey = new SpectrumKey(name, /*ImageSource.LOCAL_PERSPECTIVE,*/ fileType, spectraType, instrument);
 
-        ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
-        imageCollection.removeImage(imageKey);
+        SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+        spectrumCollection.removeSpectrum(spectrumKey);
 
-        if (imageInfo.projectionType == ProjectionType.PERSPECTIVE)
-        {
-            if (imageInfo.sumfilename != null)
+//        if (spectrumInfo.projectionType == ProjectionType.PERSPECTIVE)
+//        {
+            if (spectrumInfo.sumfilename != null)
             {
-                name = getCustomDataFolder() + File.separator + imageInfo.sumfilename;
+                name = getCustomDataFolder() + File.separator + spectrumInfo.sumfilename;
                 new File(name).delete();
             }
-            if (imageInfo.infofilename != null)
+            if (spectrumInfo.infofilename != null)
             {
-                name = getCustomDataFolder() + File.separator + imageInfo.infofilename;
+                name = getCustomDataFolder() + File.separator + spectrumInfo.infofilename;
                 new File(name).delete();
             }
 
-            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-            boundaries.removeBoundary(imageKey);
-        }
+//            PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getSpectraBoundaryCollectionModelName());
+//            boundaries.removeBoundary(spectrumKey);
+//        }
 
-        ((DefaultListModel)imageList.getModel()).remove(index);
+        ((DefaultListModel)spectraList.getModel()).remove(index);
     }
 
     private void moveDown(int i)
     {
-        DefaultListModel model = (DefaultListModel)imageList.getModel();
+        DefaultListModel model = (DefaultListModel)spectraList.getModel();
 
         if (i >= model.getSize())
             return;
@@ -604,49 +596,49 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
     {
         MapUtil configMap = new MapUtil(getConfigFilename());
 
-        String imageNames = "";
-        String imageFilenames = "";
-        String projectionTypes = "";
-        String imageTypes = "";
-        String imageRotations = "";
-        String imageFlips = "";
-        String lllats = "";
-        String lllons = "";
-        String urlats = "";
-        String urlons = "";
+        String spectrumNames = "";
+        String spectrumFilenames = "";
+//        String projectionTypes = "";
+        String spectrumTypes = "";
+//        String imageRotations = "";
+//        String imageFlips = "";
+//        String lllats = "";
+//        String lllons = "";
+//        String urlats = "";
+//        String urlons = "";
         String sumfilenames = "";
         String infofilenames = "";
 
-        DefaultListModel imageListModel = (DefaultListModel)imageList.getModel();
+        DefaultListModel imageListModel = (DefaultListModel)spectraList.getModel();
         for (int i=0; i<imageListModel.size(); ++i)
         {
-            ImageInfo imageInfo = (ImageInfo)imageListModel.get(i);
-
-            imageFilenames += imageInfo.imagefilename;
-            imageNames += imageInfo.name;
-            projectionTypes += imageInfo.projectionType;
-            imageTypes += imageInfo.imageType;
-            imageRotations += Math.floor(imageInfo.rotation / 90.0) * 90.0;
-            imageFlips += imageInfo.flip;
-            lllats += String.valueOf(imageInfo.lllat);
-            lllons += String.valueOf(imageInfo.lllon);
-            urlats += String.valueOf(imageInfo.urlat);
-            urlons += String.valueOf(imageInfo.urlon);
-            sumfilenames += imageInfo.sumfilename;
-            infofilenames += imageInfo.infofilename;
+            SpectrumInfo spectrumInfo = (SpectrumInfo)imageListModel.get(i);
+            System.out.println("CustomSpectrumPanel: updateConfigFile: saving name " + spectrumInfo.name);
+            spectrumFilenames += spectrumInfo.spectrumfilename;
+            spectrumNames += spectrumInfo.name;
+//            projectionTypes += spectrumInfo.projectionType;
+            spectrumTypes += spectrumInfo.spectraType;
+//            imageRotations += Math.floor(spectrumInfo.rotation / 90.0) * 90.0;
+//            imageFlips += spectrumInfo.flip;
+//            lllats += String.valueOf(spectrumInfo.lllat);
+//            lllons += String.valueOf(spectrumInfo.lllon);
+//            urlats += String.valueOf(spectrumInfo.urlat);
+//            urlons += String.valueOf(spectrumInfo.urlon);
+            sumfilenames += spectrumInfo.sumfilename;
+            infofilenames += spectrumInfo.infofilename;
 
             if (i < imageListModel.size()-1)
             {
-                imageNames += CustomShapeModel.LIST_SEPARATOR;
-                imageFilenames += CustomShapeModel.LIST_SEPARATOR;
-                projectionTypes += CustomShapeModel.LIST_SEPARATOR;
-                imageTypes += CustomShapeModel.LIST_SEPARATOR;
-                imageRotations += CustomShapeModel.LIST_SEPARATOR;
-                imageFlips += CustomShapeModel.LIST_SEPARATOR;
-                lllats += CustomShapeModel.LIST_SEPARATOR;
-                lllons += CustomShapeModel.LIST_SEPARATOR;
-                urlats += CustomShapeModel.LIST_SEPARATOR;
-                urlons += CustomShapeModel.LIST_SEPARATOR;
+                spectrumNames += CustomShapeModel.LIST_SEPARATOR;
+                spectrumFilenames += CustomShapeModel.LIST_SEPARATOR;
+//                projectionTypes += CustomShapeModel.LIST_SEPARATOR;
+                spectrumTypes += CustomShapeModel.LIST_SEPARATOR;
+//                imageRotations += CustomShapeModel.LIST_SEPARATOR;
+//                imageFlips += CustomShapeModel.LIST_SEPARATOR;
+//                lllats += CustomShapeModel.LIST_SEPARATOR;
+//                lllons += CustomShapeModel.LIST_SEPARATOR;
+//                urlats += CustomShapeModel.LIST_SEPARATOR;
+//                urlons += CustomShapeModel.LIST_SEPARATOR;
                 sumfilenames += CustomShapeModel.LIST_SEPARATOR;
                 infofilenames += CustomShapeModel.LIST_SEPARATOR;
             }
@@ -654,53 +646,63 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 
         Map<String, String> newMap = new LinkedHashMap<String, String>();
 
-        newMap.put(Image.IMAGE_NAMES, imageNames);
-        newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
-        newMap.put(Image.PROJECTION_TYPES, projectionTypes);
-        newMap.put(Image.IMAGE_TYPES, imageTypes);
-        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
-        newMap.put(Image.IMAGE_FLIPS, imageFlips);
-        newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
-        newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
-        newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
-        newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
+        newMap.put(Spectrum.SPECTRUM_NAMES, spectrumNames);
+        newMap.put(Spectrum.SPECTRUM_FILENAMES, spectrumFilenames);
+//        newMap.put(Image.PROJECTION_TYPES, projectionTypes);
+        newMap.put(Spectrum.SPECTRUM_TYPES, spectrumTypes);
+//        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
+//        newMap.put(Image.IMAGE_FLIPS, imageFlips);
+//        newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
+//        newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
+//        newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
+//        newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
         newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
         newMap.put(CustomPerspectiveImage.INFOFILENAMES, infofilenames);
 
         configMap.put(newMap);
     }
 
-    private void imageListMaybeShowPopup(MouseEvent e)
+    private void spectraListMaybeShowPopup(MouseEvent e)
     {
         if (e.isPopupTrigger())
         {
-            int index = imageList.locationToIndex(e.getPoint());
+            int index = spectraList.locationToIndex(e.getPoint());
 
-            if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
+            if (index >= 0 && spectraList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 // If the item right-clicked on is not selected, then deselect all the
                 // other items and select the item right-clicked on.
-                if (!imageList.isSelectedIndex(index))
+                if (!spectraList.isSelectedIndex(index))
                 {
-                    imageList.clearSelection();
-                    imageList.setSelectedIndex(index);
+                    spectraList.clearSelection();
+                    spectraList.setSelectedIndex(index);
                 }
 
-                int[] selectedIndices = imageList.getSelectedIndices();
-                List<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                int[] selectedIndices = spectraList.getSelectedIndices();
+                List<SpectrumKey> spectrumKeys = new ArrayList<SpectrumKey>();
                 for (int selectedIndex : selectedIndices)
                 {
-                    ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
-                    String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-                    FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-                    ImageType imageType = imageInfo.imageType;
-                    ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
-                    imageKeys.add(imageKey);
+                    SpectrumInfo spectraInfo = (SpectrumInfo)((DefaultListModel)spectraList.getModel()).get(selectedIndex);
+                    String name = getCustomDataFolder() + File.separator + spectraInfo.spectrumfilename;
+                    spectrumPopupMenu.setCurrentSpectrum(name);
+
+//                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+                    FileType fileType = spectraInfo.sumfilename != null && !spectraInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+                    SpectraType spectrumType = spectraInfo.spectraType;
+                    System.out.println(
+                            "CustomSpectrumPanel: spectraListMaybeShowPopup: display name " + spectrumType.getDisplayName());
+                    SpectralInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(spectrumType.getDisplayName());
+//                    ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+                    System.out.println(
+                            "CustomSpectrumPanel: spectraListMaybeShowPopup: instrument is " + instrument);
+                    spectrumPopupMenu.setInstrument(instrument);
+
+                    SpectrumKey spectrumKey = new SpectrumKey(name, /*ImageSource.LOCAL_PERSPECTIVE,*/ fileType, spectrumType, instrument);
+                    spectrumKeys.add(spectrumKey);
                 }
-                imagePopupMenu.setCurrentImages(imageKeys);
-                imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                //TODO FIX THIS
+
+                spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }
@@ -711,20 +713,20 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof ImageCollection)// || model instanceof PerspectiveImageBoundaryCollection)
+            if (model instanceof SpectraCollection)// || model instanceof PerspectiveImageBoundaryCollection)
             {
                 // Get the actual filename of the selected image
-                ImageKey key = ((ImageCollection)model).getImage((vtkActor)e.getPickedProp()).getKey();
+                SpectrumKey key = ((SpectraCollection)model).getSpectrum((vtkActor)e.getPickedProp()).getKey();
                 String name = new File(key.name).getName();
 
                 int idx = -1;
-                int size = imageList.getModel().getSize();
+                int size = spectraList.getModel().getSize();
                 for (int i=0; i<size; ++i)
                 {
                     // We want to compare the actual image filename here, not the displayed name which may not be unique
-                    ImageInfo imageInfo = (ImageInfo)((DefaultListModel)imageList.getModel()).get(i);
-                    String imageFilename = imageInfo.imagefilename;
-                    if (name.equals(imageFilename))
+                    SpectrumInfo spectrumInfo = (SpectrumInfo)((DefaultListModel)spectraList.getModel()).get(i);
+                    String spectrumFilename = spectrumInfo.spectrumfilename;
+                    if (name.equals(spectrumFilename))
                     {
                         idx = i;
                         break;
@@ -733,23 +735,23 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 
                 if (idx >= 0)
                 {
-                    imageList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
+                    spectraList.setSelectionInterval(idx, idx);
+                    Rectangle cellBounds = spectraList.getCellBounds(idx, idx);
                     if (cellBounds != null)
-                        imageList.scrollRectToVisible(cellBounds);
+                        spectraList.scrollRectToVisible(cellBounds);
                 }
             }
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
         {
             // If an image was added/removed, then
-            ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-            int currImagesInCollection = images.getImages().size();
+            SpectraCollection spectra = (SpectraCollection)getModelManager().getModel(getSpectraCollectionModelName());
+            int currSpectraInCollection = spectra.getSelectedSpectra().size();
 
-            if(currImagesInCollection != numImagesInCollection)
+            if(currSpectraInCollection != numSpectraInCollection)
             {
                 // Update count of number of images in collection and update slider
-                numImagesInCollection = currImagesInCollection;
+                numSpectraInCollection = currSpectraInCollection;
                 valueChanged(null);
             }
         }
@@ -766,7 +768,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         java.awt.GridBagConstraints gridBagConstraints;
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        imageList = new javax.swing.JList();
+        spectraList = new javax.swing.JList();
         newButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -779,20 +781,20 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 
         setLayout(new java.awt.GridBagLayout());
 
-        imageList.addMouseListener(new java.awt.event.MouseAdapter() {
+        spectraList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                imageListMousePressed(evt);
+                spectraListMousePressed(evt);
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                imageListMouseReleased(evt);
+                spectraListMouseReleased(evt);
             }
         });
-        imageList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        spectraList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 imageListValueChanged(evt);
             }
         });
-        jScrollPane1.setViewportView(imageList);
+        jScrollPane1.setViewportView(spectraList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -931,11 +933,13 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
 //            System.out.println("Image Type: " + imageInfo.imageType);
 //            System.out.println("Image Rotate: " + imageInfo.rotation);
 //            System.out.println("Image Flip: " + imageInfo.flip);
+            System.out.println(
+                    "CustomSpectrumPanel: newButtonActionPerformed: info spectra type " + imageInfo.spectraType);
             PolyhedralModel body = modelManager.getPolyhedralModel();
 
             try
             {
-                saveSpectrum(((DefaultListModel)imageList.getModel()).getSize(), null, imageInfo);
+                saveSpectrum(((DefaultListModel)spectraList.getModel()).getSize(), null, imageInfo);
             }
             catch (IOException e)
             {
@@ -945,21 +949,21 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        int[] selectedIndices = imageList.getSelectedIndices();
+        int[] selectedIndices = spectraList.getSelectedIndices();
         Arrays.sort(selectedIndices);
         for (int i=selectedIndices.length-1; i>=0; --i)
         {
-            removeImage(selectedIndices[i]);
+            removeSpectra(selectedIndices[i]);
         }
 
         updateConfigFile();
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-        int selectedItem = imageList.getSelectedIndex();
+        int selectedItem = spectraList.getSelectedIndex();
         if (selectedItem >= 0)
         {
-            SpectrumInfo oldImageInfo = (SpectrumInfo)((DefaultListModel)imageList.getModel()).get(selectedItem);
+            SpectrumInfo oldImageInfo = (SpectrumInfo)((DefaultListModel)spectraList.getModel()).get(selectedItem);
 
             CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, instrument);
             dialog.setSpectrumInfo(oldImageInfo, modelManager.getPolyhedralModel().isEllipsoid());
@@ -973,37 +977,37 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
                 try
                 {
                     saveSpectrum(selectedItem, oldImageInfo, newImageInfo);
-                    remapImageToRenderer(selectedItem);
+//                    remapImageToRenderer(selectedItem);
                 }
                 catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-                catch (FitsException e)
-                {
-                    e.printStackTrace();
-                }
+//                catch (FitsException e)
+//                {
+//                    e.printStackTrace();
+//                }
             }
         }
     }//GEN-LAST:event_editButtonActionPerformed
 
-    private void imageListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMousePressed
-        imageListMaybeShowPopup(evt);
+    private void spectraListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMousePressed
+        spectraListMaybeShowPopup(evt);
     }//GEN-LAST:event_imageListMousePressed
 
-    private void imageListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMouseReleased
-        imageListMaybeShowPopup(evt);
+    private void spectraListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMouseReleased
+        spectraListMaybeShowPopup(evt);
     }//GEN-LAST:event_imageListMouseReleased
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-        removeAllImagesFromRenderer();
+        removeAllSpectraFromRenderer();
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
-        int minSelectedItem = imageList.getMinSelectionIndex();
+        int minSelectedItem = spectraList.getMinSelectionIndex();
         if (minSelectedItem > 0)
         {
-            int[] selectedIndices = imageList.getSelectedIndices();
+            int[] selectedIndices = spectraList.getSelectedIndices();
             Arrays.sort(selectedIndices);
             for (int i=0; i<selectedIndices.length; ++i)
             {
@@ -1011,19 +1015,19 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
                 moveDown(selectedIndices[i]);
             }
 
-            imageList.clearSelection();
-            imageList.setSelectedIndices(selectedIndices);
-            imageList.scrollRectToVisible(imageList.getCellBounds(minSelectedItem-1, minSelectedItem-1));
+            spectraList.clearSelection();
+            spectraList.setSelectedIndices(selectedIndices);
+            spectraList.scrollRectToVisible(spectraList.getCellBounds(minSelectedItem-1, minSelectedItem-1));
 
             updateConfigFile();
         }
     }//GEN-LAST:event_moveUpButtonActionPerformed
 
     private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
-        int maxSelectedItem = imageList.getMaxSelectionIndex();
-        if (maxSelectedItem >= 0 && maxSelectedItem < imageList.getModel().getSize()-1)
+        int maxSelectedItem = spectraList.getMaxSelectionIndex();
+        if (maxSelectedItem >= 0 && maxSelectedItem < spectraList.getModel().getSize()-1)
         {
-            int[] selectedIndices = imageList.getSelectedIndices();
+            int[] selectedIndices = spectraList.getSelectedIndices();
             Arrays.sort(selectedIndices);
             for (int i=selectedIndices.length-1; i>=0; --i)
             {
@@ -1031,16 +1035,16 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
                 ++selectedIndices[i];
             }
 
-            imageList.clearSelection();
-            imageList.setSelectedIndices(selectedIndices);
-            imageList.scrollRectToVisible(imageList.getCellBounds(maxSelectedItem+1, maxSelectedItem+1));
+            spectraList.clearSelection();
+            spectraList.setSelectedIndices(selectedIndices);
+            spectraList.scrollRectToVisible(spectraList.getCellBounds(maxSelectedItem+1, maxSelectedItem+1));
 
             updateConfigFile();
         }
     }//GEN-LAST:event_moveDownButtonActionPerformed
 
     private void imageListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_imageListValueChanged
-        int[] indices = imageList.getSelectedIndices();
+        int[] indices = spectraList.getSelectedIndices();
         if (indices == null || indices.length == 0)
         {
             editButton.setEnabled(false);
@@ -1052,53 +1056,53 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         {
             editButton.setEnabled(indices.length == 1);
             deleteButton.setEnabled(true);
-            int minSelectedItem = imageList.getMinSelectionIndex();
-            int maxSelectedItem = imageList.getMaxSelectionIndex();
+            int minSelectedItem = spectraList.getMinSelectionIndex();
+            int maxSelectedItem = spectraList.getMaxSelectionIndex();
             moveUpButton.setEnabled(minSelectedItem > 0);
-            moveDownButton.setEnabled(maxSelectedItem < imageList.getModel().getSize()-1);
+            moveDownButton.setEnabled(maxSelectedItem < spectraList.getModel().getSize()-1);
         }
     }//GEN-LAST:event_imageListValueChanged
 
     @Override
     public void stateChanged(ChangeEvent e)
     {
-        // Custom image slider moved
-        int index = imageList.getSelectedIndex();
-        Object selectedValue = imageList.getSelectedValue();
-        if (selectedValue == null)
-            return;
-
-        // Get the actual filename of the selected image
-        String imagename = ((ImageInfo)selectedValue).imagefilename;
-
-        JSlider source = (JSlider)e.getSource();
-        currentSlice = (int)source.getValue();
-        bandValue.setText(Integer.toString(currentSlice));
-
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            if (i instanceof PerspectiveImage)
-            {
-                // We want to compare the actual image filename here, not the displayed name which may not be unique
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = new File(key.name).getName();
-
-                if (name.equals(imagename))
-                {
-                    image.setCurrentSlice(currentSlice);
-                    image.setDisplayedImageRange(null);
-                    if (!source.getValueIsAdjusting())
-                    {
-                         image.loadFootprint();
-                         image.firePropertyChange();
-                    }
-                    return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
-                }
-            }
-        }
+//        // Custom image slider moved
+//        int index = spectraList.getSelectedIndex();
+//        Object selectedValue = spectraList.getSelectedValue();
+//        if (selectedValue == null)
+//            return;
+//
+//        // Get the actual filename of the selected image
+//        String imagename = ((ImageInfo)selectedValue).imagefilename;
+//
+//        JSlider source = (JSlider)e.getSource();
+//        currentSlice = (int)source.getValue();
+//        bandValue.setText(Integer.toString(currentSlice));
+//
+//        SpectraCollection images = (SpectraCollection)getModelManager().getModel(getSpectraCollectionModelName());
+//        Set<Image> imageSet = images.getImages();
+//        for (Image i : imageSet)
+//        {
+//            if (i instanceof PerspectiveImage)
+//            {
+//                // We want to compare the actual image filename here, not the displayed name which may not be unique
+//                PerspectiveImage image = (PerspectiveImage)i;
+//                ImageKey key = image.getKey();
+//                String name = new File(key.name).getName();
+//
+//                if (name.equals(imagename))
+//                {
+//                    image.setCurrentSlice(currentSlice);
+//                    image.setDisplayedImageRange(null);
+//                    if (!source.getValueIsAdjusting())
+//                    {
+//                         image.loadFootprint();
+//                         image.firePropertyChange();
+//                    }
+//                    return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since differeent cubical images can have different numbers of bands.
+//                }
+//            }
+//        }
 
 //            System.out.println("State changed: " + fps);
     }
@@ -1107,43 +1111,43 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
     public void valueChanged(ListSelectionEvent e)
     {
         // Custom image list selected row changed
-        int index = imageList.getSelectedIndex();
-        Object selectedValue = imageList.getSelectedValue();
+        int index = spectraList.getSelectedIndex();
+        Object selectedValue = spectraList.getSelectedValue();
         if (selectedValue == null)
             return;
 
         // Get the actual filename of the selected image
-        String imagename = ((ImageInfo)selectedValue).imagefilename;
+        String imagename = ((SpectrumInfo)selectedValue).spectrumfilename;
 
-        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            if (i instanceof PerspectiveImage)
-            {
-                // We want to compare the actual image filename here, not the displayed name which may not be unique
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = new File(key.name).getName();
-                if (name.equals(imagename))
-                {
-                    int depth = image.getImageDepth();
-                    currentSlice = image.getCurrentSlice();
-                    setNumberOfBands(depth,currentSlice);
-                    image.setDisplayedImageRange(null);
-                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
-                }
-            }
-        }
-
-        // if no multi-band image found, set number of bands in slider to 1
-        setNumberOfBands(1);
+//        ImageCollection images = (ImageCollection)getModelManager().getModel(getImageCollectionModelName());
+//        Set<Image> imageSet = images.getImages();
+//        for (Image i : imageSet)
+//        {
+//            if (i instanceof PerspectiveImage)
+//            {
+//                // We want to compare the actual image filename here, not the displayed name which may not be unique
+//                PerspectiveImage image = (PerspectiveImage)i;
+//                ImageKey key = image.getKey();
+//                String name = new File(key.name).getName();
+//                if (name.equals(imagename))
+//                {
+//                    int depth = image.getImageDepth();
+//                    currentSlice = image.getCurrentSlice();
+//                    setNumberOfBands(depth,currentSlice);
+//                    image.setDisplayedImageRange(null);
+//                    return; // twupy1: Only do this for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
+//                }
+//            }
+//        }
+//
+//        // if no multi-band image found, set number of bands in slider to 1
+//        setNumberOfBands(1);
     }
 
     @Override
     public void actionPerformed(ActionEvent arg0)
     {
-        String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
+//        String newBandName = (String)((JComboBox)arg0.getSource()).getSelectedItem();
 //        System.out.println("ComboBox Value Changed: " + newBandName);
     }
 
@@ -1151,7 +1155,7 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
-    private javax.swing.JList imageList;
+    private javax.swing.JList spectraList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

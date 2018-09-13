@@ -19,7 +19,8 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
@@ -199,7 +200,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         i=0;
         for (Metadata data : spectralMetadata)
         {
-            BasicSpectrumInstrument inst = new BasicSpectrumInstrument();
+            String instrumentName = (String)data.get(Key.of("displayName"));
+            System.out
+                    .println("SmallBodyViewConfigMetadataIO: retrieve: instrument name " + instrumentName);
+            BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
             inst.retrieve(data);
             c.spectralInstruments[i++] = inst;
         }
