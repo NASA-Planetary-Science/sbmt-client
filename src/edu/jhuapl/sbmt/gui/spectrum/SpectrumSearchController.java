@@ -93,6 +93,7 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
@@ -472,7 +473,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         List<Integer> productsSelected;
         List<List<String>> results = new ArrayList<List<String>>();
 
-        if (view instanceof SpectrumSearchView) { // only submitting for searches
+        if (view instanceof SpectrumSearchView)
+        { // only submitting for searches
             try
             {
 
@@ -510,13 +512,13 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
 
                     String spectraDatasourceName = "";
-                    if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
+                    if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName())) {
                         if (((SpectrumSearchView)view).getL2Button().isSelected()) // either L2 or L3 for OTES
                             spectraDatasourceName = "OTES_L2";
                         else
                             spectraDatasourceName = "OTES_L3";
                     }
-                    else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) { // only L3 for OVIRS currently
+                    if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) { // only L3 for OVIRS currently
                         if (((SpectrumSearchView)view).getIFButton().isSelected()) // either L2 or L3 for OTES
                             spectraDatasourceName = "OVIRS_IF";
                         else
@@ -678,7 +680,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 System.out.println(e);
                 return;
             }
-        } else if (view instanceof SpectrumBrowseView) {
+        }
+        else if (view instanceof SpectrumBrowseView)
+        {
             if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
             {
                 // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
@@ -709,7 +713,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     collection.tagSpectraWithMetadata(thisResult, spec);
                     results.addAll(thisResult);
                 }
-                setSpectrumSearchResults(results);
+             setSpectrumSearchResults(results);
             }
         }
     }

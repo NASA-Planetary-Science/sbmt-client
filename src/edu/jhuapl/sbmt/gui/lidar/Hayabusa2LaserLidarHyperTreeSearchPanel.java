@@ -23,11 +23,11 @@ import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
-public class LaserLidarHyperTreeSearchPanel extends LidarSearchController//LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchController//LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
 
-    public LaserLidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
+    public Hayabusa2LaserLidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {

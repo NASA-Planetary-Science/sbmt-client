@@ -13,14 +13,15 @@ import vtk.vtkCamera;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
+import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -57,11 +58,8 @@ import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -70,9 +68,9 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchPanel;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
@@ -373,29 +371,36 @@ public class SbmtView extends View implements PropertyChangeListener
             }
         }
 
-        for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+        for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
-            if (instrument instanceof NIS)
+            System.out.println("SbmtView: setupTabs: instrument " + instrument.getClass());
+            String displayName = instrument.getDisplayName();
+            if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
             {
-            JComponent component = new NISSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                JComponent component = new NISSearchPanel(
+                        getPolyhedralModelConfig(), getModelManager(),
+                        (SbmtInfoWindowManager) getInfoPanelManager(),
+                        getPickManager(), getRenderer(), instrument);
             addTab(instrument.getDisplayName(), component);
             }
-            else
-                if (instrument instanceof OTES)
+            else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
                 {
                     JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
 //               JComponent component = new OTESSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                     addTab(instrument.getDisplayName(), component);
                 }
-                else if (instrument instanceof OVIRS)
+            else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
                 {
                     JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
 //               JComponent component = new OVIRSSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                 addTab(instrument.getDisplayName(), component);
                 }
-                else if (instrument instanceof NIRS3)
+            else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
                     {
-                    JComponent component = new NIRS3SearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+                JComponent component = new NIRS3SearchPanel(
+                        getPolyhedralModelConfig(), getModelManager(),
+                        (SbmtInfoWindowManager) getInfoPanelManager(),
+                        getPickManager(), getRenderer(), instrument);
                     addTab(instrument.getDisplayName(), component);
                     }
 
@@ -415,8 +420,9 @@ public class SbmtView extends View implements PropertyChangeListener
                 addTab("Lineament", component);
             }
 
-            // TODO - this was broken when I pulled from sbmt1dev
-//            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager()));
+
+            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
 
 
             JTabbedPane customDataPane=new JTabbedPane();

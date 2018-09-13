@@ -10,6 +10,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 /**
@@ -29,14 +30,15 @@ public class SpectrumPanel extends JTabbedPane
 
         SpectrumSearchController spectrumSearchController;
         SpectrumSearchController spectrumBrowseController;
-
-        if (instrument instanceof edu.jhuapl.sbmt.model.bennu.otes.OTES) {
+        System.out.println("SpectrumPanel: SpectrumPanel: instrument is of type " + instrument.getClass());
+        if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName())) {
+            System.out.println("SpectrumPanel: SpectrumPanel: initing OTES");
             spectrumSearchController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
             spectrumBrowseController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
             addTab("Browse", spectrumBrowseController.getView());
             addTab("Search", spectrumSearchController.getView());
         }
-        else if (instrument instanceof edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS) {
+        else if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) {
             spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
             spectrumBrowseController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
             addTab("Browse", spectrumBrowseController.getView());

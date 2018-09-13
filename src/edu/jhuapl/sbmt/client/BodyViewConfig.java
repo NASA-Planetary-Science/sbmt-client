@@ -13,7 +13,7 @@ import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
 
 
 /**
@@ -121,7 +121,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
-    public SpectralInstrument[] spectralInstruments = {};
+    public BasicSpectrumInstrument[] spectralInstruments = {};
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {

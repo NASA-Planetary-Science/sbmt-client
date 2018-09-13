@@ -25,8 +25,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 
 public class SpectrumSearchView extends SpectrumView
@@ -257,7 +256,7 @@ public class SpectrumSearchView extends SpectrumView
         panel_6.add(lblNewLabel_13);
 
 
-        if (instrument instanceof OTES) {
+        if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName())) {
             // add L2 vs L3 checkbox
             JPanel panel_16 = new JPanel();
             dbSearchPanel.add(panel_16);
@@ -278,7 +277,7 @@ public class SpectrumSearchView extends SpectrumView
             group.add(L2btn);
             group.add(L3btn);
         }
-        if (instrument instanceof OVIRS) {
+        if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) {
             // add L2 vs L3 checkbox
             JPanel panel_16 = new JPanel();
             dbSearchPanel.add(panel_16);
