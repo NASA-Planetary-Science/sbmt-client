@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,13 +51,10 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
@@ -3308,64 +3304,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         protected JTable getResultList()
         {
             return resultList;
-        }
-
-        private class HierarchicalSearchManager implements MetadataManager {
-            private final Key<List<String[]>> treePathKey = Key.of("selection");
-
-            @Override
-            public Metadata store()
-            {
-                SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-                ImmutableList.Builder<String[]> builder = ImmutableList.builder();
-
-                TreePath[] treePaths = checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths();
-                for (TreePath treePath : treePaths)
-                {
-                    Object[] pathObjects = treePath.getPath();
-                    String[] pathStrings = new String[pathObjects.length];
-                    for (int index = 0; index < pathObjects.length; ++index)
-                    {
-                        // For serializing, it's OK just to rely on the fact that
-                        // each of these nodes looks like the string it wraps.
-                        pathStrings[index] = pathObjects[index].toString();
-                    }
-                    builder.add(pathStrings);
-                }
-                result.put(treePathKey, builder.build());
-                return result;
-            }
-
-            @Override
-            public void retrieve(Metadata source)
-            {
-                List<String[]> pathStringList = source.get(treePathKey);
-                TreePath[] treePaths = new TreePath[pathStringList.size()];
-
-                for (int treeIndex = 0; treeIndex < pathStringList.size(); ++treeIndex)
-                {
-                    String[] pathStrings = pathStringList.get(treeIndex);
-                    DefaultMutableTreeNode[] nodes = new DefaultMutableTreeNode[pathStrings.length];
-                    DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) checkBoxTree.getModel().getRoot();
-                    nodes[0] = currentNode;
-                    for (int index = 0; index < pathStrings.length; ++index)
-                    {
-                        Enumeration<DefaultMutableTreeNode> children = currentNode.children();
-                        while (children.hasMoreElements())
-                        {
-                            DefaultMutableTreeNode child = children.nextElement();
-                            if (child.getUserObject().equals(pathStrings[index]))
-                            {
-                                nodes[index] = child;
-                                currentNode = child;
-                                break;
-                            }
-                        }
-                    }
-                    treePaths[treeIndex] = new TreePath(nodes);
-                }
-                checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPaths(treePaths);
-            }
         }
 
         public void initializeStateManager()
