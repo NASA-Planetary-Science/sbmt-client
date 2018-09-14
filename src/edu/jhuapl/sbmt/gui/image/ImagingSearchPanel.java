@@ -3328,7 +3328,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     final Key<String> searchByFileNameKey = Key.of("searchByFileName");
                     final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
                     final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
-                    final Key<Metadata> hierarchicalFiltersKey = Key.of("hierarchicalFilters");
+                    final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
 
                     @Override
                     public Metadata store()
@@ -3359,7 +3359,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
 //                            result.put(hierarchicalFiltersKey, manager.store());
                             MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                            result.put(hierarchicalFiltersKey, manager.store());
+                            result.put(imageTreeFilterKey, manager.store());
                       }
                         else
                         {
@@ -3424,7 +3424,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
 //                            manager.retrieve(source.get(hierarchicalFiltersKey));
                             MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                            manager.retrieve(source.get(hierarchicalFiltersKey));
+                            manager.retrieve(source.get(imageTreeFilterKey));
                         }
                         else
                         {
