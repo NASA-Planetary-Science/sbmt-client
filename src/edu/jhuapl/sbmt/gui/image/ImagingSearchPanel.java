@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,10 +52,13 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
@@ -98,6 +102,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
@@ -2599,12 +2604,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sumOfProductsSearch = true;
 
                 // Process the user's selections
-                smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
+                Selection selection = smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
                         checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
 
                 // Get the selected (camera,filter) pairs
-                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
-                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+                camerasSelected = selection.getSelectedCameras();
+                filtersSelected = selection.getSelectedFilters();
             }
             else
             {
@@ -3303,6 +3308,91 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             return resultList;
         }
 
+        private class HierarchicalSearchManager implements MetadataManager {
+            private final Key<List<String[]>> treePathKey = Key.of("selection");
+
+            @Override
+            public Metadata store()
+            {
+                SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+                ImmutableList.Builder<String[]> builder = ImmutableList.builder();
+
+                TreePath[] treePaths = checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths();
+                for (TreePath treePath : treePaths)
+                {
+                    Object[] pathObjects = treePath.getPath();
+                    String[] pathStrings = new String[pathObjects.length];
+                    for (int index = 0; index < pathObjects.length; ++index)
+                    {
+                        // For serializing, it's OK just to rely on the fact that
+                        // each of these nodes looks like the string it wraps.
+                        pathStrings[index] = pathObjects[index].toString();
+                    }
+                    builder.add(pathStrings);
+                }
+                result.put(treePathKey, builder.build());
+                return result;
+            }
+
+            @Override
+            public void retrieve(Metadata source)
+            {
+                List<String[]> pathStringList = source.get(treePathKey);
+                TreePath[] treePaths = new TreePath[pathStringList.size()];
+
+                for (int treeIndex = 0; treeIndex < pathStringList.size(); ++treeIndex)
+                {
+                    String[] pathStrings = pathStringList.get(treeIndex);
+                    DefaultMutableTreeNode[] nodes = new DefaultMutableTreeNode[pathStrings.length];
+                    DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) checkBoxTree.getModel().getRoot();
+                    nodes[0] = currentNode;
+                    for (int index = 0; index < pathStrings.length; ++index)
+                    {
+                        Enumeration<DefaultMutableTreeNode> children = currentNode.children();
+                        while (children.hasMoreElements())
+                        {
+                            DefaultMutableTreeNode child = children.nextElement();
+                            if (child.getUserObject().equals(pathStrings[index]))
+                            {
+                                nodes[index] = child;
+                                currentNode = child;
+                                break;
+                            }
+                        }
+                    }
+                    treePaths[treeIndex] = new TreePath(nodes);
+                }
+                boolean skip = false;
+                if (!skip)
+                checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPaths(treePaths);
+            }
+
+//            @Override
+//            public void retrieve(Metadata source)
+//            {
+//                List<String[]> pathStringList = source.get(treePathKey);
+//                TreePath[] treePaths = new TreePath[pathStringList.size()];
+//                for (int treeIndex = 0; treeIndex < pathStringList.size(); ++treeIndex)
+//                {
+//                    String[] pathStrings = pathStringList.get(treeIndex);
+//                    GenericMutableTreeNode<String>[] nodes = new GenericMutableTreeNode[pathStrings.length];
+//                    for (int index = 0; index < pathStrings.length; ++index)
+//                    {
+//                        nodes[index] = GenericMutableTreeNode.of(pathStrings[index]);
+//                        if (index > 0)
+//                        {
+//                            nodes[index - 1].add(nodes[index]);
+//                        }
+//                    }
+//                    treePaths[treeIndex] = new TreePath(nodes);
+//                }
+//                boolean skip = false;
+//                if (!skip)
+//                checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPath(treePaths[0]);
+//            }
+
+        }
+
         public void initializeStateManager()
         {
             if (stateManager == null) {
@@ -3325,6 +3415,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     final Key<String> searchByFileNameKey = Key.of("searchByFileName");
                     final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
                     final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
+                    final Key<Metadata> hierarchicalFiltersKey = Key.of("hierarchicalFilters");
 
                     @Override
                     public Metadata store()
@@ -3350,34 +3441,45 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         result.put(searchByFileNameEnabledKey, searchByFilenameCheckBox.isSelected());
                         result.put(searchByFileNameKey, searchByFilenameTextField.getText());
 
-                        int numberFilters = 0;
-
-                        // Regular filters.
-                        numberFilters = getNumberOfFiltersActuallyUsed();
-                        if (numberFilters > 0)
+                        if (smallBodyConfig.hasHierarchicalImageSearch)
                         {
-                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-
-                            for (int index = 0; index < numberFilters; ++index)
-                            {
-                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
-                            }
-                            result.put(filterMapKey, filterBuilder.build());
+                            // Process the user's selections
+                            smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
+                                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+                            result.put(hierarchicalFiltersKey, manager.store());
                         }
-
-                        // User-defined checkboxes.
-                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                        if (numberFilters > 0)
+                        else
                         {
-                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+                            int numberFilters = 0;
 
-                            for (int index = 0; index < numberFilters; ++index)
+                            // Regular filters.
+                            numberFilters = getNumberOfFiltersActuallyUsed();
+                            if (numberFilters > 0)
                             {
-                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+
+                                for (int index = 0; index < numberFilters; ++index)
+                                {
+                                    filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+                                }
+                                result.put(filterMapKey, filterBuilder.build());
                             }
-                            result.put(userCheckBoxMapKey, filterBuilder.build());
+
+                            // User-defined checkboxes.
+                            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                            if (numberFilters > 0)
+                            {
+                                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+
+                                for (int index = 0; index < numberFilters; ++index)
+                                {
+                                    filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                                }
+                                result.put(userCheckBoxMapKey, filterBuilder.build());
+                            }
                         }
 
                         return result;
@@ -3405,36 +3507,44 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
                         searchByFilenameTextField.setText(source.get(searchByFileNameKey));
 
-                        int numberFilters = 0;
-
-                        // Regular filters.
-                        numberFilters = getNumberOfFiltersActuallyUsed();
-                        if (numberFilters > 0)
+                        if (smallBodyConfig.hasHierarchicalImageSearch)
                         {
-                            Map<String, Boolean> filterMap = source.get(filterMapKey);
-                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-                            for (int index = 0; index < numberFilters; ++index)
+                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+                            manager.retrieve(source.get(hierarchicalFiltersKey));
+                        }
+                        else
+                        {
+                            int numberFilters = 0;
+
+                            // Regular filters.
+                            numberFilters = getNumberOfFiltersActuallyUsed();
+                            if (numberFilters > 0)
                             {
-                                Boolean filterSelected = filterMap.get(filterNames[index]);
-                                if (filterSelected != null)
+                                Map<String, Boolean> filterMap = source.get(filterMapKey);
+                                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+                                for (int index = 0; index < numberFilters; ++index)
                                 {
-                                    filterCheckBoxes[index].setSelected(filterSelected);
+                                    Boolean filterSelected = filterMap.get(filterNames[index]);
+                                    if (filterSelected != null)
+                                    {
+                                        filterCheckBoxes[index].setSelected(filterSelected);
+                                    }
                                 }
                             }
-                        }
 
-                        // User-defined checkboxes.
-                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                        if (numberFilters > 0)
-                        {
-                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
-                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-                            for (int index = 0; index < numberFilters; ++index)
+                            // User-defined checkboxes.
+                            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                            if (numberFilters > 0)
                             {
-                                Boolean filterSelected = filterMap.get(filterNames[index]);
-                                if (filterSelected != null)
+                                Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+                                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+                                for (int index = 0; index < numberFilters; ++index)
                                 {
-                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
+                                    Boolean filterSelected = filterMap.get(filterNames[index]);
+                                    if (filterSelected != null)
+                                    {
+                                        userDefinedCheckBoxes[index].setSelected(filterSelected);
+                                    }
                                 }
                             }
                         }
