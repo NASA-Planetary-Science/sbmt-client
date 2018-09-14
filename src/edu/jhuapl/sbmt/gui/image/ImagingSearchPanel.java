@@ -241,6 +241,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             // Create the tree
             checkBoxTree = new CheckBoxTree(smallBodyConfig.hierarchicalImageSearchSpecification.getTreeModel());
 
+            // Bind the checkbox-specific tree selection model to the "spec"
+            smallBodyConfig.hierarchicalImageSearchSpecification.setSelectionModel(checkBoxTree.getCheckBoxTreeSelectionModel());
+
             // Place the tree in the panel
             this.hierarchicalSearchScrollPane.setViewportView(checkBoxTree);
         }
@@ -2604,8 +2607,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 sumOfProductsSearch = true;
 
                 // Process the user's selections
-                Selection selection = smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
-                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+                Selection selection = smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections();
 
                 // Get the selected (camera,filter) pairs
                 camerasSelected = selection.getSelectedCameras();
@@ -3416,9 +3418,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                         if (smallBodyConfig.hasHierarchicalImageSearch)
                         {
-                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+//                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+//                            result.put(hierarchicalFiltersKey, manager.store());
+                            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
                             result.put(hierarchicalFiltersKey, manager.store());
-                        }
+                      }
                         else
                         {
                             int numberFilters = 0;
@@ -3479,7 +3483,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                         if (smallBodyConfig.hasHierarchicalImageSearch)
                         {
-                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+//                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+//                            manager.retrieve(source.get(hierarchicalFiltersKey));
+                            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
                             manager.retrieve(source.get(hierarchicalFiltersKey));
                         }
                         else
