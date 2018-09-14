@@ -3362,35 +3362,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
                     treePaths[treeIndex] = new TreePath(nodes);
                 }
-                boolean skip = false;
-                if (!skip)
                 checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPaths(treePaths);
             }
-
-//            @Override
-//            public void retrieve(Metadata source)
-//            {
-//                List<String[]> pathStringList = source.get(treePathKey);
-//                TreePath[] treePaths = new TreePath[pathStringList.size()];
-//                for (int treeIndex = 0; treeIndex < pathStringList.size(); ++treeIndex)
-//                {
-//                    String[] pathStrings = pathStringList.get(treeIndex);
-//                    GenericMutableTreeNode<String>[] nodes = new GenericMutableTreeNode[pathStrings.length];
-//                    for (int index = 0; index < pathStrings.length; ++index)
-//                    {
-//                        nodes[index] = GenericMutableTreeNode.of(pathStrings[index]);
-//                        if (index > 0)
-//                        {
-//                            nodes[index - 1].add(nodes[index]);
-//                        }
-//                    }
-//                    treePaths[treeIndex] = new TreePath(nodes);
-//                }
-//                boolean skip = false;
-//                if (!skip)
-//                checkBoxTree.getCheckBoxTreeSelectionModel().setSelectionPath(treePaths[0]);
-//            }
-
         }
 
         public void initializeStateManager()
@@ -3443,9 +3416,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                         if (smallBodyConfig.hasHierarchicalImageSearch)
                         {
-                            // Process the user's selections
-                            smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
-                                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
                             HierarchicalSearchManager manager = new HierarchicalSearchManager();
                             result.put(hierarchicalFiltersKey, manager.store());
                         }
