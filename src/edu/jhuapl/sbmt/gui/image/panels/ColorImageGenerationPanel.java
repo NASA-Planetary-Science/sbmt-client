@@ -1,152 +1,136 @@
 package edu.jhuapl.sbmt.gui.image.panels;
 
+import java.awt.Component;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
-import edu.jhuapl.sbmt.model.image.ColorImage;
-import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
-import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 
-import nom.tam.fits.FitsException;
-
-public class ColorImageGenerationPanel extends JPanel implements TableModelListener, MouseListener, ListSelectionListener
+public class ColorImageGenerationPanel extends JPanel //implements TableModelListener, MouseListener, ListSelectionListener
 {
     private ColorImagePopupMenu colorImagePopupMenu;
-    private JList colorImagesDisplayedList;
-    private javax.swing.JButton removeColorImageButton;
-    private javax.swing.JButton removeImageCubeButton;
-    private javax.swing.JButton generateColorImageButton;
+//    private JList colorImagesDisplayedList;
+    private JButton removeColorImageButton;
+    private JButton removeImageCubeButton;
+    private JButton generateColorImageButton;
+
+    private JComboBox redComboBox;
+    private JComboBox greenComboBox;
+    private JComboBox blueComboBox;
+    private JButton redButton;
+    private JButton greenButton;
+    private JButton blueButton;
+    private JLabel redLabel;
+    private JLabel blueLabel;
+    private JLabel greenLabel;
+
+    private ImageResultsTable displayedImageList;
+
+    protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
+
 
     public ColorImageGenerationPanel()
     {
-        // TODO Auto-generated constructor stub
-        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
-        colorImagesDisplayedList = new JList();
+        setBorder(new TitledBorder(null, "Color Image Generation", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+                JPanel panel = new JPanel();
+                add(panel);
+                panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-        colorImagesDisplayedList.setModel(new DefaultListModel());
+                        redButton = new JButton("Red");
+                        panel.add(redButton);
 
+                        Component horizontalGlue_1 = Box.createHorizontalGlue();
+                        panel.add(horizontalGlue_1);
+                        redLabel = new JLabel("");
+                        panel.add(redLabel);
 
+                JPanel panel_1 = new JPanel();
+                add(panel_1);
+                panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
-        colorImagesDisplayedList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        colorImagesDisplayedList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                colorImagesDisplayedListMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                colorImagesDisplayedListMouseReleased(evt);
-            }
-        });
+                        greenButton = new JButton("Green");
+                        panel_1.add(greenButton);
 
-        removeColorImageButton.setText("Remove Color Image");
-        removeColorImageButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeColorImageButtonActionPerformed(evt);
-            }
-        });
-        jPanel18.add(removeColorImageButton);
+                        Component horizontalGlue_2 = Box.createHorizontalGlue();
+                        panel_1.add(horizontalGlue_2);
+                        greenLabel = new JLabel("");
+                        panel_1.add(greenLabel);
 
-        generateColorImageButton.setText("Generate Color Image");
-        generateColorImageButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generateColorImageButtonActionPerformed(evt);
-            }
-        });
-        jPanel18.add(generateColorImageButton);
+                JPanel panel_2 = new JPanel();
+                add(panel_2);
+                panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
 
-        redButton.setBackground(new java.awt.Color(255, 0, 0));
-        redButton.setText("Red");
-        redButton.setToolTipText("Select an image from the list above and then press this button");
-        redButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                redButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel10.add(redButton, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel10.add(redLabel, gridBagConstraints);
+                        blueButton = new JButton("Blue");
+                        panel_2.add(blueButton);
 
-        greenButton.setBackground(new java.awt.Color(0, 255, 0));
-        greenButton.setText("Green");
-        greenButton.setToolTipText("Select an image from the list above and then press this button");
-        greenButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                greenButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        jPanel10.add(greenButton, gridBagConstraints);
+                        Component horizontalGlue_3 = Box.createHorizontalGlue();
+                        panel_2.add(horizontalGlue_3);
+                        blueLabel = new JLabel("");
+                        panel_2.add(blueLabel);
 
-        blueButton.setBackground(new java.awt.Color(0, 0, 255));
-        blueButton.setText("Blue");
-        blueButton.setToolTipText("Select an image from the list above and then press this button");
-        blueButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                blueButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel10.add(blueButton, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel10.add(greenLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel10.add(blueLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel10.add(redComboBox, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel10.add(greenComboBox, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel10.add(blueComboBox, gridBagConstraints);
+        JPanel panel_3 = new JPanel();
+        add(panel_3);
+        panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
 
+        generateColorImageButton = new JButton("Generate Color Image");
+        panel_3.add(generateColorImageButton);
 
-        jScrollPane3.setViewportView(colorImagesDisplayedList);
+        Component horizontalGlue = Box.createHorizontalGlue();
+        panel_3.add(horizontalGlue);
+
+        removeColorImageButton = new JButton("Remove Color Image");
+        panel_3.add(removeColorImageButton);
+
+        JPanel panel_4 = new JPanel();
+        add(panel_4);
+        panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+
+        JScrollPane scrollPane = new JScrollPane();
+        panel_4.add(scrollPane);
+
+        scrollPane.setViewportView(displayedImageList);
+        redComboBox = new JComboBox();
+        greenComboBox = new JComboBox();
+        blueComboBox = new JComboBox();
+        redButton = new JButton();
+        greenButton = new JButton();
+        blueButton = new JButton();
+        redLabel = new JLabel();
+        greenLabel = new JLabel();
+        blueLabel = new JLabel();
+
+        mapColumnIndex=0;
+        showFootprintColumnIndex=1;
+        frusColumnIndex=2;
+        bndrColumnIndex=3;
+        idColumnIndex=4;
+        filenameColumnIndex=5;
+        dateColumnIndex=6;
+
+        displayedImageList = new ImageResultsTable();
+
+//        displayedImageList.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//        displayedImageList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+//        displayedImageList.getColumnModel().getColumn(mapColumnIndex).setPreferredWidth(31);
+//        displayedImageList.getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(35);
+//        displayedImageList.getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
+//        displayedImageList.getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
+//        displayedImageList.getColumnModel().getColumn(mapColumnIndex).setResizable(true);
+//        displayedImageList.getColumnModel().getColumn(showFootprintColumnIndex).setResizable(true);
+//        displayedImageList.getColumnModel().getColumn(frusColumnIndex).setResizable(true);
+//        displayedImageList.getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
     }
 
     public ColorImageGenerationPanel(LayoutManager layout)
@@ -168,179 +152,17 @@ public class ColorImageGenerationPanel extends JPanel implements TableModelListe
         // TODO Auto-generated constructor stub
     }
 
-
-    protected void generateColorImage(ActionEvent e)
-    {
-        ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-
-        if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
-        {
-            ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
-            try
-            {
-                DefaultListModel listModel = (DefaultListModel)colorImagesDisplayedList.getModel();
-                if (!model.containsImage(colorKey))
-                {
-                    model.addImage(colorKey);
-
-                    listModel.addElement(colorKey);
-                    int idx = listModel.size()-1;
-                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
-                    if (cellBounds != null)
-                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
-                }
-                else
-                {
-                    int idx = listModel.indexOf(colorKey);
-                    colorImagesDisplayedList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = colorImagesDisplayedList.getCellBounds(idx, idx);
-                    if (cellBounds != null)
-                        colorImagesDisplayedList.scrollRectToVisible(cellBounds);
-                }
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (FitsException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (ColorImage.NoOverlapException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "The images you selected do not overlap.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-
-    protected void removeColorImage(ActionEvent e)
-    {
-        int index = colorImagesDisplayedList.getSelectedIndex();
-        if (index >= 0)
-        {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
-            ColorImageCollection model = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-            model.removeImage(colorKey);
-
-            // Select the element in its place (unless it's the last one in which case
-            // select the previous one)
-            if (index >= colorImagesDisplayedList.getModel().getSize())
-                --index;
-            if (index >= 0)
-                colorImagesDisplayedList.setSelectionInterval(index, index);
-        }
-    }
-
-
-    private void colorImagesDisplayedListMaybeShowPopup(MouseEvent e)
-    {
-        if (e.isPopupTrigger())
-        {
-            int index = colorImagesDisplayedList.locationToIndex(e.getPoint());
-
-            if (index >= 0 && colorImagesDisplayedList.getCellBounds(index, index).contains(e.getPoint()))
-            {
-                colorImagesDisplayedList.setSelectedIndex(index);
-                ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
-                colorImagePopupMenu.setCurrentImage(colorKey);
-                colorImagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        }
-    }
-
-
-
-    private void generateColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_generateColorImageButtonActionPerformed
-    {//GEN-HEADEREND:event_generateColorImageButtonActionPerformed
-        generateColorImage(evt);
-    }//GEN-LAST:event_generateColorImageButtonActionPerformed
-
-    private void removeColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_removeColorImageButtonActionPerformed
-    {//GEN-HEADEREND:event_removeColorImageButtonActionPerformed
-        removeColorImage(evt);
-    }//GEN-LAST
-
-    private void colorImagesDisplayedListMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_colorImagesDisplayedListMousePressed
-    {//GEN-HEADEREND:event_colorImagesDisplayedListMousePressed
-        colorImagesDisplayedListMaybeShowPopup(evt);
-    }//GEN-LAST:event_colorImagesDisplayedListMousePressed
-
-    private void colorImagesDisplayedListMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_colorImagesDisplayedListMouseReleased
-    {//GEN-HEADEREND:event_colorImagesDisplayedListMouseReleased
-        colorImagesDisplayedListMaybeShowPopup(evt);
-    }//GEN-LAST:event_colorImagesDisplayedListMouseReleased
-
-    private void redButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_redButtonActionPerformed
-    {//GEN-HEADEREND:event_redButtonActionPerformed
-        int index = resultList.getSelectedRow();
-        if (index >= 0)
-        {
-            String image = imageRawResults.get(index).get(0);
-            String name = new File(image).getName();
-            image = image.substring(0,image.length()-4);
-            selectedRedKey = imageResultsTableView.createImageKey(image, sourceOfLastQuery, instrument);
-            if (!selectedRedKey.band.equals("0"))
-                name = selectedRedKey.band + ":" + name;
-            redLabel.setText(name);
-        }
-    }//GEN-LAST:event_redButtonActionPerformed
-
-    private void greenButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_greenButtonActionPerformed
-    {//GEN-HEADEREND:event_greenButtonActionPerformed
-        int index = resultList.getSelectedRow();
-        if (index >= 0)
-        {
-            String image = imageRawResults.get(index).get(0);
-            String name = new File(image).getName();
-            image = image.substring(0,image.length()-4);
-            greenLabel.setText(name);
-            selectedGreenKey = imageResultsTableView.createImageKey(image, sourceOfLastQuery, instrument);
-            if (!selectedGreenKey.band.equals("0"))
-                name = selectedGreenKey.band + ":" + name;
-            greenLabel.setText(name);
-        }
-    }//GEN-LAST:event_greenButtonActionPerformed
-
-    private void blueButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_blueButtonActionPerformed
-    {//GEN-HEADEREND:event_blueButtonActionPerformed
-        int index = resultList.getSelectedRow();
-        if (index >= 0)
-        {
-            String image = imageRawResults.get(index).get(0);
-            String name = new File(image).getName();
-            image = image.substring(0,image.length()-4);
-            blueLabel.setText(name);
-            selectedBlueKey = imageResultsTableView.createImageKey(image, sourceOfLastQuery, instrument);
-            if (!selectedBlueKey.band.equals("0"))
-                name = selectedBlueKey.band + ":" + name;
-            blueLabel.setText(name);
-        }
-    }//GEN-LAST:event_blueButtonActionPerformed
-
-    protected javax.swing.JComboBox getRedComboBox()
+    public JComboBox getRedComboBox()
     {
         return redComboBox;
     }
 
-    protected javax.swing.JComboBox getGreenComboBox()
+    public JComboBox getGreenComboBox()
     {
         return greenComboBox;
     }
 
-    protected javax.swing.JComboBox getBlueComboBox()
+    public JComboBox getBlueComboBox()
     {
         return blueComboBox;
     }
@@ -360,5 +182,98 @@ public class ColorImageGenerationPanel extends JPanel implements TableModelListe
         return null;
     }
 
+    public ColorImagePopupMenu getColorImagePopupMenu()
+    {
+        return colorImagePopupMenu;
+    }
 
+    public javax.swing.JButton getRemoveColorImageButton()
+    {
+        return removeColorImageButton;
+    }
+
+    public javax.swing.JButton getRemoveImageCubeButton()
+    {
+        return removeImageCubeButton;
+    }
+
+    public javax.swing.JButton getGenerateColorImageButton()
+    {
+        return generateColorImageButton;
+    }
+
+    public JButton getRedButton()
+    {
+        return redButton;
+    }
+
+    public JButton getGreenButton()
+    {
+        return greenButton;
+    }
+
+    public JButton getBlueButton()
+    {
+        return blueButton;
+    }
+
+    public JLabel getRedLabel()
+    {
+        return redLabel;
+    }
+
+    public JLabel getBlueLabel()
+    {
+        return blueLabel;
+    }
+
+    public JLabel getGreenLabel()
+    {
+        return greenLabel;
+    }
+
+    public void setColorImagePopupMenu(ColorImagePopupMenu colorImagePopupMenu)
+    {
+        this.colorImagePopupMenu = colorImagePopupMenu;
+    }
+
+    public JTable getDisplayedImageList()
+    {
+        return displayedImageList;
+    }
+
+    public int getMapColumnIndex()
+    {
+        return mapColumnIndex;
+    }
+
+    public int getShowFootprintColumnIndex()
+    {
+        return showFootprintColumnIndex;
+    }
+
+    public int getFrusColumnIndex()
+    {
+        return frusColumnIndex;
+    }
+
+    public int getBndrColumnIndex()
+    {
+        return bndrColumnIndex;
+    }
+
+    public int getDateColumnIndex()
+    {
+        return dateColumnIndex;
+    }
+
+    public int getIdColumnIndex()
+    {
+        return idColumnIndex;
+    }
+
+    public int getFilenameColumnIndex()
+    {
+        return filenameColumnIndex;
+    }
 }

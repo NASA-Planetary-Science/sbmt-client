@@ -10,55 +10,19 @@
  */
 package edu.jhuapl.sbmt.gui.image;
 
-import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-
-import vtk.vtkActor;
-
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.Model;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.pick.PickEvent;
-import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.panels.ColorImageGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.panels.ImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.panels.ImageResultsTableView;
-import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
-import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
-import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
-
-import nom.tam.fits.FitsException;
 
 
-public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener//, ListSelectionListener, TableModelListener, MouseListener
+public class ImagingSearchPanel extends javax.swing.JPanel //implements PropertyChangeListener//, ListSelectionListener, TableModelListener, MouseListener
 {
-    private SmallBodyViewConfig smallBodyConfig;
-    protected final ModelManager modelManager;
-    private final SbmtInfoWindowManager infoPanelManager;
-    private final SbmtSpectrumWindowManager spectrumPanelManager;
-    private final PickManager pickManager;
-    protected final Renderer renderer;
+//    private SmallBodyViewConfig smallBodyConfig;
+//    protected final ModelManager modelManager;
+//    private final SbmtInfoWindowManager infoPanelManager;
+//    private final SbmtSpectrumWindowManager spectrumPanelManager;
+//    private final PickManager pickManager;
+//    protected final Renderer renderer;
 //    private java.util.Date startDate = null;
 //    private java.util.Date endDate = null;
 //    protected IdPair resultIntervalCurrentlyShown = null;
@@ -69,16 +33,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //    private JCheckBox[] userDefinedCheckBoxes;
 //    protected CheckBoxTree checkBoxTree;
 
-    protected ImagingInstrument instrument = new ImagingInstrument();
-
-    // The source of the images of the most recently executed query
-    protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
-
-    protected List<List<String>> imageRawResults = new ArrayList<List<String>>();
+//    protected ImagingInstrument instrument = new ImagingInstrument();
+//
+//    // The source of the images of the most recently executed query
+//    protected ImageSource sourceOfLastQuery = ImageSource.SPICE;
+//
+//    protected List<List<String>> imageRawResults = new ArrayList<List<String>>();
     private ImagePopupMenu imagePopupMenu;
 //    private ColorImagePopupMenu colorImagePopupMenu;
 //    private ImageCubePopupMenu imageCubePopupMenu;
-    private boolean enableGallery;
+//    private boolean enableGallery;
 
 //    public int getCurrentSlice() { return 0; }
 //
@@ -91,85 +55,85 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     ImageCubeGenerationPanel imageCubeGenerationPanel;
     ColorImageGenerationPanel colorImageGenerationPanel;
 
-    protected ModelManager getModelManager()
-    {
-        return modelManager;
-    }
+//    protected ModelManager getModelManager()
+//    {
+//        return modelManager;
+//    }
 
     /** Creates new form ImagingSearchPanel */
-    public ImagingSearchPanel(SmallBodyViewConfig smallBodyConfig,
-            final ModelManager modelManager,
-            SbmtInfoWindowManager infoPanelManager,
-            SbmtSpectrumWindowManager spectrumPanelManager,
-            final PickManager pickManager,
-            Renderer renderer,
-            ImagingInstrument instrument)
-    {
-        this.smallBodyConfig = smallBodyConfig;
-        this.modelManager = modelManager;
-        this.infoPanelManager = infoPanelManager;
-        this.spectrumPanelManager = spectrumPanelManager;
-        this.renderer = renderer;
-        this.pickManager = pickManager;
-
-        this.instrument = instrument;
-    }
-
-    public ImagingSearchPanel init()
-    {
-        pickManager.getDefaultPicker().addPropertyChangeListener(this);
-
-        initComponents();
-
-        initExtraComponents();
-
-        populateMonochromePanel(monochromePanel);
-
-        postInitComponents(instrument);
-
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-
-        imageResultsTableView = new ImageResultsTableView(instrument, images);
-
-        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
-        boundaries.addPropertyChangeListener(this);
-        images.addPropertyChangeListener(this);
-
-//        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
-//        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
-
-//        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
-//        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
-
-//        imageCubes.addPropertyChangeListener(this);
+//    public ImagingSearchPanel(SmallBodyViewConfig smallBodyConfig,
+//            final ModelManager modelManager,
+//            SbmtInfoWindowManager infoPanelManager,
+//            SbmtSpectrumWindowManager spectrumPanelManager,
+//            final PickManager pickManager,
+//            Renderer renderer,
+//            ImagingInstrument instrument)
+//    {
+//        this.smallBodyConfig = smallBodyConfig;
+//        this.modelManager = modelManager;
+//        this.infoPanelManager = infoPanelManager;
+//        this.spectrumPanelManager = spectrumPanelManager;
+//        this.renderer = renderer;
+//        this.pickManager = pickManager;
 //
-//        imageCubesDisplayedList.addListSelectionListener(this);
+//        this.instrument = instrument;
+//    }
 
-        // Hide gallery if not APL internal mode
-        if (!Configuration.isAPLVersion())
-        {
-            viewResultsGalleryButton.setVisible(false);
-        }
-        else
-        {
-            viewResultsGalleryButton.setEnabled(enableGallery);
-        }
-
-//        // XXX: Mike Z's defaults for testing off-limb plane generation
-        //searchByFilenameCheckBox.setSelected(true);
-//        searchByNumberTextField.setText("N46055787522");
-        //searchByNumberTextField.setText("W46990353518");
-
-        // Setup hierarchical image search
-        initHierarchicalImageSearch();
-
-        final List<List<String>> emptyList = new ArrayList<>();
-            setImageResults(emptyList);
-
-
-        return this;
-    }
+//    public ImagingSearchPanel init()
+//    {
+//        pickManager.getDefaultPicker().addPropertyChangeListener(this);
+//
+//        initComponents();
+//
+//        initExtraComponents();
+//
+//        populateMonochromePanel(monochromePanel);
+//
+//        postInitComponents(instrument);
+//
+//        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+//
+//        imageResultsTableView = new ImageResultsTableView(instrument, images);
+//
+//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+//        boundaries.addPropertyChangeListener(this);
+//        images.addPropertyChangeListener(this);
+//
+////        ColorImageCollection colorImages = (ColorImageCollection)modelManager.getModel(getColorImageCollectionModelName());
+////        colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, modelManager, this);
+//
+////        ImageCubeCollection imageCubes = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
+////        imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, this);
+//
+////        imageCubes.addPropertyChangeListener(this);
+////
+////        imageCubesDisplayedList.addListSelectionListener(this);
+//
+//        // Hide gallery if not APL internal mode
+//        if (!Configuration.isAPLVersion())
+//        {
+//            viewResultsGalleryButton.setVisible(false);
+//        }
+//        else
+//        {
+//            viewResultsGalleryButton.setEnabled(enableGallery);
+//        }
+//
+////        // XXX: Mike Z's defaults for testing off-limb plane generation
+//        //searchByFilenameCheckBox.setSelected(true);
+////        searchByNumberTextField.setText("N46055787522");
+//        //searchByNumberTextField.setText("W46990353518");
+//
+//        // Setup hierarchical image search
+//        initHierarchicalImageSearch();
+//
+//        final List<List<String>> emptyList = new ArrayList<>();
+//            setImageResults(emptyList);
+//
+//
+//        return this;
+//    }
 
 //    // Sets up everything related to hierarchical image searches
 //    protected void initHierarchicalImageSearch()
@@ -194,58 +158,58 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        }
 //    }
 
-    protected void initExtraComponents()
-    {
-        // to be overridden by subclasses
-    }
+//    protected void initExtraComponents()
+//    {
+//        // to be overridden by subclasses
+//    }
+//
+//    protected void populateMonochromePanel(JPanel panel)
+//    {
+//        // to be overridden by subclasses
+//    }
 
-    protected void populateMonochromePanel(JPanel panel)
-    {
-        // to be overridden by subclasses
-    }
+//    private int getNumberOfFiltersActuallyUsed()
+//    {
+//        String[] names = smallBodyConfig.imageSearchFilterNames;
+//        if (names == null)
+//            return 0;
+//        else
+//            return names.length;
+//    }
+//
+//    private int getNumberOfUserDefinedCheckBoxesActuallyUsed()
+//    {
+//        String[] names = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+//        if (names == null)
+//            return 0;
+//        else
+//            return names.length;
+//    }
 
-    private int getNumberOfFiltersActuallyUsed()
-    {
-        String[] names = smallBodyConfig.imageSearchFilterNames;
-        if (names == null)
-            return 0;
-        else
-            return names.length;
-    }
+//    protected ModelNames getImageCollectionModelName()
+//    {
+//        return ModelNames.IMAGES;
+//    }
+//
+//    protected ModelNames getImageBoundaryCollectionModelName()
+//    {
+//        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
+//    }
+//
+//    private ModelNames getColorImageCollectionModelName()
+//    {
+//        return ModelNames.COLOR_IMAGES;
+//    }
+//
+//    protected ModelNames getImageCubeCollectionModelName()
+//    {
+//        return ModelNames.CUBE_IMAGES;
+//    }
 
-    private int getNumberOfUserDefinedCheckBoxesActuallyUsed()
-    {
-        String[] names = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-        if (names == null)
-            return 0;
-        else
-            return names.length;
-    }
-
-    protected ModelNames getImageCollectionModelName()
-    {
-        return ModelNames.IMAGES;
-    }
-
-    protected ModelNames getImageBoundaryCollectionModelName()
-    {
-        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
-    }
-
-    private ModelNames getColorImageCollectionModelName()
-    {
-        return ModelNames.COLOR_IMAGES;
-    }
-
-    protected ModelNames getImageCubeCollectionModelName()
-    {
-        return ModelNames.CUBE_IMAGES;
-    }
-
-    protected void postInitComponents(ImagingInstrument instrument)
-    {
-
-
+//    protected void postInitComponents(ImagingInstrument instrument)
+//    {
+//
+//
 //        String[] columnNames = {
 //                "Map",
 //                "Show",
@@ -420,7 +384,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //            greenButton.setVisible(false);
 //            blueButton.setVisible(false);
 //        }
-    }
+//    }
 
 //    protected javax.swing.JComboBox getRedComboBox()
 //    {
@@ -516,10 +480,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        }
 //    }
 
-      protected void setImageResults(List<List<String>> results)
-      {
-          imageResultsTableView.setImageResults(results);
-      }
+//      protected void setImageResults(List<List<String>> results)
+//      {
+//          imageResultsTableView.setImageResults(results);
+//      }
 
 //    protected void setImageResults(List<List<String>> results)
 //    {
@@ -906,46 +870,46 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //    }
 
 
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
-        {
-            PickEvent e = (PickEvent)evt.getNewValue();
-            Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof ImageCollection || model instanceof PerspectiveImageBoundaryCollection)
-            {
-                String name = null;
-
-                if (model instanceof ImageCollection)
-                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
-                else if (model instanceof PerspectiveImageBoundaryCollection)
-                    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
-
-                int idx = -1;
-                int size = imageRawResults.size();
-                for (int i=0; i<size; ++i)
-                {
-                    // Ignore extension (The name returned from getImageName or getBoundary
-                    // is the same as the first element of each list with the imageRawResults
-                    // but without the extension).
-                    String imagePath = imageRawResults.get(i).get(0);
-                    imagePath = imagePath.substring(0, imagePath.lastIndexOf("."));
-                    if (name.equals(imagePath))
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-
-                if (idx >= 0)
-                {
-                    imageResultsTableView.getResultList().setRowSelectionInterval(idx, idx);
-                    Rectangle cellBounds = imageResultsTableView.getResultList().getCellRect(idx, 0, true);
-                    if (cellBounds != null)
-                        imageResultsTableView.getResultList().scrollRectToVisible(cellBounds);
-                }
-            }
-        }
+//    public void propertyChange(PropertyChangeEvent evt)
+//    {
+//        if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
+//        {
+//            PickEvent e = (PickEvent)evt.getNewValue();
+//            Model model = modelManager.getModel(e.getPickedProp());
+//            if (model instanceof ImageCollection || model instanceof PerspectiveImageBoundaryCollection)
+//            {
+//                String name = null;
+//
+//                if (model instanceof ImageCollection)
+//                    name = ((ImageCollection)model).getImageName((vtkActor)e.getPickedProp());
+//                else if (model instanceof PerspectiveImageBoundaryCollection)
+//                    name = ((PerspectiveImageBoundaryCollection)model).getBoundaryName((vtkActor)e.getPickedProp());
+//
+//                int idx = -1;
+//                int size = imageRawResults.size();
+//                for (int i=0; i<size; ++i)
+//                {
+//                    // Ignore extension (The name returned from getImageName or getBoundary
+//                    // is the same as the first element of each list with the imageRawResults
+//                    // but without the extension).
+//                    String imagePath = imageRawResults.get(i).get(0);
+//                    imagePath = imagePath.substring(0, imagePath.lastIndexOf("."));
+//                    if (name.equals(imagePath))
+//                    {
+//                        idx = i;
+//                        break;
+//                    }
+//                }
+//
+//                if (idx >= 0)
+//                {
+//                    imageResultsTableView.getResultList().setRowSelectionInterval(idx, idx);
+//                    Rectangle cellBounds = imageResultsTableView.getResultList().getCellRect(idx, 0, true);
+//                    if (cellBounds != null)
+//                        imageResultsTableView.getResultList().scrollRectToVisible(cellBounds);
+//                }
+//            }
+//        }
 //        else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
 //        {
 //            imageResultsTableView.getResultList().getModel().removeTableModelListener(this);
@@ -979,18 +943,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //            // Repaint the list in case the boundary colors has changed
 //            imageResultsTableView.getResultList().repaint();
 //        }
-    }
+//    }
 
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
-
+//    @SuppressWarnings("unchecked")
+//    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+//    private void initComponents() {
+//        java.awt.GridBagConstraints gridBagConstraints;
+//
 //        jScrollPane2 = new javax.swing.JScrollPane();
 //        jPanel8 = new javax.swing.JPanel();
 //        jPanel1 = new javax.swing.JPanel();
@@ -1185,11 +1149,11 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        gridBagConstraints.insets = new java.awt.Insets(6, 6, 0, 0);
 //        jPanel1.add(sourceLabel, gridBagConstraints);
 //
-////        sourceComboBox.addItemListener(new java.awt.event.ItemListener() {
-////            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-////                sourceComboBoxItemStateChanged(evt);
-////            }
-////        });
+//        sourceComboBox.addItemListener(new java.awt.event.ItemListener() {
+//            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+//                sourceComboBoxItemStateChanged(evt);
+//            }
+//        });
 //        gridBagConstraints = new java.awt.GridBagConstraints();
 //        gridBagConstraints.gridx = 1;
 //        gridBagConstraints.gridy = 0;
@@ -2262,7 +2226,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        jScrollPane2.setViewportView(jPanel8);
 //
 //        add(jScrollPane2, java.awt.BorderLayout.CENTER);
-    }// </editor-fold>//GEN-END:initComponents
+//    }// </editor-fold>//GEN-END:initComponents
 
 //    private void formComponentHidden(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_formComponentHidden
 //    {//GEN-HEADEREND:event_formComponentHidden
@@ -2953,47 +2917,47 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        imageCubesDisplayedListMaybeShowPopup(evt);
 //    }//GEN-LAST:event_imageCubesDisplayedListMouseReleased
 
-    private void viewResultsGalleryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultsGalleryButtonActionPerformed
-        // Check if image search results are valid and nonempty
-        if(imageRawResults != null)
-        {
-            String dataPath = instrument.searchQuery.getDataPath();
-            String galleryPath = instrument.searchQuery.getGalleryPath();
-            // Create list of gallery and preview image names based on results
-            List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
-            for(List<String> res : imageRawResults)
-            {
-                String s = "/" + res.get(0).replace(dataPath, galleryPath);
-                // Create entry for image gallery
-                galleryEntries.add(new ImageGalleryEntry(
-                    res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                    s+".jpeg", s+"-small.jpeg"));
-            }
-
-            // Don't bother creating a gallery if empty
-            if(galleryEntries.isEmpty())
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "Unable to generate gallery.  Gallery images corresponding to search results are not registered.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Create preview gallery based on search results
-            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
-
-            // Show gallery preview in browser
-            try
-            {
-                java.awt.Desktop.getDesktop().browse(new File(galleryURL).toURI());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }//GEN-LAST:event_viewResultsGalleryButtonActionPerformed
+//    private void viewResultsGalleryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewResultsGalleryButtonActionPerformed
+//        // Check if image search results are valid and nonempty
+//        if(imageRawResults != null)
+//        {
+//            String dataPath = instrument.searchQuery.getDataPath();
+//            String galleryPath = instrument.searchQuery.getGalleryPath();
+//            // Create list of gallery and preview image names based on results
+//            List<ImageGalleryEntry> galleryEntries = new LinkedList<ImageGalleryEntry>();
+//            for(List<String> res : imageRawResults)
+//            {
+//                String s = "/" + res.get(0).replace(dataPath, galleryPath);
+//                // Create entry for image gallery
+//                galleryEntries.add(new ImageGalleryEntry(
+//                    res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
+//                    s+".jpeg", s+"-small.jpeg"));
+//            }
+//
+//            // Don't bother creating a gallery if empty
+//            if(galleryEntries.isEmpty())
+//            {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                        "Unable to generate gallery.  Gallery images corresponding to search results are not registered.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//
+//            // Create preview gallery based on search results
+//            String galleryURL = ImageGalleryGenerator.generateGallery(galleryEntries);
+//
+//            // Show gallery preview in browser
+//            try
+//            {
+//                java.awt.Desktop.getDesktop().browse(new File(galleryURL).toURI());
+//            }
+//            catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//        }
+//    }//GEN-LAST:event_viewResultsGalleryButtonActionPerformed
 
 
 //    protected boolean imageVisible(ImageKey key)
@@ -3001,74 +2965,74 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //        return true;
 //    }
 
-    protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
-    {
-        images.addImage(key);
-//        if (!imageVisible(key))
-//        images.getImage(key).setVisible(false);
-    }
-
-    protected void loadImages(String name)
-    {
-
-        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
-        {
-            try
-            {
-                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-                if (!images.containsImage(key))
-                {
-                    loadImage(key, images);
-                }
-            }
-            catch (Exception e1) {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                e1.printStackTrace();
-            }
-
-        }
-   }
-
-    protected void unloadImage(ImageKey key, ImageCollection images)
-    {
-        images.removeImage(key);
-
-    }
-
-    protected void unloadImages(String name)
-    {
-
-        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
-        {
-            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-            unloadImage(key, images);
-        }
-   }
+//    protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+//    {
+//        images.addImage(key);
+////        if (!imageVisible(key))
+////        images.getImage(key).setVisible(false);
+//    }
+//
+//    protected void loadImages(String name)
+//    {
+//
+//        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
+//        for (ImageKey key : keys)
+//        {
+//            try
+//            {
+//                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+//                if (!images.containsImage(key))
+//                {
+//                    loadImage(key, images);
+//                }
+//            }
+//            catch (Exception e1) {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                        "There was an error mapping the image.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//
+//                e1.printStackTrace();
+//            }
+//
+//        }
+//   }
+//
+//    protected void unloadImage(ImageKey key, ImageCollection images)
+//    {
+//        images.removeImage(key);
+//
+//    }
+//
+//    protected void unloadImages(String name)
+//    {
+//
+//        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
+//        for (ImageKey key : keys)
+//        {
+//            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+//            unloadImage(key, images);
+//        }
+//   }
 
 //    public javax.swing.JList getImageCubesDisplayedList()
 //    {
 //        return imageCubesDisplayedList;
 //    }
 
-    protected void setImageVisibility(String name, boolean visible)
-    {
-        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        for (ImageKey key : keys)
-        {
-            if (images.containsImage(key))
-            {
-                Image image = images.getImage(key);
-                image.setVisible(visible);
-            }
-        }
-    }
+//    protected void setImageVisibility(String name, boolean visible)
+//    {
+//        List<ImageKey> keys = imageResultsTableView.createImageKeys(name, sourceOfLastQuery, instrument);
+//        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+//        for (ImageKey key : keys)
+//        {
+//            if (images.containsImage(key))
+//            {
+//                Image image = images.getImage(key);
+//                image.setVisible(visible);
+//            }
+//        }
+//    }
 
 //    @Override
 //    public void tableChanged(TableModelEvent e)
@@ -3252,10 +3216,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //            return numberOfBoundariesComboBox;
 //        }
 
-        protected JTable getResultList()
-        {
-            return imageResultsTableView.getResultList();
-        }
+//        protected JTable getResultList()
+//        {
+//            return imageResultsTableView.getResultList();
+//        }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
 //    private javax.swing.JButton blueButton;
