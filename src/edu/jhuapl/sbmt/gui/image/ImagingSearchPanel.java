@@ -215,16 +215,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             viewResultsGalleryButton.setEnabled(enableGallery);
         }
 
-//        // XXX: Mike Z's defaults for testing off-limb plane generation
+        //        // XXX: Mike Z's defaults for testing off-limb plane generation
         //searchByFilenameCheckBox.setSelected(true);
-//        searchByNumberTextField.setText("N46055787522");
+        //        searchByNumberTextField.setText("N46055787522");
         //searchByNumberTextField.setText("W46990353518");
 
         // Setup hierarchical image search
         initHierarchicalImageSearch();
 
         final List<List<String>> emptyList = new ArrayList<>();
-            setImageResults(emptyList);
+        setImageResults(emptyList);
 
         initializeStateManager();
 
@@ -535,7 +535,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                    //                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                     ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                     imageKeys.add(key);
                 }
@@ -606,7 +606,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = imageRawResults.get(i).get(0);
-//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
@@ -703,17 +703,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 //String boundaryName = currentImage.substring(0,currentImage.length()-4) + "_DDR.LBL";
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
 
-//                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
+                //                ImageKey key = new ImageKey(boundaryName, sourceOfLastQuery, instrument);
 
                 ImageKey key = createImageKey(boundaryName, sourceOfLastQuery, instrument);
                 model.addBoundary(key);
 
-//                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
-//                for (ImageKey key : keys)
-//                {
-//                    key.instrument = this.instrument;
-//                    model.addBoundary(key);
-//                }
+                //                List<ImageKey> keys = createImageKeys(boundaryName, sourceOfLastQuery, instrument);
+                //                for (ImageKey key : keys)
+                //                {
+                //                    key.instrument = this.instrument;
+                //                    model.addBoundary(key);
+                //                }
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
@@ -819,7 +819,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             String name = imageRawResults.get(selectedIndex).get(0);
             ImageKey selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-//            System.out.println("Key: " + selectedKey.name);
+            //            System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
             if(selectedImage == null)
@@ -834,7 +834,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             // "first key" is indicated by the first image with a visible frustum
             if (selectedImage.isFrustumShowing())
-             {
+            {
                 if(firstKey == null)
                 {
                     firstKey = selectedKey;
@@ -845,8 +845,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 }
             }
 
-//            if (!selectedRedKey.band.equals("0"))
-//                imageName = selectedKey.band + ":" + imageName;
+            //            if (!selectedRedKey.band.equals("0"))
+            //                imageName = selectedKey.band + ":" + imageName;
         }
 
         if(selectedKeys.size() == 0)
@@ -1012,7 +1012,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             for (int i=0; i<size; ++i)
             {
                 String name = imageRawResults.get(i).get(0);
-//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
@@ -1806,18 +1806,18 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         jPanel6.add(resultsLabel, gridBagConstraints);
 
         resultList.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+                new Object [][] {
 
-            },
-            new String [] {
-                "", "Id", "Filename", "Date"
-            }
-        ) {
+                },
+                new String [] {
+                        "", "Id", "Filename", "Date"
+                }
+                ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                    java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                    false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -2645,8 +2645,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
             List<List<String>> results = null;
-//            System.out.println(
-//                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
+            //            System.out.println(
+            //                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
             if (instrument.searchQuery instanceof FixedListQuery)
             {
                 FixedListQuery query = (FixedListQuery) instrument.searchQuery;
@@ -2666,96 +2666,96 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
 
                 results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
-           }
+            }
 
             //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
-//            if (instrument.spectralMode == SpectralMode.MULTI)
-//            {
-//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
-//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
-//                        searchField, null,
-//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
-//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
-//                        sumOfProductsSearch, camerasSelected, filtersSelected,
-//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
-//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
-//
-//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
-//
-//                results = instrument.searchQuery.runQuery(
-//                    "",
-//                    startDateJoda,
-//                    endDateJoda,
-//                    sumOfProductsSearch,
-//                    camerasSelected,
-//                    filtersSelected,
-//                    Double.parseDouble(fromDistanceTextField.getText()),
-//                    Double.parseDouble(toDistanceTextField.getText()),
-//                    Double.parseDouble(fromResolutionTextField.getText()),
-//                    Double.parseDouble(toResolutionTextField.getText()),
-//                    searchField,
-//                    null,
-//                    Double.parseDouble(fromIncidenceTextField.getText()),
-//                    Double.parseDouble(toIncidenceTextField.getText()),
-//                    Double.parseDouble(fromEmissionTextField.getText()),
-//                    Double.parseDouble(toEmissionTextField.getText()),
-//                    Double.parseDouble(fromPhaseTextField.getText()),
-//                    Double.parseDouble(toPhaseTextField.getText()),
-//                    cubeList,
-//                    imageSource,
-//                    hasLimbComboBox.getSelectedIndex());
-//            }
-//            else if (instrument.spectralMode == SpectralMode.HYPER)
-//            {
-//                results = instrument.searchQuery.runQuery(
-//                    "",
-//                    startDateJoda,
-//                    endDateJoda,
-//                    sumOfProductsSearch,
-//                    camerasSelected,
-//                    filtersSelected,
-//                    Double.parseDouble(fromDistanceTextField.getText()),
-//                    Double.parseDouble(toDistanceTextField.getText()),
-//                    Double.parseDouble(fromResolutionTextField.getText()),
-//                    Double.parseDouble(toResolutionTextField.getText()),
-//                    searchField,
-//                    null,
-//                    Double.parseDouble(fromIncidenceTextField.getText()),
-//                    Double.parseDouble(toIncidenceTextField.getText()),
-//                    Double.parseDouble(fromEmissionTextField.getText()),
-//                    Double.parseDouble(toEmissionTextField.getText()),
-//                    Double.parseDouble(fromPhaseTextField.getText()),
-//                    Double.parseDouble(toPhaseTextField.getText()),
-//                    cubeList,
-//                    imageSource,
-//                    hasLimbComboBox.getSelectedIndex());
-//            }
-//            else
-//            {
-//                results = instrument.searchQuery.runQuery(
-//                    "",
-//                    startDateJoda,
-//                    endDateJoda,
-//                    sumOfProductsSearch,
-//                    camerasSelected,
-//                    filtersSelected,
-//                    Double.parseDouble(fromDistanceTextField.getText()),
-//                    Double.parseDouble(toDistanceTextField.getText()),
-//                    Double.parseDouble(fromResolutionTextField.getText()),
-//                    Double.parseDouble(toResolutionTextField.getText()),
-//                    searchField,
-//                    null,
-//                    Double.parseDouble(fromIncidenceTextField.getText()),
-//                    Double.parseDouble(toIncidenceTextField.getText()),
-//                    Double.parseDouble(fromEmissionTextField.getText()),
-//                    Double.parseDouble(toEmissionTextField.getText()),
-//                    Double.parseDouble(fromPhaseTextField.getText()),
-//                    Double.parseDouble(toPhaseTextField.getText()),
-//                    cubeList,
-//                    imageSource,
-//                    hasLimbComboBox.getSelectedIndex());
-//            }
+            //            if (instrument.spectralMode == SpectralMode.MULTI)
+            //            {
+            //                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+            //                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+            //                        searchField, null,
+            //                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+            //                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+            //                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+            //                        sumOfProductsSearch, camerasSelected, filtersSelected,
+            //                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+            //                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+            //
+            //                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+            //
+            //                results = instrument.searchQuery.runQuery(
+            //                    "",
+            //                    startDateJoda,
+            //                    endDateJoda,
+            //                    sumOfProductsSearch,
+            //                    camerasSelected,
+            //                    filtersSelected,
+            //                    Double.parseDouble(fromDistanceTextField.getText()),
+            //                    Double.parseDouble(toDistanceTextField.getText()),
+            //                    Double.parseDouble(fromResolutionTextField.getText()),
+            //                    Double.parseDouble(toResolutionTextField.getText()),
+            //                    searchField,
+            //                    null,
+            //                    Double.parseDouble(fromIncidenceTextField.getText()),
+            //                    Double.parseDouble(toIncidenceTextField.getText()),
+            //                    Double.parseDouble(fromEmissionTextField.getText()),
+            //                    Double.parseDouble(toEmissionTextField.getText()),
+            //                    Double.parseDouble(fromPhaseTextField.getText()),
+            //                    Double.parseDouble(toPhaseTextField.getText()),
+            //                    cubeList,
+            //                    imageSource,
+            //                    hasLimbComboBox.getSelectedIndex());
+            //            }
+            //            else if (instrument.spectralMode == SpectralMode.HYPER)
+            //            {
+            //                results = instrument.searchQuery.runQuery(
+            //                    "",
+            //                    startDateJoda,
+            //                    endDateJoda,
+            //                    sumOfProductsSearch,
+            //                    camerasSelected,
+            //                    filtersSelected,
+            //                    Double.parseDouble(fromDistanceTextField.getText()),
+            //                    Double.parseDouble(toDistanceTextField.getText()),
+            //                    Double.parseDouble(fromResolutionTextField.getText()),
+            //                    Double.parseDouble(toResolutionTextField.getText()),
+            //                    searchField,
+            //                    null,
+            //                    Double.parseDouble(fromIncidenceTextField.getText()),
+            //                    Double.parseDouble(toIncidenceTextField.getText()),
+            //                    Double.parseDouble(fromEmissionTextField.getText()),
+            //                    Double.parseDouble(toEmissionTextField.getText()),
+            //                    Double.parseDouble(fromPhaseTextField.getText()),
+            //                    Double.parseDouble(toPhaseTextField.getText()),
+            //                    cubeList,
+            //                    imageSource,
+            //                    hasLimbComboBox.getSelectedIndex());
+            //            }
+            //            else
+            //            {
+            //                results = instrument.searchQuery.runQuery(
+            //                    "",
+            //                    startDateJoda,
+            //                    endDateJoda,
+            //                    sumOfProductsSearch,
+            //                    camerasSelected,
+            //                    filtersSelected,
+            //                    Double.parseDouble(fromDistanceTextField.getText()),
+            //                    Double.parseDouble(toDistanceTextField.getText()),
+            //                    Double.parseDouble(fromResolutionTextField.getText()),
+            //                    Double.parseDouble(toResolutionTextField.getText()),
+            //                    searchField,
+            //                    null,
+            //                    Double.parseDouble(fromIncidenceTextField.getText()),
+            //                    Double.parseDouble(toIncidenceTextField.getText()),
+            //                    Double.parseDouble(fromEmissionTextField.getText()),
+            //                    Double.parseDouble(toEmissionTextField.getText()),
+            //                    Double.parseDouble(fromPhaseTextField.getText()),
+            //                    Double.parseDouble(toPhaseTextField.getText()),
+            //                    cubeList,
+            //                    imageSource,
+            //                    hasLimbComboBox.getSelectedIndex());
+            //            }
 
             // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing
@@ -2766,12 +2766,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 if (instrument.searchQuery instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)instrument.searchQuery;
-//                    FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
-//                    if (!info.isExistsOnServer().equals(YesOrNo.YES))
-//                    {
-//                        System.out.println("Could not find " + imageListName + ". Using imagelist.txt instead");
-//                        imageListName = "imagelist.txt";
-//                    }
+                    //                    FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
+                    //                    if (!info.isExistsOnServer().equals(YesOrNo.YES))
+                    //                    {
+                    //                        System.out.println("Could not find " + imageListName + ". Using imagelist.txt instead");
+                    //                        imageListName = "imagelist.txt";
+                    //                    }
                     resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist" /*imageListName*/, "images", query.getRootPath(), imageSource)).getResultlist();
                 }
                 else
@@ -2787,33 +2787,33 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                             cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
 
-                        resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
+                    resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
 
                 }
 
 
-//                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
-//                        "",
-//                        startDateJoda,
-//                        endDateJoda,
-//                        sumOfProductsSearch,
-//                        camerasSelected,
-//                        filtersSelected,
-//                        Double.parseDouble(fromDistanceTextField.getText()),
-//                        Double.parseDouble(toDistanceTextField.getText()),
-//                        Double.parseDouble(fromResolutionTextField.getText()),
-//                        Double.parseDouble(toResolutionTextField.getText()),
-//                        searchField,
-//                        null,
-//                        Double.parseDouble(fromIncidenceTextField.getText()),
-//                        Double.parseDouble(toIncidenceTextField.getText()),
-//                        Double.parseDouble(fromEmissionTextField.getText()),
-//                        Double.parseDouble(toEmissionTextField.getText()),
-//                        Double.parseDouble(fromPhaseTextField.getText()),
-//                        Double.parseDouble(toPhaseTextField.getText()),
-//                        cubeList,
-//                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
-//                        hasLimbComboBox.getSelectedIndex());
+                //                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
+                //                        "",
+                //                        startDateJoda,
+                //                        endDateJoda,
+                //                        sumOfProductsSearch,
+                //                        camerasSelected,
+                //                        filtersSelected,
+                //                        Double.parseDouble(fromDistanceTextField.getText()),
+                //                        Double.parseDouble(toDistanceTextField.getText()),
+                //                        Double.parseDouble(fromResolutionTextField.getText()),
+                //                        Double.parseDouble(toResolutionTextField.getText()),
+                //                        searchField,
+                //                        null,
+                //                        Double.parseDouble(fromIncidenceTextField.getText()),
+                //                        Double.parseDouble(toIncidenceTextField.getText()),
+                //                        Double.parseDouble(fromEmissionTextField.getText()),
+                //                        Double.parseDouble(toEmissionTextField.getText()),
+                //                        Double.parseDouble(fromPhaseTextField.getText()),
+                //                        Double.parseDouble(toPhaseTextField.getText()),
+                //                        cubeList,
+                //                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
+                //                        hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
                 for (int i=0; i<numOtherResults; ++i)
@@ -3015,8 +3015,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 String s = "/" + res.get(0).replace(dataPath, galleryPath);
                 // Create entry for image gallery
                 galleryEntries.add(new ImageGalleryEntry(
-                    res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
-                    s+".jpeg", s+"-small.jpeg"));
+                        res.get(0).substring(res.get(0).lastIndexOf("/") + 1),
+                        s+".jpeg", s+"-small.jpeg"));
             }
 
             // Don't bother creating a gallery if empty
@@ -3045,16 +3045,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     }//GEN-LAST:event_viewResultsGalleryButtonActionPerformed
 
 
-//    protected boolean imageVisible(ImageKey key)
-//    {
-//        return true;
-//    }
+    //    protected boolean imageVisible(ImageKey key)
+    //    {
+    //        return true;
+    //    }
 
     protected void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
         images.addImage(key);
-//        if (!imageVisible(key))
-//        images.getImage(key).setVisible(false);
+        //        if (!imageVisible(key))
+        //        images.getImage(key).setVisible(false);
     }
 
     protected void loadImages(String name)
@@ -3081,7 +3081,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             }
 
         }
-   }
+    }
 
     protected void unloadImage(ImageKey key, ImageCollection images)
     {
@@ -3098,7 +3098,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             unloadImage(key, images);
         }
-   }
+    }
 
     public javax.swing.JList getImageCubesDisplayedList()
     {
@@ -3191,7 +3191,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             String name = imageRawResults.get(row).get(0);
-//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (model.containsBoundary(key))
             {
@@ -3238,7 +3238,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if (column == showFootprintColumnIndex || column == frusColumnIndex)
             {
                 String name = imageRawResults.get(row).get(0);
-//                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 return images.containsImage(key);
@@ -3258,300 +3258,300 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-//    class TableMouseHandler extends MouseAdapter
-//    {
-        public void mousePressed(MouseEvent e)
-        {
-            resultsListMaybeShowPopup(e);
-            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
-        }
+    //    class TableMouseHandler extends MouseAdapter
+    //    {
+    public void mousePressed(MouseEvent e)
+    {
+        resultsListMaybeShowPopup(e);
+        saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
+    }
 
-        public void mouseReleased(MouseEvent e)
-        {
-            resultsListMaybeShowPopup(e);
-            saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
-        }
+    public void mouseReleased(MouseEvent e)
+    {
+        resultsListMaybeShowPopup(e);
+        saveSelectedImageListButton.setEnabled(resultList.getSelectedRowCount() > 0);
+    }
 
 
-//    }
+    //    }
 
     @Override
-        public void mouseClicked(MouseEvent arg0)
-        {
-            // TODO Auto-generated method stub
+    public void mouseClicked(MouseEvent arg0)
+    {
+        // TODO Auto-generated method stub
 
-        }
+    }
 
-        @Override
-        public void mouseEntered(MouseEvent arg0)
-        {
-            // TODO Auto-generated method stub
+    @Override
+    public void mouseEntered(MouseEvent arg0)
+    {
+        // TODO Auto-generated method stub
 
-        }
+    }
 
-        @Override
-        public void mouseExited(MouseEvent arg0)
-        {
-            // TODO Auto-generated method stub
+    @Override
+    public void mouseExited(MouseEvent arg0)
+    {
+        // TODO Auto-generated method stub
 
-        }
+    }
 
-        protected JComboBox getNumberOfBoundariesComboBox()
-        {
-            return numberOfBoundariesComboBox;
-        }
+    protected JComboBox getNumberOfBoundariesComboBox()
+    {
+        return numberOfBoundariesComboBox;
+    }
 
-        protected JTable getResultList()
-        {
-            return resultList;
-        }
+    protected JTable getResultList()
+    {
+        return resultList;
+    }
 
-        public void initializeStateManager()
-        {
-            if (stateManager == null) {
-                stateManager = new MetadataManager() {
-                    final Key<String> pointingKey = Key.of("pointing");
-                    final Key<Date> startDateKey = Key.of("startDate");
-                    final Key<Date> endDateKey = Key.of("endDate");
-                    final Key<String> limbSelectedKey = Key.of("limb");
-                    final Key<Double> fromDistanceKey = Key.of("fromDistance");
-                    final Key<Double> toDistanceKey = Key.of("toDistance");
-                    final Key<Double> fromResolutionKey = Key.of("fromResolution");
-                    final Key<Double> toResolutionKey = Key.of("toResolution");
-                    final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
-                    final Key<Double> toIncidenceKey = Key.of("toIncidence");
-                    final Key<Double> fromEmissionKey = Key.of("fromEmission");
-                    final Key<Double> toEmissionKey = Key.of("toEmission");
-                    final Key<Double> fromPhaseKey = Key.of("fromPhase");
-                    final Key<Double> toPhaseKey = Key.of("toPhase");
-                    final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
-                    final Key<String> searchByFileNameKey = Key.of("searchByFileName");
-                    final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
-                    final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
-                    final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
-                    final Key<List<String[]>> imageListKey = Key.of("imageList");
+    public void initializeStateManager()
+    {
+        if (stateManager == null) {
+            stateManager = new MetadataManager() {
+                final Key<String> pointingKey = Key.of("pointing");
+                final Key<Date> startDateKey = Key.of("startDate");
+                final Key<Date> endDateKey = Key.of("endDate");
+                final Key<String> limbSelectedKey = Key.of("limb");
+                final Key<Double> fromDistanceKey = Key.of("fromDistance");
+                final Key<Double> toDistanceKey = Key.of("toDistance");
+                final Key<Double> fromResolutionKey = Key.of("fromResolution");
+                final Key<Double> toResolutionKey = Key.of("toResolution");
+                final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
+                final Key<Double> toIncidenceKey = Key.of("toIncidence");
+                final Key<Double> fromEmissionKey = Key.of("fromEmission");
+                final Key<Double> toEmissionKey = Key.of("toEmission");
+                final Key<Double> fromPhaseKey = Key.of("fromPhase");
+                final Key<Double> toPhaseKey = Key.of("toPhase");
+                final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
+                final Key<String> searchByFileNameKey = Key.of("searchByFileName");
+                final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
+                final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
+                final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
+                final Key<List<String[]>> imageListKey = Key.of("imageList");
 
-                    @Override
-                    public Metadata store()
-                    {
-                        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-
-                        ImageSource selectedItem = (ImageSource) sourceComboBox.getSelectedItem();
-                        result.put(pointingKey, selectedItem != null ? selectedItem.name() : null);
-
-                        result.put(startDateKey, (Date) startSpinner.getValue());
-                        result.put(endDateKey, (Date) endSpinner.getValue());
-                        result.put(limbSelectedKey, (String) hasLimbComboBox.getSelectedItem());
-                        result.put(fromDistanceKey, Double.valueOf(fromDistanceTextField.getText()));
-                        result.put(toDistanceKey, Double.valueOf(toDistanceTextField.getText()));
-                        result.put(fromResolutionKey, Double.valueOf(fromResolutionTextField.getText()));
-                        result.put(toResolutionKey, Double.valueOf(toResolutionTextField.getText()));
-                        result.put(fromIncidenceKey, Double.valueOf(fromIncidenceTextField.getText()));
-                        result.put(toIncidenceKey, Double.valueOf(toIncidenceTextField.getText()));
-                        result.put(fromEmissionKey, Double.valueOf(fromEmissionTextField.getText()));
-                        result.put(toEmissionKey, Double.valueOf(toEmissionTextField.getText()));
-                        result.put(fromPhaseKey, Double.valueOf(fromPhaseTextField.getText()));
-                        result.put(toPhaseKey, Double.valueOf(toPhaseTextField.getText()));
-                        result.put(searchByFileNameEnabledKey, searchByFilenameCheckBox.isSelected());
-                        result.put(searchByFileNameKey, searchByFilenameTextField.getText());
-
-                        if (smallBodyConfig.hasHierarchicalImageSearch)
-                        {
-//                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
-//                            result.put(hierarchicalFiltersKey, manager.store());
-                            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                            result.put(imageTreeFilterKey, manager.store());
-                        }
-                        else
-                        {
-                            int numberFilters = 0;
-
-                            // Regular filters.
-                            numberFilters = getNumberOfFiltersActuallyUsed();
-                            if (numberFilters > 0)
-                            {
-                                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-
-                                for (int index = 0; index < numberFilters; ++index)
-                                {
-                                    filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
-                                }
-                                result.put(filterMapKey, filterBuilder.build());
-                            }
-
-                            // User-defined checkboxes.
-                            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                            if (numberFilters > 0)
-                            {
-                                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-
-                                for (int index = 0; index < numberFilters; ++index)
-                                {
-                                    filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
-                                }
-                                result.put(userCheckBoxMapKey, filterBuilder.build());
-                            }
-                        }
-
-                        result.put(imageListKey, listToOutputFormat(imageRawResults));
-                        return result;
-                    }
-
-                    @Override
-                    public void retrieve(Metadata source)
-                    {
-                        String pointing = source.get(pointingKey);
-                        sourceComboBox.setSelectedItem(pointing != null ? ImageSource.valueOf(pointing) : null);
-
-                        startSpinner.setValue(source.get(startDateKey));
-                        endSpinner.setValue(source.get(endDateKey));
-                        hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
-                        fromDistanceTextField.setValue(source.get(fromDistanceKey));
-                        toDistanceTextField.setValue(source.get(toDistanceKey));
-                        fromResolutionTextField.setValue(source.get(fromResolutionKey));
-                        toResolutionTextField.setValue(source.get(toResolutionKey));
-                        fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
-                        toIncidenceTextField.setValue(source.get(toIncidenceKey));
-                        fromEmissionTextField.setValue(source.get(fromEmissionKey));
-                        toEmissionTextField.setValue(source.get(toEmissionKey));
-                        fromPhaseTextField.setValue(source.get(fromPhaseKey));
-                        toPhaseTextField.setValue(source.get(toPhaseKey));
-                        searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
-                        searchByFilenameTextField.setText(source.get(searchByFileNameKey));
-
-                        if (smallBodyConfig.hasHierarchicalImageSearch)
-                        {
-//                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
-//                            manager.retrieve(source.get(hierarchicalFiltersKey));
-                            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                            manager.retrieve(source.get(imageTreeFilterKey));
-                        }
-                        else
-                        {
-                            int numberFilters = 0;
-
-                            // Regular filters.
-                            numberFilters = getNumberOfFiltersActuallyUsed();
-                            if (numberFilters > 0)
-                            {
-                                Map<String, Boolean> filterMap = source.get(filterMapKey);
-                                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-                                for (int index = 0; index < numberFilters; ++index)
-                                {
-                                    Boolean filterSelected = filterMap.get(filterNames[index]);
-                                    if (filterSelected != null)
-                                    {
-                                        filterCheckBoxes[index].setSelected(filterSelected);
-                                    }
-                                }
-                            }
-
-                            // User-defined checkboxes.
-                            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                            if (numberFilters > 0)
-                            {
-                                Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
-                                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-                                for (int index = 0; index < numberFilters; ++index)
-                                {
-                                    Boolean filterSelected = filterMap.get(filterNames[index]);
-                                    if (filterSelected != null)
-                                    {
-                                        userDefinedCheckBoxes[index].setSelected(filterSelected);
-                                    }
-                                }
-                            }
-                        }
-                        List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
-                        setImageResults(imageList);
-                    }
-                };
-            }
-        }
-
-        public MetadataManager getMetadataManager()
-        {
-            return stateManager;
-        }
-
-        private List<String[]> listToOutputFormat(List<List<String>> inputListList)
-        {
-            // In case there is an exception when reading the time from the input file.
-            Date now = new Date();
-
-            List<String[]> outputArrayList = new ArrayList<>(inputListList.size());
-            for (List<String> inputList : inputListList)
-            {
-                String[] array = new String[inputList.size()];
-                for (int index = 0; index < inputList.size(); ++index)
+                @Override
+                public Metadata store()
                 {
-                    if (index == 0)
+                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+
+                    ImageSource selectedItem = (ImageSource) sourceComboBox.getSelectedItem();
+                    result.put(pointingKey, selectedItem != null ? selectedItem.name() : null);
+
+                    result.put(startDateKey, (Date) startSpinner.getValue());
+                    result.put(endDateKey, (Date) endSpinner.getValue());
+                    result.put(limbSelectedKey, (String) hasLimbComboBox.getSelectedItem());
+                    result.put(fromDistanceKey, Double.valueOf(fromDistanceTextField.getText()));
+                    result.put(toDistanceKey, Double.valueOf(toDistanceTextField.getText()));
+                    result.put(fromResolutionKey, Double.valueOf(fromResolutionTextField.getText()));
+                    result.put(toResolutionKey, Double.valueOf(toResolutionTextField.getText()));
+                    result.put(fromIncidenceKey, Double.valueOf(fromIncidenceTextField.getText()));
+                    result.put(toIncidenceKey, Double.valueOf(toIncidenceTextField.getText()));
+                    result.put(fromEmissionKey, Double.valueOf(fromEmissionTextField.getText()));
+                    result.put(toEmissionKey, Double.valueOf(toEmissionTextField.getText()));
+                    result.put(fromPhaseKey, Double.valueOf(fromPhaseTextField.getText()));
+                    result.put(toPhaseKey, Double.valueOf(toPhaseTextField.getText()));
+                    result.put(searchByFileNameEnabledKey, searchByFilenameCheckBox.isSelected());
+                    result.put(searchByFileNameKey, searchByFilenameTextField.getText());
+
+                    if (smallBodyConfig.hasHierarchicalImageSearch)
                     {
-                        array[index] = new File(inputList.get(index)).getName();
-                    }
-                    else if (index == 1)
-                    {
-                        try
-                        {
-                            Date date = new Date(Long.parseLong(inputList.get(index)));
-                            array[index] = STANDARD_UTC_FORMAT.format(date);
-                        }
-                        catch (NumberFormatException e)
-                        {
-                            array[index] = STANDARD_UTC_FORMAT.format(now);
-                        }
+                        //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+                        //                            result.put(hierarchicalFiltersKey, manager.store());
+                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+                        result.put(imageTreeFilterKey, manager.store());
                     }
                     else
                     {
-                        array[index] = inputList.get(index);
+                        int numberFilters = 0;
+
+                        // Regular filters.
+                        numberFilters = getNumberOfFiltersActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+                            }
+                            result.put(filterMapKey, filterBuilder.build());
+                        }
+
+                        // User-defined checkboxes.
+                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                            }
+                            result.put(userCheckBoxMapKey, filterBuilder.build());
+                        }
                     }
+
+                    result.put(imageListKey, listToOutputFormat(imageRawResults));
+                    return result;
                 }
-                outputArrayList.add(array);
-            }
-            return outputArrayList;
-        }
 
-        private List<List<String>> inputFormatToList(List<String[]> inputArrayList)
-        {
-            // In case there is an exception when reading the time from the input file.
-            String now = String.valueOf(new Date().getTime());
-
-            List<List<String>> outputListList = new ArrayList<>(inputArrayList.size());
-            for (String[] inputArray : inputArrayList)
-            {
-                List<String> list = new ArrayList<>();
-                for (int index = 0; index < inputArray.length; ++index)
+                @Override
+                public void retrieve(Metadata source)
                 {
-                    if (index == 0)
+                    String pointing = source.get(pointingKey);
+                    sourceComboBox.setSelectedItem(pointing != null ? ImageSource.valueOf(pointing) : null);
+
+                    startSpinner.setValue(source.get(startDateKey));
+                    endSpinner.setValue(source.get(endDateKey));
+                    hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
+                    fromDistanceTextField.setValue(source.get(fromDistanceKey));
+                    toDistanceTextField.setValue(source.get(toDistanceKey));
+                    fromResolutionTextField.setValue(source.get(fromResolutionKey));
+                    toResolutionTextField.setValue(source.get(toResolutionKey));
+                    fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
+                    toIncidenceTextField.setValue(source.get(toIncidenceKey));
+                    fromEmissionTextField.setValue(source.get(fromEmissionKey));
+                    toEmissionTextField.setValue(source.get(toEmissionKey));
+                    fromPhaseTextField.setValue(source.get(fromPhaseKey));
+                    toPhaseTextField.setValue(source.get(toPhaseKey));
+                    searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
+                    searchByFilenameTextField.setText(source.get(searchByFileNameKey));
+
+                    if (smallBodyConfig.hasHierarchicalImageSearch)
                     {
-                        list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
-                    }
-                    else if (index == 1)
-                    {
-                        try
-                        {
-                            Date date = STANDARD_UTC_FORMAT.parse(inputArray[index]);
-                            list.add(String.valueOf(date.getTime()));
-                        }
-                        catch (ParseException e)
-                        {
-                            e.printStackTrace();
-                            list.add(now);
-                        }
+                        //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
+                        //                            manager.retrieve(source.get(hierarchicalFiltersKey));
+                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+                        manager.retrieve(source.get(imageTreeFilterKey));
                     }
                     else
                     {
-                        list.add(inputArray[index]);
+                        int numberFilters = 0;
+
+                        // Regular filters.
+                        numberFilters = getNumberOfFiltersActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            Map<String, Boolean> filterMap = source.get(filterMapKey);
+                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                Boolean filterSelected = filterMap.get(filterNames[index]);
+                                if (filterSelected != null)
+                                {
+                                    filterCheckBoxes[index].setSelected(filterSelected);
+                                }
+                            }
+                        }
+
+                        // User-defined checkboxes.
+                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+                        if (numberFilters > 0)
+                        {
+                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+                            for (int index = 0; index < numberFilters; ++index)
+                            {
+                                Boolean filterSelected = filterMap.get(filterNames[index]);
+                                if (filterSelected != null)
+                                {
+                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
+                                }
+                            }
+                        }
+                    }
+                    List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
+                    setImageResults(imageList);
+                }
+            };
+        }
+    }
+
+    public MetadataManager getMetadataManager()
+    {
+        return stateManager;
+    }
+
+    private List<String[]> listToOutputFormat(List<List<String>> inputListList)
+    {
+        // In case there is an exception when reading the time from the input file.
+        Date now = new Date();
+
+        List<String[]> outputArrayList = new ArrayList<>(inputListList.size());
+        for (List<String> inputList : inputListList)
+        {
+            String[] array = new String[inputList.size()];
+            for (int index = 0; index < inputList.size(); ++index)
+            {
+                if (index == 0)
+                {
+                    array[index] = new File(inputList.get(index)).getName();
+                }
+                else if (index == 1)
+                {
+                    try
+                    {
+                        Date date = new Date(Long.parseLong(inputList.get(index)));
+                        array[index] = STANDARD_UTC_FORMAT.format(date);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        array[index] = STANDARD_UTC_FORMAT.format(now);
                     }
                 }
-                outputListList.add(list);
+                else
+                {
+                    array[index] = inputList.get(index);
+                }
             }
-            return outputListList;
+            outputArrayList.add(array);
         }
+        return outputArrayList;
+    }
 
-        // Variables declaration - do not modify//GEN-BEGIN:variables
+    private List<List<String>> inputFormatToList(List<String[]> inputArrayList)
+    {
+        // In case there is an exception when reading the time from the input file.
+        String now = String.valueOf(new Date().getTime());
+
+        List<List<String>> outputListList = new ArrayList<>(inputArrayList.size());
+        for (String[] inputArray : inputArrayList)
+        {
+            List<String> list = new ArrayList<>();
+            for (int index = 0; index < inputArray.length; ++index)
+            {
+                if (index == 0)
+                {
+                    list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
+                }
+                else if (index == 1)
+                {
+                    try
+                    {
+                        Date date = STANDARD_UTC_FORMAT.parse(inputArray[index]);
+                        list.add(String.valueOf(date.getTime()));
+                    }
+                    catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                        list.add(now);
+                    }
+                }
+                else
+                {
+                    list.add(inputArray[index]);
+                }
+            }
+            outputListList.add(list);
+        }
+        return outputListList;
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
     private javax.swing.JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
