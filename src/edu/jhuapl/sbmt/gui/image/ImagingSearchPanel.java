@@ -24,6 +24,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -110,6 +111,12 @@ import nom.tam.fits.FitsException;
 
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
+    private static final SimpleDateFormat STANDARD_UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+    static {
+        STANDARD_UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
     private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
     private final SbmtInfoWindowManager infoPanelManager;
@@ -2876,9 +2883,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 FileWriter fstream = new FileWriter(file);
                 BufferedWriter out = new BufferedWriter(fstream);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
                 String nl = System.getProperty("line.separator");
                 out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
                 int size = imageRawResults.size();
@@ -2888,7 +2892,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     String dtStr = imageRawResults.get(i).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
-                    out.write(image + " " + sdf.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
+                    out.write(image + " " + STANDARD_UTC_FORMAT.format(dt) + " " + sourceOfLastQuery.toString().replaceAll(" ", "_") + nl);
                 }
 
                 out.close();
@@ -2912,9 +2916,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             try
             {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
                 List<List<String>> results = new ArrayList<List<String>>();
                 List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
                 for (int i=0; i<lines.size(); ++i)
@@ -2924,7 +2925,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     List<String> result = new ArrayList<String>();
                     String name = instrument.searchQuery.getDataPath() + "/" + words[0];
                     result.add(name);
-                    Date dt = sdf.parse(words[1]);
+                    Date dt = STANDARD_UTC_FORMAT.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
                     results.add(result);
                 }
@@ -2945,7 +2946,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
 
     }//GEN-LAST:event_loadImageListButtonActionPerformed
-
 
     private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSelectedImageListButtonActionPerformed
         File file = CustomFileChooser.showSaveDialog(this, "Select File", "imagelist.txt");
@@ -3329,6 +3329,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
                     final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
                     final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
+                    final Key<List<String[]>> imageListKey = Key.of("imageList");
 
                     @Override
                     public Metadata store()
@@ -3360,7 +3361,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 //                            result.put(hierarchicalFiltersKey, manager.store());
                             MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
                             result.put(imageTreeFilterKey, manager.store());
-                      }
+                        }
                         else
                         {
                             int numberFilters = 0;
@@ -3394,6 +3395,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             }
                         }
 
+                        result.put(imageListKey, listToOutputFormat(imageRawResults));
                         return result;
                     }
 
@@ -3462,6 +3464,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                                 }
                             }
                         }
+                        List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
+                        setImageResults(imageList);
                     }
                 };
             }
@@ -3472,7 +3476,82 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             return stateManager;
         }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+        private List<String[]> listToOutputFormat(List<List<String>> inputListList)
+        {
+            // In case there is an exception when reading the time from the input file.
+            Date now = new Date();
+
+            List<String[]> outputArrayList = new ArrayList<>(inputListList.size());
+            for (List<String> inputList : inputListList)
+            {
+                String[] array = new String[inputList.size()];
+                for (int index = 0; index < inputList.size(); ++index)
+                {
+                    if (index == 0)
+                    {
+                        array[index] = new File(inputList.get(index)).getName();
+                    }
+                    else if (index == 1)
+                    {
+                        try
+                        {
+                            Date date = new Date(Long.parseLong(inputList.get(index)));
+                            array[index] = STANDARD_UTC_FORMAT.format(date);
+                        }
+                        catch (NumberFormatException e)
+                        {
+                            array[index] = STANDARD_UTC_FORMAT.format(now);
+                        }
+                    }
+                    else
+                    {
+                        array[index] = inputList.get(index);
+                    }
+                }
+                outputArrayList.add(array);
+            }
+            return outputArrayList;
+        }
+
+        private List<List<String>> inputFormatToList(List<String[]> inputArrayList)
+        {
+            // In case there is an exception when reading the time from the input file.
+            String now = String.valueOf(new Date().getTime());
+
+            List<List<String>> outputListList = new ArrayList<>(inputArrayList.size());
+            for (String[] inputArray : inputArrayList)
+            {
+                List<String> list = new ArrayList<>();
+                for (int index = 0; index < inputArray.length; ++index)
+                {
+                    if (index == 0)
+                    {
+                        list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
+                    }
+                    else if (index == 1)
+                    {
+                        try
+                        {
+                            Date date = STANDARD_UTC_FORMAT.parse(inputArray[index]);
+                            list.add(String.valueOf(date.getTime()));
+                        }
+                        catch (ParseException e)
+                        {
+                            e.printStackTrace();
+                            list.add(now);
+                        }
+                    }
+                    else
+                    {
+                        list.add(inputArray[index]);
+                    }
+                }
+                outputListList.add(list);
+            }
+            return outputListList;
+        }
+
+        // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton blueButton;
     private javax.swing.JComboBox blueComboBox;
     private javax.swing.JLabel blueLabel;
