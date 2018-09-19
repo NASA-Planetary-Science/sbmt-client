@@ -60,7 +60,7 @@ public class ImageCubeGenerationPanel extends JPanel //implements PropertyChange
 
         panel_1 = new JPanel();
         add(panel_1);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
 //        layerLabel = new JLabel("Layer:");
 //        panel_1.add(layerLabel);

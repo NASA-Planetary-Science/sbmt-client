@@ -58,24 +58,26 @@ import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 public class ImageResultsTableController
 {
 
-    private ImageResultsTableView imageResultsTableView;
-    private ImageSearchModel imageSearchModel;
-    private List<List<String>> imageRawResults;
+    protected ImageResultsTableView imageResultsTableView;
+    protected ImageSearchModel imageSearchModel;
+    protected List<List<String>> imageRawResults;
     private ModelManager modelManager;
-    private ImagingInstrument instrument;
-    private Renderer renderer;
-    private StringRenderer stringRenderer;
+    protected ImagingInstrument instrument;
+    protected Renderer renderer;
+    protected StringRenderer stringRenderer;
     private ImageResultsPropertyChangeListener propertyChangeListener;
-    private ImageResultsTableModeListener tableModelListener;
-    private ImageCollection imageCollection;
+    protected ImageResultsTableModeListener tableModelListener;
+    protected ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection boundaries;
+    protected ImagePopupMenu imagePopupMenu;
 
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
         this.modelManager = model.getModelManager();
         boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(model.getImageBoundaryCollectionModelName());
-        ImagePopupMenu imagePopupMenu = new ImagePopupMenu(modelManager, imageCollection, boundaries, infoPanelManager, spectrumPanelManager, renderer, imageResultsTableView);
+        imagePopupMenu = new ImagePopupMenu(modelManager, imageCollection, boundaries, infoPanelManager, spectrumPanelManager, renderer, imageResultsTableView);
         imageResultsTableView = new ImageResultsTableView(instrument, imageCollection, imagePopupMenu);
+        imageResultsTableView.setup();
 
         imageRawResults = model.getImageResults();
         this.imageCollection = imageCollection;
@@ -98,11 +100,22 @@ public class ImageResultsTableController
 
         this.imageCollection.addPropertyChangeListener(propertyChangeListener);
         boundaries.addPropertyChangeListener(propertyChangeListener);
-        setImageResultsPanel();
+
+
     }
 
-    private void setImageResultsPanel()
+    public void setImageResultsPanel()
     {
+
+        setupWidgets();
+        setupTable();
+
+//        imageResultsTableView.addPropertyChangeListener(propertyChangeListener);
+    }
+
+    protected void setupWidgets()
+    {
+        System.out.println("ImageResultsTableController: setupWidgets: setting up widgets");
         imageResultsTableView.setEnableGallery(instrument.searchQuery.getGalleryPath() != null);
 
         // setup Image Results Table view components
@@ -120,7 +133,6 @@ public class ImageResultsTableController
                 prevButtonActionPerformed(evt);
             }
         });
-
 
         imageResultsTableView.getNextButton().setText(">");
         imageResultsTableView.getNextButton().addActionListener(new java.awt.event.ActionListener() {
@@ -172,7 +184,11 @@ public class ImageResultsTableController
                 viewResultsGalleryButtonActionPerformed(evt);
             }
         });
+    }
 
+    protected void setupTable()
+    {
+        System.out.println("ImageResultsTableController: setupTable: setting up table");
         String[] columnNames = new String[]{
                 "Map",
                 "Show",
@@ -184,9 +200,7 @@ public class ImageResultsTableController
         };
 
         imageResultsTableView.getResultList().setModel(new ImagesTableModel(new Object[0][7], columnNames));
-
         imageResultsTableView.getResultList().getTableHeader().setReorderingAllowed(false);
-//        jScrollPane4.setViewportView(resultList);
         imageResultsTableView.getResultList().getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
@@ -233,7 +247,6 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
-//        imageResultsTableView.addPropertyChangeListener(propertyChangeListener);
     }
 
     protected JTable getResultList()
@@ -545,6 +558,8 @@ public class ImageResultsTableController
             int idColumnIndex = imageResultsTableView.getIdColumnIndex();
             int filenameColumnIndex = imageResultsTableView.getFilenameColumnIndex();
             int dateColumnIndex = imageResultsTableView.getDateColumnIndex();
+            System.out.println(
+                    "ImageResultsTableController: setImageResults: date column index " + dateColumnIndex);
             int bndrColumnIndex = imageResultsTableView.getBndrColumnIndex();
             int[] widths = new int[resultTable.getColumnCount()];
             int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
@@ -557,7 +572,6 @@ public class ImageResultsTableController
                 Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = imageRawResults.get(i).get(0);
-//            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 if (imageCollection.containsImage(key))
                 {

@@ -65,6 +65,7 @@ public class ImagingSearchController
         PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
         this.imageResultsTableController = new ImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
+        this.imageResultsTableController.setImageResultsPanel();
 
         this.searchParametersController = new ImageSearchParametersController(imageSearchModel, pickManager);
         this.searchParametersController.setupSearchParametersPanel();

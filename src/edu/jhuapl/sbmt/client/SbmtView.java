@@ -43,6 +43,7 @@ import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
 import edu.jhuapl.sbmt.gui.image.controllers.cubical.CubicalImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.hyperspectral.OsirisImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
@@ -342,7 +343,8 @@ public class SbmtView extends View implements PropertyChangeListener
                     {
 
 //                        JComponent component = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-//                        addTab(instrument.instrumentName.toString(), component);
+                        JComponent component = new OsirisImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                        addTab(instrument.instrumentName.toString(), component);
                     }
                     else
                     {

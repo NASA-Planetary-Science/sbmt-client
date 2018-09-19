@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.cubical;
+package edu.jhuapl.sbmt.gui.image.controllers.hyperspectral;
 
 import javax.swing.JPanel;
 
@@ -9,8 +9,8 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
-import edu.jhuapl.sbmt.gui.image.controllers.cubes.SpectralImageCubeGenerationController;
-import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
+import edu.jhuapl.sbmt.gui.image.controllers.cubes.OfflimbImageCubeGenerationController;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbImageResultsTableController;
 import edu.jhuapl.sbmt.gui.image.controllers.search.SpectralImageSearchParametersController;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
@@ -23,11 +23,11 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 
-public class CubicalImagingSearchController
+public class OsirisImagingSearchController
 {
-    ImageResultsTableController imageResultsTableController;
+    OfflimbImageResultsTableController imageResultsTableController;
     SpectralImageSearchParametersController searchParametersController;
-    SpectralImageCubeGenerationController imageCubeController;
+    OfflimbImageCubeGenerationController imageCubeController;
     ColorImageController colorImageController;
 
     private ImagingSearchPanel panel;
@@ -40,7 +40,7 @@ public class CubicalImagingSearchController
     protected final Renderer renderer;
 
 
-    public CubicalImagingSearchController(SmallBodyViewConfig smallBodyConfig,
+    public OsirisImagingSearchController(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             SbmtSpectrumWindowManager spectrumPanelManager,
@@ -58,7 +58,7 @@ public class CubicalImagingSearchController
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
         PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
-        this.imageResultsTableController = new ImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
+        this.imageResultsTableController = new OfflimbImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
         this.searchParametersController = new SpectralImageSearchParametersController(imageSearchModel, pickManager);
@@ -68,7 +68,7 @@ public class CubicalImagingSearchController
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         cubeModel.setImages(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
-        this.imageCubeController = new SpectralImageCubeGenerationController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
+        this.imageCubeController = new OfflimbImageCubeGenerationController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
         ColorImageModel colorModel = new ColorImageModel();
         this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);
@@ -83,70 +83,7 @@ public class CubicalImagingSearchController
         panel.addSubPanel(imageResultsTableController.getPanel());
         panel.addSubPanel(imageCubeController.getPanel());
         panel.addSubPanel(colorImageController.getPanel());
-
-//        pickManager.getDefaultPicker().addPropertyChangeListener(this);
-//
-//        initComponents();
-//
-//        initExtraComponents();
-//
-//        populateMonochromePanel(monochromePanel);
-//
-//        postInitComponents(instrument);
-//
-//        ImageCollection images = (ImageCollection) modelManager
-//                .getModel(getImageCollectionModelName());
-//
-////        imageResultsTableView = new ImageResultsTableView(instrument, images);
-//
-//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) modelManager
-//                .getModel(getImageBoundaryCollectionModelName());
-//        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries,
-//                infoPanelManager, spectrumPanelManager, renderer, this);
-//        boundaries.addPropertyChangeListener(this);
-//        images.addPropertyChangeListener(this);
-//
-//        viewResultsGalleryButton.setEnabled(enableGallery);
-//
-//        // Setup hierarchical image search
-//        initHierarchicalImageSearch();
-//
-//        final List<List<String>> emptyList = new ArrayList<>();
-//        setImageResults(emptyList);
-
-
-//        //setup Image results panel components
-//        setupImageResultsPanel();
-//
-//        // setup Image Cube Panel components
-//        setupImageCubePanel();
-//
-//        // setup Color Image panel components
-//        setupColorImagePanel();
-//
-//        // setup image search parameters
-//        setupSearchParametersPanel();
     }
-
-//    private void setupImageResultsPanel()
-//    {
-//
-//    }
-//
-//    private void setupImageCubePanel()
-//    {
-//
-//    }
-//
-//    private void setupColorImagePanel()
-//    {
-//
-//    }
-//
-//    private void setupSearchParametersPanel()
-//    {
-//
-//    }
 
     protected void initExtraComponents()
     {
@@ -162,7 +99,4 @@ public class CubicalImagingSearchController
     {
         return panel;
     }
-
-
-
 }

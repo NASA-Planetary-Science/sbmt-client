@@ -30,8 +30,9 @@ public class ImageResultsTableView extends JPanel
     private ImagePopupMenu imagePopupMenu;
     private boolean enableGallery;
     String[] columnNames;
-    private ImageResultsTable resultList;
+    protected ImageResultsTable resultList;
     private JLabel resultsLabel;
+    private JLabel lblNumberBoundaries;
 
     /**
      * @wbp.parser.constructor
@@ -41,11 +42,31 @@ public class ImageResultsTableView extends JPanel
         this.imagePopupMenu = imagePopupMenu;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        init();
+    }
+
+    protected void init()
+    {
+        resultsLabel = new JLabel("0 Results");
+        resultList = new ImageResultsTable();
+        lblNumberBoundaries = new JLabel("Number Boundaries:");
+        numberOfBoundariesComboBox = new JComboBox<Integer>();
+        prevButton = new JButton("Prev");
+        nextButton = new JButton("Next");
+        removeAllImagesButton = new JButton("Remove All Images");
+        removeAllButton = new JButton("Remove All Boundaries");
+        loadImageListButton = new JButton("Load...");
+        saveImageListButton = new JButton("Save...");
+        saveSelectedImageListButton = new JButton("Save Selected...");
+        viewResultsGalleryButton = new JButton("View Results as Image Gallery");
+    }
+
+    public void setup()
+    {
         JPanel panel_4 = new JPanel();
         add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
 
-        resultsLabel = new JLabel("0 Results");
         panel_4.add(resultsLabel);
 
         Component horizontalGlue = Box.createHorizontalGlue();
@@ -55,52 +76,40 @@ public class ImageResultsTableView extends JPanel
         scrollPane.setPreferredSize(new java.awt.Dimension(300, 300));
         add(scrollPane);
 
-        resultList = new ImageResultsTable();
         scrollPane.setViewportView(resultList);
 
         JPanel panel = new JPanel();
         add(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
-        JLabel lblNumberBoundaries = new JLabel("Number Boundaries:");
         panel.add(lblNumberBoundaries);
 
-        numberOfBoundariesComboBox = new JComboBox<Integer>();
         panel.add(numberOfBoundariesComboBox);
 
-        prevButton = new JButton("Prev");
         panel.add(prevButton);
 
-        nextButton = new JButton("Next");
         panel.add(nextButton);
 
         JPanel panel_1 = new JPanel();
         add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
-        removeAllImagesButton = new JButton("Remove All Images");
         panel_1.add(removeAllImagesButton);
 
-        removeAllButton = new JButton("Remove All Boundaries");
         panel_1.add(removeAllButton);
 
         JPanel panel_2 = new JPanel();
         add(panel_2);
         panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
 
-        loadImageListButton = new JButton("Load...");
         panel_2.add(loadImageListButton);
 
-        saveImageListButton = new JButton("Save...");
         panel_2.add(saveImageListButton);
 
-        saveSelectedImageListButton = new JButton("Save Selected...");
         panel_2.add(saveSelectedImageListButton);
 
         JPanel panel_3 = new JPanel();
         add(panel_3);
-
-        viewResultsGalleryButton = new JButton("View Results as Image Gallery");
         panel_3.add(viewResultsGalleryButton);
     }
 

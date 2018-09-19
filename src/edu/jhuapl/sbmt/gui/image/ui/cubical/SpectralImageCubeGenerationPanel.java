@@ -1,10 +1,10 @@
 package edu.jhuapl.sbmt.gui.image.ui.cubical;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JTable;
 
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
 
@@ -20,14 +20,19 @@ public class SpectralImageCubeGenerationPanel extends ImageCubeGenerationPanel
     {
         super();
 
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
         layerLabel = new JLabel("Layer:");
-        panel_1.add(layerLabel);
+        panel.add(layerLabel);
 
         layerValue = new JLabel("0");
-        panel_1.add(layerValue);
+        panel.add(layerValue);
 
         layerSlider = new JSlider();
-        panel_1.add(layerSlider);
+        panel.add(layerSlider);
+
+        panel_1.add(panel);
     }
 
     public void setNBands(int nBands)

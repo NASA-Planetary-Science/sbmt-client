@@ -20,14 +20,6 @@ public class ImageResultsTable extends JTable
 
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//        getColumnModel().getColumn(mapColumnIndex).setPreferredWidth(31);
-//        getColumnModel().getColumn(showFootprintColumnIndex).setPreferredWidth(35);
-//        getColumnModel().getColumn(frusColumnIndex).setPreferredWidth(31);
-//        getColumnModel().getColumn(bndrColumnIndex).setPreferredWidth(31);
-//        getColumnModel().getColumn(mapColumnIndex).setResizable(true);
-//        getColumnModel().getColumn(showFootprintColumnIndex).setResizable(true);
-//        getColumnModel().getColumn(frusColumnIndex).setResizable(true);
-//        getColumnModel().getColumn(bndrColumnIndex).setResizable(true);
     }
 
 
