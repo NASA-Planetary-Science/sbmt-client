@@ -10,9 +10,10 @@
  */
 package edu.jhuapl.sbmt.gui.image;
 
-import edu.jhuapl.sbmt.gui.image.panels.ColorImageGenerationPanel;
-import edu.jhuapl.sbmt.gui.image.panels.ImageCubeGenerationPanel;
-import edu.jhuapl.sbmt.gui.image.panels.ImageResultsTableView;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImageGenerationPanel;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTableView;
 
 
 public class ImagingSearchPanel extends javax.swing.JPanel //implements PropertyChangeListener//, ListSelectionListener, TableModelListener, MouseListener
