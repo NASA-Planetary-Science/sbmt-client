@@ -57,6 +57,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
@@ -3330,6 +3331,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
                 final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
                 final Key<List<String[]>> imageListKey = Key.of("imageList");
+                final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+                final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
 
                 @Override
                 public Metadata store()
@@ -3357,8 +3360,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     if (smallBodyConfig.hasHierarchicalImageSearch)
                     {
-                        //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
-                        //                            result.put(hierarchicalFiltersKey, manager.store());
                         MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
                         result.put(imageTreeFilterKey, manager.store());
                     }
@@ -3395,7 +3396,26 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         }
                     }
 
+                    // Save list of images.
                     result.put(imageListKey, listToOutputFormat(imageRawResults));
+
+                    // Save mapped image information.
+                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+                    ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+                    ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
+                    for (Image image : imageCollection.getImages())
+                    {
+                        String name = image.getImageName();
+                        showing.put(name, image.isVisible());
+                        if (image instanceof PerspectiveImage)
+                        {
+                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                            frus.put(name, perspectiveImage.isFrustumShowing());
+                        }
+                    }
+                    result.put(isShowingKey, showing.build());
+                    result.put(isFrustrumShowingKey, frus.build());
+
                     return result;
                 }
 
@@ -3423,8 +3443,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     if (smallBodyConfig.hasHierarchicalImageSearch)
                     {
-                        //                            HierarchicalSearchManager manager = new HierarchicalSearchManager();
-                        //                            manager.retrieve(source.get(hierarchicalFiltersKey));
                         MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
                         manager.retrieve(source.get(imageTreeFilterKey));
                     }
@@ -3464,8 +3482,32 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             }
                         }
                     }
+
+                    // Restore list of images.
                     List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
                     setImageResults(imageList);
+
+                    // Restore mapped image information.
+                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+                    Map<String, Boolean> showing = source.get(isShowingKey);
+                    Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
+                    for (String name : showing.keySet())
+                    {
+                        // Why on earth does this work to recreate the list correctly but with errors generated?
+                        // loadImages(name);
+                        String fullName = instrument.searchQuery.getDataPath() + "/" + name;
+                        loadImages(fullName);
+                    }
+                    for (Image image : imageCollection.getImages())
+                    {
+                        String name = image.getImageName();
+                        image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+                        if (image instanceof PerspectiveImage)
+                        {
+                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                            perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+                        }
+                    }
                 }
             };
         }
