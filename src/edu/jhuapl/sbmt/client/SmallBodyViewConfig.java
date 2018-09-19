@@ -2684,13 +2684,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
 
             c.hasLidarData=false;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
 
@@ -2768,13 +2768,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -2845,13 +2845,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -2920,13 +2920,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3007,13 +3007,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3094,13 +3094,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3182,13 +3182,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3269,13 +3269,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3357,13 +3357,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3445,13 +3445,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3534,13 +3534,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3622,13 +3622,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3700,13 +3700,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3782,13 +3782,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 

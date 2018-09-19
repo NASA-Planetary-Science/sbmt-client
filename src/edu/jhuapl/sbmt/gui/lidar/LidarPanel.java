@@ -41,11 +41,12 @@ public class LidarPanel extends JTabbedPane
         }
         else if ( smallBodyConfig.lidarInstrumentName.equals(Instrument.LASER))
         {
-//            lidarSearchPanel=new LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
             lidarBrowsePanel = new Hayabusa2LaserLidarBrowsePanel(modelManager, smallBodyConfig);
             addTab("Browse", lidarBrowsePanel);
-//            if (smallBodyConfig.hasHypertreeBasedLidarSearch)
-//                addTab("Search", lidarSearchPanel);
+            if (smallBodyConfig.hasHypertreeBasedLidarSearch) {
+                lidarSearchController = new Hayabusa2LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+                addTab("Search", lidarSearchController.getView());
+            }
         }
         else if (smallBodyConfig.lidarInstrumentName.equals(Instrument.OLA))
         {
