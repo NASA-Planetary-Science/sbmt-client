@@ -3329,10 +3329,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 final Key<String> searchByFileNameKey = Key.of("searchByFileName");
                 final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
                 final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
+                final Key<Metadata> circleSelectionKey = Key.of("circleSelection");
                 final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
                 final Key<List<String[]>> imageListKey = Key.of("imageList");
                 final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
                 final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+                final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 
                 @Override
                 public Metadata store()
@@ -3396,13 +3398,19 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         }
                     }
 
+                    // Save region selected.
+                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                    result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+
                     // Save list of images.
                     result.put(imageListKey, listToOutputFormat(imageRawResults));
 
                     // Save mapped image information.
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
                     ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
                     ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
+                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
                     for (Image image : imageCollection.getImages())
                     {
                         String name = image.getImageName();
@@ -3412,9 +3420,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                             frus.put(name, perspectiveImage.isFrustumShowing());
                         }
+                        ImageKey key = image.getKey();
+                        bndr.put(name, boundaries.containsBoundary(key));
                     }
                     result.put(isShowingKey, showing.build());
                     result.put(isFrustrumShowingKey, frus.build());
+                    result.put(isBoundaryShowingKey, bndr.build());
 
                     return result;
                 }
@@ -3483,6 +3494,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         }
                     }
 
+                    // Restore region selected.
+                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+
+                    selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+
                     // Restore list of images.
                     List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
                     setImageResults(imageList);
@@ -3491,6 +3508,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
                     Map<String, Boolean> showing = source.get(isShowingKey);
                     Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
+                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
                     for (String name : showing.keySet())
                     {
                         // Why on earth does this work to recreate the list correctly but with errors generated?
@@ -3498,6 +3516,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         String fullName = instrument.searchQuery.getDataPath() + "/" + name;
                         loadImages(fullName);
                     }
+                    boundaries.removeAllBoundaries();
                     for (Image image : imageCollection.getImages())
                     {
                         String name = image.getImageName();
@@ -3506,6 +3525,17 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         {
                             PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                             perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+                        }
+                        if (bndr.containsKey(name) && bndr.get(name))
+                        {
+                            try
+                            {
+                                boundaries.addBoundary(image.getKey());
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
