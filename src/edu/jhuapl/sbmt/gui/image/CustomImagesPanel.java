@@ -438,7 +438,6 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             }
             else
             {
-                System.out.println("CustomImagesPanel: saveImage: converting to PNG");
                 // Convert native VTK supported image to PNG and save to cache
                 vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
                 vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);

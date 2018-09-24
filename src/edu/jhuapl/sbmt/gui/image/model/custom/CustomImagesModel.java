@@ -111,7 +111,7 @@ public class CustomImagesModel extends ImageSearchModel
         for (ImageKey key : keys)
         {
             key.imageType = info.imageType;
-            key.instrument.type = info.imageType;
+//            key.instrument.type = info.imageType;
             ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
             key.source = source;
             key.name = getCustomDataFolder() + File.separator + key.name;
@@ -198,7 +198,6 @@ public class CustomImagesModel extends ImageSearchModel
             }
             else
             {
-                System.out.println("CustomImagesModel: saveImage: converting to PNG");
 
                 // Convert native VTK supported image to PNG and save to cache
                 vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
@@ -257,7 +256,6 @@ public class CustomImagesModel extends ImageSearchModel
                 }
             }
         }
-        System.out.println("CustomImagesModel: saveImage: type is " + newImageInfo.imageType + " and filename is " + newImageInfo.imagefilename + " custom folder " + getCustomDataFolder());
         if (index >= customImages.size())
         {
             customImages.add(newImageInfo);
@@ -337,6 +335,19 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
+    public ImageKey getImageKeyForIndex(int index)
+    {
+        ImageInfo imageInfo = customImages.get(index);
+        // Remove the image from the renderer
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        return imageKey;
+    }
+
     public void updateConfigFile()
     {
         MapUtil configMap = new MapUtil(getConfigFilename());
@@ -406,7 +417,7 @@ public class CustomImagesModel extends ImageSearchModel
         configMap.put(newMap);
     }
 
-    private void initializeImageList() throws IOException
+    public void initializeImageList() throws IOException
     {
         if (initialized)
             return;
@@ -484,6 +495,7 @@ public class CustomImagesModel extends ImageSearchModel
         }
 
         initialized = true;
+        fireResultsChanged();
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -534,6 +546,47 @@ public class CustomImagesModel extends ImageSearchModel
 ////                valueChanged(null);
 //            }
         }
+    }
+
+    public void setImageVisibility(ImageKey key, boolean visible)
+    {
+        System.out.println("CustomImagesModel: setImageVisibility: setting image visibility");
+//        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+//        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+//        for (ImageKey key : keys)
+//        {
+            if (imageCollection.containsImage(key))
+            {
+                System.out
+                        .println("CustomImageSearchModel: setImageVisibility: found image");
+                Image image = imageCollection.getImage(key);
+                image.setVisible(visible);
+            }
+//        }
+    }
+
+    @Override
+    public ImageKey[] getSelectedImageKeys()
+    {
+        int[] indices = selectedImageIndices;
+        System.out.println("ImageSearchModel: getSelectedImageKeys: indices length " + indices.length);
+        ImageKey[] selectedKeys = new ImageKey[indices.length];
+        if (indices.length > 0)
+        {
+            int i=0;
+            for (int index : indices)
+            {
+                String image = imageResults.get(index).get(0);
+                String name = new File(image).getName();
+                image = image.substring(0,image.length()-4);
+//                ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
+                ImageKey selectedKey = getImageKeyForIndex(index);
+//                if (!selectedKey.band.equals("0"))
+//                    name = selectedKey.band + ":" + name;
+                selectedKeys[i++] = selectedKey;
+            }
+        }
+        return selectedKeys;
     }
 
     private String getConfigFilename()

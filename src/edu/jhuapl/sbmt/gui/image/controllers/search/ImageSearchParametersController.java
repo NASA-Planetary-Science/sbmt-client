@@ -64,15 +64,11 @@ public class ImageSearchParametersController
     public void setupSearchParametersPanel()
     {
         smallBodyConfig = model.getSmallBodyConfig();
-        System.out.println(
-                "ImageSearchParametersController: setupSearchParametersPanel: calling");
         boolean showSourceLabelAndComboBox = true; //imageSources.length > 1 ? true : false;
         panel.getSourceLabel().setVisible(showSourceLabelAndComboBox);
         panel.getSourceComboBox().setVisible(showSourceLabelAndComboBox);
 
         ImageSource imageSources[] = model.getInstrument().searchImageSources;
-        System.out.println(
-                "ImageSearchParametersController: setupSearchParametersPanel: number of image sources " + imageSources.length);
         panel.getSourceComboBox().setModel(new DefaultComboBoxModel(imageSources));
 
         panel.getSourceComboBox().addItemListener(new java.awt.event.ItemListener() {

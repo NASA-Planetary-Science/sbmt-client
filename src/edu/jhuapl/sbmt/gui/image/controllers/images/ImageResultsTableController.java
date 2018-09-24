@@ -65,11 +65,21 @@ public class ImageResultsTableController
     protected ImagingInstrument instrument;
     protected Renderer renderer;
     protected StringRenderer stringRenderer;
-    protected ImageResultsPropertyChangeListener propertyChangeListener;
+    protected PropertyChangeListener propertyChangeListener;
     protected TableModelListener tableModelListener;
     protected ImageCollection imageCollection;
     protected PerspectiveImageBoundaryCollection boundaries;
     protected ImagePopupMenu imagePopupMenu;
+    protected DefaultTableModel tableModel;
+    protected String[] columnNames = new String[]{
+            "Map",
+            "Show",
+            "Frus",
+            "Bndr",
+            "Id",
+            "Filename",
+            "Date"
+    };
 
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
@@ -106,16 +116,12 @@ public class ImageResultsTableController
 
     public void setImageResultsPanel()
     {
-
         setupWidgets();
         setupTable();
-
-//        imageResultsTableView.addPropertyChangeListener(propertyChangeListener);
     }
 
     protected void setupWidgets()
     {
-        System.out.println("ImageResultsTableController: setupWidgets: setting up widgets");
         imageResultsTableView.setEnableGallery(instrument.searchQuery.getGalleryPath() != null);
 
         // setup Image Results Table view components
@@ -188,18 +194,10 @@ public class ImageResultsTableController
 
     protected void setupTable()
     {
-        System.out.println("ImageResultsTableController: setupTable: setting up table");
-        String[] columnNames = new String[]{
-                "Map",
-                "Show",
-                "Frus",
-                "Bndr",
-                "Id",
-                "Filename",
-                "Date"
-        };
 
-        imageResultsTableView.getResultList().setModel(new ImagesTableModel(new Object[0][7], columnNames));
+        tableModel = new ImagesTableModel(new Object[0][7], columnNames);
+
+        imageResultsTableView.getResultList().setModel(tableModel);
         imageResultsTableView.getResultList().getTableHeader().setReorderingAllowed(false);
         imageResultsTableView.getResultList().getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -538,8 +536,6 @@ public class ImageResultsTableController
     public void setImageResults(List<List<String>> results)
     {
         JTable resultTable = imageResultsTableView.getResultList();
-        System.out
-                .println("ImageResultsTableController: setImageResults: setting to " + results.size() + " images matched");
         imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
         imageRawResults = results;
         stringRenderer.setImageRawResults(imageRawResults);
@@ -558,8 +554,6 @@ public class ImageResultsTableController
             int idColumnIndex = imageResultsTableView.getIdColumnIndex();
             int filenameColumnIndex = imageResultsTableView.getFilenameColumnIndex();
             int dateColumnIndex = imageResultsTableView.getDateColumnIndex();
-            System.out.println(
-                    "ImageResultsTableController: setImageResults: date column index " + dateColumnIndex);
             int bndrColumnIndex = imageResultsTableView.getBndrColumnIndex();
             int[] widths = new int[resultTable.getColumnCount()];
             int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
@@ -675,6 +669,8 @@ public class ImageResultsTableController
 
         public boolean isCellEditable(int row, int column)
         {
+            System.out.println(
+                    "ImageResultsTableController.ImagesTableModel: isCellEditable: checking, column is " + column);
             // Only allow editing the hide column if the image is mapped
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
@@ -685,6 +681,8 @@ public class ImageResultsTableController
             }
             else
             {
+                System.out.println(
+                        "ImageResultsTableController.ImagesTableModel: isCellEditable: returning " + (column == imageResultsTableView.getMapColumnIndex() || column == imageResultsTableView.getBndrColumnIndex()));
                 return column == imageResultsTableView.getMapColumnIndex() || column == imageResultsTableView.getBndrColumnIndex();
             }
         }

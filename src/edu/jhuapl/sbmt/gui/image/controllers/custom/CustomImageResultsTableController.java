@@ -1,19 +1,27 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
@@ -47,6 +55,62 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         tableModelListener = new CustomImageResultsTableModeListener();
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+
+        this.imageCollection.removePropertyChangeListener(propertyChangeListener);
+        boundaries.removePropertyChangeListener(propertyChangeListener);
+        propertyChangeListener = new CustomImageResultsPropertyChangeListener();
+        this.imageCollection.addPropertyChangeListener(propertyChangeListener);
+        boundaries.addPropertyChangeListener(propertyChangeListener);
+
+        tableModel = new CustomImagesTableModel(new Object[0][7], columnNames);
+        imageResultsTableView.getResultList().setModel(tableModel);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getMapColumnIndex()).setPreferredWidth(31);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setPreferredWidth(35);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setPreferredWidth(31);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setPreferredWidth(31);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getMapColumnIndex()).setResizable(true);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
+        imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
+
+        imageResultsTableView.getResultList().addMouseListener(new MouseAdapter()
+        {
+            public void mousePressed(MouseEvent e)
+            {
+                resultsListMaybeShowPopup(e);
+                imageResultsTableView.getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+            }
+
+            public void mouseReleased(MouseEvent e)
+            {
+                resultsListMaybeShowPopup(e);
+                imageResultsTableView.getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+            }
+        });
+
+
+        imageResultsTableView.getResultList().getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    model.setSelectedImageIndex(imageResultsTableView.getResultList().getSelectedRows());
+                    imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && imageResultsTableView.getResultList().getSelectedRowCount() > 0);
+                }
+            }
+        });
+
+        try
+        {
+            model.initializeImageList();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 //    public void setImageResults(List<ImageInfo> results)
@@ -185,6 +249,83 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         }
     }
 
+    class CustomImageResultsPropertyChangeListener implements PropertyChangeListener
+    {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+            if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+            {
+                JTable resultList = imageResultsTableView.getResultList();
+                imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+                int size = imageRawResults.size();
+                for (int i=0; i<size; ++i)
+                {
+                    String name = imageRawResults.get(i).get(0);
+//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+//                    ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                    ImageKey key = model.getImageKeyForIndex(i);
+                    if (imageCollection.containsImage(key))
+                    {
+                        resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
+                        resultList.setValueAt(imageCollection.getImage(key).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
+                        if (imageCollection.getImage(key).getClass() == PerspectiveImage.class)
+                        {
+                            PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
+                            resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
+                        }
+                    }
+                    else
+                    {
+                        resultList.setValueAt(false, i, imageResultsTableView.getMapColumnIndex());
+                        resultList.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
+                        resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
+                    }
+                    if (boundaries.containsBoundary(key))
+                        resultList.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
+                    else
+                        resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
+                }
+                imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+                // Repaint the list in case the boundary colors has changed
+                resultList.repaint();
+            }
+        }
+    }
+
+    public class CustomImagesTableModel extends DefaultTableModel
+    {
+        public CustomImagesTableModel(Object[][] data, String[] columnNames)
+        {
+            super(data, columnNames);
+        }
+
+        public boolean isCellEditable(int row, int column)
+        {
+            // Only allow editing the hide column if the image is mapped
+            if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
+            {
+                String name = imageRawResults.get(row).get(0);
+                ImageKey key = model.getImageKeyForIndex(row);
+//                ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
+                return imageCollection.containsImage(key);
+            }
+            else
+            {
+                return column == imageResultsTableView.getMapColumnIndex() || column == imageResultsTableView.getBndrColumnIndex();
+            }
+        }
+
+        public Class<?> getColumnClass(int columnIndex)
+        {
+            if (columnIndex <= imageResultsTableView.getBndrColumnIndex())
+                return Boolean.class;
+            else
+                return String.class;
+        }
+    }
+
+
     class CustomImageResultsTableModeListener implements TableModelListener
     {
         public void tableChanged(TableModelEvent e)
@@ -196,52 +337,57 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                String namePrefix = name.substring(0, name.length()-4);
+//                String namePrefix = name.substring(0, name.length()-4);
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
-                    model.loadImages(namePrefix, results.get(row));
+                    model.loadImages(name, results.get(row));
                 else
                 {
-                    model.unloadImages(namePrefix);
+                    model.unloadImages(name);
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
             {
                 int row = e.getFirstRow();
-                String name = imageRawResults.get(row).get(0);
-                String namePrefix = name.substring(0, name.length()-4);
+//                String name = imageRawResults.get(row).get(0);
+//                String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
-                model.setImageVisibility(namePrefix, visible);
+                ImageKey key = model.getImageKeyForIndex(row);
+                model.setImageVisibility(key, visible);
             }
             else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
             {
                 int row = e.getFirstRow();
-                String name = imageRawResults.get(row).get(0);
-                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
-                System.out.println(
-                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: key is " + key);
-                System.out.println(
-                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: results " + results);
-                key.imageType = results.get(row).imageType;
-                ImageCollection images = (ImageCollection)modelManager.getModel(model.getImageCollectionModelName());
-                if (images.containsImage(key))
+//                String name = imageRawResults.get(row).get(0);
+//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
+                ImageKey key = model.getImageKeyForIndex(row);
+//                System.out.println(
+//                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: key is " + key);
+//                System.out.println(
+//                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: results " + results);
+//                key.imageType = results.get(row).imageType;
+//                ImageCollection images = (ImageCollection)modelManager.getModel(model.getImageCollectionModelName());
+//                System.out.println(
+//                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: " + imageCollection.getImage(key).getClass());
+                if (imageCollection.containsImage(key) && (imageCollection.getImage(key) instanceof PerspectiveImage))
                 {
-                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
                     image.setShowFrustum(!image.isFrustumShowing());
                 }
             }
             else if (e.getColumn() == imageResultsTableView.getBndrColumnIndex())
             {
                 int row = e.getFirstRow();
-                String name = imageRawResults.get(row).get(0);
-                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
+//                String name = imageRawResults.get(row).get(0);
+//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
+                ImageKey key = model.getImageKeyForIndex(row);
                 key.imageType = results.get(row).imageType;
                 try
                 {
-//                    if (!boundaries.containsBoundary(key))
-//                        boundaries.addBoundary(key);
-//                    else
-//                        boundaries.removeBoundary(key);
+                    if (!boundaries.containsBoundary(key))
+                        boundaries.addBoundary(key);
+                    else
+                        boundaries.removeBoundary(key);
                 }
                 catch (Exception e1) {
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),

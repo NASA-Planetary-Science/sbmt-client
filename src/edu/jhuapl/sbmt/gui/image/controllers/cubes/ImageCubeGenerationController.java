@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -254,7 +255,14 @@ public class ImageCubeGenerationController
 
     protected void generateImageCube(ActionEvent e)
     {
+        System.out.println(
+                "ImageCubeGenerationController: generateImageCube: generate image cube");
         ImageCollection images = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName());
+        System.out.println(
+                "ImageCubeGenerationController: generateImageCube: image size " + images.getImages().size());
+        for (int i=0; i< images.getImages().size(); i++)
+            System.out.println(
+                    "ImageCubeGenerationController: generateImageCube: " + ((MSIImage)images.getImages().toArray()[i]).getKey());
         ImageCubeCollection collection = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         JTable imageCubesDisplayedList = panel.getImageCubeTable();
         ImageKey firstKey = null;
@@ -270,7 +278,7 @@ public class ImageCubeGenerationController
         {
 //            String name = model.getImageResults().get(selectedIndex).get(0);
 //            ImageKey selectedKey = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-//            System.out.println("Key: " + selectedKey.name);
+            System.out.println("Key: " + selectedKey);
 //            selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
             if(selectedImage == null)

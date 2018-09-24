@@ -29,7 +29,7 @@ public class ImageSearchModel
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
     protected List<List<String>> imageResults = new ArrayList<List<String>>();
-    ImageCollection imageCollection;
+    protected ImageCollection imageCollection;
     protected ImagingInstrument instrument;
     protected ImageSource imageSourceOfLastQuery = ImageSource.SPICE;
     private Date startDate = null;
@@ -38,7 +38,7 @@ public class ImageSearchModel
     public int currentBand;
     private Renderer renderer;
     private Vector<ImageSearchResultsListener> resultsListeners;
-    private int[] selectedImageIndex;
+    protected int[] selectedImageIndices;
 
     public ImageSearchModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -268,7 +268,8 @@ public class ImageSearchModel
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        return new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
+        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
+        return key;
     }
 
     public int getNumberOfFiltersActuallyUsed()
@@ -319,7 +320,7 @@ public class ImageSearchModel
 
     public ImageKey[] getSelectedImageKeys()
     {
-        int[] indices = selectedImageIndex;
+        int[] indices = selectedImageIndices;
         ImageKey[] selectedKeys = new ImageKey[indices.length];
         if (indices.length > 0)
         {
@@ -341,12 +342,12 @@ public class ImageSearchModel
 
     public void setSelectedImageIndex(int[] selectedImageIndex)
     {
-        this.selectedImageIndex = selectedImageIndex;
+        this.selectedImageIndices = selectedImageIndex;
     }
 
     public int[] getSelectedImageIndex()
     {
-        return selectedImageIndex;
+        return selectedImageIndices;
     }
 
 }
