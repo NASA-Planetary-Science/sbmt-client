@@ -1,34 +1,33 @@
 package edu.jhuapl.sbmt.gui.image.ui.custom;
 
-import java.awt.LayoutManager;
-
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class CustomImagesControlPanel extends JPanel
 {
+    JButton newButton;
+    JButton editButton;
 
     public CustomImagesControlPanel()
     {
-        // TODO Auto-generated constructor stub
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+        newButton = new JButton("New...");
+        add(newButton);
+
+        editButton = new JButton("Edit...");
+        add(editButton);
     }
 
-    public CustomImagesControlPanel(LayoutManager layout)
+    public JButton getNewButton()
     {
-        super(layout);
-        // TODO Auto-generated constructor stub
+        return newButton;
     }
 
-    public CustomImagesControlPanel(boolean isDoubleBuffered)
+    public JButton getEditButton()
     {
-        super(isDoubleBuffered);
-        // TODO Auto-generated constructor stub
-    }
-
-    public CustomImagesControlPanel(LayoutManager layout,
-            boolean isDoubleBuffered)
-    {
-        super(layout, isDoubleBuffered);
-        // TODO Auto-generated constructor stub
+        return editButton;
     }
 
 }

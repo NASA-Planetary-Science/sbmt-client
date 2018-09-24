@@ -1,7 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.custom;
-
-import java.util.List;
-import java.util.Vector;
+package edu.jhuapl.sbmt.gui.image.controllers.hyperspectral;
 
 import javax.swing.JPanel;
 
@@ -13,23 +10,23 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeGenerationController;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbImageResultsTableController;
+import edu.jhuapl.sbmt.gui.image.controllers.search.SpectralImageSearchParametersController;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomImageResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
-public class CustomImageController
+
+public class HyperspectralImagingSearchController
 {
-    CustomImageResultsTableController imageResultsTableController;
-    CustomImagesControlController controlController;
+    OfflimbImageResultsTableController imageResultsTableController;
+    SpectralImageSearchParametersController searchParametersController;
     ImageCubeGenerationController imageCubeController;
     ColorImageController colorImageController;
 
@@ -41,10 +38,9 @@ public class CustomImageController
     private final SbmtSpectrumWindowManager spectrumPanelManager;
     private final PickManager pickManager;
     protected final Renderer renderer;
-    private CustomImagesModel customImageModel;
 
 
-    public CustomImageController(SmallBodyViewConfig smallBodyConfig,
+    public HyperspectralImagingSearchController(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             SbmtSpectrumWindowManager spectrumPanelManager,
@@ -62,27 +58,11 @@ public class CustomImageController
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
         PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
-        customImageModel = new CustomImagesModel(imageSearchModel);
-        customImageModel.addResultsChangedListener(new CustomImageResultsListener()
-        {
-
-            @Override
-            public void resultsChanged(List<ImageInfo> results)
-            {
-                List<List<String>> resultList = new Vector<List<String>>();
-                for (ImageInfo info : results)
-                {
-                    resultList.add(info.toList());
-                }
-                customImageModel.setImageResults(resultList);
-                imageResultsTableController.setImageResults(resultList);
-            }
-        });
-
-        this.imageResultsTableController = new CustomImageResultsTableController(instrument, imageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
+        this.imageResultsTableController = new OfflimbImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
-        this.controlController = new CustomImagesControlController(customImageModel);
+        this.searchParametersController = new SpectralImageSearchParametersController(imageSearchModel, pickManager);
+        this.searchParametersController.setupSearchParametersPanel();
 
         ImageCubeGenerationModel cubeModel = new ImageCubeGenerationModel();
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
@@ -99,10 +79,20 @@ public class CustomImageController
     public void init()
     {
         panel = new ImagingSearchPanel();
-        panel.addSubPanel(controlController.getPanel());
+        panel.addSubPanel(searchParametersController.getPanel());
         panel.addSubPanel(imageResultsTableController.getPanel());
         panel.addSubPanel(imageCubeController.getPanel());
         panel.addSubPanel(colorImageController.getPanel());
+    }
+
+    protected void initExtraComponents()
+    {
+        // to be overridden by subclasses
+    }
+
+    protected void populateMonochromePanel(JPanel panel)
+    {
+        // to be overridden by subclasses
     }
 
     public JPanel getPanel()

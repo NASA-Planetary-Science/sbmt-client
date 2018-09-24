@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -44,11 +46,34 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     }
 
     @Override
+    protected void setupWidgets()
+    {
+        // TODO Auto-generated method stub
+        super.setupWidgets();
+        offlimbTableView.getOfflimbControlsButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
+                System.out.println(
+                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: name is " + name);
+                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                System.out.println(
+                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: key is " + key);
+                OsirisImage image = (OsirisImage)imageCollection.getImage(key);
+                System.out.println(
+                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: image is " + image);
+                OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
+                controller.getControlsFrame().setVisible(true);
+            }
+        });
+    }
+
+    @Override
     public void setupTable()
     {
-        System.out.println(
-                "OfflimbImageResultsTableController: setupTable: setting up table");
-
         String[] columnNames = new String[]{
                 "Map",
                 "Show",

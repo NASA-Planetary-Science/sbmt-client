@@ -8,7 +8,7 @@
  *
  * Created on Jun 5, 2012, 3:56:56 PM
  */
-package edu.jhuapl.sbmt.gui.image.ui.custom;
+package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -64,6 +64,7 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
@@ -407,7 +408,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
                 // We were given an ENVI file (binary or header)
                 // Can assume at this point that both binary + header files exist in the same directory
-
+                System.out.println("CustomImagesPanel: saveImage: ENVI file");
                 // Get filenames of the binary and header files
                 String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
                 String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
@@ -437,6 +438,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             }
             else
             {
+                System.out.println("CustomImagesPanel: saveImage: converting to PNG");
                 // Convert native VTK supported image to PNG and save to cache
                 vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
                 vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);

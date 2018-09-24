@@ -65,10 +65,10 @@ public class ImageResultsTableController
     protected ImagingInstrument instrument;
     protected Renderer renderer;
     protected StringRenderer stringRenderer;
-    private ImageResultsPropertyChangeListener propertyChangeListener;
-    protected ImageResultsTableModeListener tableModelListener;
+    protected ImageResultsPropertyChangeListener propertyChangeListener;
+    protected TableModelListener tableModelListener;
     protected ImageCollection imageCollection;
-    private PerspectiveImageBoundaryCollection boundaries;
+    protected PerspectiveImageBoundaryCollection boundaries;
     protected ImagePopupMenu imagePopupMenu;
 
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
@@ -625,7 +625,7 @@ public class ImageResultsTableController
 
         // Show the first set of boundaries
         imageSearchModel.setResultIntervalCurrentlyShown( new IdPair(0, Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
-        this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+//        this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
 
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());

@@ -344,4 +344,9 @@ public class ImageSearchModel
         this.selectedImageIndex = selectedImageIndex;
     }
 
+    public int[] getSelectedImageIndex()
+    {
+        return selectedImageIndex;
+    }
+
 }

@@ -42,12 +42,14 @@ import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
+import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.controllers.cubical.CubicalImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.hyperspectral.OsirisImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImagesPanel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
@@ -360,15 +362,17 @@ public class SbmtView extends View implements PropertyChangeListener
                 if (Configuration.isAPLVersion())
                 {
 //                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-//                    addTab(instrument.instrumentName.toString(), component);
+                    JComponent component = new QuadSpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
                 }
             }
             else if (instrument.spectralMode == SpectralMode.HYPER)
             {
                 if (Configuration.isAPLVersion())
                 {
-//                    JComponent component = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
-//                    addTab(instrument.instrumentName.toString(), component);
+                    JComponent component = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
+//                    JComponent component = new HyperspectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
                 }
             }
         }
@@ -442,8 +446,9 @@ public class SbmtView extends View implements PropertyChangeListener
                     instrument = i;
                     break;
                 }
+                customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
 
-                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+//                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
 //            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));

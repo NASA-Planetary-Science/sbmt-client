@@ -9,7 +9,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
-import edu.jhuapl.sbmt.gui.image.controllers.cubes.OfflimbImageCubeGenerationController;
+import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeGenerationController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbImageResultsTableController;
 import edu.jhuapl.sbmt.gui.image.controllers.search.SpectralImageSearchParametersController;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
@@ -27,7 +27,7 @@ public class OsirisImagingSearchController
 {
     OfflimbImageResultsTableController imageResultsTableController;
     SpectralImageSearchParametersController searchParametersController;
-    OfflimbImageCubeGenerationController imageCubeController;
+    ImageCubeGenerationController imageCubeController;
     ColorImageController colorImageController;
 
     private ImagingSearchPanel panel;
@@ -68,7 +68,7 @@ public class OsirisImagingSearchController
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         cubeModel.setImages(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
-        this.imageCubeController = new OfflimbImageCubeGenerationController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
+        this.imageCubeController = new ImageCubeGenerationController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
         ColorImageModel colorModel = new ColorImageModel();
         this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);

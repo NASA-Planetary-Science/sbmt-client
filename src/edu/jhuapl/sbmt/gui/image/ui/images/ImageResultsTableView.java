@@ -33,6 +33,7 @@ public class ImageResultsTableView extends JPanel
     protected ImageResultsTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
+    protected JPanel buttonPanel3;
 
     /**
      * @wbp.parser.constructor
@@ -108,9 +109,9 @@ public class ImageResultsTableView extends JPanel
 
         panel_2.add(saveSelectedImageListButton);
 
-        JPanel panel_3 = new JPanel();
-        add(panel_3);
-        panel_3.add(viewResultsGalleryButton);
+        buttonPanel3 = new JPanel();
+        add(buttonPanel3);
+        buttonPanel3.add(viewResultsGalleryButton);
     }
 
     public ImageResultsTableView(LayoutManager layout)

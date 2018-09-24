@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.gui.image.ui.search;
 
-import java.awt.Color;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,7 +16,6 @@ public class ImagingSearchPanel extends JPanel
         add(scrollPane);
         containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
-        containerPanel.setBackground(Color.green);
         scrollPane.setViewportView(containerPanel);
     }
 
