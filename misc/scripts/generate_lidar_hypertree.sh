@@ -13,4 +13,4 @@ rm -rf test_hypertee/*
 ./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator /project/sbmt2/sbmt/data/bodies/ryugu/shared/lidar/browse/dataDirList.txt test_hypertree/ 1 32 -1 LASER
 
 #condense the hypertree into a bounds file .spectra
-./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.Hayabusa2LaserFSHyperTreeCondenser test_hypertree/
+./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserFSHyperTreeCondenser test_hypertree/
