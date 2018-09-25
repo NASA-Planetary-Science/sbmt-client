@@ -31,7 +31,7 @@ public class ImageSearchParametersPanel extends JPanel
     protected CheckBoxTree checkBoxTree;
     private JFormattedTextField searchByNumberTextField;
     private JToggleButton selectRegionButton;
-    private JComboBox sourceComboBox;
+    private JComboBox<String> sourceComboBox;
     private JLabel sourceLabel;
     private JLabel startDateLabel;
     private JSpinner startSpinner;
@@ -65,7 +65,7 @@ public class ImageSearchParametersPanel extends JPanel
     private JFormattedTextField fromPhaseTextField;
     private JLabel fromResolutionLabel;
     private JFormattedTextField fromResolutionTextField;
-    private JComboBox hasLimbComboBox;
+    private JComboBox<String> hasLimbComboBox;
     private JLabel hasLimbLabel;
     protected JScrollPane hierarchicalSearchScrollPane;
     private JButton clearRegionButton;
@@ -93,7 +93,7 @@ public class ImageSearchParametersPanel extends JPanel
         sourceLabel = new JLabel("Pointing:");
         pointingPanel.add(sourceLabel);
 
-        sourceComboBox = new JComboBox();
+        sourceComboBox = new JComboBox<String>();
         sourceComboBox.setMaximumSize(
                 new java.awt.Dimension(sourceComboBox.getWidth(), 22));
         pointingPanel.add(sourceComboBox);
@@ -232,7 +232,7 @@ public class ImageSearchParametersPanel extends JPanel
         hasLimbLabel = new JLabel("Limb:");
         panel_3.add(hasLimbLabel);
 
-        hasLimbComboBox = new JComboBox();
+        hasLimbComboBox = new JComboBox<String>();
         hasLimbComboBox.setMaximumSize(
                 new java.awt.Dimension(hasLimbComboBox.getWidth(), 22));
         panel_3.add(hasLimbComboBox);
@@ -495,7 +495,7 @@ public class ImageSearchParametersPanel extends JPanel
         return selectRegionButton;
     }
 
-    public JComboBox getSourceComboBox()
+    public JComboBox<String> getSourceComboBox()
     {
         return sourceComboBox;
     }
@@ -660,7 +660,7 @@ public class ImageSearchParametersPanel extends JPanel
         return fromResolutionTextField;
     }
 
-    public JComboBox getHasLimbComboBox()
+    public JComboBox<String> getHasLimbComboBox()
     {
         return hasLimbComboBox;
     }

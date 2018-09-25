@@ -5,13 +5,10 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
-import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImagesControlPanel;
-
-import nom.tam.fits.FitsException;
 
 public class CustomImagesControlController
 {
@@ -68,10 +65,10 @@ public class CustomImagesControlController
         {
             imageInfo = dialog.getImageInfo();
 
-            System.out.println("Image Type: " + imageInfo.imageType);
-            System.out.println("Image Rotate: " + imageInfo.rotation);
-            System.out.println("Image Flip: " + imageInfo.flip);
-            PolyhedralModel body = model.getModelManager().getPolyhedralModel();
+//            System.out.println("Image Type: " + imageInfo.imageType);
+//            System.out.println("Image Rotate: " + imageInfo.rotation);
+//            System.out.println("Image Flip: " + imageInfo.flip);
+//            PolyhedralModel body = model.getModelManager().getPolyhedralModel();
 
             try
             {
@@ -93,17 +90,14 @@ public class CustomImagesControlController
         model.saveImage(index, oldImageInfo, newImageInfo);
     }
 
-    /**
-     * This function unmaps the image from the renderer and maps it again,
-     * if it is currently shown.
-     * @throws IOException
-     * @throws FitsException
-     */
-    private void remapImageToRenderer(int index) throws FitsException, IOException
-    {
-        model.remapImageToRenderer(index);
-    }
-
-
-
+//    /**
+//     * This function unmaps the image from the renderer and maps it again,
+//     * if it is currently shown.
+//     * @throws IOException
+//     * @throws FitsException
+//     */
+//    private void remapImageToRenderer(int index) throws FitsException, IOException
+//    {
+//        model.remapImageToRenderer(index);
+//    }
 }

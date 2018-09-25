@@ -57,14 +57,8 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             public void actionPerformed(ActionEvent e)
             {
                 String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
-                System.out.println(
-                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: name is " + name);
                 ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                System.out.println(
-                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: key is " + key);
                 OsirisImage image = (OsirisImage)imageCollection.getImage(key);
-                System.out.println(
-                        "OfflimbImageResultsTableController.setupWidgets().new ActionListener() {...}: actionPerformed: image is " + image);
                 OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
                 controller.getControlsFrame().setVisible(true);
             }

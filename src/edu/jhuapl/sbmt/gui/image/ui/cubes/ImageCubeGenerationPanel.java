@@ -12,27 +12,12 @@ import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTable;
 
 public class ImageCubeGenerationPanel extends JPanel //implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
-//    private JList imageCubesDisplayedList;
-//    private ImageCubePopupMenu imageCubePopupMenu;
     private JButton generateImageCubeButton;
     private JButton removeImageCubeButton;
-//    private JButton greenButton;
-//    private JComboBox greenComboBox;
-//    private JLabel greenLabel;
-//    private JButton blueButton;
-//    private JComboBox blueComboBox;
-//    private JLabel blueLabel;
-//    private JButton redButton;
-//    private JComboBox redComboBox;
-//    private JLabel redLabel;
-
-    protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
+    protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,/*bndrColumnIndex,*/dateColumnIndex,idColumnIndex,filenameColumnIndex;
     private ImageResultsTable imageCubeTable;
     private JScrollPane scrollPane;
     protected JPanel panel_1;
-//    private JLabel layerLabel;
-//    private JLabel layerValue;
-//    private JSlider layerSlider;
     private DefaultBoundedRangeModel monoBoundedRangeModel;
     private int nbands;
 
@@ -62,34 +47,11 @@ public class ImageCubeGenerationPanel extends JPanel //implements PropertyChange
         add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
-//        layerLabel = new JLabel("Layer:");
-//        panel_1.add(layerLabel);
-//
-//        layerValue = new JLabel("0");
-//        panel_1.add(layerValue);
-
-//        layerSlider = new JSlider();
-//        panel_1.add(layerSlider);
-
         mapColumnIndex = 0;
         showFootprintColumnIndex = 1;
-        bndrColumnIndex = 2;
-        filenameColumnIndex = 3;
-
-
-
+//        bndrColumnIndex = 2;
+        filenameColumnIndex = 2;
     }
-
-//    public void setNBands(int nBands)
-//    {
-//        int midband = (nbands-1) / 2;
-//        String midbandString = Integer.toString(midband);
-//        layerValue.setText(midbandString);
-//
-//        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
-//        layerSlider = new JSlider(monoBoundedRangeModel);
-//    }
-
 
     public JTable getImageCubeTable()
     {
@@ -115,10 +77,10 @@ public class ImageCubeGenerationPanel extends JPanel //implements PropertyChange
     }
 
 
-    public int getBndrColumnIndex()
-    {
-        return bndrColumnIndex;
-    }
+//    public int getBndrColumnIndex()
+//    {
+//        return bndrColumnIndex;
+//    }
 
 
     public int getDateColumnIndex()
@@ -149,15 +111,4 @@ public class ImageCubeGenerationPanel extends JPanel //implements PropertyChange
     {
         return removeImageCubeButton;
     }
-
-//    public JLabel getLayerValue()
-//    {
-//        return layerValue;
-//    }
-//
-//
-//    public JSlider getLayerSlider()
-//    {
-//        return layerSlider;
-//    }
 }

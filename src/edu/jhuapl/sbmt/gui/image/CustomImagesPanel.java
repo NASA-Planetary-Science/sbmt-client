@@ -83,7 +83,7 @@ import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
 

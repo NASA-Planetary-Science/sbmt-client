@@ -14,7 +14,7 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.cubical.SpectralImageCubeGenerationPanel;
+import edu.jhuapl.sbmt.gui.image.ui.spectral.SpectralImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
@@ -22,20 +22,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 
 public class SpectralImageCubeGenerationController extends ImageCubeGenerationController
 {
-
-//    private ImageSearchModel model;
-//    private ImageCubeGenerationModel cubeModel;
-//    private SpectralImageCubeGenerationPanel panel;
-//    private SbmtInfoWindowManager infoPanelManager;
-//    private ImageCubePopupMenu imageCubePopupMenu;
-//    private SbmtSpectrumWindowManager spectrumPanelManager;
-//    private Renderer renderer;
-//    private ImageCubeCollection imageCubes;
     private int currentSlice = 0;
-//    private StringRenderer stringRenderer;
-//    private ImageCubeResultsTableModeListener tableModelListener;
-//    private ImageCubeResultsPropertyChangeListener propertyChangeListener;
-//    private PerspectiveImageBoundaryCollection boundaries;
 
     public SpectralImageCubeGenerationController(ImageSearchModel model,
             ImageCubeGenerationModel cubeModel,
@@ -44,36 +31,13 @@ public class SpectralImageCubeGenerationController extends ImageCubeGenerationCo
             SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer)
     {
         super(model, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
-//        this.model = model;
-//        model.addResultsChangedListener(new ImageSearchResultsListener()
-//        {
-//            @Override
-//            public void resultsChanged(List<List<String>> results)
-//            {
-//                stringRenderer.setImageRawResults(results);
-//            }
-//        });
-//        this.cubeModel = cubeModel;
-//        this.infoPanelManager = infoPanelManager;
-//        this.imageCubePopupMenu = imageCubePopupMenu;
-//        this.spectrumPanelManager = spectrumPanelManager;
-//        this.renderer = renderer;
-
-//        propertyChangeListener = new ImageCubeResultsPropertyChangeListener();
-//        tableModelListener = new ImageCubeResultsTableModeListener();
-//        setupPanel();
     }
-
-//    public void addPropertyChangeListner(PropertyChangeListener listener)
-//    {
-//        imageCubes.addPropertyChangeListener(listener);
-//    }
 
     @Override
     protected void setupPanel()
     {
-        super.setupPanel();
         this.panel = new SpectralImageCubeGenerationPanel();
+        super.setupPanel();
         ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().addChangeListener(new ChangeListener()
         {
 
@@ -125,8 +89,6 @@ public class SpectralImageCubeGenerationController extends ImageCubeGenerationCo
 
     }
 
-
-
     private void setNumberOfBands(int nbands)
     {
         // Select midband by default
@@ -143,6 +105,4 @@ public class SpectralImageCubeGenerationController extends ImageCubeGenerationCo
         DefaultBoundedRangeModel monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 0, nbands-1);
         specPanel.getLayerSlider().setModel(monoBoundedRangeModel);
     }
-
-
 }

@@ -42,7 +42,6 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
-
 public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener, ChangeListener
 {
     private JPanel bandPanel;

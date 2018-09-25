@@ -8,7 +8,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -82,15 +81,8 @@ public class ColorImageController
         ColorImagePopupMenu colorImagePopupMenu = new ColorImagePopupMenu(colorImages, infoPanelManager, model.getModelManager(), panel);
         panel.setColorImagePopupMenu(colorImagePopupMenu);
 
-//        panel.getColorImagesDisplayedList().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-//        panel.getColorImagesDisplayedList().addMouseListener(new java.awt.event.MouseAdapter() {
-//            public void mousePressed(java.awt.event.MouseEvent evt) {
-//                colorImagesDisplayedListMousePressed(evt);
-//            }
-//            public void mouseReleased(java.awt.event.MouseEvent evt) {
-//                colorImagesDisplayedListMouseReleased(evt);
-//            }
-//        });
+        colorImages.addPropertyChangeListener(propertyChangeListener);
+        boundaries.addPropertyChangeListener(propertyChangeListener);
 
         panel.getRemoveColorImageButton().setText("Remove Color Image");
         panel.getRemoveColorImageButton().addActionListener(new java.awt.event.ActionListener() {
@@ -136,29 +128,23 @@ public class ColorImageController
             }
         });
 
-//        jScrollPane3.setViewportView(colorImagesDisplayedList);
 
         String[] columnNames = new String[]{
                 "Map",
                 "Show",
-//                "Frus",
-                "Bndr",
-//                "Id",
+//                "Bndr",
                 "Filename",
-//                "Date"
         };
 
-        panel.getDisplayedImageList().setModel(new ColorImageTableModel(new Object[0][4], columnNames));
+        panel.getDisplayedImageList().setModel(new ColorImageTableModel(new Object[0][3], columnNames));
         stringRenderer = new StringRenderer(model, model.getImageResults());
         panel.getDisplayedImageList().setDefaultRenderer(String.class, stringRenderer);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setPreferredWidth(35);
-//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFrusColumnIndex()).setPreferredWidth(31);
-        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
+//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getMapColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
-//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFrusColumnIndex()).setResizable(true);
-        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
+//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setPreferredWidth(350);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getModel().addTableModelListener(tableModelListener);
@@ -221,8 +207,8 @@ public class ColorImageController
         if (selectedKey != null)
         {
             String name = selectedKey.name;
-            if (!selectedKey.band.equals("0"))
-                name = selectedKey.band + ":" + name;
+//            if (!selectedKey.band.equals("0"))
+//                name = selectedKey.band + ":" + name;
             panel.getRedLabel().setText(new File(name).getName());
             colorModel.setSelectedRedKey(selectedKey);
         }
@@ -234,8 +220,8 @@ public class ColorImageController
         if (selectedKey != null)
         {
             String name = selectedKey.name;
-            if (!selectedKey.band.equals("0"))
-                name = selectedKey.band + ":" + name;
+//            if (!selectedKey.band.equals("0"))
+//                name = selectedKey.band + ":" + name;
             panel.getGreenLabel().setText(new File(name).getName());
             colorModel.setSelectedGreenKey(selectedKey);
         }
@@ -247,8 +233,8 @@ public class ColorImageController
         if (selectedKey != null)
         {
             String name = selectedKey.name;
-            if (!selectedKey.band.equals("0"))
-                name = selectedKey.band + ":" + name;
+//            if (!selectedKey.band.equals("0"))
+//                name = selectedKey.band + ":" + name;
             panel.getBlueLabel().setText(new File(name).getName());
             colorModel.setSelectedBlueKey(selectedKey);
         }
@@ -259,11 +245,8 @@ public class ColorImageController
         JTable colorImagesDisplayedList = panel.getDisplayedImageList();
         int mapColumnIndex = panel.getMapColumnIndex();
         int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
-//        int frusColumnIndex = panel.getFrusColumnIndex();
-//        int idColumnIndex = panel.getIdColumnIndex();
         int filenameColumnIndex = panel.getFilenameColumnIndex();
-//        int dateColumnIndex = panel.getDateColumnIndex();
-        int bndrColumnIndex = panel.getBndrColumnIndex();
+//        int bndrColumnIndex = panel.getBndrColumnIndex();
         int[] widths = new int[colorImagesDisplayedList.getColumnCount()];
         int[] columnsNeedingARenderer=new int[]{/*idColumnIndex,*/filenameColumnIndex/*,dateColumnIndex*/};
 
@@ -271,7 +254,6 @@ public class ColorImageController
         ImageKey selectedRedKey = colorModel.getSelectedRedKey();
         ImageKey selectedGreenKey = colorModel.getSelectedGreenKey();
         ImageKey selectedBlueKey = colorModel.getSelectedBlueKey();
-        System.out.println("ColorImageController: generateColorImage: setting row count to " + (colorImagesDisplayedList.getRowCount()+1));
         ((DefaultTableModel)colorImagesDisplayedList.getModel()).setRowCount(colorImagesDisplayedList.getRowCount()+1);
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
@@ -291,14 +273,10 @@ public class ColorImageController
 //                {
                     collection.addImage(colorKey);
                     int i = colorImagesDisplayedList.getRowCount();
-                    System.out.println(
-                            "ColorImageController: generateColorImage: row count " + i);
                     colorImagesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
                     colorImagesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
-                    colorImagesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
-//                    colorImagesDisplayedList.setValueAt(aValue, i-1, idColumnIndex);
+//                    colorImagesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
                     colorImagesDisplayedList.setValueAt(colorKey.toString(), i-1, filenameColumnIndex);
-//                    colorImagesDisplayedList.setValueAt(aValue, i-1, dateColumnIndex);
 //                }
             }
             catch (IOException e1)
@@ -320,7 +298,7 @@ public class ColorImageController
             catch (ColorImage.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "The images you selected do not overlap.",
+                        "Color Image Generation: The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -337,13 +315,6 @@ public class ColorImageController
             ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
             ColorImageCollection imageCollection = (ColorImageCollection)model.getModelManager().getModel(colorModel.getColorImageCollectionModelName());
             imageCollection.removeImage(colorKey);
-
-//            // Select the element in its place (unless it's the last one in which case
-//            // select the previous one)
-//            if (index >= colorImagesDisplayedList.getModel().getSize())
-//                --index;
-//            if (index >= 0)
-//                colorImagesDisplayedList.setSelectionInterval(index, index);
         }
     }
 
@@ -362,7 +333,6 @@ public class ColorImageController
                     colorImagesDisplayedList.clearSelection();
                     colorImagesDisplayedList.setRowSelectionInterval(index, index);
                 }
-//                ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).get(index);
                 ColorImage image = colorImages.getLoadedImages().get(index);
                 ColorImageKey colorKey = image.getColorKey();
                 panel.getColorImagePopupMenu().setCurrentImage(colorKey);
@@ -375,11 +345,6 @@ public class ColorImageController
     {
         return panel;
     }
-
-//    public void setPanel(ColorImageGenerationPanel panel)
-//    {
-//        this.panel = panel;
-//    }
 
     public class ColorImageTableModel extends DefaultTableModel
     {
@@ -401,13 +366,13 @@ public class ColorImageController
             }
             else
             {
-                return column == panel.getMapColumnIndex() || column == panel.getBndrColumnIndex();
+                return column == panel.getMapColumnIndex() /*|| column == panel.getBndrColumnIndex()*/;
             }
         }
 
         public Class<?> getColumnClass(int columnIndex)
         {
-            if (columnIndex <= panel.getBndrColumnIndex())
+            if (columnIndex <= panel.getShowFootprintColumnIndex())
                 return Boolean.class;
             else
                 return String.class;
@@ -437,8 +402,8 @@ public class ColorImageController
                 else
                 {
                     colorModel.unloadImage(key);
-                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
-                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
+//                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
+//                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -460,27 +425,27 @@ public class ColorImageController
 //                    image.setShowFrustum(!image.isFrustumShowing());
 //                }
 //            }
-            else if (e.getColumn() == panel.getBndrColumnIndex())
-            {
-                int row = e.getFirstRow();
-                ColorImage image = colorImages.getLoadedImages().get(row);
-                ImageKey key = image.getColorKey().getImageKey();
-                try
-                {
-                    if (!boundaries.containsBoundary(key))
-                        boundaries.addBoundary(key);
-                    else
-                        boundaries.removeBoundary(key);
-                }
-                catch (Exception e1) {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                            "There was an error mapping the boundary.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-
-                    e1.printStackTrace();
-                }
-            }
+//            else if (e.getColumn() == panel.getBndrColumnIndex())
+//            {
+//                int row = e.getFirstRow();
+//                ColorImage image = colorImages.getLoadedImages().get(row);
+//                ImageKey key = image.getColorKey().getImageKey();
+//                try
+//                {
+//                    if (!boundaries.containsBoundary(key))
+//                        boundaries.addBoundary(key);
+//                    else
+//                        boundaries.removeBoundary(key);
+//                }
+//                catch (Exception e1) {
+//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+//                            "There was an error mapping the boundary.",
+//                            "Error",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                    e1.printStackTrace();
+//                }
+//            }
 
         }
     }
@@ -495,23 +460,15 @@ public class ColorImageController
                 JTable resultList = panel.getDisplayedImageList();
                 if (resultList.getRowCount() == 0) return;
                 resultList.getModel().removeTableModelListener(tableModelListener);
-                Set<ColorImage> colorImageSet = colorImages.getImages();
-
-                int size = colorImageSet.size();
-//                for (int i=0; i<size; ++i)
                 int i=0;
-                for (ColorImage image : colorImageSet)
+                for (ColorImage colorImage : colorImages.getLoadedImages())
                 {
-//                    String name = imageRawResults.get(i).get(0);
-                    String name = image.getImageName();
-                    ColorImageKey key = image.getColorKey();
-//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-//                    ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-                    if (colorImages.containsImage(key))
+//                    ColorImageKey key = colorImage.getColorKey();
+                    if (colorImages.getImages().contains(colorImage))
                     {
                         resultList.setValueAt(true, i, panel.getMapColumnIndex());
 //                        PerspectiveImage image = (PerspectiveImage) model.getImageCollection().getImage(key);
-                        resultList.setValueAt(image.isVisible(), i, panel.getShowFootprintColumnIndex());
+                        resultList.setValueAt(colorImage.isVisible(), i, panel.getShowFootprintColumnIndex());
 //                        resultList.setValueAt(image.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     }
                     else
@@ -527,6 +484,42 @@ public class ColorImageController
 //                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
                     i++;
                 }
+
+
+//                Set<ColorImage> colorImageSet = colorImages.getImages();
+//
+//                int size = colorImageSet.size();
+//                for (int i=0; i<size; ++i)
+
+//                System.out.println(
+//                        "ColorImageController.ColorImageResultsPropertyChangeListener: propertyChange: color image set size " + size);
+//                for (ColorImage image : colorImageSet)
+//                {
+////                    String name = imageRawResults.get(i).get(0);
+//                    String name = image.getImageName();
+//                    ColorImageKey key = image.getColorKey();
+////                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+////                    ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
+//                    if (colorImages.containsImage(key))
+//                    {
+//                        resultList.setValueAt(true, i, panel.getMapColumnIndex());
+////                        PerspectiveImage image = (PerspectiveImage) model.getImageCollection().getImage(key);
+//                        resultList.setValueAt(image.isVisible(), i, panel.getShowFootprintColumnIndex());
+////                        resultList.setValueAt(image.isFrustumShowing(), i, panel.getFrusColumnIndex());
+//                    }
+//                    else
+//                    {
+//                        resultList.setValueAt(false, i, panel.getMapColumnIndex());
+//                        resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
+////                        resultList.setValueAt(false, i, panel.getFrusColumnIndex());
+//                    }
+//                    //TODO fix this - do we track the color image boundaries separately? - DON'T THINK SO
+////                    if (boundaries.containsBoundary(key))
+////                        resultList.setValueAt(true, i, panel.getBndrColumnIndex());
+////                    else
+////                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
+//                    i++;
+//                }
                 resultList.getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();

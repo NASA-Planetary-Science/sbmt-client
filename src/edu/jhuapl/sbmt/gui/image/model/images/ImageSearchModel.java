@@ -42,18 +42,12 @@ public class ImageSearchModel
 
     public ImageSearchModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
-//            SbmtInfoWindowManager infoPanelManager,
-//            SbmtSpectrumWindowManager spectrumPanelManager,
-//            final PickManager pickManager,
             Renderer renderer,
             ImagingInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
-//        this.infoPanelManager = infoPanelManager;
-//        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
-//        this.pickManager = pickManager;
         this.resultsListeners = new Vector<ImageSearchResultsListener>();
         this.instrument = instrument;
         this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -138,9 +132,6 @@ public class ImageSearchModel
         }
     }
 
-
-
-
     public IdPair getResultIntervalCurrentlyShown()
     {
         return resultIntervalCurrentlyShown;
@@ -163,9 +154,7 @@ public class ImageSearchModel
     {
         this.imageResults = imageRawResults;
         fireResultsChanged();
-
     }
-
 
     public ImageCollection getImageCollection()
     {
@@ -184,18 +173,15 @@ public class ImageSearchModel
         return instrument;
     }
 
-
     public void setInstrument(ImagingInstrument instrument)
     {
         this.instrument = instrument;
     }
 
-
     public ImageSource getImageSourceOfLastQuery()
     {
         return imageSourceOfLastQuery;
     }
-
 
     public void setImageSourceOfLastQuery(ImageSource imageSourceOfLastQuery)
     {

@@ -102,7 +102,7 @@ import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private SmallBodyViewConfig smallBodyConfig;

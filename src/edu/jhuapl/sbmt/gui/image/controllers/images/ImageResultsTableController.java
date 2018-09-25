@@ -443,7 +443,7 @@ public class ImageResultsTableController
     }
 
 
-    private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSelectedImageListButtonActionPerformed
+    private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -616,10 +616,10 @@ public class ImageResultsTableController
             boundaries.addPropertyChangeListener(propertyChangeListener);
         }
 
-
         // Show the first set of boundaries
         imageSearchModel.setResultIntervalCurrentlyShown( new IdPair(0, Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
-//        this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+//        if (boundaries.getProps().size() > 0)
+            this.showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
 
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
@@ -630,8 +630,9 @@ public class ImageResultsTableController
         int startId = idPair.id1;
         int endId = idPair.id2;
 
-        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
-        model.removeAllBoundaries();
+//        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
+//        model.removeAllBoundaries();
+        boundaries.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -645,7 +646,7 @@ public class ImageResultsTableController
                 String currentImage = imageRawResults.get(i).get(0);
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
                 ImageKey key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
-                model.addBoundary(key);
+                boundaries.addBoundary(key);
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),
@@ -669,8 +670,6 @@ public class ImageResultsTableController
 
         public boolean isCellEditable(int row, int column)
         {
-            System.out.println(
-                    "ImageResultsTableController.ImagesTableModel: isCellEditable: checking, column is " + column);
             // Only allow editing the hide column if the image is mapped
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
@@ -681,8 +680,6 @@ public class ImageResultsTableController
             }
             else
             {
-                System.out.println(
-                        "ImageResultsTableController.ImagesTableModel: isCellEditable: returning " + (column == imageResultsTableView.getMapColumnIndex() || column == imageResultsTableView.getBndrColumnIndex()));
                 return column == imageResultsTableView.getMapColumnIndex() || column == imageResultsTableView.getBndrColumnIndex();
             }
         }
@@ -747,7 +744,6 @@ public class ImageResultsTableController
                 for (int i=0; i<size; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
-//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                     ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                     if (imageCollection.containsImage(key))
                     {

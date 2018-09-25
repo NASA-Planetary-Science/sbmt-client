@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.controllers.cubes;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -30,7 +31,6 @@ import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -97,107 +97,38 @@ public class ImageCubeGenerationController
         imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
 
-
-
-//        imageCubesDisplayedList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-//        imageCubesDisplayedList.addMouseListener(new java.awt.event.MouseAdapter() {
-//            public void mousePressed(java.awt.event.MouseEvent evt) {
-//                imageCubesDisplayedListMousePressed(evt);
-//            }
-//            public void mouseReleased(java.awt.event.MouseEvent evt) {
-//                imageCubesDisplayedListMouseReleased(evt);
-//            }
-//        });
-
         panel.getRemoveImageCubeButton().setText("Remove Image Cube");
-        panel.getRemoveImageCubeButton().addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        panel.getRemoveImageCubeButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 removeImageCubeButtonActionPerformed(evt);
             }
         });
 
         panel.getGenerateImageCubeButton().setText("Generate Image Cube");
-        panel.getGenerateImageCubeButton().addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        panel.getGenerateImageCubeButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 generateImageCubeButtonActionPerformed(evt);
             }
         });
 
-//        panel.getLayerSlider().addChangeListener(new ChangeListener()
-//        {
-//
-//            @Override
-//            public void stateChanged(ChangeEvent e)
-//            {
-//                JTable imageList = panel.getImageCubeTable();
-//
-//                int index = imageList.getSelectedRow();
-//                if (index == -1)
-//                {
-//                    setNumberOfBands(1);
-//                    return;
-//                }
-//
-////                ImageCubeKey selectedValue = (ImageCubeKey)imageList.getValueAt(index, 5);
-//                ImageCube selectedImage = imageCubes.getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
-//                ImageCubeKey selectedValue = selectedImage.getImageCubeKey();
-//
-//                String imagestring = selectedValue.fileNameString();
-//                String[]tokens = imagestring.split(",");
-//                String imagename = tokens[0].trim();
-//
-//                JSlider source = (JSlider)e.getSource();
-//                currentSlice = (int)source.getValue();
-//                panel.getLayerValue().setText(Integer.toString(currentSlice));
-//
-//                ImageCubeCollection images = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-//
-//                Set<ImageCube> imageSet = images.getImages();
-//                for (ImageCube image : imageSet)
-//                {
-//                    ImageKey key = image.getKey();
-//                    String name = image.getImageName();
-//
-//                    if(name.equals(imagename))
-//                    {
-//                       image.setCurrentSlice(currentSlice);
-//                       image.setDisplayedImageRange(null);
-//                       if (!source.getValueIsAdjusting())
-//                       {
-//                            image.loadFootprint();
-//                            image.firePropertyChange();
-//                       }
-//                       return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
-//                    }
-//                }
-//            }
-//        });
-
         String[] columnNames = new String[]{
                 "Map",
                 "Show",
-//                "Frus",
-                "Bndr",
-//                "Id",
+//                "Bndr",
                 "Filename",
-//                "Date"
         };
-        panel.getImageCubeTable().setModel(new ImageCubesTableModel(new Object[0][4], columnNames));
+        panel.getImageCubeTable().setModel(new ImageCubesTableModel(new Object[0][3], columnNames));
         stringRenderer = new StringRenderer(model, model.getImageResults());
         panel.getImageCubeTable().setDefaultRenderer(String.class, stringRenderer);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setPreferredWidth(35);
-//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getFrusColumnIndex()).setPreferredWidth(31);
-        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
+//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getMapColumnIndex()).setResizable(true);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
-//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getFrusColumnIndex()).setResizable(true);
-        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
+//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setPreferredWidth(250);
-//        panel.getImageCubeTable().setPreferredSize(new Dimension(panel.getImageCubeTable().getWidth(), 200));
         panel.getImageCubeTable().getModel().addTableModelListener(tableModelListener);
         imageCubes.addPropertyChangeListener(propertyChangeListener);
-//        jScrollPane5.setViewportView(imageCubesDisplayedList);
 
         panel.getImageCubeTable().addMouseListener(new MouseAdapter()
         {
@@ -255,14 +186,7 @@ public class ImageCubeGenerationController
 
     protected void generateImageCube(ActionEvent e)
     {
-        System.out.println(
-                "ImageCubeGenerationController: generateImageCube: generate image cube");
         ImageCollection images = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName());
-        System.out.println(
-                "ImageCubeGenerationController: generateImageCube: image size " + images.getImages().size());
-        for (int i=0; i< images.getImages().size(); i++)
-            System.out.println(
-                    "ImageCubeGenerationController: generateImageCube: " + ((MSIImage)images.getImages().toArray()[i]).getKey());
         ImageCubeCollection collection = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         JTable imageCubesDisplayedList = panel.getImageCubeTable();
         ImageKey firstKey = null;
@@ -270,16 +194,8 @@ public class ImageCubeGenerationController
 
         List<ImageKey> selectedKeys = new ArrayList<>();
         for (ImageKey key : model.getSelectedImageKeys()) { selectedKeys.add(key); }
-//        List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
-//        int[] selectedIndices = model.getsel
-//        //System.out.println(Arrays.toString(selectedIndices));
-//        for (int selectedIndex : selectedIndices)
         for (ImageKey selectedKey : selectedKeys)
         {
-//            String name = model.getImageResults().get(selectedIndex).get(0);
-//            ImageKey selectedKey = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-            System.out.println("Key: " + selectedKey);
-//            selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
             if(selectedImage == null)
             {
@@ -328,31 +244,21 @@ public class ImageCubeGenerationController
             PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
             int mapColumnIndex = panel.getMapColumnIndex();
             int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
-//            int frusColumnIndex = panel.getFrusColumnIndex();
-//            int idColumnIndex = panel.getIdColumnIndex();
             int filenameColumnIndex = panel.getFilenameColumnIndex();
-//            int dateColumnIndex = panel.getDateColumnIndex();
-            int bndrColumnIndex = panel.getBndrColumnIndex();
-
+//            int bndrColumnIndex = panel.getBndrColumnIndex();
             ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
             try
             {
                 DefaultTableModel tableModel = (DefaultTableModel)imageCubesDisplayedList.getModel();
-                tableModel.setRowCount(imageCubesDisplayedList.getRowCount()+1);
                 if (!collection.containsImage(imageCubeKey))
                 {
                     collection.addImage(imageCubeKey);
+                    tableModel.setRowCount(imageCubesDisplayedList.getRowCount()+1);
                     int i = imageCubesDisplayedList.getRowCount();
                     imageCubesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
                     imageCubesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
-                    imageCubesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
+//                    imageCubesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
                     imageCubesDisplayedList.setValueAt(imageCubeKey.toString(), i-1, filenameColumnIndex);
-//                    listModel.addElement(imageCubeKey);
-//                    int idx = listModel.size()-1;
-//                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
 
                     if(multipleFrustumVisible)
                     {
@@ -364,12 +270,6 @@ public class ImageCubeGenerationController
                 }
                 else
                 {
-//                    int idx = listModel.indexOf(imageCubeKey);
-//                    imageCubesDisplayedList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = imageCubesDisplayedList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        imageCubesDisplayedList.scrollRectToVisible(cellBounds);
-
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
                             "Image cube consisting of same images already exists, no new image cube was generated.",
                             "Notification",
@@ -395,7 +295,7 @@ public class ImageCubeGenerationController
             catch (ImageCube.NoOverlapException e1)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "The images you selected do not overlap.",
+                        "Cube Generation: The images you selected do not overlap.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -411,31 +311,8 @@ public class ImageCubeGenerationController
             ImageCubeKey imageCubeKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
             ImageCubeCollection collection = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
             collection.removeImage(imageCubeKey);
-
-//            // Select the element in its place (unless it's the last one in which case
-//            // select the previous one)
-//            if (index >= imageCubesDisplayedList.getModel().getSize())
-//                --index;
-//            if (index >= 0)
-//                imageCubesDisplayedList.setSelectionInterval(index, index);
         }
     }
-
-//    private void setNumberOfBands(int nbands)
-//    {
-//        // Select midband by default
-//        setNumberOfBands(nbands, (nbands-1)/2);
-//    }
-//
-//    private void setNumberOfBands(int nbands, int activeBand)
-//    {
-//        cubeModel.setNbands(nbands);
-//        panel.setNBands(nbands);
-//        String activeBandString = Integer.toString(activeBand);
-//        panel.getLayerValue().setText(activeBandString);
-//        DefaultBoundedRangeModel monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 0, nbands-1);
-//        panel.getLayerSlider().setModel(monoBoundedRangeModel);
-//    }
 
     private void removeImageCubeButtonActionPerformed(ActionEvent evt) {
         removeImageCube(evt);
@@ -484,20 +361,17 @@ public class ImageCubeGenerationController
             // Only allow editing the hide column if the image is mapped
             if (column == panel.getShowFootprintColumnIndex() /*|| column == panel.getFrusColumnIndex()*/)
             {
-//                String name = model.getImageResults().get(row).get(0);
-//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-//                return model.getImageCollection().containsImage(key);
                 return (Boolean)getValueAt(row, 0);
             }
             else
             {
-                return column == panel.getMapColumnIndex() || column == panel.getBndrColumnIndex();
+                return column == panel.getMapColumnIndex() /*|| column == panel.getBndrColumnIndex()*/;
             }
         }
 
         public Class<?> getColumnClass(int columnIndex)
         {
-            if (columnIndex <= panel.getBndrColumnIndex())
+            if (columnIndex <= panel.getShowFootprintColumnIndex())
                 return Boolean.class;
             else
                 return String.class;
@@ -530,7 +404,7 @@ public class ImageCubeGenerationController
                 {
                     cubeModel.unloadImage(key);
                     panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
-                    panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
+//                    panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -541,39 +415,29 @@ public class ImageCubeGenerationController
                 if (imageCubes.getLoadedImages().size() == 0) return;
                 imageCubes.getLoadedImages().get(row).setVisible(visible);
             }
-//            else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
+//            else if (e.getColumn() == panel.getBndrColumnIndex())
 //            {
 //                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
-//                ImageCollection images = (ImageCollection)modelManager.getModel(model.getImageCollectionModelName());
-//                if (images.containsImage(key))
+//                ImageCube image = imageCubes.getLoadedImages().get(row);
+//                ImageKey key = image.getImageCubeKey();//.getFirstImageKey();
+//                System.out.println(
+//                        "ImageCubeGenerationController.ImageCubeResultsTableModeListener: tableChanged: key name " + key.name);
+//                try
 //                {
-//                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-//                    image.setShowFrustum(!image.isFrustumShowing());
+//                    if (!boundaries.containsBoundary(key))
+//                        boundaries.addBoundary(key);
+//                    else
+//                        boundaries.removeBoundary(key);
+//                }
+//                catch (Exception e1) {
+//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+//                            "There was an error mapping the boundary.",
+//                            "Error",
+//                            JOptionPane.ERROR_MESSAGE);
+//
+//                    e1.printStackTrace();
 //                }
 //            }
-            else if (e.getColumn() == panel.getBndrColumnIndex())
-            {
-                int row = e.getFirstRow();
-                ImageCube image = imageCubes.getLoadedImages().get(row);
-                ImageKey key = image.getImageCubeKey().getFirstImageKey();
-                try
-                {
-                    if (!boundaries.containsBoundary(key))
-                        boundaries.addBoundary(key);
-                    else
-                        boundaries.removeBoundary(key);
-                }
-                catch (Exception e1) {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                            "There was an error mapping the boundary.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-
-                    e1.printStackTrace();
-                }
-            }
 
         }
     }
@@ -590,28 +454,19 @@ public class ImageCubeGenerationController
                 resultList.getModel().removeTableModelListener(tableModelListener);
                 Set<ImageCube> imageCubeSet = imageCubes.getImages();
 
-//                int size = colorImageSet.size();
-//                for (int i=0; i<size; ++i)
                 int i=0;
                 for (ImageCube image : imageCubeSet)
                 {
-//                    String name = imageRawResults.get(i).get(0);
-//                    String name = image.getImageName();
                     ImageCubeKey key = image.getImageCubeKey();
-//                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-//                    ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
                     if (imageCubes.containsImage(key))
                     {
                         resultList.setValueAt(true, i, panel.getMapColumnIndex());
-//                        PerspectiveImage image = (PerspectiveImage) model.getImageCollection().getImage(key);
                         resultList.setValueAt(image.isVisible(), i, panel.getShowFootprintColumnIndex());
-//                        resultList.setValueAt(image.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     }
                     else
                     {
                         resultList.setValueAt(false, i, panel.getMapColumnIndex());
                         resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
-//                        resultList.setValueAt(false, i, panel.getFrusColumnIndex());
                     }
                     //TODO fix this - do we track the color image boundaries separately? - DON'T THINK SO
 //                    if (boundaries.containsBoundary(key))

@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.ui.cubical;
+package edu.jhuapl.sbmt.gui.image.ui.spectral;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultBoundedRangeModel;

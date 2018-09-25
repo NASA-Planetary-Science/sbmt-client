@@ -7,7 +7,6 @@ public class ImageResultsTable extends JTable
 {
     protected int mapColumnIndex,showFootprintColumnIndex,frusColumnIndex,bndrColumnIndex,dateColumnIndex,idColumnIndex,filenameColumnIndex;
 
-
     public ImageResultsTable()
     {
         mapColumnIndex=0;
@@ -22,46 +21,38 @@ public class ImageResultsTable extends JTable
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
-
     public int getMapColumnIndex()
     {
         return mapColumnIndex;
     }
-
 
     public int getShowFootprintColumnIndex()
     {
         return showFootprintColumnIndex;
     }
 
-
     public int getFrusColumnIndex()
     {
         return frusColumnIndex;
     }
-
 
     public int getBndrColumnIndex()
     {
         return bndrColumnIndex;
     }
 
-
     public int getDateColumnIndex()
     {
         return dateColumnIndex;
     }
-
 
     public int getIdColumnIndex()
     {
         return idColumnIndex;
     }
 
-
     public int getFilenameColumnIndex()
     {
         return filenameColumnIndex;
     }
-
 }

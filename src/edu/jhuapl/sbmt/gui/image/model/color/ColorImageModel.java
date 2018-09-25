@@ -68,32 +68,6 @@ public class ColorImageModel
         images.addImage(key);
     }
 
-//    public void loadImages(String name)
-//    {
-//
-//        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-//        for (ImageKey key : keys)
-//        {
-//            try
-//            {
-//                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-//                if (!images.containsImage(key))
-//                {
-//                    loadImage(key, images);
-//                }
-//            }
-//            catch (Exception e1) {
-//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
-//                        "There was an error mapping the image.",
-//                        "Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//
-//                e1.printStackTrace();
-//            }
-//
-//        }
-//   }
-
     public void unloadImage(ColorImageKey key)
     {
         images.removeImage(key);
@@ -103,17 +77,4 @@ public class ColorImageModel
     {
         this.images = images;
     }
-
-//    public void unloadImages(String name)
-//    {
-//
-//        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-//        for (ImageKey key : keys)
-//        {
-//            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-//            unloadImage(key, images);
-//        }
-//   }
-
-
 }

@@ -17,10 +17,7 @@ import javax.swing.border.TitledBorder;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTable;
 
 
-public class ColorImageGenerationPanel extends JPanel // implements
-                                                      // TableModelListener,
-                                                      // MouseListener,
-                                                      // ListSelectionListener
+public class ColorImageGenerationPanel extends JPanel
 {
     private ColorImagePopupMenu colorImagePopupMenu;
     private JButton removeColorImageButton;
@@ -39,8 +36,8 @@ public class ColorImageGenerationPanel extends JPanel // implements
 
     private ImageResultsTable displayedImageList;
 
-    protected int mapColumnIndex, showFootprintColumnIndex, /*frusColumnIndex,*/
-            bndrColumnIndex, /*dateColumnIndex, idColumnIndex,*/
+    protected int mapColumnIndex, showFootprintColumnIndex,
+//            bndrColumnIndex,
             filenameColumnIndex;
 
     public ColorImageGenerationPanel()
@@ -106,12 +103,8 @@ public class ColorImageGenerationPanel extends JPanel // implements
         scrollPane_1.setPreferredSize(new java.awt.Dimension(300, 100));
         mapColumnIndex = 0;
         showFootprintColumnIndex = 1;
-//        frusColumnIndex = 2;
-        bndrColumnIndex = 2;
-//        idColumnIndex = 4;
-        filenameColumnIndex = 3;
-//        dateColumnIndex = 6;
-
+//        bndrColumnIndex = 2;
+        filenameColumnIndex = 2;
     }
 
     public ColorImageGenerationPanel(LayoutManager layout)
@@ -233,24 +226,9 @@ public class ColorImageGenerationPanel extends JPanel // implements
         return showFootprintColumnIndex;
     }
 
-//    public int getFrusColumnIndex()
+//    public int getBndrColumnIndex()
 //    {
-//        return frusColumnIndex;
-//    }
-
-    public int getBndrColumnIndex()
-    {
-        return bndrColumnIndex;
-    }
-
-//    public int getDateColumnIndex()
-//    {
-//        return dateColumnIndex;
-//    }
-//
-//    public int getIdColumnIndex()
-//    {
-//        return idColumnIndex;
+//        return bndrColumnIndex;
 //    }
 
     public int getFilenameColumnIndex()

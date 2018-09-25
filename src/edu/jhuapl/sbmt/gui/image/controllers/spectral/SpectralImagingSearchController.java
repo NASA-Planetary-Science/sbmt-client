@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.cubical;
+package edu.jhuapl.sbmt.gui.image.controllers.spectral;
 
 import javax.swing.JPanel;
 
@@ -23,7 +23,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 
-public class CubicalImagingSearchController
+public class SpectralImagingSearchController
 {
     ImageResultsTableController imageResultsTableController;
     SpectralImageSearchParametersController searchParametersController;
@@ -40,7 +40,7 @@ public class CubicalImagingSearchController
     protected final Renderer renderer;
 
 
-    public CubicalImagingSearchController(SmallBodyViewConfig smallBodyConfig,
+    public SpectralImagingSearchController(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             SbmtSpectrumWindowManager spectrumPanelManager,
@@ -83,70 +83,7 @@ public class CubicalImagingSearchController
         panel.addSubPanel(imageResultsTableController.getPanel());
         panel.addSubPanel(imageCubeController.getPanel());
         panel.addSubPanel(colorImageController.getPanel());
-
-//        pickManager.getDefaultPicker().addPropertyChangeListener(this);
-//
-//        initComponents();
-//
-//        initExtraComponents();
-//
-//        populateMonochromePanel(monochromePanel);
-//
-//        postInitComponents(instrument);
-//
-//        ImageCollection images = (ImageCollection) modelManager
-//                .getModel(getImageCollectionModelName());
-//
-////        imageResultsTableView = new ImageResultsTableView(instrument, images);
-//
-//        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection) modelManager
-//                .getModel(getImageBoundaryCollectionModelName());
-//        imagePopupMenu = new ImagePopupMenu(modelManager, images, boundaries,
-//                infoPanelManager, spectrumPanelManager, renderer, this);
-//        boundaries.addPropertyChangeListener(this);
-//        images.addPropertyChangeListener(this);
-//
-//        viewResultsGalleryButton.setEnabled(enableGallery);
-//
-//        // Setup hierarchical image search
-//        initHierarchicalImageSearch();
-//
-//        final List<List<String>> emptyList = new ArrayList<>();
-//        setImageResults(emptyList);
-
-
-//        //setup Image results panel components
-//        setupImageResultsPanel();
-//
-//        // setup Image Cube Panel components
-//        setupImageCubePanel();
-//
-//        // setup Color Image panel components
-//        setupColorImagePanel();
-//
-//        // setup image search parameters
-//        setupSearchParametersPanel();
     }
-
-//    private void setupImageResultsPanel()
-//    {
-//
-//    }
-//
-//    private void setupImageCubePanel()
-//    {
-//
-//    }
-//
-//    private void setupColorImagePanel()
-//    {
-//
-//    }
-//
-//    private void setupSearchParametersPanel()
-//    {
-//
-//    }
 
     protected void initExtraComponents()
     {

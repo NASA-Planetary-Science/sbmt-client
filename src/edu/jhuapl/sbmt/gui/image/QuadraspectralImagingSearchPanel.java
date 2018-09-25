@@ -44,7 +44,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel implements ActionListener
 {
     private JPanel bandPanel;

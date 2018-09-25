@@ -111,17 +111,15 @@ public class CustomImagesModel extends ImageSearchModel
         for (ImageKey key : keys)
         {
             key.imageType = info.imageType;
-//            key.instrument.type = info.imageType;
             ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
             key.source = source;
-            key.name = getCustomDataFolder() + File.separator + key.name;
+            key.name = getCustomDataFolder() + File.separator + info.imagefilename;
             System.out.println("CustomImagesModel: loadImages: key name " + key.name);
             try
             {
-                ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-                if (!images.containsImage(key))
+                if (!imageCollection.containsImage(key))
                 {
-                    loadImage(key, images);
+                    loadImage(key, imageCollection);
                 }
             }
             catch (Exception e1) {
@@ -132,7 +130,6 @@ public class CustomImagesModel extends ImageSearchModel
 
                 e1.printStackTrace();
             }
-
         }
    }
 
@@ -147,8 +144,7 @@ public class CustomImagesModel extends ImageSearchModel
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         for (ImageKey key : keys)
         {
-            ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-            unloadImage(key, images);
+            unloadImage(key, imageCollection);
         }
    }
 

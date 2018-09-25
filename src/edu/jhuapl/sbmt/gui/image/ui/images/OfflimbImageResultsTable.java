@@ -7,7 +7,6 @@ public class OfflimbImageResultsTable extends ImageResultsTable
 {
     protected int offLimbIndex;
 
-
     public OfflimbImageResultsTable()
     {
         mapColumnIndex = 0;
@@ -22,7 +21,6 @@ public class OfflimbImageResultsTable extends ImageResultsTable
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
-
 
     public int getOffLimbIndex()
     {

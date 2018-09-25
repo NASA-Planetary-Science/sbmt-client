@@ -91,7 +91,6 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         renWin.setInteractorStyle(style);
 
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
-//        vtkImageData displayedImage = (vtkImageData)image.getImage();
 
         // Only allow contrast changing for images with exactly 1 channel
         if (image.getNumberOfComponentsOfOriginalImage() > 1)

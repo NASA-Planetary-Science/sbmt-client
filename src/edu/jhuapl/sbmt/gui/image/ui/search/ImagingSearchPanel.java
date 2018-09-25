@@ -23,5 +23,4 @@ public class ImagingSearchPanel extends JPanel
     {
         containerPanel.add(panel);
     }
-
 }

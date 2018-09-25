@@ -43,11 +43,11 @@ import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
 import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
-import edu.jhuapl.sbmt.gui.image.controllers.cubical.CubicalImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.hyperspectral.OsirisImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
@@ -336,7 +336,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
 //                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-                    JComponent component = new CubicalImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                    JComponent component = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
                     addTab(instrument.instrumentName.toString(), component);
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))

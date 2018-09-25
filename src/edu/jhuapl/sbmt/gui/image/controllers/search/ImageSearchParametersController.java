@@ -55,9 +55,6 @@ public class ImageSearchParametersController
         this.pickManager = pickManager;
         camerasSelected = new LinkedList<Integer>();
         filtersSelected = new LinkedList<Integer>();
-
-
-//        setupSearchParametersPanel();
     }
 
 
@@ -77,17 +74,7 @@ public class ImageSearchParametersController
             }
         });
 
-
-//        panel.getSearchByFilenameCheckBox().setText("Search by Filename");
-//        panel.getSearchByFilenameCheckBox().addItemListener(new java.awt.event.ItemListener() {
-//            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-//                searchByFilenameCheckBoxItemStateChanged(evt);
-//            }
-//        });
-
         JSpinner startSpinner = panel.getStartSpinner();
-
-//        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
         startSpinner.setModel(new javax.swing.SpinnerDateModel(smallBodyConfig.imageSearchDefaultStartDate, null, null, java.util.Calendar.DAY_OF_MONTH));
         startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -100,7 +87,6 @@ public class ImageSearchParametersController
 
 
         panel.getEndDateLabel().setText("End Date:");
-
         JSpinner endSpinner = panel.getEndSpinner();
         endSpinner.setModel(new javax.swing.SpinnerDateModel(smallBodyConfig.imageSearchDefaultEndDate, null, null, java.util.Calendar.DAY_OF_MONTH));
         endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
@@ -253,7 +239,6 @@ public class ImageSearchParametersController
             pickManager.setPickMode(PickMode.DEFAULT);
 
             String searchField = null;
-//            if (panel.getSearchByFilenameCheckBox().isSelected())
             if (panel.getFilenameRadioButton().isSelected())
                 searchField = panel.getSearchByNumberTextField().getText().trim();
 
@@ -349,11 +334,7 @@ public class ImageSearchParametersController
 //                    }
 //                }
             }
-            System.out.println(
-                    "ImageSearchParametersController: submitButtonActionPerformed: filters selected size " + filtersSelected.size());
             List<List<String>> results = null;
-//            System.out.println(
-//                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
             if (model.getInstrument().searchQuery instanceof FixedListQuery)
             {
                 FixedListQuery query = (FixedListQuery) model.getInstrument().searchQuery;
@@ -372,9 +353,6 @@ public class ImageSearchParametersController
                         Ranges.closed(Double.valueOf(panel.getFromResolutionTextField().getText()), Double.valueOf(panel.getToResolutionTextField().getText())),
                         cubeList, imageSource, panel.getHasLimbComboBox().getSelectedIndex());
                 results = model.getInstrument().searchQuery.runQuery(searchMetadata).getResultlist();
-                System.out.println(
-                        "ImageSearchParametersController: submitButtonActionPerformed: results " + results.size());
-
            }
 
             // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
@@ -473,12 +451,6 @@ public class ImageSearchParametersController
             }
         }
     }
-
-//    private void searchByFilenameCheckBoxItemStateChanged(ItemEvent evt)
-//    {
-//        boolean enable = evt.getStateChange() == ItemEvent.SELECTED;
-//        panel.enableFilenameSearch(enable);
-//    }
 
     private void selectRegionButtonActionPerformed(ActionEvent evt)
     {
