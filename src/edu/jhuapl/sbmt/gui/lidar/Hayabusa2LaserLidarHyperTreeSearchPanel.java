@@ -152,7 +152,16 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
 
         Stopwatch sw=new Stopwatch();
         sw.start();
-        TreeSet<Integer> cubeList=((LaserLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(new double[]{Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY}), getSelectedTimeLimits());
+        // get search bounding box
+        if (smallBodyModel.getModelResolution() > 0)
+            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+        else
+            interiorPoly=region.interiorPolyData;
+
+
+        double[] bounds = interiorPoly.GetBounds();
+        double[] rangeLims = new double[] {Double.parseDouble(view.getMinSCRange().getText()), Double.parseDouble(view.getMaxSCRange().getText())};
+        TreeSet<Integer> cubeList=((LaserLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(bounds), getSelectedTimeLimits(), rangeLims);
         System.out.println(cubeList);
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
