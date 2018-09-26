@@ -66,7 +66,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeMetadataArray(spectralInstruments, c.spectralInstruments, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
-        write(hasHypertreeBasedLidarSearch, c.hasLidarData, configMetadata);
+        write(hasHypertreeBasedLidarSearch, c.hasHypertreeBasedLidarSearch, configMetadata);
         write(hasMapmaker, c.hasMapmaker, configMetadata);
         write(hasSpectralData, c.hasSpectralData, configMetadata);
         write(hasLineamentData, c.hasLineamentData, configMetadata);
