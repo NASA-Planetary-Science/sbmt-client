@@ -565,6 +565,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 final Key<double[]> positionKey = Key.of("cameraPosition");
                 final Key<double[]> upKey = Key.of("cameraUp");
                 final Key<SortedMap<String, Metadata>> imagingKey = Key.of("imaging");
+                final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
                 public Metadata store()
@@ -590,6 +591,13 @@ public class SbmtView extends View implements PropertyChangeListener
                     	    }
                     	}
                     	result.put(imagingKey, builder.build());
+                    }
+                    JTabbedPane controlPanel = getControlPanel();
+                    if (controlPanel != null)
+                    {
+                        int selectedIndex = controlPanel.getSelectedIndex();
+                        String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
+                        result.put(currentTabKey, title);
                     }
                     return result;
                 }
@@ -621,6 +629,28 @@ public class SbmtView extends View implements PropertyChangeListener
                                 MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
                                 imagingStateManager.retrieve(imagingMetadata);
                             }
+                        }
+                    }
+                    if (state.hasKey(currentTabKey))
+                    {
+
+                        JTabbedPane controlPanel = getControlPanel();
+                        if (controlPanel != null)
+                        {
+                            int selectedIndex = 0;
+                            String currentTab = state.get(currentTabKey);
+                            if (currentTab != null)
+                            {
+                                for (int index = 0; index < controlPanel.getTabCount(); ++index)
+                                {
+                                    if (currentTab.equalsIgnoreCase(controlPanel.getTitleAt(index)))
+                                    {
+                                        selectedIndex = index;
+                                        break;
+                                    }
+                                }
+                            }
+                            controlPanel.setSelectedIndex(selectedIndex);
                         }
                     }
                 }
