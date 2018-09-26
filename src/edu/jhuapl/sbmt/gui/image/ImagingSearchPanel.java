@@ -3312,6 +3312,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         if (stateManager == null) {
             stateManager = new MetadataManager() {
                 final Key<String> pointingKey = Key.of("pointing");
+                final Key<Boolean> excludeSPCKey = Key.of("excludeSPC");
                 final Key<Date> startDateKey = Key.of("startDate");
                 final Key<Date> endDateKey = Key.of("endDate");
                 final Key<String> limbSelectedKey = Key.of("limb");
@@ -3343,6 +3344,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     ImageSource selectedItem = (ImageSource) sourceComboBox.getSelectedItem();
                     result.put(pointingKey, selectedItem != null ? selectedItem.name() : null);
+
+                    if (excludeGaskellCheckBox.isEnabled()) {
+                        result.put(excludeSPCKey, excludeGaskellCheckBox.isSelected());
+                    }
 
                     result.put(startDateKey, (Date) startSpinner.getValue());
                     result.put(endDateKey, (Date) endSpinner.getValue());
@@ -3435,6 +3440,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
                     String pointing = source.get(pointingKey);
                     sourceComboBox.setSelectedItem(pointing != null ? ImageSource.valueOf(pointing) : null);
+
+                    if (source.hasKey(excludeSPCKey)) {
+                        excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
+                    }
 
                     startSpinner.setValue(source.get(startDateKey));
                     endSpinner.setValue(source.get(endDateKey));
