@@ -7,8 +7,8 @@ import javax.swing.event.ChangeListener;
 import com.jidesoft.swing.RangeSlider;
 
 import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
-import edu.jhuapl.sbmt.gui.image.model.images.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbControlsFrame;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 

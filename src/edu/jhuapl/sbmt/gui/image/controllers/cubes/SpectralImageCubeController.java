@@ -11,7 +11,7 @@ import javax.swing.event.ChangeListener;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
+import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.spectral.SpectralImageCubeGenerationPanel;
@@ -20,12 +20,12 @@ import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 
-public class SpectralImageCubeGenerationController extends ImageCubeGenerationController
+public class SpectralImageCubeController extends ImageCubeController
 {
     private int currentSlice = 0;
 
-    public SpectralImageCubeGenerationController(ImageSearchModel model,
-            ImageCubeGenerationModel cubeModel,
+    public SpectralImageCubeController(ImageSearchModel model,
+            ImageCubeModel cubeModel,
             SbmtInfoWindowManager infoPanelManager,
             ImageCubePopupMenu imageCubePopupMenu,
             SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer)

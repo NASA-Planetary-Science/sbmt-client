@@ -12,7 +12,6 @@ import nom.tam.fits.FitsException;
 
 public class ColorImageModel
 {
-
     private ImageKey selectedRedKey;
     private ImageKey selectedGreenKey;
     private ImageKey selectedBlueKey;

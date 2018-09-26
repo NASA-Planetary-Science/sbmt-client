@@ -27,7 +27,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
+import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
@@ -42,25 +42,23 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
-public class ImageCubeGenerationController
+public class ImageCubeController
 {
-
     protected ImageSearchModel model;
-    protected ImageCubeGenerationModel cubeModel;
+    protected ImageCubeModel cubeModel;
     protected ImageCubeGenerationPanel panel;
     private SbmtInfoWindowManager infoPanelManager;
     private ImageCubePopupMenu imageCubePopupMenu;
     private SbmtSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
     ImageCubeCollection imageCubes;
-    private int currentSlice = 0;
     private StringRenderer stringRenderer;
     private ImageCubeResultsTableModeListener tableModelListener;
     private ImageCubeResultsPropertyChangeListener propertyChangeListener;
     private PerspectiveImageBoundaryCollection boundaries;
 
-    public ImageCubeGenerationController(ImageSearchModel model,
-            ImageCubeGenerationModel cubeModel,
+    public ImageCubeController(ImageSearchModel model,
+            ImageCubeModel cubeModel,
             SbmtInfoWindowManager infoPanelManager,
             ImageCubePopupMenu imageCubePopupMenu,
             SbmtSpectrumWindowManager spectrumPanelManager, Renderer renderer)
@@ -114,7 +112,6 @@ public class ImageCubeGenerationController
         String[] columnNames = new String[]{
                 "Map",
                 "Show",
-//                "Bndr",
                 "Filename",
         };
         panel.getImageCubeTable().setModel(new ImageCubesTableModel(new Object[0][3], columnNames));
@@ -122,10 +119,8 @@ public class ImageCubeGenerationController
         panel.getImageCubeTable().setDefaultRenderer(String.class, stringRenderer);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setPreferredWidth(35);
-//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getMapColumnIndex()).setResizable(true);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
-//        panel.getImageCubeTable().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setPreferredWidth(250);
         panel.getImageCubeTable().getModel().addTableModelListener(tableModelListener);
         imageCubes.addPropertyChangeListener(propertyChangeListener);
@@ -175,7 +170,6 @@ public class ImageCubeGenerationController
                     imageCubesDisplayedList.clearSelection();
                     imageCubesDisplayedList.setRowSelectionInterval(index, index);
                 }
-//                ImageCubeKey colorKey = (ImageCubeKey)((TableModel)imageCubesDisplayedList.getModel()).get(index);
                 ImageCube image = imageCubes.getLoadedImages().get(index);
                 ImageCubeKey imageCubeKey = image.getImageCubeKey();
                 imageCubePopupMenu.setCurrentImage(imageCubeKey);
@@ -245,7 +239,6 @@ public class ImageCubeGenerationController
             int mapColumnIndex = panel.getMapColumnIndex();
             int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
             int filenameColumnIndex = panel.getFilenameColumnIndex();
-//            int bndrColumnIndex = panel.getBndrColumnIndex();
             ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
             try
             {
@@ -257,7 +250,6 @@ public class ImageCubeGenerationController
                     int i = imageCubesDisplayedList.getRowCount();
                     imageCubesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
                     imageCubesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
-//                    imageCubesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
                     imageCubesDisplayedList.setValueAt(imageCubeKey.toString(), i-1, filenameColumnIndex);
 
                     if(multipleFrustumVisible)
@@ -327,28 +319,6 @@ public class ImageCubeGenerationController
         return panel;
     }
 
-//    private void imageCubesDisplayedListMousePressed(MouseEvent evt) {
-//        imageCubesDisplayedListMaybeShowPopup(evt);
-//    }
-//
-//    private void imageCubesDisplayedListMouseReleased(MouseEvent evt) {
-//        imageCubesDisplayedListMaybeShowPopup(evt);
-//    }
-
-//    public JList getImageCubesDisplayedList()
-//    {
-//        return imageCubesDisplayedList;
-//    }
-//
-//    @Override
-//    public void valueChanged(ListSelectionEvent e)
-//    {
-//        if (!e.getValueIsAdjusting())
-//        {
-//            viewResultsGalleryButton.setEnabled(enableGallery && resultList.getSelectedRowCount() > 0);
-//        }
-//    }
-
     public class ImageCubesTableModel extends DefaultTableModel
     {
         public ImageCubesTableModel(Object[][] data, String[] columnNames)
@@ -415,30 +385,6 @@ public class ImageCubeGenerationController
                 if (imageCubes.getLoadedImages().size() == 0) return;
                 imageCubes.getLoadedImages().get(row).setVisible(visible);
             }
-//            else if (e.getColumn() == panel.getBndrColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                ImageCube image = imageCubes.getLoadedImages().get(row);
-//                ImageKey key = image.getImageCubeKey();//.getFirstImageKey();
-//                System.out.println(
-//                        "ImageCubeGenerationController.ImageCubeResultsTableModeListener: tableChanged: key name " + key.name);
-//                try
-//                {
-//                    if (!boundaries.containsBoundary(key))
-//                        boundaries.addBoundary(key);
-//                    else
-//                        boundaries.removeBoundary(key);
-//                }
-//                catch (Exception e1) {
-//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-//                            "There was an error mapping the boundary.",
-//                            "Error",
-//                            JOptionPane.ERROR_MESSAGE);
-//
-//                    e1.printStackTrace();
-//                }
-//            }
-
         }
     }
 
@@ -468,11 +414,6 @@ public class ImageCubeGenerationController
                         resultList.setValueAt(false, i, panel.getMapColumnIndex());
                         resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
                     }
-                    //TODO fix this - do we track the color image boundaries separately? - DON'T THINK SO
-//                    if (boundaries.containsBoundary(key))
-//                        resultList.setValueAt(true, i, panel.getBndrColumnIndex());
-//                    else
-//                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
                     i++;
                 }
                 resultList.getModel().addTableModelListener(tableModelListener);

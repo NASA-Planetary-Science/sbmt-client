@@ -31,6 +31,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
@@ -100,7 +101,6 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
-        System.out.println("CustomImagesModel: loadImage: type is " + key.imageType);
         images.addImage(key);
     }
 
@@ -114,7 +114,6 @@ public class CustomImagesModel extends ImageSearchModel
             ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
             key.source = source;
             key.name = getCustomDataFolder() + File.separator + info.imagefilename;
-            System.out.println("CustomImagesModel: loadImages: key name " + key.name);
             try
             {
                 if (!imageCollection.containsImage(key))

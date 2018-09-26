@@ -69,9 +69,6 @@ public class ColorImageController
         propertyChangeListener = new ColorImageResultsPropertyChangeListener();
         tableModelListener = new ColorImageResultsTableModeListener();
         setupPanel();
-
-
-
     }
 
     private void setupPanel()
@@ -132,7 +129,6 @@ public class ColorImageController
         String[] columnNames = new String[]{
                 "Map",
                 "Show",
-//                "Bndr",
                 "Filename",
         };
 
@@ -141,10 +137,8 @@ public class ColorImageController
         panel.getDisplayedImageList().setDefaultRenderer(String.class, stringRenderer);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setPreferredWidth(35);
-//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setPreferredWidth(31);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getMapColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
-//        panel.getDisplayedImageList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setPreferredWidth(350);
         panel.getDisplayedImageList().getColumnModel().getColumn(panel.getFilenameColumnIndex()).setResizable(true);
         panel.getDisplayedImageList().getModel().addTableModelListener(tableModelListener);
@@ -189,16 +183,6 @@ public class ColorImageController
     private void removeColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         removeColorImage(evt);
-    }
-
-    private void colorImagesDisplayedListMousePressed(java.awt.event.MouseEvent evt)
-    {
-        colorImagesDisplayedListMaybeShowPopup(evt);
-    }
-
-    private void colorImagesDisplayedListMouseReleased(java.awt.event.MouseEvent evt)
-    {
-        colorImagesDisplayedListMaybeShowPopup(evt);
     }
 
     private void redButtonActionPerformed(java.awt.event.ActionEvent evt)
@@ -402,8 +386,6 @@ public class ColorImageController
                 else
                 {
                     colorModel.unloadImage(key);
-//                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
-//                    panel.getDisplayedImageList().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -413,40 +395,6 @@ public class ColorImageController
                 boolean visible = (Boolean)panel.getDisplayedImageList().getValueAt(row, panel.getShowFootprintColumnIndex());
                 colorImages.getLoadedImages().get(row).setVisible(visible);
             }
-//            else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, model.getInstrument());
-//                ImageCollection images = (ImageCollection)modelManager.getModel(model.getImageCollectionModelName());
-//                if (images.containsImage(key))
-//                {
-//                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-//                    image.setShowFrustum(!image.isFrustumShowing());
-//                }
-//            }
-//            else if (e.getColumn() == panel.getBndrColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                ColorImage image = colorImages.getLoadedImages().get(row);
-//                ImageKey key = image.getColorKey().getImageKey();
-//                try
-//                {
-//                    if (!boundaries.containsBoundary(key))
-//                        boundaries.addBoundary(key);
-//                    else
-//                        boundaries.removeBoundary(key);
-//                }
-//                catch (Exception e1) {
-//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-//                            "There was an error mapping the boundary.",
-//                            "Error",
-//                            JOptionPane.ERROR_MESSAGE);
-//
-//                    e1.printStackTrace();
-//                }
-//            }
-
         }
     }
 
@@ -463,68 +411,23 @@ public class ColorImageController
                 int i=0;
                 for (ColorImage colorImage : colorImages.getLoadedImages())
                 {
-//                    ColorImageKey key = colorImage.getColorKey();
                     if (colorImages.getImages().contains(colorImage))
                     {
                         resultList.setValueAt(true, i, panel.getMapColumnIndex());
-//                        PerspectiveImage image = (PerspectiveImage) model.getImageCollection().getImage(key);
                         resultList.setValueAt(colorImage.isVisible(), i, panel.getShowFootprintColumnIndex());
-//                        resultList.setValueAt(image.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     }
                     else
                     {
                         resultList.setValueAt(false, i, panel.getMapColumnIndex());
                         resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
-//                        resultList.setValueAt(false, i, panel.getFrusColumnIndex());
                     }
-                    //TODO fix this - do we track the color image boundaries separately? - DON'T THINK SO
-//                    if (boundaries.containsBoundary(key))
-//                        resultList.setValueAt(true, i, panel.getBndrColumnIndex());
-//                    else
-//                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
                     i++;
                 }
 
-
-//                Set<ColorImage> colorImageSet = colorImages.getImages();
-//
-//                int size = colorImageSet.size();
-//                for (int i=0; i<size; ++i)
-
-//                System.out.println(
-//                        "ColorImageController.ColorImageResultsPropertyChangeListener: propertyChange: color image set size " + size);
-//                for (ColorImage image : colorImageSet)
-//                {
-////                    String name = imageRawResults.get(i).get(0);
-//                    String name = image.getImageName();
-//                    ColorImageKey key = image.getColorKey();
-////                    ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-////                    ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-//                    if (colorImages.containsImage(key))
-//                    {
-//                        resultList.setValueAt(true, i, panel.getMapColumnIndex());
-////                        PerspectiveImage image = (PerspectiveImage) model.getImageCollection().getImage(key);
-//                        resultList.setValueAt(image.isVisible(), i, panel.getShowFootprintColumnIndex());
-////                        resultList.setValueAt(image.isFrustumShowing(), i, panel.getFrusColumnIndex());
-//                    }
-//                    else
-//                    {
-//                        resultList.setValueAt(false, i, panel.getMapColumnIndex());
-//                        resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
-////                        resultList.setValueAt(false, i, panel.getFrusColumnIndex());
-//                    }
-//                    //TODO fix this - do we track the color image boundaries separately? - DON'T THINK SO
-////                    if (boundaries.containsBoundary(key))
-////                        resultList.setValueAt(true, i, panel.getBndrColumnIndex());
-////                    else
-////                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
-//                    i++;
-//                }
                 resultList.getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();
             }
         }
     }
-
 }

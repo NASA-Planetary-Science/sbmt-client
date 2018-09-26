@@ -245,6 +245,8 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
+
+        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
     }
 
     protected JTable getResultList()
@@ -491,12 +493,15 @@ public class ImageResultsTableController
 
     private void removeAllImagesButtonActionPerformed(ActionEvent evt)
     {
-        ImageCollection model = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
-        model.removeImages(ImageSource.GASKELL);
-        model.removeImages(ImageSource.GASKELL_UPDATED);
-        model.removeImages(ImageSource.SPICE);
-        model.removeImages(ImageSource.CORRECTED_SPICE);
-        model.removeImages(ImageSource.CORRECTED);
+        System.out.println(
+                "ImageResultsTableController: removeAllImagesButtonActionPerformed: removing all");
+        imageCollection.removeImages(ImageSource.GASKELL);
+        imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
+        imageCollection.removeImages(ImageSource.SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED_SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED);
+        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
+        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
     }
 
     private void prevButtonActionPerformed(ActionEvent evt)

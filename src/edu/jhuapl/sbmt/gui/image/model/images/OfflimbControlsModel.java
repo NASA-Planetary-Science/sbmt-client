@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.gui.image.model.images;
 
 import java.util.Vector;
 
+import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 
 public class OfflimbControlsModel

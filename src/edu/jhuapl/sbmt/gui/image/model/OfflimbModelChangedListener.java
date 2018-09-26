@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.model.images;
+package edu.jhuapl.sbmt.gui.image.model;
 
 public interface OfflimbModelChangedListener
 {

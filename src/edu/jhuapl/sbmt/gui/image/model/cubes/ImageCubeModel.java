@@ -9,12 +9,12 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 
 import nom.tam.fits.FitsException;
 
-public class ImageCubeGenerationModel
+public class ImageCubeModel
 {
     int nbands = 0;
     private ImageCubeCollection images;
 
-    public ImageCubeGenerationModel()
+    public ImageCubeModel()
     {
 
     }

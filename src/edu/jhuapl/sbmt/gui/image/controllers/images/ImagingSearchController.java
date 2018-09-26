@@ -9,10 +9,10 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
-import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeGenerationController;
+import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeController;
 import edu.jhuapl.sbmt.gui.image.controllers.search.ImageSearchParametersController;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
-import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeGenerationModel;
+import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
@@ -26,14 +26,10 @@ public class ImagingSearchController
 {
     private ImageResultsTableController imageResultsTableController;
     private ImageSearchParametersController searchParametersController;
-    private ImageCubeGenerationController imageCubeController;
+    private ImageCubeController imageCubeController;
     private ColorImageController colorImageController;
     private ImagingSearchPanel panel;
-    private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
-    private final SbmtInfoWindowManager infoPanelManager;
-    private final SbmtSpectrumWindowManager spectrumPanelManager;
-    private final PickManager pickManager;
     protected final Renderer renderer;
 
 
@@ -44,12 +40,8 @@ public class ImagingSearchController
             final PickManager pickManager, Renderer renderer,
             ImagingInstrument instrument)
     {
-        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
-        this.infoPanelManager = infoPanelManager;
-        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
-        this.pickManager = pickManager;
 
         ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
@@ -61,11 +53,11 @@ public class ImagingSearchController
         this.searchParametersController = new ImageSearchParametersController(imageSearchModel, pickManager);
         this.searchParametersController.setupSearchParametersPanel();
 
-        ImageCubeGenerationModel cubeModel = new ImageCubeGenerationModel();
+        ImageCubeModel cubeModel = new ImageCubeModel();
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         cubeModel.setImages(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
-        this.imageCubeController = new ImageCubeGenerationController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
+        this.imageCubeController = new ImageCubeController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
         ColorImageModel colorModel = new ColorImageModel();
         this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);
@@ -80,16 +72,6 @@ public class ImagingSearchController
         panel.addSubPanel(imageResultsTableController.getPanel());
         panel.addSubPanel(imageCubeController.getPanel());
         panel.addSubPanel(colorImageController.getPanel());
-    }
-
-    protected void initExtraComponents()
-    {
-        // to be overridden by subclasses
-    }
-
-    protected void populateMonochromePanel(JPanel panel)
-    {
-        // to be overridden by subclasses
     }
 
     public JPanel getPanel()
