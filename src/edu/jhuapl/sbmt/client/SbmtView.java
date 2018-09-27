@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.EmptyMetadata;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
@@ -562,7 +563,6 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Boolean> initializedKey = Key.of("initialized");
                 final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
                 final Key<double[]> positionKey = Key.of("cameraPosition");
                 final Key<double[]> upKey = Key.of("cameraUp");
@@ -572,12 +572,12 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public Metadata store()
                 {
-                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-                    result.put(initializedKey, isInitialized());
                     if (!isInitialized())
                     {
-                        return result;
+                        return EmptyMetadata.instance();
                     }
+
+                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
 
                     result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
 
@@ -614,10 +614,6 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(Metadata state)
                 {
-                    if (!state.get(initializedKey)) {
-                        return;
-                    }
-
                     initialize();
                     if (state.hasKey(resolutionLevelKey))
                     {
