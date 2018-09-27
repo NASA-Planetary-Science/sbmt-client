@@ -3575,10 +3575,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         {
                             e.printStackTrace();
                         }
-                        if (entry.getValue())
-                        {
-
-                        }
                     }
 
                     // Restore mapped image information.
