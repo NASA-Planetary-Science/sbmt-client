@@ -87,7 +87,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private final DEMKey key;
     private final DEMCollection demCollection;
     private final Colorbar refColorbar;
-    private int currentColorIndex = 0;
     private int numColors;
     private boolean syncColoring;
 
@@ -339,7 +338,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
 
                 // Set the color of this new structure
                 int idx = lineModel.getNumberOfStructures() - 1;
-                lineModel.setStructureColor(idx, getNextColor());
+                lineModel.setStructureColor(idx, getDefaultColor(idx));
 
                 pickManager.setPickMode(PickMode.LINE_DRAW);
                 editButton.setSelected(true);
@@ -464,14 +463,18 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), aVtkProp);
     }
 
-    private int[] getNextColor()
+    /**
+     * Helper method that returns the default color for the specified index.
+     *
+     * @param aIdx
+     */
+    private int[] getDefaultColor(int aIdx)
     {
         int numColors = DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE.length;
-        if (currentColorIndex >= numColors)
-            currentColorIndex = 0;
-        Color c = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[currentColorIndex];
-        ++currentColorIndex;
-        return new int[] {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
+        int tmpIdx = aIdx % numColors;
+        Color tmpColor = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[tmpIdx];
+
+        return new int[] {tmpColor.getRed(), tmpColor.getGreen(), tmpColor.getBlue(), tmpColor.getAlpha()};
     }
 
     private void saveView(File file) throws IOException
@@ -570,11 +573,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                 lineModel.insertVertexIntoActivatedStructure(p2);
 
                 ++lineId;
-
-                // Force an increment of the color index. Note this
-                // might not work so well since there may be no relationship
-                // between the colors loaded from the file and the color index.
-                getNextColor();
             }
         }
 
