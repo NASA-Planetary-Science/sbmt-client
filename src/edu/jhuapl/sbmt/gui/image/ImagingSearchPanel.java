@@ -32,6 +32,8 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
@@ -58,6 +60,7 @@ import org.joda.time.DateTimeZone;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
@@ -99,6 +102,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
@@ -3333,6 +3337,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 final Key<Metadata> circleSelectionKey = Key.of("circleSelection");
                 final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
                 final Key<List<String[]>> imageListKey = Key.of("imageList");
+                final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
                 final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
                 final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
                 final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
@@ -3410,12 +3415,31 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     // Save list of images.
                     result.put(imageListKey, listToOutputFormat(imageRawResults));
 
+                    // Save selected images.
+                    ImmutableSortedSet.Builder<String> selected = ImmutableSortedSet.naturalOrder();
+                    int[] selectedIndices = resultList.getSelectedRows();
+                    for (int selectedIndex : selectedIndices)
+                    {
+                        String image = new File(imageRawResults.get(selectedIndex).get(0)).getName();
+                        selected.add(image);
+                    }
+                    result.put(selectedImagesKey, selected.build());
+
+                    // Save boundary info.
+                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+                    for (ImageKey key : boundaries.getImageKeys())
+                    {
+                        PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+                        bndr.put(key.name, boundary.isVisible());
+                    }
+                    result.put(isBoundaryShowingKey, bndr.build());
+
                     // Save mapped image information.
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
-                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
                     ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
                     ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
-                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+
                     for (Image image : imageCollection.getImages())
                     {
                         String name = image.getImageName();
@@ -3426,11 +3450,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             frus.put(name, perspectiveImage.isFrustumShowing());
                         }
                         ImageKey key = image.getKey();
-                        bndr.put(name, boundaries.containsBoundary(key));
                     }
                     result.put(isShowingKey, showing.build());
                     result.put(isFrustrumShowingKey, frus.build());
-                    result.put(isBoundaryShowingKey, bndr.build());
 
                     return result;
                 }
@@ -3513,19 +3535,48 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
                     setImageResults(imageList);
 
+                    // Restore image selections.
+                    Set<String> selected = source.get(selectedImagesKey);
+                    resultList.clearSelection();
+                    for (int index = 0; index < resultList.getRowCount(); ++index)
+                    {
+                        String image = new File(imageRawResults.get(index).get(0)).getName();
+                        if (selected.contains(image)) {
+                            resultList.addRowSelectionInterval(index, index);
+                        }
+                    }
+
+                    // Restore boundaries.
+                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
+                    boundaries.removeAllBoundaries();
+                    for (Entry<String, Boolean> entry : bndr.entrySet())
+                    {
+                        try
+                        {
+                            ImageKey imageKey = createImageKey(entry.getKey(), sourceOfLastQuery, instrument);
+                            boundaries.addBoundary(imageKey);
+                            boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                        if (entry.getValue())
+                        {
+
+                        }
+                    }
+
                     // Restore mapped image information.
                     ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
                     Map<String, Boolean> showing = source.get(isShowingKey);
                     Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
-                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
                     for (String name : showing.keySet())
                     {
-                        // Why on earth does this work to recreate the list correctly but with errors generated?
-                        // loadImages(name);
                         String fullName = instrument.searchQuery.getDataPath() + "/" + name;
                         loadImages(fullName);
                     }
-                    boundaries.removeAllBoundaries();
+
                     for (Image image : imageCollection.getImages())
                     {
                         String name = image.getImageName();
@@ -3534,17 +3585,6 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         {
                             PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                             perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
-                        }
-                        if (bndr.containsKey(name) && bndr.get(name))
-                        {
-                            try
-                            {
-                                boundaries.addBoundary(image.getKey());
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
                         }
                     }
                 }
