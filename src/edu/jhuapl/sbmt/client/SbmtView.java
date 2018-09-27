@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.client;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -562,6 +563,7 @@ public class SbmtView extends View implements PropertyChangeListener
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
                 final Key<Boolean> initializedKey = Key.of("initialized");
+                final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
                 final Key<double[]> positionKey = Key.of("cameraPosition");
                 final Key<double[]> upKey = Key.of("cameraUp");
                 final Key<SortedMap<String, Metadata>> imagingKey = Key.of("imaging");
@@ -572,6 +574,13 @@ public class SbmtView extends View implements PropertyChangeListener
                 {
                     SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
                     result.put(initializedKey, isInitialized());
+                    if (!isInitialized())
+                    {
+                        return result;
+                    }
+
+                    result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
+
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
@@ -610,6 +619,18 @@ public class SbmtView extends View implements PropertyChangeListener
                     }
 
                     initialize();
+                    if (state.hasKey(resolutionLevelKey))
+                    {
+                        try
+                        {
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(resolutionLevelKey));
+                        }
+                        catch (IOException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null)
                     {
