@@ -3347,8 +3347,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 {
                     SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
 
-                    ImageSource selectedItem = (ImageSource) sourceComboBox.getSelectedItem();
-                    result.put(pointingKey, selectedItem != null ? selectedItem.name() : null);
+                    ImageSource pointing = (ImageSource) sourceComboBox.getSelectedItem();
+                    result.put(pointingKey, pointing.name());
 
                     if (excludeGaskellCheckBox.isEnabled()) {
                         result.put(excludeSPCKey, excludeGaskellCheckBox.isSelected());
@@ -3430,8 +3430,13 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
                     for (ImageKey key : boundaries.getImageKeys())
                     {
-                        PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                        bndr.put(key.name, boundary.isVisible());
+                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+                        {
+                            PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+                            String fullName = key.name;
+                            String name = new File(fullName).getName();
+                            bndr.put(name, boundary.isVisible());
+                        }
                     }
                     result.put(isBoundaryShowingKey, bndr.build());
 
@@ -3460,8 +3465,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 @Override
                 public void retrieve(Metadata source)
                 {
-                    String pointing = source.get(pointingKey);
-                    sourceComboBox.setSelectedItem(pointing != null ? ImageSource.valueOf(pointing) : null);
+                    ImageSource pointing = ImageSource.valueOf(source.get(pointingKey));
+
+                    sourceComboBox.setSelectedItem(pointing);
+                    sourceOfLastQuery = pointing;
 
                     if (source.hasKey(excludeSPCKey)) {
                         excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
@@ -3546,14 +3553,21 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         }
                     }
 
-                    // Restore boundaries.
+                    // Restore boundaries. First clear any associated with this model.
+                    for (ImageKey key : boundaries.getImageKeys())
+                    {
+                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+                        {
+                            boundaries.removeBoundary(key);
+                        }
+                    }
                     Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
-                    boundaries.removeAllBoundaries();
                     for (Entry<String, Boolean> entry : bndr.entrySet())
                     {
                         try
                         {
-                            ImageKey imageKey = createImageKey(entry.getKey(), sourceOfLastQuery, instrument);
+                            String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
+                            ImageKey imageKey = createImageKey(fullName, pointing, instrument);
                             boundaries.addBoundary(imageKey);
                             boundaries.getBoundary(imageKey).setVisible(entry.getValue());
                         }
