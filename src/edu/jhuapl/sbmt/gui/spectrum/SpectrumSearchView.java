@@ -3,23 +3,32 @@ package edu.jhuapl.sbmt.gui.spectrum;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.border.TitledBorder;
 
-public class SpectrumSearchView extends JPanel
+import org.joda.time.DateTime;
+
+import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
+import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+
+public class SpectrumSearchView extends SpectrumView
 {
     private JSpinner startSpinner;
     private JSpinner endSpinner;
@@ -31,15 +40,7 @@ public class SpectrumSearchView extends JPanel
     private JFormattedTextField toEmissionTextField;
     private JFormattedTextField fromPhaseTextField;
     private JFormattedTextField toPhaseTextField;
-    private JScrollPane dataSourcesScrollPane;
-    private JButton selectRegionButton;
-    private JButton clearRegionButton;
-    private JButton submitButton;
     private JScrollPane resultsScrollPanel;
-    private JComboBox numberOfFootprintsComboBox;
-    private JButton prevButton;
-    private JButton nextButton;
-    private JButton removeAllFootprintsButton;
     private JCheckBox grayscaleCheckBox;
     private JButton customFunctionsButton;
     private JComboBox redComboBox;
@@ -51,30 +52,25 @@ public class SpectrumSearchView extends JPanel
     private JComboBox blueComboBox;
     private JSpinner blueMinSpinner;
     private JSpinner blueMaxSpinner;
-    private JList resultList;
     protected SpectrumPopupMenu spectrumPopupMenu;
     private JLabel resultsLabel;
     private JPanel resultsLabelPanel;
-    private JButton removeAllBoundariesButton;
     private JPanel dbSearchPanel;
     private JPanel coloringDetailPanel;
     private JPanel coloringPanel;
-    private JComboBox coloringComboBox;
     private JPanel emissionAngleColoringPanel;
     private JPanel rgbColoringPanel;
-    private JButton saveSpectraListButton;
-    private JButton loadSpectraListButton;
+    private JRadioButton L3btn;
+    private JRadioButton L2btn;
+    private JRadioButton ifbtn;
+    private JRadioButton refbtn;
 
-    public SpectrumSearchView()
+    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
     {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        resultList = new JList();
-        JScrollPane scrollPane = new JScrollPane();
-        add(scrollPane);
 
-        JPanel panel = new JPanel();
-        scrollPane.setViewportView(panel);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        super(smallBodyConfig, modelManager, pickManager2, renderer, instrument);
+
+        JPanel panel = getPanel();
 
         dbSearchPanel = new JPanel();
         dbSearchPanel.setBorder(new TitledBorder(null, "Search Parameters", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -92,7 +88,9 @@ public class SpectrumSearchView extends JPanel
         panel_1.add(horizontalGlue);
 
         startSpinner = new JSpinner();
-        startSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1126411200000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        DateTime start = new DateTime(2017, 1, 1, 0, 0, 0, 0);
+        model.setStartDate(start.toDate());
+        startSpinner.setModel(new javax.swing.SpinnerDateModel(start.toDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
         startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
         startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         startSpinner.setPreferredSize(new java.awt.Dimension(200, 22));
@@ -110,7 +108,9 @@ public class SpectrumSearchView extends JPanel
         panel_2.add(horizontalGlue_1);
 
         endSpinner = new JSpinner();
-        endSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1132462800000L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        DateTime end = new DateTime(2017, 12, 31, 0, 0, 0, 0);
+        model.setEndDate(end.toDate());
+        endSpinner.setModel(new javax.swing.SpinnerDateModel(end.toDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
         endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
         endSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         endSpinner.setPreferredSize(new java.awt.Dimension(200, 22));
@@ -131,6 +131,7 @@ public class SpectrumSearchView extends JPanel
         fromDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromDistanceTextField.setPreferredSize(new Dimension(0, 22));
         fromDistanceTextField.setText("0");
+//        fromDistanceTextField.setEnabled(false);
         fromDistanceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromDistanceTextField.getPreferredSize().height) );
 
         panel_3.add(fromDistanceTextField);
@@ -140,7 +141,8 @@ public class SpectrumSearchView extends JPanel
 
         toDistanceTextField = new JFormattedTextField();
         toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
-        toDistanceTextField.setText("100");
+        toDistanceTextField.setText("5000000");
+//        toDistanceTextField.setEnabled(false);
         toDistanceTextField.setPreferredSize(new Dimension(0, 22));
         toDistanceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toDistanceTextField.getPreferredSize().height) );
 
@@ -162,6 +164,7 @@ public class SpectrumSearchView extends JPanel
         fromIncidenceTextField = new JFormattedTextField();
         fromIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromIncidenceTextField.setText("0");
+//        fromIncidenceTextField.setEnabled(false);
         fromIncidenceTextField.setPreferredSize(new Dimension(0, 22));
         fromIncidenceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromIncidenceTextField.getPreferredSize().height) );
 
@@ -174,6 +177,7 @@ public class SpectrumSearchView extends JPanel
         toIncidenceTextField.setPreferredSize(new Dimension(0, 22));
         toIncidenceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toIncidenceTextField.setText("180");
+//        toIncidenceTextField.setEnabled(false);
         toIncidenceTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toIncidenceTextField.getPreferredSize().height) );
 
         panel_4.add(toIncidenceTextField);
@@ -194,6 +198,7 @@ public class SpectrumSearchView extends JPanel
         fromEmissionTextField = new JFormattedTextField();
         fromEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromEmissionTextField.setText("0");
+//        fromEmissionTextField.setEnabled(false);
         fromEmissionTextField.setPreferredSize(new Dimension(0, 22));
         fromEmissionTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromEmissionTextField.getPreferredSize().height) );
 
@@ -205,6 +210,7 @@ public class SpectrumSearchView extends JPanel
         toEmissionTextField = new JFormattedTextField();
         toEmissionTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toEmissionTextField.setText("180");
+//        toEmissionTextField.setEnabled(false);
         toEmissionTextField.setPreferredSize(new Dimension(0, 22));
         toEmissionTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toEmissionTextField.getPreferredSize().height) );
 
@@ -229,6 +235,7 @@ public class SpectrumSearchView extends JPanel
         fromPhaseTextField.setPreferredSize(new Dimension(0, 22));
         fromPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         fromPhaseTextField.setText("0");
+//        fromPhaseTextField.setEnabled(false);
         fromPhaseTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, fromPhaseTextField.getPreferredSize().height) );
 
         panel_6.add(fromPhaseTextField);
@@ -239,6 +246,7 @@ public class SpectrumSearchView extends JPanel
         toPhaseTextField = new JFormattedTextField();
         toPhaseTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
         toPhaseTextField.setText("180");
+//        toPhaseTextField.setEnabled(false);
         toPhaseTextField.setPreferredSize(new Dimension(0, 22));
         toPhaseTextField.setMaximumSize( new Dimension(Integer.MAX_VALUE, toPhaseTextField.getPreferredSize().height) );
 
@@ -247,47 +255,72 @@ public class SpectrumSearchView extends JPanel
         JLabel lblNewLabel_13 = new JLabel("deg");
         panel_6.add(lblNewLabel_13);
 
-        JPanel dataSourcePanel = new JPanel();
-        dataSourcePanel.setBorder(new TitledBorder(null, "Data Sources", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        panel.add(dataSourcePanel);
-        dataSourcePanel.setLayout(new BoxLayout(dataSourcePanel, BoxLayout.Y_AXIS));
 
-        dataSourcesScrollPane = new JScrollPane();
-        dataSourcesScrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
-        dataSourcePanel.add(dataSourcesScrollPane);
+        if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName())) {
+            // add L2 vs L3 checkbox
+            JPanel panel_16 = new JPanel();
+            dbSearchPanel.add(panel_16);
+            panel_16.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
-        JPanel panel_7 = new JPanel();
-        dataSourcePanel.add(panel_7);
-        panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.X_AXIS));
+            JLabel lblOtesLevel = new JLabel("OTES TYPE");
+            panel_16.add(lblOtesLevel);
 
-        selectRegionButton = new JButton("Select Region");
-        panel_7.add(selectRegionButton);
+            L2btn = new JRadioButton("L2");
+            L2btn.setSelected(true);
+            panel_16.add(L2btn);
 
-        clearRegionButton = new JButton("Clear Region");
-        clearRegionButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-        panel_7.add(clearRegionButton);
+            L3btn = new JRadioButton("L3");
+            L3btn.setSelected(false);
+            panel_16.add(L3btn);
 
-        submitButton = new JButton("Search");
-        panel_7.add(submitButton);
+            ButtonGroup group = new ButtonGroup();
+            group.add(L2btn);
+            group.add(L3btn);
+        }
+        if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) {
+            // add L2 vs L3 checkbox
+            JPanel panel_16 = new JPanel();
+            dbSearchPanel.add(panel_16);
+            panel_16.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+            JLabel lblOvirs = new JLabel("OVIRS TYPE");
+            panel_16.add(lblOvirs);
+
+            ifbtn = new JRadioButton("I/F");
+            ifbtn.setSelected(true);
+            panel_16.add(ifbtn);
+
+            refbtn = new JRadioButton("REFF");
+            refbtn.setSelected(false);
+            panel_16.add(refbtn);
+
+            ButtonGroup group = new ButtonGroup();
+            group.add(ifbtn);
+            group.add(refbtn);
+        }
+
+
+
+
+        dbSearchPanel.add(getSearchButtonPanel());
+
+
 
         JPanel resultsPanel = new JPanel();
         resultsPanel.setBorder(new TitledBorder(null, "Results", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(resultsPanel);
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
 
-        resultsLabelPanel = new JPanel();
+        resultsLabelPanel = getResultsLabelPanel();
         resultsLabelPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         FlowLayout fl_resultsLabelPanel = (FlowLayout) resultsLabelPanel.getLayout();
         fl_resultsLabelPanel.setAlignment(FlowLayout.LEFT);
         resultsPanel.add(resultsLabelPanel);
 
-        resultsLabel = new JLabel("");
+        resultsLabel = getResultsLabel();
         resultsLabelPanel.add(resultsLabel);
 
-        resultsScrollPanel = new JScrollPane();
+        resultsScrollPanel = getResultsScrollPanel();
         resultsScrollPanel.setPreferredSize(new java.awt.Dimension(150, 150));
         resultsPanel.add(resultsScrollPanel);
 
@@ -297,15 +330,9 @@ public class SpectrumSearchView extends JPanel
 
         JLabel lblNumberFootprints = new JLabel("Number Footprints:");
         panel_8.add(lblNumberFootprints);
-
-        numberOfFootprintsComboBox = new JComboBox();
-        panel_8.add(numberOfFootprintsComboBox);
-
-        prevButton = new JButton("<");
-        panel_8.add(prevButton);
-
-        nextButton = new JButton(">");
-        panel_8.add(nextButton);
+        panel_8.add(getNumberOfFootprintsComboBox());
+        panel_8.add(getPrevButton());
+        panel_8.add(getNextButton());
 
         JPanel panel_9 = new JPanel();
         resultsPanel.add(panel_9);
@@ -315,43 +342,35 @@ public class SpectrumSearchView extends JPanel
         panel_9.add(panel_15);
         panel_15.setLayout(new BoxLayout(panel_15, BoxLayout.X_AXIS));
 
-        saveSpectraListButton = new JButton("Save List");
-        panel_15.add(saveSpectraListButton);
-
-        loadSpectraListButton = new JButton("Load List");
-        panel_15.add(loadSpectraListButton);
+        panel_15.add(getSaveSpectraListButton());
+        panel_15.add(getLoadSpectraListButton());
 
         JPanel panel_14 = new JPanel();
         panel_9.add(panel_14);
         panel_14.setLayout(new BoxLayout(panel_14, BoxLayout.X_AXIS));
 
-        removeAllFootprintsButton = new JButton("Remove All Footprints");
-        panel_14.add(removeAllFootprintsButton);
+        panel_14.add(getRemoveAllFootprintsButton());
+        panel_14.add(getRemoveAllBoundariesButton());
 
-        removeAllBoundariesButton = new JButton("Remove All Boundaries");
-        panel_14.add(removeAllBoundariesButton);
-
-        coloringPanel = new JPanel();
-        coloringPanel.setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        coloringPanel = getColoringPanel();
         panel.add(coloringPanel);
         coloringPanel.setLayout(new BoxLayout(coloringPanel, BoxLayout.Y_AXIS));
 
-        coloringComboBox = new JComboBox();
-        coloringPanel.add(coloringComboBox);
 
-        coloringDetailPanel = new JPanel();
+        coloringPanel.add(getColoringComboBox());
+        coloringDetailPanel = getColoringDetailPanel();
         coloringPanel.add(coloringDetailPanel);
 
-                emissionAngleColoringPanel = new JPanel();
-                emissionAngleColoringPanel.setVisible(false);
-                coloringDetailPanel.setLayout(new BoxLayout(coloringDetailPanel, BoxLayout.Y_AXIS));
-                coloringDetailPanel.add(emissionAngleColoringPanel);
-                emissionAngleColoringPanel.setLayout(new BoxLayout(emissionAngleColoringPanel, BoxLayout.X_AXIS));
+        emissionAngleColoringPanel = getEmissionAngleColoringPanel();
+        emissionAngleColoringPanel.setVisible(false);
+        coloringDetailPanel.setLayout(new BoxLayout(coloringDetailPanel, BoxLayout.Y_AXIS));
+        coloringDetailPanel.add(emissionAngleColoringPanel);
+        emissionAngleColoringPanel.setLayout(new BoxLayout(emissionAngleColoringPanel, BoxLayout.X_AXIS));
 
-                        JLabel lblNewLabel_15 = new JLabel("Coloring by Avg Emission Angle (OREX Scalar Ramp, 0 to 90)");
-                        emissionAngleColoringPanel.add(lblNewLabel_15);
+        JLabel lblNewLabel_15 = new JLabel("Coloring by Avg Emission Angle (OREX Scalar Ramp, 0 to 90)");
+        emissionAngleColoringPanel.add(lblNewLabel_15);
 
-        rgbColoringPanel = new JPanel();
+        rgbColoringPanel = getRgbColoringPanel();
         coloringDetailPanel.add(rgbColoringPanel);
         rgbColoringPanel.setLayout(new BoxLayout(rgbColoringPanel, BoxLayout.Y_AXIS));
 
@@ -359,13 +378,13 @@ public class SpectrumSearchView extends JPanel
         rgbColoringPanel.add(panel_10);
         panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
 
-        grayscaleCheckBox = new JCheckBox("Grayscale");
+        grayscaleCheckBox = getGrayscaleCheckBox();
         panel_10.add(grayscaleCheckBox);
 
         Component horizontalGlue_2 = Box.createHorizontalGlue();
         panel_10.add(horizontalGlue_2);
 
-        customFunctionsButton = new JButton("Custom Formulas");
+        customFunctionsButton = getCustomFunctionsButton();
         panel_10.add(customFunctionsButton);
 
         JPanel panel_11 = new JPanel();
@@ -375,13 +394,14 @@ public class SpectrumSearchView extends JPanel
         JLabel lblRed = new JLabel("Red");
         panel_11.add(lblRed);
 
-        redComboBox = new JComboBox();
+        redComboBox = getRedComboBox();
         panel_11.add(redComboBox);
 
         JLabel lblMin = new JLabel("Min");
         panel_11.add(lblMin);
 
-        redMinSpinner = new JSpinner();
+
+        redMinSpinner = getRedMinSpinner();
         redMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         redMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         redMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -391,7 +411,7 @@ public class SpectrumSearchView extends JPanel
         JLabel lblMax = new JLabel("Max");
         panel_11.add(lblMax);
 
-        redMaxSpinner = new JSpinner();
+        redMaxSpinner = getRedMaxSpinner();
         redMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         redMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         redMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -405,13 +425,14 @@ public class SpectrumSearchView extends JPanel
         JLabel lblGreen = new JLabel("Green");
         panel_12.add(lblGreen);
 
-        greenComboBox = new JComboBox();
+
+        greenComboBox = getGreenComboBox();
         panel_12.add(greenComboBox);
 
         JLabel lblMin_1 = new JLabel("Min");
         panel_12.add(lblMin_1);
 
-        greenMinSpinner = new JSpinner();
+        greenMinSpinner = getGreenMinSpinner();
         greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         greenMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         greenMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -421,7 +442,7 @@ public class SpectrumSearchView extends JPanel
         JLabel lblNewLabel_14 = new JLabel("Max");
         panel_12.add(lblNewLabel_14);
 
-        greenMaxSpinner = new JSpinner();
+        greenMaxSpinner = getGreenMaxSpinner();
         greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         greenMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         greenMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -435,13 +456,13 @@ public class SpectrumSearchView extends JPanel
         JLabel lblBlue = new JLabel("Blue");
         panel_13.add(lblBlue);
 
-        blueComboBox = new JComboBox();
+        blueComboBox = getBlueComboBox();
         panel_13.add(blueComboBox);
 
         JLabel lblMin_2 = new JLabel("Min");
         panel_13.add(lblMin_2);
 
-        blueMinSpinner = new JSpinner();
+        blueMinSpinner = getBlueMinSpinner();
         blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         blueMinSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         blueMinSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -451,7 +472,7 @@ public class SpectrumSearchView extends JPanel
         JLabel lblMax_1 = new JLabel("Max");
         panel_13.add(lblMax_1);
 
-        blueMaxSpinner = new JSpinner();
+        blueMaxSpinner = getBlueMaxSpinner();
         blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
         blueMaxSpinner.setPreferredSize(new java.awt.Dimension(100, 28));
         blueMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
@@ -461,142 +482,77 @@ public class SpectrumSearchView extends JPanel
     }
 
 
-    public JSpinner getStartSpinner() {
+
+
+    private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed
+    {//GEN-HEADEREND:event_selectRegionButtonActionPerformed
+        if (getSelectRegionButton().isSelected())
+            getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
+        else
+            getPickManager().setPickMode(PickMode.DEFAULT);
+    }//GEN-LAST:event_selectRegionButtonActionPerformed
+
+    public JSpinner getStartSpinner()
+    {
         return startSpinner;
     }
-    public JSpinner getEndSpinner() {
+
+
+    public JSpinner getEndSpinner()
+    {
         return endSpinner;
     }
-    public JFormattedTextField getFromDistanceTextField() {
+
+
+    public JRadioButton getL2Button()
+    {
+        return L2btn;
+    }
+
+
+    public JFormattedTextField getFromDistanceTextField()
+    {
         return fromDistanceTextField;
     }
-    public JFormattedTextField getToDistanceTextField() {
-        return toDistanceTextField;
-    }
-    public JFormattedTextField getFromIncidenceTextField() {
-        return fromIncidenceTextField;
-    }
-    public JFormattedTextField getToIncidenceTextField() {
-        return toIncidenceTextField;
-    }
-    public JFormattedTextField getFromEmissionTextField() {
+
+    public JFormattedTextField getFromEmissionTextField()
+    {
         return fromEmissionTextField;
     }
-    public JFormattedTextField getToEmissionTextField() {
-        return toEmissionTextField;
+    public JFormattedTextField getFromIncidenceTextField()
+    {
+        return fromIncidenceTextField;
     }
-    public JFormattedTextField getFromPhaseTextField() {
+
+
+    public JFormattedTextField getFromPhaseTextField()
+    {
         return fromPhaseTextField;
     }
-    public JFormattedTextField getToPhaseTextField() {
+    public JFormattedTextField getToDistanceTextField()
+    {
+        return toDistanceTextField;
+    }
+
+    public JFormattedTextField getToEmissionTextField()
+    {
+        return toEmissionTextField;
+    }
+    public JFormattedTextField getToIncidenceTextField()
+    {
+        return toIncidenceTextField;
+    }
+
+
+    public JFormattedTextField getToPhaseTextField()
+    {
         return toPhaseTextField;
     }
-    public JScrollPane getDataSourcesScrollPane() {
-        return dataSourcesScrollPane;
-    }
-    public JButton getSelectRegionButton() {
-        return selectRegionButton;
-    }
-    public JButton getClearRegionButton() {
-        return clearRegionButton;
-    }
-    public JButton getSubmitButton() {
-        return submitButton;
-    }
-    public JScrollPane getResultsScrollPanel() {
-        return resultsScrollPanel;
-    }
-    public JComboBox getNumberOfFootprintsComboBox() {
-        return numberOfFootprintsComboBox;
-    }
-    public JButton getPrevButton() {
-        return prevButton;
-    }
-    public JButton getNextButton() {
-        return nextButton;
-    }
-    public JButton getRemoveAllFootprintsButton() {
-        return removeAllFootprintsButton;
-    }
-    public JCheckBox getGrayscaleCheckBox() {
-        return grayscaleCheckBox;
-    }
-    public JButton getCustomFunctionsButton() {
-        return customFunctionsButton;
-    }
-    public JComboBox getRedComboBox() {
-        return redComboBox;
-    }
-    public JSpinner getRedMinSpinner() {
-        return redMinSpinner;
-    }
-    public JSpinner getRedMaxSpinner() {
-        return redMaxSpinner;
-    }
-    public JComboBox getGreenComboBox() {
-        return greenComboBox;
-    }
-    public JSpinner getGreenMinSpinner() {
-        return greenMinSpinner;
-    }
-    public JSpinner getGreenMaxSpinner() {
-        return greenMaxSpinner;
-    }
-    public JComboBox getBlueComboBox() {
-        return blueComboBox;
-    }
-    public JSpinner getBlueMinSpinner() {
-        return blueMinSpinner;
-    }
-    public JSpinner getBlueMaxSpinner() {
-        return blueMaxSpinner;
-    }
 
-
-    public JList getResultList()
+    public JRadioButton getIFButton()
     {
-        return resultList;
+        return ifbtn;
     }
 
 
-    public SpectrumPopupMenu getSpectrumPopupMenu()
-    {
-        return spectrumPopupMenu;
-    }
-
-
-    public void setSpectrumPopupMenu(SpectrumPopupMenu spectrumPopupMenu)
-    {
-        this.spectrumPopupMenu = spectrumPopupMenu;
-    }
-    public JLabel getResultsLabel() {
-        return resultsLabel;
-    }
-    public JButton getRemoveAllBoundariesButton() {
-        return removeAllBoundariesButton;
-    }
-    public JPanel getDbSearchPanel() {
-        return dbSearchPanel;
-    }
-    public JPanel getColoringDetailPanel() {
-        return coloringDetailPanel;
-    }
-    public JPanel getColoringPanel() {
-        return coloringPanel;
-    }
-    public JComboBox getColoringComboBox() {
-        return coloringComboBox;
-    }
-    public JPanel getEmissionAngleColoringPanel() {
-        return emissionAngleColoringPanel;
-    }
-    public JPanel getRgbColoringPanel() {
-        return rgbColoringPanel;
-    }
-    public JButton getSaveSpectraListButton() {
-        return saveSpectraListButton;
-    }
-    public JButton getLoadSpectraListButton() {
-        return loadSpectraListButton;
-    }
 }

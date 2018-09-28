@@ -56,12 +56,16 @@ public abstract class QueryBase implements Cloneable, MetadataManager
 {
     protected String galleryPath;
     protected Boolean galleryExists;
+    private boolean headless = false;
 
     protected QueryBase(String galleryPath)
     {
         this.galleryPath = galleryPath;
         this.galleryExists = null;
+        if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equalsIgnoreCase("true"))
+            headless = true;
     }
+
 
     @Override
     public QueryBase clone()
@@ -400,11 +404,14 @@ public abstract class QueryBase implements Cloneable, MetadataManager
             String pathToDataFolder
             )
     {
-        // We will reach this if SBMT is unable to connect to server
-        JOptionPane.showMessageDialog(null,
+        if (headless  == false)
+        {
+            // We will reach this if SBMT is unable to connect to server
+            JOptionPane.showMessageDialog(null,
                 "Unable to perform online search. Ignoring search parameters and listing all cached data products.",
-                "Warning",
-                JOptionPane.WARNING_MESSAGE);
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        }
         final List<File> fileList = getCachedFiles(pathToDataFolder);
         final Map<String, File> filesFound = new TreeMap<>();
         for (File file: fileList)
