@@ -391,6 +391,15 @@ public class SbmtView extends View implements PropertyChangeListener
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument).getView();
+//                OTESSearchModel model = new OTESSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//
+//                JComponent component = new SpectrumSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        (SbmtSpectrumWindowManager)getSpectrumPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
@@ -399,7 +408,17 @@ public class SbmtView extends View implements PropertyChangeListener
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument).getView();
-                addTab(instrument.getDisplayName(), component);
+
+//                OVIRSSearchModel model = new OVIRSSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//
+//                JComponent component = new SpectrumSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        (SbmtSpectrumWindowManager)getSpectrumPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
+//                addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
             {

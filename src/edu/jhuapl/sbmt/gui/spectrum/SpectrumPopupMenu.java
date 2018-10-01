@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -39,6 +40,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics.Sample;
@@ -59,7 +61,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     private JMenuItem setIlluminationMenuItem;
     private JMenuItem showOutlineMenuItem;
     //private SmallBodyModel erosModel;
-
+    private List<SpectrumKey> spectrumKeys = new ArrayList<SpectrumKey>();
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
 
@@ -183,6 +185,21 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     SpectralInstrument instrument;
 
+    public void setCurrentSpectrum(SpectrumKey key)
+    {
+        spectrumKeys.clear();
+        spectrumKeys.add(key);
+
+        updateMenuItems();
+    }
+
+    public void setCurrentSpectra(List<SpectrumKey> keys)
+    {
+        spectrumKeys.clear();
+        spectrumKeys.addAll(keys);
+
+        updateMenuItems();
+    }
 
     public void setInstrument(SpectralInstrument instrument)
     {

@@ -308,6 +308,8 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
         {
             boolean needToUpgradeConfigFile = false;
             String[] spectrumNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
+            System.out.println(
+                    "CustomSpectrumPanel: initializeSpectraList: spectrum name size " + spectrumNames.length);
             String[] spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
 //            String[] projectionTypes = configMap.getAsArray(Spectrum.PROJECTION_TYPES);
             String[] spectraTypes = configMap.getAsArray(Spectrum.SPECTRUM_TYPES);
@@ -347,6 +349,8 @@ public class CustomSpectrumPanel extends javax.swing.JPanel implements PropertyC
             int numImages = infofileNames.length;
             for (int i=0; i<numImages; ++i)
             {
+                System.out.println(
+                        "CustomSpectrumPanel: initializeSpectraList: spectrum name " + i + " " + spectrumNames[i]);
                 SpectrumInfo spectrumInfo = new SpectrumInfo();
                 spectrumInfo.name = spectrumNames[i];
                 spectrumInfo.spectrumfilename = spectrumFilenames[i];
