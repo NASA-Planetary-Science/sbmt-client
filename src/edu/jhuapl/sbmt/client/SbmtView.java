@@ -425,7 +425,7 @@ public class SbmtView extends View implements PropertyChangeListener
             }
 
 
-            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
+            boolean supportsEsri=true;//(getConfig().body==ShapeModelBody.RQ36);
             addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
 
 
