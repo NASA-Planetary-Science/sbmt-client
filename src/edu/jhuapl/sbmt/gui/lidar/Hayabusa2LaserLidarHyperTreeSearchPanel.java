@@ -20,6 +20,7 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
+import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LidarHypertreeSkeleton;
 import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
@@ -95,6 +96,8 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
         // read in the skeleton, if it hasn't been read in already
         ((LaserLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
 
+        Hayabusa2LidarHypertreeSkeleton skeleton = ((LaserLidarHyperTreeSearchDataCollection)lidarModel).getCurrentSkeleton();
+
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
@@ -165,6 +168,7 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
         System.out.println(cubeList);
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
+
 
         Picker.setPickingEnabled(false);
 
