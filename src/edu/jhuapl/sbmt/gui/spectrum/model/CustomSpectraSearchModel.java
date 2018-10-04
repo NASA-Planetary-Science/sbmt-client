@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.gui.spectrum.model;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.common.collect.Lists;
 
 import vtk.vtkActor;
-import vtk.vtkAlgorithmOutput;
-import vtk.vtkImageReader2;
-import vtk.vtkImageReader2Factory;
-import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
@@ -34,7 +31,6 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -112,7 +108,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         return customSpectra;
     }
 
-    public void setcustomSpectra(List<SpectrumInfo> customSpectra)
+    public void setCustomSpectra(List<SpectrumInfo> customSpectra)
     {
         this.customSpectra = customSpectra;
     }
@@ -182,7 +178,8 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
    }
 
-    public void saveSpectra(int index, SpectrumInfo oldSpectrumInfo, SpectrumInfo newSpectrumInfo) throws IOException
+    //TODO: UPDATE THIS TO SAVE SPECTRA
+    public void saveSpectrum(int index, SpectrumInfo oldSpectrumInfo, SpectrumInfo newSpectrumInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
 
@@ -194,98 +191,109 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
         else
         {
-            // Check if this image is any of the supported formats
-            if(VtkENVIReader.isENVIFilename(newSpectrumInfo.spectrumfilename)){
-                // We were given an ENVI file (binary or header)
-                // Can assume at this point that both binary + header files exist in the same directory
+            String newFilename = "spectrum-" + uuid + ".spect";
+            String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+            FileUtil.copyFile(newSpectrumInfo.spectrumfilename,  newFilepath);
+            String newFileInfoname = "spectrum-" + uuid + ".INFO";
+            String newFileInfopath = getCustomDataFolder() + File.separator + newFileInfoname;
+            FileUtil.copyFile(newSpectrumInfo.infofilename,  newFileInfopath);
+            // Change newImageInfo.imagefilename to the new location of the file
+            newSpectrumInfo.spectrumfilename = newFilename;
+            newSpectrumInfo.infofilename = newFileInfoname;
+            System.out.println("CustomSpectraSearchModel: saveSpectrum: new file name is " + newFilename);
 
-                // Get filenames of the binary and header files
-                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newSpectrumInfo.spectrumfilename);
-                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newSpectrumInfo.spectrumfilename);
-
-                // Rename newSpectrumInfo as that of the binary file
-                newSpectrumInfo.spectrumfilename = "image-" + uuid;
-
-                // Copy over the binary file
-                Files.copy(new File(enviBinaryFilename),
-                        new File(getCustomDataFolder() + File.separator
-                                + newSpectrumInfo.spectrumfilename));
-
-                // Copy over the header file
-                Files.copy(new File(enviHeaderFilename),
-                        new File(getCustomDataFolder() + File.separator
-                                + VtkENVIReader.getHeaderFilename(newSpectrumInfo.spectrumfilename)));
-            }
-            else if(newSpectrumInfo.spectrumfilename.endsWith(".fit") || newSpectrumInfo.spectrumfilename.endsWith(".fits") ||
-                    newSpectrumInfo.spectrumfilename.endsWith(".FIT") || newSpectrumInfo.spectrumfilename.endsWith(".FITS"))
-            {
-                // Copy FIT file to cache
-                String newFilename = "image-" + uuid + ".fit";
-                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newSpectrumInfo.spectrumfilename,  newFilepath);
-                // Change newSpectrumInfo.spectrumfilename to the new location of the file
-                newSpectrumInfo.spectrumfilename = newFilename;
-            }
-            else
-            {
-
-                // Convert native VTK supported image to PNG and save to cache
-                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newSpectrumInfo.spectrumfilename);
-                if (imageReader == null)
-                {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
-                        "The format of the specified file is not supported.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                imageReader.SetFileName(newSpectrumInfo.spectrumfilename);
-                imageReader.Update();
-
-                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
-                vtkPNGWriter imageWriter = new vtkPNGWriter();
-                imageWriter.SetInputConnection(imageReaderOutput);
-                // We save out the image using a new name that makes use of a UUID
-                newSpectrumInfo.spectrumfilename = "image-" + uuid + ".png";
-                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newSpectrumInfo.spectrumfilename);
-                //imageWriter.SetFileTypeToBinary();
-                imageWriter.Write();
-            }
+//            // Check if this image is any of the supported formats
+//            if(VtkENVIReader.isENVIFilename(newSpectrumInfo.spectrumfilename)){
+//                // We were given an ENVI file (binary or header)
+//                // Can assume at this point that both binary + header files exist in the same directory
+//
+//                // Get filenames of the binary and header files
+//                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newSpectrumInfo.spectrumfilename);
+//                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newSpectrumInfo.spectrumfilename);
+//
+//                // Rename newSpectrumInfo as that of the binary file
+//                newSpectrumInfo.spectrumfilename = "image-" + uuid;
+//
+//                // Copy over the binary file
+//                Files.copy(new File(enviBinaryFilename),
+//                        new File(getCustomDataFolder() + File.separator
+//                                + newSpectrumInfo.spectrumfilename));
+//
+//                // Copy over the header file
+//                Files.copy(new File(enviHeaderFilename),
+//                        new File(getCustomDataFolder() + File.separator
+//                                + VtkENVIReader.getHeaderFilename(newSpectrumInfo.spectrumfilename)));
+//            }
+//            else if(newSpectrumInfo.spectrumfilename.endsWith(".fit") || newSpectrumInfo.spectrumfilename.endsWith(".fits") ||
+//                    newSpectrumInfo.spectrumfilename.endsWith(".FIT") || newSpectrumInfo.spectrumfilename.endsWith(".FITS"))
+//            {
+//                // Copy FIT file to cache
+//                String newFilename = "image-" + uuid + ".fit";
+//                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+//                FileUtil.copyFile(newSpectrumInfo.spectrumfilename,  newFilepath);
+//                // Change newSpectrumInfo.spectrumfilename to the new location of the file
+//                newSpectrumInfo.spectrumfilename = newFilename;
+//            }
+//            else
+//            {
+//
+//                // Convert native VTK supported image to PNG and save to cache
+//                vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
+//                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newSpectrumInfo.spectrumfilename);
+//                if (imageReader == null)
+//                {
+//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+//                        "The format of the specified file is not supported.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//                imageReader.SetFileName(newSpectrumInfo.spectrumfilename);
+//                imageReader.Update();
+//
+//                vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
+//                vtkPNGWriter imageWriter = new vtkPNGWriter();
+//                imageWriter.SetInputConnection(imageReaderOutput);
+//                // We save out the image using a new name that makes use of a UUID
+//                newSpectrumInfo.spectrumfilename = "image-" + uuid + ".png";
+//                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newSpectrumInfo.spectrumfilename);
+//                //imageWriter.SetFileTypeToBinary();
+//                imageWriter.Write();
+//            }
         }
 
-        // Operations specific for perspective projection type
-        if (newSpectrumInfo.projectionType == ProjectionType.PERSPECTIVE)
-        {
-            // If newSpectrumInfo.sumfilename and infofilename are both null, that means we are in edit mode
-            // and should continue to use the existing sumfile
-            if (newSpectrumInfo.sumfilename == null && newSpectrumInfo.infofilename == null)
-            {
-                newSpectrumInfo.sumfilename = oldSpectrumInfo.sumfilename;
-                newSpectrumInfo.infofilename = oldSpectrumInfo.infofilename;
-            }
-            else
-            {
-                if (newSpectrumInfo.sumfilename != null)
-                {
-                    // We save out the sumfile using a new name that makes use of a UUID
-                    String newFilename = "sumfile-" + uuid + ".SUM";
-                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                    FileUtil.copyFile(newSpectrumInfo.sumfilename, newFilepath);
-                    // Change newSpectrumInfo.sumfilename to the new location of the file
-                    newSpectrumInfo.sumfilename = newFilename;
-                }
-                else if (newSpectrumInfo.infofilename != null)
-                {
-                    // We save out the infofile using a new name that makes use of a UUID
-                    String newFilename = "infofile-" + uuid + ".INFO";
-                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                    FileUtil.copyFile(newSpectrumInfo.infofilename, newFilepath);
-                    // Change newSpectrumInfo.infofilename to the new location of the file
-                    newSpectrumInfo.infofilename = newFilename;
-                }
-            }
-        }
+//        // Operations specific for perspective projection type
+//        if (newSpectrumInfo.projectionType == ProjectionType.PERSPECTIVE)
+//        {
+//            // If newSpectrumInfo.sumfilename and infofilename are both null, that means we are in edit mode
+//            // and should continue to use the existing sumfile
+//            if (newSpectrumInfo.sumfilename == null && newSpectrumInfo.infofilename == null)
+//            {
+//                newSpectrumInfo.sumfilename = oldSpectrumInfo.sumfilename;
+//                newSpectrumInfo.infofilename = oldSpectrumInfo.infofilename;
+//            }
+//            else
+//            {
+//                if (newSpectrumInfo.sumfilename != null)
+//                {
+//                    // We save out the sumfile using a new name that makes use of a UUID
+//                    String newFilename = "sumfile-" + uuid + ".SUM";
+//                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+//                    FileUtil.copyFile(newSpectrumInfo.sumfilename, newFilepath);
+//                    // Change newSpectrumInfo.sumfilename to the new location of the file
+//                    newSpectrumInfo.sumfilename = newFilename;
+//                }
+//                else if (newSpectrumInfo.infofilename != null)
+//                {
+//                    // We save out the infofile using a new name that makes use of a UUID
+//                    String newFilename = "infofile-" + uuid + ".INFO";
+//                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+//                    FileUtil.copyFile(newSpectrumInfo.infofilename, newFilepath);
+//                    // Change newSpectrumInfo.infofilename to the new location of the file
+//                    newSpectrumInfo.infofilename = newFilename;
+//                }
+//            }
+//        }
         if (index >= customSpectra.size())
         {
             customSpectra.add(newSpectrumInfo);
@@ -294,9 +302,20 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         {
             customSpectra.set(index, newSpectrumInfo);
         }
+        System.out.println("CustomSpectraSearchModel: saveSpectrum: customSpectra size " + customSpectra.size());
 
+        List<List<String>> tempResults = new ArrayList<List<String>>();
+        for (SpectrumInfo info : customSpectra)
+        {
+            List<String> res = new ArrayList<String>();
+            res.add(info.spectrumfilename);
+            tempResults.add(res);
+        }
+
+        setSpectrumRawResults(tempResults);
         updateConfigFile();
         fireResultsChanged();
+        fireResultsCountChanged(this.results.size());
 
     }
 

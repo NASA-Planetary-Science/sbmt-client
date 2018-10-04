@@ -55,6 +55,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
@@ -490,7 +491,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
-                JComponent component = new SpectrumSearchController(
+                JComponent component = new CustomSpectraSearchController(
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument, model).getPanel();

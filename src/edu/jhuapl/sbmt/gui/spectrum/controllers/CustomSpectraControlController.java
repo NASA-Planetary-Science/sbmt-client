@@ -70,7 +70,7 @@ public class CustomSpectraControlController
             imageInfo = dialog.getSpectrumInfo();
             try
             {
-                saveImage(model.getSpectrumRawResults().size(), null, imageInfo);
+                saveSpectrum(model.getSpectrumRawResults().size(), null, imageInfo);
             }
             catch (IOException e)
             {
@@ -84,7 +84,7 @@ public class CustomSpectraControlController
         model.editButtonActionPerformed();
     }
 
-    private void saveImage(int index, SpectrumInfo oldImageInfo,
+    private void saveSpectrum(int index, SpectrumInfo oldImageInfo,
             SpectrumInfo newImageInfo) throws IOException
     {
         model.saveSpectrum(index, oldImageInfo, newImageInfo);
