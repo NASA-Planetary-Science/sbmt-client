@@ -102,8 +102,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         this.view = new SpectrumSearchView();
         this.model = new SpectrumSearchModel(smallBodyConfig, modelManager, pickManager, renderer);
         this.instrument=instrument;
-
-        view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
+        SpectrumPopupMenu popup = new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer);
+        popup.setInstrument(instrument);
+        view.setSpectrumPopupMenu(popup);
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
         try
@@ -869,6 +870,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 resultList.setSelectedIndex(index);
 //                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(index));
+                System.out.println(
+                        "SpectrumSearchController: maybeShowPopup: setting instrument " + instrument);
                 spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                 spectrumPopupMenu.setSearchPanel(this);

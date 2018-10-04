@@ -61,16 +61,46 @@ public class SpectrumSearchParametersPanel  extends JPanel
     private JPanel auxPanel;
     private JRadioButton parametersRadioButton;
     private JRadioButton filenameRadioButton;
+    private JCheckBox fullCheckBox;
+    private JCheckBox partialCheckBox;
+    private JCheckBox degenerateCheckBox;
 
-    public SpectrumSearchParametersPanel()
+    public SpectrumSearchParametersPanel(boolean isHierarchical)
     {
         setBorder(new TitledBorder(null, "Search Parameters",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        if (isHierarchical) initHierarchicalSearch();
+        else initParameterSearch();
 
+        JPanel panel_10 = new JPanel();
+        add(panel_10);
+        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
+
+        selectRegionButton = new JToggleButton("Select Region");
+        panel_10.add(selectRegionButton);
+
+        clearRegionButton = new JButton("Clear Region");
+        panel_10.add(clearRegionButton);
+
+        submitButton = new JButton("Search");
+        panel_10.add(submitButton);
+
+        Component verticalStrut_1 = Box.createVerticalStrut(20);
+        add(verticalStrut_1);
+    }
+
+    private void initHierarchicalSearch()
+    {
         // TODO: Override and setup in subclass
-        hierarchicalSearchScrollPane = new javax.swing.JScrollPane();
+        hierarchicalSearchScrollPane = new JScrollPane();
+        hierarchicalSearchScrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
+        add(hierarchicalSearchScrollPane);
+    }
 
+
+    private void initParameterSearch()
+    {
         Component verticalStrut_10 = Box.createVerticalStrut(5);
         add(verticalStrut_10);
 
@@ -197,14 +227,14 @@ public class SpectrumSearchParametersPanel  extends JPanel
         hasLimbLabel = new JLabel("Field of View Polygon Type:");
         panel_3.add(hasLimbLabel);
 
-        JCheckBox chckbxNewCheckBox = new JCheckBox("Full");
-        panel_3.add(chckbxNewCheckBox);
+        fullCheckBox = new JCheckBox("Full");
+        panel_3.add(fullCheckBox);
 
-        JCheckBox chckbxNewCheckBox_1 = new JCheckBox("Partial");
-        panel_3.add(chckbxNewCheckBox_1);
+        partialCheckBox = new JCheckBox("Partial");
+        panel_3.add(partialCheckBox);
 
-        JCheckBox checkBox = new JCheckBox("Degenerate");
-        panel_3.add(checkBox);
+        degenerateCheckBox = new JCheckBox("Degenerate");
+        panel_3.add(degenerateCheckBox);
 
         Component horizontalGlue_6 = Box.createHorizontalGlue();
         panel_3.add(horizontalGlue_6);
@@ -344,21 +374,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         Component verticalStrut = Box.createVerticalStrut(20);
         add(verticalStrut);
 
-        JPanel panel_10 = new JPanel();
-        add(panel_10);
-        panel_10.setLayout(new BoxLayout(panel_10, BoxLayout.X_AXIS));
-
-        selectRegionButton = new JToggleButton("Select Region");
-        panel_10.add(selectRegionButton);
-
-        clearRegionButton = new JButton("Clear Region");
-        panel_10.add(clearRegionButton);
-
-        submitButton = new JButton("Search");
-        panel_10.add(submitButton);
-
-        Component verticalStrut_1 = Box.createVerticalStrut(20);
-        add(verticalStrut_1);
 
     }
 
@@ -542,6 +557,21 @@ public class SpectrumSearchParametersPanel  extends JPanel
     public JRadioButton getFilenameRadioButton()
     {
         return filenameRadioButton;
+    }
+
+    public JCheckBox getFullCheckBox()
+    {
+        return fullCheckBox;
+    }
+
+    public JCheckBox getPartialCheckBox()
+    {
+        return partialCheckBox;
+    }
+
+    public JCheckBox getDegenerateCheckBox()
+    {
+        return degenerateCheckBox;
     }
 
 }

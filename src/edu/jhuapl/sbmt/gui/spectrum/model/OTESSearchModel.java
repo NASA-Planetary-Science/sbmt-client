@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.gui.spectrum.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -26,56 +25,34 @@ public class OTESSearchModel extends SpectrumSearchModel
             Renderer renderer, SpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+
+        setRedMaxVal(0.000001);
+        setGreenMaxVal(0.000001);
+        setBlueMaxVal(0.000001);
+
+        setRedIndex(50);
+        setGreenIndex(100);
+        setBlueIndex(150);
     }
 
     @Override
     public void setSpectrumRawResults(List<List<String>> spectrumRawResults)
     {
-//        view.getResultsLabel().setText(results.size() + " spectra matched");
         //TODO This need to really be shifted to use classes and not string representation until the end
 
         List<String> matchedImages=Lists.newArrayList();
         if (matchedImages.size() > 0)
             fileExtension = FilenameUtils.getExtension(matchedImages.get(0));
-        for (List<String> res : results)
-        {
-            String basePath=FilenameUtils.getPath(res.get(0));
-            String filename=FilenameUtils.getBaseName(res.get(0));
 
-            matchedImages.add(basePath + filename + "." + FilenameUtils.getExtension(res.get(0)));
-        }
-
-//        setSpectrumRawResults(matchedImages);
-
-        String[] formattedResults = new String[results.size()];
-
-        // add the results to the list
-        int i=0;
-        for (String str : matchedImages)
-        {
-            formattedResults[i]=FilenameUtils.getBaseName(str) + "." + FilenameUtils.getExtension(str);
-            ++i;
-        }
-
-//        view.getResultList().setListData(formattedResults);
-
-        for (String res : formattedResults)
-        {
-            List<String> result = new ArrayList<String>();
-            result.add(res);
-            this.results.add(result);
-        }
-
-
-        // Show the first set of footprints
-//        setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String)view.getNumberOfFootprintsComboBox().getSelectedItem())));
-//        this.showFootprints(getResultIntervalCurrentlyShown());
+        super.setSpectrumRawResults(spectrumRawResults);
+        fireResultsChanged();
+        fireResultsCountChanged(this.results.size());
     }
 
     @Override
     public String createSpectrumName(int index)
     {
-        return "/" + getSpectrumRawResults().get(index);
+        return getSpectrumRawResults().get(index).get(0);
     }
 
     @Override
@@ -89,5 +66,4 @@ public class OTESSearchModel extends SpectrumSearchModel
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
     }
-
 }

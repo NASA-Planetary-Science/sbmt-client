@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
@@ -27,7 +28,6 @@ public class SpectrumResultsTableView extends JPanel
     private JButton saveSpectraListButton;
     private JButton saveSelectedSpectraListButton;
     private SpectrumPopupMenu spectrumPopupMenu;
-    String[] columnNames;
     protected SpectrumResultsTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
@@ -38,10 +38,7 @@ public class SpectrumResultsTableView extends JPanel
     public SpectrumResultsTableView(SpectralInstrument instrument, SpectraCollection spectrumCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         init();
-        setup();
     }
 
     protected void init()
@@ -61,6 +58,8 @@ public class SpectrumResultsTableView extends JPanel
 
     public void setup()
     {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new TitledBorder(null, "Results", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         JPanel panel_4 = new JPanel();
         add(panel_4);
         panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
@@ -71,7 +70,7 @@ public class SpectrumResultsTableView extends JPanel
         panel_4.add(horizontalGlue);
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setPreferredSize(new java.awt.Dimension(300, 300));
+        scrollPane.setPreferredSize(new java.awt.Dimension(150, 150));
         add(scrollPane);
 
         scrollPane.setViewportView(resultList);

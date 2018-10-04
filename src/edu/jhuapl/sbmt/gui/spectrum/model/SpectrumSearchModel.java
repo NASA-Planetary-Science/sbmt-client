@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -80,17 +81,20 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     private double minPhaseQuery;
     private double maxPhaseQuery;
     private TreePath[] selectedPaths;
-    Double redMinVal;
-    Double redMaxVal;
-    Double greenMinVal;
-    Double greenMaxVal;
-    Double blueMinVal;
-    Double blueMaxVal;
-    boolean greyScaleSelected;
-    int redIndex;
-    int greenIndex;
-    int blueIndex;
+    private Double redMinVal = 0.0;
+    private Double redMaxVal;
+    private Double greenMinVal = 0.0;
+    private Double greenMaxVal;
+    private Double blueMinVal = 0.0;
+    private Double blueMaxVal;
+    private boolean greyScaleSelected;
+    private int redIndex;
+    private int greenIndex;
+    private int blueIndex;
     private String spectrumColoringStyleName;
+    private int numberOfBoundariesToShow;
+    private List<Integer> polygonTypesChecked = new ArrayList<Integer>();
+    protected SpectraCollection spectrumCollection;
 
     public SpectrumSearchModel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
@@ -105,8 +109,24 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
+        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
+        spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
+
     }
 
+    public void loadSearchSpecMetadata()
+    {
+        try
+        {
+            if (spectraSpec != null)
+                spectraSpec.loadMetadata();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     public Date getStartDate()
     {
@@ -140,6 +160,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     public void setSpectrumRawResults(List<List<String>> spectrumRawResults)
     {
         this.results = spectrumRawResults;
+        this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
+        showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());
     }
@@ -250,6 +272,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     new double[]{redMaxVal, greenMaxVal, blueMaxVal},
                     instrument);
         }
+        fireColoringChanged();
     }
 
     public void showFootprints(IdPair idPair)
@@ -258,10 +281,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         int endId = idPair.id2;
 
         SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(spectrumColoringStyleName);
-
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
-//        model.removeAllSpectra();
-
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -271,8 +291,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
             try
             {
-//                String currentSpectrum = results.get(i);
-//                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
                 collection.addSpectrum(createSpectrumName(i), instrument, style);
             }
             catch (IOException e1) {
@@ -281,8 +299,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         }
         updateColoring();
     }
-
-
 
     public void saveSpectrumListButtonActionPerformed(Component view) throws Exception
     {
@@ -339,16 +355,18 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 result.add(words[0]);
                 results.add(result);
             }
-//                setSpectrumSearchResults(results);
-
             populateSpectrumMetadata(lines2);
 
             fireResultsChanged();
+            this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
+            showFootprints(resultIntervalCurrentlyShown);
         }
     }
 
     public void performSearch()
     {
+        results.clear();
+        List<List<String>> tempResults = new ArrayList<List<String>>();
         try
         {
 //            panel.getSelectRegionButton().setSelected(false);
@@ -377,7 +395,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     endDateGreg.get(GregorianCalendar.MILLISECOND),
                     DateTimeZone.UTC);
 
-//            TreeSet<Integer> cubeList = null;
             if (cubeList != null)
                 cubeList.clear();
             AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
@@ -402,7 +419,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
 
             List<Integer> productsSelected;
-//            List<List<String>> results = new ArrayList<List<String>>();
             if(getSmallBodyConfig().hasHierarchicalSpectraSearch)
             {
                 // Sum of products (hierarchical) search: (CAMERA 1 AND FILTER 1) OR ... OR (CAMERA N AND FILTER N)
@@ -430,9 +446,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
                     List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
                     collection.tagSpectraWithMetadata(thisResult, spec);
-                    results.addAll(thisResult);
+                    tempResults.addAll(thisResult);
                 }
-//                results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", ImageSource.CORRECTED_SPICE)).getResultlist();
             }
             else
             {
@@ -440,27 +455,25 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                             Ranges.closed(minDistanceQuery, maxDistanceQuery),
-                            "", null,   //TODO: reinstate polygon types here
+                            "", polygonTypesChecked,
                             Ranges.closed(minIncidenceQuery, maxIncidenceQuery),
                             Ranges.closed(minEmissionQuery, maxEmissionQuery),
                             Ranges.closed(minPhaseQuery, maxPhaseQuery),
                             cubeList);
-
                     DatabaseQueryBase query = (DatabaseQueryBase)queryType;
-                    results = query.runQuery(searchMetadata).getResultlist();
+                    tempResults = query.runQuery(searchMetadata).getResultlist();
                 }
             }
-//            setSpectrumSearchResults(results);
-            fireResultsChanged();
-//            SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-//            collection.tagSpectraWithMetadata(results, spec);
-
+//            this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
+//            showFootprints(resultIntervalCurrentlyShown);
+//            fireResultsChanged();
+            setSpectrumRawResults(tempResults);
         }
         catch (Exception e)
         {
@@ -470,7 +483,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         }
     }
 
-    private void fireResultsChanged()
+    protected void fireResultsChanged()
     {
         for (SpectrumSearchResultsListener listener : resultsListeners)
         {
@@ -478,7 +491,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         }
     }
 
-    private void fireResultsCountChanged(int count)
+    protected void fireResultsCountChanged(int count)
     {
         for (SpectrumSearchResultsListener listener : resultsListeners)
         {
@@ -529,7 +542,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         fireColoringChanged();
     }
 
-    public SpectrumKey[] getSelectedImageKeys()
+    public SpectrumKey[] getSelectedSpectrumKeys()
     {
         int[] indices = selectedImageIndices;
         SpectrumKey[] selectedKeys = new SpectrumKey[indices.length];
@@ -539,12 +552,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             for (int index : indices)
             {
                 String image = results.get(index).get(0);
-                String name = new File(image).getName();
-                image = image.substring(0,image.length()-4);
-//                SpectrumKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
+                SpectrumKey selectedKey = createSpectrumKey(image, instrument);
 //                if (!selectedKey.band.equals("0"))
 //                    name = selectedKey.band + ":" + name;
-//                selectedKeys[i++] = selectedKey;
+                selectedKeys[i++] = selectedKey;
             }
         }
         return selectedKeys;
@@ -774,7 +785,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     }
 
 
-    public int isRedIndex()
+    public int getRedIndex()
     {
         return redIndex;
     }
@@ -786,7 +797,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     }
 
 
-    public int isGreenIndex()
+    public int getGreenIndex()
     {
         return greenIndex;
     }
@@ -798,7 +809,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     }
 
 
-    public int isBlueIndex()
+    public int getBlueIndex()
     {
         return blueIndex;
     }
@@ -819,5 +830,22 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     public void setSpectrumColoringStyleName(String spectrumColoringStyleName)
     {
         this.spectrumColoringStyleName = spectrumColoringStyleName;
+    }
+
+
+    public int getNumberOfBoundariesToShow()
+    {
+        return numberOfBoundariesToShow;
+    }
+
+
+    public void setNumberOfBoundariesToShow(int numberOfBoundariesToShow)
+    {
+        this.numberOfBoundariesToShow = numberOfBoundariesToShow;
+    }
+
+    public void addToPolygonsSelected(int index)
+    {
+        polygonTypesChecked.add(index);
     }
 }

@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.gui.spectrum.ui;
 
 import java.awt.Component;
+import java.text.DecimalFormat;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -10,7 +12,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSpinner.NumberEditor;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
+
+import com.google.common.collect.Lists;
 
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
 
@@ -28,10 +34,16 @@ public class SpectrumColoringPanel extends JPanel
     private JSpinner blueMinSpinner;
     private JSpinner blueMaxSpinner;
     private JPanel coloringDetailPanel;
-    private JPanel coloringPanel;
     private JComboBox<SpectrumColoringStyle> coloringComboBox;
     private JPanel emissionAngleColoringPanel;
     private JPanel rgbColoringPanel;
+    private JLabel redLabel;
+    private JLabel greenLabel;
+    private JLabel greenMinLabel;
+    private JLabel greenMaxLabel;
+    private JLabel blueLabel;
+    private JLabel blueMinLabel;
+    private JLabel blueMaxLabel;
 
     public SpectrumColoringPanel()
     {
@@ -40,14 +52,15 @@ public class SpectrumColoringPanel extends JPanel
 
     private void init()
     {
-        coloringPanel.setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-        coloringPanel.setLayout(new BoxLayout(coloringPanel, BoxLayout.Y_AXIS));
+        setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         coloringComboBox = new JComboBox<SpectrumColoringStyle>();
-        coloringPanel.add(coloringComboBox);
+
+        add(coloringComboBox);
 
         coloringDetailPanel = new JPanel();
-        coloringPanel.add(coloringDetailPanel);
+        add(coloringDetailPanel);
 
         emissionAngleColoringPanel = new JPanel();
         emissionAngleColoringPanel.setVisible(false);
@@ -79,8 +92,8 @@ public class SpectrumColoringPanel extends JPanel
         rgbColoringPanel.add(panel_11);
         panel_11.setLayout(new BoxLayout(panel_11, BoxLayout.X_AXIS));
 
-        JLabel lblRed = new JLabel("Red");
-        panel_11.add(lblRed);
+        redLabel = new JLabel("Red");
+        panel_11.add(redLabel);
 
         redComboBox = new JComboBox<String>();
         panel_11.add(redComboBox);
@@ -109,14 +122,14 @@ public class SpectrumColoringPanel extends JPanel
         rgbColoringPanel.add(panel_12);
         panel_12.setLayout(new BoxLayout(panel_12, BoxLayout.X_AXIS));
 
-        JLabel lblGreen = new JLabel("Green");
-        panel_12.add(lblGreen);
+        greenLabel = new JLabel("Green");
+        panel_12.add(greenLabel);
 
         greenComboBox = new JComboBox<String>();
         panel_12.add(greenComboBox);
 
-        JLabel lblMin_1 = new JLabel("Min");
-        panel_12.add(lblMin_1);
+        greenMinLabel = new JLabel("Min");
+        panel_12.add(greenMinLabel);
 
         greenMinSpinner = new JSpinner();
         greenMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
@@ -125,8 +138,8 @@ public class SpectrumColoringPanel extends JPanel
         greenMinSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
         panel_12.add(greenMinSpinner);
 
-        JLabel lblNewLabel_14 = new JLabel("Max");
-        panel_12.add(lblNewLabel_14);
+        greenMaxLabel = new JLabel("Max");
+        panel_12.add(greenMaxLabel);
 
         greenMaxSpinner = new JSpinner();
         greenMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
@@ -139,14 +152,14 @@ public class SpectrumColoringPanel extends JPanel
         rgbColoringPanel.add(panel_13);
         panel_13.setLayout(new BoxLayout(panel_13, BoxLayout.X_AXIS));
 
-        JLabel lblBlue = new JLabel("Blue");
-        panel_13.add(lblBlue);
+        blueLabel = new JLabel("Blue");
+        panel_13.add(blueLabel);
 
         blueComboBox = new JComboBox<String>();
         panel_13.add(blueComboBox);
 
-        JLabel lblMin_2 = new JLabel("Min");
-        panel_13.add(lblMin_2);
+        blueMinLabel = new JLabel("Min");
+        panel_13.add(blueMinLabel);
 
         blueMinSpinner = new JSpinner();
         blueMinSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
@@ -155,8 +168,8 @@ public class SpectrumColoringPanel extends JPanel
         blueMinSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
         panel_13.add(blueMinSpinner);
 
-        JLabel lblMax_1 = new JLabel("Max");
-        panel_13.add(lblMax_1);
+        blueMaxLabel = new JLabel("Max");
+        panel_13.add(blueMaxLabel);
 
         blueMaxSpinner = new JSpinner();
         blueMaxSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.05d), null, null, Double.valueOf(0.01d)));
@@ -164,6 +177,17 @@ public class SpectrumColoringPanel extends JPanel
         blueMaxSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
         blueMaxSpinner.setMaximumSize(new java.awt.Dimension(100, 22));
         panel_13.add(blueMaxSpinner);
+
+        List<JSpinner> spinners=Lists.newArrayList(blueMaxSpinner, blueMinSpinner, redMaxSpinner, redMinSpinner,
+                greenMaxSpinner, greenMinSpinner);
+
+        for (JSpinner spinner : spinners)
+        {
+            spinner.setModel(new SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(0.0000001d)));
+            NumberEditor editor = (NumberEditor)spinner.getEditor();
+            DecimalFormat format = editor.getFormat();
+            format.setMinimumFractionDigits(8);
+        }
     }
 
     public JCheckBox getGrayscaleCheckBox()
@@ -226,11 +250,6 @@ public class SpectrumColoringPanel extends JPanel
         return coloringDetailPanel;
     }
 
-    public JPanel getColoringPanel()
-    {
-        return coloringPanel;
-    }
-
     public JComboBox<SpectrumColoringStyle> getColoringComboBox()
     {
         return coloringComboBox;
@@ -244,5 +263,40 @@ public class SpectrumColoringPanel extends JPanel
     public JPanel getRgbColoringPanel()
     {
         return rgbColoringPanel;
+    }
+
+    public JLabel getGreenLabel()
+    {
+        return greenLabel;
+    }
+
+    public JLabel getRedLabel()
+    {
+        return redLabel;
+    }
+
+    public JLabel getBlueLabel()
+    {
+        return blueLabel;
+    }
+
+    public JLabel getGreenMinLabel()
+    {
+        return greenMinLabel;
+    }
+
+    public JLabel getGreenMaxLabel()
+    {
+        return greenMaxLabel;
+    }
+
+    public JLabel getBlueMinLabel()
+    {
+        return blueMinLabel;
+    }
+
+    public JLabel getBlueMaxLabel()
+    {
+        return blueMaxLabel;
     }
 }
