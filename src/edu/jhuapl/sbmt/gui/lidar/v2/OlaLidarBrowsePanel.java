@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.lidar;
+package edu.jhuapl.sbmt.gui.lidar.v2;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.util.Scanner;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.LidarBrowsePanel;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
 

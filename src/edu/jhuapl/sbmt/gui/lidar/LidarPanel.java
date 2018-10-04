@@ -8,6 +8,9 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
+import edu.jhuapl.sbmt.gui.lidar.v2.OlaLidarBrowsePanel;
+import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserLidarBrowsePanel;
+import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserLidarHyperTreeSearchPanel;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 
