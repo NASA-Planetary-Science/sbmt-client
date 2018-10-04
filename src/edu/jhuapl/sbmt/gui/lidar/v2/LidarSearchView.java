@@ -177,11 +177,10 @@ public class LidarSearchView extends JPanel
 
         JLabel lblSpacecraftRange = new JLabel("Spacecraft Range:");
         GridBagConstraints gbc_lblSpacecraftRange = new GridBagConstraints();
-        gbc_lblSpacecraftRange.gridheight = 4;
         gbc_lblSpacecraftRange.anchor = GridBagConstraints.WEST;
         gbc_lblSpacecraftRange.insets = new Insets(0, 0, 0, 5);
         gbc_lblSpacecraftRange.gridx = 0;
-        gbc_lblSpacecraftRange.gridy = 1;
+        gbc_lblSpacecraftRange.gridy = 2;
         searchPropertiesPanel.add(lblSpacecraftRange, gbc_lblSpacecraftRange);
 
         minSCRange = new JFormattedTextField();
@@ -202,7 +201,7 @@ public class LidarSearchView extends JPanel
         searchPropertiesPanel.add(lblTo, gbc_lblTo);
 
         maxSCRange = new JFormattedTextField();
-        maxSCRange.setText("5000000");
+        maxSCRange.setText("500");
         GridBagConstraints gbc_maxSCRange = new GridBagConstraints();
         gbc_maxSCRange.fill = GridBagConstraints.BOTH;
         gbc_maxSCRange.insets = new Insets(0, 0, 5, 5);
