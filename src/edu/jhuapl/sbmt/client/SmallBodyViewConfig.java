@@ -2752,7 +2752,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
-                    tir
+//                    tir
             };
 
             c.imageSearchFilterNames = new String[]{};
@@ -2767,7 +2767,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxResolution = 300.0;
 
 
-            c.hasLidarData=true;
+            c.hasLidarData=false;
             c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
@@ -2830,7 +2830,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam,
-                    tir
+//                    tir
             };
 
             c.imageSearchFilterNames = new String[]{};
@@ -2844,7 +2844,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.hasLidarData=true;
+            c.hasLidarData=false;
             c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
@@ -3605,7 +3605,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    oncCam, tirCam
+                    oncCam //, tirCam
             };
 
             c.imageSearchFilterNames = new String[]{};
@@ -3621,7 +3621,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
+            c.hasLidarData=false;
             c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
@@ -4084,11 +4084,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
     }
 
     public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements) {
-    	super(resolutionLabels, resolutionNumberElements);
+        super(resolutionLabels, resolutionNumberElements);
     }
 
     private SmallBodyViewConfig() {
-    	super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+        super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
     }
 
     @Override
