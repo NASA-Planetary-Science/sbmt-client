@@ -9,8 +9,8 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
 import edu.jhuapl.sbmt.gui.lidar.v2.OlaLidarBrowsePanel;
-import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserLidarBrowsePanel;
-import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserLidarHyperTreeSearchPanel;
+import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarBrowsePanel;
+import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHyperTreeSearchPanel;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 
@@ -44,10 +44,10 @@ public class LidarPanel extends JTabbedPane
         }
         else if ( smallBodyConfig.lidarInstrumentName.equals(Instrument.LASER))
         {
-            lidarBrowsePanel = new Hayabusa2LaserLidarBrowsePanel(modelManager, smallBodyConfig);
+            lidarBrowsePanel = new Hayabusa2LidarBrowsePanel(modelManager, smallBodyConfig);
             addTab("Browse", lidarBrowsePanel);
             if (smallBodyConfig.hasHypertreeBasedLidarSearch) {
-                lidarSearchController = new Hayabusa2LaserLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
+                lidarSearchController = new Hayabusa2LidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer);
                 addTab("Search", lidarSearchController.getView());
             }
         }

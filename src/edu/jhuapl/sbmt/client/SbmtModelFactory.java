@@ -43,8 +43,8 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lidar.LaserLidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarBrowseDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
@@ -388,7 +388,7 @@ public class SbmtModelFactory
 
         if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName==Instrument.LASER)
         {
-            models.put(ModelNames.LIDAR_BROWSE, new LaserLidarBrowseDataCollection(smallBodyModel));
+            models.put(ModelNames.LIDAR_BROWSE, new Hayabusa2LidarBrowseDataCollection(smallBodyModel));
         }
         else
         {
@@ -406,7 +406,7 @@ public class SbmtModelFactory
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
                 break;
             case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LaserLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new Hayabusa2LidarHyperTreeSearchDataCollection(smallBodyModel));
                 break;
                 default:
                 	throw new AssertionError();
