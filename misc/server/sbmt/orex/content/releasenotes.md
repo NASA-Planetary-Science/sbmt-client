@@ -4,6 +4,14 @@
 
 # Release Notes
 
+### September 7, 2018 (SBMT-0.6.0)
+
+- Added ability for users to use a selected regional DTM as the main shape on which to map data
+- Made minor enhancements to SBMT GUI
+- Resolved bug that interfered with saving plate data inside polygon structures
+- Resolved bug with backplane generation
+- Resolved bug with Viking images of Phobos and Deimos
+
 ### August 16, 2018 (SBMT-0.5.5.1)
 
 - Fixed a startup problem crash when the preferences file didn't exist

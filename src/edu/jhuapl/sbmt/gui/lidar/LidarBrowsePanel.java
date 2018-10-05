@@ -35,6 +35,7 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileCache;
+import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
@@ -83,6 +84,11 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
         }
     }
 
+    protected void isDataGettable()
+    {
+        FileCache.isFileGettable(lidarModel.getBrowseFileResourcePath());
+    }
+
     public LidarBrowsePanel(
             final ModelManager modelManager)
     {
@@ -98,29 +104,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 
         lidarResultListModel = new DefaultListModel();
 
-        List<LidarDataFileSpec> lidarPaths;
-        try
-        {
-            lidarPaths = lidarModel.getAllLidarPaths();
-            for (LidarDataFileSpec spec : lidarPaths)
-            {
-                lidarResultListModel.addElement(spec);
-            }
-        }
-        catch (FileNotFoundException e2)
-        {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
 
-        //Create the list and put it in a scroll pane.
-        resultList = new JList(lidarResultListModel);
-        resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        resultList.addListSelectionListener(this);
-        listScrollPane = new JScrollPane(resultList);
-
-        resultsPanel.add(resultsLabel, BorderLayout.NORTH);
-        resultsPanel.add(listScrollPane, BorderLayout.CENTER);
 
         final JPanel resultControlsPanel = new JPanel(new BorderLayout());
 
@@ -250,6 +234,40 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
             }
         });
         showSpacecraftPanel.add(showSpacecraftCheckBox);
+
+        try
+        {
+            isDataGettable();
+            List<LidarDataFileSpec> lidarPaths;
+            try
+            {
+                lidarPaths = lidarModel.getAllLidarPaths();
+                for (LidarDataFileSpec spec : lidarPaths)
+                {
+                    lidarResultListModel.addElement(spec);
+                }
+            }
+            catch (FileNotFoundException e2)
+            {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            resultsLabel.setText("No Results Available: Access Not Authorized");
+        }
+
+        //Create the list and put it in a scroll pane.
+        resultList = new JList(lidarResultListModel);
+        resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        resultList.addListSelectionListener(this);
+        listScrollPane = new JScrollPane(resultList);
+
+        resultsPanel.add(resultsLabel, BorderLayout.NORTH);
+        resultsPanel.add(listScrollPane, BorderLayout.CENTER);
+
 
         add(resultsPanel);
         add(timeIntervalChanger);
