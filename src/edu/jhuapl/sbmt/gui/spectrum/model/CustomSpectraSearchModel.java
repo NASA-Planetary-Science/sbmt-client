@@ -308,12 +308,12 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         for (SpectrumInfo info : customSpectra)
         {
             List<String> res = new ArrayList<String>();
-            res.add(info.spectrumfilename);
+            res.add(getCustomDataFolder() + File.separator + info.spectrumfilename);
             tempResults.add(res);
         }
+        updateConfigFile();
 
         setSpectrumRawResults(tempResults);
-        updateConfigFile();
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());
 
@@ -400,7 +400,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     public void updateConfigFile()
     {
         MapUtil configMap = new MapUtil(getConfigFilename());
-
+        System.out.println("CustomSpectraSearchModel: updateConfigFile: config name " + getConfigFilename());
         String spectrumNames = "";
         String spectrumFilenames = "";
         String projectionTypes = "";
@@ -415,7 +415,8 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         for (int i=0; i<customSpectra.size(); ++i)
         {
             SpectrumInfo spectrumInfo = customSpectra.get(i);
-
+            System.out.println(
+                    "CustomSpectraSearchModel: updateConfigFile: adding " + spectrumInfo.spectrumfilename);
             spectrumFilenames += spectrumInfo.spectrumfilename;
             spectrumNames += spectrumInfo.name;
 //            projectionTypes += spectrumInfo.projectionType;
