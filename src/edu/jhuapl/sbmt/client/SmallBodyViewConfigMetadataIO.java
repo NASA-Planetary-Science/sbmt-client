@@ -163,6 +163,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
     private <T> T read(Key<T> key, Metadata configMetadata)
     {
+        if (configMetadata.hasKey(key) == false) return null;
         T value = configMetadata.get(key);
         if (value != null)
             return value;
@@ -208,15 +209,21 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.hasSpectralData = read(hasSpectralData, configMetadata);
         c.hasLineamentData = read(hasLineamentData, configMetadata);
 
-        c.imageSearchDefaultStartDate = new Date(read(imageSearchDefaultStartDate, configMetadata));
-        c.imageSearchDefaultEndDate = new Date(read(imageSearchDefaultEndDate, configMetadata));
+        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
+        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
+        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
+        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
         c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
         c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
         c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
         c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
 
-        c.lidarSearchDefaultStartDate = new Date(read(lidarSearchDefaultStartDate, configMetadata));
-        c.lidarSearchDefaultEndDate = new Date(read(lidarSearchDefaultEndDate, configMetadata));
+        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
+        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
+        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
+        Long lidarSearchDefaultEnd = read(lidarSearchDefaultEndDate, configMetadata);
+        if (lidarSearchDefaultEnd == null) lidarSearchDefaultEnd = 0L;
+        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
         c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
         c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
