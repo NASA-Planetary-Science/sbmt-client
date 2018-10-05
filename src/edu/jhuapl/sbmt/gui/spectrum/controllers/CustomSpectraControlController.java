@@ -89,4 +89,6 @@ public class CustomSpectraControlController
     {
         model.saveSpectrum(index, oldImageInfo, newImageInfo);
     }
+
+
 }

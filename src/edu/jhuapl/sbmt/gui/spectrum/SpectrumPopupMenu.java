@@ -214,7 +214,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
                 {
-                    model.addSpectrum(currentSpectrum, instrument);
+                    model.addSpectrum(currentSpectrum, instrument, false);
                     if (searchPanel!=null)
                         searchPanel.updateColoring();
 

@@ -26,6 +26,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -41,6 +42,7 @@ import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 import nom.tam.fits.FitsException;
@@ -78,7 +80,8 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         List<String> matchedImages=Lists.newArrayList();
         if (matchedImages.size() > 0)
             fileExtension = FilenameUtils.getExtension(matchedImages.get(0));
-
+        System.out.println(
+                "CustomSpectraSearchModel: setSpectrumRawResults: spectrum raw results size " + spectrumRawResults.size());
         super.setSpectrumRawResults(spectrumRawResults);
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());
@@ -87,7 +90,9 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     @Override
     public String createSpectrumName(int index)
     {
-        return getSpectrumRawResults().get(index).get(0);
+        System.out
+                .println("CustomSpectraSearchModel: createSpectrumName: specturm name " + getSpectrumRawResults().get(index).get(1));
+        return getSpectrumRawResults().get(index).get(1);
     }
 
     @Override
@@ -125,6 +130,8 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     protected void fireResultsChanged()
     {
+        System.out
+                .println("CustomSpectraSearchModel: fireResultsChanged: firing listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
             listener.resultsChanged(customSpectra);
@@ -177,6 +184,19 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             unloadSpectrum(key, spectrumCollection);
         }
    }
+
+    public List<SpectrumKey> createSpectrumKeys(String boundaryName, SpectralInstrument instrument)
+    {
+        List<SpectrumKey> result = new ArrayList<SpectrumKey>();
+        result.add(createSpectrumKey(boundaryName, instrument));
+        return result;
+    }
+
+    public SpectrumKey createSpectrumKey(String imagePathName, SpectralInstrument instrument)
+    {
+        SpectrumKey key = new SpectrumKey(getCustomDataFolder() + File.separator + imagePathName, null, null, instrument);
+        return key;
+    }
 
     //TODO: UPDATE THIS TO SAVE SPECTRA
     public void saveSpectrum(int index, SpectrumInfo oldSpectrumInfo, SpectrumInfo newSpectrumInfo) throws IOException
@@ -308,6 +328,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         for (SpectrumInfo info : customSpectra)
         {
             List<String> res = new ArrayList<String>();
+            res.add(info.spectrumfilename);
             res.add(getCustomDataFolder() + File.separator + info.spectrumfilename);
             tempResults.add(res);
         }
@@ -510,9 +531,9 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             int numImages = imageNames.length;
             for (int i=0; i<numImages; ++i)
             {
-                SpectrumInfo SpectrumInfo = new SpectrumInfo();
-                SpectrumInfo.name = imageNames[i];
-                SpectrumInfo.spectrumfilename = imageFilenames[i];
+                SpectrumInfo spectrumInfo = new SpectrumInfo();
+                spectrumInfo.name = imageNames[i];
+                spectrumInfo.spectrumfilename = imageFilenames[i];
 //                SpectrumInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
 //                SpectralInstrument instrument = instrument;
 
@@ -527,19 +548,36 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 //                }
 //                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
 //                {
-                    SpectrumInfo.sumfilename = sumfileNames[i];
-                    SpectrumInfo.infofilename = infofileNames[i];
+                if (sumfileNames.length > 0)
+                    spectrumInfo.sumfilename = sumfileNames[i];
+                if (infofileNames.length > 0)
+                    spectrumInfo.infofilename = infofileNames[i];
 //                }
 
-                customSpectra.add(SpectrumInfo);
+                customSpectra.add(spectrumInfo);
             }
 
             if (needToUpgradeConfigFile)
                 updateConfigFile();
         }
 
-        initialized = true;
+        List<List<String>> tempResults = new ArrayList<List<String>>();
+        for (SpectrumInfo info : customSpectra)
+        {
+            List<String> res = new ArrayList<String>();
+            res.add(info.spectrumfilename);
+            res.add(getCustomDataFolder() + File.separator + info.spectrumfilename);
+            tempResults.add(res);
+        }
+        updateConfigFile();
+        System.out
+                .println("CustomSpectraSearchModel: initializeSpecList: temp results size " + tempResults.size());
+        setSpectrumRawResults(tempResults);
         fireResultsChanged();
+        fireResultsCountChanged(this.results.size());
+
+        initialized = true;
+//        fireResultsChanged();
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -610,5 +648,31 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     public String getCustomDataFolder()
     {
         return getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
+    public void showFootprints(IdPair idPair)
+    {
+        int startId = idPair.id1;
+        int endId = idPair.id2;
+
+        SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(spectrumColoringStyleName);
+        SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
+        for (int i=startId; i<endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if(i >= getSpectrumRawResults().size())
+                break;
+
+            try
+            {
+                collection.addSpectrum(createSpectrumName(i), instrument, style, true);
+
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+        updateColoring();
     }
 }

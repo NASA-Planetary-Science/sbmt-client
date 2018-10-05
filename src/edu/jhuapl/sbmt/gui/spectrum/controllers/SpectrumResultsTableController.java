@@ -408,6 +408,8 @@ public class SpectrumResultsTableController
 
     public void setSpectrumResults(List<List<String>> results)
     {
+        System.out.println(
+                "SpectrumResultsTableController: setSpectrumResults: setting results size " + results.size());
         JTable resultTable = panel.getResultList();
         panel.getResultsLabel().setText(results.size() + " images matched");
         spectrumRawResults = results;
@@ -443,7 +445,7 @@ public class SpectrumResultsTableController
                 if (spectrum != null)
                 {
                     resultTable.setValueAt(true, i, mapColumnIndex);
-                    resultTable.setValueAt(true, i, panel.getShowFootprintColumnIndex());
+//                    resultTable.setValueAt(true, i, panel.getShowFootprintColumnIndex());
                     resultTable.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
                     resultTable.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     resultTable.setValueAt(true, i, bndrColumnIndex);
@@ -456,7 +458,10 @@ public class SpectrumResultsTableController
                 }
 
                 resultTable.setValueAt(i+1, i, idColumnIndex);
-                resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                if (str.size() < 3)
+                    resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                else
+                    resultTable.setValueAt(str.get(2), i, filenameColumnIndex);
                 resultTable.setValueAt(sdf.format(dt), i, dateColumnIndex);
 
                 for (int j : columnsNeedingARenderer)
@@ -493,7 +498,8 @@ public class SpectrumResultsTableController
                 JTable resultList = panel.getResultList();
                 panel.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = model.getSpectrumRawResults().size();
-                if (resultList.getModel().getRowCount() == 0) return;
+//                ((DefaultTableModel)panel.getResultList().getModel()).setRowCount(size);
+                if ((resultList.getModel().getRowCount() == 0) || (size != panel.getResultList().getRowCount()))  return;
                 for (int i=0; i<size; ++i)
                 {
 //                    int actualRow = panel.getResultList().getRowSorter().convertRowIndexToView(i);
@@ -506,7 +512,7 @@ public class SpectrumResultsTableController
                     if (spectrumCollection.containsKey(key))
                     {
                         resultList.setValueAt(true, i, panel.getMapColumnIndex());
-                        resultList.setValueAt(true, i, panel.getShowFootprintColumnIndex());
+//                        resultList.setValueAt(true, i, panel.getShowFootprintColumnIndex());
                         resultList.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
                         resultList.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     }
@@ -555,8 +561,6 @@ public class SpectrumResultsTableController
                 {
                     try
                     {
-                        System.out.println(
-                                "SpectrumResultsTableController.SpectrumResultsTableModeListener: tableChanged: key is " + key);
                         spectra.addSpectrum(key.name, key.instrument, SpectrumColoringStyle.getStyleForName(model.getSpectrumColoringStyleName()));
                         model.updateColoring();
                     }

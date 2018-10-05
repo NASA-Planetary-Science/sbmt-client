@@ -515,7 +515,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             try
             {
                 String currentSpectrum = spectrumRawResults.get(i);
-                model.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
             }
             catch (IOException e1) {
                 e1.printStackTrace();

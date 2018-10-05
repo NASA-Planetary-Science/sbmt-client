@@ -162,6 +162,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         SpectrumInfo info = new SpectrumInfo();
 
         info.spectrumfilename = spectrumPathTextField.getText();
+        info.name = spectrumNameTextField.getText();
         if (LEAVE_UNMODIFIED.equals(info.spectrumfilename) || info.spectrumfilename == null || info.spectrumfilename.isEmpty())
             info.spectrumfilename = null;
 

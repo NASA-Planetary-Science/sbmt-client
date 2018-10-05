@@ -7,4 +7,6 @@ import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 public interface CustomSpectraResultsListener
 {
     public void resultsChanged(List<SpectrumInfo> results);
+
+    public void resultsCountChanged(int count);
 }

@@ -91,7 +91,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     private int redIndex;
     private int greenIndex;
     private int blueIndex;
-    private String spectrumColoringStyleName;
+    protected String spectrumColoringStyleName;
     private int numberOfBoundariesToShow;
     private List<Integer> polygonTypesChecked = new ArrayList<Integer>();
     protected SpectraCollection spectrumCollection;
