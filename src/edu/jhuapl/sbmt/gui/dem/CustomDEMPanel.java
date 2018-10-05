@@ -746,6 +746,11 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         // User specifies DEM(s)
         File[] files = CustomFileChooser.showOpenDialog(this, "Load DEM(s)", new ArrayList<String>(Arrays.asList("fit","fits")), true);
 
+        if (files == null)
+        {
+            return;
+        }
+
         for(File file : files)
         {
             // Check if the file provided is valid

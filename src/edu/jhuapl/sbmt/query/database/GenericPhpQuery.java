@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.query.database;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.SearchMetadata;
 import edu.jhuapl.sbmt.query.SearchResultsMetadata;
 
@@ -151,6 +153,9 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
             double minResolution = Math.min(startResolution, stopResolution) / 1000.0;
             double maxResolution = Math.max(startResolution, stopResolution) / 1000.0;
 
+            boolean tableExists = QueryBase.checkForDatabaseTable(imagesDatabase);
+            if (!tableExists) throw new RuntimeException("Database table " + imagesDatabase + " is not available now.");
+
             HashMap<String, String> args = new HashMap<>();
             args.put("imagesDatabase", imagesDatabase);
             args.put("cubesDatabase", cubesDatabase);
@@ -218,10 +223,15 @@ public class GenericPhpQuery extends DatabaseQueryBase implements MetadataManage
             results = doQuery("searchimages.php", constructUrlArguments(args));
 
         }
-        catch (Exception e)
+        catch (RuntimeException e)
         {
             e.printStackTrace();
             results = getResultsFromFileListOnServer(rootPath + "/imagelist.txt", getDataPath(), getGalleryPath(), searchString);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            results = getCachedResults(getDataPath());
         }
 
         return SearchResultsMetadata.of("", results);   //"" should really be a query name here, if applicable
