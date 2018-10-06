@@ -162,8 +162,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                     File file = CustomFileChooser.showSaveDialog(
                             saveButton.getParent(),
                             "Save Lidar data",
-                            tmp.getName().substring(0, tmp.getName().length()-3));
-
+                            tmp.getName());
                     try
                     {
                         if (file != null)
