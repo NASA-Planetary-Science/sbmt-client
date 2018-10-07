@@ -48,4 +48,9 @@ public class ImageCubeModel
     {
         this.images = images;
     }
+
+    public ImageCubeCollection getImages()
+    {
+        return images;
+    }
 }

@@ -31,7 +31,7 @@ public class SpectralImageCubeGenerationPanel extends ImageCubeGenerationPanel
 
         layerSlider = new JSlider();
         panel.add(layerSlider);
-
+        layerSlider.setEnabled(false);
         panel_1.add(panel);
     }
 

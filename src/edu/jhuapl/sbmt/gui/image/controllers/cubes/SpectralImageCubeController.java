@@ -7,6 +7,8 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -38,6 +40,23 @@ public class SpectralImageCubeController extends ImageCubeController
     {
         this.panel = new SpectralImageCubeGenerationPanel();
         super.setupPanel();
+
+        panel.getImageCubeTable().getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    ImageCube cube = cubeModel.getImages().getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
+                    ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setEnabled(true);
+                    ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(0);
+                    ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(cube.getNimages()-1);
+                }
+            }
+        });
+
+
         ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().addChangeListener(new ChangeListener()
         {
 
