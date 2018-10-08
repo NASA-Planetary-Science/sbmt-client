@@ -1149,7 +1149,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
                 //                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
-                collection.addSpectrum(createSpectrumName(i), instrument, style);
+                Spectrum spectrum = collection.addSpectrum(createSpectrumName(i), instrument, style);
+                spectrum.setSelected();
             }
             catch (IOException e1) {
                 e1.printStackTrace();

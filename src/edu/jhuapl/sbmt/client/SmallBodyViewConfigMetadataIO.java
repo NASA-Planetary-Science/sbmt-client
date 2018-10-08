@@ -66,6 +66,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeMetadataArray(spectralInstruments, c.spectralInstruments, configMetadata);
 
         write(hasLidarData, c.hasLidarData, configMetadata);
+        write(hasHypertreeBasedLidarSearch, c.hasHypertreeBasedLidarSearch, configMetadata);
         write(hasMapmaker, c.hasMapmaker, configMetadata);
         write(hasSpectralData, c.hasSpectralData, configMetadata);
         write(hasLineamentData, c.hasLineamentData, configMetadata);
@@ -83,12 +84,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarBrowseDataSourceMap, c.lidarBrowseDataSourceMap, configMetadata);
 
         write(lidarBrowseXYZIndices, c.lidarBrowseXYZIndices, configMetadata);
+        write(lidarBrowseSpacecraftIndices, c.lidarBrowseSpacecraftIndices, configMetadata);
         write(lidarBrowseIsSpacecraftInSphericalCoordinates, c.lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
         write(lidarBrowseTimeIndex, c.lidarBrowseTimeIndex, configMetadata);
         write(lidarBrowseNoiseIndex, c.lidarBrowseNoiseIndex, configMetadata);
+        write(lidarBrowseOutgoingIntensityIndex, c.lidarBrowseOutgoingIntensityIndex, configMetadata);
+        write(lidarBrowseReceivedIntensityIndex, c.lidarBrowseReceivedIntensityIndex, configMetadata);
         write(lidarBrowseFileListResourcePath, c.lidarBrowseFileListResourcePath, configMetadata);
         write(lidarBrowseNumberHeaderLines, c.lidarBrowseNumberHeaderLines, configMetadata);
         write(lidarBrowseIsInMeters, c.lidarBrowseIsInMeters, configMetadata);
+        write(lidarBrowseIsBinary, c.lidarBrowseIsBinary, configMetadata);
+        write(lidarBrowseBinaryRecordSize, c.lidarBrowseBinaryRecordSize, configMetadata);
         write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
         writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
         return configMetadata;
@@ -205,6 +211,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         }
 
         c.hasLidarData = read(hasLidarData, configMetadata);
+        c.hasHypertreeBasedLidarSearch = read(hasHypertreeBasedLidarSearch, configMetadata);
         c.hasMapmaker = read(hasMapmaker, configMetadata);
         c.hasSpectralData = read(hasSpectralData, configMetadata);
         c.hasLineamentData = read(hasLineamentData, configMetadata);
@@ -228,12 +235,17 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
         c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
+        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
         c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
         c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
         c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
+        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
+        c.lidarBrowseReceivedIntensityIndex = read(lidarBrowseReceivedIntensityIndex, configMetadata);
         c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
         c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
         c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
+        c.lidarBrowseIsBinary = read(lidarBrowseIsBinary, configMetadata);
+        c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
         c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
         c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
 
@@ -263,6 +275,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Metadata[]> spectralInstruments = Key.of("spectralInstruments");
 
     final Key<Boolean> hasLidarData = Key.of("hasLidarData");
+    final Key<Boolean> hasHypertreeBasedLidarSearch = Key.of("hasHypertreeBasedLidarSearch");
     final Key<Boolean> hasMapmaker = Key.of("hasMapmaker");
     final Key<Boolean> hasSpectralData = Key.of("hasSpectralData");
     final Key<Boolean> hasLineamentData = Key.of("hasLineamentData");
@@ -281,15 +294,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Map> lidarBrowseDataSourceMap = Key.of("lidarBrowseDataSourceMap");
 
     final Key<int[]> lidarBrowseXYZIndices = Key.of("lidarBrowseXYZIndices");
+    final Key<int[]> lidarBrowseSpacecraftIndices = Key.of("lidarBrowseSpacecraftIndices");
 
     final Key<Boolean> lidarBrowseIsSpacecraftInSphericalCoordinates = Key.of("lidarBrowseIsSpacecraftInSphericalCoordinates");
 
     final Key<Integer> lidarBrowseTimeIndex = Key.of("lidarBrowseTimeIndex");
     final Key<Integer> lidarBrowseNoiseIndex = Key.of("lidarBrowseNoiseIndex");
+    final Key<Integer> lidarBrowseOutgoingIntensityIndex = Key.of("lidarBrowseOutgoingIntensityIndex");
+    final Key<Integer> lidarBrowseReceivedIntensityIndex = Key.of("lidarBrowseReceivedIntensityIndex");
     final Key<String> lidarBrowseFileListResourcePath = Key.of("lidarBrowseFileListResourcePath");
     final Key<Integer> lidarBrowseNumberHeaderLines = Key.of("lidarBrowseNumberHeaderLines");
     final Key<Boolean> lidarBrowseIsInMeters = Key.of("lidarBrowseIsInMeters");
     final Key<Double> lidarOffsetScale = Key.of("lidarOffsetScale");
+    final Key<Boolean> lidarBrowseIsBinary = Key.of("lidarBrowseIsBinary");
+    final Key<Integer> lidarBrowseBinaryRecordSize = Key.of("lidarBrowseBinaryRecordSize");
     final Key<String> lidarInstrumentName = Key.of("lidarInstrumentName");
 
 }
