@@ -48,7 +48,7 @@ public class SpectralImageCubeController extends ImageCubeController
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    ImageCube cube = cubeModel.getImages().getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
+                    ImageCube cube = cubeModel.getColorImageCollection().getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setEnabled(true);
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(0);
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(cube.getNimages()-1);
@@ -100,7 +100,7 @@ public class SpectralImageCubeController extends ImageCubeController
                             image.loadFootprint();
                             image.firePropertyChange();
                        }
-                       return; // twupy1: Only change band for a single image now even if multiple ones are highlighted since different cubical images can have different numbers of bands.
+                       return;
                     }
                 }
             }

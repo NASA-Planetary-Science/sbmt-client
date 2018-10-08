@@ -117,9 +117,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
-
-//        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
-//        model.removeAllBoundaries();
         boundaries.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)

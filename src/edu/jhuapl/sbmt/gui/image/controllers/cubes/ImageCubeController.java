@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,18 +25,17 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
+import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubeGenerationPanel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
-import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
@@ -78,10 +76,46 @@ public class ImageCubeController
         this.imageCubePopupMenu = imageCubePopupMenu;
         this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
+        ImageCollection imageCollection = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName());
+        this.cubeModel.setImageCollection(imageCollection);
+        this.cubeModel.setImageSearchModel(model);
         this.panel = new ImageCubeGenerationPanel();
         propertyChangeListener = new ImageCubeResultsPropertyChangeListener();
         tableModelListener = new ImageCubeResultsTableModeListener();
         setupPanel();
+
+        cubeModel.addResultsChangedListener(new ImageCubeResultsListener()
+        {
+
+            @Override
+            public void imageCubeAdded(ImageCubeKey imageCubeKey)
+            {
+                DefaultTableModel tableModel = (DefaultTableModel)panel.getImageCubeTable().getModel();
+                tableModel.setRowCount(panel.getImageCubeTable().getRowCount()+1);
+                int i = panel.getImageCubeTable().getRowCount();
+                panel.getImageCubeTable().setValueAt(true, i-1, panel.getMapColumnIndex());
+                panel.getImageCubeTable().setValueAt(true, i-1, panel.getShowFootprintColumnIndex());
+                panel.getImageCubeTable().setValueAt(imageCubeKey.toString(), i-1, panel.getFilenameColumnIndex());
+            }
+
+            @Override
+            public void presentErrorMessage(String message)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                        message,
+                        "Notification",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void presentInformationalMessage(String message)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                        message,
+                        "Notification",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
     }
 
     public void addPropertyChangeListner(PropertyChangeListener listener)
@@ -130,13 +164,11 @@ public class ImageCubeController
             public void mousePressed(MouseEvent e)
             {
                 imageCubesDisplayedListMaybeShowPopup(e);
-//                panel.getImageCubeTable().getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
             }
 
             public void mouseReleased(MouseEvent e)
             {
                 imageCubesDisplayedListMaybeShowPopup(e);
-//                panel.getImageCubeTable().getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
             }
         });
 
@@ -180,118 +212,7 @@ public class ImageCubeController
 
     protected void generateImageCube(ActionEvent e)
     {
-        ImageCollection images = (ImageCollection)model.getModelManager().getModel(model.getImageCollectionModelName());
-        ImageCubeCollection collection = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        JTable imageCubesDisplayedList = panel.getImageCubeTable();
-        ImageKey firstKey = null;
-        boolean multipleFrustumVisible = false;
-
-        List<ImageKey> selectedKeys = new ArrayList<>();
-        for (ImageKey key : model.getSelectedImageKeys()) { selectedKeys.add(key); }
-        for (ImageKey selectedKey : selectedKeys)
-        {
-            PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
-            if(selectedImage == null)
-            {
-                // We are in here because the image is not mapped, display an error message and exit
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "All selected images must be mapped when generating an image cube.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // "first key" is indicated by the first image with a visible frustum
-            if (selectedImage.isFrustumShowing())
-             {
-                if(firstKey == null)
-                {
-                    firstKey = selectedKey;
-                }
-                else
-                {
-                    multipleFrustumVisible = true;
-                }
-            }
-        }
-
-        if(selectedKeys.size() == 0)
-        {
-            // We are in here because no images were selected by user
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                    "At least one image must be selected when generating an image cube.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        else if(firstKey == null)
-        {
-            // We are in here because no frustum was selected by user
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                    "At least one selected image must have its frustum showing when generating an image cube.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        else
-        {
-            PerspectiveImage firstImage = (PerspectiveImage)images.getImage(firstKey);
-            int mapColumnIndex = panel.getMapColumnIndex();
-            int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
-            int filenameColumnIndex = panel.getFilenameColumnIndex();
-            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
-            try
-            {
-                DefaultTableModel tableModel = (DefaultTableModel)imageCubesDisplayedList.getModel();
-                if (!collection.containsImage(imageCubeKey))
-                {
-                    collection.addImage(imageCubeKey);
-                    tableModel.setRowCount(imageCubesDisplayedList.getRowCount()+1);
-                    int i = imageCubesDisplayedList.getRowCount();
-                    imageCubesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
-                    imageCubesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
-                    imageCubesDisplayedList.setValueAt(imageCubeKey.toString(), i-1, filenameColumnIndex);
-
-                    if(multipleFrustumVisible)
-                    {
-                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                                "More than one selected image has a visible frustum, image cube was generated using the first such frustum in order of appearance in the image list.",
-                                "Notification",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                            "Image cube consisting of same images already exists, no new image cube was generated.",
-                            "Notification",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (FitsException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (ImageCube.NoOverlapException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "Cube Generation: The images you selected do not overlap.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        cubeModel.generateImageCube(e);
     }
 
     protected void removeImageCube(ActionEvent e)
@@ -301,8 +222,7 @@ public class ImageCubeController
         if (index >= 0)
         {
             ImageCubeKey imageCubeKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
-            ImageCubeCollection collection = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-            collection.removeImage(imageCubeKey);
+            cubeModel.removeImageCube(imageCubeKey);
         }
     }
 
@@ -374,7 +294,6 @@ public class ImageCubeController
                 {
                     cubeModel.unloadImage(key);
                     panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
-//                    panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getBndrColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -422,5 +341,4 @@ public class ImageCubeController
             }
         }
     }
-
 }

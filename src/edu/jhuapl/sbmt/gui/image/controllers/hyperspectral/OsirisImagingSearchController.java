@@ -32,11 +32,7 @@ public class OsirisImagingSearchController
 
     private ImagingSearchPanel panel;
 
-    private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
-    private final SbmtInfoWindowManager infoPanelManager;
-    private final SbmtSpectrumWindowManager spectrumPanelManager;
-    private final PickManager pickManager;
     protected final Renderer renderer;
 
 
@@ -47,12 +43,8 @@ public class OsirisImagingSearchController
             final PickManager pickManager, Renderer renderer,
             ImagingInstrument instrument)
     {
-        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
-        this.infoPanelManager = infoPanelManager;
-        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
-        this.pickManager = pickManager;
 
         ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
@@ -66,7 +58,7 @@ public class OsirisImagingSearchController
 
         ImageCubeModel cubeModel = new ImageCubeModel();
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        cubeModel.setImages(imageCubeCollection);
+        cubeModel.setColorImageCollection(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
         this.imageCubeController = new ImageCubeController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 
@@ -83,16 +75,6 @@ public class OsirisImagingSearchController
         panel.addSubPanel(imageResultsTableController.getPanel());
         panel.addSubPanel(imageCubeController.getPanel());
         panel.addSubPanel(colorImageController.getPanel());
-    }
-
-    protected void initExtraComponents()
-    {
-        // to be overridden by subclasses
-    }
-
-    protected void populateMonochromePanel(JPanel panel)
-    {
-        // to be overridden by subclasses
     }
 
     public JPanel getPanel()

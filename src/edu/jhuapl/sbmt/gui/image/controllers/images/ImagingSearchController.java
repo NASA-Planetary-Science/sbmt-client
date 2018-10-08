@@ -55,7 +55,7 @@ public class ImagingSearchController
 
         ImageCubeModel cubeModel = new ImageCubeModel();
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)imageSearchModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        cubeModel.setImages(imageCubeCollection);
+        cubeModel.setColorImageCollection(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
         this.imageCubeController = new ImageCubeController(imageSearchModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 

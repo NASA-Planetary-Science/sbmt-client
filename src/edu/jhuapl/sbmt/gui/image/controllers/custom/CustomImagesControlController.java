@@ -64,12 +64,6 @@ public class CustomImagesControlController
         if (dialog.getOkayPressed())
         {
             imageInfo = dialog.getImageInfo();
-
-//            System.out.println("Image Type: " + imageInfo.imageType);
-//            System.out.println("Image Rotate: " + imageInfo.rotation);
-//            System.out.println("Image Flip: " + imageInfo.flip);
-//            PolyhedralModel body = model.getModelManager().getPolyhedralModel();
-
             try
             {
                 saveImage(model.getImageResults().size(), null, imageInfo);
@@ -89,15 +83,4 @@ public class CustomImagesControlController
     {
         model.saveImage(index, oldImageInfo, newImageInfo);
     }
-
-//    /**
-//     * This function unmaps the image from the renderer and maps it again,
-//     * if it is currently shown.
-//     * @throws IOException
-//     * @throws FitsException
-//     */
-//    private void remapImageToRenderer(int index) throws FitsException, IOException
-//    {
-//        model.remapImageToRenderer(index);
-//    }
 }
