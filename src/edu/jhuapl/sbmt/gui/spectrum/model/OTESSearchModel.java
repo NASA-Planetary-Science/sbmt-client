@@ -19,6 +19,7 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 public class OTESSearchModel extends SpectrumSearchModel
 {
     String fileExtension = "";
+//    private OREXSearchSpec spec;
 
     public OTESSearchModel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
@@ -66,4 +67,14 @@ public class OTESSearchModel extends SpectrumSearchModel
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
     }
+
+//    public OREXSearchSpec getSpec()
+//    {
+//        return spec;
+//    }
+//
+//    public void setSpec(OREXSearchSpec spec)
+//    {
+//        this.spec = spec;
+//    }
 }

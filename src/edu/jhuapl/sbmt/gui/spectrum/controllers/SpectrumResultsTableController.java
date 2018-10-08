@@ -408,8 +408,6 @@ public class SpectrumResultsTableController
 
     public void setSpectrumResults(List<List<String>> results)
     {
-        System.out.println(
-                "SpectrumResultsTableController: setSpectrumResults: setting results size " + results.size());
         JTable resultTable = panel.getResultList();
         panel.getResultsLabel().setText(results.size() + " images matched");
         spectrumRawResults = results;

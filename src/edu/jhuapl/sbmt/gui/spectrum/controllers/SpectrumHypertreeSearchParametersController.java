@@ -3,7 +3,9 @@ package edu.jhuapl.sbmt.gui.spectrum.controllers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.Enumeration;
 
+import javax.swing.AbstractButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -11,31 +13,32 @@ import javax.swing.SpinnerDateModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.jidesoft.swing.CheckBoxTree;
-
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
-import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumSearchParametersPanel;
+import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumHypertreeSearchParametersPanel;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 
-public class SpectrumSearchParametersController
+public class SpectrumHypertreeSearchParametersController
 {
-    protected SpectrumSearchParametersPanel panel;
+    protected SpectrumHypertreeSearchParametersPanel panel;
     protected SpectrumSearchModel model;
     private JPanel auxPanel;
     protected PickManager pickManager;
     protected SmallBodyViewConfig smallBodyConfig;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
 
-    public SpectrumSearchParametersController(SpectrumSearchModel model, PickManager pickManager)
+    public SpectrumHypertreeSearchParametersController(SpectrumSearchModel model, PickManager pickManager)
     {
+        System.out.println(
+                "SpectrumHypertreeSearchParametersController: SpectrumHypertreeSearchParametersController: initing");
         this.model = model;
         this.spectraSpec = model.getSpectraSpec();
-        this.panel = new SpectrumSearchParametersPanel(model.getSmallBodyConfig().hasHierarchicalSpectraSearch);
+        this.panel = new SpectrumHypertreeSearchParametersPanel(model.getSmallBodyConfig().hasHierarchicalSpectraSearch);
         this.pickManager = pickManager;
         this.smallBodyConfig = model.getSmallBodyConfig();
     }
@@ -44,13 +47,22 @@ public class SpectrumSearchParametersController
     {
         initHierarchicalImageSearch();
 
-        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+//        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+//        {
+//            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+//                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+//        }
+//        else
         {
-            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
-                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
-        }
-        else
-        {
+            if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
+            {
+                panel.addRadioButtons("OTES TYPE", new String[]{"L2", "L3"});
+            }
+            else
+            {
+                panel.addRadioButtons("OVIRS TYPE", new String[]{"I/F", "REFF"});
+            }
+
 
             panel.getClearRegionButton().addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
@@ -120,7 +132,7 @@ public class SpectrumSearchParametersController
 
             JFormattedTextField toDistanceTextField = panel.getToDistanceTextField();
             toDistanceTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.###"))));
-            toDistanceTextField.setText("1000");
+            toDistanceTextField.setText("5000000");
             toDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
 
             JFormattedTextField fromDistanceTextField = panel.getFromDistanceTextField();
@@ -134,32 +146,32 @@ public class SpectrumSearchParametersController
             model.setEndDate(smallBodyConfig.imageSearchDefaultEndDate);
             ((SpinnerDateModel)endSpinner.getModel()).setValue(model.getEndDate());
 
-            panel.getFullCheckBox().addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    model.addToPolygonsSelected(0);
-                }
-            });
-
-            panel.getPartialCheckBox().addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    model.addToPolygonsSelected(0);
-                }
-            });
-
-            panel.getDegenerateCheckBox().addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    model.addToPolygonsSelected(0);
-                }
-            });
+//            panel.getFullCheckBox().addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    model.addToPolygonsSelected(0);
+//                }
+//            });
+//
+//            panel.getPartialCheckBox().addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    model.addToPolygonsSelected(0);
+//                }
+//            });
+//
+//            panel.getDegenerateCheckBox().addActionListener(new ActionListener()
+//            {
+//                @Override
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    model.addToPolygonsSelected(0);
+//                }
+//            });
 
             panel.getFromDistanceTextField().getDocument().addDocumentListener(new DocumentListener()
             {
@@ -270,7 +282,7 @@ public class SpectrumSearchParametersController
                 }
             });
 
-            toDistanceTextField.setValue(smallBodyConfig.imageSearchDefaultMaxSpacecraftDistance);
+//            toDistanceTextField.setValue(smallBodyConfig.imageSearchDefaultMaxSpacecraftDistance);
 
             model.setStartDate((Date)panel.getStartSpinner().getValue());
             model.setEndDate((Date)panel.getEndSpinner().getValue());
@@ -296,9 +308,43 @@ public class SpectrumSearchParametersController
         panel.getSubmitButton().setText("Search");
         panel.getSubmitButton().addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
-                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
-                model.performSearch();
+//                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+//                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
+                {
+                    String[] names = new String[] {"OTES_L2", "OTES_L3"};
+                    int i=0;
+                    for (Enumeration<AbstractButton> buttons = panel.getGroup().getElements(); buttons.hasMoreElements();) {
+                        AbstractButton button = buttons.nextElement();
+                        if (button.isSelected()) {
+                            model.setSpectraHypertreeSourceName(names[i]);
+                        }
+                        i++;
+                    }
+
+//                    if (panel.getGroup().getSelection())
+//                    if (((SpectrumSearchView) view).getL2Button().isSelected())
+//                        spectraDatasourceName = "OTES_L2";
+//                    else
+//                        spectraDatasourceName = "OTES_L3";
+                }
+                if (model.getInstrument().getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
+                { // only L3 for OVIRS currently
+                    String[] names = new String[] {"OVIRS_IF", "OVIRS_REF"};
+                    int i=0;
+                    for (Enumeration<AbstractButton> buttons = panel.getGroup().getElements(); buttons.hasMoreElements();) {
+                        AbstractButton button = buttons.nextElement();
+                        if (button.isSelected()) {
+                            model.setSpectraHypertreeSourceName(names[i]);
+                        }
+                        i++;
+                    }
+//                    if (((SpectrumSearchView) view).getIFButton().isSelected())
+//                        spectraDatasourceName = "OVIRS_IF";
+//                    else
+//                        spectraDatasourceName = "OVIRS_REF";
+                }
+                model.performHypertreeSearch();
             }
         });
 
@@ -329,10 +375,11 @@ public class SpectrumSearchParametersController
             // Create the tree
             spectraSpec.clearTreeLeaves();
             spectraSpec.readHierarchyForInstrument(model.getInstrument().getDisplayName());
-            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
-
-            // Place the tree in the panel
-                panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
+//            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
+//
+//            // Place the tree in the panel
+//            if (panel.getHierarchicalSearchScrollPane() != null)
+//                panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
         }
 //        else
 //        {
@@ -378,12 +425,12 @@ public class SpectrumSearchParametersController
         selectionModel.removeAllStructures();
     }
 
-    public SpectrumSearchParametersPanel getPanel()
+    public SpectrumHypertreeSearchParametersPanel getPanel()
     {
         return panel;
     }
 
-    public void setPanel(SpectrumSearchParametersPanel panel)
+    public void setPanel(SpectrumHypertreeSearchParametersPanel panel)
     {
         this.panel = panel;
     }

@@ -668,7 +668,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
             try
             {
-                collection.addSpectrum(createSpectrumName(i), instrument, style, true);
+                collection.addSpectrum(createSpectrumName(i), instrument, style,true);
 
             }
             catch (IOException e1) {

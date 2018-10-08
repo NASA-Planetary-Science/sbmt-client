@@ -91,9 +91,9 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
@@ -669,6 +669,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                         results = query.runQuery(searchMetadata).getResultlist();
                 }
             }
+//                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+//                List<SearchSpec> specs = instrumentMetadata.getSpecs();
+//                collection.tagSpectraWithMetadata(results, spec);
                 setSpectrumSearchResults(results);
 
             }
