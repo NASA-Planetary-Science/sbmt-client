@@ -35,11 +35,7 @@ public class CustomImageController
 
     private ImagingSearchPanel panel;
 
-    private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
-    private final SbmtInfoWindowManager infoPanelManager;
-    private final SbmtSpectrumWindowManager spectrumPanelManager;
-    private final PickManager pickManager;
     protected final Renderer renderer;
     private CustomImagesModel customImageModel;
 
@@ -51,12 +47,8 @@ public class CustomImageController
             final PickManager pickManager, Renderer renderer,
             ImagingInstrument instrument)
     {
-        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
-        this.infoPanelManager = infoPanelManager;
-        this.spectrumPanelManager = spectrumPanelManager;
         this.renderer = renderer;
-        this.pickManager = pickManager;
 
         ImageSearchModel imageSearchModel = new ImageSearchModel(smallBodyConfig, modelManager, renderer, instrument);
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
@@ -65,7 +57,6 @@ public class CustomImageController
         customImageModel = new CustomImagesModel(imageSearchModel);
         customImageModel.addResultsChangedListener(new CustomImageResultsListener()
         {
-
             @Override
             public void resultsChanged(List<ImageInfo> results)
             {
@@ -86,7 +77,7 @@ public class CustomImageController
 
         ImageCubeModel cubeModel = new ImageCubeModel();
         ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        cubeModel.setImages(imageCubeCollection);
+        cubeModel.setColorImageCollection(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
         this.imageCubeController = new ImageCubeController(customImageModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
 

@@ -1,8 +1,11 @@
 package edu.jhuapl.sbmt.gui.image.model.color;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -15,16 +18,17 @@ public class ColorImageModel
     private ImageKey selectedRedKey;
     private ImageKey selectedGreenKey;
     private ImageKey selectedBlueKey;
-    private ColorImageCollection images;
+    private ColorImageCollection imageCollection;
+    private Vector<ColorImageResultsListener> resultsListeners;
 
     public ColorImageModel()
     {
-
+        resultsListeners = new Vector<ColorImageResultsListener>();
     }
 
     public ColorImageModel(ColorImageCollection collection)
     {
-        this.images = collection;
+        this.imageCollection = collection;
     }
 
     public ModelNames getColorImageCollectionModelName()
@@ -64,16 +68,64 @@ public class ColorImageModel
 
     public void loadImage(ColorImageKey key) throws FitsException, IOException, NoOverlapException
     {
-        images.addImage(key);
+        imageCollection.addImage(key);
     }
 
     public void unloadImage(ColorImageKey key)
     {
-        images.removeImage(key);
+        imageCollection.removeImage(key);
     }
 
     public void setImages(ColorImageCollection images)
     {
-        this.images = images;
+        this.imageCollection = images;
+    }
+
+//    private void fireResultsChanged()
+//    {
+//        for (ColorImageResultsListener listener : resultsListeners)
+//        {
+//            listener.resultsChanged(imageResults);
+//        }
+//    }
+
+    public void addResultsChangedListener(ColorImageResultsListener listener)
+    {
+        resultsListeners.add(listener);
+    }
+
+    public void removeResultsChangedListener(ColorImageResultsListener listener)
+    {
+        resultsListeners.remove(listener);
+    }
+
+    public void removeAllResultsChangedListeners()
+    {
+        resultsListeners.removeAllElements();
+    }
+
+    public void generateColorImage(ActionEvent e) throws IOException, FitsException, NoOverlapException
+    {
+        ImageKey selectedRedKey = getSelectedRedKey();
+        ImageKey selectedGreenKey = getSelectedGreenKey();
+        ImageKey selectedBlueKey = getSelectedBlueKey();
+
+
+        if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
+        {
+            ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
+            imageCollection.addImage(colorKey);
+            for (ColorImageResultsListener listener : resultsListeners)
+            {
+                listener.colorImageAdded(colorKey);
+            }
+
+        }
+    }
+
+
+    public void removeColorImage(ColorImageKey colorKey)
+    {
+        imageCollection.removeImage(colorKey);
     }
 }

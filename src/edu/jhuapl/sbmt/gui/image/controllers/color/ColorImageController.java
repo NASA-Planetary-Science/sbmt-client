@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
+import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -69,6 +70,25 @@ public class ColorImageController
         propertyChangeListener = new ColorImageResultsPropertyChangeListener();
         tableModelListener = new ColorImageResultsTableModeListener();
         setupPanel();
+
+        colorModel.addResultsChangedListener(new ColorImageResultsListener()
+        {
+
+            @Override
+            public void colorImageAdded(ColorImageKey colorKey)
+            {
+                JTable colorImagesDisplayedList = panel.getDisplayedImageList();
+                ((DefaultTableModel)colorImagesDisplayedList.getModel()).setRowCount(colorImagesDisplayedList.getRowCount()+1);
+                int mapColumnIndex = panel.getMapColumnIndex();
+                int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
+                int filenameColumnIndex = panel.getFilenameColumnIndex();
+                int i = colorImagesDisplayedList.getRowCount();
+                colorImagesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
+                colorImagesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
+                colorImagesDisplayedList.setValueAt(colorKey.toString(), i-1, filenameColumnIndex);
+
+            }
+        });
     }
 
     private void setupPanel()
@@ -149,13 +169,11 @@ public class ColorImageController
             public void mousePressed(MouseEvent e)
             {
                 colorImagesDisplayedListMaybeShowPopup(e);
-//                panel.getImageCubeTable().getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
             }
 
             public void mouseReleased(MouseEvent e)
             {
                 colorImagesDisplayedListMaybeShowPopup(e);
-//                panel.getImageCubeTable().getSaveSelectedImageListButton().setEnabled(imageResultsTableView.getResultList().getSelectedRowCount() > 0);
             }
         });
 
@@ -175,17 +193,48 @@ public class ColorImageController
 
     }
 
-    private void generateColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void generateColorImageButtonActionPerformed(ActionEvent evt)
     {
-        generateColorImage(evt);
+        try
+        {
+            colorModel.generateColorImage(evt);
+        }
+        catch (IOException e1)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error mapping the image.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
+        }
+        catch (FitsException e1)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error mapping the image.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
+        }
+        catch (ColorImage.NoOverlapException e1)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "Color Image Generation: The images you selected do not overlap.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void removeColorImageButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void removeColorImageButtonActionPerformed(ActionEvent evt)
     {
-        removeColorImage(evt);
+        int index = panel.getDisplayedImageList().getSelectedRow();
+        if (index >= 0)
+        {
+            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)panel.getDisplayedImageList().getModel()).remove(index);
+            colorModel.removeColorImage(colorKey);
+        }
     }
 
-    private void redButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void redButtonActionPerformed(ActionEvent evt)
     {
         ImageKey selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
@@ -198,7 +247,7 @@ public class ColorImageController
         }
     }
 
-    private void greenButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void greenButtonActionPerformed(ActionEvent evt)
     {
         ImageKey selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
@@ -211,7 +260,7 @@ public class ColorImageController
         }
     }
 
-    private void blueButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void blueButtonActionPerformed(ActionEvent evt)
     {
         ImageKey selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
@@ -224,83 +273,7 @@ public class ColorImageController
         }
     }
 
-    protected void generateColorImage(ActionEvent e)
-    {
-        JTable colorImagesDisplayedList = panel.getDisplayedImageList();
-        int mapColumnIndex = panel.getMapColumnIndex();
-        int showFootprintColumnIndex = panel.getShowFootprintColumnIndex();
-        int filenameColumnIndex = panel.getFilenameColumnIndex();
-//        int bndrColumnIndex = panel.getBndrColumnIndex();
-        int[] widths = new int[colorImagesDisplayedList.getColumnCount()];
-        int[] columnsNeedingARenderer=new int[]{/*idColumnIndex,*/filenameColumnIndex/*,dateColumnIndex*/};
 
-        ColorImageCollection collection = (ColorImageCollection)model.getModelManager().getModel(colorModel.getColorImageCollectionModelName());
-        ImageKey selectedRedKey = colorModel.getSelectedRedKey();
-        ImageKey selectedGreenKey = colorModel.getSelectedGreenKey();
-        ImageKey selectedBlueKey = colorModel.getSelectedBlueKey();
-        ((DefaultTableModel)colorImagesDisplayedList.getModel()).setRowCount(colorImagesDisplayedList.getRowCount()+1);
-
-        if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
-        {
-            ColorImageKey colorKey = new ColorImageKey(selectedRedKey, selectedGreenKey, selectedBlueKey);
-            try
-            {
-//                TableModel tableModel = colorImagesDisplayedList.getModel();
-//                if (collection.containsImage(colorKey))
-//                {
-//                    colorImagesDisplayedList.setValueAt(true, i, mapColumnIndex);
-//                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-//                    colorImagesDisplayedList.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-//                    colorImagesDisplayedList.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
-//                }
-//                else
-//                {
-                    collection.addImage(colorKey);
-                    int i = colorImagesDisplayedList.getRowCount();
-                    colorImagesDisplayedList.setValueAt(true, i-1, mapColumnIndex);
-                    colorImagesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
-//                    colorImagesDisplayedList.setValueAt(true, i-1, bndrColumnIndex);
-                    colorImagesDisplayedList.setValueAt(colorKey.toString(), i-1, filenameColumnIndex);
-//                }
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (FitsException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error mapping the image.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-            catch (ColorImage.NoOverlapException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "Color Image Generation: The images you selected do not overlap.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-
-    protected void removeColorImage(ActionEvent e)
-    {
-        JTable colorImagesDisplayedList = panel.getDisplayedImageList();
-        int index = colorImagesDisplayedList.getSelectedRow();
-        if (index >= 0)
-        {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)colorImagesDisplayedList.getModel()).remove(index);
-            ColorImageCollection imageCollection = (ColorImageCollection)model.getModelManager().getModel(colorModel.getColorImageCollectionModelName());
-            imageCollection.removeImage(colorKey);
-        }
-    }
 
 
     private void colorImagesDisplayedListMaybeShowPopup(MouseEvent e)
@@ -340,17 +313,13 @@ public class ColorImageController
         public boolean isCellEditable(int row, int column)
         {
             // Only allow editing the hide column if the image is mapped
-            if (column == panel.getShowFootprintColumnIndex() /*|| column == panel.getFrusColumnIndex()*/)
+            if (column == panel.getShowFootprintColumnIndex())
             {
-//                String name = model.getImageResults().get(row).get(0);
-//                ImageKey key = model.createImageKey(name.substring(0, name.length()-4), model.getImageSourceOfLastQuery(), model.getInstrument());
-//                ColorImageKey key = (ColorImageKey)((DefaultListModel)panel.getDisplayedImageList().getModel()).get(row);
-//                return colorImages.containsImage(key);
                 return (Boolean)getValueAt(row, 0);
             }
             else
             {
-                return column == panel.getMapColumnIndex() /*|| column == panel.getBndrColumnIndex()*/;
+                return column == panel.getMapColumnIndex();
             }
         }
 
@@ -380,7 +349,6 @@ public class ColorImageController
                     }
                     catch (FitsException | IOException | NoOverlapException e1)
                     {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 else

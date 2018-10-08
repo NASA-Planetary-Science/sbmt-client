@@ -37,7 +37,6 @@ public class ColorImageGenerationPanel extends JPanel
     private ImageResultsTable displayedImageList;
 
     protected int mapColumnIndex, showFootprintColumnIndex,
-//            bndrColumnIndex,
             filenameColumnIndex;
 
     public ColorImageGenerationPanel()
@@ -103,7 +102,6 @@ public class ColorImageGenerationPanel extends JPanel
         scrollPane_1.setPreferredSize(new java.awt.Dimension(300, 100));
         mapColumnIndex = 0;
         showFootprintColumnIndex = 1;
-//        bndrColumnIndex = 2;
         filenameColumnIndex = 2;
     }
 
@@ -225,11 +223,6 @@ public class ColorImageGenerationPanel extends JPanel
     {
         return showFootprintColumnIndex;
     }
-
-//    public int getBndrColumnIndex()
-//    {
-//        return bndrColumnIndex;
-//    }
 
     public int getFilenameColumnIndex()
     {
