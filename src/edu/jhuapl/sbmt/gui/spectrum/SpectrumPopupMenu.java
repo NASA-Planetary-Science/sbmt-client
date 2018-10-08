@@ -517,4 +517,5 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     }
 
+
 }

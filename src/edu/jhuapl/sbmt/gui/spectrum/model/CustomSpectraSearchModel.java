@@ -491,26 +491,28 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             return;
 
         MapUtil configMap = new MapUtil(getConfigFilename());
-
+        System.out
+                .println("CustomSpectraSearchModel: initializeSpecList: config name " + getConfigFilename());
         if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) /*|| configMap.containsKey(Image.PROJECTION_TYPES)*/)
         {
             boolean needToUpgradeConfigFile = false;
-            String[] imageNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
-            String[] imageFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
+            String[] spectrumNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
+            if (spectrumNames == null || (spectrumNames.length == 0)) return;
+            String[] spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
 //            String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
             String[] imageTypes = configMap.getAsArray(Spectrum.SPECTRUM_TYPES);
-            if (imageFilenames == null)
+            if (spectrumFilenames == null)
             {
                 // for backwards compatibility
 //                imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
-                imageNames = new String[imageFilenames.length];
+                spectrumNames = new String[spectrumFilenames.length];
 //                projectionTypes = new String[imageFilenames.length];
-                imageTypes = new String[imageFilenames.length];
+                imageTypes = new String[spectrumFilenames.length];
 
-                for (int i=0; i<imageFilenames.length; ++i)
+                for (int i=0; i<spectrumFilenames.length; ++i)
                 {
-                    imageNames[i] = new File(imageFilenames[i]).getName();
-                    imageFilenames[i] = "image" + i + ".png";
+                    spectrumNames[i] = new File(spectrumFilenames[i]).getName();
+                    spectrumFilenames[i] = "image" + i + ".png";
 //                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
                     imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
 
@@ -528,12 +530,12 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
 
 //            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
-            int numImages = imageNames.length;
+            int numImages = spectrumNames.length;
             for (int i=0; i<numImages; ++i)
             {
                 SpectrumInfo spectrumInfo = new SpectrumInfo();
-                spectrumInfo.name = imageNames[i];
-                spectrumInfo.spectrumfilename = imageFilenames[i];
+                spectrumInfo.name = spectrumNames[i];
+                spectrumInfo.spectrumfilename = spectrumFilenames[i];
 //                SpectrumInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
 //                SpectralInstrument instrument = instrument;
 

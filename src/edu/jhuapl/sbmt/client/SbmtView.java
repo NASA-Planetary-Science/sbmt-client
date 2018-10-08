@@ -54,6 +54,7 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
@@ -201,7 +202,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
+            allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
@@ -401,6 +402,9 @@ public class SbmtView extends View implements PropertyChangeListener
             }
             else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
             {
+            	//From Colleen:
+            	//JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            	
 //                JComponent component = new OTESSearchPanel(
 //                        getPolyhedralModelConfig(), getModelManager(),
 //                        (SbmtInfoWindowManager) getInfoPanelManager(),
@@ -417,6 +421,9 @@ public class SbmtView extends View implements PropertyChangeListener
             }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
             {
+            //From Colleen
+            //JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            
 //                JComponent component = new OVIRSSearchPanel(
 //                        getPolyhedralModelConfig(), getModelManager(),
 //                        (SbmtInfoWindowManager) getInfoPanelManager(),
