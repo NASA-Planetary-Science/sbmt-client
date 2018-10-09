@@ -534,7 +534,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
@@ -996,7 +996,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
 //                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
-                collection.addSpectrum(createSpectrumName(i), instrument, style);
+                Spectrum spectrum = collection.addSpectrum(createSpectrumName(i), instrument, style);
+                spectrum.setSelected();
             }
             catch (IOException e1) {
                 e1.printStackTrace();

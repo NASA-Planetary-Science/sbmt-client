@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.Frame;
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -30,8 +32,8 @@ import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.TrackedMetadataManager;
 import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 
@@ -180,6 +182,37 @@ public class SbmtViewManager extends ViewManager
         customConfig.modelLabel = name;
         customConfig.customTemporary = temporary;
         customConfig.author = ShapeModelType.CUSTOM;
+        return new SbmtView(statusBar, customConfig);
+    }
+
+    @Override
+    public View createCustomView(String name, boolean temporary, File metadata)
+    {
+        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
+        SmallBodyViewConfigMetadataIO customConfigImporter = new SmallBodyViewConfigMetadataIO();
+        try
+        {
+            customConfigImporter.read(metadata, name, customConfig);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        customConfig.modelLabel = name;
+        customConfig.customTemporary = temporary;
+        customConfig.author = ShapeModelType.CUSTOM;
+        //write this back out with the new metadata data changes to denote the customization
+        try
+        {
+            customConfigImporter.write(metadata, name);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return new SbmtView(statusBar, customConfig);
     }
 
@@ -616,7 +649,14 @@ public class SbmtViewManager extends ViewManager
             ShapeModelType.CARRY,
             ShapeModelType.DLR,
             ShapeModelType.OREX,
-            ShapeModelType.JAXA_001,
+            ShapeModelType.JAXA_SFM_v20180627,
+            ShapeModelType.JAXA_SPC_v20180705,
+            ShapeModelType.JAXA_SFM_v20180714,
+            ShapeModelType.JAXA_SPC_v20180717,
+            ShapeModelType.JAXA_SPC_v20180719_2,
+            ShapeModelType.JAXA_SFM_v20180725_2,
+            ShapeModelType.JAXA_SPC_v20180731,
+            ShapeModelType.JAXA_SFM_v20180804,
             ShapeModelType.NASA_001,
             ShapeModelType.NASA_002,
             ShapeModelType.BLENDER,

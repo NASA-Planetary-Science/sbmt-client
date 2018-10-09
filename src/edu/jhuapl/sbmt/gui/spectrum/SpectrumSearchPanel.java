@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -1134,7 +1135,9 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
         submitButton.setText("Search");
         submitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 submitButtonActionPerformed(evt);
+                setCursor(Cursor.getDefaultCursor());
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1848,7 +1851,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
