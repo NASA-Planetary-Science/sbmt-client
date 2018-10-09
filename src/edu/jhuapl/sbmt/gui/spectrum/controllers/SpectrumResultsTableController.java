@@ -435,7 +435,7 @@ public class SpectrumResultsTableController
             int i=0;
             for (List<String> str : results)
             {
-                Date dt = new Date(Long.parseLong(str.get(1)));
+//                Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = spectrumRawResults.get(i).get(0);
                 SpectrumKey key = model.createSpectrumKey(name,  instrument);
@@ -447,6 +447,7 @@ public class SpectrumResultsTableController
                     resultTable.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
                     resultTable.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     resultTable.setValueAt(true, i, bndrColumnIndex);
+                    resultTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, dateColumnIndex);
                 }
                 else
                 {
@@ -460,7 +461,8 @@ public class SpectrumResultsTableController
                     resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
                 else
                     resultTable.setValueAt(str.get(2), i, filenameColumnIndex);
-                resultTable.setValueAt(sdf.format(dt), i, dateColumnIndex);
+
+
 
                 for (int j : columnsNeedingARenderer)
                 {
@@ -493,11 +495,13 @@ public class SpectrumResultsTableController
         {
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
-                JTable resultList = panel.getResultList();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                JTable resultsTable = panel.getResultList();
                 panel.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = model.getSpectrumRawResults().size();
 //                ((DefaultTableModel)panel.getResultList().getModel()).setRowCount(size);
-                if ((resultList.getModel().getRowCount() == 0) || (size != panel.getResultList().getRowCount()))  return;
+                if ((resultsTable.getModel().getRowCount() == 0) || (size != panel.getResultList().getRowCount()))  return;
                 for (int i=0; i<size; ++i)
                 {
 //                    int actualRow = panel.getResultList().getRowSorter().convertRowIndexToView(i);
@@ -509,29 +513,30 @@ public class SpectrumResultsTableController
                     Spectrum spectrum = (Spectrum) spectrumCollection.getSpectrumFromKey(key);
                     if (spectrumCollection.containsKey(key))
                     {
-                        resultList.setValueAt(true, i, panel.getMapColumnIndex());
+                        resultsTable.setValueAt(true, i, panel.getMapColumnIndex());
 //                        resultList.setValueAt(true, i, panel.getShowFootprintColumnIndex());
-                        resultList.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
-                        resultList.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
+                        resultsTable.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
+                        resultsTable.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
+                        resultsTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, panel.getDateColumnIndex());
                     }
                     else
                     {
-                        resultList.setValueAt(false, i, panel.getMapColumnIndex());
-                        resultList.setValueAt(false, i, panel.getShowFootprintColumnIndex());
-                        resultList.setValueAt(false, i, panel.getFrusColumnIndex());
+                        resultsTable.setValueAt(false, i, panel.getMapColumnIndex());
+                        resultsTable.setValueAt(false, i, panel.getShowFootprintColumnIndex());
+                        resultsTable.setValueAt(false, i, panel.getFrusColumnIndex());
                     }
                     if (spectrum != null && (spectrum.isSelected() == true))
                     {
-                        resultList.setValueAt(true, i, panel.getBndrColumnIndex());
+                        resultsTable.setValueAt(true, i, panel.getBndrColumnIndex());
                     }
                     else
                     {
-                        resultList.setValueAt(false, i, panel.getBndrColumnIndex());
+                        resultsTable.setValueAt(false, i, panel.getBndrColumnIndex());
                     }
                 }
                 panel.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
-                resultList.repaint();
+                resultsTable.repaint();
 //                for (int i=0; i<panel.getResultList().getRowCount(); i++)
 //                {
 //                    System.out.println(
