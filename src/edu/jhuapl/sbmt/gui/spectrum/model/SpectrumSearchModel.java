@@ -509,6 +509,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     {
         List<Integer> productsSelected;
         List<List<String>> results = new ArrayList<List<String>>();
+        Map<String, Double> fileDateMap = new HashMap<String, Double>();
 
         try
         {
@@ -621,6 +622,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                                 times[1], spectraLims[1], spectraLims[3],
                                 spectraLims[5], spectraLims[7] });
 
+
+
                 for (Integer cubeid : cubeList)
                 {
 //                    System.out.println("cubeId: " + cubeid);
@@ -635,15 +638,20 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     {
                         while (instream.available() > 0)
                         {
-                            HyperBoundedObject obj = BoundedObjectHyperTreeNode
+                            HyperBoundedObject spectra = BoundedObjectHyperTreeNode
                                     .createNewBoundedObject(instream, 8);
-                            int fileNum = obj.getFileNum();
+                            int fileNum = spectra.getFileNum();
+                            double date_et = spectra.getDate();
+
+
+
                             Map<Integer, String> fileMap = skeleton
                                     .getFileMap();
                             String file = fileMap.get(fileNum);
                             if (files.add(file))
                             {
-                                fileSpecMap.put(file, obj);
+                                fileSpecMap.put(file, spectra);
+                                fileDateMap.put(file, date_et);
                             }
                         }
                     }
@@ -655,12 +663,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
                 }
 
-//                for (String file : files)
-//                {
-//                    System.out.println(file);
-//                }
 
-                ArrayList<String> intFiles = new ArrayList<String>();
+                ArrayList<String> finalFiles = new ArrayList<String>();
+                ArrayList<HyperBoundedObject> finalSpectra = new ArrayList<HyperBoundedObject>();
 
                 // NOW CHECK WHICH SPECTRA ACTUALLY INTERSECT REGION
                 for (String fi : files)
@@ -671,7 +676,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     {
                         if (hbb.intersects(bbox))
                         {
-                            intFiles.add(fi);
+                            finalFiles.add(fi);
+                            finalSpectra.add(spec);
                         }
                     }
                     catch (HyperException e)
@@ -682,13 +688,12 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 }
 
                 // final list of spectra that intersect region
-                // create a list of lists for the reults
+                // create a list of lists for the results
                 List<List<String>> listoflist = new ArrayList<List<String>>(
-                        intFiles.size()); // why is results formatted this way?
+                        finalFiles.size()); // why is results formatted this way?
                                           // (list of list)
-//                System.out.println("SPECTRA THAT INTERSECT SEARCH REGION: ");
 
-                intFiles.sort(new Comparator<String>()
+                finalFiles.sort(new Comparator<String>()
                 {
 
                     @Override
@@ -697,15 +702,19 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                         return o1.compareTo(o2);
                     }
                 });
-                for (String file : intFiles)
+                for (String file : finalFiles)
                 {
-//                    System.out.println(file);
                     ArrayList<String> currList = new ArrayList<String>();
                     currList.add(file);
-                    currList.add("0");  //TODO fix this
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String date = sdf.format(fileDateMap.get(file));
+                    currList.add("0"); //TODO fix this - to match with browse result list
+                    currList.add(date);
                     listoflist.add(currList);
                 }
                 results = listoflist;
+                setSpectrumRawResults(results);
 
             }
             else
@@ -747,6 +756,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                  }
              }
              setSpectrumRawResults(results);
+
 
         }
         catch (Exception e)

@@ -447,7 +447,6 @@ public class SpectrumResultsTableController
                     resultTable.setValueAt(spectrum.isVisible(), i, panel.getShowFootprintColumnIndex());
                     resultTable.setValueAt(spectrum.isFrustumShowing(), i, panel.getFrusColumnIndex());
                     resultTable.setValueAt(true, i, bndrColumnIndex);
-                    resultTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, dateColumnIndex);
                 }
                 else
                 {
@@ -457,10 +456,15 @@ public class SpectrumResultsTableController
                 }
 
                 resultTable.setValueAt(i+1, i, idColumnIndex);
-                if (str.size() < 3)
+                if (str.size() == 3) {
                     resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-                else
-                    resultTable.setValueAt(str.get(2), i, filenameColumnIndex);
+                    resultTable.setValueAt(str.get(2), i, dateColumnIndex);
+                }
+                else {
+                    resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                    if (spectrum != null)
+                        resultTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, dateColumnIndex);
+                }
 
 
 
