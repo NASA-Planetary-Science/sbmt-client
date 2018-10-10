@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,56 +37,38 @@ import javax.swing.JToggleButton;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
+import vtk.vtkProp;
+import vtk.vtkRenderer;
 
+import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
-import edu.jhuapl.saavtk.model.structure.CircleModel;
-import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
-import edu.jhuapl.saavtk.model.structure.EllipseModel;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.LineModel;
-import edu.jhuapl.saavtk.model.structure.PointModel;
-import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
+import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
-import edu.jhuapl.sbmt.gui.scale.ScaleDataRangeDialog;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 
 import nom.tam.fits.FitsException;
 
-public class DEMView extends JFrame implements WindowListener
+public class DEMView extends JFrame implements PropertyChangeListener, WindowListener
 {
-    private JButton newButton;
-    private JToggleButton editButton;
-    private JButton deleteAllButton;
-    private JButton saveButton;
-    private JButton loadButton;
-    private LineModel lineModel;
-    private PickManager pickManager;
-    private DEMPlot plot;
-    private int currentColorIndex = 0;
-    private int numColors;
-    private JComboBox coloringTypeComboBox;
-    private DEM dem;
-    private DEMKey key;
-    private DEMCollection demCollection;
-    private Renderer renderer;
-    private JButton scaleColoringButton;
-    private boolean syncColoring;
-
+    // Constants
     private static final String Profile = "Profile";
     private static final String StartLatitude = "StartLatitude";
     private static final String StartLongitude = "StartLongitude";
@@ -93,6 +77,29 @@ public class DEMView extends JFrame implements WindowListener
     private static final String EndLongitude = "EndLongitude";
     private static final String EndRadius = "EndRadius";
     private static final String Color = "Color";
+
+    // State vars
+    private final LineModel lineModel;
+    private final ModelManager modelManager;
+    private final PickManager pickManager;
+    private final DEMPlot plot;
+    private final DEM dem;
+    private final DEMKey key;
+    private final DEMCollection demCollection;
+    private final Colorbar refColorbar;
+    private int numColors;
+    private boolean syncColoring;
+
+    // Gui vars
+    private ScaleDataRangeDialog scaleDataDialog;
+    private JButton newButton;
+    private JToggleButton editButton;
+    private JButton deleteAllButton;
+    private JButton scaleColoringButton;
+    private JButton loadButton;
+    private JButton saveButton;
+    private JComboBox<?> coloringTypeComboBox;
+    private Renderer renderer;
 
     public Renderer getRenderer()
     {
@@ -120,7 +127,6 @@ public class DEMView extends JFrame implements WindowListener
 
         // Create an entirely new DEM object to go with this model manager
         // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
-        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
 
         // Set this micro DEM to have the same properties as the macroDEM
@@ -130,18 +136,13 @@ public class DEMView extends JFrame implements WindowListener
         }
         dem.setColoringIndex(macroDEM.getColoringIndex());
 
-        final ModelManager modelManager = new SbmtModelManager(dem);
-
-
         lineModel = new LineModel(dem, true);
         lineModel.setMaximumVerticesPerLine(2);
+        HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
         allModels.put(ModelNames.SMALL_BODY, dem);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
-        allModels.put(ModelNames.POLYGON_STRUCTURES, new PolygonModel(dem));
-        allModels.put(ModelNames.CIRCLE_STRUCTURES, new CircleModel(dem));
-        allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(dem));
-        allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(dem));
-        allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(dem));
+
+        modelManager = new SbmtModelManager(dem);
         modelManager.setModels(allModels);
 
         renderer = new Renderer(modelManager);
@@ -156,7 +157,7 @@ public class DEMView extends JFrame implements WindowListener
         renderer.setMinimumSize(new Dimension(100, 100));
         renderer.setPreferredSize(new Dimension(400, 400));
 
-        JPanel panel = new JPanel(new BorderLayout());
+        refColorbar = new Colorbar(renderer);
 
         plot = new DEMPlot(lineModel, dem, macroDEM.getColoringIndex());
         plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
@@ -164,13 +165,12 @@ public class DEMView extends JFrame implements WindowListener
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                renderer, plot.getChartPanel());
-
         splitPane.setResizeWeight(0.5);
         splitPane.setOneTouchExpandable(true);
 
+        JPanel panel = new JPanel(new BorderLayout());
         panel.add(splitPane, BorderLayout.CENTER); // twupy1: This is what messes up main shape model
         panel.add(createButtonsPanel(macroDEM.getColoringIndex()), BorderLayout.SOUTH);
-
         add(panel, BorderLayout.CENTER);
 
         addWindowListener(this);
@@ -182,6 +182,12 @@ public class DEMView extends JFrame implements WindowListener
         setVisible(true);
 
         setSize(600, 300);
+
+        // Register for events of interest
+        dem.addPropertyChangeListener(this);
+        lineModel.addPropertyChangeListener(this);
+        modelManager.addPropertyChangeListener(this);
+        pickManager.getDefaultPicker().addPropertyChangeListener(this);
     }
 
     private void createMenus()
@@ -238,7 +244,7 @@ public class DEMView extends JFrame implements WindowListener
         }
         coloringOptions[numColors] = "No coloring";
 
-        coloringTypeComboBox = new JComboBox(coloringOptions);
+        coloringTypeComboBox = new JComboBox<>(coloringOptions);
         coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
         coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
         coloringTypeComboBox.addActionListener(new ActionListener()
@@ -265,6 +271,11 @@ public class DEMView extends JFrame implements WindowListener
                         scaleColoringButton.setEnabled(true);
                         dem.setColoringIndex(index);
                         plot.setColoringIndex(index);
+
+                        // Reset the primary model's coloring range to the defaults
+                        double[] tmpArr = dem.getDefaultColoringRange(index);
+                        dem.setCurrentColoringRange(index, tmpArr);
+
                         if(syncColoring)
                         {
                             // Get the macroDEM
@@ -306,8 +317,11 @@ public class DEMView extends JFrame implements WindowListener
         {
             public void actionPerformed(ActionEvent e)
             {
-                ScaleDataRangeDialog scaleDataDialog = new ScaleDataRangeDialog(dem,demCollection.getDEM(key),syncColoring);
-                scaleDataDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(scaleColoringButton));
+                // Lazy init
+                if (scaleDataDialog == null)
+                    scaleDataDialog = new ScaleDataRangeDialog(JOptionPane.getFrameForComponent(scaleColoringButton));
+
+                scaleDataDialog.setModelConfiguration(dem, demCollection.getDEM(key), syncColoring);
                 scaleDataDialog.setVisible(true);
             }
         });
@@ -324,7 +338,7 @@ public class DEMView extends JFrame implements WindowListener
 
                 // Set the color of this new structure
                 int idx = lineModel.getNumberOfStructures() - 1;
-                lineModel.setStructureColor(idx, getNextColor());
+                lineModel.setStructureColor(idx, getDefaultColor(idx));
 
                 pickManager.setPickMode(PickMode.LINE_DRAW);
                 editButton.setSelected(true);
@@ -412,14 +426,55 @@ public class DEMView extends JFrame implements WindowListener
         return panel;
     }
 
-    private int[] getNextColor()
+    /**
+     * Helper method to configure the Colorbar.
+     */
+    private void doConfigureColorbar()
+    {
+        // Disable the Colorbar if it is not needed
+        if (dem.isColoringDataAvailable() == false || dem.getColoringIndex() < 0)
+        {
+            refColorbar.setVisible(false);
+            return;
+        }
+
+        // Customize the Colorbar to reflect the dem model
+        if (!refColorbar.isVisible())
+            refColorbar.setVisible(true);
+
+        refColorbar.setColormap(dem.getColormap());
+        int index = dem.getColoringIndex();
+        String title = dem.getColoringName(index).trim();
+        String units = dem.getColoringUnits(index).trim();
+        if (units != null && !units.isEmpty())
+            title += " (" + units + ")";
+        refColorbar.setTitle(title);
+
+        registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), refColorbar.getActor());
+        refColorbar.getActor().SetNumberOfLabels(dem.getColormap().getNumberOfLabels());
+    }
+
+    /**
+     * Helper method to ensure the ModelManager's VTK state is kept in sync
+     */
+    private void doConfigureModelManager()
+    {
+        for (vtkProp aVtkProp : modelManager.getProps())
+            registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), aVtkProp);
+    }
+
+    /**
+     * Helper method that returns the default color for the specified index.
+     *
+     * @param aIdx
+     */
+    private int[] getDefaultColor(int aIdx)
     {
         int numColors = DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE.length;
-        if (currentColorIndex >= numColors)
-            currentColorIndex = 0;
-        Color c = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[currentColorIndex];
-        ++currentColorIndex;
-        return new int[] {c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
+        int tmpIdx = aIdx % numColors;
+        Color tmpColor = (Color)DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE[tmpIdx];
+
+        return new int[] {tmpColor.getRed(), tmpColor.getGreen(), tmpColor.getBlue(), tmpColor.getAlpha()};
     }
 
     private void saveView(File file) throws IOException
@@ -518,11 +573,6 @@ public class DEMView extends JFrame implements WindowListener
                 lineModel.insertVertexIntoActivatedStructure(p2);
 
                 ++lineId;
-
-                // Force an increment of the color index. Note this
-                // might not work so well since there may be no relationship
-                // between the colors loaded from the file and the color index.
-                getNextColor();
             }
         }
 
@@ -685,7 +735,6 @@ public class DEMView extends JFrame implements WindowListener
         @Override
         public void actionPerformed(ActionEvent event)
         {
-            // TODO Auto-generated method stub
             AbstractButton aButton = (AbstractButton) event.getSource();
             syncColoring = aButton.getModel().isSelected();
 
@@ -722,45 +771,55 @@ public class DEMView extends JFrame implements WindowListener
     }
 
     @Override
+    public void propertyChange(PropertyChangeEvent aEvent)
+    {
+        Object source = aEvent.getSource();
+
+        // Configure the Colorbar whenever the DEM model has changed
+        if (source == dem && aEvent.getPropertyName().equals(Properties.MODEL_CHANGED))
+            doConfigureColorbar();
+
+        if (source == modelManager)
+            doConfigureModelManager();
+
+        // Force a repaint
+        renderer.getRenderWindowPanel().Render();
+    }
+
+    @Override
     public void windowActivated(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
     public void windowClosed(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
     public void windowDeactivated(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
     public void windowDeiconified(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
     public void windowIconified(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
     public void windowOpened(WindowEvent e)
     {
-        // TODO Auto-generated method stub
-
+        ; // Nothing to do
     }
 
     @Override
@@ -777,4 +836,27 @@ public class DEMView extends JFrame implements WindowListener
         System.gc();
         vtkObject.JAVA_OBJECT_MANAGER.gc(true);
     }
+
+    /**
+     * Utility method that will register the vtkProp with vtkRenderer.
+     * <P>
+     * In order for vtkProps to be rendered to the scene they must be added as
+     * actors.
+     * <P>
+     * TODO: Promote this to a utility class if more equivalents of this logic
+     * block is found.
+     *
+     * @param aVtkRenderer
+     * @param aVtkProp
+     */
+    public static void registerIfNotRegistered(vtkRenderer aVtkRenderer, vtkProp aVtkProp)
+    {
+        // Bail if the vtkProp has already been registered
+        if (aVtkRenderer.HasViewProp(aVtkProp) != 0)
+            return;
+
+        // Register the vtkProp to be rendered
+        aVtkRenderer.AddActor(aVtkProp);
+    }
+
 }
