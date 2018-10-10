@@ -310,6 +310,7 @@ public class SpectrumHypertreeSearchParametersController
             public void actionPerformed(java.awt.event.ActionEvent evt) {
 //                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
 //                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                model.clearSpectraFromDisplay();
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
                 {
                     String[] names = new String[] {"OTES_L2", "OTES_L3"};

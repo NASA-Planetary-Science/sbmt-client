@@ -298,6 +298,7 @@ public class SpectrumSearchParametersController
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
                     model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                model.clearSpectraFromDisplay();
                 model.performSearch();
             }
         });

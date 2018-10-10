@@ -456,15 +456,18 @@ public class SpectrumResultsTableController
                 }
 
                 resultTable.setValueAt(i+1, i, idColumnIndex);
-                if (str.size() == 3) {
+//                if (str.size() == 3) {
+//                    System.out.println(
+//                            "SpectrumResultsTableController: setSpectrumResults: str 1 is " + str.get(1));
+//                    resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+//                    resultTable.setValueAt(str.get(1), i, dateColumnIndex);
+//                }
+//                else {
                     resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-                    resultTable.setValueAt(str.get(2), i, dateColumnIndex);
-                }
-                else {
-                    resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-                    if (spectrum != null)
-                        resultTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, dateColumnIndex);
-                }
+                    resultTable.setValueAt(sdf.format(Long.parseLong(str.get(1))), i, dateColumnIndex);
+//                    if (spectrum != null)
+//                        resultTable.setValueAt(sdf.format(spectrum.getDateTime().toDate().getTime()), i, dateColumnIndex);
+//                }
 
 
 

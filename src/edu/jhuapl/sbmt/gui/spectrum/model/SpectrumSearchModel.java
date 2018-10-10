@@ -507,6 +507,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
     public void performHypertreeSearch()
     {
+        results.clear();
         List<Integer> productsSelected;
         List<List<String>> results = new ArrayList<List<String>>();
         Map<String, Double> fileDateMap = new HashMap<String, Double>();
@@ -551,10 +552,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 String spectraDatasourcePath = spectraModel
                         .getSpectraDataSourceMap().get(spectraDatasourceName);
 
-                System.out.println("Current Spectra Datasource Name: "
-                        + spectraDatasourceName);
-                System.out.println("Current Spectra Datasource Path: "
-                        + spectraDatasourcePath);
+//                System.out.println("Current Spectra Datasource Name: "
+//                        + spectraDatasourceName);
+//                System.out.println("Current Spectra Datasource Path: "
+//                        + spectraDatasourcePath);
 
                 spectraModel.addDatasourceSkeleton(spectraDatasourceName,
                         spectraDatasourcePath);
@@ -709,8 +710,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
                     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String date = sdf.format(fileDateMap.get(file));
-                    currList.add("0"); //TODO fix this - to match with browse result list
-                    currList.add(date);
+                    Long dateLong = sdf.parse(date).getTime();
+                    currList.add(""+dateLong);
                     listoflist.add(currList);
                 }
                 results = listoflist;
@@ -843,6 +844,13 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
         }
         return selectedKeys;
+    }
+
+    public void clearSpectraFromDisplay()
+    {
+        spectrumCollection.removeAllSpectraForInstrument(instrument);
+        spectrumCollection.deselectAll();
+        setResultIntervalCurrentlyShown(null);
     }
 
 
