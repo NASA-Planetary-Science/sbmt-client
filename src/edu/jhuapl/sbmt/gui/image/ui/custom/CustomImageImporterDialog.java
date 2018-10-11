@@ -8,11 +8,14 @@
  *
  * Created on Jul 21, 2011, 9:00:24 PM
  */
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.custom;
 
 import java.awt.Dialog;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -75,6 +78,17 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                 else
                     return name + ", Perspective" + ", " + imageType;
             }
+        }
+
+        public List<String> toList()
+        {
+            List<String> string = new Vector<String>();
+            string.add(name);
+//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//            string.add(formatter.format(new Date()));
+            string.add("" + new Date().getTime());
+            return string;
+
         }
     }
 

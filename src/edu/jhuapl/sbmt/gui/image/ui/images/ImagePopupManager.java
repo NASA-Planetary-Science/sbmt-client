@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.event.MouseEvent;
 import java.util.HashMap;

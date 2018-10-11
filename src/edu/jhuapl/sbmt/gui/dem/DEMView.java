@@ -20,10 +20,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -59,7 +58,7 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
-import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
@@ -88,7 +87,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private final DEMCollection demCollection;
     private final Colorbar refColorbar;
     private int numColors;
-    private boolean syncColoring;
 
     // Gui vars
     private ScaleDataRangeDialog scaleDataDialog;
@@ -99,6 +97,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private JButton loadButton;
     private JButton saveButton;
     private JComboBox<?> coloringTypeComboBox;
+    private JCheckBox syncColoringCB;
     private Renderer renderer;
 
     public Renderer getRenderer()
@@ -110,9 +109,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     {
         this.key = key;
         this.demCollection = demCollection;
-
-        // Don't sync coloring by default
-        syncColoring = false;
 
         ImageIcon erosIcon = new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
         setIconImage(erosIcon.getImage());
@@ -218,16 +214,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         fileMenu.setMnemonic('F');
         menuBar.add(fileMenu);
 
-        // Sync
-        JMenu syncMenu = new JMenu("Sync");
-
-        JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem("Coloring");
-        syncMenu.add(cbmi);
-        cbmi.addActionListener(new SynchronizeColoringAction());
-
-        syncMenu.setMnemonic('S');
-        menuBar.add(syncMenu);
-
         setJMenuBar(menuBar);
     }
 
@@ -253,6 +239,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             {
                 try
                 {
+                    boolean isSyncColoring = syncColoringCB.isSelected();
                     int index = coloringTypeComboBox.getSelectedIndex();
                     if (index == numColors)
                     {
@@ -260,10 +247,9 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                         scaleColoringButton.setEnabled(false);
                         dem.setColoringIndex(-1);
                         plot.setColoringIndex(-1);
-                        if(syncColoring)
-                        {
+
+                        if(isSyncColoring)
                             demCollection.getDEM(key).setColoringIndex(-1);
-                        }
                     }
                     else
                     {
@@ -276,21 +262,8 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                         double[] tmpArr = dem.getDefaultColoringRange(index);
                         dem.setCurrentColoringRange(index, tmpArr);
 
-                        if(syncColoring)
-                        {
-                            // Get the macroDEM
-                            DEM macroDEM = demCollection.getDEM(key);
-
-                            // Synchronize coloring ranges
-                            for(int i=0; i<dem.getNumberOfColors(); i++)
-                            {
-
-                                macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
-                            }
-
-                            // Synchronize coloring index
-                            macroDEM.setColoringIndex(index);
-                        }
+                        if(isSyncColoring)
+                            doSynchronizeColoring();
                     }
                 }
                 catch (IOException e1)
@@ -301,6 +274,19 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             }
         });
         panel.add(coloringTypeComboBox);
+
+        syncColoringCB = new JCheckBox("Sync Coloring");
+        syncColoringCB.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent aEvent)
+            {
+                // Sychronize the coloring if selected
+                if (syncColoringCB.isSelected() == true)
+                    doSynchronizeColoring();
+            }
+        });
+        panel.add(syncColoringCB);
 
         scaleColoringButton = new JButton("Rescale Data Range");
         if(coloringTypeComboBox.getSelectedIndex() == numColors)
@@ -321,7 +307,8 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                 if (scaleDataDialog == null)
                     scaleDataDialog = new ScaleDataRangeDialog(JOptionPane.getFrameForComponent(scaleColoringButton));
 
-                scaleDataDialog.setModelConfiguration(dem, demCollection.getDEM(key), syncColoring);
+                boolean isSyncColoring = syncColoringCB.isSelected();
+                scaleDataDialog.setModelConfiguration(dem, demCollection.getDEM(key), isSyncColoring);
                 scaleDataDialog.setVisible(true);
             }
         });
@@ -461,6 +448,33 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     {
         for (vtkProp aVtkProp : modelManager.getProps())
             registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), aVtkProp);
+    }
+
+    /**
+     * Helper method to synchronize the coloring of the base DEM to reflect our
+     * internal DEM.
+     */
+    private void doSynchronizeColoring()
+    {
+        // Get the macroDEM
+        DEM macroDEM = demCollection.getDEM(key);
+
+        try
+        {
+            // Synchronize coloring ranges
+            for (int i = 0; i < dem.getNumberOfColors(); i++)
+                macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
+
+            // Synchronize coloring index
+            macroDEM.setColoringIndex(dem.getColoringIndex());
+        }
+        catch (Exception aExp)
+        {
+            aExp.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "An error occurred synchronizing macro view DEM coloring with micro view.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -727,47 +741,6 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
                 return;
             }
         }
-    }
-
-    private class SynchronizeColoringAction extends AbstractAction
-    {
-
-        @Override
-        public void actionPerformed(ActionEvent event)
-        {
-            AbstractButton aButton = (AbstractButton) event.getSource();
-            syncColoring = aButton.getModel().isSelected();
-
-            // If true, then signal macroDEM to use current microDEM coloring
-            if(syncColoring)
-            {
-                try
-                {
-                    // Get the macroDEM
-                    DEM macroDEM = demCollection.getDEM(key);
-
-                    // Synchronize coloring ranges
-                    for(int i=0; i<dem.getNumberOfColors(); i++)
-                    {
-                        macroDEM.setColoringIndex(dem.getColoringIndex());
-                        macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
-                    }
-
-                    // Synchronize coloring index
-                    macroDEM.setColoringIndex(dem.getColoringIndex());
-                }
-                catch (Exception e1)
-                {
-                    e1.printStackTrace();
-                    JOptionPane.showMessageDialog(null,
-                            "An error occurred synchronizing macro view DEM coloring with micro view.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-        }
-
     }
 
     @Override
