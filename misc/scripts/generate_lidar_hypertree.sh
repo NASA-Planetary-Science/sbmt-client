@@ -2,12 +2,15 @@
 
 cd `dirname $0`
 
+# make these inputs:
+DATADIR=/project/sbmt2/sbmt/data/bodies/ryugu/shared/lidar/browse/dataDirList.txt
 TREEDIR=/project/sbmt2/sbmt/data/servers/multi-mission/test/ryugu/shared/lidar/search/hypertree
+INSTRUMENT=LASER
 
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
 # generate the hypertree
-./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator /project/sbmt2/sbmt/data/bodies/ryugu/shared/lidar/browse/dataDirList.txt $TREEDIR 1 32 -1 LASER
+./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator $DATADIR $TREEDIR 1 32 -1 $INSTRUMENT
 
 #condense the hypertree into a bounds file .spectra
 ./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2HyperTreeCondenser $TREEDIR
