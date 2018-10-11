@@ -1,7 +1,13 @@
-package edu.jhuapl.sbmt.gui.lidar;
+package edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
 
 import com.google.common.base.Stopwatch;
 
@@ -12,6 +18,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.model.PointInCylinderChecker;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -19,20 +26,24 @@ import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
-import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.util.TimeUtil;
 
-public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchController//LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
+public class Hayabusa2LidarHyperTreeSearchPanel extends LidarSearchController//LidarSearchPanel  // currently implemented only for OLA lidar points, but could be revised to handle any points satisfying the LidarPoint interface.
 {
     Renderer renderer;
 
-    public Hayabusa2LaserLidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
+    public Hayabusa2LidarHyperTreeSearchPanel(SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager, PickManager pickManager,
             Renderer renderer)
     {
         super(smallBodyConfig, modelManager, pickManager, renderer);
         this.renderer=renderer;
+        this.view = new Hayabusa2LidarSearchView();
+        setupConnections();
     }
 
     @Override
@@ -46,7 +57,7 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
         super.updateLidarDatasourceComboBox();
 
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-        LaserLidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (LaserLidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        Hayabusa2LidarHyperTreeSearchDataCollection lidarHyperTreeSearchDataCollection = (Hayabusa2LidarHyperTreeSearchDataCollection)modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
         this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(getLidarModelName());
 
         // clear the skeletons instances (should we try to keep these around to avoid having to load them again? -turnerj1)
@@ -87,13 +98,15 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
         //String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
         int lidarIndex=-1;
         String lidarDatasourceName="Hayabusa2";
-        String lidarDatasourcePath="/earth/hayabusa2/laser/tree/dataSource.lidar";
+        String lidarDatasourcePath=lidarModel.getLidarDataSourceMap().get(lidarDatasourceName);
         System.out.println("Current Lidar Datasource Index : " + lidarIndex);
         System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
         System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
         // read in the skeleton, if it hasn't been read in already
-        ((LaserLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        ((Hayabusa2LidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+
+        Hayabusa2LidarHypertreeSkeleton skeleton = ((Hayabusa2LidarHyperTreeSearchDataCollection)lidarModel).getCurrentSkeleton();
 
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -127,22 +140,6 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
             interiorPoly.DeepCopy(box.GetOutput());
         }
 
-        String selectedSourceName = (String)view.getSourceComboBox().getModel().getElementAt(view.getSourceComboBox().getSelectedIndex());
-        System.out.println("Selected lidar source name: "+selectedSourceName);
-//        if (lidarDatasourceName.equals("Default"))
-            lidarModel=(LaserLidarHyperTreeSearchDataCollection)modelManager.getModel(getLidarModelName());
-//        else
-//            lidarModel=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(lidarDatasourcePath));
-        // lidarModel is by default equal to the source given in the super's constructor
-
-        // look for custom data sources in small body model
-/*        for (int i=0; i<smallBodyModel.getNumberOfLidarDatasources(); i++)
-            if (smallBodyModel.getLidarDatasourceName(i).equals(selectedSourceName))
-            {
-                sourcePath=smallBodyModel.getLidarDatasourcePath(i);
-                lidarModel=new LidarHyperTreeSearchDataCollection(smallBodyModel, Paths.get(sourcePath));
-                break;
-            }*/
 
         System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
         lidarModel.addPropertyChangeListener(propertyChangeListener);
@@ -152,57 +149,87 @@ public class Hayabusa2LaserLidarHyperTreeSearchPanel extends LidarSearchControll
 
         Stopwatch sw=new Stopwatch();
         sw.start();
-        TreeSet<Integer> cubeList=((LaserLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(new double[]{Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY}), getSelectedTimeLimits());
+
+
+
+        double[] bounds = interiorPoly.GetBounds();
+        double[] rangeLims = new double[] {Double.parseDouble(((Hayabusa2LidarSearchView)view).getMinSCRange().getText()), Double.parseDouble(((Hayabusa2LidarSearchView)view).getMaxSCRange().getText())};
+        TreeSet<Integer> cubeList=((Hayabusa2LidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(bounds), getSelectedTimeLimits(), rangeLims);
         System.out.println(cubeList);
         System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
+
         Picker.setPickingEnabled(false);
 
-        ((LaserLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
+        ((Hayabusa2LidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         view.getRadialOffsetSlider().reset();
-
-/*        vtkPoints points=new vtkPoints();
-        vtkCellArray cellArray=new vtkCellArray();
-        vtkIntArray trackIds=new vtkIntArray();
-        vtkIntArray pointTypes=new vtkIntArray();
-        for (int i=0; i<lidarModel.getNumberOfTracks(); i++)
-        {
-            Track track=lidarModel.getTrack(i);
-            for (int j=0; j<track.getNumberOfPoints(); j++)
-            {
-                LidarPoint p=track.getPoint(j);
-                //
-                int id=points.InsertNextPoint(p.getTargetPosition().toArray());
-                vtkVertex vert=new vtkVertex();
-                vert.GetPointIds().SetId(0, id);
-                cellArray.InsertNextCell(vert);
-                trackIds.InsertNextValue(i);
-                pointTypes.InsertNextValue(0);  // for target positions
-                //
-                id=points.InsertNextPoint(p.getSourcePosition().toArray());
-                vtkVertex vert2=new vtkVertex();
-                vert2.GetPointIds().SetId(0, id);
-                cellArray.InsertNextCell(vert2);
-                trackIds.InsertNextValue(i);
-                pointTypes.InsertNextValue(1);  // for target positions
-            }
-        }
-        vtkPolyData polyData=new vtkPolyData();
-        polyData.SetPoints(points);
-        polyData.SetVerts(cellArray);
-        polyData.GetCellData().AddArray(trackIds);
-        //
-        vtkPolyDataWriter writer=new vtkPolyDataWriter();
-        writer.SetFileName("/Users/zimmemi1/Desktop/test.vtk");
-        writer.SetFileTypeToBinary();
-        writer.SetInputData(polyData);
-        writer.Write();*/
 
 
         Picker.setPickingEnabled(true);
 
+    }
+
+    @Override
+    protected void showData(
+            TreeSet<Integer> cubeList,
+            double[] selectionRegionCenter,
+            double selectionRegionRadius)
+    {
+        int minTrackLength = Integer.parseInt(view.getMinTrackSizeTextField().getText());
+        if (minTrackLength < 1)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(view),
+                    "Minimum track length must be a positive integer.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double timeSeparationBetweenTracks = Double.parseDouble(view.getTrackSeparationTextField().getText());
+        if (timeSeparationBetweenTracks < 0.0)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(view),
+                    "Track separation must be nonnegative.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double minRange = Double.parseDouble(((Hayabusa2LidarSearchView)view).getMinSCRange().getText());
+        double maxRange = Double.parseDouble(((Hayabusa2LidarSearchView)view).getMaxSCRange().getText());
+
+        try
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+            double start = TimeUtil.str2et(sdf.format(model.getStartDate()).replace(' ', 'T'));
+            double end = TimeUtil.str2et(sdf.format(model.getEndDate()).replace(' ', 'T'));
+            PointInCylinderChecker checker;
+            if (selectionRegionCenter==null || selectionRegionRadius<=0)// do time-only search
+                checker=null;
+            else
+                checker=new PointInCylinderChecker(modelManager.getPolyhedralModel(), selectionRegionCenter, selectionRegionRadius);
+            //
+            lidarModel.setLidarData(
+                    view.getSourceComboBox().getSelectedItem().toString(),
+                    start,
+                    end,
+                    cubeList,
+                    checker,
+                    timeSeparationBetweenTracks,
+                    minTrackLength,
+                    minRange,
+                    maxRange);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 

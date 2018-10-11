@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
+import edu.jhuapl.sbmt.gui.lidar.v2.OlaLidarBrowsePanel;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.OlaLidarHyperTreeSearchDataCollection;
 

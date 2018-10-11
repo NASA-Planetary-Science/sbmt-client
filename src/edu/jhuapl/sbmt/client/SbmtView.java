@@ -55,10 +55,9 @@ import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
-import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
@@ -139,19 +138,19 @@ public class SbmtView extends View implements PropertyChangeListener
     @Override
     public String getDisplayName()
     {
-    	String result = "";
-    	SmallBodyViewConfig config = getPolyhedralModelConfig();
-    	if (config.modelLabel != null)
-    	    result = config.modelLabel;
-    	else if (config.author == null)
-    	    result = config.body.toString();
-    	else
-    	    result = config.author.toString();
+        String result = "";
+        SmallBodyViewConfig config = getPolyhedralModelConfig();
+        if (config.modelLabel != null)
+            result = config.modelLabel;
+        else if (config.author == null)
+            result = config.body.toString();
+        else
+            result = config.author.toString();
 
-    	if (config.version != null)
-    	    result = result + " (" + config.version + ")";
+        if (config.version != null)
+            result = result + " (" + config.version + ")";
 
-    	return result;
+        return result;
     }
 
     @Override
@@ -197,7 +196,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
+            allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
@@ -374,6 +373,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
         {
+            System.out.println("SbmtView: setupTabs: instrument " + instrument.getClass());
             String displayName = instrument.getDisplayName();
             if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
             {
@@ -381,32 +381,28 @@ public class SbmtView extends View implements PropertyChangeListener
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
-                addTab(instrument.getDisplayName(), component);
+            addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
-            {
-                JComponent component = new OTESSearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument).getView();
-                addTab(instrument.getDisplayName(), component);
-            }
+                {
+                    JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+//               JComponent component = new OTESSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
+                    addTab(instrument.getDisplayName(), component);
+                }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
-            {
-                JComponent component = new OVIRSSearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument).getView();
+                {
+                    JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+//               JComponent component = new OVIRSSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument).getView();
                 addTab(instrument.getDisplayName(), component);
-            }
+                }
             else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
-            {
+                    {
                 JComponent component = new NIRS3SearchPanel(
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
-                addTab(instrument.getDisplayName(), component);
-            }
+                    addTab(instrument.getDisplayName(), component);
+                    }
 
         }
 
