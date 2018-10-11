@@ -34,8 +34,6 @@ public class SpectrumHypertreeSearchParametersController
 
     public SpectrumHypertreeSearchParametersController(SpectrumSearchModel model, PickManager pickManager)
     {
-        System.out.println(
-                "SpectrumHypertreeSearchParametersController: SpectrumHypertreeSearchParametersController: initing");
         this.model = model;
         this.spectraSpec = model.getSpectraSpec();
         this.panel = new SpectrumHypertreeSearchParametersPanel(model.getSmallBodyConfig().hasHierarchicalSpectraSearch);
@@ -310,6 +308,7 @@ public class SpectrumHypertreeSearchParametersController
             public void actionPerformed(java.awt.event.ActionEvent evt) {
 //                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
 //                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                panel.getSelectRegionButton().setSelected(false);
                 model.clearSpectraFromDisplay();
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
                 {

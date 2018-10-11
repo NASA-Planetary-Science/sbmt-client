@@ -110,7 +110,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     private int redIndex;
     private int greenIndex;
     private int blueIndex;
-    protected String spectrumColoringStyleName;
+    protected String spectrumColoringStyleName = "RGB";
     private int numberOfBoundariesToShow;
     private List<Integer> polygonTypesChecked = new ArrayList<Integer>();
     protected SpectraCollection spectrumCollection;
@@ -345,7 +345,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             {
                 String result = createSpectrumName(i);
                 String spectrumPath  = result;
-                out.write(spectrumPath + nl);
+                out.write(spectrumPath + "," + getSpectrumRawResults().get(i) + nl);
                 SearchSpec spectrumSpec = collection.getSearchSpec(spectrumPath);
                 spectrumSpec.toFile(out2);
             }
@@ -357,6 +357,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
     public void loadSpectrumListButtonActionPerformed(ActionEvent evt) throws Exception
     {
+        results.clear();
         File file = CustomFileChooser.showOpenDialog(null, "Select File");
         String metadataFilename = getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
         File file2 = new File(metadataFilename);
@@ -366,15 +367,16 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            List<List<String>> results = new ArrayList<List<String>>();
+//            List<List<String>> results = new ArrayList<List<String>>();
             List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
             List<String> lines2 = FileUtil.getFileLinesAsStringList(file2.getAbsolutePath());
             for (int i=0; i<lines.size(); ++i)
             {
                 if (lines.get(i).startsWith("#")) continue;
-                String[] words = lines.get(i).trim().split("\\s+");
+                String[] words = lines.get(i).trim().split("[,\\[\\]]+"); //was \\s+
                 List<String> result = new ArrayList<String>();
                 result.add(words[0]);
+                result.add(words[2].trim());
                 results.add(result);
             }
             populateSpectrumMetadata(lines2);

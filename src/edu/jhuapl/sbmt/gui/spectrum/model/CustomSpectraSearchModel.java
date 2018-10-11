@@ -80,8 +80,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         List<String> matchedImages=Lists.newArrayList();
         if (matchedImages.size() > 0)
             fileExtension = FilenameUtils.getExtension(matchedImages.get(0));
-        System.out.println(
-                "CustomSpectraSearchModel: setSpectrumRawResults: spectrum raw results size " + spectrumRawResults.size());
         super.setSpectrumRawResults(spectrumRawResults);
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());
@@ -90,8 +88,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     @Override
     public String createSpectrumName(int index)
     {
-        System.out
-                .println("CustomSpectraSearchModel: createSpectrumName: specturm name " + getSpectrumRawResults().get(index).get(1));
         return getSpectrumRawResults().get(index).get(1);
     }
 
@@ -130,8 +126,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     protected void fireResultsChanged()
     {
-        System.out
-                .println("CustomSpectraSearchModel: fireResultsChanged: firing listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
             listener.resultsChanged(customSpectra);
@@ -220,7 +214,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             // Change newImageInfo.imagefilename to the new location of the file
             newSpectrumInfo.spectrumfilename = newFilename;
             newSpectrumInfo.infofilename = newFileInfoname;
-            System.out.println("CustomSpectraSearchModel: saveSpectrum: new file name is " + newFilename);
 
 //            // Check if this image is any of the supported formats
 //            if(VtkENVIReader.isENVIFilename(newSpectrumInfo.spectrumfilename)){
@@ -322,7 +315,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         {
             customSpectra.set(index, newSpectrumInfo);
         }
-        System.out.println("CustomSpectraSearchModel: saveSpectrum: customSpectra size " + customSpectra.size());
 
         List<List<String>> tempResults = new ArrayList<List<String>>();
         for (SpectrumInfo info : customSpectra)
@@ -421,7 +413,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     public void updateConfigFile()
     {
         MapUtil configMap = new MapUtil(getConfigFilename());
-        System.out.println("CustomSpectraSearchModel: updateConfigFile: config name " + getConfigFilename());
         String spectrumNames = "";
         String spectrumFilenames = "";
         String projectionTypes = "";
@@ -436,8 +427,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         for (int i=0; i<customSpectra.size(); ++i)
         {
             SpectrumInfo spectrumInfo = customSpectra.get(i);
-            System.out.println(
-                    "CustomSpectraSearchModel: updateConfigFile: adding " + spectrumInfo.spectrumfilename);
             spectrumFilenames += spectrumInfo.spectrumfilename;
             spectrumNames += spectrumInfo.name;
 //            projectionTypes += spectrumInfo.projectionType;
@@ -491,8 +480,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             return;
 
         MapUtil configMap = new MapUtil(getConfigFilename());
-        System.out
-                .println("CustomSpectraSearchModel: initializeSpecList: config name " + getConfigFilename());
         if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) /*|| configMap.containsKey(Image.PROJECTION_TYPES)*/)
         {
             boolean needToUpgradeConfigFile = false;
@@ -572,8 +559,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             tempResults.add(res);
         }
         updateConfigFile();
-        System.out
-                .println("CustomSpectraSearchModel: initializeSpecList: temp results size " + tempResults.size());
         setSpectrumRawResults(tempResults);
         fireResultsChanged();
         fireResultsCountChanged(this.results.size());

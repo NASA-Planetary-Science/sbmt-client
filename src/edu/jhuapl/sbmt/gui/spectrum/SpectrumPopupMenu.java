@@ -124,9 +124,9 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
         showToSunVectorMenuItem = new JCheckBoxMenuItem(new ShowToSunVectorAction());
         showToSunVectorMenuItem.setText("Show Sunward Vector");
-        this.add(showToSunVectorMenuItem);
+//        this.add(showToSunVectorMenuItem);
 
-        setIlluminationMenuItem = new JMenuItem(new SetIlluminationAction());
+        setIlluminationMenuItem = new JCheckBoxMenuItem(new SetIlluminationAction());
         setIlluminationMenuItem.setText("Set Illumination");
         if (renderer!=null)
             this.add(setIlluminationMenuItem);
@@ -163,11 +163,15 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             showFrustumMenuItem.setSelected(spectrum.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
             showOutlineMenuItem.setSelected(spectrum.isOutlineShowing());
+            showOutlineMenuItem.setSelected(spectrum.isSelected());
             showOutlineMenuItem.setEnabled(true);
             centerSpectrumMenuItem.setEnabled(true);
             showToSunVectorMenuItem.setSelected(spectrum.isToSunVectorShowing());
             showToSunVectorMenuItem.setEnabled(true);
+            if (renderer.getLighting() == LightingType.FIXEDLIGHT) setIlluminationMenuItem.setSelected(true);
+            else setIlluminationMenuItem.setSelected(false);
             setIlluminationMenuItem.setEnabled(true);
+
         }
         else
         {
@@ -180,6 +184,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
             showToSunVectorMenuItem.setEnabled(false);
             setIlluminationMenuItem.setEnabled(false);
         }
+
     }
 
     SpectralInstrument instrument;
@@ -270,9 +275,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     public void showStatisticsWindow()
     {
-        SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
         SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        List<Spectrum> spectra=model.getSelectedSpectra();
+        List<Spectrum> spectra = model.getSelectedSpectra();
         if (spectra.size()==0)
             spectra.add(spectrum);    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
         //
@@ -395,7 +399,16 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 //                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 //                model.addSpectrum(currentSpectrum, instrument);
 //                Spectrum spectrum = model.getSpectrum(currentSpectrum);
+                SpectraCollection collection = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 
+                if (showOutlineMenuItem.isSelected())
+                {
+                    collection.select(spectrum);
+                }
+                else
+                {
+                    collection.deselect(spectrum);
+                }
                 spectrum.setShowOutline(showOutlineMenuItem.isSelected());
 
                 updateMenuItems();
@@ -439,8 +452,15 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 //                SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 //                model.addSpectrum(currentSpectrum, instrument);
 //                Spectrum spectrum = model.getSpectrum(currentSpectrum);
+                if (renderer.getLighting() == LightingType.FIXEDLIGHT)
+                {
+                    renderer.setLighting(LightingType.LIGHT_KIT);
+                }
+                else
+                {
+                    renderer.setLighting(LightingType.FIXEDLIGHT);
+                }
 
-                renderer.setLighting(LightingType.FIXEDLIGHT);
                 Path fullPath=Paths.get(spectrum.getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
                 Vector3D toSunVector=new Vector3D(spectrum.getToSunUnitVector());

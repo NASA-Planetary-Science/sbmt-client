@@ -13,6 +13,7 @@ import vtk.vtkFunctionParser;
 
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumMathPanel;
+import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumColoringPanel;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
@@ -29,6 +30,7 @@ public class SpectrumColoringController
         this.panel = new SpectrumColoringPanel();
         this.model = model;
         init();
+
     }
 
     private void init()
@@ -107,6 +109,17 @@ public class SpectrumColoringController
                 customFunctionsButtonActionPerformed(evt);
             }
         });
+
+        model.addColoringChangedListener(new SpectrumColoringChangedListener()
+        {
+
+            @Override
+            public void coloringChanged()
+            {
+                panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getSpectrumColoringStyleName()));
+            }
+        });
+
     }
 
     private void customFunctionsButtonActionPerformed(ActionEvent evt) {
