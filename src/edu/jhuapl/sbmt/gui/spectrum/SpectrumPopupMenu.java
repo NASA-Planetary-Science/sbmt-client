@@ -201,7 +201,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     {
         spectrumKeys.clear();
         spectrumKeys.addAll(keys);
-
+        currentSpectrum = keys.get(0).name.substring(keys.get(0).name.lastIndexOf("/")+1);
         updateMenuItems();
     }
 
