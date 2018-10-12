@@ -7,13 +7,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -26,7 +22,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -196,42 +191,20 @@ public class SpectrumResultsTableController
 
     }
 
-    private void saveSelectedSpectrumListButtonActionPerformed(ActionEvent evt) {
-        File file = CustomFileChooser.showSaveDialog(panel, "Select File", "imagelist.txt");
-
-        if (file != null)
+    private void saveSelectedSpectrumListButtonActionPerformed(ActionEvent evt)
+    {
+        try
         {
-            try
-            {
-                FileWriter fstream = new FileWriter(file);
-                BufferedWriter out = new BufferedWriter(fstream);
+            model.saveSelectedSpectrumListButtonActionPerformed(this.getPanel(), panel.getResultList().getSelectedRows());
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                    "There was an error saving the file.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-                String nl = System.getProperty("line.separator");
-                out.write("#Image_Name Image_Time_UTC Pointing"  + nl);
-                int[] selectedIndices = panel.getResultList().getSelectedRows();
-                for (int selectedIndex : selectedIndices)
-                {
-                    String image = new File(spectrumRawResults.get(selectedIndex).get(0)).getName();
-                    String dtStr = spectrumRawResults.get(selectedIndex).get(1);
-                    Date dt = new Date(Long.parseLong(dtStr));
-
-                    out.write(image + " " + sdf.format(dt) + nl);
-                }
-
-                out.close();
-            }
-            catch (Exception e)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
-                        "There was an error saving the file.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                e.printStackTrace();
-            }
+            e.printStackTrace();
         }
     }
 
