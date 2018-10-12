@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.lidar.hyperoctree.laser.Hayabusa2LaserRawLidarFile;
+import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2RawLidarFile;
 import edu.jhuapl.sbmt.lidar.hyperoctree.nlr.NlrRawLidarFile;
 import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaLidarFile;
 
@@ -32,6 +32,10 @@ public class BruteForceLidarBoundsCalculator
     double ymax=Double.NEGATIVE_INFINITY;
     double zmin=Double.POSITIVE_INFINITY;
     double zmax=Double.NEGATIVE_INFINITY;
+    double rngmax = Double.NEGATIVE_INFINITY;
+    double rnamin = Double.POSITIVE_INFINITY;
+
+    boolean hasRange = false;
 
     LidarInstrument instrument;
 
@@ -49,7 +53,8 @@ public class BruteForceLidarBoundsCalculator
         case NLR:
             return new NlrRawLidarFile(file.toString());
         case LASER:
-            return new Hayabusa2LaserRawLidarFile(file.toString());
+            hasRange = true;
+            return new Hayabusa2RawLidarFile(file.toString());
         default:
             return null;
         }
