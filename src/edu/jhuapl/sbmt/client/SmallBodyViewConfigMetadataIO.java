@@ -55,7 +55,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeEnum(type, c.type, configMetadata);
         writeEnum(population, c.population, configMetadata);
         writeEnum(dataUsed, c.dataUsed, configMetadata);
-        writeEnum(author, c.author, configMetadata);
+        write(author, c.author.name(), configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
