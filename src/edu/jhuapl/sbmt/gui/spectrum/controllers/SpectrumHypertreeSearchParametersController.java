@@ -220,13 +220,29 @@ public class SpectrumHypertreeSearchParametersController
                 }
             });
 
-            panel.getFromIncidenceTextField().addActionListener(new ActionListener()
+            panel.getFromIncidenceTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+                    if (!panel.getFromIncidenceTextField().getText().equals(""))
+                        model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromIncidenceTextField().getText().equals(""))
+                        model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromIncidenceTextField().getText().equals(""))
+                        model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+
                 }
             });
 
