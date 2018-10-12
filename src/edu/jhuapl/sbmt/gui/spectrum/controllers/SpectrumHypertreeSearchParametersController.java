@@ -407,11 +407,13 @@ public class SpectrumHypertreeSearchParametersController
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
                 {
                     String[] names = new String[] {"OTES_L2", "OTES_L3"};
+                    String[] dataSpecNames = new String[] {"OTES L2", "OTES L3"};
                     int i=0;
                     for (Enumeration<AbstractButton> buttons = panel.getGroup().getElements(); buttons.hasMoreElements();) {
                         AbstractButton button = buttons.nextElement();
                         if (button.isSelected()) {
                             model.setSpectraHypertreeSourceName(names[i]);
+                            model.setSpectraHypertreeDataSpecName(dataSpecNames[i]);
                         }
                         i++;
                     }
@@ -425,11 +427,13 @@ public class SpectrumHypertreeSearchParametersController
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
                 { // only L3 for OVIRS currently
                     String[] names = new String[] {"OVIRS_IF", "OVIRS_REF"};
+                    String[] dataSpecNames = new String[] {"OVIRS L3 I/F Spectra", "OVIRS L3 REFF"};
                     int i=0;
                     for (Enumeration<AbstractButton> buttons = panel.getGroup().getElements(); buttons.hasMoreElements();) {
                         AbstractButton button = buttons.nextElement();
                         if (button.isSelected()) {
                             model.setSpectraHypertreeSourceName(names[i]);
+                            model.setSpectraHypertreeDataSpecName(dataSpecNames[i]);
                         }
                         i++;
                     }

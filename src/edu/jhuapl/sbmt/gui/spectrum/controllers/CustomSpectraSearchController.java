@@ -51,8 +51,6 @@ public class CustomSpectraSearchController
             @Override
             public void resultsChanged(List<SpectrumInfo> results)
             {
-                System.out.println(
-                        "CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: results size " + results.size());
                 List<List<String>> formattedResults = new ArrayList<List<String>>();
                 for (SpectrumInfo info : results)
                 {

@@ -116,6 +116,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     protected SpectraCollection spectrumCollection;
     private String spectraHypertreeSourceName;
     private SpectraSearchDataCollection spectraModel;
+    private String spectraHypertreeDataSpecName;
 
 
     public SpectrumSearchModel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
@@ -752,7 +753,11 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
              List<SearchSpec> specs = instrumentMetadata.getSpecs();
              for (SearchSpec spec : specs)
              {
-                 if (spec.getDataName().contains(spectraHypertreeSourceName.replaceAll("_", " ")))
+                 System.out.println(
+                        "SpectrumSearchModel: performHypertreeSearch: hypertree source " + spectraHypertreeDataSpecName);
+                 System.out.println(
+                        "SpectrumSearchModel: performHypertreeSearch: data name " + spec.getDataName());
+                 if (spec.getDataName().contains(spectraHypertreeDataSpecName))
                  {
 
                      spectrumCollection.tagSpectraWithMetadata(results, spec);
@@ -1146,6 +1151,11 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     public void setSpectraHypertreeSourceName(String spectraHypertreeSourceName)
     {
         this.spectraHypertreeSourceName = spectraHypertreeSourceName;
+    }
+
+    public void setSpectraHypertreeDataSpecName(String spectraHypertreeSourceName)
+    {
+        this.spectraHypertreeDataSpecName = spectraHypertreeSourceName;
     }
 
     public void addToPolygonsSelected(int index)
