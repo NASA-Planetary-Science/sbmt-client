@@ -181,11 +181,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     public void retrieve(Metadata configMetadata)
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)configs.get(0);
-        c.body = ShapeModelBody.valueOf(""+read(body, configMetadata));
-        c.type = BodyType.valueOf(""+read(type, configMetadata));
-        c.population = ShapeModelPopulation.valueOf(""+read(population, configMetadata));
-        c.dataUsed =ShapeModelDataUsed.valueOf(""+read(dataUsed, configMetadata));
-        c.author = ShapeModelType.valueOf(""+read(author, configMetadata));
+        c.body = ShapeModelBody.valueOf(read(body, configMetadata));
+        c.type = BodyType.valueOf(read(type, configMetadata));
+        c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
+        c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
+        c.author = ShapeModelType.valueOf(read(author, configMetadata));
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
@@ -207,8 +207,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         for (Metadata data : spectralMetadata)
         {
             String instrumentName = (String)data.get(Key.of("displayName"));
-            System.out
-                    .println("SmallBodyViewConfigMetadataIO: retrieve: instrument name " + instrumentName);
             BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
             inst.retrieve(data);
             c.spectralInstruments[i++] = inst;
