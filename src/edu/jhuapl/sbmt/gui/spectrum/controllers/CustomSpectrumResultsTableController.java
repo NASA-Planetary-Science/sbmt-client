@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.spectrum.controllers;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -53,6 +55,17 @@ public class CustomSpectrumResultsTableController
         panel.getResultList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
         panel.getResultList().getColumnModel().getColumn(panel.getFrusColumnIndex()).setResizable(true);
         panel.getResultList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
+
+        panel.getRemoveAllSpectraButton().removeActionListener(panel.getRemoveAllSpectraButton().getActionListeners()[0]);
+        panel.getRemoveAllSpectraButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                removeAllFootprintsForAllInstrumentsButtonActionPerformed(e);
+            }
+        });
 
 //        panel.getResultList().addMouseListener(new MouseAdapter()
 //        {

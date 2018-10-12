@@ -311,6 +311,13 @@ public class SpectrumResultsTableController
         model.setResultIntervalCurrentlyShown(null);
     }
 
+    protected void removeAllFootprintsForAllInstrumentsButtonActionPerformed(ActionEvent evt)
+    {
+        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
+        collection.removeAllSpectra();
+        model.setResultIntervalCurrentlyShown(null);
+    }
+
     private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
     {
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
