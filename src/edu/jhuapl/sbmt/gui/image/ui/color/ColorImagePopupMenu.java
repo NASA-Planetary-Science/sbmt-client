@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.color;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -10,8 +10,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkActor;
 import vtk.vtkProp;
 
@@ -21,9 +19,11 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.model.image.ColorImage;
-import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
+import edu.jhuapl.sbmt.model.image.ColorImageCollection;
+
+import nom.tam.fits.FitsException;
 
 
 public class ColorImagePopupMenu extends PopupMenu

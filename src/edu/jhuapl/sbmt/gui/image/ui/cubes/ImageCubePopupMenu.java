@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.cubes;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -88,9 +88,6 @@ public class ImageCubePopupMenu extends PopupMenu
             SbmtSpectrumWindowManager spectrumPanelManager,
             Renderer renderer,
             Component invoker)
-//            ModelInfoWindowManager infoPanelManager,
-//            ModelManager modelManager,
-//            Component invoker)
     {
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;

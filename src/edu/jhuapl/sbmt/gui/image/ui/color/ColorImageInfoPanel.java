@@ -8,7 +8,7 @@
  *
  * Created on May 30, 2011, 12:24:26 PM
  */
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.color;
 
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -91,7 +91,6 @@ public class ColorImageInfoPanel extends ModelInfoWindow implements PropertyChan
         renWin.setInteractorStyle(style);
 
         vtkImageData displayedImage = (vtkImageData)image.getTexture().GetInput();
-//        vtkImageData displayedImage = (vtkImageData)image.getImage();
 
         // Only allow contrast changing for images with exactly 1 channel
         if (image.getNumberOfComponentsOfOriginalImage() > 1)

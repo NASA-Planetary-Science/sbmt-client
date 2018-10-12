@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;

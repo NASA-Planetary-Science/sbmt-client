@@ -8,7 +8,7 @@
  *
  * Created on May 30, 2011, 12:24:26 PM
  */
-package edu.jhuapl.sbmt.gui.image;
+package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.Component;
 import java.awt.Dimension;
