@@ -26,7 +26,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumSearchView extends SpectrumView
 {

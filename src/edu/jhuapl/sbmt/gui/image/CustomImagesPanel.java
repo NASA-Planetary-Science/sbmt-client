@@ -376,8 +376,10 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 }
                 else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
                 {
-                    imageInfo.sumfilename = sumfileNames[i];
-                    imageInfo.infofilename = infofileNames[i];
+                    if (sumfileNames.length > 0)
+                        imageInfo.sumfilename = sumfileNames[i];
+                    if (infofileNames.length > 0)
+                        imageInfo.infofilename = infofileNames[i];
                 }
 
                 ((DefaultListModel)imageList.getModel()).addElement(imageInfo);

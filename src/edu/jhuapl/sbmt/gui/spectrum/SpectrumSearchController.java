@@ -90,13 +90,13 @@ import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNode;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.model.spectrum.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
@@ -130,9 +130,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             this.view = new SpectrumSearchView(smallBodyConfig, modelManager, pickManager, renderer, instrument, model);
         else
             this.view = new SpectrumBrowseView(smallBodyConfig, modelManager, pickManager, renderer, instrument);
-
-
-        view.setSpectrumPopupMenu(new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer));
+        SpectrumPopupMenu popup = new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer);
+        popup.setInstrument(instrument);
+        view.setSpectrumPopupMenu(popup);
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
         try
@@ -154,7 +154,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         renderer.addKeyListener(this);
         model.setRenderer(renderer);
-        //        this.renderer=renderer;
+//        this.renderer=renderer;
 
 
 
@@ -193,29 +193,27 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
         {
             if (!isSearchView)
-                model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
-                        checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
+            	model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+                    checkBoxTree.getCheckBoxTreeSelectionModel().getSelectionPaths());
         }
 
-
-
         view.getClearRegionButton().addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    clearRegionButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(ActionEvent evt) {
+                clearRegionButtonActionPerformed(evt);
+            }
+        });
 
         view.getSubmitButton().addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    submitButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
 
         view.getSelectRegionButton().addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    selectRegionButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(ActionEvent evt) {
+                selectRegionButtonActionPerformed(evt);
+            }
+        });
 
         if (view instanceof SpectrumSearchView) {
             ((SpectrumSearchView) view).getStartSpinner().addChangeListener(new ChangeListener() {
@@ -358,7 +356,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 for (int i=0; i<view.getResultList().getModel().getSize(); i++)
                 {
-                    //                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
+//                    Spectrum spectrum=collection.getSpectrum(createSpectrumName((String)view.getResultList().getModel().getElementAt(i)));
                     Spectrum spectrum=collection.getSpectrum(createSpectrumName(i));
                     if (spectrum == null)
                         continue;
@@ -383,28 +381,28 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         if (view instanceof SpectrumSearchView) {
             Date date = ((SpinnerDateModel)((SpectrumSearchView)view).getStartSpinner().getModel()).getDate();
-            if (date != null)
-                model.setStartDate(date);
-        }
+        	if (date != null)
+            	model.setStartDate(date);
+    	}
     }
 
     private void endSpinnerStateChanged(ChangeEvent evt)
     {
         if (view instanceof SpectrumSearchView) {
             Date date = ((SpinnerDateModel)((SpectrumSearchView)view).getEndSpinner().getModel()).getDate();
-            if (date != null)
-                model.setEndDate(date);
-        }
+        	if (date != null)
+            	model.setEndDate(date);
+   	 	}
     }
 
     private void selectRegionButtonActionPerformed(ActionEvent evt)
     {
         if (view instanceof SpectrumSearchView) {
             if ( ((SpectrumSearchView)view).getSelectRegionButton().isSelected())
-                model.getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
-            else
-                model.getPickManager().setPickMode(PickMode.DEFAULT);
-        }
+            	model.getPickManager().setPickMode(PickMode.CIRCLE_SELECTION);
+        	else
+            	model.getPickManager().setPickMode(PickMode.DEFAULT);
+    	}
     }
 
     private void clearRegionButtonActionPerformed(ActionEvent evt)
@@ -475,37 +473,37 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         if (view instanceof SpectrumSearchView)
         { // only submitting for searches
-            try
-            {
+        try
+        {
 
-                ((SpectrumSearchView)view).getSelectRegionButton().setSelected(false);
-                model.getPickManager().setPickMode(PickMode.DEFAULT);
+             ((SpectrumSearchView)view).getSelectRegionButton().setSelected(false);
+           	 model.getPickManager().setPickMode(PickMode.DEFAULT);
 
-                GregorianCalendar startDateGreg = new GregorianCalendar();
-                GregorianCalendar endDateGreg = new GregorianCalendar();
-                startDateGreg.setTime(model.getStartDate());
-                endDateGreg.setTime(model.getEndDate());
+            GregorianCalendar startDateGreg = new GregorianCalendar();
+            GregorianCalendar endDateGreg = new GregorianCalendar();
+            startDateGreg.setTime(model.getStartDate());
+            endDateGreg.setTime(model.getEndDate());
                 double startTime = model.getStartDate().getTime();
                 double endTime = model.getEndDate().getTime();
 
-                DateTime startDateJoda = new DateTime(
-                        startDateGreg.get(GregorianCalendar.YEAR),
-                        startDateGreg.get(GregorianCalendar.MONTH)+1,
-                        startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
-                        startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
-                        startDateGreg.get(GregorianCalendar.MINUTE),
-                        startDateGreg.get(GregorianCalendar.SECOND),
-                        startDateGreg.get(GregorianCalendar.MILLISECOND),
-                        DateTimeZone.UTC);
-                DateTime endDateJoda = new DateTime(
-                        endDateGreg.get(GregorianCalendar.YEAR),
-                        endDateGreg.get(GregorianCalendar.MONTH)+1,
-                        endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
-                        endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
-                        endDateGreg.get(GregorianCalendar.MINUTE),
-                        endDateGreg.get(GregorianCalendar.SECOND),
-                        endDateGreg.get(GregorianCalendar.MILLISECOND),
-                        DateTimeZone.UTC);
+            DateTime startDateJoda = new DateTime(
+                    startDateGreg.get(GregorianCalendar.YEAR),
+                    startDateGreg.get(GregorianCalendar.MONTH)+1,
+                    startDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                    startDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                    startDateGreg.get(GregorianCalendar.MINUTE),
+                    startDateGreg.get(GregorianCalendar.SECOND),
+                    startDateGreg.get(GregorianCalendar.MILLISECOND),
+                    DateTimeZone.UTC);
+            DateTime endDateJoda = new DateTime(
+                    endDateGreg.get(GregorianCalendar.YEAR),
+                    endDateGreg.get(GregorianCalendar.MONTH)+1,
+                    endDateGreg.get(GregorianCalendar.DAY_OF_MONTH),
+                    endDateGreg.get(GregorianCalendar.HOUR_OF_DAY),
+                    endDateGreg.get(GregorianCalendar.MINUTE),
+                    endDateGreg.get(GregorianCalendar.SECOND),
+                    endDateGreg.get(GregorianCalendar.MILLISECOND),
+                    DateTimeZone.UTC);
 
 
                 if (model.getSmallBodyConfig().hasHypertreeBasedSpectraSearch)
@@ -545,16 +543,16 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                     AbstractEllipsePolygonModel.EllipsePolygon region=null;
                     vtkPolyData interiorPoly=new vtkPolyData();
-                    if (selectionModel.getNumberOfStructures() > 0)
-                    {
+            		if (selectionModel.getNumberOfStructures() > 0)
+            		{
                         region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
                         selectionRegionCenter = region.center;
                         selectionRegionRadius = region.radius;
 
 
-                        // Always use the lowest resolution model for getting the intersection cubes list.
-                        // Therefore, if the selection region was created using a higher resolution model,
-                        // we need to recompute the selection region using the low res model.
+                // Always use the lowest resolution model for getting the intersection cubes list.
+                // Therefore, if the selection region was created using a higher resolution model,
+                // we need to recompute the selection region using the low res model.
                         if (smallBodyModel.getModelResolution() > 0)
                             smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
                         else
@@ -653,12 +651,12 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
                     QueryBase queryType = instrument.getQueryBase();
                     if (queryType instanceof FixedListQuery)
-                    {
+                {
                         FixedListQuery query = (FixedListQuery)queryType;
                         results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
-                    }
-                    else
-                    {
+                }
+                else
+                {
                         SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                                 Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromDistanceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToDistanceTextField().getText())),
                                 "", null,   //TODO: reinstate polygon types here
@@ -669,8 +667,11 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                         DatabaseQueryBase query = (DatabaseQueryBase)queryType;
                         results = query.runQuery(searchMetadata).getResultlist();
-                    }
                 }
+            }
+//                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+//                List<SearchSpec> specs = instrumentMetadata.getSpecs();
+//                collection.tagSpectraWithMetadata(results, spec);
                 setSpectrumSearchResults(results);
 
             }
@@ -714,17 +715,17 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                     results.addAll(thisResult);
                 }
              setSpectrumSearchResults(results);
+                }
+                }
             }
-        }
-    }
 
     protected double[] getSelectedTimeLimits()
-    {
+        {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
         double start = TimeUtil.str2et(sdf.format(model.getStartDate()).replace(' ', 'T'));
         double end = TimeUtil.str2et(sdf.format(model.getEndDate()).replace(' ', 'T'));
         return new double[]{start,end};
-    }
+        }
 
     private void resultListMousePressed(MouseEvent evt)
     {
@@ -795,18 +796,18 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     private void grayscaleCheckBoxActionPerformed(ActionEvent evt) {
         boolean enableColor = !view.getGrayscaleCheckBox().isSelected();
 
-        //        redLabel.setVisible(enableColor);
-        //        greenLabel.setVisible(enableColor);
+//        redLabel.setVisible(enableColor);
+//        greenLabel.setVisible(enableColor);
         view.getGreenComboBox().setVisible(enableColor);
-        //        greenMinLabel.setVisible(enableColor);
+//        greenMinLabel.setVisible(enableColor);
         view.getGreenMinSpinner().setVisible(enableColor);
-        //        greenMaxLabel.setVisible(enableColor);
+//        greenMaxLabel.setVisible(enableColor);
         view.getGreenMaxSpinner().setVisible(enableColor);
-        //        blueLabel.setVisible(enableColor);
+//        blueLabel.setVisible(enableColor);
         view.getBlueComboBox().setVisible(enableColor);
-        //        blueMinLabel.setVisible(enableColor);
+//        blueMinLabel.setVisible(enableColor);
         view.getBlueMinSpinner().setVisible(enableColor);
-        //        blueMaxLabel.setVisible(enableColor);
+//        blueMaxLabel.setVisible(enableColor);
         view.getBlueMaxSpinner().setVisible(enableColor);
 
         updateColoring();
@@ -834,7 +835,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                 for (int i=0; i<size; ++i)
                 {
-                    //                    String result = model.getSpectrumRawResults().get(i);
+//                    String result = model.getSpectrumRawResults().get(i);
                     String result = createSpectrumName(i);
                     String spectrumPath  = result; //new File(result).getAbsoluteFile().toString().substring(beginIndex);
                     out.write(spectrumPath + nl);
@@ -925,29 +926,28 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     {
         if (view instanceof SpectrumBrowseView) {
             SpectrumBrowseView browseView = (SpectrumBrowseView) view;
-            // Show/hide panels depending on whether this body has hierarchical image search capabilities
-            if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
-            {
+        // Show/hide panels depending on whether this body has hierarchical image search capabilities
+        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+        {
+            // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
+//            filterCheckBoxPanel.setVisible(false);
+//            userDefinedCheckBoxPanel.setVisible(false);
 
-                // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
-                //            filterCheckBoxPanel.setVisible(false);
-                //            userDefinedCheckBoxPanel.setVisible(false);
+            // Create the tree
+            spectraSpec.clearTreeLeaves();
+//            spectraSpec.setRootName(instrument.getDisplayName());
+            spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
+            checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
 
-                // Create the tree
-                spectraSpec.clearTreeLeaves();
-                //            spectraSpec.setRootName(instrument.getDisplayName());
-                spectraSpec.readHierarchyForInstrument(instrument.getDisplayName());
-                checkBoxTree = new CheckBoxTree(spectraSpec.getTreeModel());
-
-                // Place the tree in the panel
+            // Place the tree in the panel
                 browseView.getDataSourcesScrollPane().setViewportView(checkBoxTree);
-            }
-            else
-            {
-                // No hierarchical search capabilities, hide the scroll pane
-                browseView.getDataSourcesScrollPane().setVisible(false);
-            }
         }
+        else
+        {
+            // No hierarchical search capabilities, hide the scroll pane
+                browseView.getDataSourcesScrollPane().setVisible(false);
+        }
+    }
     }
 
     protected void setupComboBoxes()
@@ -1019,7 +1019,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             if (index >= 0 && resultList.getCellBounds(index, index).contains(e.getPoint()))
             {
                 resultList.setSelectedIndex(index);
-                //                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
+//                spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(model.getSpectrumRawResults().get(index)));
                 spectrumPopupMenu.setCurrentSpectrum(createSpectrumName(index));
                 spectrumPopupMenu.setInstrument(instrument);
                 spectrumPopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -1136,7 +1136,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(view.getColoringComboBox().getSelectedItem().toString());
 
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-        //        model.removeAllSpectra();
+//        model.removeAllSpectra();
 
         for (int i=startId; i<endId; ++i)
         {
@@ -1148,8 +1148,9 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             try
             {
                 String currentSpectrum = model.getSpectrumRawResults().get(i);
-                //                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
-                collection.addSpectrum(createSpectrumName(i), instrument, style);
+//                collection.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                Spectrum spectrum = collection.addSpectrum(createSpectrumName(i), instrument, style);
+                spectrum.setSelected();
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -1159,7 +1160,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     }
 
 
-    //    public abstract String createSpectrumName(String currentSpectrumRaw);
+//    public abstract String createSpectrumName(String currentSpectrumRaw);
     public abstract String createSpectrumName(int index);
 
 
@@ -1269,7 +1270,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
                     if (!resultList.getSelectionModel().isSelectedIndex(i))
                     {
-                        //                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
+//                        Spectrum spectrum_=coll.getSpectrum(createSpectrumName((String)resultList.getModel().getElementAt(i)));
                         Spectrum spectrum_=coll.getSpectrum(createSpectrumName(i));
                         if (spectrum_ != null)
                             coll.deselect(spectrum_);
@@ -1277,7 +1278,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 }
                 resultList.repaint();
             }
-        }
+       }
         else
         {
             resultList.repaint();
@@ -1304,7 +1305,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             }
             else
             {
-                //                String spectrumFile=createSpectrumName(value.toString());
+//                String spectrumFile=createSpectrumName(value.toString());
                 String spectrumFile=createSpectrumName(index);
                 SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
                 Spectrum spectrum=collection.getSpectrum(spectrumFile);
