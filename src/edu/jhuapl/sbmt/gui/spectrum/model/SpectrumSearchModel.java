@@ -351,7 +351,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 out.write(results.get(selectedIndex).get(0) + "," + dt.getTime() + nl);
                 String result = createSpectrumName(selectedIndex);
                 SearchSpec spectrumSpec = collection.getSearchSpec(result);
-                spectrumSpec.toFile(out2);
+                if (spectrumSpec != null)
+                    spectrumSpec.toFile(out2);
             }
 
             out.close();
@@ -385,7 +386,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 String spectrumPath  = result;
                 out.write(spectrumPath + "," + getSpectrumRawResults().get(i).get(1) + nl);
                 SearchSpec spectrumSpec = collection.getSearchSpec(spectrumPath);
-                spectrumSpec.toFile(out2);
+                if (spectrumSpec != null)
+                    spectrumSpec.toFile(out2);
             }
 
             out.close();
@@ -417,7 +419,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 result.add(words[1].trim());
                 results.add(result);
             }
-            populateSpectrumMetadata(lines2);
+            if (lines2.size() > 0)
+                populateSpectrumMetadata(lines2);
 
             fireResultsChanged();
             this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
