@@ -184,6 +184,7 @@ public class NISSearchModel extends SpectrumSearchModel
     public String createSpectrumName(int index)
     {
         List<String> result = getSpectrumRawResults().get(index);
+        if (result.size() == 2) return result.get(0);
         int name = Integer.parseInt(result.get(2));
         int year = Integer.parseInt(result.get(3));
         int doy = Integer.parseInt(result.get(4));

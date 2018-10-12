@@ -56,9 +56,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
-import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
@@ -73,7 +71,6 @@ import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
@@ -495,15 +492,15 @@ public class SbmtView extends View implements PropertyChangeListener
 
             if (getPolyhedralModelConfig().spectralInstruments.length > 0)
             {
-                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
-                CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument);
-                JComponent component = new CustomSpectraSearchController(
-                        getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument, model).getPanel();
-                customDataPane.addTab("Spectra", component);
+//                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
+//                CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//                JComponent component = new CustomSpectraSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
+//                customDataPane.addTab("Spectra", component);
 //                customDataPane.addTab("Spectra", new CustomSpectrumPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
 
             }
