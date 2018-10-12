@@ -45,12 +45,12 @@ public class SpectrumHypertreeSearchParametersController
     {
         initHierarchicalImageSearch();
 
-//        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
-//        {
-//            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
-//                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
-//        }
-//        else
+        //        if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+        //        {
+        //            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+        //                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+        //        }
+        //        else
         {
             if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
             {
@@ -204,13 +204,15 @@ public class SpectrumHypertreeSearchParametersController
                 public void removeUpdate(DocumentEvent e)
                 {
                     if (!panel.getToDistanceTextField().getText().equals(""))
-                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));            }
+                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+                }
 
                 @Override
                 public void insertUpdate(DocumentEvent e)
                 {
                     if (!panel.getToDistanceTextField().getText().equals(""))
-                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));            }
+                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+                }
 
                 @Override
                 public void changedUpdate(DocumentEvent e)
@@ -246,57 +248,133 @@ public class SpectrumHypertreeSearchParametersController
                 }
             });
 
-            panel.getToIncidenceTextField().addActionListener(new ActionListener()
+            panel.getToIncidenceTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+                    if (!panel.getToIncidenceTextField().getText().equals(""))
+                        model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToIncidenceTextField().getText().equals(""))
+                        model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToIncidenceTextField().getText().equals(""))
+                        model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+
                 }
             });
 
-            panel.getFromEmissionTextField().addActionListener(new ActionListener()
+            panel.getFromEmissionTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+                    if (!panel.getFromEmissionTextField().getText().equals(""))
+                        model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromEmissionTextField().getText().equals(""))
+                        model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromEmissionTextField().getText().equals(""))
+                        model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+
                 }
             });
 
-            panel.getToEmissionTextField().addActionListener(new ActionListener()
+            panel.getToEmissionTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+                    if (!panel.getToEmissionTextField().getText().equals(""))
+                        model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToEmissionTextField().getText().equals(""))
+                        model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToEmissionTextField().getText().equals(""))
+                        model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
                 }
             });
 
-            panel.getFromPhaseTextField().addActionListener(new ActionListener()
+            panel.getFromPhaseTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+                    if (!panel.getFromPhaseTextField().getText().equals(""))
+                        model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromPhaseTextField().getText().equals(""))
+                        model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getFromPhaseTextField().getText().equals(""))
+                        model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
                 }
             });
 
-            panel.getToPhaseTextField().addActionListener(new ActionListener()
+            panel.getToPhaseTextField().getDocument().addDocumentListener(new DocumentListener()
             {
 
                 @Override
-                public void actionPerformed(ActionEvent e)
+                public void removeUpdate(DocumentEvent e)
                 {
-                    model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+                    if (!panel.getToPhaseTextField().getText().equals(""))
+                        model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToPhaseTextField().getText().equals(""))
+                        model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    if (!panel.getToPhaseTextField().getText().equals(""))
+                        model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
                 }
             });
-
-//            toDistanceTextField.setValue(smallBodyConfig.imageSearchDefaultMaxSpacecraftDistance);
+            //            toDistanceTextField.setValue(smallBodyConfig.imageSearchDefaultMaxSpacecraftDistance);
 
             model.setStartDate((Date)panel.getStartSpinner().getValue());
             model.setEndDate((Date)panel.getEndSpinner().getValue());
@@ -322,8 +400,8 @@ public class SpectrumHypertreeSearchParametersController
         panel.getSubmitButton().setText("Search");
         panel.getSubmitButton().addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
-//                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                //                if (model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
+                //                    model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
                 panel.getSelectRegionButton().setSelected(false);
                 model.clearSpectraFromDisplay();
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
@@ -338,11 +416,11 @@ public class SpectrumHypertreeSearchParametersController
                         i++;
                     }
 
-//                    if (panel.getGroup().getSelection())
-//                    if (((SpectrumSearchView) view).getL2Button().isSelected())
-//                        spectraDatasourceName = "OTES_L2";
-//                    else
-//                        spectraDatasourceName = "OTES_L3";
+                    //                    if (panel.getGroup().getSelection())
+                    //                    if (((SpectrumSearchView) view).getL2Button().isSelected())
+                    //                        spectraDatasourceName = "OTES_L2";
+                    //                    else
+                    //                        spectraDatasourceName = "OTES_L3";
                 }
                 if (model.getInstrument().getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
                 { // only L3 for OVIRS currently
@@ -355,10 +433,10 @@ public class SpectrumHypertreeSearchParametersController
                         }
                         i++;
                     }
-//                    if (((SpectrumSearchView) view).getIFButton().isSelected())
-//                        spectraDatasourceName = "OVIRS_IF";
-//                    else
-//                        spectraDatasourceName = "OVIRS_REF";
+                    //                    if (((SpectrumSearchView) view).getIFButton().isSelected())
+                    //                        spectraDatasourceName = "OVIRS_IF";
+                    //                    else
+                    //                        spectraDatasourceName = "OVIRS_REF";
                 }
                 model.performHypertreeSearch();
             }
@@ -384,24 +462,24 @@ public class SpectrumHypertreeSearchParametersController
         if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
         {
             // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
-//            panel.getFilterCheckBoxPanel().setVisible(false);
-//            panel.getUserDefinedCheckBoxPanel().setVisible(false);
-//            panel.getAuxPanel().setVisible(false);
+            //            panel.getFilterCheckBoxPanel().setVisible(false);
+            //            panel.getUserDefinedCheckBoxPanel().setVisible(false);
+            //            panel.getAuxPanel().setVisible(false);
 
             // Create the tree
             spectraSpec.clearTreeLeaves();
             spectraSpec.readHierarchyForInstrument(model.getInstrument().getDisplayName());
-//            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
-//
-//            // Place the tree in the panel
-//            if (panel.getHierarchicalSearchScrollPane() != null)
-//                panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
+            //            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
+            //
+            //            // Place the tree in the panel
+            //            if (panel.getHierarchicalSearchScrollPane() != null)
+            //                panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
         }
-//        else
-//        {
-//            // No hierarchical search capabilities, hide the scroll pane
-//            panel.getHierarchicalSearchScrollPane().setVisible(false);
-//        }
+        //        else
+        //        {
+        //            // No hierarchical search capabilities, hide the scroll pane
+        //            panel.getHierarchicalSearchScrollPane().setVisible(false);
+        //        }
     }
 
     public void formComponentHidden(java.awt.event.ComponentEvent evt)
