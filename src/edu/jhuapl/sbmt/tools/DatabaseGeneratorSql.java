@@ -587,9 +587,9 @@ public class DatabaseGeneratorSql
                 "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
 
-        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/onc", "ryugu_nasa002",
-                "ryugu/nasa-002/onc"),
+        RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
+                "ryugu/jaxa-spc-v20180829/onc"),
 
         /********************************
          * Hayabusa 2 - ONC images at APL
@@ -658,9 +658,9 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
 
-        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_002),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002",
-                "ryugu/nasa-002/onc"),
+        RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
+                "ryugu/nasa-005/onc"),
 
 
         /********************************
@@ -729,9 +729,9 @@ public class DatabaseGeneratorSql
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
 //                "ryugu/nasa-005/tir"),
 
-        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-                "/var/www/sbmt/sbmt/data/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
+        RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
+                "ryugu/jaxa-spc-v20180829/tir"),
 
 
         /********************************
@@ -809,9 +809,9 @@ public class DatabaseGeneratorSql
 //                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
 //                "ryugu/nasa-005/tir"),
 
-        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_003),
-                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir",
-                "ryugu/nasa-002/tir"),
+        RYUGU_SHARED_TIR_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir/imagelist-info.txt", "ryugu_nasa005_tir",
+                "ryugu/nasa-005/tir"),
 
 
 
