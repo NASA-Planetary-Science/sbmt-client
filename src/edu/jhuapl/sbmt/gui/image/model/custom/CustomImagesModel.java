@@ -545,15 +545,12 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void setImageVisibility(ImageKey key, boolean visible)
     {
-        System.out.println("CustomImagesModel: setImageVisibility: setting image visibility");
 //        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
 //        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
 //        for (ImageKey key : keys)
 //        {
             if (imageCollection.containsImage(key))
             {
-                System.out
-                        .println("CustomImageSearchModel: setImageVisibility: found image");
                 Image image = imageCollection.getImage(key);
                 image.setVisible(visible);
             }
@@ -564,7 +561,6 @@ public class CustomImagesModel extends ImageSearchModel
     public ImageKey[] getSelectedImageKeys()
     {
         int[] indices = selectedImageIndices;
-        System.out.println("ImageSearchModel: getSelectedImageKeys: indices length " + indices.length);
         ImageKey[] selectedKeys = new ImageKey[indices.length];
         if (indices.length > 0)
         {
