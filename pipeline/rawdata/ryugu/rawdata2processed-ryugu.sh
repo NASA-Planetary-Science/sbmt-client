@@ -49,7 +49,7 @@ javaCmd="/project/nearsdc/software/java/x86_64/latest/bin/java"
 srcTop="$rawdataTop/$bodyName/$processingVersion"
 destTop="$processedTop/$bodyName/$processingVersion"
 
-releaseDir="$srcTop/$processingModelName"
+releaseDir="$srcTop"
 
 # figures out what the latest kernel is for use in many of the processing methods
 if [ $processingModelName = "shared" ]
@@ -597,20 +597,25 @@ else
      # copies over onc directory
      doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc/
 
-     # *** process imager, not actually sure what this does *** james should know and I just realized that it proabbly has no effect since the rsync is already done
-     processImager
+     # Skip this for now. This processes images, sumfiles and image lists at the same
+     # time, validating and including only images that will work in the destination directory.
+     # Currently this script just uses the processMakeSumfiles function to handle this.
+     # The latter is not as thorough in its vetting, but it works well enough and correctly
+     # for the case where images are not included in the delivery (like for the current ryugu
+     # use cases.
+     #processImager
      echo Finished sumfile processing
    fi
 
    # process coloring data and generates the metadata needed to read the colroing data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ] 
    then
-      echo discovering plate colorings
+      echo Processing plate colorings
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
      
       # gzips the coloring files
-      doGzipDir $destTop/$processingModelName/coloring/*.fits
+      doGzipDir $destTop/$processingModelName/coloring
 
       # runs James' java tool, DiscoverPlateColorings, that class ues an intermediate script, ls-pc.sh which is located in /project/sbmt2/sbmt/scripts
       discoverPlateColorings
