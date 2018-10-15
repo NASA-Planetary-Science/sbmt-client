@@ -496,8 +496,6 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         for (DEM dem : ((DEMCollection)modelManager.getModel(ModelNames.DEM)).getImages())
         {
             DEMKey demkey = dem.getKey();
-            System.out
-                    .println("CustomDEMPanel: imageListMaybeShowPopup: key is " + demkey.displayName);
         }
         if (e.isPopupTrigger())
         {

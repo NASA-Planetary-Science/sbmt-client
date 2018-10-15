@@ -19,7 +19,8 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
-import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
@@ -55,7 +56,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeEnum(type, c.type, configMetadata);
         writeEnum(population, c.population, configMetadata);
         writeEnum(dataUsed, c.dataUsed, configMetadata);
-        writeEnum(author, c.author, configMetadata);
+        write(author, c.author.name(), configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
@@ -180,11 +181,11 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     public void retrieve(Metadata configMetadata)
     {
         SmallBodyViewConfig c = (SmallBodyViewConfig)configs.get(0);
-        c.body = ShapeModelBody.valueOf(""+read(body, configMetadata));
-        c.type = BodyType.valueOf(""+read(type, configMetadata));
-        c.population = ShapeModelPopulation.valueOf(""+read(population, configMetadata));
-        c.dataUsed =ShapeModelDataUsed.valueOf(""+read(dataUsed, configMetadata));
-        c.author = ShapeModelType.valueOf(""+read(author, configMetadata));
+        c.body = ShapeModelBody.valueOf(read(body, configMetadata));
+        c.type = BodyType.valueOf(read(type, configMetadata));
+        c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
+        c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
+        c.author = ShapeModelType.valueOf(read(author, configMetadata));
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
@@ -205,7 +206,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         i=0;
         for (Metadata data : spectralMetadata)
         {
-            BasicSpectrumInstrument inst = new BasicSpectrumInstrument();
+            String instrumentName = (String)data.get(Key.of("displayName"));
+            BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
             inst.retrieve(data);
             c.spectralInstruments[i++] = inst;
         }

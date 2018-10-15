@@ -13,7 +13,7 @@ import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 
 
 /**
@@ -51,6 +51,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
     public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
+
+    public boolean hasHypertreeBasedSpectraSearch=false;
+    public Map<String, String> spectraSearchDataSourceMap=Maps.newHashMap();
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in

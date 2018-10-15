@@ -22,7 +22,6 @@ import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrum;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -30,6 +29,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics;
 
 public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListener
 {
