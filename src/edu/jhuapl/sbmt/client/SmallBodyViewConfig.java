@@ -3631,7 +3631,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.rotationRate = 0.00022871; // (rad/sec)
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
@@ -3962,7 +3962,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
