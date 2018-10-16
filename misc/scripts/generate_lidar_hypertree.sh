@@ -2,10 +2,12 @@
 
 cd `dirname $0`
 
-# make these inputs:
-DATADIR=/project/sbmt2/sbmt/data/bodies/ryugu/shared/lidar/browse/dataDirList.txt
-TREEDIR=/project/sbmt2/sbmt/data/servers/multi-mission/test/ryugu/shared/lidar/search/hypertree
-INSTRUMENT=LASER
+# directory where the data is stored
+DATADIR=$1
+# directory to create the tree
+TREEDIR=$2
+# OLA, LASER, etc
+INSTRUMENT=$3
 
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
