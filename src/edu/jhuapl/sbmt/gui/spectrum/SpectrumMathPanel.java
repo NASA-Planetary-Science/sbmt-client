@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 
 public class SpectrumMathPanel extends javax.swing.JDialog {

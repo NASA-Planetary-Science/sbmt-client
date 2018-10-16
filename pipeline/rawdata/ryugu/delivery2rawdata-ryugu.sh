@@ -404,9 +404,19 @@ else
    doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
    
    # Copy coloring files
-	doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
+   doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
-   if [ -d "$srcTop/$deliveredModelName/onc" ] 
+   # Hand deliveries usually name directory "imaging".
+   if [ -d "$srcTop/$deliveredModelName/imaging" ]
+   then
+     createDirIfNecessary $destTop/$processingModelName/onc
+
+     # copy the onc imaging files
+     doRsyncDir $srcTop/$deliveredModelName/imaging $destTop/$processingModelName/onc
+   fi
+
+   # Hand deliveries should and someday may correectly use "onc".
+   if [ -d "$srcTop/$deliveredModelName/onc" ]
    then
      createDirIfNecessary $destTop/$processingModelName/onc
 

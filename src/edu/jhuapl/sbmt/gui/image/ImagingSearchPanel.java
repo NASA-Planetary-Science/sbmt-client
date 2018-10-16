@@ -78,6 +78,9 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -99,7 +102,7 @@ import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private SmallBodyViewConfig smallBodyConfig;
@@ -2644,7 +2647,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                         sumOfProductsSearch, camerasSelected, filtersSelected,
                         Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
                         cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
- 
+
                 results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
            }
 

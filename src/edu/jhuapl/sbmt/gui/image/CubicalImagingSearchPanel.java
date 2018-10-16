@@ -40,7 +40,7 @@ import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
-
+@Deprecated
 public class CubicalImagingSearchPanel extends ImagingSearchPanel implements PropertyChangeListener, ChangeListener, ListSelectionListener
 {
     private JPanel bandPanel;

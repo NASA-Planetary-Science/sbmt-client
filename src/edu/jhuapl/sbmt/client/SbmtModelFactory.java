@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
