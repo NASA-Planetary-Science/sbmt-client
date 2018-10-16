@@ -76,10 +76,10 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
@@ -515,7 +515,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             try
             {
                 String currentSpectrum = spectrumRawResults.get(i);
-                model.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
             }
             catch (IOException e1) {
                 e1.printStackTrace();

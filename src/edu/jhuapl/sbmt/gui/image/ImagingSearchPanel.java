@@ -90,6 +90,9 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -113,7 +116,7 @@ import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private static final SimpleDateFormat STANDARD_UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");

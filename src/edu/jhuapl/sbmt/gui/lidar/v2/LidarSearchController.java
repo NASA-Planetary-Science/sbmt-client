@@ -227,7 +227,7 @@ public class LidarSearchController implements ItemListener
         view.setCursor(Cursor.getDefaultCursor());
     }
 
-    private void setupConnections()
+    protected void setupConnections()
     {
 
         Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();

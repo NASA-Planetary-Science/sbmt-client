@@ -85,9 +85,9 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
         String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
         String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
-        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
-        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+//        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
+//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
+//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
         // read in the skeleton, if it hasn't been read in already
         ((MolaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
@@ -141,7 +141,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
                 break;
             }*/
 
-        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
+//        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
         lidarModel.addPropertyChangeListener(propertyChangeListener);
         view.getRadialOffsetSlider().setModel(lidarModel);
         view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
@@ -150,7 +150,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         Stopwatch sw=new Stopwatch();
         sw.start();
         TreeSet<Integer> cubeList=((MolaLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
-        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
+//        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
         Picker.setPickingEnabled(false);

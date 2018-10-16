@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
+import edu.jhuapl.sbmt.gui.lidar.v2.OlaLidarBrowsePanel;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.OlaLidarHyperTreeSearchDataCollection;
 
@@ -117,9 +118,9 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         int lidarIndex=view.getSourceComboBox().getSelectedIndex();
         String lidarDatasourceName=sourceComboBoxEnumeration.get(lidarIndex);
         String lidarDatasourcePath=lidarModel.getLidarDataSourceMap().get(lidarDatasourceName);
-        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
-        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+//        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
+//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
+//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
 
         // read in the skeleton, if it hasn't been read in already
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setCurrentDatasourceSkeleton(lidarDatasourceName);
@@ -174,7 +175,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
                 break;
             }*/
 
-        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
+//        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
         lidarModel.addPropertyChangeListener(propertyChangeListener);
         view.getRadialOffsetSlider().setModel(lidarModel);
         view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
@@ -183,7 +184,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         Stopwatch sw=new Stopwatch();
         sw.start();
         TreeSet<Integer> cubeList=((OlaLidarHyperTreeSearchDataCollection)lidarModel).getLeavesIntersectingBoundingBox(new BoundingBox(interiorPoly.GetBounds()), getSelectedTimeLimits());
-        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
+//        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
         Picker.setPickingEnabled(false);

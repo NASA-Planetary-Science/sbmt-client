@@ -4,16 +4,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
-
-import com.google.common.collect.ImmutableSortedMap;
 
 import vtk.vtkCamera;
 
@@ -49,37 +44,37 @@ import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
-import edu.jhuapl.sbmt.gui.eros.NISSearchPanel;
-import edu.jhuapl.sbmt.gui.image.ColorImagePopupMenu;
-import edu.jhuapl.sbmt.gui.image.CubicalImagingSearchPanel;
-import edu.jhuapl.sbmt.gui.image.CustomImagesPanel;
 import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
-import edu.jhuapl.sbmt.gui.image.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ImagePickManager;
-import edu.jhuapl.sbmt.gui.image.ImagePopupManager;
-import edu.jhuapl.sbmt.gui.image.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ImagingSearchPanel;
-import edu.jhuapl.sbmt.gui.image.QuadraspectralImagingSearchPanel;
+import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
+import edu.jhuapl.sbmt.gui.image.controllers.hyperspectral.OsirisImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchController;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
+import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
+import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
-import edu.jhuapl.sbmt.model.bennu.otes.OTESSearchPanel;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImagingSearchPanel;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchPanel;
-import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
 
@@ -94,7 +89,6 @@ public class SbmtView extends View implements PropertyChangeListener
 {
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
-    private final Map<String, ImagingSearchPanel> searchPanelMap;
     private Colorbar smallBodyColorbar;
 
 
@@ -109,7 +103,6 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         super(statusBar, smallBodyConfig);
         this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
-        this.searchPanelMap = new TreeMap<>();
         initializeStateManager();
     }
 
@@ -184,30 +177,35 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
 
-        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
-        {
-            if (instrument.spectralMode == SpectralMode.MONO)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
+        //all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
+        allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+        allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+        allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
 
-            else if (instrument.spectralMode == SpectralMode.MULTI)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-            }
-        }
+//        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
+//        {
+//            if (instrument.spectralMode == SpectralMode.MONO)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+//                allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//
+//            else if (instrument.spectralMode == SpectralMode.MULTI)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//            else if (instrument.spectralMode == SpectralMode.HYPER)
+//            {
+//                allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+////                allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
+//            }
+//        }
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            allModels.put(ModelNames.SPECTRA, SbmtModelFactory.createSpectralModel(smallBodyModel));
+            allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
         }
@@ -304,8 +302,13 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
-            PopupMenu popupMenu = new SpectrumPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getRenderer());
-            registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
+            //This needs to be updated to handle the multiple Spectral Instruments that can exist on screen at the same time....
+//            for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+            {
+                PopupMenu popupMenu = new SpectrumPopupMenu(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getRenderer());
+                ((SpectrumPopupMenu)popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments[0]);
+                registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
+            }
         }
 
         if (getPolyhedralModelConfig().hasLidarData)
@@ -340,23 +343,29 @@ public class SbmtView extends View implements PropertyChangeListener
 
         for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
         {
-            ImagingSearchPanel searchPanel = null;
             if (instrument.spectralMode == SpectralMode.MONO)
             {
                 // For the public version, only include image tab for Eros (all) and Gaskell's Itokawa shape models.
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
-                    searchPanel = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+//                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
                 {
                     if (getPolyhedralModelConfig().body == ShapeModelBody._67P)
                     {
-                        searchPanel = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+
+//                        JComponent component = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                        JComponent component = new OsirisImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                        addTab(instrument.instrumentName.toString(), component);
                     }
                     else
                     {
-                        searchPanel = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+//                        JComponent component = new ImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                        JComponent component = new ImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                        addTab(instrument.instrumentName.toString(), component);
                     }
                 }
             }
@@ -365,20 +374,19 @@ public class SbmtView extends View implements PropertyChangeListener
             {
                 if (Configuration.isAPLVersion())
                 {
-                    searchPanel = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+//                    JComponent component = new QuadraspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
+                    JComponent component = new QuadSpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
                 }
             }
             else if (instrument.spectralMode == SpectralMode.HYPER)
             {
                 if (Configuration.isAPLVersion())
                 {
-                    searchPanel = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
+                    JComponent component = new HyperspectralImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).init();
+//                    JComponent component = new HyperspectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument, SmallBodyViewConfig.LEISA_NBANDS).getPanel();
+                    addTab(instrument.instrumentName.toString(), component);
                 }
-            }
-            if (searchPanel != null)
-            {
-                addTab(instrument.instrumentName.toString(), searchPanel);
-                searchPanelMap.put(instrument.instrumentName.toString(), searchPanel);
             }
         }
 
@@ -387,34 +395,74 @@ public class SbmtView extends View implements PropertyChangeListener
             String displayName = instrument.getDisplayName();
             if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
             {
-                JComponent component = new NISSearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
+//                JComponent component = new NISSearchPanel(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+                NISSearchModel model = new NISSearchModel(getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
+                JComponent component = new SpectrumSearchController(
+                        getPolyhedralModelConfig(), getModelManager(),
+                        (SbmtInfoWindowManager) getInfoPanelManager(),
+                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
             {
-                JComponent component = new OTESSearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument).getView();
+            	//From Colleen:
+            	JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+            	//Old way
+//                JComponent component = new OTESSearchPanel(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, false).getView();
+            	//My way
+//                OTESSearchModel model = new OTESSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//
+//                JComponent component = new SpectrumSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
             {
-                JComponent component = new OVIRSSearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
-                        (SbmtInfoWindowManager) getInfoPanelManager(),
-                        getPickManager(), getRenderer(), instrument).getView();
+            //From Colleen
+                JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+
+               //Old way
+//                JComponent component = new OVIRSSearchPanel(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, false).getView();
+
+                //My Way
+//                OVIRSSearchModel model = new OVIRSSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//
+//                JComponent component = new SpectrumSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
             {
-                JComponent component = new NIRS3SearchPanel(
-                        getPolyhedralModelConfig(), getModelManager(),
+                NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
+                JComponent component = new SpectrumSearchController(
+                        getPolyhedralModelConfig(), getModelManager(),
+                        (SbmtInfoWindowManager) getInfoPanelManager(),
+                        getPickManager(), getRenderer(), instrument, model).getPanel();
+//                JComponent component = new NIRS3SearchPanel(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
             }
 
@@ -451,8 +499,24 @@ public class SbmtView extends View implements PropertyChangeListener
                     instrument = i;
                     break;
                 }
+                customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
 
-                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+//                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+            }
+
+            if (getPolyhedralModelConfig().spectralInstruments.length > 0)
+            {
+//                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
+//                CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument);
+//                JComponent component = new CustomSpectraSearchController(
+//                        getPolyhedralModelConfig(), getModelManager(),
+//                        (SbmtInfoWindowManager) getInfoPanelManager(),
+//                        getPickManager(), getRenderer(), instrument, model).getPanel();
+//                customDataPane.addTab("Spectra", component);
+//                customDataPane.addTab("Spectra", new CustomSpectrumPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
+
             }
 
 //            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
@@ -588,19 +652,21 @@ public class SbmtView extends View implements PropertyChangeListener
                         result.put(positionKey, camera.GetPosition());
                         result.put(upKey, camera.GetViewUp());
                     }
-                    if (!searchPanelMap.isEmpty())
-                    {
-                    	ImmutableSortedMap.Builder<String, Metadata> builder = ImmutableSortedMap.naturalOrder();
-                    	for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
-                    	{
-                    	    MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
-                    	    if (imagingStateManager != null)
-                    	    {
-                    	        builder.put(entry.getKey(), imagingStateManager.store());
-                    	    }
-                    	}
-                    	result.put(imagingKey, builder.build());
-                    }
+
+                    // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        ImmutableSortedMap.Builder<String, Metadata> builder = ImmutableSortedMap.naturalOrder();
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                            if (imagingStateManager != null)
+//                            {
+//                                builder.put(entry.getKey(), imagingStateManager.store());
+//                            }
+//                        }
+//                        result.put(imagingKey, builder.build());
+//                    }
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
@@ -638,19 +704,20 @@ public class SbmtView extends View implements PropertyChangeListener
                         panel.Render();
                     }
 
-                    if (!searchPanelMap.isEmpty())
-                    {
-                        SortedMap<String, Metadata> metadataMap = state.get(imagingKey);
-                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
-                        {
-                            Metadata imagingMetadata = metadataMap.get(entry.getKey());
-                            if (imagingMetadata != null)
-                            {
-                                MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
-                                imagingStateManager.retrieve(imagingMetadata);
-                            }
-                        }
-                    }
+                    // Redmine #1320/1439: this is what used to be here to retrieve the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        SortedMap<String, Metadata> metadataMap = state.get(imagingKey);
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            Metadata imagingMetadata = metadataMap.get(entry.getKey());
+//                            if (imagingMetadata != null)
+//                            {
+//                                MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                                imagingStateManager.retrieve(imagingMetadata);
+//                            }
+//                        }
+//                    }
                     if (state.hasKey(currentTabKey))
                     {
 
