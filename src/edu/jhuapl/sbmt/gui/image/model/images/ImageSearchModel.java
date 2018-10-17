@@ -359,6 +359,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     {
         startDate = source.get(START_DATE_KEY);
         // TODO retrieve the rest of the mutable fields.
+        // TODO fire update events such that the view is notified of the change of
+        // the start date and the other fields that changed.
     }
 
 }
