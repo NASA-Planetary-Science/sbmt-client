@@ -196,7 +196,7 @@ public class SbmtViewManager extends ViewManager
         }
         catch (NullPointerException | IllegalArgumentException iae)
         {
-            System.err.println("Custom Model Import Error: unable to read custom model metadata for " + name);
+            System.err.println("Custom Model Import Error: nable to read custom model metadata for " + name);
             return null;
         }
         catch (IOException e)
