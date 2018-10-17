@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -50,8 +52,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     @Override
     public void setImageResultsPanel()
     {
-        // TODO Auto-generated method stub
+
         super.setImageResultsPanel();
+
+        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
+
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         tableModelListener = new CustomImageResultsTableModeListener();
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
@@ -102,6 +107,29 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             }
         });
 
+        imageResultsTableView.getRemoveAllImagesButton().removeActionListener(imageResultsTableView.getRemoveAllImagesButton().getActionListeners()[0]);
+        imageResultsTableView.getRemoveAllButton().removeActionListener(imageResultsTableView.getRemoveAllButton().getActionListeners()[0]);
+
+        imageResultsTableView.getRemoveAllImagesButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                model.removeAllImagesButtonActionPerformed(e);
+            }
+        });
+
+        imageResultsTableView.getRemoveAllButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                model.removeAllButtonActionPerformed(e);
+            }
+        });
+
         try
         {
             model.initializeImageList();
@@ -112,6 +140,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             e.printStackTrace();
         }
     }
+
+
 
     protected void showImageBoundaries(IdPair idPair)
     {
@@ -180,14 +210,21 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         @Override
         public void propertyChange(PropertyChangeEvent evt)
         {
+            System.out.println(
+                    "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: property changed");
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
+                System.out.println(
+                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: image collection is of type " + imageCollection.getImages().size());
+
                 for (int i=0; i<size; ++i)
                 {
                     ImageKey key = model.getImageKeyForIndex(i);
+                    System.out.println(
+                            "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: key is " + key);
                     if (imageCollection.containsImage(key))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
@@ -267,6 +304,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
             {
+                System.out.println(
+                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: image collection is of type " + imageCollection.getImages().size());
+
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
                 ImageKey key = model.getImageKeyForIndex(row);
