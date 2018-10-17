@@ -10,6 +10,12 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.IdPair;
@@ -23,8 +29,10 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 import nom.tam.fits.FitsException;
 
-public class ImageSearchModel
+public class ImageSearchModel implements Controller.Model, MetadataManager
 {
+    private static final Key<Date> START_DATE_KEY = Key.of("startDate");
+
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
@@ -334,6 +342,23 @@ public class ImageSearchModel
     public int[] getSelectedImageIndex()
     {
         return selectedImageIndices;
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata metadata = SettableMetadata.of(Version.of(1,0));
+        metadata.put(START_DATE_KEY, startDate);
+        // TODO store the rest of the mutable fields.
+        return metadata;
+    }
+
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        startDate = source.get(START_DATE_KEY);
+        // TODO retrieve the rest of the mutable fields.
     }
 
 }
