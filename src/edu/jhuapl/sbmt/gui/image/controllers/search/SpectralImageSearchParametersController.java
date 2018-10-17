@@ -34,7 +34,7 @@ public class SpectralImageSearchParametersController
         int i = 0;
         for (String name : filterNames)
         {
-            filtersSelected.add(i);
+            model.getFiltersSelected().add(i);
             filterTable.setValueAt(true, i, 0);
             filterTable.setValueAt(name, i++, 1);
         }
@@ -45,7 +45,7 @@ public class SpectralImageSearchParametersController
         i = 0;
         for (String name : userSearchNames)
         {
-            camerasSelected.add(i);
+            model.getCamerasSelected().add(i);
             userTable.setValueAt(true, i, 0);
             userTable.setValueAt(name, i++, 1);
         }
@@ -56,12 +56,12 @@ public class SpectralImageSearchParametersController
             @Override
             public void tableChanged(TableModelEvent e)
             {
-                filtersSelected.clear();
+                model.getFiltersSelected().clear();
                 for (int i=0; i < specPanel.getFilterTable().getModel().getRowCount(); i++)
                 {
                     if ((Boolean)specPanel.getFilterTable().getValueAt(i, 0))
                     {
-                        filtersSelected.add(i);
+                        model.getFiltersSelected().add(i);
                     }
                 }
             }
@@ -74,12 +74,12 @@ public class SpectralImageSearchParametersController
             @Override
             public void tableChanged(TableModelEvent e)
             {
-                camerasSelected.clear();
+                model.getCamerasSelected().clear();
                 for (int i=0; i < specPanel.getUserParamTable().getModel().getRowCount(); i++)
                 {
                     if ((Boolean)specPanel.getUserParamTable().getValueAt(i, 0))
                     {
-                        camerasSelected.add(i);
+                        model.getCamerasSelected().add(i);
                     }
                 }
             }

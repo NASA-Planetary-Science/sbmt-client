@@ -4,7 +4,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class ImagingSearchPanel extends JPanel
+import edu.jhuapl.saavtk.model.Controller;
+
+public class ImagingSearchPanel extends JPanel implements Controller.View
 {
     JScrollPane scrollPane;
     JPanel containerPanel;
@@ -22,5 +24,11 @@ public class ImagingSearchPanel extends JPanel
     public void addSubPanel(JPanel panel)
     {
         containerPanel.add(panel);
+    }
+
+    @Override
+    public JPanel getComponent()
+    {
+        return this;
     }
 }

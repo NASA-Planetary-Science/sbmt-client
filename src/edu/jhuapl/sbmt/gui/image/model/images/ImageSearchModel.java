@@ -34,6 +34,7 @@ import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
@@ -57,8 +58,10 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
 import nom.tam.fits.FitsException;
 
-public class ImageSearchModel
+public class ImageSearchModel implements Controller.Model, MetadataManager
 {
+    private static final Key<Date> START_DATE_KEY = Key.of("startDate");
+
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
@@ -109,6 +112,7 @@ public class ImageSearchModel
         this.modelManager = modelManager;
         this.renderer = renderer;
         this.resultsListeners = new Vector<ImageSearchResultsListener>();
+        this.modelListeners = new Vector<ImageSearchModelListener>();
         this.instrument = instrument;
         this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         this.startDate = smallBodyConfig.imageSearchDefaultStartDate;
@@ -1023,35 +1027,35 @@ public class ImageSearchModel
 
                         // Regular filters.
                         numberFilters = getNumberOfFiltersActuallyUsed();
-                        if (numberFilters > 0)
-                        {
-                            Map<String, Boolean> filterMap = source.get(filterMapKey);
-                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-                            for (int index = 0; index < numberFilters; ++index)
-                            {
-                                Boolean filterSelected = filterMap.get(filterNames[index]);
-                                if (filterSelected != null)
-                                {
-                                    filterCheckBoxes[index].setSelected(filterSelected);
-                                }
-                            }
-                        }
-
-                        // User-defined checkboxes.
-                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                        if (numberFilters > 0)
-                        {
-                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
-                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-                            for (int index = 0; index < numberFilters; ++index)
-                            {
-                                Boolean filterSelected = filterMap.get(filterNames[index]);
-                                if (filterSelected != null)
-                                {
-                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
-                                }
-                            }
-                        }
+//                        if (numberFilters > 0)
+//                        {
+//                            Map<String, Boolean> filterMap = source.get(filterMapKey);
+//                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+//                            for (int index = 0; index < numberFilters; ++index)
+//                            {
+//                                Boolean filterSelected = filterMap.get(filterNames[index]);
+//                                if (filterSelected != null)
+//                                {
+//                                    filterCheckBoxes[index].setSelected(filterSelected);
+//                                }
+//                            }
+//                        }
+//
+//                        // User-defined checkboxes.
+//                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+//                        if (numberFilters > 0)
+//                        {
+//                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+//                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+//                            for (int index = 0; index < numberFilters; ++index)
+//                            {
+//                                Boolean filterSelected = filterMap.get(filterNames[index]);
+//                                if (filterSelected != null)
+//                                {
+//                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
+//                                }
+//                            }
+//                        }
                     }
 
                     // Restore region selected.
@@ -1065,15 +1069,15 @@ public class ImageSearchModel
                     setImageResults(imageList);
 
                     // Restore image selections.
-                    Set<String> selected = source.get(selectedImagesKey);
-                    resultList.clearSelection();
-                    for (int index = 0; index < resultList.getRowCount(); ++index)
-                    {
-                        String image = new File(imageResults.get(index).get(0)).getName();
-                        if (selected.contains(image)) {
-                            resultList.addRowSelectionInterval(index, index);
-                        }
-                    }
+//                    Set<String> selected = source.get(selectedImagesKey);
+//                    resultList.clearSelection();
+//                    for (int index = 0; index < resultList.getRowCount(); ++index)
+//                    {
+//                        String image = new File(imageResults.get(index).get(0)).getName();
+//                        if (selected.contains(image)) {
+//                            resultList.addRowSelectionInterval(index, index);
+//                        }
+//                    }
 
                     // Restore boundaries. First clear any associated with this model.
                     for (ImageKey key : boundaries.getImageKeys())
@@ -1204,6 +1208,23 @@ public class ImageSearchModel
             outputListList.add(list);
         }
         return outputListList;
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata metadata = SettableMetadata.of(Version.of(1,0));
+        metadata.put(START_DATE_KEY, startDate);
+        // TODO store the rest of the mutable fields.
+        return metadata;
+    }
+
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        startDate = source.get(START_DATE_KEY);
+        // TODO retrieve the rest of the mutable fields.
     }
 
 }
