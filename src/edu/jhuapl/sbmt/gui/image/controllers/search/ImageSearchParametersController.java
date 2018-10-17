@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImageSearchParametersPanel;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -40,6 +41,17 @@ public class ImageSearchParametersController
         this.model = model;
         this.panel = new ImageSearchParametersPanel();
         this.pickManager = pickManager;
+
+        model.addModelChangedListener(new ImageSearchModelListener()
+        {
+
+            @Override
+            public void modelUpdated()
+            {
+                panel.getSourceComboBox().setSelectedItem(ImageSearchParametersController.this.model.getImageSourceOfLastQuery());
+
+            }
+        });
 
     }
 

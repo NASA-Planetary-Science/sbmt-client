@@ -40,6 +40,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
@@ -71,6 +72,7 @@ public class ImageSearchModel
     public int currentBand;
     private Renderer renderer;
     private Vector<ImageSearchResultsListener> resultsListeners;
+    private Vector<ImageSearchModelListener> modelListeners;
     protected int[] selectedImageIndices;
     private MetadataManager stateManager;
     protected List<Integer> camerasSelected;
@@ -362,6 +364,29 @@ public class ImageSearchModel
     public void removeAllResultsChangedListeners()
     {
         resultsListeners.removeAllElements();
+    }
+
+    private void fireModelChanged()
+    {
+        for (ImageSearchModelListener listener : modelListeners)
+        {
+            listener.modelUpdated();
+        }
+    }
+
+    public void addModelChangedListener(ImageSearchModelListener listener)
+    {
+        modelListeners.add(listener);
+    }
+
+    public void removeModelChangedListener(ImageSearchModelListener listener)
+    {
+        modelListeners.remove(listener);
+    }
+
+    public void removeAllModelChangedListeners()
+    {
+        modelListeners.removeAllElements();
     }
 
     public ImageKey[] getSelectedImageKeys()
@@ -939,30 +964,53 @@ public class ImageSearchModel
                 @Override
                 public void retrieve(Metadata source)
                 {
+                    ImageSearchModel model = ImageSearchModel.this;
                     ImageSource pointing = ImageSource.valueOf(source.get(pointingKey));
+                    model.setImageSourceOfLastQuery(pointing);
 
-                    sourceComboBox.setSelectedItem(pointing);
-                    sourceOfLastQuery = pointing;
-
-                    if (source.hasKey(excludeSPCKey)) {
-                        excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
+                    if (source.hasKey(excludeSPCKey))
+                    {
+                        model.excludeGaskell = source.get(excludeSPCKey);
                     }
 
-                    startSpinner.setValue(source.get(startDateKey));
-                    endSpinner.setValue(source.get(endDateKey));
-                    hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
-                    fromDistanceTextField.setValue(source.get(fromDistanceKey));
-                    toDistanceTextField.setValue(source.get(toDistanceKey));
-                    fromResolutionTextField.setValue(source.get(fromResolutionKey));
-                    toResolutionTextField.setValue(source.get(toResolutionKey));
-                    fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
-                    toIncidenceTextField.setValue(source.get(toIncidenceKey));
-                    fromEmissionTextField.setValue(source.get(fromEmissionKey));
-                    toEmissionTextField.setValue(source.get(toEmissionKey));
-                    fromPhaseTextField.setValue(source.get(fromPhaseKey));
-                    toPhaseTextField.setValue(source.get(toPhaseKey));
-                    searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
-                    searchByFilenameTextField.setText(source.get(searchByFileNameKey));
+                    model.setStartDate(source.get(startDateKey));
+                    model.setEndDate(source.get(endDateKey));
+                    model.setSelectedLimbString(source.get(limbSelectedKey));
+                    model.setMinDistanceQuery(source.get(fromDistanceKey));
+                    model.setMaxDistanceQuery(source.get(toDistanceKey));
+                    model.setMinResolutionQuery(source.get(fromResolutionKey));
+                    model.setMaxResolutionQuery(source.get(toResolutionKey));
+                    model.setMinIncidenceQuery(source.get(fromIncidenceKey));
+                    model.setMaxIncidenceQuery(source.get(toIncidenceKey));
+                    model.setMinEmissionQuery(source.get(fromEmissionKey));
+                    model.setMaxEmissionQuery(source.get(toEmissionKey));
+                    model.setMinPhaseQuery(source.get(fromPhaseKey));
+                    model.setMaxPhaseQuery(source.get(toPhaseKey));
+                    model.setSearchByFilename(source.get(searchByFileNameEnabledKey));
+                    model.setSearchFilename(source.get(searchByFileNameKey));
+
+//                    sourceComboBox.setSelectedItem(pointing);
+//                    sourceOfLastQuery = pointing;
+//
+//                    if (source.hasKey(excludeSPCKey)) {
+//                        excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
+//                    }
+//
+//                    startSpinner.setValue(source.get(startDateKey));
+//                    endSpinner.setValue(source.get(endDateKey));
+//                    hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
+//                    fromDistanceTextField.setValue(source.get(fromDistanceKey));
+//                    toDistanceTextField.setValue(source.get(toDistanceKey));
+//                    fromResolutionTextField.setValue(source.get(fromResolutionKey));
+//                    toResolutionTextField.setValue(source.get(toResolutionKey));
+//                    fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
+//                    toIncidenceTextField.setValue(source.get(toIncidenceKey));
+//                    fromEmissionTextField.setValue(source.get(fromEmissionKey));
+//                    toEmissionTextField.setValue(source.get(toEmissionKey));
+//                    fromPhaseTextField.setValue(source.get(fromPhaseKey));
+//                    toPhaseTextField.setValue(source.get(toPhaseKey));
+//                    searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
+//                    searchByFilenameTextField.setText(source.get(searchByFileNameKey));
 
                     if (smallBodyConfig.hasHierarchicalImageSearch)
                     {
@@ -1071,6 +1119,8 @@ public class ImageSearchModel
                             perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
                         }
                     }
+
+                    fireModelChanged();
                 }
             };
         }
