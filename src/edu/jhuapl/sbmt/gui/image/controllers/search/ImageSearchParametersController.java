@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImageSearchParametersPanel;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
@@ -217,7 +218,13 @@ public class ImageSearchParametersController
             panel.getAuxPanel().setVisible(false);
 
             // Create the tree
-            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalImageSearchSpecification.getTreeModel()));
+            CheckBoxTree checkBoxTree = new CheckBoxTree(smallBodyConfig.hierarchicalImageSearchSpecification.getTreeModel());
+
+            // Connect tree to panel.
+            panel.setCheckBoxTree(checkBoxTree);
+
+            // Bind the checkbox-specific tree selection model to the "spec"
+            smallBodyConfig.hierarchicalImageSearchSpecification.setSelectionModel(checkBoxTree.getCheckBoxTreeSelectionModel());
 
             // Place the tree in the panel
             panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
@@ -300,12 +307,11 @@ public class ImageSearchParametersController
                 sumOfProductsSearch = true;
 
                 // Process the user's selections
-                smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections(
-                        panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+                Selection selection = smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections();
 
                 // Get the selected (camera,filter) pairs
-                camerasSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedCameras();
-                filtersSelected = smallBodyConfig.hierarchicalImageSearchSpecification.getSelectedFilters();
+                camerasSelected = selection.getSelectedCameras();
+                filtersSelected = selection.getSelectedFilters();
             }
             else
             {
