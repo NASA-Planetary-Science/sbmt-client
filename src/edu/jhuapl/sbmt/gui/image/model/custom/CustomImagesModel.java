@@ -107,19 +107,16 @@ public class CustomImagesModel extends ImageSearchModel
     public void loadImages(String name, ImageInfo info)
     {
 
+        ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         for (ImageKey key : keys)
         {
-//            key.imageType = info.imageType;
-            ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-//            key.source = source;
-//            key.name = getCustomDataFolder() + File.separator + info.imagefilename;
-            ImageKey newKey = new ImageKey(key, source, info.imageType, getCustomDataFolder() + File.separator + info.imagefilename);
+            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, key.fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
-                if (!imageCollection.containsImage(newKey))
+                if (!imageCollection.containsImage(revisedKey))
                 {
-                    loadImage(key, imageCollection);
+                    loadImage(revisedKey, imageCollection);
                 }
             }
             catch (Exception e1) {
