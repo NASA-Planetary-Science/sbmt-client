@@ -70,7 +70,7 @@ public class CustomImageController
             }
         });
 
-        ImageCollection customImageCollection = (ImageCollection)modelManager.getModel(customImageModel.getImageCollectionModelName());
+        ImageCollection customImageCollection = customImageModel.getImageCollection();
         this.imageResultsTableController = new CustomImageResultsTableController(instrument, customImageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 

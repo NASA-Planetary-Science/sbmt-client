@@ -36,6 +36,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class CustomImageResultsTableController extends ImageResultsTableController
 {
@@ -47,6 +48,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
         this.model = model;
         this.results = model.getCustomImages();
+        this.boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getCustomImageBoundaryCollectionModelName());
     }
 
     @Override
@@ -54,13 +56,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     {
 
         super.setImageResultsPanel();
-
         imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
 
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         tableModelListener = new CustomImageResultsTableModeListener();
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
-
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
@@ -210,21 +210,15 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         @Override
         public void propertyChange(PropertyChangeEvent evt)
         {
-            System.out.println(
-                    "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: property changed");
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
-                System.out.println(
-                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: image collection is of type " + imageCollection.getImages().size());
 
                 for (int i=0; i<size; ++i)
                 {
                     ImageKey key = model.getImageKeyForIndex(i);
-                    System.out.println(
-                            "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: key is " + key);
                     if (imageCollection.containsImage(key))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
@@ -295,7 +289,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 String name = imageRawResults.get(row).get(0);
 //                String namePrefix = name.substring(0, name.length()-4);
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
+                {
                     model.loadImages(name, results.get(row));
+                }
                 else
                 {
                     model.unloadImages(name);
@@ -304,9 +300,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
             {
-                System.out.println(
-                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: image collection is of type " + imageCollection.getImages().size());
-
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
                 ImageKey key = model.getImageKeyForIndex(row);

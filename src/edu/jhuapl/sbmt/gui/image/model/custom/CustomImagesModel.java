@@ -57,7 +57,6 @@ public class CustomImagesModel extends ImageSearchModel
     private boolean initialized = false;
     private int numImagesInCollection = -1;
     private PerspectiveImageBoundaryCollection boundaries;
-//    private ImageCollection imageCollection;
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -117,7 +116,6 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
     {
-        System.out.println("CustomImagesModel: loadImage: adding " + key + " to " + images);
         images.addImage(key);
     }
 
