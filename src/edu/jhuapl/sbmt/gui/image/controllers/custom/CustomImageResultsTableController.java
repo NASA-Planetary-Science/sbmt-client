@@ -286,9 +286,19 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 ImageKey key = model.getImageKeyForIndex(row);
-                key.imageType = results.get(row).imageType;
+
+                // There used to be an assignment here of the key.imageType, but that field is now immutable.
+                // However, it appears that this assignment is not necessary -- the correct ImageType is
+                // injected when the key is created. Replaced the assignment with a check for mismatch inside
+                // the try just for testing, to uncover any runtime cases where this may actually be needed.
+                // key.imageType = results.get(row).imageType;
                 try
                 {
+                	// TODO remove this check if it never triggers the AssertionError.
+                    if (key.imageType != results.get(row).imageType)
+                    {
+                        throw new AssertionError("Image type mismatch");
+                    }
                     if (!boundaries.containsBoundary(key))
                         boundaries.addBoundary(key);
                     else
