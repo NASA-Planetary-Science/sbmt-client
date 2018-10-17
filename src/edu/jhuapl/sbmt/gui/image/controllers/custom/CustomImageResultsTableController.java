@@ -286,7 +286,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 ImageKey key = model.getImageKeyForIndex(row);
-                key.imageType = results.get(row).imageType;
+//                key.imageType = results.get(row).imageType;
                 try
                 {
                     if (!boundaries.containsBoundary(key))
