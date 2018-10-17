@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.gui.image.model.images;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -86,6 +89,14 @@ public class ImageSearchModel
     private String selectedLimbString;
     private boolean searchByFilename;
     private String searchFilename;
+    private boolean excludeGaskell;
+    private boolean excludeGaskellEnabled;
+
+    private static final SimpleDateFormat STANDARD_UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+    static {
+        STANDARD_UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     public ImageSearchModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -514,7 +525,7 @@ public class ImageSearchModel
         // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
         // then remove from the list images which are contained in the other list by doing
         // an additional search.
-        if (imageSource == ImageSource.SPICE && panel.getExcludeGaskellCheckBox().isSelected())
+        if (imageSource == ImageSource.SPICE && excludeGaskell)
         {
             List<List<String>> resultsOtherSource = null;
             if (getInstrument().searchQuery instanceof FixedListQuery)
@@ -747,6 +758,30 @@ public class ImageSearchModel
     }
 
 
+    public boolean isExcludeGaskell()
+    {
+        return excludeGaskell;
+    }
+
+
+    public void setExcludeGaskell(boolean excludeGaskell)
+    {
+        this.excludeGaskell = excludeGaskell;
+    }
+
+
+    public boolean isExcludeGaskellEnabled()
+    {
+        return excludeGaskellEnabled;
+    }
+
+
+    public void setExcludeGaskellEnabled(boolean excludeGaskellEnabled)
+    {
+        this.excludeGaskellEnabled = excludeGaskellEnabled;
+    }
+
+
     //Metadata based methods
     public void initializeStateManager()
     {
@@ -787,8 +822,8 @@ public class ImageSearchModel
                     ImageSource pointing = getImageSourceOfLastQuery();
                     result.put(pointingKey, pointing.name());
 
-                    if (excludeGaskellCheckBox.isEnabled()) {
-                        result.put(excludeSPCKey, excludeGaskellCheckBox.isSelected());
+                    if (excludeGaskellEnabled) {
+                        result.put(excludeSPCKey, excludeGaskell);
                     }
 
                     result.put(startDateKey, getStartDate());
@@ -825,7 +860,8 @@ public class ImageSearchModel
 
                             for (int index = 0; index < numberFilters; ++index)
                             {
-                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+//                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+                                filterBuilder.put(filterNames[index], filtersSelected.contains(index));
                             }
                             result.put(filterMapKey, filterBuilder.build());
                         }
@@ -839,7 +875,8 @@ public class ImageSearchModel
 
                             for (int index = 0; index < numberFilters; ++index)
                             {
-                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+//                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                                filterBuilder.put(filterNames[index], camerasSelected.contains(index));
                             }
                             result.put(userCheckBoxMapKey, filterBuilder.build());
                         }
@@ -850,14 +887,14 @@ public class ImageSearchModel
                     result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
 
                     // Save list of images.
-                    result.put(imageListKey, listToOutputFormat(imageRawResults));
+                    result.put(imageListKey, listToOutputFormat(imageResults));
 
                     // Save selected images.
                     ImmutableSortedSet.Builder<String> selected = ImmutableSortedSet.naturalOrder();
-                    int[] selectedIndices = resultList.getSelectedRows();
+                    int[] selectedIndices = selectedImageIndices;
                     for (int selectedIndex : selectedIndices)
                     {
-                        String image = new File(imageRawResults.get(selectedIndex).get(0)).getName();
+                        String image = new File(imageResults.get(selectedIndex).get(0)).getName();
                         selected.add(image);
                     }
                     result.put(selectedImagesKey, selected.build());
@@ -984,7 +1021,7 @@ public class ImageSearchModel
                     resultList.clearSelection();
                     for (int index = 0; index < resultList.getRowCount(); ++index)
                     {
-                        String image = new File(imageRawResults.get(index).get(0)).getName();
+                        String image = new File(imageResults.get(index).get(0)).getName();
                         if (selected.contains(image)) {
                             resultList.addRowSelectionInterval(index, index);
                         }
@@ -1042,6 +1079,81 @@ public class ImageSearchModel
     public MetadataManager getMetadataManager()
     {
         return stateManager;
+    }
+
+    private List<String[]> listToOutputFormat(List<List<String>> inputListList)
+    {
+        // In case there is an exception when reading the time from the input file.
+        Date now = new Date();
+
+        List<String[]> outputArrayList = new ArrayList<>(inputListList.size());
+        for (List<String> inputList : inputListList)
+        {
+            String[] array = new String[inputList.size()];
+            for (int index = 0; index < inputList.size(); ++index)
+            {
+                if (index == 0)
+                {
+                    array[index] = new File(inputList.get(index)).getName();
+                }
+                else if (index == 1)
+                {
+                    try
+                    {
+                        Date date = new Date(Long.parseLong(inputList.get(index)));
+                        array[index] = STANDARD_UTC_FORMAT.format(date);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        array[index] = STANDARD_UTC_FORMAT.format(now);
+                    }
+                }
+                else
+                {
+                    array[index] = inputList.get(index);
+                }
+            }
+            outputArrayList.add(array);
+        }
+        return outputArrayList;
+    }
+
+    private List<List<String>> inputFormatToList(List<String[]> inputArrayList)
+    {
+        // In case there is an exception when reading the time from the input file.
+        String now = String.valueOf(new Date().getTime());
+
+        List<List<String>> outputListList = new ArrayList<>(inputArrayList.size());
+        for (String[] inputArray : inputArrayList)
+        {
+            List<String> list = new ArrayList<>();
+            for (int index = 0; index < inputArray.length; ++index)
+            {
+                if (index == 0)
+                {
+                    list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
+                }
+                else if (index == 1)
+                {
+                    try
+                    {
+                        Date date = STANDARD_UTC_FORMAT.parse(inputArray[index]);
+                        list.add(String.valueOf(date.getTime()));
+                    }
+                    catch (ParseException e)
+                    {
+                        e.printStackTrace();
+                        list.add(now);
+                    }
+                }
+                else
+                {
+                    list.add(inputArray[index]);
+                }
+            }
+            outputListList.add(list);
+        }
+        return outputListList;
     }
 
 }

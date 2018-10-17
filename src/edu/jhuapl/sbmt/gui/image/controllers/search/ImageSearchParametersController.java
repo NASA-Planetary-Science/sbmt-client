@@ -24,7 +24,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImageSearchParametersPanel;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification.Selection;
 
 public class ImageSearchParametersController
 {
@@ -219,7 +218,15 @@ public class ImageSearchParametersController
             }
         });
 
+        panel.getExcludeGaskellCheckBox().addActionListener(new ActionListener()
+        {
 
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                model.setExcludeGaskell(panel.getExcludeGaskellCheckBox().isSelected());
+            }
+        });
 
         pushInputToModel();
 
@@ -509,6 +516,7 @@ public class ImageSearchParametersController
             if (source == ImageSource.GASKELL_UPDATED)
             {
                 panel.getExcludeGaskellCheckBox().setVisible(imageSource == ImageSource.SPICE);
+                model.setExcludeGaskellEnabled(panel.getExcludeGaskellCheckBox().isVisible());
             }
         }
     }
