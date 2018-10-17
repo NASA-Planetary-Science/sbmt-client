@@ -696,7 +696,6 @@ public class StateHistoryController implements TableModelListener, ItemListener,
         currentRun.setSunView(false);
         currentRun.setSpacecraftMovement(true);
         currentRun.setActorVisibility("Spacecraft", false);
-        view.getShowSpacecraft().setSelected(false);
         view.getShowSpacecraft().setEnabled(false);
         view.getDistanceOptions().setEnabled(false);
         view.getViewInputAngle().setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
