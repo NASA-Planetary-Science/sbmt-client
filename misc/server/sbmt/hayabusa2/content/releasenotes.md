@@ -4,6 +4,20 @@
 
 # Release Notes
 
+### October 18, 2018 (SBMT-0.6.5)
+
+- Made bug fixes, feature enhancements, and UI improvements to the structures panel
+- Made bug fixes, feature enhancements, and UI improvements to the custom images panel
+- Made bug fixes and feature enhancements to custom plate coloring import and display
+- Made bug fixes and feature enhancements to DTM tab
+- Made performance enhancements when changing the resolution of shape models while also displaying plate colorings
+ 
+ 
+H2:
+- Added hypertree search for LIDAR data
+- Added ability to import custom LIDAR data
+ 
+
 ### September 7, 2018 (SBMT-0.6.0)
 
 - Added ability for users to use a selected regional DTM as the main shape on which to map data
