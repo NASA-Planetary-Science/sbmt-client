@@ -48,8 +48,7 @@ public class ImageSearchParametersController
             @Override
             public void modelUpdated()
             {
-                panel.getSourceComboBox().setSelectedItem(ImageSearchParametersController.this.model.getImageSourceOfLastQuery());
-
+                pullFromModel();
             }
         });
 
@@ -372,24 +371,24 @@ public class ImageSearchParametersController
 //                // Populate list of selected cameras
 ////                camerasSelected = new LinkedList<Integer>();
 ////                int numberOfCameras = model.getNumberOfUserDefinedCheckBoxesActuallyUsed();
-////                for (int i=0; i<numberOfCameras; i++)
-////                {
-////                    if(panel.getUserDefinedCheckBoxes()[i].isSelected())
-////                    {
-////                        camerasSelected.add(i);
-////                    }
-////                }
+//                for (int i=0; i<numberOfCameras; i++)
+//                {
+//                    if(panel.getUserDefinedCheckBoxes()[i].isSelected())
+//                    {
+//                        camerasSelected.add(i);
+//                    }
+//                }
 //
 //                // Populate list of selected filters
-////                filtersSelected = new LinkedList<Integer>();
-////                int numberOfFilters = model.getNumberOfFiltersActuallyUsed();
-////                for (int i=0; i<numberOfFilters; i++)
-////                {
-////                    if(panel.getFilterCheckBoxes()[i].isSelected())
-////                    {
-////                        filtersSelected.add(i);
-////                    }
-////                }
+//                filtersSelected = new LinkedList<Integer>();
+//                int numberOfFilters = model.getNumberOfFiltersActuallyUsed();
+//                for (int i=0; i<numberOfFilters; i++)
+//                {
+//                    if(panel.getFilterCheckBoxes()[i].isSelected())
+//                    {
+//                        filtersSelected.add(i);
+//                    }
+//                }
 //            }
 //            List<List<String>> results = null;
 //            if (model.getInstrument().searchQuery instanceof FixedListQuery)
@@ -472,12 +471,48 @@ public class ImageSearchParametersController
 //        }
 //    }
 
-    private void pushInputToModel()
+
+    protected void pullFromModel()
     {
-        model.setStartDate(smallBodyConfig.imageSearchDefaultStartDate);
-        ((SpinnerDateModel)panel.getStartSpinner().getModel()).setValue(model.getStartDate());
-        model.setEndDate(smallBodyConfig.imageSearchDefaultEndDate);
-        ((SpinnerDateModel)panel.getEndSpinner().getModel()).setValue(model.getEndDate());
+        panel.getSourceComboBox().setSelectedItem(ImageSearchParametersController.this.model.getImageSourceOfLastQuery());
+
+        if (model.isSearchByFilename() == true)
+            panel.getFilenameRadioButton().setSelected(true);
+        else
+            panel.getParametersRadioButton().setSelected(true);
+
+        if (model.getSearchFilename() != null)
+            panel.getSearchByNumberTextField().setText(model.getSearchFilename());
+
+        panel.getStartSpinner().setValue(model.getStartDate());
+        panel.getEndSpinner().setValue(model.getEndDate());
+
+        panel.getHasLimbComboBox().setSelectedItem(model.getSelectedLimbString());
+
+        panel.getFromDistanceTextField().setText(""+model.getMinDistanceQuery());
+        panel.getToDistanceTextField().setText(""+model.getMaxDistanceQuery());
+        panel.getFromIncidenceTextField().setText(""+model.getMinIncidenceQuery());
+        panel.getToIncidenceTextField().setText(""+model.getMaxIncidenceQuery());
+        panel.getFromEmissionTextField().setText(""+model.getMinEmissionQuery());
+        panel.getToEmissionTextField().setText(""+model.getMaxEmissionQuery());
+        panel.getFromPhaseTextField().setText(""+model.getMinPhaseQuery());
+        panel.getToPhaseTextField().setText(""+model.getMaxPhaseQuery());
+        panel.getFromResolutionTextField().setText(""+model.getMinResolutionQuery());
+        panel.getToResolutionTextField().setText(""+model.getMaxResolutionQuery());
+
+
+    }
+
+    protected void pushInputToModel()
+    {
+        model.setImageSourceOfLastQuery((ImageSource)panel.getSourceComboBox().getSelectedItem());
+
+        model.setSearchByFilename(panel.getFilenameRadioButton().isSelected());
+
+        if (!panel.getSearchByNumberTextField().getText().trim().equals(""))
+            model.setSearchFilename(panel.getSearchByNumberTextField().getText().trim());
+        else
+            model.setSearchFilename(null);
 
         model.setStartDate((Date)panel.getStartSpinner().getValue());
         model.setEndDate((Date)panel.getEndSpinner().getValue());
@@ -492,7 +527,7 @@ public class ImageSearchParametersController
         model.setMinResolutionQuery(Integer.parseInt(panel.getFromResolutionTextField().getText()));
         model.setMaxResolutionQuery(Integer.parseInt(panel.getToResolutionTextField().getText()));
 
-        model.setSearchFilename(panel.getSearchByNumberTextField().getText().trim());
+
     }
 
     private void formComponentHidden(java.awt.event.ComponentEvent evt)

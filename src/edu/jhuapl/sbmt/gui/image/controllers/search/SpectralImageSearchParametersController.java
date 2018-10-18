@@ -86,4 +86,45 @@ public class SpectralImageSearchParametersController
         });
     }
 
+    @Override
+    protected void pullFromModel()
+    {
+        super.pullFromModel();
+
+        for (Integer i : model.getFiltersSelected())
+        {
+            specPanel.getFilterTable().getValueAt(i, 0);
+        }
+
+        for (Integer i : model.getCamerasSelected())
+        {
+            specPanel.getUserParamTable().getValueAt(i, 0);
+        }
+
+    }
+
+    @Override
+    protected void pushInputToModel()
+    {
+        super.pushInputToModel();
+
+        model.getFiltersSelected().clear();
+        for (int i=0; i < specPanel.getFilterTable().getModel().getRowCount(); i++)
+        {
+            if ((Boolean)specPanel.getFilterTable().getValueAt(i, 0))
+            {
+                model.getFiltersSelected().add(i);
+            }
+        }
+
+        model.getCamerasSelected().clear();
+        for (int i=0; i < specPanel.getUserParamTable().getModel().getRowCount(); i++)
+        {
+            if ((Boolean)specPanel.getUserParamTable().getValueAt(i, 0))
+            {
+                model.getCamerasSelected().add(i);
+            }
+        }
+    }
+
 }

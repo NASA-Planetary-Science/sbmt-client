@@ -120,7 +120,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private int selectedLimbIndex;
     private String selectedLimbString;
     private boolean searchByFilename;
-    private String searchFilename;
+    private String searchFilename = null;
     private boolean excludeGaskell;
     private boolean excludeGaskellEnabled;
     private Set<String> selectedFilenames;
@@ -147,6 +147,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         this.endDate = smallBodyConfig.imageSearchDefaultEndDate;
         camerasSelected = new LinkedList<Integer>();
         filtersSelected = new LinkedList<Integer>();
+        selectedImageIndices = new int[] {};
     }
 
 
@@ -248,6 +249,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     {
         this.imageResults = imageRawResults;
         fireResultsChanged();
+        fireResultsCountChanged(this.imageResults.size());
     }
 
     public ImageCollection getImageCollection()
@@ -383,6 +385,14 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
     }
 
+    protected void fireResultsCountChanged(int count)
+    {
+        for (ImageSearchResultsListener listener : resultsListeners)
+        {
+            listener.resultsCountChanged(count);
+        }
+    }
+
     public void addResultsChangedListener(ImageSearchResultsListener listener)
     {
         resultsListeners.add(listener);
@@ -455,7 +465,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public void performSearch()
     {
-
+        imageResults.clear();
 //        String searchField = null;
 //        if (searchByFilename)
 //            searchField = searchFilename;
@@ -527,8 +537,6 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
             Selection selection = smallBodyConfig.hierarchicalImageSearchSpecification.processTreeSelections();
             camerasSelected = selection.getSelectedCameras();
-            System.out.println(
-                    "ImageSearchParametersController: submitButtonActionPerformed: cameras selected size " + camerasSelected.size());
             filtersSelected = selection.getSelectedFilters();
         }
         else
@@ -538,7 +546,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
             // Populate list of selected cameras
 //            camerasSelected = new LinkedList<Integer>();
-//            int numberOfCameras = model.getNumberOfUserDefinedCheckBoxesActuallyUsed();
+//            int numberOfCameras = getNumberOfUserDefinedCheckBoxesActuallyUsed();
 //            for (int i=0; i<numberOfCameras; i++)
 //            {
 //                if(panel.getUserDefinedCheckBoxes()[i].isSelected())
@@ -546,10 +554,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //                    camerasSelected.add(i);
 //                }
 //            }
-
-            // Populate list of selected filters
+//
+//            // Populate list of selected filters
 //            filtersSelected = new LinkedList<Integer>();
-//            int numberOfFilters = model.getNumberOfFiltersActuallyUsed();
+//            int numberOfFilters = getNumberOfFiltersActuallyUsed();
 //            for (int i=0; i<numberOfFilters; i++)
 //            {
 //                if(panel.getFilterCheckBoxes()[i].isSelected())
@@ -566,6 +574,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
         else
         {
+            System.out.println("ImageSearchModel: performSearch: max distance " + maxDistanceQuery);
             // Run queries based on user specifications
             ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                     Ranges.closed(minDistanceQuery, maxDistanceQuery),
@@ -1172,6 +1181,18 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void setSelectedFilenames(Set<String> selectedFilenames)
     {
         this.selectedFilenames = selectedFilenames;
+    }
+
+
+    public void setCamerasSelected(List<Integer> camerasSelected)
+    {
+        this.camerasSelected = camerasSelected;
+    }
+
+
+    public void setFiltersSelected(List<Integer> filtersSelected)
+    {
+        this.filtersSelected = filtersSelected;
     }
 
 

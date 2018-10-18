@@ -42,6 +42,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -3108,7 +3109,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    public javax.swing.JList getImageCubesDisplayedList()
+    public JList getImageCubesDisplayedList()
     {
         return imageCubesDisplayedList;
     }

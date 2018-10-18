@@ -61,6 +61,12 @@ public class ColorImageController
             {
                 stringRenderer.setImageRawResults(results);
             }
+
+
+            @Override
+            public void resultsCountChanged(int count)
+            {
+            }
         });
         this.colorModel = colorModel;
         colorImages = (ColorImageCollection)model.getModelManager().getModel(colorModel.getColorImageCollectionModelName());
