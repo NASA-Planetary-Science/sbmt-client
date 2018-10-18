@@ -4,7 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.SortedMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -23,6 +24,7 @@ import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Utilities;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.Graticule;
@@ -87,8 +89,10 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
+    private final Map<String, MetadataManager> metadataManagers;
     private Colorbar smallBodyColorbar;
 
 
@@ -103,6 +107,7 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         super(statusBar, smallBodyConfig);
         this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
+        this.metadataManagers = new HashMap<>();
         initializeStateManager();
     }
 
@@ -349,8 +354,11 @@ public class SbmtView extends View implements PropertyChangeListener
                 if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 {
 //                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-                    JComponent component = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
-                    addTab(instrument.instrumentName.toString(), component);
+                    SpectralImagingSearchController controller = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
+
+                    metadataManagers.put(instrument.instrumentName.toString(), controller.getModel());
+
+                    addTab(instrument.instrumentName.toString(), controller.getView().getComponent());
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
                 {
@@ -630,7 +638,6 @@ public class SbmtView extends View implements PropertyChangeListener
                 final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
                 final Key<double[]> positionKey = Key.of("cameraPosition");
                 final Key<double[]> upKey = Key.of("cameraUp");
-                final Key<SortedMap<String, Metadata>> imagingKey = Key.of("imaging");
                 final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
@@ -667,6 +674,9 @@ public class SbmtView extends View implements PropertyChangeListener
 //                        }
 //                        result.put(imagingKey, builder.build());
 //                    }
+                    Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
+                    result.put(METADATA_MANAGERS_KEY, metadata);
+
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
@@ -718,9 +728,11 @@ public class SbmtView extends View implements PropertyChangeListener
 //                            }
 //                        }
 //                    }
+                    Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
+                    Utilities.bulkRetrieve(metadataManagers, metadata);
+
                     if (state.hasKey(currentTabKey))
                     {
-
                         JTabbedPane controlPanel = getControlPanel();
                         if (controlPanel != null)
                         {

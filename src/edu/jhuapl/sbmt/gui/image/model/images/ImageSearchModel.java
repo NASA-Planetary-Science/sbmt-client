@@ -1515,6 +1515,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
 
         fireModelChanged();
+        // TODO fire update events such that the view is notified of the change of
+        // the start date and the other fields that changed.
     }
 
 }
