@@ -7,9 +7,9 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 1 ]
+if [ "$#" -ne 1 -a "$#" -ne 3 ]]
 then
-  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version>"
+  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version> <model-label>"
   echo "Shared data usage: rawdata2processed-ryugu.sh shared"
   exit 1
 fi
@@ -18,6 +18,7 @@ fi
 rawdataModelName=$1
 processingVersion=$2
 processingModelName=$rawdataModelName
+processingModelLabel=$3
 
 if [ $processingModelName = "shared" ]
 then                                                                                              
@@ -385,7 +386,7 @@ discoverPlateColorings() {
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
-    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelName/162173 Ryugu" >> $log 2>&1
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/162173 Ryugu" >> $log 2>&1
     if test $? -ne 0; then
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
