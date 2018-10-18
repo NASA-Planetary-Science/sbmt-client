@@ -60,7 +60,34 @@ import nom.tam.fits.FitsException;
 
 public class ImageSearchModel implements Controller.Model, MetadataManager
 {
-    private static final Key<Date> START_DATE_KEY = Key.of("startDate");
+//    private static final Key<Date> START_DATE_KEY = Key.of("startDate");
+
+    final Key<String> pointingKey = Key.of("pointing");
+    final Key<Boolean> excludeSPCKey = Key.of("excludeSPC");
+    final Key<Date> startDateKey = Key.of("startDate");
+    final Key<Date> endDateKey = Key.of("endDate");
+    final Key<String> limbSelectedKey = Key.of("limb");
+    final Key<Double> fromDistanceKey = Key.of("fromDistance");
+    final Key<Double> toDistanceKey = Key.of("toDistance");
+    final Key<Double> fromResolutionKey = Key.of("fromResolution");
+    final Key<Double> toResolutionKey = Key.of("toResolution");
+    final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
+    final Key<Double> toIncidenceKey = Key.of("toIncidence");
+    final Key<Double> fromEmissionKey = Key.of("fromEmission");
+    final Key<Double> toEmissionKey = Key.of("toEmission");
+    final Key<Double> fromPhaseKey = Key.of("fromPhase");
+    final Key<Double> toPhaseKey = Key.of("toPhase");
+    final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
+    final Key<String> searchByFileNameKey = Key.of("searchByFileName");
+    final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
+    final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
+    final Key<Metadata> circleSelectionKey = Key.of("circleSelection");
+    final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
+    final Key<List<String[]>> imageListKey = Key.of("imageList");
+    final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
+    final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+    final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+    final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
@@ -96,6 +123,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private String searchFilename;
     private boolean excludeGaskell;
     private boolean excludeGaskellEnabled;
+    private Set<String> selectedFilenames;
 
     private static final SimpleDateFormat STANDARD_UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -811,329 +839,341 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    //Metadata based methods
-    public void initializeStateManager()
-    {
-        if (stateManager == null) {
-            stateManager = new MetadataManager() {
-                final Key<String> pointingKey = Key.of("pointing");
-                final Key<Boolean> excludeSPCKey = Key.of("excludeSPC");
-                final Key<Date> startDateKey = Key.of("startDate");
-                final Key<Date> endDateKey = Key.of("endDate");
-                final Key<String> limbSelectedKey = Key.of("limb");
-                final Key<Double> fromDistanceKey = Key.of("fromDistance");
-                final Key<Double> toDistanceKey = Key.of("toDistance");
-                final Key<Double> fromResolutionKey = Key.of("fromResolution");
-                final Key<Double> toResolutionKey = Key.of("toResolution");
-                final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
-                final Key<Double> toIncidenceKey = Key.of("toIncidence");
-                final Key<Double> fromEmissionKey = Key.of("fromEmission");
-                final Key<Double> toEmissionKey = Key.of("toEmission");
-                final Key<Double> fromPhaseKey = Key.of("fromPhase");
-                final Key<Double> toPhaseKey = Key.of("toPhase");
-                final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
-                final Key<String> searchByFileNameKey = Key.of("searchByFileName");
-                final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
-                final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
-                final Key<Metadata> circleSelectionKey = Key.of("circleSelection");
-                final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
-                final Key<List<String[]>> imageListKey = Key.of("imageList");
-                final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
-                final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
-                final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
-                final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
-
-                @Override
-                public Metadata store()
-                {
-                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-
-                    ImageSource pointing = getImageSourceOfLastQuery();
-                    result.put(pointingKey, pointing.name());
-
-                    if (excludeGaskellEnabled) {
-                        result.put(excludeSPCKey, excludeGaskell);
-                    }
-
-                    result.put(startDateKey, getStartDate());
-                    result.put(endDateKey, getEndDate());
-                    result.put(limbSelectedKey, selectedLimbString);
-                    result.put(fromDistanceKey, minDistanceQuery);
-                    result.put(toDistanceKey, maxDistanceQuery);
-                    result.put(fromResolutionKey, minResolutionQuery);
-                    result.put(toResolutionKey, maxResolutionQuery);
-                    result.put(fromIncidenceKey, minIncidenceQuery);
-                    result.put(toIncidenceKey, maxIncidenceQuery);
-                    result.put(fromEmissionKey, minEmissionQuery);
-                    result.put(toEmissionKey, maxEmissionQuery);
-                    result.put(fromPhaseKey, minPhaseQuery);
-                    result.put(toPhaseKey, maxPhaseQuery);
-                    result.put(searchByFileNameEnabledKey, searchByFilename);
-                    result.put(searchByFileNameKey, searchFilename);
-
-                    if (smallBodyConfig.hasHierarchicalImageSearch)
-                    {
-                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                        result.put(imageTreeFilterKey, manager.store());
-                    }
-                    else
-                    {
-                        int numberFilters = 0;
-
-                        // Regular filters.
-                        numberFilters = getNumberOfFiltersActuallyUsed();
-                        if (numberFilters > 0)
-                        {
-                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
-
-                            for (int index = 0; index < numberFilters; ++index)
-                            {
-//                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
-                                filterBuilder.put(filterNames[index], filtersSelected.contains(index));
-                            }
-                            result.put(filterMapKey, filterBuilder.build());
-                        }
-
-                        // User-defined checkboxes.
-                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
-                        if (numberFilters > 0)
-                        {
-                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
-                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
-
-                            for (int index = 0; index < numberFilters; ++index)
-                            {
-//                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
-                                filterBuilder.put(filterNames[index], camerasSelected.contains(index));
-                            }
-                            result.put(userCheckBoxMapKey, filterBuilder.build());
-                        }
-                    }
-
-                    // Save region selected.
-                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                    result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
-
-                    // Save list of images.
-                    result.put(imageListKey, listToOutputFormat(imageResults));
-
-                    // Save selected images.
-                    ImmutableSortedSet.Builder<String> selected = ImmutableSortedSet.naturalOrder();
-                    int[] selectedIndices = selectedImageIndices;
-                    for (int selectedIndex : selectedIndices)
-                    {
-                        String image = new File(imageResults.get(selectedIndex).get(0)).getName();
-                        selected.add(image);
-                    }
-                    result.put(selectedImagesKey, selected.build());
-
-                    // Save boundary info.
-                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-                    for (ImageKey key : boundaries.getImageKeys())
-                    {
-                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
-                        {
-                            PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                            String fullName = key.name;
-                            String name = new File(fullName).getName();
-                            bndr.put(name, boundary.isVisible());
-                        }
-                    }
-                    result.put(isBoundaryShowingKey, bndr.build());
-
-                    // Save mapped image information.
-                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
-                    ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
-                    ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
-
-                    for (Image image : imageCollection.getImages())
-                    {
-                        String name = image.getImageName();
-                        showing.put(name, image.isVisible());
-                        if (image instanceof PerspectiveImage)
-                        {
-                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                            frus.put(name, perspectiveImage.isFrustumShowing());
-                        }
-                        ImageKey key = image.getKey();
-                    }
-                    result.put(isShowingKey, showing.build());
-                    result.put(isFrustrumShowingKey, frus.build());
-
-                    return result;
-                }
-
-                @Override
-                public void retrieve(Metadata source)
-                {
-                    ImageSearchModel model = ImageSearchModel.this;
-                    ImageSource pointing = ImageSource.valueOf(source.get(pointingKey));
-                    model.setImageSourceOfLastQuery(pointing);
-
-                    if (source.hasKey(excludeSPCKey))
-                    {
-                        model.excludeGaskell = source.get(excludeSPCKey);
-                    }
-
-                    model.setStartDate(source.get(startDateKey));
-                    model.setEndDate(source.get(endDateKey));
-                    model.setSelectedLimbString(source.get(limbSelectedKey));
-                    model.setMinDistanceQuery(source.get(fromDistanceKey));
-                    model.setMaxDistanceQuery(source.get(toDistanceKey));
-                    model.setMinResolutionQuery(source.get(fromResolutionKey));
-                    model.setMaxResolutionQuery(source.get(toResolutionKey));
-                    model.setMinIncidenceQuery(source.get(fromIncidenceKey));
-                    model.setMaxIncidenceQuery(source.get(toIncidenceKey));
-                    model.setMinEmissionQuery(source.get(fromEmissionKey));
-                    model.setMaxEmissionQuery(source.get(toEmissionKey));
-                    model.setMinPhaseQuery(source.get(fromPhaseKey));
-                    model.setMaxPhaseQuery(source.get(toPhaseKey));
-                    model.setSearchByFilename(source.get(searchByFileNameEnabledKey));
-                    model.setSearchFilename(source.get(searchByFileNameKey));
-
-//                    sourceComboBox.setSelectedItem(pointing);
-//                    sourceOfLastQuery = pointing;
+//    //Metadata based methods
+//    public void initializeStateManager()
+//    {
+//        if (stateManager == null) {
+//            stateManager = new MetadataManager() {
+//                final Key<String> pointingKey = Key.of("pointing");
+//                final Key<Boolean> excludeSPCKey = Key.of("excludeSPC");
+//                final Key<Date> startDateKey = Key.of("startDate");
+//                final Key<Date> endDateKey = Key.of("endDate");
+//                final Key<String> limbSelectedKey = Key.of("limb");
+//                final Key<Double> fromDistanceKey = Key.of("fromDistance");
+//                final Key<Double> toDistanceKey = Key.of("toDistance");
+//                final Key<Double> fromResolutionKey = Key.of("fromResolution");
+//                final Key<Double> toResolutionKey = Key.of("toResolution");
+//                final Key<Double> fromIncidenceKey = Key.of("fromIncidence");
+//                final Key<Double> toIncidenceKey = Key.of("toIncidence");
+//                final Key<Double> fromEmissionKey = Key.of("fromEmission");
+//                final Key<Double> toEmissionKey = Key.of("toEmission");
+//                final Key<Double> fromPhaseKey = Key.of("fromPhase");
+//                final Key<Double> toPhaseKey = Key.of("toPhase");
+//                final Key<Boolean> searchByFileNameEnabledKey = Key.of("searchByFileNameEnabled");
+//                final Key<String> searchByFileNameKey = Key.of("searchByFileName");
+//                final Key<Map<String, Boolean>> filterMapKey = Key.of("filters");
+//                final Key<Map<String, Boolean>> userCheckBoxMapKey = Key.of("userCheckBoxes");
+//                final Key<Metadata> circleSelectionKey = Key.of("circleSelection");
+//                final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
+//                final Key<List<String[]>> imageListKey = Key.of("imageList");
+//                final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
+//                final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+//                final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+//                final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 //
-//                    if (source.hasKey(excludeSPCKey)) {
-//                        excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
+//                @Override
+//                public Metadata store()
+//                {
+//                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+//
+//                    ImageSource pointing = getImageSourceOfLastQuery();
+//                    result.put(pointingKey, pointing.name());
+//
+//                    if (excludeGaskellEnabled) {
+//                        result.put(excludeSPCKey, excludeGaskell);
 //                    }
 //
-//                    startSpinner.setValue(source.get(startDateKey));
-//                    endSpinner.setValue(source.get(endDateKey));
-//                    hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
-//                    fromDistanceTextField.setValue(source.get(fromDistanceKey));
-//                    toDistanceTextField.setValue(source.get(toDistanceKey));
-//                    fromResolutionTextField.setValue(source.get(fromResolutionKey));
-//                    toResolutionTextField.setValue(source.get(toResolutionKey));
-//                    fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
-//                    toIncidenceTextField.setValue(source.get(toIncidenceKey));
-//                    fromEmissionTextField.setValue(source.get(fromEmissionKey));
-//                    toEmissionTextField.setValue(source.get(toEmissionKey));
-//                    fromPhaseTextField.setValue(source.get(fromPhaseKey));
-//                    toPhaseTextField.setValue(source.get(toPhaseKey));
-//                    searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
-//                    searchByFilenameTextField.setText(source.get(searchByFileNameKey));
-
-                    if (smallBodyConfig.hasHierarchicalImageSearch)
-                    {
-                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
-                        manager.retrieve(source.get(imageTreeFilterKey));
-                    }
-                    else
-                    {
-                        int numberFilters = 0;
-
-                        // Regular filters.
-                        numberFilters = getNumberOfFiltersActuallyUsed();
+//                    result.put(startDateKey, getStartDate());
+//                    result.put(endDateKey, getEndDate());
+//                    result.put(limbSelectedKey, selectedLimbString);
+//                    result.put(fromDistanceKey, minDistanceQuery);
+//                    result.put(toDistanceKey, maxDistanceQuery);
+//                    result.put(fromResolutionKey, minResolutionQuery);
+//                    result.put(toResolutionKey, maxResolutionQuery);
+//                    result.put(fromIncidenceKey, minIncidenceQuery);
+//                    result.put(toIncidenceKey, maxIncidenceQuery);
+//                    result.put(fromEmissionKey, minEmissionQuery);
+//                    result.put(toEmissionKey, maxEmissionQuery);
+//                    result.put(fromPhaseKey, minPhaseQuery);
+//                    result.put(toPhaseKey, maxPhaseQuery);
+//                    result.put(searchByFileNameEnabledKey, searchByFilename);
+//                    result.put(searchByFileNameKey, searchFilename);
+//
+//                    if (smallBodyConfig.hasHierarchicalImageSearch)
+//                    {
+//                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+//                        result.put(imageTreeFilterKey, manager.store());
+//                    }
+//                    else
+//                    {
+//                        int numberFilters = 0;
+//
+//                        // Regular filters.
+//                        numberFilters = getNumberOfFiltersActuallyUsed();
 //                        if (numberFilters > 0)
 //                        {
-//                            Map<String, Boolean> filterMap = source.get(filterMapKey);
+//                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
 //                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+//
 //                            for (int index = 0; index < numberFilters; ++index)
 //                            {
-//                                Boolean filterSelected = filterMap.get(filterNames[index]);
-//                                if (filterSelected != null)
-//                                {
-//                                    filterCheckBoxes[index].setSelected(filterSelected);
-//                                }
+////                                filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+//                                filterBuilder.put(filterNames[index], filtersSelected.contains(index));
 //                            }
+//                            result.put(filterMapKey, filterBuilder.build());
 //                        }
 //
 //                        // User-defined checkboxes.
 //                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
 //                        if (numberFilters > 0)
 //                        {
-//                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+//                            ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
 //                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+//
 //                            for (int index = 0; index < numberFilters; ++index)
 //                            {
-//                                Boolean filterSelected = filterMap.get(filterNames[index]);
-//                                if (filterSelected != null)
-//                                {
-//                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
-//                                }
+////                                filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+//                                filterBuilder.put(filterNames[index], camerasSelected.contains(index));
 //                            }
-//                        }
-                    }
-
-                    // Restore region selected.
-                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
-
-                    selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
-
-                    // Restore list of images.
-                    List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
-                    setImageResults(imageList);
-
-                    // Restore image selections.
-//                    Set<String> selected = source.get(selectedImagesKey);
-//                    resultList.clearSelection();
-//                    for (int index = 0; index < resultList.getRowCount(); ++index)
-//                    {
-//                        String image = new File(imageResults.get(index).get(0)).getName();
-//                        if (selected.contains(image)) {
-//                            resultList.addRowSelectionInterval(index, index);
+//                            result.put(userCheckBoxMapKey, filterBuilder.build());
 //                        }
 //                    }
+//
+//                    // Save region selected.
+//                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+//                    result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+//
+//                    // Save list of images.
+//                    result.put(imageListKey, listToOutputFormat(imageResults));
+//
+//                    // Save selected images.
+//                    ImmutableSortedSet.Builder<String> selected = ImmutableSortedSet.naturalOrder();
+//                    int[] selectedIndices = selectedImageIndices;
+//                    for (int selectedIndex : selectedIndices)
+//                    {
+//                        String image = new File(imageResults.get(selectedIndex).get(0)).getName();
+//                        selected.add(image);
+//                    }
+//                    result.put(selectedImagesKey, selected.build());
+//
+//                    // Save boundary info.
+//                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+//                    ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+//                    for (ImageKey key : boundaries.getImageKeys())
+//                    {
+//                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+//                        {
+//                            PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+//                            String fullName = key.name;
+//                            String name = new File(fullName).getName();
+//                            bndr.put(name, boundary.isVisible());
+//                        }
+//                    }
+//                    result.put(isBoundaryShowingKey, bndr.build());
+//
+//                    // Save mapped image information.
+//                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+//                    ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+//                    ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
+//
+//                    for (Image image : imageCollection.getImages())
+//                    {
+//                        String name = image.getImageName();
+//                        showing.put(name, image.isVisible());
+//                        if (image instanceof PerspectiveImage)
+//                        {
+//                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+//                            frus.put(name, perspectiveImage.isFrustumShowing());
+//                        }
+//                        ImageKey key = image.getKey();
+//                    }
+//                    result.put(isShowingKey, showing.build());
+//                    result.put(isFrustrumShowingKey, frus.build());
+//
+//                    return result;
+//                }
+//
+//                @Override
+//                public void retrieve(Metadata source)
+//                {
+////                    ImageSearchModel model = ImageSearchModel.this;
+////                    ImageSource pointing = ImageSource.valueOf(source.get(pointingKey));
+////                    model.setImageSourceOfLastQuery(pointing);
+////
+////                    if (source.hasKey(excludeSPCKey))
+////                    {
+////                        model.excludeGaskell = source.get(excludeSPCKey);
+////                    }
+////
+////                    model.setStartDate(source.get(startDateKey));
+////                    model.setEndDate(source.get(endDateKey));
+////                    model.setSelectedLimbString(source.get(limbSelectedKey));
+////                    model.setMinDistanceQuery(source.get(fromDistanceKey));
+////                    model.setMaxDistanceQuery(source.get(toDistanceKey));
+////                    model.setMinResolutionQuery(source.get(fromResolutionKey));
+////                    model.setMaxResolutionQuery(source.get(toResolutionKey));
+////                    model.setMinIncidenceQuery(source.get(fromIncidenceKey));
+////                    model.setMaxIncidenceQuery(source.get(toIncidenceKey));
+////                    model.setMinEmissionQuery(source.get(fromEmissionKey));
+////                    model.setMaxEmissionQuery(source.get(toEmissionKey));
+////                    model.setMinPhaseQuery(source.get(fromPhaseKey));
+////                    model.setMaxPhaseQuery(source.get(toPhaseKey));
+////                    model.setSearchByFilename(source.get(searchByFileNameEnabledKey));
+////                    model.setSearchFilename(source.get(searchByFileNameKey));
+////
+//////                    sourceComboBox.setSelectedItem(pointing);
+//////                    sourceOfLastQuery = pointing;
+//////
+//////                    if (source.hasKey(excludeSPCKey)) {
+//////                        excludeGaskellCheckBox.setSelected(source.get(excludeSPCKey));
+//////                    }
+//////
+//////                    startSpinner.setValue(source.get(startDateKey));
+//////                    endSpinner.setValue(source.get(endDateKey));
+//////                    hasLimbComboBox.setSelectedItem(source.get(limbSelectedKey));
+//////                    fromDistanceTextField.setValue(source.get(fromDistanceKey));
+//////                    toDistanceTextField.setValue(source.get(toDistanceKey));
+//////                    fromResolutionTextField.setValue(source.get(fromResolutionKey));
+//////                    toResolutionTextField.setValue(source.get(toResolutionKey));
+//////                    fromIncidenceTextField.setValue(source.get(fromIncidenceKey));
+//////                    toIncidenceTextField.setValue(source.get(toIncidenceKey));
+//////                    fromEmissionTextField.setValue(source.get(fromEmissionKey));
+//////                    toEmissionTextField.setValue(source.get(toEmissionKey));
+//////                    fromPhaseTextField.setValue(source.get(fromPhaseKey));
+//////                    toPhaseTextField.setValue(source.get(toPhaseKey));
+//////                    searchByFilenameCheckBox.setSelected(source.get(searchByFileNameEnabledKey));
+//////                    searchByFilenameTextField.setText(source.get(searchByFileNameKey));
+////
+////                    if (smallBodyConfig.hasHierarchicalImageSearch)
+////                    {
+////                        MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+////                        manager.retrieve(source.get(imageTreeFilterKey));
+////                    }
+////                    else
+////                    {
+////                        int numberFilters = 0;
+////
+////                        // Regular filters.
+////                        numberFilters = getNumberOfFiltersActuallyUsed();
+//////                        if (numberFilters > 0)
+//////                        {
+//////                            Map<String, Boolean> filterMap = source.get(filterMapKey);
+//////                            String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+//////                            for (int index = 0; index < numberFilters; ++index)
+//////                            {
+//////                                Boolean filterSelected = filterMap.get(filterNames[index]);
+//////                                if (filterSelected != null)
+//////                                {
+//////                                    filterCheckBoxes[index].setSelected(filterSelected);
+//////                                }
+//////                            }
+//////                        }
+//////
+//////                        // User-defined checkboxes.
+//////                        numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+//////                        if (numberFilters > 0)
+//////                        {
+//////                            Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+//////                            String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+//////                            for (int index = 0; index < numberFilters; ++index)
+//////                            {
+//////                                Boolean filterSelected = filterMap.get(filterNames[index]);
+//////                                if (filterSelected != null)
+//////                                {
+//////                                    userDefinedCheckBoxes[index].setSelected(filterSelected);
+//////                                }
+//////                            }
+//////                        }
+////                    }
+////
+////                    // Restore region selected.
+////                    AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+////                    PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+////
+////                    selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+////
+////                    // Restore list of images.
+////                    List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
+////                    setImageResults(imageList);
+////
+////                    // Restore image selections.
+//////                    Set<String> selected = source.get(selectedImagesKey);
+//////                    resultList.clearSelection();
+//////                    for (int index = 0; index < resultList.getRowCount(); ++index)
+//////                    {
+//////                        String image = new File(imageResults.get(index).get(0)).getName();
+//////                        if (selected.contains(image)) {
+//////                            resultList.addRowSelectionInterval(index, index);
+//////                        }
+//////                    }
+////
+////                    // Restore boundaries. First clear any associated with this model.
+////                    for (ImageKey key : boundaries.getImageKeys())
+////                    {
+////                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+////                        {
+////                            boundaries.removeBoundary(key);
+////                        }
+////                    }
+////                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
+////                    for (Entry<String, Boolean> entry : bndr.entrySet())
+////                    {
+////                        try
+////                        {
+////                            String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
+////                            ImageKey imageKey = createImageKey(fullName, pointing, instrument);
+////                            boundaries.addBoundary(imageKey);
+////                            boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+////                        }
+////                        catch (Exception e)
+////                        {
+////                            e.printStackTrace();
+////                        }
+////                    }
+////
+////                    // Restore mapped image information.
+////                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+////                    Map<String, Boolean> showing = source.get(isShowingKey);
+////                    Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
+////                    for (String name : showing.keySet())
+////                    {
+////                        String fullName = instrument.searchQuery.getDataPath() + "/" + name;
+////                        loadImages(fullName);
+////                    }
+////
+////                    for (Image image : imageCollection.getImages())
+////                    {
+////                        String name = image.getImageName();
+////                        image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+////                        if (image instanceof PerspectiveImage)
+////                        {
+////                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+////                            perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+////                        }
+////                    }
+////
+////                    fireModelChanged();
+//                }
+//            };
+//        }
+//    }
+//
+//    public MetadataManager getMetadataManager()
+//    {
+//        return stateManager;
+//    }
 
-                    // Restore boundaries. First clear any associated with this model.
-                    for (ImageKey key : boundaries.getImageKeys())
-                    {
-                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
-                        {
-                            boundaries.removeBoundary(key);
-                        }
-                    }
-                    Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
-                    for (Entry<String, Boolean> entry : bndr.entrySet())
-                    {
-                        try
-                        {
-                            String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
-                            ImageKey imageKey = createImageKey(fullName, pointing, instrument);
-                            boundaries.addBoundary(imageKey);
-                            boundaries.getBoundary(imageKey).setVisible(entry.getValue());
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // Restore mapped image information.
-                    ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
-                    Map<String, Boolean> showing = source.get(isShowingKey);
-                    Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
-                    for (String name : showing.keySet())
-                    {
-                        String fullName = instrument.searchQuery.getDataPath() + "/" + name;
-                        loadImages(fullName);
-                    }
-
-                    for (Image image : imageCollection.getImages())
-                    {
-                        String name = image.getImageName();
-                        image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
-                        if (image instanceof PerspectiveImage)
-                        {
-                            PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                            perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
-                        }
-                    }
-
-                    fireModelChanged();
-                }
-            };
-        }
-    }
-
-    public MetadataManager getMetadataManager()
+    public Set<String> getSelectedFilenames()
     {
-        return stateManager;
+        return selectedFilenames;
     }
+
+
+    public void setSelectedFilenames(Set<String> selectedFilenames)
+    {
+        this.selectedFilenames = selectedFilenames;
+    }
+
 
     private List<String[]> listToOutputFormat(List<List<String>> inputListList)
     {
@@ -1213,18 +1253,268 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     @Override
     public Metadata store()
     {
-        SettableMetadata metadata = SettableMetadata.of(Version.of(1,0));
-        metadata.put(START_DATE_KEY, startDate);
-        // TODO store the rest of the mutable fields.
-        return metadata;
+        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+
+        ImageSource pointing = getImageSourceOfLastQuery();
+        result.put(pointingKey, pointing.name());
+
+        if (excludeGaskellEnabled) {
+            result.put(excludeSPCKey, excludeGaskell);
+        }
+
+        result.put(startDateKey, getStartDate());
+        result.put(endDateKey, getEndDate());
+        result.put(limbSelectedKey, selectedLimbString);
+        result.put(fromDistanceKey, minDistanceQuery);
+        result.put(toDistanceKey, maxDistanceQuery);
+        result.put(fromResolutionKey, minResolutionQuery);
+        result.put(toResolutionKey, maxResolutionQuery);
+        result.put(fromIncidenceKey, minIncidenceQuery);
+        result.put(toIncidenceKey, maxIncidenceQuery);
+        result.put(fromEmissionKey, minEmissionQuery);
+        result.put(toEmissionKey, maxEmissionQuery);
+        result.put(fromPhaseKey, minPhaseQuery);
+        result.put(toPhaseKey, maxPhaseQuery);
+        result.put(searchByFileNameEnabledKey, searchByFilename);
+        result.put(searchByFileNameKey, searchFilename);
+
+        if (smallBodyConfig.hasHierarchicalImageSearch)
+        {
+            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+            result.put(imageTreeFilterKey, manager.store());
+        }
+        else
+        {
+            int numberFilters = 0;
+
+            // Regular filters.
+            numberFilters = getNumberOfFiltersActuallyUsed();
+            if (numberFilters > 0)
+            {
+                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+
+                for (int index = 0; index < numberFilters; ++index)
+                {
+//                    filterBuilder.put(filterNames[index], filterCheckBoxes[index].isSelected());
+                    filterBuilder.put(filterNames[index], filtersSelected.contains(index));
+                }
+                result.put(filterMapKey, filterBuilder.build());
+            }
+
+            // User-defined checkboxes.
+            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+            if (numberFilters > 0)
+            {
+                ImmutableMap.Builder<String, Boolean> filterBuilder = ImmutableMap.builder();
+                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+
+                for (int index = 0; index < numberFilters; ++index)
+                {
+//                    filterBuilder.put(filterNames[index], userDefinedCheckBoxes[index].isSelected());
+                    filterBuilder.put(filterNames[index], camerasSelected.contains(index));
+                }
+                result.put(userCheckBoxMapKey, filterBuilder.build());
+            }
+        }
+
+        // Save region selected.
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+
+        // Save list of images.
+        result.put(imageListKey, listToOutputFormat(imageResults));
+
+        // Save selected images.
+        ImmutableSortedSet.Builder<String> selected = ImmutableSortedSet.naturalOrder();
+        int[] selectedIndices = selectedImageIndices;
+        for (int selectedIndex : selectedIndices)
+        {
+            String image = new File(imageResults.get(selectedIndex).get(0)).getName();
+            selected.add(image);
+        }
+        result.put(selectedImagesKey, selected.build());
+
+        // Save boundary info.
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+        ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
+        for (ImageKey key : boundaries.getImageKeys())
+        {
+            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            {
+                PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
+                String fullName = key.name;
+                String name = new File(fullName).getName();
+                bndr.put(name, boundary.isVisible());
+            }
+        }
+        result.put(isBoundaryShowingKey, bndr.build());
+
+        // Save mapped image information.
+        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+        ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+        ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
+
+        for (Image image : imageCollection.getImages())
+        {
+            String name = image.getImageName();
+            showing.put(name, image.isVisible());
+            if (image instanceof PerspectiveImage)
+            {
+                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                frus.put(name, perspectiveImage.isFrustumShowing());
+            }
+            ImageKey key = image.getKey();
+        }
+        result.put(isShowingKey, showing.build());
+        result.put(isFrustrumShowingKey, frus.build());
+
+        return result;
     }
 
 
     @Override
     public void retrieve(Metadata source)
     {
-        startDate = source.get(START_DATE_KEY);
-        // TODO retrieve the rest of the mutable fields.
+
+        ImageSearchModel model = ImageSearchModel.this;
+        ImageSource pointing = ImageSource.valueOf(source.get(pointingKey));
+        model.setImageSourceOfLastQuery(pointing);
+
+        if (source.hasKey(excludeSPCKey))
+        {
+            model.excludeGaskell = source.get(excludeSPCKey);
+        }
+
+        model.setStartDate(source.get(startDateKey));
+        model.setEndDate(source.get(endDateKey));
+        model.setSelectedLimbString(source.get(limbSelectedKey));
+        model.setMinDistanceQuery(source.get(fromDistanceKey));
+        model.setMaxDistanceQuery(source.get(toDistanceKey));
+        model.setMinResolutionQuery(source.get(fromResolutionKey));
+        model.setMaxResolutionQuery(source.get(toResolutionKey));
+        model.setMinIncidenceQuery(source.get(fromIncidenceKey));
+        model.setMaxIncidenceQuery(source.get(toIncidenceKey));
+        model.setMinEmissionQuery(source.get(fromEmissionKey));
+        model.setMaxEmissionQuery(source.get(toEmissionKey));
+        model.setMinPhaseQuery(source.get(fromPhaseKey));
+        model.setMaxPhaseQuery(source.get(toPhaseKey));
+        model.setSearchByFilename(source.get(searchByFileNameEnabledKey));
+        model.setSearchFilename(source.get(searchByFileNameKey));
+
+        if (smallBodyConfig.hasHierarchicalImageSearch)
+        {
+            MetadataManager manager = smallBodyConfig.hierarchicalImageSearchSpecification.getMetadataManager();
+            manager.retrieve(source.get(imageTreeFilterKey));
+        }
+        else
+        {
+            int numberFilters = 0;
+
+            // Regular filters.
+            numberFilters = getNumberOfFiltersActuallyUsed();
+            if (numberFilters > 0)
+            {
+                Map<String, Boolean> filterMap = source.get(filterMapKey);
+                String[] filterNames = smallBodyConfig.imageSearchFilterNames;
+                for (int index = 0; index < numberFilters; ++index)
+                {
+                    Boolean filterSelected = filterMap.get(filterNames[index]);
+                    if (filterSelected != null)
+                    {
+                        filtersSelected.add(index);
+//                        filterCheckBoxes[index].setSelected(filterSelected);
+                    }
+                }
+            }
+
+            // User-defined checkboxes.
+            numberFilters = getNumberOfUserDefinedCheckBoxesActuallyUsed();
+            if (numberFilters > 0)
+            {
+                Map<String, Boolean> filterMap = source.get(userCheckBoxMapKey);
+                String[] filterNames = smallBodyConfig.imageSearchUserDefinedCheckBoxesNames;
+                for (int index = 0; index < numberFilters; ++index)
+                {
+                    Boolean filterSelected = filterMap.get(filterNames[index]);
+                    if (filterSelected != null)
+                    {
+                        camerasSelected.add(index);
+//                        userDefinedCheckBoxes[index].setSelected(filterSelected);
+                    }
+                }
+            }
+        }
+
+        // Restore region selected.
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+        PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
+
+        selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+
+        // Restore list of images.
+        List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
+        setImageResults(imageList);
+
+        // Restore image selections.
+        Set<String> selected = source.get(selectedImagesKey);
+
+        //This is now done in a listener
+//        resultList.clearSelection();
+//        for (int index = 0; index < resultList.getRowCount(); ++index)
+//        {
+//            String image = new File(imageResults.get(index).get(0)).getName();
+//            if (selected.contains(image)) {
+//                resultList.addRowSelectionInterval(index, index);
+//            }
+//        }
+
+        // Restore boundaries. First clear any associated with this model.
+        for (ImageKey key : boundaries.getImageKeys())
+        {
+            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            {
+                boundaries.removeBoundary(key);
+            }
+        }
+        Map<String, Boolean> bndr = source.get(isBoundaryShowingKey);
+        for (Entry<String, Boolean> entry : bndr.entrySet())
+        {
+            try
+            {
+                String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
+                ImageKey imageKey = createImageKey(fullName, pointing, instrument);
+                boundaries.addBoundary(imageKey);
+                boundaries.getBoundary(imageKey).setVisible(entry.getValue());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        // Restore mapped image information.
+        ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
+        Map<String, Boolean> showing = source.get(isShowingKey);
+        Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
+        for (String name : showing.keySet())
+        {
+            String fullName = instrument.searchQuery.getDataPath() + "/" + name;
+            loadImages(fullName);
+        }
+
+        for (Image image : imageCollection.getImages())
+        {
+            String name = image.getImageName();
+            image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+            if (image instanceof PerspectiveImage)
+            {
+                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+            }
+        }
+
+        fireModelChanged();
     }
 
 }
