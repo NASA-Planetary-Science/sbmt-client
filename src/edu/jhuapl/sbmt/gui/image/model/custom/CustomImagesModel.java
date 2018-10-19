@@ -22,6 +22,7 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -586,6 +587,20 @@ public class CustomImagesModel extends ImageSearchModel
     public String getCustomDataFolder()
     {
         return getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
+    @Override
+    public Metadata store()
+    {
+        Metadata data = super.store();
+
+        return data;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        super.retrieve(source);
     }
 }
 

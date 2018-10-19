@@ -1478,7 +1478,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         setImageResults(imageList);
 
         // Restore image selections.
-        Set<String> selected = source.get(selectedImagesKey);
+        selectedFilenames = source.get(selectedImagesKey);
 
         //This is now done in a listener
 //        resultList.clearSelection();
@@ -1536,8 +1536,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
 
         fireModelChanged();
-        // TODO fire update events such that the view is notified of the change of
-        // the start date and the other fields that changed.
+
     }
 
 }

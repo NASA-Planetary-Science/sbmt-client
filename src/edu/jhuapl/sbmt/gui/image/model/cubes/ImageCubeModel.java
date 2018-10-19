@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -19,7 +22,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
-public class ImageCubeModel
+public class ImageCubeModel implements Controller.Model, MetadataManager
 {
     int nbands = 0;
     private ImageCollection imageCollection;
@@ -207,5 +210,17 @@ public class ImageCubeModel
     public void removeImageCube(ImageCubeKey imageCubeKey)
     {
         imageCubeCollection.removeImage(imageCubeKey);
+    }
+
+    @Override
+    public Metadata store()
+    {
+        return imageSearchModel.store();
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        imageSearchModel.retrieve(source);
     }
 }
