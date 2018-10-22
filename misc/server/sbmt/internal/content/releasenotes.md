@@ -4,6 +4,10 @@
 
 # Release Notes
 
+### October 22, 2018 (SBMT-0.6.5.1)
+
+- Configuration update for H2 lidar data
+
 ### October 18, 2018 (SBMT-0.6.5)
 
 - Made bug fixes, feature enhancements, and UI improvements to the structures panel
