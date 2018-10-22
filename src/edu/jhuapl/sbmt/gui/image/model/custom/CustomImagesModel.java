@@ -67,8 +67,8 @@ public class CustomImagesModel extends ImageSearchModel
         this.customImages = new Vector<ImageInfo>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
 
-        this.imageCollection = (ImageCollection)modelManager.getModel(getCustomImageCollectionModelName());
-        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getCustomImageBoundaryCollectionModelName());
+        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
     }
 
     public CustomImagesModel(ImageSearchModel model)
@@ -76,12 +76,12 @@ public class CustomImagesModel extends ImageSearchModel
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
     }
 
-    public ModelNames getCustomImageCollectionModelName()
+    public ModelNames getImageCollectionModelName()
     {
         return ModelNames.CUSTOM_IMAGES;
     }
 
-    public ModelNames getCustomImageBoundaryCollectionModelName()
+    public ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
     }

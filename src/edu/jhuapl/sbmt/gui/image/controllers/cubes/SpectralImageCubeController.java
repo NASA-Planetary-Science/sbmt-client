@@ -38,7 +38,6 @@ public class SpectralImageCubeController extends ImageCubeController
     @Override
     protected void setupPanel()
     {
-        this.panel = new SpectralImageCubeGenerationPanel();
         super.setupPanel();
 
         panel.getImageCubeTable().getSelectionModel().addListSelectionListener(new ListSelectionListener()

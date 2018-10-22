@@ -15,11 +15,11 @@ import nom.tam.fits.FitsException;
 
 public class ColorImageModel
 {
-    private ImageKey selectedRedKey;
-    private ImageKey selectedGreenKey;
-    private ImageKey selectedBlueKey;
-    private ColorImageCollection imageCollection;
-    private Vector<ColorImageResultsListener> resultsListeners;
+    protected ImageKey selectedRedKey;
+    protected ImageKey selectedGreenKey;
+    protected ImageKey selectedBlueKey;
+    protected ColorImageCollection imageCollection;
+    protected Vector<ColorImageResultsListener> resultsListeners;
 
     public ColorImageModel()
     {
@@ -31,7 +31,7 @@ public class ColorImageModel
         this.imageCollection = collection;
     }
 
-    public ModelNames getColorImageCollectionModelName()
+    public ModelNames getImageCollectionModelName()
     {
         return ModelNames.COLOR_IMAGES;
     }

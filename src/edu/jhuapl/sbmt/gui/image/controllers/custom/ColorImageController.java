@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.color;
+package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;

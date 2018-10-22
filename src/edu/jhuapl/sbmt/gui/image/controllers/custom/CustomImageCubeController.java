@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.cubes;
+package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,7 +39,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
 
-public class ImageCubeController
+public class CustomImageCubeController
 {
     protected ImageSearchModel model;
     protected ImageCubeModel cubeModel;
@@ -54,7 +54,7 @@ public class ImageCubeController
     private ImageCubeResultsPropertyChangeListener propertyChangeListener;
     private PerspectiveImageBoundaryCollection boundaries;
 
-    public ImageCubeController(ImageSearchModel model,
+    public CustomImageCubeController(ImageSearchModel model,
             ImageCubeModel cubeModel,
             SbmtInfoWindowManager infoPanelManager,
             ImageCubePopupMenu imageCubePopupMenu,
@@ -81,7 +81,9 @@ public class ImageCubeController
         this.panel = new SpectralImageCubeGenerationPanel();
         propertyChangeListener = new ImageCubeResultsPropertyChangeListener();
         tableModelListener = new ImageCubeResultsTableModeListener();
+        System.out.println("ImageCubeController: ImageCubeController: calling");
         setupPanel();
+        System.out.println("ImageCubeController: ImageCubeController: called");
 
         cubeModel.addResultsChangedListener(new ImageCubeResultsListener()
         {
@@ -124,6 +126,7 @@ public class ImageCubeController
 
     protected void setupPanel()
     {
+        System.out.println("ImageCubeController: setupPanel: ");
         boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
         imageCubes = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
         imageCubePopupMenu = new ImageCubePopupMenu(imageCubes, boundaries, infoPanelManager, spectrumPanelManager, renderer, panel);
@@ -319,6 +322,8 @@ public class ImageCubeController
                 if (resultList.getRowCount() == 0) return;
                 resultList.getModel().removeTableModelListener(tableModelListener);
                 Set<ImageCube> imageCubeSet = imageCubes.getImages();
+                System.out.println(
+                        "ImageCubeController.ImageCubeResultsPropertyChangeListener: propertyChange: image cubes size " + imageCubeSet.size() + " " + Integer.toHexString(imageCubes.hashCode()));
                 int i=0;
                 for (ImageCube image : imageCubeSet)
                 {
