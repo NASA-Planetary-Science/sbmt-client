@@ -22,7 +22,9 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -55,7 +57,8 @@ public class CustomImagesModel extends ImageSearchModel
     private List<ImageInfo> customImages;
     private Vector<CustomImageResultsListener> customImageListeners;
     private boolean initialized = false;
-    private int numImagesInCollection = -1;
+//    private int numImagesInCollection = -1;
+    final Key<Vector<Metadata>> customImagesKey = Key.of("customImages");
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -592,8 +595,15 @@ public class CustomImagesModel extends ImageSearchModel
     @Override
     public Metadata store()
     {
-        Metadata data = super.store();
-
+        SettableMetadata data = (SettableMetadata)super.store();
+        //store the ImageInfo objects that make up this custom model
+        Vector<Metadata> images = new Vector<Metadata>();
+//        ImmutableSortedSet.Builder<Metadata> images = ImmutableSortedSet.naturalOrder();
+        for (ImageInfo info : customImages)
+        {
+            images.add(info.store());
+        }
+        data.put(customImagesKey, images);
         return data;
     }
 
@@ -601,6 +611,14 @@ public class CustomImagesModel extends ImageSearchModel
     public void retrieve(Metadata source)
     {
         super.retrieve(source);
+        //get the ImageInfo objects for this custom model
+        Vector<Metadata> images = source.get(customImagesKey);
+        for (Metadata image : images)
+        {
+            ImageInfo info = new ImageInfo();
+            info.retrieve(image);
+            customImages.add(info);
+        }
     }
 }
 
