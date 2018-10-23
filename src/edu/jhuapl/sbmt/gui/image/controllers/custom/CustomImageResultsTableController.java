@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -8,8 +9,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -18,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
@@ -141,6 +146,97 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         }
     }
 
+    public void setImageResults(List<List<String>> results)
+    {
+        JTable resultTable = imageResultsTableView.getResultList();
+        imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
+        imageRawResults = results;
+        stringRenderer.setImageRawResults(imageRawResults);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+        imageCollection.removePropertyChangeListener(propertyChangeListener);
+        boundaries.removePropertyChangeListener(propertyChangeListener);
+
+        try
+        {
+            int mapColumnIndex = imageResultsTableView.getMapColumnIndex();
+            int showFootprintColumnIndex = imageResultsTableView.getShowFootprintColumnIndex();
+            int frusColumnIndex = imageResultsTableView.getFrusColumnIndex();
+            int idColumnIndex = imageResultsTableView.getIdColumnIndex();
+            int filenameColumnIndex = imageResultsTableView.getFilenameColumnIndex();
+            int dateColumnIndex = imageResultsTableView.getDateColumnIndex();
+            int bndrColumnIndex = imageResultsTableView.getBndrColumnIndex();
+            int[] widths = new int[resultTable.getColumnCount()];
+            int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
+
+            // add the results to the list
+            ((DefaultTableModel)resultTable.getModel()).setRowCount(results.size());
+            int i=0;
+
+
+            for (List<String> str : results)
+            {
+                Date dt = new Date(Long.parseLong(str.get(1)));
+                ImageKey key = model.getKeyForIndex(i);
+                if (imageCollection.containsImage(key))
+                {
+                    resultTable.setValueAt(true, i, mapColumnIndex);
+                    PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
+                    resultTable.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+                    resultTable.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
+                }
+                else
+                {
+                    resultTable.setValueAt(false, i, mapColumnIndex);
+                    resultTable.setValueAt(false, i, showFootprintColumnIndex);
+                    resultTable.setValueAt(false, i, frusColumnIndex);
+                }
+
+
+                if (boundaries.containsBoundary(key))
+                    resultTable.setValueAt(true, i, bndrColumnIndex);
+                else
+                    resultTable.setValueAt(false, i, bndrColumnIndex);
+
+                resultTable.setValueAt(i+1, i, idColumnIndex);
+                resultTable.setValueAt(str.get(2).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                resultTable.setValueAt(sdf.format(dt), i, dateColumnIndex);
+
+                for (int j : columnsNeedingARenderer)
+                {
+                    TableCellRenderer renderer = resultTable.getCellRenderer(i, j);
+                    Component comp = resultTable.prepareRenderer(renderer, i, j);
+                    widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
+                }
+
+                ++i;
+            }
+
+            for (int j : columnsNeedingARenderer)
+                imageResultsTableView.getResultList().getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
+
+            boolean enablePostSearchButtons = resultTable.getModel().getRowCount() > 0;
+            imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
+            imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
+            imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && enablePostSearchButtons);
+        }
+        finally
+        {
+            imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+            imageCollection.addPropertyChangeListener(propertyChangeListener);
+            boundaries.addPropertyChangeListener(propertyChangeListener);
+        }
+
+        // Show the first set of boundaries
+        model.setResultIntervalCurrentlyShown( new IdPair(0, Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
+//        if (boundaries.getProps().size() > 0)
+            this.showImageBoundaries(model.getResultIntervalCurrentlyShown());
+
+        // Enable or disable the image gallery button
+        imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+    }
 
 
     protected void showImageBoundaries(IdPair idPair)

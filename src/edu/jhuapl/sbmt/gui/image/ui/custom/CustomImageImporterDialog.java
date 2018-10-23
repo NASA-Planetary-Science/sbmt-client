@@ -83,10 +83,11 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public List<String> toList()
         {
             List<String> string = new Vector<String>();
-            string.add(name);
+            string.add(imagefilename);
 //            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 //            string.add(formatter.format(new Date()));
             string.add("" + new Date().getTime());
+            string.add(name);
             return string;
 
         }

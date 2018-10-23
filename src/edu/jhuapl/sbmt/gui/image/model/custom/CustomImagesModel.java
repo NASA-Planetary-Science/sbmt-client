@@ -330,6 +330,11 @@ public class CustomImagesModel extends ImageSearchModel
       }
   }
 
+    public ImageKey getKeyForIndex(int index)
+    {
+        return getKeyForImageInfo(customImages.get(index));
+    }
+
     private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
     {
         String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
