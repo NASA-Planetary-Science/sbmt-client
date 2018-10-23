@@ -189,6 +189,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, visible);
+                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
 

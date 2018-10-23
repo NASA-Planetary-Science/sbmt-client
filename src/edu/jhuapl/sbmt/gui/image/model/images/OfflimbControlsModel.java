@@ -13,6 +13,7 @@ public class OfflimbControlsModel
     private int currentDepth;
     private int contrastLow;
     private int contrastHigh;
+    private boolean showBoundary = true; // true by default
     Vector<OfflimbModelChangedListener> listeners;
 
     public OfflimbControlsModel(OsirisImage image, int currentSlice)
@@ -84,6 +85,12 @@ public class OfflimbControlsModel
         return contrastHigh;
     }
 
+
+    public boolean getShowBoundary()
+    {
+        return showBoundary;
+    }
+
     public void setContrastHigh(int contrastHigh)
     {
         this.contrastHigh = contrastHigh;
@@ -96,6 +103,11 @@ public class OfflimbControlsModel
     public void setImage(OsirisImage image)
     {
         this.image = image;
+    }
+
+    public void setShowBoundary(boolean show)
+    {
+        this.showBoundary = show;
     }
 
     public void setCurrentSlice(int currentSlice)

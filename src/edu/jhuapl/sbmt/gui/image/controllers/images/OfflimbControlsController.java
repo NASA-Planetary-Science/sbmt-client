@@ -1,5 +1,9 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -20,15 +24,30 @@ public class OfflimbControlsController
     DepthSlider depthSlider;
     AlphaSlider alphaSlider;
     ContrastSlider contrastSlider;
+    ShowBoundaryButton showBoundaryBtn;
 
     public OfflimbControlsController(OsirisImage image, int currentSlice)
     {
         this.image = image;
+        controlsModel = new OfflimbControlsModel(image, currentSlice);
+
+
         depthSlider = new DepthSlider();
         alphaSlider = new AlphaSlider();
         contrastSlider = new ContrastSlider();
-        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider);
-        controlsModel = new OfflimbControlsModel(image, currentSlice);
+        showBoundaryBtn = new ShowBoundaryButton();
+        showBoundaryBtn.setSelected(controlsModel.getShowBoundary());
+        showBoundaryBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
+                controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
+            }
+
+        });
+        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn);
         controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
         {
 
@@ -94,6 +113,11 @@ public class OfflimbControlsController
                     contrastSlider.applyContrastToImage();
                     controlsModel.setContrastLow(contrastSlider.getLowValue());
                     controlsModel.setContrastHigh(contrastSlider.getHighValue());
+                }
+                else if (e.getSource() == controlsFrame.getPanel().getShowBoundaryButton())
+                {
+                    showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
+                    controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
                 }
                 controlsModel.getImage().firePropertyChange();
             }
@@ -189,5 +213,20 @@ public class OfflimbControlsController
                     new IntensityRange(getLowValue(), getHighValue()));
         }
     }
+
+    public class ShowBoundaryButton extends JRadioButton
+    {
+        public ShowBoundaryButton()
+        {
+            setText("Show Boundary");
+        }
+
+        public void showBoundary(boolean selected)
+        {
+           image.setOffLimbBoundaryVisibility(selected);
+        }
+
+    }
+
 
 }
