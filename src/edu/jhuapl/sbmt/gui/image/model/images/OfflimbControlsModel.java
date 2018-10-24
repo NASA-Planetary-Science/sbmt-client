@@ -3,11 +3,11 @@ package edu.jhuapl.sbmt.gui.image.model.images;
 import java.util.Vector;
 
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 public class OfflimbControlsModel
 {
-    private OsirisImage image;
+    private PerspectiveImage image;
     private int currentSlice;
     private int currentAlpha;
     private int currentDepth;
@@ -16,7 +16,7 @@ public class OfflimbControlsModel
     private boolean showBoundary = true; // true by default
     Vector<OfflimbModelChangedListener> listeners;
 
-    public OfflimbControlsModel(OsirisImage image, int currentSlice)
+    public OfflimbControlsModel(PerspectiveImage image, int currentSlice)
     {
         this.image = image;
         this.currentSlice = currentSlice;
@@ -28,7 +28,7 @@ public class OfflimbControlsModel
         listeners.add(listener);
     }
 
-    public OsirisImage getImage()
+    public PerspectiveImage getImage()
     {
         return image;
     }
@@ -100,7 +100,7 @@ public class OfflimbControlsModel
         }
     }
 
-    public void setImage(OsirisImage image)
+    public void setImage(PerspectiveImage image)
     {
         this.image = image;
     }

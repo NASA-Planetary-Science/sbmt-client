@@ -14,19 +14,19 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbControlsFrame;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 public class OfflimbControlsController
 {
     OfflimbControlsFrame controlsFrame;
     OfflimbControlsModel controlsModel;
-    OsirisImage image;
+    PerspectiveImage image;
     DepthSlider depthSlider;
     AlphaSlider alphaSlider;
     ContrastSlider contrastSlider;
     ShowBoundaryButton showBoundaryBtn;
 
-    public OfflimbControlsController(OsirisImage image, int currentSlice)
+    public OfflimbControlsController(PerspectiveImage image, int currentSlice)
     {
         this.image = image;
         controlsModel = new OfflimbControlsModel(image, currentSlice);
@@ -61,7 +61,7 @@ public class OfflimbControlsController
             @Override
             public void currentDepthChanged(int depth)
             {
-                int sliderValue = depthSlider.convertDepthToSliderValue(((OsirisImage)controlsModel.getImage()).getOffLimbPlaneDepth());
+                int sliderValue = depthSlider.convertDepthToSliderValue(((PerspectiveImage)controlsModel.getImage()).getOffLimbPlaneDepth());
                 controlsFrame.getPanel().getFootprintDepthValue().setText("" + sliderValue);
             }
 
@@ -187,7 +187,7 @@ public class OfflimbControlsController
             setMaximum(100);
         }
 
-        public void applyAlphaToImage(/*OsirisImage image*/)
+        public void applyAlphaToImage()
         {
             image.setOffLimbFootprintAlpha(getAlphaValue());
         }
@@ -207,7 +207,7 @@ public class OfflimbControlsController
             setMaximum(255);
         }
 
-        public void applyContrastToImage(/*OsirisImage image*/)
+        public void applyContrastToImage()
         {
             image.setDisplayedImageRange(
                     new IntensityRange(getLowValue(), getHighValue()));

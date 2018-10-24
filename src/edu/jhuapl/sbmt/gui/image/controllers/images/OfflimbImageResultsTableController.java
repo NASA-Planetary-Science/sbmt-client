@@ -24,7 +24,6 @@ import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 
 public class OfflimbImageResultsTableController extends ImageResultsTableController
 {
@@ -58,7 +57,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             {
                 String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
                 ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                OsirisImage image = (OsirisImage)imageCollection.getImage(key);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
                 OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
                 controller.getControlsFrame().setVisible(true);
             }
@@ -148,7 +147,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (imageCollection.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                ((OsirisImage)image).setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
+                image.setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
                 getResultList().setValueAt(false, i, offlimbTableView.getOffLimbIndex());   // hide off limb footprint by default
             }
             else
@@ -204,7 +203,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         {
             if (images.containsImage(key))
             {
-                OsirisImage image = (OsirisImage)images.getImage(key);
+                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
                 image.setOffLimbFootprintVisibility(visible);
             }
         }
