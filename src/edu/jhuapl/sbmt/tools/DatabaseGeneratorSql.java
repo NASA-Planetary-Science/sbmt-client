@@ -140,7 +140,7 @@ public class DatabaseGeneratorSql
     }
 
     private void populateTables(
-            List<String> imageFiles,
+            List<String> lines,
             String tableName,
             String cubesTableName,
             ImageSource imageSource) throws IOException, SQLException, FitsException
@@ -174,9 +174,10 @@ public class DatabaseGeneratorSql
             }
         }
 
-        int totalFiles = imageFiles.size();
-        for (String filename : imageFiles)
+        int totalFiles = lines.size();
+        for (String line : lines)
         {
+            String filename = line.replaceFirst("\\s.*", "");
             // Increment image count (for status message purposes only)
             count++;
 
@@ -389,14 +390,14 @@ public class DatabaseGeneratorSql
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
         }
 
-        List<String> files = null;
+        List<String> lines = null;
         try {
             // if the file path starts with "/" then we know we are accessing files from the local file system
             if (fileList.startsWith("/"))
-                files = FileUtil.getFileLinesAsStringList(fileList);
+                lines = FileUtil.getFileLinesAsStringList(fileList);
             // otherwise, we try to load the file from the server via HTTP
             else
-                files = FileCache.getFileLinesFromServerAsStringList(fileList);
+                lines = FileCache.getFileLinesFromServerAsStringList(fileList);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
@@ -432,7 +433,7 @@ public class DatabaseGeneratorSql
 
         try
         {
-            populateTables(files, imagesTable, cubesTable, source);
+            populateTables(lines, imagesTable, cubesTable, source);
         }
         catch (Exception e1) {
             e1.printStackTrace();

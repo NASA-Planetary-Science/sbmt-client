@@ -246,8 +246,7 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
-
-        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
+        imageResultsTableView.getViewResultsGalleryButton().setVisible(true);
     }
 
     protected JTable getResultList()
