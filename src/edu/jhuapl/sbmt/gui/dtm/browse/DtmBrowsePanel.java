@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.dtm;
+package edu.jhuapl.sbmt.gui.dtm.browse;
 
 import javax.swing.JPanel;
 

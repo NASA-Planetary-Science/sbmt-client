@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.dtm;
+package edu.jhuapl.sbmt.gui.dtm.creation;
 
 import edu.jhuapl.saavtk2.event.BasicEvent;
 import edu.jhuapl.saavtk2.event.EventSource;

@@ -7,6 +7,10 @@ import javax.swing.JTabbedPane;
 
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.sbmt.gui.dtm.browse.DtmBrowsePanel;
+import edu.jhuapl.sbmt.gui.dtm.creation.DEMCreationPanel;
+import edu.jhuapl.sbmt.gui.dtm.creation.DEMCreator;
+import edu.jhuapl.sbmt.gui.dtm.search.DtmSearchPanel;
 
 @SuppressWarnings("serial")
 public class ExperimentalDEMPanel extends JPanel

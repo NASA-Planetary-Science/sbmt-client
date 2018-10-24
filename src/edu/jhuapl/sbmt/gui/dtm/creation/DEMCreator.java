@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.dtm;
+package edu.jhuapl.sbmt.gui.dtm.creation;
 
 import java.nio.file.Path;
 
