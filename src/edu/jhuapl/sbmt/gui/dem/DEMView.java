@@ -312,6 +312,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         syncColoringCB = new JCheckBox("Sync Coloring");
         syncColoringCB.addActionListener(this);
+        syncColoringCB.setToolTipText("Sync coloring with main window");
         retPanel.add(syncColoringCB, "wrap 20");
 
         // ColorMap area
@@ -346,8 +347,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         // File area
         loadButton = new JButton("Load...");
         loadButton.addActionListener(this);
+        loadButton.setToolTipText("Load Profile Data");
         saveButton = new JButton("Save...");
         saveButton.addActionListener(this);
+        saveButton.setToolTipText("Save Profile Data");
         retPanel.add(loadButton, "sg 3,span,split");
         retPanel.add(saveButton, "sg 3,wrap");
 
