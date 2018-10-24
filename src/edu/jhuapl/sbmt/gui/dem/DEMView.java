@@ -106,7 +106,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     private JButton deleteAllButton;
     private JButton loadButton;
     private JButton saveButton;
-    private JLabel pathL, fileL;
+    private JLabel fileL;
     private Renderer renderer;
 
     public Renderer getRenderer()
@@ -216,8 +216,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             try
             {
                 loadView(file);
-                pathL.setText("Path: " + file.getPath());
                 fileL.setText("File: " + file.getName());
+                fileL.setToolTipText(file.getPath());
             }
             catch (Exception aExp)
             {
@@ -236,8 +236,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             try
             {
                 saveView(file);
-                pathL.setText("Path: " + file.getPath());
                 fileL.setText("File: " + file.getName());
+                fileL.setToolTipText(file.getPath());
             }
             catch (Exception aExp)
             {
@@ -351,8 +351,6 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         retPanel.add(loadButton, "sg 3,span,split");
         retPanel.add(saveButton, "sg 3,wrap");
 
-        pathL = new JLabel("");
-        retPanel.add(pathL, "w 0:0:,wrap");
         fileL = new JLabel("");
         retPanel.add(fileL, "w 0:0:");
 
