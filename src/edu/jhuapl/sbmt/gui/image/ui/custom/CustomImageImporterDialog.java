@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -186,8 +187,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         else if (perspectiveProjectionRadioButton.isSelected())
         {
             info.projectionType = ProjectionType.PERSPECTIVE;
-            info.sumfilename = sumfilePathTextField.getText();
-            info.infofilename = infofilePathTextField.getText();
+            info.sumfilename = null;
+            if (sumfilePathRB.isSelected() == true)
+                info.sumfilename = sumfilePathTextField.getText();
+            info.infofilename = null;
+            if (infofilePathRB.isSelected() == true)
+                info.infofilename = infofilePathTextField.getText();
             if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
                 info.sumfilename = null;
             if (LEAVE_UNMODIFIED.equals(info.infofilename) || info.infofilename == null || info.infofilename.isEmpty())
@@ -292,17 +297,20 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         else
         {
             String sumfilePath = sumfilePathTextField.getText();
-            if (sumfilePath == null)
+            if (sumfilePathRB.isSelected() == false || sumfilePath == null)
                 sumfilePath = "";
 
             String infofilePath = infofilePathTextField.getText();
-            if (infofilePath == null)
+            if (infofilePathRB.isSelected() == false || infofilePath == null)
                 infofilePath = "";
 
             if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
             {
-                if (sumfilePath.isEmpty() && infofilePath.isEmpty())
-                    return "Please enter the path to a sumfile or infofile.";
+                if (infofilePathRB.isSelected() == true && infofilePath.isEmpty() == true)
+                    return "Please enter the path to an infofile.";
+
+                if (sumfilePathRB.isSelected() == true && sumfilePath.isEmpty() == true)
+                    return "Please enter the path to a sumfile.";
 
                 if (!sumfilePath.isEmpty())
                 {
@@ -344,10 +352,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlatFormattedTextField.setEnabled(cylindrical);
         urlonLabel.setEnabled(cylindrical);
         urlonFormattedTextField.setEnabled(cylindrical);
-        infofilePathLabel.setEnabled(!cylindrical);
-        infofilePathTextField.setEnabled(!cylindrical && !isEditMode);
-        sumfilePathLabel.setEnabled(!cylindrical);
-        sumfilePathTextField.setEnabled(!cylindrical && !isEditMode);
+        infofilePathRB.setEnabled(!cylindrical);
+        infofilePathTextField.setEnabled(!cylindrical && !isEditMode && infofilePathRB.isSelected());
+        sumfilePathRB.setEnabled(!cylindrical);
+        sumfilePathTextField.setEnabled(!cylindrical && !isEditMode && sumfilePathRB.isSelected());
 
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
         imageFlipComboBox.setEnabled(generic && !cylindrical);
@@ -381,11 +389,11 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonFormattedTextField = new javax.swing.JFormattedTextField();
         cylindricalProjectionRadioButton = new javax.swing.JRadioButton();
         perspectiveProjectionRadioButton = new javax.swing.JRadioButton();
-        infofilePathLabel = new javax.swing.JLabel();
+        infofilePathRB = new javax.swing.JRadioButton("Infofile Path", true);
         browseInfofileButton = new javax.swing.JButton();
         imageLabel = new javax.swing.JLabel();
         imageNameTextField = new javax.swing.JTextField();
-        sumfilePathLabel = new javax.swing.JLabel();
+        sumfilePathRB = new javax.swing.JRadioButton();
         infofilePathTextField = new javax.swing.JTextField();
         sumfilePathTextField = new javax.swing.JTextField();
         browseSumfileButton = new javax.swing.JButton();
@@ -395,6 +403,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         imageFlipLabel = new javax.swing.JLabel();
         imageRotateComboBox = new javax.swing.JComboBox();
         imageFlipComboBox = new javax.swing.JComboBox();
+        ButtonGroup tmpBG = new ButtonGroup();
+        tmpBG.add(infofilePathRB);
+        tmpBG.add(sumfilePathRB);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -566,13 +577,18 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 4, 0);
         getContentPane().add(perspectiveProjectionRadioButton, gridBagConstraints);
 
-        infofilePathLabel.setText("Infofile Path");
+        infofilePathRB.setText("Infofile Path");
+        infofilePathRB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateEnabledItems();
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(infofilePathLabel, gridBagConstraints);
+        getContentPane().add(infofilePathRB, gridBagConstraints);
 
         browseInfofileButton.setText("Browse...");
         browseInfofileButton.addActionListener(new java.awt.event.ActionListener() {
@@ -606,13 +622,18 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 0);
         getContentPane().add(imageNameTextField, gridBagConstraints);
 
-        sumfilePathLabel.setText("Sumfile Path");
+        sumfilePathRB.setText("Sumfile Path");
+        sumfilePathRB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateEnabledItems();
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
-        getContentPane().add(sumfilePathLabel, gridBagConstraints);
+        getContentPane().add(sumfilePathRB, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 12;
@@ -735,7 +756,9 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         int suffixLength = suffix.length();
         String imageFileNamePrefix = imageFileName.substring(0, imageFileName.length() - suffixLength);
         String defaultInfoFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "INFO";
+        String defaultSumFileName = file.getParent() + System.getProperty("file.separator") + imageFileNamePrefix + "SUM";
         infofilePathTextField.setText(defaultInfoFileName);
+        sumfilePathTextField.setText(defaultSumFileName);
 
         updateEnabledItems();
     }//GEN-LAST:event_browseImageButtonActionPerformed
@@ -811,7 +834,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private javax.swing.JLabel imageRotateLabel;
     private javax.swing.JComboBox imageTypeComboBox;
     private javax.swing.JLabel imageTypeLabel;
-    private javax.swing.JLabel infofilePathLabel;
+    private javax.swing.JRadioButton infofilePathRB;
     private javax.swing.JTextField infofilePathTextField;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JFormattedTextField lllatFormattedTextField;
@@ -821,7 +844,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private javax.swing.JButton okButton;
     private javax.swing.JRadioButton perspectiveProjectionRadioButton;
     private javax.swing.ButtonGroup projectionButtonGroup;
-    private javax.swing.JLabel sumfilePathLabel;
+    private javax.swing.JRadioButton sumfilePathRB;
     private javax.swing.JTextField sumfilePathTextField;
     private javax.swing.JFormattedTextField urlatFormattedTextField;
     private javax.swing.JLabel urlatLabel;
