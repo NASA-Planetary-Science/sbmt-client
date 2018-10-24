@@ -181,7 +181,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
                 return; //so it doesn't fall through to the super
             }
-            if (e.getColumn() == offlimbTableView.getOffLimbIndex())
+            else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
@@ -190,7 +190,9 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 setOffLimbFootprintVisibility(namePrefix, visible);
                 ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
-            super.tableChanged(e);
+            else {
+                super.tableChanged(e);
+            }
 
         }
     }
