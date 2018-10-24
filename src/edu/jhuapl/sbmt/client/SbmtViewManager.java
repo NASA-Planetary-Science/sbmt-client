@@ -195,6 +195,11 @@ public class SbmtViewManager extends ViewManager
         {
             customConfigImporter.read(metadata, name, customConfig);
         }
+        catch (NullPointerException | IllegalArgumentException iae)
+        {
+            System.err.println("Custom Model Import Error: nable to read custom model metadata for " + name);
+            return null;
+        }
         catch (IOException e)
         {
             // TODO Auto-generated catch block

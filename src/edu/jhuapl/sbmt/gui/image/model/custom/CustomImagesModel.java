@@ -48,6 +48,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import nom.tam.fits.FitsException;
@@ -59,6 +60,7 @@ public class CustomImagesModel extends ImageSearchModel
     private boolean initialized = false;
 //    private int numImagesInCollection = -1;
     final Key<Vector<Metadata>> customImagesKey = Key.of("customImages");
+    private PerspectiveImageBoundaryCollection boundaries;
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -68,11 +70,24 @@ public class CustomImagesModel extends ImageSearchModel
         super(smallBodyConfig, modelManager, renderer, instrument);
         this.customImages = new Vector<ImageInfo>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
+
+        this.imageCollection = (ImageCollection)modelManager.getModel(getCustomImageCollectionModelName());
+        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getCustomImageBoundaryCollectionModelName());
     }
 
     public CustomImagesModel(ImageSearchModel model)
     {
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
+    }
+
+    public ModelNames getCustomImageCollectionModelName()
+    {
+        return ModelNames.CUSTOM_IMAGES;
+    }
+
+    public ModelNames getCustomImageBoundaryCollectionModelName()
+    {
+        return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
     }
 
     public List<ImageInfo> getCustomImages()
@@ -148,6 +163,23 @@ public class CustomImagesModel extends ImageSearchModel
             unloadImage(key, imageCollection);
         }
    }
+
+    public void removeAllButtonActionPerformed(ActionEvent evt)
+    {
+        boundaries.removeAllBoundaries();
+        setResultIntervalCurrentlyShown(null);
+    }
+
+    public void removeAllImagesButtonActionPerformed(ActionEvent evt)
+    {
+        imageCollection.removeImages(ImageSource.GASKELL);
+        imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
+        imageCollection.removeImages(ImageSource.SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED_SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED);
+        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
+        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+    }
 
     public void saveImage(int index, ImageInfo oldImageInfo, ImageInfo newImageInfo) throws IOException
     {
@@ -300,6 +332,17 @@ public class CustomImagesModel extends ImageSearchModel
       }
   }
 
+    private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
+    {
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        return imageKey;
+    }
+
     /**
      * This function unmaps the image from the renderer and maps it again,
      * if it is currently shown.
@@ -317,7 +360,7 @@ public class CustomImagesModel extends ImageSearchModel
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
 
-        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+//        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
         if (imageCollection.containsImage(imageKey))
         {

@@ -74,26 +74,8 @@ public class CustomImageController
             }
         });
 
-        customImageModel.addModelChangedListener(new ImageSearchModelListener()
-        {
-
-            @Override
-            public void modelUpdated()
-            {
-                JTable resultList = imageResultsTableController.getPanel().getResultList();
-                Set<String> selectedNames = customImageModel.getSelectedFilenames();
-                resultList.clearSelection();
-                for (int index = 0; index < resultList.getRowCount(); ++index)
-                {
-                    String image = new File(customImageModel.getImageResults().get(index).get(0)).getName();
-                    if (selectedNames.contains(image)) {
-                        resultList.addRowSelectionInterval(index, index);
-                    }
-                }
-            }
-        });
-
-        this.imageResultsTableController = new CustomImageResultsTableController(instrument, imageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
+        ImageCollection customImageCollection = customImageModel.getImageCollection();
+        this.imageResultsTableController = new CustomImageResultsTableController(instrument, customImageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
         this.controlController = new CustomImagesControlController(customImageModel);
