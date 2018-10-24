@@ -516,16 +516,16 @@ public class ImageSearchParametersController
 
         model.setStartDate((Date)panel.getStartSpinner().getValue());
         model.setEndDate((Date)panel.getEndSpinner().getValue());
-        model.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
-        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
-        model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
-        model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
-        model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
-        model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
-        model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
-        model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
-        model.setMinResolutionQuery(Integer.parseInt(panel.getFromResolutionTextField().getText()));
-        model.setMaxResolutionQuery(Integer.parseInt(panel.getToResolutionTextField().getText()));
+        model.setMinDistanceQuery(Double.parseDouble(panel.getFromDistanceTextField().getText()));
+        model.setMaxDistanceQuery(Double.parseDouble(panel.getToDistanceTextField().getText()));
+        model.setMinIncidenceQuery(Double.parseDouble(panel.getFromIncidenceTextField().getText()));
+        model.setMaxIncidenceQuery(Double.parseDouble(panel.getToIncidenceTextField().getText()));
+        model.setMinEmissionQuery(Double.parseDouble(panel.getFromEmissionTextField().getText()));
+        model.setMaxEmissionQuery(Double.parseDouble(panel.getToEmissionTextField().getText()));
+        model.setMinPhaseQuery(Double.parseDouble(panel.getFromPhaseTextField().getText()));
+        model.setMaxPhaseQuery(Double.parseDouble(panel.getToPhaseTextField().getText()));
+        model.setMinResolutionQuery(Double.parseDouble(panel.getFromResolutionTextField().getText()));
+        model.setMaxResolutionQuery(Double.parseDouble(panel.getToResolutionTextField().getText()));
 
 
     }

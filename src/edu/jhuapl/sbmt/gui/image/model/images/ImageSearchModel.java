@@ -574,7 +574,6 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
         else
         {
-            System.out.println("ImageSearchModel: performSearch: max distance " + maxDistanceQuery);
             // Run queries based on user specifications
             ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                     Ranges.closed(minDistanceQuery, maxDistanceQuery),
