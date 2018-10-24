@@ -24,9 +24,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -135,9 +137,70 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             }
         });
 
+        imageResultsTableView.getSaveImageListButton().removeActionListener(imageResultsTableView.getSaveImageListButton().getActionListeners()[0]);
+        imageResultsTableView.getSaveSelectedImageListButton().removeActionListener(imageResultsTableView.getSaveSelectedImageListButton().getActionListeners()[0]);
+        imageResultsTableView.getLoadImageListButton().removeActionListener(imageResultsTableView.getLoadImageListButton().getActionListeners()[0]);
+
+        imageResultsTableView.getSaveImageListButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
+                try
+                {
+                    model.saveImageInfoToFile(file.getAbsolutePath());
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        imageResultsTableView.getSaveSelectedImageListButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
+                try
+                {
+                    model.saveSelectedImageInfoToFile(file.getAbsolutePath());
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        imageResultsTableView.getLoadImageListButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                File file = CustomFileChooser.showOpenDialog(imageResultsTableView, "Select File");
+                try
+                {
+                    model.initializeImageListFromFile(file.getAbsolutePath());
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
+
         try
         {
-            model.initializeImageList();
+            model.initializeImageListFromCache();
         }
         catch (IOException e)
         {
@@ -237,6 +300,51 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
     }
+
+    @Override
+    protected void loadImageListButtonActionPerformed(ActionEvent evt) {
+        File file = CustomFileChooser.showOpenDialog(imageResultsTableView, "Select File");
+
+        if (file != null)
+        {
+            try
+            {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                List<List<String>> results = new ArrayList<List<String>>();
+                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
+                for (int i=0; i<lines.size(); ++i)
+                {
+                    if (lines.get(i).startsWith("#")) continue;
+                    String[] words = lines.get(i).trim().split("\\s+");
+                    List<String> result = new ArrayList<String>();
+                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
+                    result.add(name);
+                    Date dt = sdf.parse(words[1]);
+                    result.add(String.valueOf(dt.getTime()));
+                    results.add(result);
+                }
+
+                //TODO needed?
+//                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
+                this.imageRawResults.addAll(results);
+                model.setImageResults(this.imageRawResults);
+                setImageResults(model.processResults(this.imageRawResults));
+            }
+            catch (Exception e)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),
+                        "There was an error reading the file.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 
 
     protected void showImageBoundaries(IdPair idPair)

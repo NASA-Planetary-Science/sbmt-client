@@ -5,9 +5,8 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -22,13 +21,18 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.FixedMetadata;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
@@ -36,9 +40,6 @@ import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
-import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
-import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -292,7 +293,8 @@ public class CustomImagesModel extends ImageSearchModel
             customImages.set(index, newImageInfo);
         }
 
-        updateConfigFile();
+//        updateConfigFile();
+        saveImageInfoDataToCache();
         fireResultsChanged();
 
     }
@@ -391,155 +393,246 @@ public class CustomImagesModel extends ImageSearchModel
         return imageKey;
     }
 
-    public void updateConfigFile()
+    public void saveImageInfoDataToCache() throws IOException
     {
-        MapUtil configMap = new MapUtil(getConfigFilename());
-
-        String imageNames = "";
-        String imageFilenames = "";
-        String projectionTypes = "";
-        String imageTypes = "";
-        String imageRotations = "";
-        String imageFlips = "";
-        String lllats = "";
-        String lllons = "";
-        String urlats = "";
-        String urlons = "";
-        String sumfilenames = "";
-        String infofilenames = "";
-
-        for (int i=0; i<customImages.size(); ++i)
-        {
-            ImageInfo imageInfo = customImages.get(i);
-
-            imageFilenames += imageInfo.imagefilename;
-            imageNames += imageInfo.name;
-            projectionTypes += imageInfo.projectionType;
-            imageTypes += imageInfo.imageType;
-            imageRotations += Math.floor(imageInfo.rotation / 90.0) * 90.0;
-            imageFlips += imageInfo.flip;
-            lllats += String.valueOf(imageInfo.lllat);
-            lllons += String.valueOf(imageInfo.lllon);
-            urlats += String.valueOf(imageInfo.urlat);
-            urlons += String.valueOf(imageInfo.urlon);
-            sumfilenames += imageInfo.sumfilename;
-            infofilenames += imageInfo.infofilename;
-
-            if (i < customImages.size()-1)
-            {
-                imageNames += CustomShapeModel.LIST_SEPARATOR;
-                imageFilenames += CustomShapeModel.LIST_SEPARATOR;
-                projectionTypes += CustomShapeModel.LIST_SEPARATOR;
-                imageTypes += CustomShapeModel.LIST_SEPARATOR;
-                imageRotations += CustomShapeModel.LIST_SEPARATOR;
-                imageFlips += CustomShapeModel.LIST_SEPARATOR;
-                lllats += CustomShapeModel.LIST_SEPARATOR;
-                lllons += CustomShapeModel.LIST_SEPARATOR;
-                urlats += CustomShapeModel.LIST_SEPARATOR;
-                urlons += CustomShapeModel.LIST_SEPARATOR;
-                sumfilenames += CustomShapeModel.LIST_SEPARATOR;
-                infofilenames += CustomShapeModel.LIST_SEPARATOR;
-            }
-        }
-
-        Map<String, String> newMap = new LinkedHashMap<String, String>();
-
-        newMap.put(Image.IMAGE_NAMES, imageNames);
-        newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
-        newMap.put(Image.PROJECTION_TYPES, projectionTypes);
-        newMap.put(Image.IMAGE_TYPES, imageTypes);
-        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
-        newMap.put(Image.IMAGE_FLIPS, imageFlips);
-        newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
-        newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
-        newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
-        newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
-        newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
-        newMap.put(CustomPerspectiveImage.INFOFILENAMES, infofilenames);
-
-        configMap.put(newMap);
+        saveImageInfoToFile(null);
     }
 
-    public void initializeImageList() throws IOException
+    public void saveImageInfoToFile(String filename) throws IOException
     {
-        if (initialized)
-            return;
+        File file = null;
+        if (filename == null)
+            file = new File(getConfigFilename());
+        else
+            file = new File(filename);
 
-        MapUtil configMap = new MapUtil(getConfigFilename());
-
-        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
+        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        final Key<Vector<Metadata>> imageInfoKey = Key.of("imageInfo");
+        Vector<Metadata> imageMetadata = new Vector<Metadata>();
+        for (ImageInfo info : customImages)
         {
-            boolean needToUpgradeConfigFile = false;
-            String[] imageNames = configMap.getAsArray(Image.IMAGE_NAMES);
-            String[] imageFilenames = configMap.getAsArray(Image.IMAGE_FILENAMES);
-            String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
-            String[] imageTypes = configMap.getAsArray(Image.IMAGE_TYPES);
-            String[] imageRotations = configMap.getAsArray(Image.IMAGE_ROTATIONS);
-            String[] imageFlips = configMap.getAsArray(Image.IMAGE_FLIPS);
-            if (imageFilenames == null)
-            {
-                // for backwards compatibility
-                imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
-                imageNames = new String[imageFilenames.length];
-                projectionTypes = new String[imageFilenames.length];
-                imageTypes = new String[imageFilenames.length];
-                imageRotations = new String[imageFilenames.length];
-                imageFlips = new String[imageFilenames.length];
-                for (int i=0; i<imageFilenames.length; ++i)
-                {
-                    imageNames[i] = new File(imageFilenames[i]).getName();
-                    imageFilenames[i] = "image" + i + ".png";
-                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
-                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
-                    imageRotations[i] = Double.toString(0.0);
-                    imageFlips[i] = "None";
-                }
-
-                // Mark that we need to upgrade config file to latest version
-                // which we'll do at end of function.
-                needToUpgradeConfigFile = true;
-            }
-            double[] lllats = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LATITUDES);
-            double[] lllons = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LONGITUDES);
-            double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
-            double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
-            String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
-            String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
-
-            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
-            for (int i=0; i<numImages; ++i)
-            {
-                ImageInfo imageInfo = new ImageInfo();
-                imageInfo.name = imageNames[i];
-                imageInfo.imagefilename = imageFilenames[i];
-                imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
-                imageInfo.imageType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
-                imageInfo.rotation = imageRotations == null ? 0.0 : Double.valueOf(imageRotations[i]);
-                imageInfo.flip = imageFlips == null ? "None" : imageFlips[i];
-
-                if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
-                {
-                    imageInfo.lllat = lllats[i];
-                    imageInfo.lllon = lllons[i];
-                    imageInfo.urlat = urlats[i];
-                    imageInfo.urlon = urlons[i];
-                }
-                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
-                {
-                    imageInfo.sumfilename = sumfileNames[i];
-                    imageInfo.infofilename = infofileNames[i];
-                }
-
-                customImages.add(imageInfo);
-            }
-
-            if (needToUpgradeConfigFile)
-                updateConfigFile();
+            imageMetadata.add(info.store());
         }
+        result.put(imageInfoKey, imageMetadata);
+        Serializers.serialize("CustomImages", result, file);
+    }
 
+    public void saveSelectedImageInfoToFile(String filename) throws IOException
+    {
+        File file = null;
+        if (filename == null)
+            file = new File(getConfigFilename());
+        else
+            file = new File(filename);
+
+        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        final Key<Vector<Metadata>> imageInfoKey = Key.of("imageInfo");
+        Vector<Metadata> imageMetadata = new Vector<Metadata>();
+//        for (ImageInfo info : customImages)
+        for (int selected : selectedImageIndices)
+        {
+            imageMetadata.add(customImages.get(selected).store());
+        }
+        result.put(imageInfoKey, imageMetadata);
+        Serializers.serialize("CustomImages", result, file);
+    }
+
+    public void initializeImageListFromCache() throws IOException
+    {
+        initializeImageListFromFile(null);
         initialized = true;
-        fireResultsChanged();
     }
+
+    public void initializeImageListFromFile(String filename) throws IOException
+    {
+        File file = null;
+        if (filename == null)
+            file = new File(getConfigFilename());
+        else
+            file = new File(filename);
+        if (file.exists() == false) return;
+        final Key<ArrayList<Metadata>> imageInfoKey = Key.of("imageInfo");
+        FixedMetadata source = Serializers.deserialize(file, "CustomImages");
+        ArrayList<Metadata> imageInfoMetadata = source.get(imageInfoKey);
+        for (Metadata data : imageInfoMetadata)
+        {
+            ImageInfo info = new ImageInfo();
+            info.retrieve(data);
+            customImages.add(info);
+        }
+        fireResultsChanged();
+        saveImageInfoDataToCache();
+    }
+
+//    public void appendImageListFromFile(String filename) throws IOException
+//    {
+//        File file = null;
+//        if (filename == null)
+//            file = new File(getConfigFilename());
+//        else
+//            file = new File(filename);
+//        if (file.exists() == false) return;
+//        final Key<Vector<Metadata>> imageInfoKey = Key.of("imageInfo");
+//        FixedMetadata source = Serializers.deserialize(file, "CustomImages");
+//        Vector<Metadata> imageInfoMetadata = source.get(imageInfoKey);
+//        for (Metadata data : imageInfoMetadata)
+//        {
+//            ImageInfo info = new ImageInfo();
+//            info.retrieve(data);
+//            customImages.add(info);
+//        }
+//        fireResultsChanged();
+//    }
+
+//    public void updateConfigFile()
+//    {
+//        MapUtil configMap = new MapUtil(getConfigFilename());
+//
+//        String imageNames = "";
+//        String imageFilenames = "";
+//        String projectionTypes = "";
+//        String imageTypes = "";
+//        String imageRotations = "";
+//        String imageFlips = "";
+//        String lllats = "";
+//        String lllons = "";
+//        String urlats = "";
+//        String urlons = "";
+//        String sumfilenames = "";
+//        String infofilenames = "";
+//
+//        for (int i=0; i<customImages.size(); ++i)
+//        {
+//            ImageInfo imageInfo = customImages.get(i);
+//
+//            imageFilenames += imageInfo.imagefilename;
+//            imageNames += imageInfo.name;
+//            projectionTypes += imageInfo.projectionType;
+//            imageTypes += imageInfo.imageType;
+//            imageRotations += Math.floor(imageInfo.rotation / 90.0) * 90.0;
+//            imageFlips += imageInfo.flip;
+//            lllats += String.valueOf(imageInfo.lllat);
+//            lllons += String.valueOf(imageInfo.lllon);
+//            urlats += String.valueOf(imageInfo.urlat);
+//            urlons += String.valueOf(imageInfo.urlon);
+//            sumfilenames += imageInfo.sumfilename;
+//            infofilenames += imageInfo.infofilename;
+//
+//            if (i < customImages.size()-1)
+//            {
+//                imageNames += CustomShapeModel.LIST_SEPARATOR;
+//                imageFilenames += CustomShapeModel.LIST_SEPARATOR;
+//                projectionTypes += CustomShapeModel.LIST_SEPARATOR;
+//                imageTypes += CustomShapeModel.LIST_SEPARATOR;
+//                imageRotations += CustomShapeModel.LIST_SEPARATOR;
+//                imageFlips += CustomShapeModel.LIST_SEPARATOR;
+//                lllats += CustomShapeModel.LIST_SEPARATOR;
+//                lllons += CustomShapeModel.LIST_SEPARATOR;
+//                urlats += CustomShapeModel.LIST_SEPARATOR;
+//                urlons += CustomShapeModel.LIST_SEPARATOR;
+//                sumfilenames += CustomShapeModel.LIST_SEPARATOR;
+//                infofilenames += CustomShapeModel.LIST_SEPARATOR;
+//            }
+//        }
+//
+//        Map<String, String> newMap = new LinkedHashMap<String, String>();
+//
+//        newMap.put(Image.IMAGE_NAMES, imageNames);
+//        newMap.put(Image.IMAGE_FILENAMES, imageFilenames);
+//        newMap.put(Image.PROJECTION_TYPES, projectionTypes);
+//        newMap.put(Image.IMAGE_TYPES, imageTypes);
+//        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
+//        newMap.put(Image.IMAGE_FLIPS, imageFlips);
+//        newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
+//        newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
+//        newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
+//        newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
+//        newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
+//        newMap.put(CustomPerspectiveImage.INFOFILENAMES, infofilenames);
+//
+//        configMap.put(newMap);
+//    }
+//
+//    public void initializeImageList() throws IOException
+//    {
+//        if (initialized)
+//            return;
+//
+//        MapUtil configMap = new MapUtil(getConfigFilename());
+//
+//        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
+//        {
+//            boolean needToUpgradeConfigFile = false;
+//            String[] imageNames = configMap.getAsArray(Image.IMAGE_NAMES);
+//            String[] imageFilenames = configMap.getAsArray(Image.IMAGE_FILENAMES);
+//            String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
+//            String[] imageTypes = configMap.getAsArray(Image.IMAGE_TYPES);
+//            String[] imageRotations = configMap.getAsArray(Image.IMAGE_ROTATIONS);
+//            String[] imageFlips = configMap.getAsArray(Image.IMAGE_FLIPS);
+//            if (imageFilenames == null)
+//            {
+//                // for backwards compatibility
+//                imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
+//                imageNames = new String[imageFilenames.length];
+//                projectionTypes = new String[imageFilenames.length];
+//                imageTypes = new String[imageFilenames.length];
+//                imageRotations = new String[imageFilenames.length];
+//                imageFlips = new String[imageFilenames.length];
+//                for (int i=0; i<imageFilenames.length; ++i)
+//                {
+//                    imageNames[i] = new File(imageFilenames[i]).getName();
+//                    imageFilenames[i] = "image" + i + ".png";
+//                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
+//                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
+//                    imageRotations[i] = Double.toString(0.0);
+//                    imageFlips[i] = "None";
+//                }
+//
+//                // Mark that we need to upgrade config file to latest version
+//                // which we'll do at end of function.
+//                needToUpgradeConfigFile = true;
+//            }
+//            double[] lllats = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LATITUDES);
+//            double[] lllons = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LONGITUDES);
+//            double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
+//            double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
+//            String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
+//            String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
+//
+//            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
+//            for (int i=0; i<numImages; ++i)
+//            {
+//                ImageInfo imageInfo = new ImageInfo();
+//                imageInfo.name = imageNames[i];
+//                imageInfo.imagefilename = imageFilenames[i];
+//                imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
+//                imageInfo.imageType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
+//                imageInfo.rotation = imageRotations == null ? 0.0 : Double.valueOf(imageRotations[i]);
+//                imageInfo.flip = imageFlips == null ? "None" : imageFlips[i];
+//
+//                if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
+//                {
+//                    imageInfo.lllat = lllats[i];
+//                    imageInfo.lllon = lllons[i];
+//                    imageInfo.urlat = urlats[i];
+//                    imageInfo.urlon = urlons[i];
+//                }
+//                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
+//                {
+//                    imageInfo.sumfilename = sumfileNames[i];
+//                    imageInfo.infofilename = infofileNames[i];
+//                }
+//
+//                customImages.add(imageInfo);
+//            }
+//
+//            if (needToUpgradeConfigFile)
+//                updateConfigFile();
+//        }
+//
+//        initialized = true;
+//        fireResultsChanged();
+//    }
 
     public void propertyChange(PropertyChangeEvent evt)
     {

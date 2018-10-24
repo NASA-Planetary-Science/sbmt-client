@@ -402,7 +402,7 @@ public class ImageResultsTableController
         }
     }
 
-    private void loadImageListButtonActionPerformed(ActionEvent evt) {
+    protected void loadImageListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showOpenDialog(imageResultsTableView, "Select File");
 
         if (file != null)
@@ -428,7 +428,6 @@ public class ImageResultsTableController
 
                 //TODO needed?
 //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
-
                 setImageResults(imageSearchModel.processResults(results));
             }
             catch (Exception e)

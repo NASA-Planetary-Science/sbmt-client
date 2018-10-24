@@ -24,6 +24,11 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
@@ -43,7 +48,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         PERSPECTIVE
     }
 
-    public static class ImageInfo
+    public static class ImageInfo implements MetadataManager
     {
         public String name = ""; // name to call this image for display purposes
         public String imagefilename = ""; // filename of image on disk
@@ -57,6 +62,19 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public double urlon = 360.0;
         public String sumfilename = "null"; // filename of sumfile on disk
         public String infofilename = "null"; // filename of infofile on disk
+
+        final Key<String> nameKey = Key.of("name");
+        final Key<String> imageFileNameKey = Key.of("imagefilename");
+        final Key<String> projectionKey = Key.of("projectionType");
+        final Key<String> imageTypeKey = Key.of("imageType");
+        final Key<Double> rotationKey = Key.of("rotation");
+        final Key<String> flipKey = Key.of("flip");
+        final Key<Double> lllatKey = Key.of("lllat");
+        final Key<Double> lllonKey = Key.of("lllon");
+        final Key<Double> urlatKey = Key.of("urlat");
+        final Key<Double> urlonKey = Key.of("urlon");
+        final Key<String> sumfilenameKey = Key.of("sumfilename");
+        final Key<String> infofileKey = Key.of("infofilename");
 
         @Override
         public String toString()
@@ -90,6 +108,42 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             string.add(name);
             return string;
 
+        }
+
+        @Override
+        public Metadata store()
+        {
+            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+            result.put(nameKey, name);
+            result.put(imageFileNameKey, imagefilename);
+            result.put(projectionKey, projectionType.toString());
+            result.put(imageTypeKey, imageType.toString());
+            result.put(rotationKey, rotation);
+            result.put(flipKey, flip);
+            result.put(lllatKey, lllat);
+            result.put(lllonKey, lllon);
+            result.put(urlatKey, urlat);
+            result.put(urlonKey, urlon);
+            result.put(sumfilenameKey, sumfilename);
+            result.put(infofileKey, infofilename);
+            return result;
+        }
+
+        @Override
+        public void retrieve(Metadata source)
+        {
+            name = source.get(nameKey);
+            imagefilename = source.get(imageFileNameKey);
+            projectionType = ProjectionType.valueOf(source.get(projectionKey));
+            imageType = ImageType.valueOf(source.get(imageTypeKey));
+            rotation = source.get(rotationKey);
+            flip = source.get(flipKey);
+            lllat = source.get(lllatKey);
+            lllon = source.get(lllonKey);
+            urlat = source.get(urlatKey);
+            urlon = source.get(urlonKey);
+            sumfilename = source.get(sumfilenameKey);
+            infofilename = source.get(infofileKey);
         }
     }
 
