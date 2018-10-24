@@ -72,7 +72,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 {
     private ModelManager modelManager;
     private JToggleButton selectRegionButton;
-    private JFormattedTextField nameTextField;
+//    private JFormattedTextField nameTextField;
     private JFormattedTextField outputFolderTextField;
     private JCheckBox setSpecifyRegionManuallyCheckbox;
     private JCheckBox grotesqueModelCheckbox;
@@ -82,6 +82,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     private JButton mapmakerSubmitButton;
     private JButton bigmapSubmitButton;
     private JButton loadButton;
+    private JButton renameButton;
     private PickManager pickManager;
     private JSpinner halfSizeSpinner;
     private String mapmakerPath;
@@ -228,10 +229,10 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         });
         selectRegionPanel.add(clearRegionButton);
 
-        final JLabel nameLabel = new JLabel("Name");
-        nameTextField = new JFormattedTextField();
-        nameTextField.setPreferredSize(new Dimension(200, 24));
-        nameTextField.setText("map");
+//        final JLabel nameLabel = new JLabel("Name");
+//        nameTextField = new JFormattedTextField();
+//        nameTextField.setPreferredSize(new Dimension(200, 24));
+//        nameTextField.setText("map");
 
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
         halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
@@ -318,8 +319,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         pane.add(longitudeTextField, "width 200!, gapleft push, wrap");
         pane.add(pixelScaleLabel, ", gapleft 25, split 2");
         pane.add(pixelScaleTextField, "width 200!, gapleft push, wrap");
-        pane.add(nameLabel, "split 2");
-        pane.add(nameTextField);
+//        pane.add(nameLabel, "split 2");
+//        pane.add(nameTextField);
         pane.add(halfSizeLabel, "split 2");
         pane.add(halfSizeSpinner);
 
@@ -446,7 +447,6 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
             demFilenames += demInfo.demfilename;
             demNames += demInfo.name;
-
             if (i < demListModel.size()-1)
             {
                 demNames += CustomShapeModel.LIST_SEPARATOR;
@@ -493,6 +493,10 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     // Popup menu for when using right clicks
     private void imageListMaybeShowPopup(MouseEvent e)
     {
+        for (DEM dem : ((DEMCollection)modelManager.getModel(ModelNames.DEM)).getImages())
+        {
+            DEMKey demkey = dem.getKey();
+        }
         if (e.isPopupTrigger())
         {
             int index = imageList.locationToIndex(e.getPoint());
@@ -518,6 +522,11 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
                 }
                 demPopupMenu.setCurrentDEMs(demKeys);
                 demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+//                if (demKeys.size() > 0)
+//                {
+//                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
+//                    updateConfigFile();
+//                }
             }
         }
     }
@@ -570,6 +579,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         imageList = new javax.swing.JList();
         newButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        renameButton = new JButton();
         moveUpButton = new javax.swing.JButton();
         moveDownButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -618,6 +628,20 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
         add(newButton, gridBagConstraints);
+
+        renameButton.setText("Rename...");
+        renameButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renameActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(7, 0, 0, 0);
+        add(renameButton, gridBagConstraints);
+
 
         jLabel1.setText("Regional DTMs");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -702,9 +726,28 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         add(monochromePanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void renameActionPerformed(ActionEvent evt)
+    {
+//        DEMKey demKey = demKeys.get(0);
+        // Get the DEM info
+        DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(imageList.getSelectedIndex());
+
+        String newDEMName = JOptionPane.showInputDialog(this, "Enter a new name", "Rename the DEM", JOptionPane.PLAIN_MESSAGE);
+        if (newDEMName != null && !newDEMName.equals(""))
+        {
+            demInfo.name = newDEMName;
+            updateConfigFile();
+        }
+    }
+
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // User specifies DEM(s)
         File[] files = CustomFileChooser.showOpenDialog(this, "Load DEM(s)", new ArrayList<String>(Arrays.asList("fit","fits")), true);
+
+        if (files == null)
+        {
+            return;
+        }
 
         for(File file : files)
         {
@@ -950,24 +993,51 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
             }
         }
 
-        final String demName = this.nameTextField.getText();
-        if (demName == null || demName.length() == 0)
-        {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "Please enter a name.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+//        final String demName = this.nameTextField.getText();
+//        if (demName == null || demName.length() == 0)
+//        {
+//            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                    "Please enter a name.",
+//                    "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
 
         // Start and manage the appropriate swing worker
         if(e.getSource() == mapmakerSubmitButton)
         {
-            runMapmakerSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()));
+            String demName = JOptionPane.showInputDialog(this, "Enter a name", "Name the DEM", JOptionPane.PLAIN_MESSAGE);
+            if (demName != null && !demName.equals(""))
+            {
+                runMapmakerSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()));
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please enter a name.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+
         }
         else if(e.getSource() == bigmapSubmitButton)
         {
-            runBigmapSwingWorker(demName, centerPoint, radius, new File(getCustomDataRootFolder()), new File(getCustomDataFolder()));
+            String demName = JOptionPane.showInputDialog(this, "Enter a name", "Name the DEM", JOptionPane.PLAIN_MESSAGE);
+
+            if (demName != null && !demName.equals(""))
+            {
+                runBigmapSwingWorker(demName, centerPoint, radius, new File(getCustomDataRootFolder()), new File(getCustomDataFolder()));
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                        "Please enter a name.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
     }
 

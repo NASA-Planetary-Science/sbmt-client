@@ -58,10 +58,69 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
-	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
-	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
-	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
-	<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
+		<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
+		<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
+		<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+		<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
+      	<pathelement location="${libDir}/geotools/GeographicLib-Java-1.44.jar"/>
+      	<pathelement location="${libDir}/geotools/commons-pool-1.5.4.jar"/>
+      	<pathelement location="${libDir}/geotools/core-0.26.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-api-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-coverage-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-cql-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-data-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-epsg-hsql-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-main-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-metadata-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-opengis-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-referencing-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-render-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-shapefile-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/gt-swing-15.1.jar"/>
+      	<pathelement location="${libDir}/geotools/hsqldb-2.3.0.jar"/>
+      	<pathelement location="${libDir}/geotools/imageio-ext-geocore-1.1.15.jar"/>
+      	<pathelement location="${libDir}/geotools/imageio-ext-streams-1.1.15.jar"/>
+      	<pathelement location="${libDir}/geotools/imageio-ext-tiff-1.1.15.jar"/>
+      	<pathelement location="${libDir}/geotools/imageio-ext-utilities-1.1.15.jar"/>
+      	<pathelement location="${libDir}/geotools/jai_codec-1.1.3.jar"/>
+      	<pathelement location="${libDir}/geotools/jai_core-1.1.3.jar"/>
+      	<pathelement location="${libDir}/geotools/jai_imageio-1.1.jar"/>
+      	<pathelement location="${libDir}/geotools/jdom-1.1.3.jar"/>
+      	<pathelement location="${libDir}/geotools/jgridshift-1.0.jar"/>
+      	<pathelement location="${libDir}/geotools/jsr-275-1.0-beta-2.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-affine-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-algebra-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-bandcombine-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-bandmerge-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-bandselect-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-binarize-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-border-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-buffer-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-classifier-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-colorconvert-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-colorindexer-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-crop-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-errordiffusion-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-format-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-imagefunction-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-iterators-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-lookup-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-mosaic-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-nullop-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-orderdither-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-piecewise-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-rescale-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-rlookup-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-scale-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-stats-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-translate-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-utilities-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-utils-1.4.0.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-vectorbin-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-warp-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-zonal-1.0.9.jar"/>
+      	<pathelement location="${libDir}/geotools/jt-zonalstats-1.4.0.jar"/>
+      	<pathelement location="${libDir}/geotools/jts-1.13.jar"/>
       </classpath>
     </javac>
   </target>
@@ -115,11 +174,12 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
-	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
-	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
-	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
-	<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
+		<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
+		<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
+		<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>
+		<pathelement location="${libDir}/jogl/jogl-all-natives-macosx-universal.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
+      	<pathelement location="${libDir}/geotools"/>
       </classpath>
     </javac>
   </target>
@@ -165,6 +225,65 @@
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
+        	GeographicLib-Java-1.44.jar
+        	commons-pool-1.5.4.jar
+        	core-0.26.jar
+        	gt-api-15.1.jar
+        	gt-coverage-15.1.jar
+        	gt-cql-15.1.jar
+        	gt-data-15.1.jar
+        	gt-epsg-hsql-15.1.jar
+        	gt-main-15.1.jar
+        	gt-metadata-15.1.jar
+        	gt-opengis-15.1.jar
+        	gt-referencing-15.1.jar
+        	gt-render-15.1.jar
+        	gt-shapefile-15.1.jar
+        	gt-swing-15.1.jar
+        	hsqldb-2.3.0.jar
+        	imageio-ext-geocore-1.1.15.jar
+        	imageio-ext-streams-1.1.15.jar
+        	imageio-ext-tiff-1.1.15.jar
+        	imageio-ext-utilities-1.1.15.jar
+        	jai_codec-1.1.3.jar
+        	jai_core-1.1.3.jar
+        	jai_imageio-1.1.jar
+        	jdom-1.1.3.jar
+        	jgridshift-1.0.jar
+        	jsr-275-1.0-beta-2.jar
+        	jt-affine-1.0.9.jar
+        	jt-algebra-1.0.9.jar
+        	jt-bandcombine-1.0.9.jar
+        	jt-bandmerge-1.0.9.jar
+        	jt-bandselect-1.0.9.jar
+        	jt-binarize-1.0.9.jar
+        	jt-border-1.0.9.jar
+        	jt-buffer-1.0.9.jar
+        	jt-classifier-1.0.9.jar
+        	jt-colorconvert-1.0.9.jar
+        	jt-colorindexer-1.0.9.jar
+        	jt-crop-1.0.9.jar
+        	jt-errordiffusion-1.0.9.jar
+        	jt-format-1.0.9.jar
+        	jt-imagefunction-1.0.9.jar
+        	jt-iterators-1.0.9.jar
+        	jt-lookup-1.0.9.jar
+        	jt-mosaic-1.0.9.jar
+        	jt-nullop-1.0.9.jar
+        	jt-orderdither-1.0.9.jar
+        	jt-piecewise-1.0.9.jar
+        	jt-rescale-1.0.9.jar
+        	jt-rlookup-1.0.9.jar
+        	jt-scale-1.0.9.jar
+        	jt-stats-1.0.9.jar
+        	jt-translate-1.0.9.jar
+        	jt-utilities-1.0.9.jar
+        	jt-utils-1.4.0.jar
+        	jt-vectorbin-1.0.9.jar
+        	jt-warp-1.0.9.jar
+        	jt-zonal-1.0.9.jar
+        	jt-zonalstats-1.4.0.jar
+        	jts-1.13.jar
             "/>
 
         <attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
@@ -215,6 +334,65 @@
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
+        	GeographicLib-Java-1.44.jar
+        	commons-pool-1.5.4.jar
+        	core-0.26.jar
+        	gt-api-15.1.jar
+        	gt-coverage-15.1.jar
+        	gt-cql-15.1.jar
+        	gt-data-15.1.jar
+        	gt-epsg-hsql-15.1.jar
+        	gt-main-15.1.jar
+        	gt-metadata-15.1.jar
+        	gt-opengis-15.1.jar
+        	gt-referencing-15.1.jar
+        	gt-render-15.1.jar
+        	gt-shapefile-15.1.jar
+        	gt-swing-15.1.jar
+        	hsqldb-2.3.0.jar
+        	imageio-ext-geocore-1.1.15.jar
+        	imageio-ext-streams-1.1.15.jar
+        	imageio-ext-tiff-1.1.15.jar
+        	imageio-ext-utilities-1.1.15.jar
+        	jai_codec-1.1.3.jar
+        	jai_core-1.1.3.jar
+        	jai_imageio-1.1.jar
+        	jdom-1.1.3.jar
+        	jgridshift-1.0.jar
+        	jsr-275-1.0-beta-2.jar
+        	jt-affine-1.0.9.jar
+        	jt-algebra-1.0.9.jar
+        	jt-bandcombine-1.0.9.jar
+        	jt-bandmerge-1.0.9.jar
+        	jt-bandselect-1.0.9.jar
+        	jt-binarize-1.0.9.jar
+        	jt-border-1.0.9.jar
+        	jt-buffer-1.0.9.jar
+        	jt-classifier-1.0.9.jar
+        	jt-colorconvert-1.0.9.jar
+        	jt-colorindexer-1.0.9.jar
+        	jt-crop-1.0.9.jar
+        	jt-errordiffusion-1.0.9.jar
+        	jt-format-1.0.9.jar
+        	jt-imagefunction-1.0.9.jar
+        	jt-iterators-1.0.9.jar
+        	jt-lookup-1.0.9.jar
+        	jt-mosaic-1.0.9.jar
+        	jt-nullop-1.0.9.jar
+        	jt-orderdither-1.0.9.jar
+        	jt-piecewise-1.0.9.jar
+        	jt-rescale-1.0.9.jar
+        	jt-rlookup-1.0.9.jar
+        	jt-scale-1.0.9.jar
+        	jt-stats-1.0.9.jar
+        	jt-translate-1.0.9.jar
+        	jt-utilities-1.0.9.jar
+        	jt-utils-1.4.0.jar
+        	jt-vectorbin-1.0.9.jar
+        	jt-warp-1.0.9.jar
+        	jt-zonal-1.0.9.jar
+        	jt-zonalstats-1.4.0.jar
+        	jts-1.13.jar
             "/>
 
       	<attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
@@ -248,6 +426,65 @@
 					    jogl-all-natives-linux-amd64.jar
 					    gluegen-rt-natives-macosx-universal.jar
 	  				    jogl-all-natives-macosx-universal.jar
+        	GeographicLib-Java-1.44.jar
+        	commons-pool-1.5.4.jar
+        	core-0.26.jar
+        	gt-api-15.1.jar
+        	gt-coverage-15.1.jar
+        	gt-cql-15.1.jar
+        	gt-data-15.1.jar
+        	gt-epsg-hsql-15.1.jar
+        	gt-main-15.1.jar
+        	gt-metadata-15.1.jar
+        	gt-opengis-15.1.jar
+        	gt-referencing-15.1.jar
+        	gt-render-15.1.jar
+        	gt-shapefile-15.1.jar
+        	gt-swing-15.1.jar
+        	hsqldb-2.3.0.jar
+        	imageio-ext-geocore-1.1.15.jar
+        	imageio-ext-streams-1.1.15.jar
+        	imageio-ext-tiff-1.1.15.jar
+        	imageio-ext-utilities-1.1.15.jar
+        	jai_codec-1.1.3.jar
+        	jai_core-1.1.3.jar
+        	jai_imageio-1.1.jar
+        	jdom-1.1.3.jar
+        	jgridshift-1.0.jar
+        	jsr-275-1.0-beta-2.jar
+        	jt-affine-1.0.9.jar
+        	jt-algebra-1.0.9.jar
+        	jt-bandcombine-1.0.9.jar
+        	jt-bandmerge-1.0.9.jar
+        	jt-bandselect-1.0.9.jar
+        	jt-binarize-1.0.9.jar
+        	jt-border-1.0.9.jar
+        	jt-buffer-1.0.9.jar
+        	jt-classifier-1.0.9.jar
+        	jt-colorconvert-1.0.9.jar
+        	jt-colorindexer-1.0.9.jar
+        	jt-crop-1.0.9.jar
+        	jt-errordiffusion-1.0.9.jar
+        	jt-format-1.0.9.jar
+        	jt-imagefunction-1.0.9.jar
+        	jt-iterators-1.0.9.jar
+        	jt-lookup-1.0.9.jar
+        	jt-mosaic-1.0.9.jar
+        	jt-nullop-1.0.9.jar
+        	jt-orderdither-1.0.9.jar
+        	jt-piecewise-1.0.9.jar
+        	jt-rescale-1.0.9.jar
+        	jt-rlookup-1.0.9.jar
+        	jt-scale-1.0.9.jar
+        	jt-stats-1.0.9.jar
+        	jt-translate-1.0.9.jar
+        	jt-utilities-1.0.9.jar
+        	jt-utils-1.4.0.jar
+        	jt-vectorbin-1.0.9.jar
+        	jt-warp-1.0.9.jar
+        	jt-zonal-1.0.9.jar
+        	jt-zonalstats-1.4.0.jar
+        	jts-1.13.jar
                                             "/>
         <attribute name="Main-Class" value="edu.jhuapl.saavtk.example.ExampleTool"/>
       </manifest>
@@ -377,6 +614,65 @@
         <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
+      	<pathelement location="${libDir}/geotools/GeographicLib-Java-1.44.jar"/>
+      	      	<pathelement location="${libDir}/geotools/commons-pool-1.5.4.jar"/>
+      	      	<pathelement location="${libDir}/geotools/core-0.26.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-api-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-coverage-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-cql-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-data-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-epsg-hsql-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-main-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-metadata-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-opengis-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-referencing-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-render-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-shapefile-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/gt-swing-15.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/hsqldb-2.3.0.jar"/>
+      	      	<pathelement location="${libDir}/geotools/imageio-ext-geocore-1.1.15.jar"/>
+      	      	<pathelement location="${libDir}/geotools/imageio-ext-streams-1.1.15.jar"/>
+      	      	<pathelement location="${libDir}/geotools/imageio-ext-tiff-1.1.15.jar"/>
+      	      	<pathelement location="${libDir}/geotools/imageio-ext-utilities-1.1.15.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jai_codec-1.1.3.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jai_core-1.1.3.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jai_imageio-1.1.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jdom-1.1.3.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jgridshift-1.0.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jsr-275-1.0-beta-2.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-affine-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-algebra-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-bandcombine-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-bandmerge-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-bandselect-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-binarize-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-border-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-buffer-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-classifier-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-colorconvert-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-colorindexer-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-crop-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-errordiffusion-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-format-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-imagefunction-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-iterators-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-lookup-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-mosaic-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-nullop-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-orderdither-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-piecewise-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-rescale-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-rlookup-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-scale-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-stats-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-translate-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-utilities-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-utils-1.4.0.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-vectorbin-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-warp-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-zonal-1.0.9.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jt-zonalstats-1.4.0.jar"/>
+      	      	<pathelement location="${libDir}/geotools/jts-1.13.jar"/>
 	<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
 	<pathelement location="${libDir}/jogl/jogl-all-natives-linux-amd64.jar"/>
 	<pathelement location="${libDir}/jogl/gluegen-rt-natives-macosx-universal.jar"/>

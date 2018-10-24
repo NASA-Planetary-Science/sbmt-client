@@ -247,7 +247,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                     vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
                     vtkImageReader2 imageReader = imageFactory.CreateImageReader2(imagePath);
                     if (imageReader == null)
-                        return "The format of the specified image is not supported.";
+                        return "The format of the specified image is not supported (tried native).";
                 }
             }
 

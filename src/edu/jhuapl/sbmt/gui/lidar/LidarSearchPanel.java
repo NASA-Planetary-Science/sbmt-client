@@ -13,6 +13,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
@@ -936,19 +937,19 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
 
     protected void submitButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_submitButtonActionPerformed
     {//GEN-HEADEREND:event_submitButtonActionPerformed
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
-
         selectRegionButton.setSelected(false);
         pickManager.setPickMode(PickMode.DEFAULT);
-
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel) modelManager
+                .getModel(ModelNames.CIRCLE_SELECTION);
         TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+                    .getStructure(0);
             selectionRegionCenter = region.center;
             selectionRegionRadius = region.radius;
 
@@ -958,30 +959,32 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
-                cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(interiorPoly.GetBounds()));
+                smallBodyModel.drawRegularPolygonLowRes(region.center,
+                        region.radius, region.numberOfSides, interiorPoly,
+                        null);
+                cubeList = smallBodyModel.getIntersectingCubes(
+                        new BoundingBox(interiorPoly.GetBounds()));
             }
             else
             {
-                cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.interiorPolyData.GetBounds()));
+                cubeList = smallBodyModel.getIntersectingCubes(
+                        new BoundingBox(region.interiorPolyData.GetBounds()));
             }
         }
         else
         {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "Please select a region on the asteroid.",
-                    "Error",
+            JOptionPane.showMessageDialog(
+                    JOptionPane.getFrameForComponent(this),
+                    "Please select a region on the asteroid.", "Error",
                     JOptionPane.ERROR_MESSAGE);
 
             return;
         }
-
         Picker.setPickingEnabled(false);
-
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
-
         Picker.setPickingEnabled(true);
+        setCursor(Cursor.getDefaultCursor());
     }//GEN-LAST:event_submitButtonActionPerformed
 
     private void selectRegionButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_selectRegionButtonActionPerformed

@@ -12,8 +12,8 @@ import edu.jhuapl.sbmt.lidar.LidarPoint;
 public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
 {
 
-    // there are 8 data values but only 4 are used to define the hyperspace: tgx,tgy,tgz,time
-    protected double[] data=new double[8];    // tgx,tgy,tgz,time,scx,scy,scz,intensity
+    // there are 9 data values but only 5 are used to define the hyperspace: tgx,tgy,tgz,time, range
+    protected double[] data=new double[9];    // tgx,tgy,tgz,time,scx,scy,scz, range,intensity
     int fileNum;
 
     public FSHyperPointWithFileTag()
@@ -23,10 +23,10 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
 
     public static FSHyperPointWithFileTag wrap(LidarPoint pt, int filenum)
     {
-        return new FSHyperPointWithFileTag(pt.getTargetPosition().getX(),pt.getTargetPosition().getY(),pt.getTargetPosition().getZ(),pt.getTime(),pt.getSourcePosition().getX(),pt.getSourcePosition().getY(),pt.getSourcePosition().getZ(),pt.getIntensityReceived(),filenum);
+        return new FSHyperPointWithFileTag(pt.getTargetPosition().getX(),pt.getTargetPosition().getY(),pt.getTargetPosition().getZ(),pt.getTime(),pt.getSourcePosition().getX(),pt.getSourcePosition().getY(),pt.getSourcePosition().getZ(),pt.getRangeToSC(), pt.getIntensityReceived(),filenum);
     }
 
-    public FSHyperPointWithFileTag(double tgx, double tgy, double tgz, double time, double scx, double scy, double scz, double intensity, int fileNum)
+    public FSHyperPointWithFileTag(double tgx, double tgy, double tgz, double time, double scx, double scy, double scz, double range, double intensity, int fileNum)
     {
         data[0]=tgx;
         data[1]=tgy;
@@ -36,6 +36,7 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
         data[5]=scy;
         data[6]=scz;
         data[7]=intensity;
+        data[8]=range;
         this.fileNum=fileNum;
     }
 
@@ -47,7 +48,7 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
     @Override
     public double getCoordinate(int i)
     {
-        return data[i]; // i goes from 0 to 3 so the ordering of tgx,tgy,tgz,time in the beginning of data[] is crucial
+        return data[i];
     }
 
     @Override
@@ -65,7 +66,7 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
     @Override
     public void read(DataInputStream inputStream) throws IOException    // the hyperpoint only has 4 coordinates but we need to write all 8
     {
-        for (int i=0; i<8; i++)
+        for (int i=0; i<data.length; i++)
             data[i]=inputStream.readDouble();
         fileNum=inputStream.readInt();
     }
@@ -73,7 +74,7 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
     @Override
     public void write(DataOutputStream outputStream) throws IOException
     {
-        for (int i=0; i<8; i++)
+        for (int i=0; i<data.length; i++)
             outputStream.writeDouble(data[i]);
         outputStream.writeInt(fileNum);
     }
@@ -117,6 +118,12 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
     public int getFileNum()
     {
         return fileNum;
+    }
+
+    @Override
+    public double getRangeToSC()
+    {
+        return data[8];
     }
 
 }

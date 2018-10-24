@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -53,6 +54,7 @@ import javax.swing.table.TableCellRenderer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.google.common.collect.Ranges;
 import com.jidesoft.swing.CheckBoxTree;
 
 import vtk.vtkActor;
@@ -60,6 +62,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -75,7 +78,9 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.client.SpectralMode;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
@@ -89,12 +94,15 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private SmallBodyViewConfig smallBodyConfig;
@@ -202,7 +210,8 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         initHierarchicalImageSearch();
 
         final List<List<String>> emptyList = new ArrayList<>();
-        setImageResults(emptyList);
+            setImageResults(emptyList);
+
 
         return this;
     }
@@ -2518,6 +2527,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {//GEN-HEADEREND:event_submitButtonActionPerformed
         try
         {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             selectRegionButton.setSelected(false);
             pickManager.setPickMode(PickMode.DEFAULT);
 
@@ -2611,118 +2621,182 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 for (int i=0; i<numberOfFilters; i++)
                 {
                     if(filterCheckBoxes[i].isSelected())
-            {
+                    {
                         filtersSelected.add(i);
                     }
                 }
             }
 
-            // Run queries based on user specifications
             List<List<String>> results = null;
-
-            if (instrument.spectralMode == SpectralMode.MULTI)
+//            System.out.println(
+//                    "ImagingSearchPanel: submitButtonActionPerformed: search query type " + instrument.searchQuery.getClass());
+            if (instrument.searchQuery instanceof FixedListQuery)
             {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
-            else if (instrument.spectralMode == SpectralMode.HYPER)
-            {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
+                FixedListQuery query = (FixedListQuery) instrument.searchQuery;
+                results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
             }
             else
             {
-                results = instrument.searchQuery.runQuery(
-                    "",
-                    startDateJoda,
-                    endDateJoda,
-                    sumOfProductsSearch,
-                    camerasSelected,
-                    filtersSelected,
-                    Double.parseDouble(fromDistanceTextField.getText()),
-                    Double.parseDouble(toDistanceTextField.getText()),
-                    Double.parseDouble(fromResolutionTextField.getText()),
-                    Double.parseDouble(toResolutionTextField.getText()),
-                    searchField,
-                    null,
-                    Double.parseDouble(fromIncidenceTextField.getText()),
-                    Double.parseDouble(toIncidenceTextField.getText()),
-                    Double.parseDouble(fromEmissionTextField.getText()),
-                    Double.parseDouble(toEmissionTextField.getText()),
-                    Double.parseDouble(fromPhaseTextField.getText()),
-                    Double.parseDouble(toPhaseTextField.getText()),
-                    cubeList,
-                    imageSource,
-                    hasLimbComboBox.getSelectedIndex());
-            }
+                // Run queries based on user specifications
+                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                        searchField, null,
+                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                        sumOfProductsSearch, camerasSelected, filtersSelected,
+                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+
+                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+           }
+
+            //ALL OF THE BRANCHES BELOW CALL IDENTICAL CODE!
+//            if (instrument.spectralMode == SpectralMode.MULTI)
+//            {
+//                ImageDatabaseSearchMetadata searchMetadata = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+//                        Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+//                        searchField, null,
+//                        Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+//                        Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+//                        sumOfProductsSearch, camerasSelected, filtersSelected,
+//                        Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+//                        cubeList, imageSource, hasLimbComboBox.getSelectedIndex());
+//
+//                results = instrument.searchQuery.runQuery(searchMetadata).getResultlist();
+//
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
+//            else if (instrument.spectralMode == SpectralMode.HYPER)
+//            {
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
+//            else
+//            {
+//                results = instrument.searchQuery.runQuery(
+//                    "",
+//                    startDateJoda,
+//                    endDateJoda,
+//                    sumOfProductsSearch,
+//                    camerasSelected,
+//                    filtersSelected,
+//                    Double.parseDouble(fromDistanceTextField.getText()),
+//                    Double.parseDouble(toDistanceTextField.getText()),
+//                    Double.parseDouble(fromResolutionTextField.getText()),
+//                    Double.parseDouble(toResolutionTextField.getText()),
+//                    searchField,
+//                    null,
+//                    Double.parseDouble(fromIncidenceTextField.getText()),
+//                    Double.parseDouble(toIncidenceTextField.getText()),
+//                    Double.parseDouble(fromEmissionTextField.getText()),
+//                    Double.parseDouble(toEmissionTextField.getText()),
+//                    Double.parseDouble(fromPhaseTextField.getText()),
+//                    Double.parseDouble(toPhaseTextField.getText()),
+//                    cubeList,
+//                    imageSource,
+//                    hasLimbComboBox.getSelectedIndex());
+//            }
 
             // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
             // then remove from the list images which are contained in the other list by doing
             // an additional search.
             if (imageSource == ImageSource.SPICE && excludeGaskellCheckBox.isSelected())
             {
-                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
-                        "",
-                        startDateJoda,
-                        endDateJoda,
-                        sumOfProductsSearch,
-                        camerasSelected,
-                        filtersSelected,
-                        Double.parseDouble(fromDistanceTextField.getText()),
-                        Double.parseDouble(toDistanceTextField.getText()),
-                        Double.parseDouble(fromResolutionTextField.getText()),
-                        Double.parseDouble(toResolutionTextField.getText()),
-                        searchField,
-                        null,
-                        Double.parseDouble(fromIncidenceTextField.getText()),
-                        Double.parseDouble(toIncidenceTextField.getText()),
-                        Double.parseDouble(fromEmissionTextField.getText()),
-                        Double.parseDouble(toEmissionTextField.getText()),
-                        Double.parseDouble(fromPhaseTextField.getText()),
-                        Double.parseDouble(toPhaseTextField.getText()),
-                        cubeList,
-                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
-                        hasLimbComboBox.getSelectedIndex());
+                List<List<String>> resultsOtherSource = null;
+                if (instrument.searchQuery instanceof FixedListQuery)
+                {
+                    FixedListQuery query = (FixedListQuery)instrument.searchQuery;
+//                    FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
+//                    if (!info.isExistsOnServer().equals(YesOrNo.YES))
+//                    {
+//                        System.out.println("Could not find " + imageListName + ". Using imagelist.txt instead");
+//                        imageListName = "imagelist.txt";
+//                    }
+                    resultsOtherSource = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist" /*imageListName*/, "images", query.getRootPath(), imageSource)).getResultlist();
+                }
+                else
+                {
+
+                    ImageDatabaseSearchMetadata searchMetadataOther = ImageDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
+                            Ranges.closed(Double.valueOf(fromDistanceTextField.getText()), Double.valueOf(toDistanceTextField.getText())),
+                            searchField, null,
+                            Ranges.closed(Double.valueOf(fromIncidenceTextField.getText()), Double.valueOf(toIncidenceTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromEmissionTextField.getText()), Double.valueOf(toEmissionTextField.getText())),
+                            Ranges.closed(Double.valueOf(fromPhaseTextField.getText()), Double.valueOf(toPhaseTextField.getText())),
+                            sumOfProductsSearch, camerasSelected, filtersSelected,
+                            Ranges.closed(Double.valueOf(fromResolutionTextField.getText()), Double.valueOf(toResolutionTextField.getText())),
+                            cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, hasLimbComboBox.getSelectedIndex());
+
+                        resultsOtherSource = instrument.searchQuery.runQuery(searchMetadataOther).getResultlist();
+
+                }
+
+
+//                List<List<String>> resultsOtherSource = instrument.searchQuery.runQuery(
+//                        "",
+//                        startDateJoda,
+//                        endDateJoda,
+//                        sumOfProductsSearch,
+//                        camerasSelected,
+//                        filtersSelected,
+//                        Double.parseDouble(fromDistanceTextField.getText()),
+//                        Double.parseDouble(toDistanceTextField.getText()),
+//                        Double.parseDouble(fromResolutionTextField.getText()),
+//                        Double.parseDouble(toResolutionTextField.getText()),
+//                        searchField,
+//                        null,
+//                        Double.parseDouble(fromIncidenceTextField.getText()),
+//                        Double.parseDouble(toIncidenceTextField.getText()),
+//                        Double.parseDouble(fromEmissionTextField.getText()),
+//                        Double.parseDouble(toEmissionTextField.getText()),
+//                        Double.parseDouble(fromPhaseTextField.getText()),
+//                        Double.parseDouble(toPhaseTextField.getText()),
+//                        cubeList,
+//                        imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE,
+//                        hasLimbComboBox.getSelectedIndex());
 
                 int numOtherResults = resultsOtherSource.size();
                 for (int i=0; i<numOtherResults; ++i)
@@ -2743,6 +2817,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             sourceOfLastQuery = imageSource;
 
             setImageResults(processResults(results));
+            setCursor(Cursor.getDefaultCursor());
         }
         catch (Exception e)
         {
@@ -2758,7 +2833,14 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     private void sourceComboBoxItemStateChanged(java.awt.event.ItemEvent evt)
     {//GEN-FIRST:event_sourceComboBoxItemStateChanged
         ImageSource imageSource = ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name());
-        excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+        for (int i=0; i< sourceComboBox.getModel().getSize(); i++)
+        {
+            ImageSource source = ImageSource.valueOf(((Enum)sourceComboBox.getItemAt(i)).name());
+            if (source == ImageSource.GASKELL_UPDATED)
+            {
+                excludeGaskellCheckBox.setVisible(imageSource == ImageSource.SPICE);
+            }
+        }
     }//GEN-LAST:event_sourceComboBoxItemStateChanged
 
     private void numberOfBoundariesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numberOfBoundariesComboBoxActionPerformed
@@ -3038,7 +3120,10 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             if ((Boolean)resultList.getValueAt(row, mapColumnIndex))
                 loadImages(namePrefix);
             else
+            {
                 unloadImages(namePrefix);
+                renderer.setLighting(LightingType.LIGHT_KIT);
+            }
         }
         else if (e.getColumn() == showFootprintColumnIndex)
         {

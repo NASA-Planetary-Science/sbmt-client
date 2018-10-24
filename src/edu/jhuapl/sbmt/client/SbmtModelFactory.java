@@ -30,7 +30,7 @@ import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
@@ -43,8 +43,8 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lidar.LaserLidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LaserLidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarBrowseDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarHyperTreeSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
@@ -62,6 +62,7 @@ import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
+import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
@@ -146,19 +147,19 @@ public class SbmtModelFactory
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_IMAGE)
+                else if (key.instrument.type == ImageType.POLYCAM_V3_IMAGE)
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_IMAGE)
+                else if (key.instrument.type == ImageType.MAPCAM_V3_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.POLYCAM_V4_IMAGE)
                     return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_V4_IMAGE)
                     return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
+                else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
                     return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
+                else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
                     return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
+                else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
                     return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_TRUTH_IMAGE)
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
@@ -198,18 +199,32 @@ public class SbmtModelFactory
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.LORRI_IMAGE)
                 return new LorriImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_IMAGE)
+            else if (key.imageType == ImageType.POLYCAM_V3_IMAGE)
                 return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_IMAGE)
+            else if (key.imageType == ImageType.MAPCAM_V3_IMAGE)
                 return new MapCamImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.POLYCAM_V4_IMAGE)
+                return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MAPCAM_V4_IMAGE)
+                return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.POLYCAM_FLIGHT_IMAGE)
+                return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.SAMCAM_FLIGHT_IMAGE)
+                return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.MAPCAM_FLIGHT_IMAGE)
+                return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)
               return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
                 return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.instrument.type == ImageType.ONC_IMAGE)
+            else if (key.imageType == ImageType.ONC_IMAGE)
                 return new ONCImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.ONC_TRUTH_IMAGE)
+                return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.imageType == ImageType.TIR_IMAGE)
+                return new TIRImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
         }
@@ -353,13 +368,18 @@ public class SbmtModelFactory
         return new LineamentModel();
     }
 
-    static public SpectraCollection createSpectralModel(SmallBodyModel smallBodyModel)
+    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
     {
+        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+
         ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
         ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
         String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
 
-        return new SpectraCollection(smallBodyModel);
+        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+
+        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+        return models;
     }
 
     static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
@@ -368,7 +388,7 @@ public class SbmtModelFactory
 
         if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName==Instrument.LASER)
         {
-            models.put(ModelNames.LIDAR_BROWSE, new LaserLidarBrowseDataCollection(smallBodyModel));
+            models.put(ModelNames.LIDAR_BROWSE, new Hayabusa2LidarBrowseDataCollection(smallBodyModel));
         }
         else
         {
@@ -386,7 +406,7 @@ public class SbmtModelFactory
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
                 break;
             case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LaserLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new Hayabusa2LidarHyperTreeSearchDataCollection(smallBodyModel));
                 break;
                 default:
                 	throw new AssertionError();

@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.gui.lidar.v2;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -172,15 +173,12 @@ public class LidarSearchController implements ItemListener
 
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        PolyhedralModel smallBodyModel = modelManager
-                .getPolyhedralModel();
-
+        view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         view.getSelectRegionButton().setSelected(false);
         model.getPickManager().setPickMode(PickMode.DEFAULT);
-
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel) modelManager
                 .getModel(ModelNames.CIRCLE_SELECTION);
-
         TreeSet<Integer> cubeList = null;
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -201,16 +199,15 @@ public class LidarSearchController implements ItemListener
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
                 smallBodyModel.drawRegularPolygonLowRes(region.center,
-                        region.radius, region.numberOfSides,
-                        interiorPoly, null);
+                        region.radius, region.numberOfSides, interiorPoly,
+                        null);
                 cubeList = smallBodyModel.getIntersectingCubes(
                         new BoundingBox(interiorPoly.GetBounds()));
             }
             else
             {
-                cubeList = smallBodyModel
-                        .getIntersectingCubes(new BoundingBox(
-                                region.interiorPolyData.GetBounds()));
+                cubeList = smallBodyModel.getIntersectingCubes(
+                        new BoundingBox(region.interiorPolyData.GetBounds()));
             }
         }
         else
@@ -219,20 +216,18 @@ public class LidarSearchController implements ItemListener
                     JOptionPane.getFrameForComponent(view),
                     "Please select a region on the asteroid.", "Error",
                     JOptionPane.ERROR_MESSAGE);
+            view.setCursor(Cursor.getDefaultCursor());
 
             return;
         }
-
         Picker.setPickingEnabled(false);
-
-        showData(cubeList, selectionRegionCenter,
-                selectionRegionRadius);
+        showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
-
         Picker.setPickingEnabled(true);
+        view.setCursor(Cursor.getDefaultCursor());
     }
 
-    private void setupConnections()
+    protected void setupConnections()
     {
 
         Map<String, String> sourceMap = lidarModel.getLidarDataSourceMap();
