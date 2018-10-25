@@ -3634,7 +3634,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -3723,7 +3723,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
@@ -4143,7 +4143,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
