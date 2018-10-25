@@ -7,11 +7,11 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 4 ]
+if [ "$#" -lt 5 ]
 then
   echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> shared"	
   echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> <model-name> <processing-version>"	
-  echo "Example: runDBGenerator-ryugu.sh tir RYUGU_SHARED_TIR_APL SPICE shared "
+  echo "Example: runDBGenerator-ryugu.sh tir RYUGU_SHARED_TIR_APL 1 SPICE shared "
   exit 1
 fi
 
@@ -29,6 +29,11 @@ processingVersion="latest"
 if [ $processingModelName != "shared" ]
 then
   processingVersion=$6
+  if [ "x$processingVersion" = x ]
+  then
+    echo "Error: need to set processing-version argument" >&2
+    exit 1
+  fi
 fi
 
 echo "Processing Model Name: " $processingModelName
