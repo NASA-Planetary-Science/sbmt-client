@@ -48,9 +48,13 @@ public class SpectrumSearchParametersController
         {
             model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
                     panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+            panel.getSelectRegionButton().setVisible(false);
+            panel.getClearRegionButton().setVisible(false);
         }
         else
         {
+            panel.getSelectRegionButton().setVisible(true);
+            panel.getClearRegionButton().setVisible(true);
 
             panel.getClearRegionButton().addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
