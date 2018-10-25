@@ -103,6 +103,12 @@ public class ImageResultsTableController
             {
                 setImageResults(results);
             }
+
+            @Override
+            public void resultsCountChanged(int count)
+            {
+                imageResultsTableView.getResultsLabel().setText(count + " images found");
+            }
         });
 
         propertyChangeListener = new ImageResultsPropertyChangeListener();
@@ -246,8 +252,7 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
-
-        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
+        imageResultsTableView.getViewResultsGalleryButton().setVisible(true);
     }
 
     protected JTable getResultList()

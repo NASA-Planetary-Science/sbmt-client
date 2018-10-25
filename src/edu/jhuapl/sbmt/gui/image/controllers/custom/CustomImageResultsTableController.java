@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -34,6 +36,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class CustomImageResultsTableController extends ImageResultsTableController
 {
@@ -45,17 +48,19 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
         this.model = model;
         this.results = model.getCustomImages();
+        this.boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getCustomImageBoundaryCollectionModelName());
     }
 
     @Override
     public void setImageResultsPanel()
     {
-        // TODO Auto-generated method stub
+
         super.setImageResultsPanel();
+        imageResultsTableView.getViewResultsGalleryButton().setVisible(false);
+
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         tableModelListener = new CustomImageResultsTableModeListener();
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
-
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
@@ -102,6 +107,29 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             }
         });
 
+        imageResultsTableView.getRemoveAllImagesButton().removeActionListener(imageResultsTableView.getRemoveAllImagesButton().getActionListeners()[0]);
+        imageResultsTableView.getRemoveAllButton().removeActionListener(imageResultsTableView.getRemoveAllButton().getActionListeners()[0]);
+
+        imageResultsTableView.getRemoveAllImagesButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                model.removeAllImagesButtonActionPerformed(e);
+            }
+        });
+
+        imageResultsTableView.getRemoveAllButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                model.removeAllButtonActionPerformed(e);
+            }
+        });
+
         try
         {
             model.initializeImageList();
@@ -112,6 +140,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             e.printStackTrace();
         }
     }
+
+
 
     protected void showImageBoundaries(IdPair idPair)
     {
@@ -185,6 +215,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
+
                 for (int i=0; i<size; ++i)
                 {
                     ImageKey key = model.getImageKeyForIndex(i);
@@ -258,7 +289,9 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 String name = imageRawResults.get(row).get(0);
 //                String namePrefix = name.substring(0, name.length()-4);
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
+                {
                     model.loadImages(name, results.get(row));
+                }
                 else
                 {
                     model.unloadImages(name);
@@ -286,9 +319,19 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 ImageKey key = model.getImageKeyForIndex(row);
-                key.imageType = results.get(row).imageType;
+
+                // There used to be an assignment here of the key.imageType, but that field is now immutable.
+                // However, it appears that this assignment is not necessary -- the correct ImageType is
+                // injected when the key is created. Replaced the assignment with a check for mismatch inside
+                // the try just for testing, to uncover any runtime cases where this may actually be needed.
+                // key.imageType = results.get(row).imageType;
                 try
                 {
+                	// TODO remove this check if it never triggers the AssertionError.
+                    if (key.imageType != results.get(row).imageType)
+                    {
+                        throw new AssertionError("Image type mismatch");
+                    }
                     if (!boundaries.containsBoundary(key))
                         boundaries.addBoundary(key);
                     else
