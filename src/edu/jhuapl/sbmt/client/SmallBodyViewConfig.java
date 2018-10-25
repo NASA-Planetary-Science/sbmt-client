@@ -4092,6 +4092,89 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-004", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-004/onc", "ryugu_nasa004", "ryugu_nasa005", "/ryugu/nasa-004/onc/gallery");
+            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-004/onc", "/ryugu/nasa-004/onc/gallery");
+//            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-004/tir", "/ryugu/nasa-004/tir/gallery", false);
+            QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-004/tir", "", "ryugu_nasa004_tir", "/ryugu/nasa-004/tir/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.NASA_004;
+            c.modelLabel = "NASA-004";
+            c.rootDirOnServer = "/ryugu/nasa-004";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 0;
+            c.imageSearchDefaultMaxResolution = 0;
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/nasa-004/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1200.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+
+
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-005", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-005/onc", "ryugu_nasa005", "ryugu_nasa005", "/ryugu/nasa-005/onc/gallery");
