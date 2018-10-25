@@ -22,8 +22,7 @@ public class OfflimbControlsFrame extends JFrame
     private void init()
     {
         add(panel);
-        setSize(400, 325);
-//        setMaximumSize(new Dimension(425, 125));
+        setSize(400, 200);
         setVisible(true);
         setTitle("Offlimb Properties");
     }

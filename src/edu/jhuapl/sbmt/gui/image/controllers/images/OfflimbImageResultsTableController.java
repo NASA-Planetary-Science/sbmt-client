@@ -14,7 +14,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
@@ -169,17 +168,9 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = name.substring(0, name.length()-4);
+                super.tableChanged(e);
                 offlimbTableView.getResultList().setValueAt(false, row, offlimbTableView.getOffLimbIndex());
-                if ((Boolean)offlimbTableView.getResultList().getValueAt(row, offlimbTableView.getMapColumnIndex()))
-                    imageSearchModel.loadImages(namePrefix);
-                else
-                {
-                    imageSearchModel.unloadImages(namePrefix);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
-                }
                 setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
-
-                return; //so it doesn't fall through to the super
             }
             else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
@@ -190,9 +181,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 setOffLimbFootprintVisibility(namePrefix, visible);
                 ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
-            else {
-                super.tableChanged(e);
-            }
+            super.tableChanged(e);
 
         }
     }
