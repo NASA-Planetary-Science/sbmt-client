@@ -14,15 +14,14 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.gui.eros.NISSpectrumInfoPanel;
-import edu.jhuapl.sbmt.gui.image.ColorImageInfoPanel;
-import edu.jhuapl.sbmt.gui.image.ImageInfoPanel;
+import edu.jhuapl.sbmt.gui.image.ui.color.ColorImageInfoPanel;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImageInfoPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumStatisticsInfoPanel;
 import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrum;
 import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrum;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.model.eros.SpectrumStatistics;
 import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
@@ -30,6 +29,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
+import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics;
 
 public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListener
 {

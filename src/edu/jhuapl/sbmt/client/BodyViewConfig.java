@@ -13,7 +13,7 @@ import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 
 
 /**
@@ -42,8 +42,8 @@ public abstract class BodyViewConfig extends ViewConfig
     // if spectralModes is not empty, the following must be filled in
     public Date imageSearchDefaultStartDate;
     public Date imageSearchDefaultEndDate;
-    public String[] imageSearchFilterNames;
-    public String[] imageSearchUserDefinedCheckBoxesNames;
+    public String[] imageSearchFilterNames = new String[] {};
+    public String[] imageSearchUserDefinedCheckBoxesNames = new String[] {};
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
     public boolean hasHierarchicalImageSearch;
@@ -51,6 +51,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
     public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
+
+    public boolean hasHypertreeBasedSpectraSearch=false;
+    public Map<String, String> spectraSearchDataSourceMap=Maps.newHashMap();
 
     public boolean hasHypertreeBasedLidarSearch=false;
     // if hasLidarData is true, the following must be filled in
@@ -61,8 +64,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
     public String lidarBrowsePathTop; // current top-of-path for lidar data; replaces the expression given by lidarBrowseOrigPathRegex.
 
-    public int[] lidarBrowseXYZIndices;
-    public int[] lidarBrowseSpacecraftIndices;
+    public int[] lidarBrowseXYZIndices = new int[] {};
+    public int[] lidarBrowseSpacecraftIndices = new int[] {};
     public int lidarBrowseOutgoingIntensityIndex;
     public int lidarBrowseReceivedIntensityIndex;
     public int lidarBrowseRangeIndex;

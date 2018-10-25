@@ -131,17 +131,19 @@ public class ViewOptionsPanel extends JPanel implements ItemListener
                 StateHistoryModel currentRun = runs.getCurrentRun();
                 if (currentRun != null) { // can't do any view things if we don't have a trajectory / time history
                     String selectedItem = (String)((JComboBox<String>)e.getSource()).getSelectedItem();
-                    showSpacecraft.setEnabled(true);
+//                    showSpacecraft.setEnabled(true);
                     if(selectedItem.equals(viewChoices.FREE.toString())){
 
                     } else if(selectedItem.equals(viewChoices.EARTH.toString())){
+                        showSpacecraft.setEnabled(true);
                         currentRun.setSpacecraftMovement(false);
-                        currentRun.setEarthView(true);
+                        currentRun.setEarthView(true, showSpacecraft.isSelected());
                         viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SUN.toString())){
+                        showSpacecraft.setEnabled(true);
                         currentRun.setSpacecraftMovement(false);
-                        currentRun.setEarthView(false);
-                        currentRun.setSunView(true);
+                        currentRun.setEarthView(false, showSpacecraft.isSelected());
+                        currentRun.setSunView(true, showSpacecraft.isSelected());
                         viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
                         currentRun.setSpacecraftMovement(true);
