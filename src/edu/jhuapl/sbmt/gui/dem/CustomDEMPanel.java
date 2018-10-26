@@ -60,6 +60,7 @@ import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
@@ -68,7 +69,7 @@ import edu.jhuapl.sbmt.model.dem.DEMCollection;
 
 import net.miginfocom.swing.MigLayout;
 
-public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
+public class CustomDEMPanel extends JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
     private ModelManager modelManager;
     private JToggleButton selectRegionButton;
@@ -87,6 +88,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     private JSpinner halfSizeSpinner;
     private String mapmakerPath;
     private String bigmapPath;
+    private SmallBodyViewConfig smallBodyConfig;
 
     private DEMPopupMenu demPopupMenu;
     Renderer renderer;
@@ -132,7 +134,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
             final PickManager pickManager,
             String shapeRootDirOnServer,
             boolean hasMapmaker,
-            boolean hasBigmap, Renderer renderer)
+            boolean hasBigmap, Renderer renderer,
+            SmallBodyViewConfig smallBodyConfig)
     {
         // Setup member variables
         this.modelManager = modelManager;
@@ -141,6 +144,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         this.bigmapPath = shapeRootDirOnServer + "/bigmap.zip";
         this.selectRegionButton = null;
         this.renderer=renderer;
+        this.smallBodyConfig = smallBodyConfig;
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -1044,23 +1048,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
     // Starts and manages a MapmakerSwingWorker
     private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
     {
-        // Download the entire map maker suite to the users computer
-        // if it has never been downloaded before.
-        // Ask the user beforehand if it's okay to continue.
-        final MapmakerSwingWorker mapmakerWorker =
-                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
-
-        // If we need to download, prompt the user that it will take a long time
-        if (mapmakerWorker.getIfNeedToDownload())
-        {
-            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
-                    "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
-                    "This may take several minutes. Would you like to continue?",
-                    "Confirm Download",
-                    JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.NO_OPTION)
-                return;
-        }
+        final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(this, "Running Mapmaker", mapmakerPath);
 
         if (setSpecifyRegionManuallyCheckbox.isSelected())
         {
@@ -1079,13 +1067,22 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         }
         else
         {
+            mapmakerWorker.setRegionSpecifiedWithLatLonScale(false);
             mapmakerWorker.setCenterPoint(centerPoint);
             mapmakerWorker.setRadius(radius);
         }
+
+
         mapmakerWorker.setName(demName);
         mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
-        mapmakerWorker.setOutputFolder(outputFolder);
+        mapmakerWorker.setCacheDir(outputFolder.getAbsolutePath());
 
+
+//        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url " + Configuration.getDataRootURL());
+//        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url file version" + Configuration.getDataRootURL().getFile());
+//        String rootDir = FileCache.createURL(smallBodyConfig.rootDirOnServer).toString();
+        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
+        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
         mapmakerWorker.executeDialog();
 
         if (mapmakerWorker.isCancelled())
@@ -1093,7 +1090,8 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
 
         DEMInfo newDemInfo = new DEMInfo();
         newDemInfo.name = demName;
-        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+//        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+        newDemInfo.demfilename = new File(outputFolder + File.separator + demName + ".fits").getAbsolutePath();
         try
         {
             saveDEM(newDemInfo);
@@ -1102,6 +1100,65 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
         {
             e1.printStackTrace();
         }
+
+//        // Download the entire map maker suite to the users computer
+//        // if it has never been downloaded before.
+//        // Ask the user beforehand if it's okay to continue.
+//        final MapmakerSwingWorker mapmakerWorker =
+//                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
+//
+//        // If we need to download, prompt the user that it will take a long time
+//        if (mapmakerWorker.getIfNeedToDownload())
+//        {
+//            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
+//                    "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
+//                    "This may take several minutes. Would you like to continue?",
+//                    "Confirm Download",
+//                    JOptionPane.YES_NO_OPTION);
+//            if (result == JOptionPane.NO_OPTION)
+//                return;
+//        }
+//
+//        if (setSpecifyRegionManuallyCheckbox.isSelected())
+//        {
+//            if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+//            {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                        "Please enter values for the latitude, longitude, and pixel scale.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
+//            mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
+//            mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
+//            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+//        }
+//        else
+//        {
+//            mapmakerWorker.setCenterPoint(centerPoint);
+//            mapmakerWorker.setRadius(radius);
+//        }
+//        mapmakerWorker.setName(demName);
+//        mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+//        mapmakerWorker.setOutputFolder(outputFolder);
+//
+//        mapmakerWorker.executeDialog();
+//
+//        if (mapmakerWorker.isCancelled())
+//            return;
+//
+//        DEMInfo newDemInfo = new DEMInfo();
+//        newDemInfo.name = demName;
+//        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+//        try
+//        {
+//            saveDEM(newDemInfo);
+//        }
+//        catch (IOException e1)
+//        {
+//            e1.printStackTrace();
+//        }
     }
 
     // Starts and manages a BigmapSwingWorker

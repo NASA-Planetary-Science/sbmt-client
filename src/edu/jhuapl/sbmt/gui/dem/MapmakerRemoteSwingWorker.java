@@ -5,14 +5,28 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
-import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.util.MapMakerRemote;
 
 public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 {
-    boolean regionSpecifiedWithLatLonScale = false;
+
+    public static void main(String[] args)
+    {
+        MapmakerRemoteSwingWorker remote = new MapmakerRemoteSwingWorker(null, "Test", "TestFile.fits");
+        remote.setName("MyTestFile");
+        remote.setHalfSize(512);
+        remote.setPixelScale(4);
+        remote.setLatitude(32);
+        remote.setLongitude(-230);
+        remote.setDatadir("DATA");
+        remote.setMapoutdir("MAPFILES");
+        remote.setCacheDir("/Users/steelrj1/Desktop/");
+        remote.doInBackground();
+    }
+
+    boolean regionSpecifiedWithLatLonScale = true;
     private String name;
     private double[] centerPoint;
     private double radius;
@@ -22,6 +36,9 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     private double pixelScale;
     private double latitude;
     private double longitude;
+    private String datadir;
+    private String mapoutdir;
+    private String cacheDir;
 
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
@@ -81,18 +98,39 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     }
 
 
+    public void setDatadir(String datadir)
+    {
+        this.datadir = datadir;
+    }
+
+
+    public void setMapoutdir(String mapoutdir)
+    {
+        this.mapoutdir = mapoutdir;
+    }
+
+
+    public void setCacheDir(String cacheDir)
+    {
+        this.cacheDir = cacheDir;
+    }
+
+
     public void setRegionSpecifiedWithLatLonScale(
             boolean regionSpecifiedWithLatLonScale)
     {
         this.regionSpecifiedWithLatLonScale = regionSpecifiedWithLatLonScale;
     }
 
+    @Override
+    public boolean getIfNeedToDownload()
+    {
+        return false;
+    }
 
     @Override
     protected Void doInBackground()
     {
-        super.doInBackground();
-
         if (isCancelled())
         {
             return null;
@@ -107,8 +145,8 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
         try
         {
-            File file = FileCache.getFileFromServer(this.getFileDownloaded());
-            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
+//            File file = FileCache.getFileFromServer(this.getFileDownloaded());
+//            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
             MapMakerRemote mapmaker = new MapMakerRemote();
             mapmaker.setName(name);
@@ -120,6 +158,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             }
             else
             {
+
                 LatLon ll = MathUtil.reclat(centerPoint).toDegrees();
                 mapmaker.setLatitude(ll.lat);
                 mapmaker.setLongitude(ll.lon);
@@ -127,8 +166,9 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             }
             mapmaker.setHalfSize(halfSize);
             mapmaker.setOutputFolder(outputFolder);
-
-
+            mapmaker.setDatadir(datadir);
+            mapmaker.setMapoutdir(mapoutdir);
+            mapmaker.setCacheDir(cacheDir);
             mapmaker.runMapmaker();
 
 
@@ -152,7 +192,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 //            }
 
 //            mapmaker.convertCubeToFitsAndSaveInOutputFolder(false);
-//            mapletFile = mapmaker.getMapletFile();
+            mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
         {
@@ -168,10 +208,10 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             e.printStackTrace();
         }
 
-        if (mapmakerProcess != null && isCancelled())
-        {
-            mapmakerProcess.destroy();
-        }
+//        if (mapmakerProcess != null && isCancelled())
+//        {
+//            mapmakerProcess.destroy();
+//        }
 
         setProgress(100);
 
