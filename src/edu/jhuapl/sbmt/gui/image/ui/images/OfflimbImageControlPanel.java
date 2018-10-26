@@ -46,7 +46,7 @@ public class OfflimbImageControlPanel extends JPanel
         transparencyPanel
                 .setLayout(new BoxLayout(transparencyPanel, BoxLayout.X_AXIS));
         footprintTransparencyLabel = new JLabel(
-                "Off-limb footprint transparency:");
+                "Off-limb footprint opacity:"); // changed to opacity because of the way it works (opposite of transparency)
         transparencyPanel.add(footprintTransparencyLabel);
 
         footprintTransparencyValue = new JLabel("0");

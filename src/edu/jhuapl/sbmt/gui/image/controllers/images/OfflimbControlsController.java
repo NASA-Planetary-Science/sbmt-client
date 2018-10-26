@@ -160,7 +160,7 @@ public class OfflimbControlsController
         {
             depthMin = image.getMinFrustumDepth(currentSlice);
             depthMax = image.getMaxFrustumDepth(currentSlice);
-//            image.loadOffLimbPlane(getDepthValue());
+            image.setOffLimbPlaneDepth(getDepthValue());
         }
 
         public double getDepthValue()
