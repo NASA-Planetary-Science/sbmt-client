@@ -2,7 +2,10 @@ package edu.jhuapl.sbmt.client;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -16,10 +19,12 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.EmptyMetadata;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Utilities;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.Graticule;
@@ -83,8 +88,10 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
+    private final Map<String, MetadataManager> metadataManagers;
     private Colorbar smallBodyColorbar;
 
 
@@ -99,6 +106,7 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         super(statusBar, smallBodyConfig);
         this.stateManager = TrackedMetadataManager.of("View " + getUniqueName());
+        this.metadataManagers = new HashMap<>();
         initializeStateManager();
     }
 
@@ -348,8 +356,11 @@ public class SbmtView extends View implements PropertyChangeListener
                 if (getPolyhedralModelConfig().imageSearchFilterNames != null && getPolyhedralModelConfig().imageSearchFilterNames.length > 0 && !(getPolyhedralModelConfig().body == ShapeModelBody._67P))
                 {
 //                    JComponent component = new CubicalImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-                    JComponent component = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
-                    addTab(instrument.instrumentName.toString(), component);
+                    SpectralImagingSearchController controller = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument);
+
+                    metadataManagers.put(instrument.instrumentName.toString(), controller.getModel());
+
+                    addTab(instrument.instrumentName.toString(), controller.getView().getComponent());
                 }
                 else if (Configuration.isAPLVersion() || (getPolyhedralModelConfig().body == ShapeModelBody.ITOKAWA && ShapeModelType.GASKELL == getPolyhedralModelConfig().author))
                 {
@@ -626,15 +637,23 @@ public class SbmtView extends View implements PropertyChangeListener
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Boolean> initializedKey = Key.of("initialized");
+                final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
                 final Key<double[]> positionKey = Key.of("cameraPosition");
                 final Key<double[]> upKey = Key.of("cameraUp");
+                final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
                 public Metadata store()
                 {
+                    if (!isInitialized())
+                    {
+                        return EmptyMetadata.instance();
+                    }
+
                     SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-                    result.put(initializedKey, isInitialized());
+
+                    result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
+
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
@@ -642,23 +661,97 @@ public class SbmtView extends View implements PropertyChangeListener
                         result.put(positionKey, camera.GetPosition());
                         result.put(upKey, camera.GetViewUp());
                     }
+
+                    // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        ImmutableSortedMap.Builder<String, Metadata> builder = ImmutableSortedMap.naturalOrder();
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                            if (imagingStateManager != null)
+//                            {
+//                                builder.put(entry.getKey(), imagingStateManager.store());
+//                            }
+//                        }
+//                        result.put(imagingKey, builder.build());
+//                    }
+                    Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
+                    result.put(METADATA_MANAGERS_KEY, metadata);
+
+                    JTabbedPane controlPanel = getControlPanel();
+                    if (controlPanel != null)
+                    {
+                        int selectedIndex = controlPanel.getSelectedIndex();
+                        String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
+                        result.put(currentTabKey, title);
+                    }
                     return result;
                 }
 
                 @Override
                 public void retrieve(Metadata state)
                 {
-                    if (state.get(initializedKey)) {
-                        initialize();
-                        Renderer localRenderer = SbmtView.this.getRenderer();
-                        if (localRenderer != null)
+                    initialize();
+                    if (state.hasKey(resolutionLevelKey))
+                    {
+                        try
                         {
-                            RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-                            vtkCamera camera = panel.getActiveCamera();
-                            camera.SetPosition(state.get(positionKey));
-                            camera.SetViewUp(state.get(upKey));
-                            panel.resetCameraClippingRange();
-                            panel.Render();
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(resolutionLevelKey));
+                        }
+                        catch (IOException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    Renderer localRenderer = SbmtView.this.getRenderer();
+                    if (localRenderer != null)
+                    {
+                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        vtkCamera camera = panel.getActiveCamera();
+                        camera.SetPosition(state.get(positionKey));
+                        camera.SetViewUp(state.get(upKey));
+                        panel.resetCameraClippingRange();
+                        panel.Render();
+                    }
+
+                    // Redmine #1320/1439: this is what used to be here to retrieve the state of imaging search panels.
+//                    if (!searchPanelMap.isEmpty())
+//                    {
+//                        SortedMap<String, Metadata> metadataMap = state.get(imagingKey);
+//                        for (Entry<String, ImagingSearchPanel> entry : searchPanelMap.entrySet())
+//                        {
+//                            Metadata imagingMetadata = metadataMap.get(entry.getKey());
+//                            if (imagingMetadata != null)
+//                            {
+//                                MetadataManager imagingStateManager = entry.getValue().getMetadataManager();
+//                                imagingStateManager.retrieve(imagingMetadata);
+//                            }
+//                        }
+//                    }
+                    Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
+                    Utilities.bulkRetrieve(metadataManagers, metadata);
+
+                    if (state.hasKey(currentTabKey))
+                    {
+                        JTabbedPane controlPanel = getControlPanel();
+                        if (controlPanel != null)
+                        {
+                            int selectedIndex = 0;
+                            String currentTab = state.get(currentTabKey);
+                            if (currentTab != null)
+                            {
+                                for (int index = 0; index < controlPanel.getTabCount(); ++index)
+                                {
+                                    if (currentTab.equalsIgnoreCase(controlPanel.getTitleAt(index)))
+                                    {
+                                        selectedIndex = index;
+                                        break;
+                                    }
+                                }
+                            }
+                            controlPanel.setSelectedIndex(selectedIndex);
                         }
                     }
                 }

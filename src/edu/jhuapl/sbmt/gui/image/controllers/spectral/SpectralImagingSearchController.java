@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.gui.image.controllers.spectral;
 import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
@@ -24,14 +25,15 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 
-public class SpectralImagingSearchController
+public class SpectralImagingSearchController implements Controller<ImageSearchModel, ImagingSearchPanel>
 {
     ImageResultsTableController imageResultsTableController;
     SpectralImageSearchParametersController searchParametersController;
     SpectralImageCubeController imageCubeController;
     ColorImageController colorImageController;
 
-    private ImagingSearchPanel panel;
+    private final ImageSearchModel model;
+    private final ImagingSearchPanel panel;
 
     private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
@@ -74,16 +76,12 @@ public class SpectralImagingSearchController
         ColorImageModel colorModel = new ColorImageModel();
         this.colorImageController = new ColorImageController(imageSearchModel, colorModel, infoPanelManager);
 
-        init();
-    }
-
-    public void init()
-    {
-        panel = new ImagingSearchPanel();
-        panel.addSubPanel(searchParametersController.getPanel());
-        panel.addSubPanel(imageResultsTableController.getPanel());
-        panel.addSubPanel(imageCubeController.getPanel());
-        panel.addSubPanel(colorImageController.getPanel());
+        this.model = imageSearchModel;
+        this.panel = new ImagingSearchPanel();
+        this.panel.addSubPanel(searchParametersController.getPanel());
+        this.panel.addSubPanel(imageResultsTableController.getPanel());
+        this.panel.addSubPanel(imageCubeController.getPanel());
+        this.panel.addSubPanel(colorImageController.getPanel());
     }
 
     protected void initExtraComponents()
@@ -97,6 +95,18 @@ public class SpectralImagingSearchController
     }
 
     public JPanel getPanel()
+    {
+        return panel;
+    }
+
+    @Override
+    public ImageSearchModel getModel()
+    {
+        return model;
+    }
+
+    @Override
+    public ImagingSearchPanel getView()
     {
         return panel;
     }
