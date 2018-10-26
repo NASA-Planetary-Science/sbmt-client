@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.dtm.creation;
+package edu.jhuapl.sbmt.gui.dtm.ui.creation;
 
 import java.awt.Color;
 import java.awt.GridLayout;

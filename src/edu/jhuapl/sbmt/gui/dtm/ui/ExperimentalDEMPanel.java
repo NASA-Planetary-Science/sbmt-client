@@ -1,16 +1,17 @@
-package edu.jhuapl.sbmt.gui.dtm;
+package edu.jhuapl.sbmt.gui.dtm.ui;
 
 import java.awt.BorderLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.gui.dtm.browse.DtmBrowsePanel;
-import edu.jhuapl.sbmt.gui.dtm.creation.DEMCreationPanel;
-import edu.jhuapl.sbmt.gui.dtm.creation.DEMCreator;
-import edu.jhuapl.sbmt.gui.dtm.search.DtmSearchPanel;
+import edu.jhuapl.sbmt.gui.dtm.ui.browse.DtmBrowsePanel;
+import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreationPanel;
+import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
+import edu.jhuapl.sbmt.gui.dtm.ui.search.DtmSearchPanel;
 
 @SuppressWarnings("serial")
 public class ExperimentalDEMPanel extends JPanel
@@ -23,7 +24,7 @@ public class ExperimentalDEMPanel extends JPanel
         setLayout(new BorderLayout(0, 0));
 
         createPanel=new DEMCreationPanel(modelManager, pickManager, creationTool);
-
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         add(tabbedPane);
         tabbedPane.addTab("Create", createPanel);
