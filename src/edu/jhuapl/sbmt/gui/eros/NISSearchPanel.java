@@ -20,7 +20,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class NISSearchPanel extends SpectrumSearchPanel
 {

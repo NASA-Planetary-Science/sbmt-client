@@ -7,9 +7,9 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 1 ]
+if [ "$#" -ne 1 -a "$#" -ne 3 ]]
 then
-  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version>"
+  echo "Model data usage:  rawdata2processed-ryugu.sh <model-name> <processing-version> <model-label>"
   echo "Shared data usage: rawdata2processed-ryugu.sh shared"
   exit 1
 fi
@@ -18,6 +18,7 @@ fi
 rawdataModelName=$1
 processingVersion=$2
 processingModelName=$rawdataModelName
+processingModelLabel=$3
 
 if [ $processingModelName = "shared" ]
 then                                                                                              
@@ -49,7 +50,7 @@ javaCmd="/project/nearsdc/software/java/x86_64/latest/bin/java"
 srcTop="$rawdataTop/$bodyName/$processingVersion"
 destTop="$processedTop/$bodyName/$processingVersion"
 
-releaseDir="$srcTop/$processingModelName"
+releaseDir="$srcTop"
 
 # figures out what the latest kernel is for use in many of the processing methods
 if [ $processingModelName = "shared" ]
@@ -385,7 +386,7 @@ discoverPlateColorings() {
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
-    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$modelName/162173 Ryugu" >> $log 2>&1
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/162173 Ryugu" >> $log 2>&1
     if test $? -ne 0; then
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
@@ -597,20 +598,25 @@ else
      # copies over onc directory
      doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc/
 
-     # *** process imager, not actually sure what this does *** james should know and I just realized that it proabbly has no effect since the rsync is already done
-     processImager
+     # Skip this for now. This processes images, sumfiles and image lists at the same
+     # time, validating and including only images that will work in the destination directory.
+     # Currently this script just uses the processMakeSumfiles function to handle this.
+     # The latter is not as thorough in its vetting, but it works well enough and correctly
+     # for the case where images are not included in the delivery (like for the current ryugu
+     # use cases.
+     #processImager
      echo Finished sumfile processing
    fi
 
    # process coloring data and generates the metadata needed to read the colroing data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ] 
    then
-      echo discovering plate colorings
+      echo Processing plate colorings
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
      
       # gzips the coloring files
-      doGzipDir $destTop/$processingModelName/coloring/*.fits
+      doGzipDir $destTop/$processingModelName/coloring
 
       # runs James' java tool, DiscoverPlateColorings, that class ues an intermediate script, ls-pc.sh which is located in /project/sbmt2/sbmt/scripts
       discoverPlateColorings
