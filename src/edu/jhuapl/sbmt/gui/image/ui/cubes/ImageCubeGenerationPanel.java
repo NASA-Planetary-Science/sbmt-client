@@ -10,7 +10,7 @@ import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTable;
 
-public class ImageCubeGenerationPanel extends JPanel //implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
+public abstract class ImageCubeGenerationPanel extends JPanel //implements PropertyChangeListener, TableModelListener, MouseListener, ListSelectionListener
 {
     private JButton generateImageCubeButton;
     private JButton removeImageCubeButton;

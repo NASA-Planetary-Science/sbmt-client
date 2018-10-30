@@ -26,7 +26,7 @@ public class SpectralImageCubeGenerationPanel extends ImageCubeGenerationPanel
         layerLabel = new JLabel("Layer:");
         panel.add(layerLabel);
 
-        layerValue = new JLabel("0");
+        layerValue = new JLabel("1");
         panel.add(layerValue);
 
         layerSlider = new JSlider();
@@ -38,10 +38,10 @@ public class SpectralImageCubeGenerationPanel extends ImageCubeGenerationPanel
     public void setNBands(int nBands)
     {
         int midband = (nbands-1) / 2;
-        String midbandString = Integer.toString(midband);
+        String midbandString = Integer.toString(midband+1);
         layerValue.setText(midbandString);
 
-        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 0, nbands-1);
+        monoBoundedRangeModel = new DefaultBoundedRangeModel(midband, 0, 1, nbands);
         layerSlider = new JSlider(monoBoundedRangeModel);
     }
 

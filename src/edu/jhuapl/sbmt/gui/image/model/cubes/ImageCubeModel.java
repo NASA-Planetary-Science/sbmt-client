@@ -26,11 +26,11 @@ import nom.tam.fits.FitsException;
 
 public class ImageCubeModel implements Controller.Model, MetadataManager
 {
-    private int nbands = 0;
-    private ImageCollection imageCollection;
-    private ImageCubeCollection imageCubeCollection;
-    private Vector<ImageCubeResultsListener> resultsListeners;
-    private ImageSearchModel imageSearchModel;
+    protected int nbands = 0;
+    protected ImageCollection imageCollection;
+    protected ImageCubeCollection imageCubeCollection;
+    protected Vector<ImageCubeResultsListener> resultsListeners;
+    protected ImageSearchModel imageSearchModel;
 
     final Key<Integer> numberBandsKey = Key.of("numberOfBands");
 
@@ -99,7 +99,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         resultsListeners.removeAllElements();
     }
 
-    private void fireErrorMessage(String message)
+    protected void fireErrorMessage(String message)
     {
         for (ImageCubeResultsListener listener : resultsListeners)
         {
@@ -107,7 +107,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         }
     }
 
-    private void fireInformationalMessage(String message)
+    protected void fireInformationalMessage(String message)
     {
         for (ImageCubeResultsListener listener : resultsListeners)
         {

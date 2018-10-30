@@ -181,6 +181,8 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
         allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
+        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
 
         //all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
