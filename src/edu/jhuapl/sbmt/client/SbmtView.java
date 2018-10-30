@@ -48,7 +48,6 @@ import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
 import edu.jhuapl.sbmt.gui.image.controllers.custom.CustomImageController;
-import edu.jhuapl.sbmt.gui.image.controllers.hyperspectral.OsirisImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.quadspectral.QuadSpectralImagingSearchController;
 import edu.jhuapl.sbmt.gui.image.controllers.spectral.SpectralImagingSearchController;
@@ -369,7 +368,7 @@ public class SbmtView extends View implements PropertyChangeListener
                     {
 
 //                        JComponent component = new OsirisImagingSearchPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init();
-                        JComponent component = new OsirisImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
+                        JComponent component = new SpectralImagingSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel();
                         addTab(instrument.instrumentName.toString(), component);
                     }
                     else
