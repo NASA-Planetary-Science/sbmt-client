@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -194,6 +195,11 @@ public class SbmtViewManager extends ViewManager
         {
             customConfigImporter.read(metadata, name, customConfig);
         }
+        catch (NullPointerException | IllegalArgumentException iae)
+        {
+            System.err.println("Custom Model Import Error: nable to read custom model metadata for " + name);
+            return null;
+        }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
@@ -235,8 +241,16 @@ public class SbmtViewManager extends ViewManager
                 @Override
                 public void retrieve(Metadata source)
                 {
-                    String uniqueName = source.get(currentViewKey);
-                    setCurrentView(getView(uniqueName));
+                    final View retrievedView = getView(source.get(currentViewKey));
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run()
+                        {
+                            setCurrentView(retrievedView);
+                        }
+
+                    });
                 }
             });
         }

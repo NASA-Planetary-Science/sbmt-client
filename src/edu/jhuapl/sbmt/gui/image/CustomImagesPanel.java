@@ -64,8 +64,10 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
-import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ImageInfo;
-import edu.jhuapl.sbmt.gui.image.CustomImageImporterDialog.ProjectionType;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
@@ -81,7 +83,7 @@ import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import nom.tam.fits.FitsException;
 
-
+@Deprecated
 public class CustomImagesPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, ChangeListener, ListSelectionListener
 {
 
@@ -376,8 +378,10 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                 }
                 else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
                 {
-                    imageInfo.sumfilename = sumfileNames[i];
-                    imageInfo.infofilename = infofileNames[i];
+                    if (sumfileNames.length > 0)
+                        imageInfo.sumfilename = sumfileNames[i];
+                    if (infofileNames.length > 0)
+                        imageInfo.infofilename = infofileNames[i];
                 }
 
                 ((DefaultListModel)imageList.getModel()).addElement(imageInfo);
@@ -406,7 +410,7 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
             if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
                 // We were given an ENVI file (binary or header)
                 // Can assume at this point that both binary + header files exist in the same directory
-
+                System.out.println("CustomImagesPanel: saveImage: ENVI file");
                 // Get filenames of the binary and header files
                 String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
                 String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
