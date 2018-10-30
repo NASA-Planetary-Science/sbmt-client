@@ -103,6 +103,12 @@ public class ImageResultsTableController
             {
                 setImageResults(results);
             }
+
+            @Override
+            public void resultsCountChanged(int count)
+            {
+                imageResultsTableView.getResultsLabel().setText(count + " images found");
+            }
         });
 
         propertyChangeListener = new ImageResultsPropertyChangeListener();
