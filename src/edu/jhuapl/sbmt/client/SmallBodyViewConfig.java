@@ -4299,7 +4299,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
             c.density = 1200.; // (kg/m^3)
-            c.rotationRate = 0.00022871; // (rad/sec)
+            c.rotationRate = 0.00022867; // (rad/sec)
 
 
             c.hasLidarData=true;
