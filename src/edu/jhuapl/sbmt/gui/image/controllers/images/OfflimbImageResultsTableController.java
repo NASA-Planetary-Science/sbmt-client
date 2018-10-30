@@ -14,7 +14,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
@@ -24,7 +23,6 @@ import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 
 public class OfflimbImageResultsTableController extends ImageResultsTableController
 {
@@ -58,7 +56,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             {
                 String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
                 ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                OsirisImage image = (OsirisImage)imageCollection.getImage(key);
+                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
                 OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
                 controller.getControlsFrame().setVisible(true);
             }
@@ -148,7 +146,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (imageCollection.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                ((OsirisImage)image).setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
+                image.setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
                 getResultList().setValueAt(false, i, offlimbTableView.getOffLimbIndex());   // hide off limb footprint by default
             }
             else
@@ -170,25 +168,18 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = name.substring(0, name.length()-4);
+                super.tableChanged(e);
                 offlimbTableView.getResultList().setValueAt(false, row, offlimbTableView.getOffLimbIndex());
-                if ((Boolean)offlimbTableView.getResultList().getValueAt(row, offlimbTableView.getMapColumnIndex()))
-                    imageSearchModel.loadImages(namePrefix);
-                else
-                {
-                    imageSearchModel.unloadImages(namePrefix);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
-                }
                 setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
-
-                return; //so it doesn't fall through to the super
             }
-            if (e.getColumn() == offlimbTableView.getOffLimbIndex())
+            else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, visible);
+                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
 
@@ -203,7 +194,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         {
             if (images.containsImage(key))
             {
-                OsirisImage image = (OsirisImage)images.getImage(key);
+                PerspectiveImage image = (PerspectiveImage) images.getImage(key);
                 image.setOffLimbFootprintVisibility(visible);
             }
         }
