@@ -22,6 +22,7 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
+import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -90,6 +91,9 @@ public class SbmtMultiMissionTool
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
 			OSXAdapter.setDockIconImage(erosIcon.getImage());
 		}
+
+		// Initialize serialization proxies
+		AbstractEllipsePolygonModel.EllipsePolygon.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

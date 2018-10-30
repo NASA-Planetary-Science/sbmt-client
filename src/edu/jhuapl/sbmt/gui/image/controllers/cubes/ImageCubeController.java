@@ -70,6 +70,12 @@ public class ImageCubeController
             {
                 stringRenderer.setImageRawResults(results);
             }
+
+
+            @Override
+            public void resultsCountChanged(int count)
+            {
+            }
         });
         this.cubeModel = cubeModel;
         this.infoPanelManager = infoPanelManager;
