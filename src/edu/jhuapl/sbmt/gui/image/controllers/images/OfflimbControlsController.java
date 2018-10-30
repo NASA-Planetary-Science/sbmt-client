@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.gui.image.controllers.images;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -214,7 +214,7 @@ public class OfflimbControlsController
         }
     }
 
-    public class ShowBoundaryButton extends JRadioButton
+    public class ShowBoundaryButton extends JCheckBox
     {
         public ShowBoundaryButton()
         {
