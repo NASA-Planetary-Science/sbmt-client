@@ -80,7 +80,7 @@ public class SpectralImageCubeController extends ImageCubeController
 
                 JSlider source = (JSlider)e.getSource();
                 currentSlice = (int)source.getValue();
-                ((SpectralImageCubeGenerationPanel)panel).getLayerValue().setText(Integer.toString(currentSlice));
+                ((SpectralImageCubeGenerationPanel)panel).getLayerValue().setText(Integer.toString(currentSlice+1));
 
                 ImageCubeCollection images = (ImageCubeCollection)model.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
 
@@ -118,9 +118,9 @@ public class SpectralImageCubeController extends ImageCubeController
         SpectralImageCubeGenerationPanel specPanel = (SpectralImageCubeGenerationPanel)panel;
         cubeModel.setNbands(nbands);
         specPanel.setNBands(nbands);
-        String activeBandString = Integer.toString(activeBand);
+        String activeBandString = Integer.toString(activeBand+1);
         specPanel.getLayerValue().setText(activeBandString);
-        DefaultBoundedRangeModel monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 0, nbands-1);
+        DefaultBoundedRangeModel monoBoundedRangeModel = new DefaultBoundedRangeModel(activeBand, 0, 1, nbands-1);
         specPanel.getLayerSlider().setModel(monoBoundedRangeModel);
     }
 }

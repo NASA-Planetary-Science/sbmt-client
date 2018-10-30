@@ -527,12 +527,12 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
                         currentRun.setSpacecraftMovement(false);
                     }
                     currentRun.setSpacecraftMovement(false);
-                    currentRun.setEarthView(true);
+                    currentRun.setEarthView(true, showSpacecraftView.isSelected());
                     viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
                 }else if(source == showSunView){
                     currentRun.setSpacecraftMovement(false);
-                    currentRun.setEarthView(false);
-                    currentRun.setSunView(true);
+                    currentRun.setEarthView(false, showSpacecraftView.isSelected());
+                    currentRun.setSunView(true, showSpacecraftView.isSelected());
                     viewAngleInput.setText(Double.toString(renderer.getCameraViewAngle()));
                 }else if(source == showFreeView){
 
@@ -565,11 +565,11 @@ public class StateHistoryPanel extends javax.swing.JPanel implements ItemListene
                     distanceOptions.setEnabled(false);
                 } else if(source == showEarthView){
                     currentRun.setSpacecraftMovement(false);
-                    currentRun.setEarthView(false);
+                    currentRun.setEarthView(false, showSpacecraftView.isSelected());
                 } else if(source == showSunView){
                     currentRun.setSpacecraftMovement(false);
-                    currentRun.setEarthView(false);
-                    currentRun.setSunView(false);
+                    currentRun.setEarthView(false, showSpacecraftView.isSelected());
+                    currentRun.setSunView(false, showSpacecraftView.isSelected());
                 } else if(source == mapTrajectory){
                     currentRun.setActorVisibility("Trajectory", false);
                     showTrajectory.setEnabled(false);

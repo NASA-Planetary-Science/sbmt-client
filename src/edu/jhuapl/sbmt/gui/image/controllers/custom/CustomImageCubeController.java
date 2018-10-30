@@ -69,6 +69,13 @@ public class CustomImageCubeController
             {
                 stringRenderer.setImageRawResults(results);
             }
+
+            @Override
+            public void resultsCountChanged(int count)
+            {
+                // TODO Auto-generated method stub
+
+            }
         });
         this.cubeModel = cubeModel;
         this.infoPanelManager = infoPanelManager;

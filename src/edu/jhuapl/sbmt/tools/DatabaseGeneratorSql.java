@@ -301,7 +301,7 @@ public class DatabaseGeneratorSql
             // Now populate cubes table
             vtkPolyData footprintPolyData = image.getUnshiftedFootprint();
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
-            System.out.println("cubeIds:  " + cubeIds);
+//            System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
             System.out.println("id: " + cubeTablePrimaryKey);
             System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());

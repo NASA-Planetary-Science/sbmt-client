@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Vector;
 
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
@@ -13,7 +16,7 @@ import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 
 import nom.tam.fits.FitsException;
 
-public class ColorImageModel
+public class ColorImageModel implements Controller.Model, MetadataManager
 {
     protected ImageKey selectedRedKey;
     protected ImageKey selectedGreenKey;
@@ -123,9 +126,22 @@ public class ColorImageModel
         }
     }
 
-
     public void removeColorImage(ColorImageKey colorKey)
     {
         imageCollection.removeImage(colorKey);
+    }
+
+    @Override
+    public Metadata store()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        // TODO Auto-generated method stub
+
     }
 }

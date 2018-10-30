@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -19,7 +24,7 @@ import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
 
-public class ImageCubeModel
+public class ImageCubeModel implements Controller.Model, MetadataManager
 {
     protected int nbands = 0;
     protected ImageCollection imageCollection;
@@ -27,6 +32,7 @@ public class ImageCubeModel
     protected Vector<ImageCubeResultsListener> resultsListeners;
     protected ImageSearchModel imageSearchModel;
 
+    final Key<Integer> numberBandsKey = Key.of("numberOfBands");
 
     public ImageCubeModel()
     {
@@ -207,5 +213,20 @@ public class ImageCubeModel
     public void removeImageCube(ImageCubeKey imageCubeKey)
     {
         imageCubeCollection.removeImage(imageCubeKey);
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata data = (SettableMetadata)imageSearchModel.store();
+        data.put(numberBandsKey, nbands);
+        return data;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        imageSearchModel.retrieve(source);
+        nbands = source.get(numberBandsKey);
     }
 }
