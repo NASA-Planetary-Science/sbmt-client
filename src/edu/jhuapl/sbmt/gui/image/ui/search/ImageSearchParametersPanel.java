@@ -695,4 +695,9 @@ public class ImageSearchParametersPanel extends JPanel
         return filenameRadioButton;
     }
 
+    public JRadioButton getParametersRadioButton()
+    {
+        return parametersRadioButton;
+    }
+
 }

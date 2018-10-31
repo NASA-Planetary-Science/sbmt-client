@@ -1,5 +1,9 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -10,25 +14,40 @@ import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbControlsFrame;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 public class OfflimbControlsController
 {
     OfflimbControlsFrame controlsFrame;
     OfflimbControlsModel controlsModel;
-    OsirisImage image;
+    PerspectiveImage image;
     DepthSlider depthSlider;
     AlphaSlider alphaSlider;
     ContrastSlider contrastSlider;
+    ShowBoundaryButton showBoundaryBtn;
 
-    public OfflimbControlsController(OsirisImage image, int currentSlice)
+    public OfflimbControlsController(PerspectiveImage image, int currentSlice)
     {
         this.image = image;
+        controlsModel = new OfflimbControlsModel(image, currentSlice);
+
+
         depthSlider = new DepthSlider();
         alphaSlider = new AlphaSlider();
         contrastSlider = new ContrastSlider();
-        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider);
-        controlsModel = new OfflimbControlsModel(image, currentSlice);
+        showBoundaryBtn = new ShowBoundaryButton();
+        showBoundaryBtn.setSelected(controlsModel.getShowBoundary());
+        showBoundaryBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
+                controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
+            }
+
+        });
+        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn);
         controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
         {
 
@@ -42,7 +61,7 @@ public class OfflimbControlsController
             @Override
             public void currentDepthChanged(int depth)
             {
-                int sliderValue = depthSlider.convertDepthToSliderValue(((OsirisImage)controlsModel.getImage()).getOffLimbPlaneDepth());
+                int sliderValue = depthSlider.convertDepthToSliderValue(((PerspectiveImage)controlsModel.getImage()).getOffLimbPlaneDepth());
                 controlsFrame.getPanel().getFootprintDepthValue().setText("" + sliderValue);
             }
 
@@ -95,6 +114,11 @@ public class OfflimbControlsController
                     controlsModel.setContrastLow(contrastSlider.getLowValue());
                     controlsModel.setContrastHigh(contrastSlider.getHighValue());
                 }
+                else if (e.getSource() == controlsFrame.getPanel().getShowBoundaryButton())
+                {
+                    showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
+                    controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
+                }
                 controlsModel.getImage().firePropertyChange();
             }
         };
@@ -136,7 +160,7 @@ public class OfflimbControlsController
         {
             depthMin = image.getMinFrustumDepth(currentSlice);
             depthMax = image.getMaxFrustumDepth(currentSlice);
-            image.loadOffLimbPlane(getDepthValue());
+            image.setOffLimbPlaneDepth(getDepthValue());
         }
 
         public double getDepthValue()
@@ -163,7 +187,7 @@ public class OfflimbControlsController
             setMaximum(100);
         }
 
-        public void applyAlphaToImage(/*OsirisImage image*/)
+        public void applyAlphaToImage()
         {
             image.setOffLimbFootprintAlpha(getAlphaValue());
         }
@@ -183,11 +207,26 @@ public class OfflimbControlsController
             setMaximum(255);
         }
 
-        public void applyContrastToImage(/*OsirisImage image*/)
+        public void applyContrastToImage()
         {
             image.setDisplayedImageRange(
                     new IntensityRange(getLowValue(), getHighValue()));
         }
     }
+
+    public class ShowBoundaryButton extends JCheckBox
+    {
+        public ShowBoundaryButton()
+        {
+            setText("Show Boundary");
+        }
+
+        public void showBoundary(boolean selected)
+        {
+           image.setOffLimbBoundaryVisibility(selected);
+        }
+
+    }
+
 
 }

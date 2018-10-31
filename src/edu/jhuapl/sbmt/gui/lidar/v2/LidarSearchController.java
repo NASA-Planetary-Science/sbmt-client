@@ -599,6 +599,10 @@ public class LidarSearchController implements ItemListener
                 //Component comp=jTable1.prepareRenderer(jTable1.getCellRenderer(r, c), r, c);
                 Component comp=view.getTable().prepareRenderer(view.getTable().getCellRenderer(r, c), r, c);
                 w=Math.max(w, comp.getPreferredSize().width+1);
+                if (c == 0)
+                {
+                    view.getTable().getModel().setValueAt(lidarModel.getTrack(r).hidden, r, 0);
+                }
             }
             view.getTable().getColumnModel().getColumn(c).setPreferredWidth(w+spacing);
         }

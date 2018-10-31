@@ -22,6 +22,9 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -55,7 +58,8 @@ public class CustomImagesModel extends ImageSearchModel
     private List<ImageInfo> customImages;
     private Vector<CustomImageResultsListener> customImageListeners;
     private boolean initialized = false;
-    private int numImagesInCollection = -1;
+//    private int numImagesInCollection = -1;
+    final Key<Vector<Metadata>> customImagesKey = Key.of("customImages");
     private PerspectiveImageBoundaryCollection boundaries;
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
@@ -67,8 +71,8 @@ public class CustomImagesModel extends ImageSearchModel
         this.customImages = new Vector<ImageInfo>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
 
-        this.imageCollection = (ImageCollection)modelManager.getModel(getCustomImageCollectionModelName());
-        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getCustomImageBoundaryCollectionModelName());
+        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
     }
 
     public CustomImagesModel(ImageSearchModel model)
@@ -76,12 +80,12 @@ public class CustomImagesModel extends ImageSearchModel
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
     }
 
-    public ModelNames getCustomImageCollectionModelName()
+    public ModelNames getImageCollectionModelName()
     {
         return ModelNames.CUSTOM_IMAGES;
     }
 
-    public ModelNames getCustomImageBoundaryCollectionModelName()
+    public ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
     }
@@ -122,18 +126,16 @@ public class CustomImagesModel extends ImageSearchModel
     public void loadImages(String name, ImageInfo info)
     {
 
+        ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         for (ImageKey key : keys)
         {
-            key.imageType = info.imageType;
-            ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-            key.source = source;
-            key.name = getCustomDataFolder() + File.separator + info.imagefilename;
+            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, key.fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
-                if (!imageCollection.containsImage(key))
+                if (!imageCollection.containsImage(revisedKey))
                 {
-                    loadImage(key, imageCollection);
+                    loadImage(revisedKey, imageCollection);
                 }
             }
             catch (Exception e1) {
@@ -631,6 +633,35 @@ public class CustomImagesModel extends ImageSearchModel
     public String getCustomDataFolder()
     {
         return getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata data = (SettableMetadata)super.store();
+        //store the ImageInfo objects that make up this custom model
+        Vector<Metadata> images = new Vector<Metadata>();
+//        ImmutableSortedSet.Builder<Metadata> images = ImmutableSortedSet.naturalOrder();
+        for (ImageInfo info : customImages)
+        {
+            images.add(info.store());
+        }
+        data.put(customImagesKey, images);
+        return data;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        super.retrieve(source);
+        //get the ImageInfo objects for this custom model
+        Vector<Metadata> images = source.get(customImagesKey);
+        for (Metadata image : images)
+        {
+            ImageInfo info = new ImageInfo();
+            info.retrieve(image);
+            customImages.add(info);
+        }
     }
 }
 
