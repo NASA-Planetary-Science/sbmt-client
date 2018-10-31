@@ -16,7 +16,7 @@ import vtk.vtkCamera;
 import edu.jhuapl.saavtk.colormap.Colorbar;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.View;
-import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
+import edu.jhuapl.saavtk.gui.panel.structures.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.metadata.EmptyMetadata;
