@@ -300,4 +300,30 @@ public abstract class BodyViewConfig extends ViewConfig
 
         return modelFiles;
     }
+
+//    //metadata management
+//    /**
+//     * Return a (complete and self-consistent) set of metadata derived from the
+//     * content or state of one or more objects.
+//     *
+//     * @return destination object in which the metadata are stored
+//     */
+//    @Override
+//    public Metadata store()
+//    {
+//
+//        return null;
+//    }
+//
+//    /**
+//     * Retrieve a (complete and self-consistent) set of metadata in the provided
+//     * source object. The metadata retrieved will typically be used to create or
+//     * restore the state of one or more objects.
+//     *
+//     * @param source the source metadata object
+//     */
+//    public void retrieve(Metadata source)
+//    {
+//
+//    }
 }

@@ -17,6 +17,7 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
@@ -24,6 +25,29 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
+    public static void main(String[] args) throws IOException
+    {
+        Configuration.setAPLVersion(true);
+        SmallBodyViewConfig.initialize();
+        for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
+        {
+            each.enable(true);
+        }
+        List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
+        for (ViewConfig config : builtInConfigs)
+        {
+            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
+            SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
+            String version = config.version == null ? "" : config.version;
+            File file = new File("/Users/steelrj1/Desktop/configs/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
+            if (!file.exists()) file.getParentFile().mkdirs();
+            io.write(config.getUniqueName(), file, io.store());
+        }
+
+
+    }
+
     private List<ViewConfig> configs;
 
     public SmallBodyViewConfigMetadataIO()
@@ -36,9 +60,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         this.configs = configs;
     }
 
+    public SmallBodyViewConfigMetadataIO(ViewConfig config)
+    {
+        this.configs = new Vector<ViewConfig>();
+        this.configs.add(config);
+    }
+
     public void write(File file, String metadataID) throws IOException
     {
         Serializers.serialize(metadataID, store(), file);
+    }
+
+    private void write(String metadataID, File file, Metadata metadata) throws IOException
+    {
+        Serializers.serialize(metadataID, metadata, file);
     }
 
     public void read(File file, String metadataID, SmallBodyViewConfig config) throws IOException

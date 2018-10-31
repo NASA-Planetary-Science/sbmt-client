@@ -2054,7 +2054,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Nimmo et al. (2017)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
@@ -2101,7 +2101,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Nimmo et al. (2017)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
@@ -2142,7 +2142,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
@@ -2181,7 +2181,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
@@ -2192,7 +2192,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
             c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
@@ -2229,7 +2229,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.EXPERIMENTAL;
             c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
