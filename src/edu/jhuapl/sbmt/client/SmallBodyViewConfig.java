@@ -1,15 +1,20 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Vector;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.metadata.FixedMetadata;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -59,9 +64,58 @@ public class SmallBodyViewConfig extends BodyViewConfig
         return (SmallBodyViewConfig)getConfig(name, author, version);
     }
 
+    private static List<ViewConfig> addRemoteEntries()
+    {
+        List<ViewConfig> configs = new Vector<ViewConfig>();
+        File allBodies = FileCache.getFileFromServer("allBodiesBeta.json");
+        System.out.println("SmallBodyViewConfig: addRemoteEntries: reading " + allBodies.getAbsolutePath());
+        try
+        {
+            FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
+            for (Key key : metadata.getKeys())
+            {
+                String path = metadata.get(key);
+                ViewConfig fetchedConfig = fetchRemoteConfig(key.toString(), path);
+                configs.add(fetchedConfig);
+            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+        return configs;
+
+    }
+
+    private static ViewConfig fetchRemoteConfig(String name, String url)
+    {
+        SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO();
+        File configFile = FileCache.getFileFromServer(url);
+        try
+        {
+            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: reading " + name + " at " + url);
+            FixedMetadata metadata = Serializers.deserialize(configFile, name);
+            io.retrieve(metadata);
+            return io.getConfigs().get(0);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     public static void initialize()
     {
+
+
         List<ViewConfig> configArray = getBuiltInConfigs();
+
+        configArray.addAll(addRemoteEntries());
 
         // Gaskell Eros
         SmallBodyViewConfig c = new SmallBodyViewConfig();

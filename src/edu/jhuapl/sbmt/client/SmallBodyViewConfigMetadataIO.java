@@ -27,6 +27,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
     public static void main(String[] args) throws IOException
     {
+        SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(1, 0));
         Configuration.setAPLVersion(true);
         SmallBodyViewConfig.initialize();
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
@@ -40,10 +41,15 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
             String version = config.version == null ? "" : config.version;
             File file = new File("/Users/steelrj1/Desktop/configs/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+
+            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
+
             System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();
             io.write(config.getUniqueName(), file, io.store());
         }
+
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs/allBodies.json"));
 
 
     }
