@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.AlphaSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.DepthSlider;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ShowBoundaryButton;
 
 
 public class OfflimbImageControlPanel extends JPanel
@@ -24,7 +25,9 @@ public class OfflimbImageControlPanel extends JPanel
     private JLabel imageContrastValue;
     private ContrastSlider imageContrastSlider;
 
-    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider)
+    private ShowBoundaryButton showBoundaryButton;
+
+    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn)
     {
         super();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -43,7 +46,7 @@ public class OfflimbImageControlPanel extends JPanel
         transparencyPanel
                 .setLayout(new BoxLayout(transparencyPanel, BoxLayout.X_AXIS));
         footprintTransparencyLabel = new JLabel(
-                "Off-limb footprint transparency:");
+                "Off-limb footprint opacity:"); // changed to opacity because of the way it works (opposite of transparency)
         transparencyPanel.add(footprintTransparencyLabel);
 
         footprintTransparencyValue = new JLabel("0");
@@ -63,9 +66,16 @@ public class OfflimbImageControlPanel extends JPanel
         imageContrastSlider = contrastSlider;
         contrastPanel.add(imageContrastSlider);
 
+
+        JPanel boundaryPanel = new JPanel();
+        showBoundaryButton = showBoundaryBtn;
+        boundaryPanel.add(showBoundaryButton);
+
+
         add(depthPanel);
         add(transparencyPanel);
         add(contrastPanel);
+        add(boundaryPanel);
     }
 
     public JLabel getFootprintDepthValue()
@@ -98,6 +108,11 @@ public class OfflimbImageControlPanel extends JPanel
         return imageContrastSlider;
     }
 
+    public ShowBoundaryButton getShowBoundaryButton()
+    {
+        return showBoundaryButton;
+    }
+
     public void setFootprintDepthSlider(DepthSlider footprintDepthSlider)
     {
         this.footprintDepthSlider = footprintDepthSlider;
@@ -107,6 +122,11 @@ public class OfflimbImageControlPanel extends JPanel
             AlphaSlider footprintTransparencySlider)
     {
         this.footprintTransparencySlider = footprintTransparencySlider;
+    }
+
+    public void getShowBoundaryButton(ShowBoundaryButton showbounds)
+    {
+        this.showBoundaryButton = showbounds;
     }
 
     public void setImageContrastSlider(ContrastSlider imageContrastSlider)
