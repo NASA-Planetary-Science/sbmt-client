@@ -1,9 +1,12 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.JTable;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -13,9 +16,11 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeController;
+import edu.jhuapl.sbmt.gui.image.controllers.cubes.SpectralImageCubeController;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
-import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
+import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomColorImageModel;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
@@ -70,18 +75,19 @@ public class CustomImageController
             }
         });
 
-        this.imageResultsTableController = new CustomImageResultsTableController(instrument, imageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
+        ImageCollection customImageCollection = customImageModel.getImageCollection();
+        this.imageResultsTableController = new CustomImageResultsTableController(instrument, customImageCollection, customImageModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
         this.controlController = new CustomImagesControlController(customImageModel);
 
-        ImageCubeModel cubeModel = new ImageCubeModel();
-        ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(cubeModel.getImageCubeCollectionModelName());
-        cubeModel.setColorImageCollection(imageCubeCollection);
+        CustomImageCubeModel customCubeModel = new CustomImageCubeModel();
+        ImageCubeCollection imageCubeCollection = (ImageCubeCollection)customImageModel.getModelManager().getModel(customCubeModel.getImageCubeCollectionModelName());
+        customCubeModel.setImageSearchModel(customImageModel);
+        customCubeModel.setColorImageCollection(imageCubeCollection);
         ImageCubePopupMenu imageCubePopupMenu = new ImageCubePopupMenu(imageCubeCollection, imageBoundaryCollection, infoPanelManager, spectrumPanelManager, renderer, getPanel());
-        this.imageCubeController = new ImageCubeController(customImageModel, cubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
-
-        ColorImageModel colorModel = new ColorImageModel();
+        this.imageCubeController = new SpectralImageCubeController(customImageModel, customCubeModel, infoPanelManager, imageCubePopupMenu, spectrumPanelManager, renderer);
+        CustomColorImageModel colorModel = new CustomColorImageModel();
         this.colorImageController = new ColorImageController(customImageModel, colorModel, infoPanelManager);
 
         init();

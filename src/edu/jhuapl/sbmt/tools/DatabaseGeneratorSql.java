@@ -140,7 +140,7 @@ public class DatabaseGeneratorSql
     }
 
     private void populateTables(
-            List<String> imageFiles,
+            List<String> lines,
             String tableName,
             String cubesTableName,
             ImageSource imageSource) throws IOException, SQLException, FitsException
@@ -174,9 +174,10 @@ public class DatabaseGeneratorSql
             }
         }
 
-        int totalFiles = imageFiles.size();
-        for (String filename : imageFiles)
+        int totalFiles = lines.size();
+        for (String line : lines)
         {
+            String filename = line.replaceFirst("\\s.*", "");
             // Increment image count (for status message purposes only)
             count++;
 
@@ -300,7 +301,7 @@ public class DatabaseGeneratorSql
             // Now populate cubes table
             vtkPolyData footprintPolyData = image.getUnshiftedFootprint();
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
-            System.out.println("cubeIds:  " + cubeIds);
+//            System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
             System.out.println("id: " + cubeTablePrimaryKey);
             System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
@@ -389,14 +390,14 @@ public class DatabaseGeneratorSql
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
         }
 
-        List<String> files = null;
+        List<String> lines = null;
         try {
             // if the file path starts with "/" then we know we are accessing files from the local file system
             if (fileList.startsWith("/"))
-                files = FileUtil.getFileLinesAsStringList(fileList);
+                lines = FileUtil.getFileLinesAsStringList(fileList);
             // otherwise, we try to load the file from the server via HTTP
             else
-                files = FileCache.getFileLinesFromServerAsStringList(fileList);
+                lines = FileCache.getFileLinesFromServerAsStringList(fileList);
         } catch (IOException e2) {
             e2.printStackTrace();
             return;
@@ -432,7 +433,7 @@ public class DatabaseGeneratorSql
 
         try
         {
-            populateTables(files, imagesTable, cubesTable, source);
+            populateTables(lines, imagesTable, cubesTable, source);
         }
         catch (Exception e1) {
             e1.printStackTrace();
@@ -586,6 +587,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
@@ -657,6 +661,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",

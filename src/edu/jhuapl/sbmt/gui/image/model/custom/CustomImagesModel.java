@@ -22,6 +22,9 @@ import vtk.vtkImageReader2Factory;
 import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -45,6 +48,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import nom.tam.fits.FitsException;
@@ -54,7 +58,9 @@ public class CustomImagesModel extends ImageSearchModel
     private List<ImageInfo> customImages;
     private Vector<CustomImageResultsListener> customImageListeners;
     private boolean initialized = false;
-    private int numImagesInCollection = -1;
+//    private int numImagesInCollection = -1;
+    final Key<Vector<Metadata>> customImagesKey = Key.of("customImages");
+    private PerspectiveImageBoundaryCollection boundaries;
 
     public CustomImagesModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
@@ -64,11 +70,24 @@ public class CustomImagesModel extends ImageSearchModel
         super(smallBodyConfig, modelManager, renderer, instrument);
         this.customImages = new Vector<ImageInfo>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
+
+        this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
+        this.boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
     }
 
     public CustomImagesModel(ImageSearchModel model)
     {
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
+    }
+
+    public ModelNames getImageCollectionModelName()
+    {
+        return ModelNames.CUSTOM_IMAGES;
+    }
+
+    public ModelNames getImageBoundaryCollectionModelName()
+    {
+        return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
     }
 
     public List<ImageInfo> getCustomImages()
@@ -107,18 +126,16 @@ public class CustomImagesModel extends ImageSearchModel
     public void loadImages(String name, ImageInfo info)
     {
 
+        ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         for (ImageKey key : keys)
         {
-            key.imageType = info.imageType;
-            ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-            key.source = source;
-            key.name = getCustomDataFolder() + File.separator + info.imagefilename;
+            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, key.fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
-                if (!imageCollection.containsImage(key))
+                if (!imageCollection.containsImage(revisedKey))
                 {
-                    loadImage(key, imageCollection);
+                    loadImage(revisedKey, imageCollection);
                 }
             }
             catch (Exception e1) {
@@ -146,6 +163,23 @@ public class CustomImagesModel extends ImageSearchModel
             unloadImage(key, imageCollection);
         }
    }
+
+    public void removeAllButtonActionPerformed(ActionEvent evt)
+    {
+        boundaries.removeAllBoundaries();
+        setResultIntervalCurrentlyShown(null);
+    }
+
+    public void removeAllImagesButtonActionPerformed(ActionEvent evt)
+    {
+        imageCollection.removeImages(ImageSource.GASKELL);
+        imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
+        imageCollection.removeImages(ImageSource.SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED_SPICE);
+        imageCollection.removeImages(ImageSource.CORRECTED);
+        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
+        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+    }
 
     public void saveImage(int index, ImageInfo oldImageInfo, ImageInfo newImageInfo) throws IOException
     {
@@ -298,6 +332,17 @@ public class CustomImagesModel extends ImageSearchModel
       }
   }
 
+    private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
+    {
+        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+        ImageType imageType = imageInfo.imageType;
+        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        return imageKey;
+    }
+
     /**
      * This function unmaps the image from the renderer and maps it again,
      * if it is currently shown.
@@ -315,7 +360,7 @@ public class CustomImagesModel extends ImageSearchModel
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
 
-        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
+//        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
         if (imageCollection.containsImage(imageKey))
         {
@@ -588,6 +633,35 @@ public class CustomImagesModel extends ImageSearchModel
     public String getCustomDataFolder()
     {
         return getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata data = (SettableMetadata)super.store();
+        //store the ImageInfo objects that make up this custom model
+        Vector<Metadata> images = new Vector<Metadata>();
+//        ImmutableSortedSet.Builder<Metadata> images = ImmutableSortedSet.naturalOrder();
+        for (ImageInfo info : customImages)
+        {
+            images.add(info.store());
+        }
+        data.put(customImagesKey, images);
+        return data;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        super.retrieve(source);
+        //get the ImageInfo objects for this custom model
+        Vector<Metadata> images = source.get(customImagesKey);
+        for (Metadata image : images)
+        {
+            ImageInfo info = new ImageInfo();
+            info.retrieve(image);
+            customImages.add(info);
+        }
     }
 }
 

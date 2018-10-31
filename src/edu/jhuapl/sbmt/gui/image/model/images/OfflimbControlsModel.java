@@ -2,20 +2,33 @@ package edu.jhuapl.sbmt.gui.image.model.images;
 
 import java.util.Vector;
 
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
-import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
-public class OfflimbControlsModel
+public class OfflimbControlsModel implements Controller.Model, MetadataManager
 {
-    private OsirisImage image;
+    private PerspectiveImage image;
     private int currentSlice;
     private int currentAlpha;
     private int currentDepth;
     private int contrastLow;
     private int contrastHigh;
+    private boolean showBoundary = true; // true by default
     Vector<OfflimbModelChangedListener> listeners;
 
-    public OfflimbControlsModel(OsirisImage image, int currentSlice)
+    final Key<Integer> currentSliceKey = Key.of("currentSlice");
+    final Key<Integer> currentAlphaKey = Key.of("currentAlpha");
+    final Key<Integer> currentDepthKey = Key.of("currentDepth");
+    final Key<Integer> contrastLowKey = Key.of("contrastLow");
+    final Key<Integer> contrastHighKey = Key.of("contrastHigh");
+
+    public OfflimbControlsModel(PerspectiveImage image, int currentSlice)
     {
         this.image = image;
         this.currentSlice = currentSlice;
@@ -27,7 +40,7 @@ public class OfflimbControlsModel
         listeners.add(listener);
     }
 
-    public OsirisImage getImage()
+    public PerspectiveImage getImage()
     {
         return image;
     }
@@ -84,6 +97,12 @@ public class OfflimbControlsModel
         return contrastHigh;
     }
 
+
+    public boolean getShowBoundary()
+    {
+        return showBoundary;
+    }
+
     public void setContrastHigh(int contrastHigh)
     {
         this.contrastHigh = contrastHigh;
@@ -93,9 +112,14 @@ public class OfflimbControlsModel
         }
     }
 
-    public void setImage(OsirisImage image)
+    public void setImage(PerspectiveImage image)
     {
         this.image = image;
+    }
+
+    public void setShowBoundary(boolean show)
+    {
+        this.showBoundary = show;
     }
 
     public void setCurrentSlice(int currentSlice)
@@ -105,6 +129,30 @@ public class OfflimbControlsModel
         {
             listener.currentSliceChanged(currentSlice);
         }
+    }
+
+    @Override
+    public Metadata store()
+    {
+        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        result.put(currentAlphaKey, currentAlpha);
+        result.put(currentDepthKey, currentDepth);
+        result.put(currentSliceKey, currentSlice);
+        result.put(contrastLowKey, contrastLow);
+        result.put(contrastHighKey, contrastHigh);
+
+
+        return result;
+    }
+
+    @Override
+    public void retrieve(Metadata source)
+    {
+        currentAlpha = source.get(currentAlphaKey);
+        currentDepth = source.get(currentDepthKey);
+        currentSlice = source.get(currentSliceKey);
+        contrastLow = source.get(contrastLowKey);
+        contrastHigh = source.get(contrastHighKey);
     }
 
 }
