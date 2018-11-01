@@ -17,6 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
@@ -594,7 +595,8 @@ public class DEMPopupMenu extends PopupMenu
 
                 dialog = new ShapeModelImporterDialog(null);
 
-                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                String extension = FilenameUtils.getExtension(demFilename);
+                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + extension, extension);
                 dialog.beforeOKRunner = new Runnable()
                 {
                     final String filename = demFilename;
