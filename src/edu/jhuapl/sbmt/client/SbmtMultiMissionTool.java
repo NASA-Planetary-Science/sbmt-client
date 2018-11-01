@@ -77,7 +77,7 @@ public class SbmtMultiMissionTool
 
 	// DO NOT change anything about this without also confirming the script set-released-mission.sh still works correctly!
 	// This field is used during the build process to "hard-wire" a release to point to a specific server.
-	private static final Mission RELEASED_MISSION = Mission.APL_INTERNAL;
+	private static final Mission RELEASED_MISSION = null;
 	private static Mission mission = RELEASED_MISSION;
 	private static boolean missionConfigured = false;
 

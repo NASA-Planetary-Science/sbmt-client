@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.google.common.collect.ImmutableList;
+
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.metadata.FixedMetadata;
 import edu.jhuapl.saavtk.metadata.Key;
@@ -98,7 +100,14 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         writeEnum(population, c.population, configMetadata);
         writeEnum(dataUsed, c.dataUsed, configMetadata);
         write(author, c.author.name(), configMetadata);
+        write(modelLabel, c.modelLabel, configMetadata);
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
+        write(shapeModelFileExtension, c.shapeModelFileExtension, configMetadata);
+        write(shapeModelFileBaseName, c.shapeModelFileBaseName, configMetadata);
+        String[] resolutionsToSave = new String[c.getResolutionLabels().size()];
+        Integer[] platesPerResToSave = new Integer[c.getResolutionNumberElements().size()];
+        write(resolutions, c.getResolutionLabels().toArray(resolutionsToSave), configMetadata);
+        write(platesPerRes, c.getResolutionNumberElements().toArray(platesPerResToSave), configMetadata);
         write(timeHistoryFile, c.timeHistoryFile, configMetadata);
         write(hasImageMap, c.hasImageMap, configMetadata);
         write(hasStateHistory, c.hasStateHistory, configMetadata);
@@ -227,7 +236,13 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.population = ShapeModelPopulation.valueOf(read(population, configMetadata));
         c.dataUsed =ShapeModelDataUsed.valueOf(read(dataUsed, configMetadata));
         c.author = ShapeModelType.valueOf(read(author, configMetadata));
+        c.modelLabel = read(modelLabel, configMetadata);
         c.rootDirOnServer = read(rootDirOnServer, configMetadata);
+        c.shapeModelFileExtension = read(shapeModelFileExtension, configMetadata);
+        c.shapeModelFileBaseName = read(shapeModelFileBaseName, configMetadata);
+        String[] resolutionsToAdd = read(resolutions, configMetadata);
+        Integer[] platesPerResToAdd = read(platesPerRes, configMetadata);
+        c.setResolution(ImmutableList.copyOf(resolutionsToAdd), ImmutableList.copyOf(platesPerResToAdd));
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
         c.hasImageMap = read(hasImageMap, configMetadata);
         c.hasStateHistory = read(hasStateHistory, configMetadata);
@@ -304,8 +319,12 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> population = Key.of("population");
     final Key<String> dataUsed = Key.of("dataUsed");
     final Key<String> author = Key.of("author");
-    final Key<String> modelLabel = Key.of("author");
+    final Key<String> modelLabel = Key.of("modelLabel");
     final Key<String> rootDirOnServer = Key.of("rootDirOnServer");
+    final Key<String> shapeModelFileExtension = Key.of("shapeModelFileExtension");
+    final Key<String> shapeModelFileBaseName = Key.of("shapeModelFileBaseName");
+    final Key<String[]> resolutions = Key.of("resolutions");
+    final Key<Integer[]> platesPerRes = Key.of("platesPerRes");
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
     final Key<Boolean> hasImageMap = Key.of("hasImageMap");
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
