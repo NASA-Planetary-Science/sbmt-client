@@ -704,7 +704,7 @@ public class ImageCubePopupMenu extends PopupMenu
 
                     System.out.println("Exporting INFO file for " + image.getImageName() + " to " + filename);
 
-                    image.saveImageInfo(filename);
+                    image.getInfoFileIO().saveImageInfo(filename);
                 }
                 catch (Exception ex)
                 {
