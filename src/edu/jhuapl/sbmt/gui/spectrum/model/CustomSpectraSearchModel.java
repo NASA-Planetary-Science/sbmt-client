@@ -617,7 +617,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             {
                 String spectrum = getSpectrumRawResults().get(index).get(0);
                 String name = new File(spectrum).getName();
-                spectrum = spectrum.substring(0, spectrum.length()-4);
+//                spectrum = spectrum.substring(0, spectrum.length()-4);
                 SpectrumKey selectedKey = getSpectrumKeyForIndex(index);
 //                if (!selectedKey.band.equals("0"))
 //                    name = selectedKey.band + ":" + name;

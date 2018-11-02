@@ -709,7 +709,7 @@ public class CustomImagesModel extends ImageSearchModel
             {
                 String image = imageResults.get(index).get(0);
                 String name = new File(image).getName();
-                image = image.substring(0,image.length()-4);
+//                image = image.substring(0,image.length()-4);
 //                ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
                 ImageKey selectedKey = getImageKeyForIndex(index);
 //                if (!selectedKey.band.equals("0"))

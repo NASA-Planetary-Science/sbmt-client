@@ -442,7 +442,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
                 String image = imageResults.get(index).get(0);
                 String name = new File(image).getName();
-                image = image.substring(0,image.length()-4);
+//                image = image.substring(0,image.length()-4);
                 ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
                 if (!selectedKey.band.equals("0"))
                     name = selectedKey.band + ":" + name;
