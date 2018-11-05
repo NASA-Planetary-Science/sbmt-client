@@ -701,7 +701,8 @@ public class ImagePopupMenu extends PopupMenu
                 if (file != null)
                 {
                     String filename = file.getAbsolutePath();
-                    image.exportAsEnvi(filename.substring(0, filename.length()-4), "bsq", true);
+                    image.getFileIO().getEnviIO().exportAsEnvi(filename.substring(0, filename.length()-4), "bsq", true);
+//                    image.exportAsEnvi(filename.substring(0, filename.length()-4), "bsq", true);
                 }
             }
             catch(Exception ex)
