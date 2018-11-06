@@ -567,6 +567,10 @@ public class DatabaseGeneratorSql
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
                 "ryugu/jaxa-spc-v20180829/onc"),
 
+        JAXA_SPC_V20181014(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
        JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
@@ -587,6 +591,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
@@ -642,6 +649,11 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
 
+        JAXA_SPC_V20181014_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
+
 
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001",
@@ -658,6 +670,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
