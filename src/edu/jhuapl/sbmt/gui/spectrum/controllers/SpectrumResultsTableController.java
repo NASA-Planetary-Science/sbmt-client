@@ -36,6 +36,7 @@ import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumResultsTableView;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
@@ -52,6 +53,7 @@ public class SpectrumResultsTableController
     protected SpectraCollection spectrumCollection;
     protected SpectrumPopupMenu spectrumPopupMenu;
     protected DefaultTableModel tableModel;
+    protected SpectrumBoundaryCollection boundaries;
     protected String[] columnNames = new String[]{
             "Map",
             "Show",
@@ -68,6 +70,7 @@ public class SpectrumResultsTableController
         spectrumPopupMenu.setInstrument(instrument);
         panel = new SpectrumResultsTableView(instrument, spectrumCollection, spectrumPopupMenu);
         panel.setup();
+        boundaries = (SpectrumBoundaryCollection)model.getModelManager().getModel(model.getSpectrumBoundaryCollectionModelName());
 
         spectrumRawResults = model.getSpectrumRawResults();
         this.spectrumCollection = spectrumCollection;
@@ -94,6 +97,8 @@ public class SpectrumResultsTableController
         tableModelListener = new SpectrumResultsTableModeListener();
 
         this.spectrumCollection.addPropertyChangeListener(propertyChangeListener);
+        boundaries.addPropertyChangeListener(propertyChangeListener);
+
     }
 
     public void setSpectrumResultsPanel()
@@ -245,7 +250,7 @@ public class SpectrumResultsTableController
             }
         });
 
-        stringRenderer = new SpectrumStringRenderer(model, spectrumRawResults);
+        stringRenderer = new SpectrumStringRenderer(model, spectrumRawResults, spectrumCollection);
         panel.getResultList().setDefaultRenderer(String.class, stringRenderer);
         panel.getResultList().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
         panel.getResultList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setPreferredWidth(35);
@@ -279,6 +284,7 @@ public class SpectrumResultsTableController
             {
                 resultIntervalCurrentlyShown.prevBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
+                showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
     }
@@ -295,12 +301,14 @@ public class SpectrumResultsTableController
             {
                 resultIntervalCurrentlyShown.nextBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
+                showImageBoundaries(resultIntervalCurrentlyShown);
             }
         }
         else
         {
             resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
             model.showFootprints(resultIntervalCurrentlyShown);
+            showImageBoundaries(resultIntervalCurrentlyShown);
         }
     }
 
@@ -335,6 +343,7 @@ public class SpectrumResultsTableController
         {
             shown.id2 = newMaxId;
             model.showFootprints(shown);
+            showImageBoundaries(shown);
         }
     }
 
@@ -386,10 +395,42 @@ public class SpectrumResultsTableController
 //        }
     }
 
+    protected void showImageBoundaries(IdPair idPair)
+    {
+        int startId = idPair.id1;
+        int endId = idPair.id2;
+        boundaries.removeAllBoundaries();
+
+        for (int i=startId; i<endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if(i >= spectrumRawResults.size())
+                break;
+
+            try
+            {
+                String currentImage = spectrumRawResults.get(i).get(0);
+                String boundaryName = currentImage.substring(0,currentImage.length()-4);
+                SpectrumKey key = model.createSpectrumKey(currentImage, model.getInstrument());
+                boundaries.addBoundary(key, spectrumCollection);
+            }
+            catch (Exception e1) {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                        "There was an error mapping the boundary.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+                break;
+            }
+        }
+    }
+
     public void setSpectrumResults(List<List<String>> results)
     {
         JTable resultTable = panel.getResultList();
-        panel.getResultsLabel().setText(results.size() + " images matched");
+        panel.getResultsLabel().setText(results.size() + " spectra matched");
         spectrumRawResults = results;
         stringRenderer.setSpectrumRawResults(spectrumRawResults);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
@@ -397,6 +438,7 @@ public class SpectrumResultsTableController
 
         panel.getResultList().getModel().removeTableModelListener(tableModelListener);
         spectrumCollection.removePropertyChangeListener(propertyChangeListener);
+        boundaries.removePropertyChangeListener(propertyChangeListener);
 
         try
         {
@@ -435,6 +477,11 @@ public class SpectrumResultsTableController
                     resultTable.setValueAt(false, i, frusColumnIndex);
                 }
 
+                if (boundaries.containsBoundary(key))
+                    resultTable.setValueAt(true, i, bndrColumnIndex);
+                else
+                    resultTable.setValueAt(false, i, bndrColumnIndex);
+
                 resultTable.setValueAt(i+1, i, idColumnIndex);
 //                if (str.size() == 3) {
 //                    System.out.println(
@@ -472,7 +519,10 @@ public class SpectrumResultsTableController
         {
             panel.getResultList().getModel().addTableModelListener(tableModelListener);
             spectrumCollection.addPropertyChangeListener(propertyChangeListener);
+            boundaries.addPropertyChangeListener(propertyChangeListener);
         }
+        model.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
+        showImageBoundaries(model.getResultIntervalCurrentlyShown());
     }
 
     class SpectrumResultsPropertyChangeListener implements PropertyChangeListener
@@ -512,14 +562,20 @@ public class SpectrumResultsTableController
                         resultsTable.setValueAt(false, i, panel.getShowFootprintColumnIndex());
                         resultsTable.setValueAt(false, i, panel.getFrusColumnIndex());
                     }
-                    if (spectrum != null && (spectrum.isSelected() == true))
-                    {
+//                    if (spectrum != null && (spectrum.isSelected() == true))
+//                    {
+//                        resultsTable.setValueAt(true, i, panel.getBndrColumnIndex());
+//                    }
+//                    else
+//                    {
+//                        resultsTable.setValueAt(false, i, panel.getBndrColumnIndex());
+//                    }
+
+                    if (boundaries.containsBoundary(key))
                         resultsTable.setValueAt(true, i, panel.getBndrColumnIndex());
-                    }
                     else
-                    {
                         resultsTable.setValueAt(false, i, panel.getBndrColumnIndex());
-                    }
+
                 }
                 panel.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
@@ -603,10 +659,15 @@ public class SpectrumResultsTableController
             {
                 try
                 {
-                    if (spectrum.isSelected())
-                        spectra.deselect(spectrum);
+//                    if (spectrum.isSelected())
+//                        spectra.deselect(spectrum);
+//                    else
+//                        spectra.select(spectrum);
+
+                    if (!boundaries.containsBoundary(key))
+                        boundaries.addBoundary(key, spectrumCollection);
                     else
-                        spectra.select(spectrum);
+                        boundaries.removeBoundary(key);
                 }
                 catch (Exception e1) {
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
