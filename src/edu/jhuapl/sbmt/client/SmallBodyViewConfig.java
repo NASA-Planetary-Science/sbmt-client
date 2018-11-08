@@ -431,7 +431,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/hypertree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/hypertree/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt";
