@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -495,8 +494,7 @@ public class SbmtView extends View implements PropertyChangeListener
             }
 
 
-            boolean supportsEsri=true;//(getConfig().body==ShapeModelBody.RQ36);
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), getStatusBar()));
 
 
             JTabbedPane customDataPane=new JTabbedPane();
