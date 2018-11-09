@@ -8,6 +8,8 @@ Latest version: VERSIONXXXXXX
 
 The SBMT OREX Version is currently available for Mac, Windows, and Linux systems. It is distributed as a self-contained zip file.
 
+Users new to the SBMT or those wanting to learn more about its functionality can access a [user guide and tutorials from the main website](http://sbmt.jhuapl.edu/index.php#Getting-Started). 
+
 To install the SBMT, download the file appropriate for your operating system, navigate to the sbmt folder, and run the "runsbmt" program.
 
 

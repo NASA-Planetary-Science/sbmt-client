@@ -48,7 +48,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
         this.model = model;
         this.results = model.getCustomImages();
-        this.boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getCustomImageBoundaryCollectionModelName());
+        this.boundaries = (PerspectiveImageBoundaryCollection)model.getModelManager().getModel(model.getImageBoundaryCollectionModelName());
     }
 
     @Override
