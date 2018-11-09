@@ -740,9 +740,9 @@ public class DatabaseGeneratorSql
 //        RYUGU_NASA_004_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
 //                "ryugu/nasa-004/tir"),
-//        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-//                "ryugu/nasa-005/tir"),
+        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
+                "ryugu/nasa-005/tir"),
 
         RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
