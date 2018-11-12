@@ -3,6 +3,9 @@ package edu.jhuapl.sbmt.gui.lidar.v2;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -53,6 +56,8 @@ public class LidarSearchView extends JPanel
     private JPanel searchPanel;
     private JPanel trackInfoPanel;
 
+    protected JPanel searchPropertiesPanel;
+
     /**
      * Create the panel.
      */
@@ -91,7 +96,7 @@ public class LidarSearchView extends JPanel
         timeRangePanel.setBorder(null);
         searchPanel.add(timeRangePanel);
         timeRangePanel
-                .setLayout(new BoxLayout(timeRangePanel, BoxLayout.X_AXIS));
+        .setLayout(new BoxLayout(timeRangePanel, BoxLayout.X_AXIS));
 
         JLabel lblStart = new JLabel("Start:");
         timeRangePanel.add(lblStart);
@@ -116,31 +121,59 @@ public class LidarSearchView extends JPanel
         Component verticalStrut = Box.createVerticalStrut(20);
         searchPanel.add(verticalStrut);
 
-        JPanel searchPropertiesPanel = new JPanel();
+        searchPropertiesPanel = new JPanel();
         searchPropertiesPanel.setBorder(null);
         searchPanel.add(searchPropertiesPanel);
-        searchPropertiesPanel.setLayout(
-                new BoxLayout(searchPropertiesPanel, BoxLayout.X_AXIS));
+        GridBagLayout gbl_searchPropertiesPanel = new GridBagLayout();
+        gbl_searchPropertiesPanel.columnWidths = new int[] {95, 30, 30, 0, 75, 0, 0, 30, 30};
+        gbl_searchPropertiesPanel.rowHeights = new int[]{26, 0, 0, 0, 0};
+        gbl_searchPropertiesPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        gbl_searchPropertiesPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+        searchPropertiesPanel.setLayout(gbl_searchPropertiesPanel);
 
         JLabel lblMinTrackSize = new JLabel("Min Track Size:");
-        searchPropertiesPanel.add(lblMinTrackSize);
+        GridBagConstraints gbc_lblMinTrackSize = new GridBagConstraints();
+        gbc_lblMinTrackSize.anchor = GridBagConstraints.WEST;
+        gbc_lblMinTrackSize.insets = new Insets(0, 0, 5, 5);
+        gbc_lblMinTrackSize.gridx = 0;
+        gbc_lblMinTrackSize.gridy = 0;
+        searchPropertiesPanel.add(lblMinTrackSize, gbc_lblMinTrackSize);
 
         minTrackSizeTextField = new JFormattedTextField();
         minTrackSizeTextField.setText("10");
         minTrackSizeTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                 minTrackSizeTextField.getPreferredSize().height));
 
-        searchPropertiesPanel.add(minTrackSizeTextField);
+        GridBagConstraints gbc_minTrackSizeTextField = new GridBagConstraints();
+        gbc_minTrackSizeTextField.fill = GridBagConstraints.HORIZONTAL;
+        gbc_minTrackSizeTextField.gridwidth = 2;
+        gbc_minTrackSizeTextField.insets = new Insets(0, 0, 5, 5);
+        gbc_minTrackSizeTextField.gridx = 1;
+        gbc_minTrackSizeTextField.gridy = 0;
+        searchPropertiesPanel.add(minTrackSizeTextField, gbc_minTrackSizeTextField);
 
-        JLabel lblNewLabel_1 = new JLabel("Track Separaton (sec):");
-        searchPropertiesPanel.add(lblNewLabel_1);
+        JLabel lblNewLabel_1 = new JLabel("Track Separation (sec):");
+        GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+        gbc_lblNewLabel_1.gridwidth = 3;
+        gbc_lblNewLabel_1.anchor = GridBagConstraints.WEST;
+        gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
+        gbc_lblNewLabel_1.gridx = 4;
+        gbc_lblNewLabel_1.gridy = 0;
+        searchPropertiesPanel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
         trackSeparationTextField = new JFormattedTextField();
         trackSeparationTextField.setText("10");
         trackSeparationTextField.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                 trackSeparationTextField.getPreferredSize().height));
 
-        searchPropertiesPanel.add(trackSeparationTextField);
+        GridBagConstraints gbc_trackSeparationTextField = new GridBagConstraints();
+        gbc_trackSeparationTextField.fill = GridBagConstraints.HORIZONTAL;
+        gbc_trackSeparationTextField.gridwidth = 2;
+        gbc_trackSeparationTextField.insets = new Insets(0, 0, 5, 0);
+        gbc_trackSeparationTextField.gridx = 7;
+        gbc_trackSeparationTextField.gridy = 0;
+        searchPropertiesPanel.add(trackSeparationTextField, gbc_trackSeparationTextField);
+
 
         Component verticalStrut_1 = Box.createVerticalStrut(20);
         searchPanel.add(verticalStrut_1);
@@ -148,7 +181,7 @@ public class LidarSearchView extends JPanel
         JPanel searchButtonsPanel = new JPanel();
         searchPanel.add(searchButtonsPanel);
         searchButtonsPanel
-                .setLayout(new BoxLayout(searchButtonsPanel, BoxLayout.X_AXIS));
+        .setLayout(new BoxLayout(searchButtonsPanel, BoxLayout.X_AXIS));
 
         selectRegionButton = new JToggleButton("Select Region");
         searchButtonsPanel.add(selectRegionButton);
@@ -165,7 +198,7 @@ public class LidarSearchView extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(trackInfoPanel);
         trackInfoPanel
-                .setLayout(new BoxLayout(trackInfoPanel, BoxLayout.Y_AXIS));
+        .setLayout(new BoxLayout(trackInfoPanel, BoxLayout.Y_AXIS));
 
         JPanel loadPanel = new JPanel();
         trackInfoPanel.add(loadPanel);
@@ -212,7 +245,7 @@ public class LidarSearchView extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(translationPanel);
         translationPanel
-                .setLayout(new BoxLayout(translationPanel, BoxLayout.Y_AXIS));
+        .setLayout(new BoxLayout(translationPanel, BoxLayout.Y_AXIS));
 
         JPanel panel_1 = new JPanel();
         translationPanel.add(panel_1);
@@ -232,7 +265,7 @@ public class LidarSearchView extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null));
         panel.add(propertiesPanel);
         propertiesPanel
-                .setLayout(new BoxLayout(propertiesPanel, BoxLayout.Y_AXIS));
+        .setLayout(new BoxLayout(propertiesPanel, BoxLayout.Y_AXIS));
 
         radialOffsetSlider = new RadialOffsetChanger();
         propertiesPanel.add(radialOffsetSlider);
@@ -240,7 +273,7 @@ public class LidarSearchView extends JPanel
         JPanel pointSizePanel = new JPanel();
         propertiesPanel.add(pointSizePanel);
         pointSizePanel
-                .setLayout(new BoxLayout(pointSizePanel, BoxLayout.X_AXIS));
+        .setLayout(new BoxLayout(pointSizePanel, BoxLayout.X_AXIS));
 
         JLabel lblNewLabel_2 = new JLabel("Point Size:");
         pointSizePanel.add(lblNewLabel_2);
@@ -266,40 +299,40 @@ public class LidarSearchView extends JPanel
         Component horizontalGlue_3 = Box.createHorizontalGlue();
         errorPanel.add(horizontalGlue_3);
 
-//        addComponentListener(new ComponentListener()
-//        {
-//
-//            @Override
-//            public void componentShown(ComponentEvent e)
-//            {
-//                // TODO Auto-generated method stub
-//
-//            }
-//
-//            @Override
-//            public void componentResized(ComponentEvent e)
-//            {
-//                System.out.println(
-//                        "LidarSearchView.LidarSearchView().new ComponentListener() {...}: componentResized: component resized " + getWidth());
-//                tableScrollPane.setPreferredSize(new Dimension(getWidth(), 150));
-//                tableScrollPane.setMaximumSize(new Dimension(getWidth(), 150));
-//                tableScrollPane.invalidate();
-//            }
-//
-//            @Override
-//            public void componentMoved(ComponentEvent e)
-//            {
-//                // TODO Auto-generated method stub
-//
-//            }
-//
-//            @Override
-//            public void componentHidden(ComponentEvent e)
-//            {
-//                // TODO Auto-generated method stub
-//
-//            }
-//        });
+        //        addComponentListener(new ComponentListener()
+        //        {
+        //
+        //            @Override
+        //            public void componentShown(ComponentEvent e)
+        //            {
+        //                // TODO Auto-generated method stub
+        //
+        //            }
+        //
+        //            @Override
+        //            public void componentResized(ComponentEvent e)
+        //            {
+        //                System.out.println(
+        //                        "LidarSearchView.LidarSearchView().new ComponentListener() {...}: componentResized: component resized " + getWidth());
+        //                tableScrollPane.setPreferredSize(new Dimension(getWidth(), 150));
+        //                tableScrollPane.setMaximumSize(new Dimension(getWidth(), 150));
+        //                tableScrollPane.invalidate();
+        //            }
+        //
+        //            @Override
+        //            public void componentMoved(ComponentEvent e)
+        //            {
+        //                // TODO Auto-generated method stub
+        //
+        //            }
+        //
+        //            @Override
+        //            public void componentHidden(ComponentEvent e)
+        //            {
+        //                // TODO Auto-generated method stub
+        //
+        //            }
+        //        });
 
     }
 
@@ -324,14 +357,14 @@ public class LidarSearchView extends JPanel
                     {null, null, null, null}
                 },
                 new String [] {
-                    "Title 1", "Title 2", "Title 3", "Title 4"
+                        "Title 1", "Title 2", "Title 3", "Title 4"
                 }
-            ));
+                ));
         this.table.setFillsViewportHeight(true);
         tableScrollPane = new JScrollPane(table);
         tableScrollPane.setPreferredSize(new Dimension(getWidth(), 150));
         tableScrollPane.setMaximumSize(new Dimension(getWidth(), 150));
-//        tablePanel.add(tableScrollPane, 0);
+        //        tablePanel.add(tableScrollPane, 0);
         tablePanel.add(tableScrollPane, BorderLayout.CENTER);
     }
 
@@ -455,4 +488,5 @@ public class LidarSearchView extends JPanel
     public JPanel getTrackInfoPanel() {
         return trackInfoPanel;
     }
+
 }

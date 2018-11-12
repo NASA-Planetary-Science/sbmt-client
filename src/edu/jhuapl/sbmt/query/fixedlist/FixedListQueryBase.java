@@ -84,8 +84,11 @@ public abstract class FixedListQueryBase extends QueryBase
 
         List<List<String>> results = new ArrayList<>();
 
-        System.out.println(
-                "FixedListQueryBase: getResultsFromFileListOnServer: path is " + pathToFileListOnServer);
+        if (!checkAuthorizedAccess())
+        {
+            return results;
+        }
+
         FileInfo info = FileCache.getFileInfoFromServer(pathToFileListOnServer);
         if (!info.isURLAccessAuthorized().equals(YesOrNo.YES) || !info.isExistsOnServer().equals(YesOrNo.YES))
         {
@@ -94,10 +97,11 @@ public abstract class FixedListQueryBase extends QueryBase
         File file = FileCache.getFileFromServer(pathToFileListOnServer);
 
         // Let user know that search uses fixed list and ignores search parameters
-        JOptionPane.showMessageDialog(null,
-                "Search uses a fixed list and ignores all but file name search parameters.",
-                "Notification",
-                JOptionPane.INFORMATION_MESSAGE);
+        // TODO - commented out on 1251 to allow for headless version to run
+//        JOptionPane.showMessageDialog(null,
+//                "Search uses a fixed list and ignores all but file name search parameters.",
+//                "Notification",
+//                JOptionPane.INFORMATION_MESSAGE);
 
         if (file.exists())
         {

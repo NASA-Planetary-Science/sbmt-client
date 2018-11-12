@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -150,7 +149,8 @@ public class OlaFSHyperTreeStatistics implements Dimensioned
                 {
 //                    root.add(new OlaFSHyperPoint(tgpos.getX(), tgpos.getY(), tgpos.getZ(), time, scpos.getX(), scpos.getY(), scpos.getZ(), intensity));
 //                    totalPointsWritten++;
-                    OlaFSHyperPoint pt=new OlaFSHyperPoint(tgpos.getX(), tgpos.getY(), tgpos.getZ(), time, scpos.getX(), scpos.getY(), scpos.getZ(), intensity, -1);    // -1 means don't worry about file number
+                    double range = 0;  // TODO range currently not used for OLA, so set to 0/
+                    OlaFSHyperPoint pt=new OlaFSHyperPoint(tgpos.getX(), tgpos.getY(), tgpos.getZ(), time, scpos.getX(), scpos.getY(), scpos.getZ(), range, intensity, -1);    // -1 means don't worry about file number
                     for (int i=0; i<getDimension(); i++)
                         binCounts[i][getBin(i, pt.getCoordinate(i))]++;
                     cnt++;
@@ -275,10 +275,10 @@ public class OlaFSHyperTreeStatistics implements Dimensioned
             sw.reset();
             sw.start();
             Path inputPath=Paths.get(fileList.get(i).toString());
-            System.out.println("Searching for valid lidar points in file "+(i+1)+"/"+numFiles+" : "+inputPath);
+//            System.out.println("Searching for valid lidar points in file "+(i+1)+"/"+numFiles+" : "+inputPath);
             statistics.addPointsFromL2FileToRoot(inputPath,Integer.MAX_VALUE);
-            System.out.println("  Elapsed time = "+sw.elapsedTime(TimeUnit.SECONDS)+" s");
-            System.out.println("  Total points considered = "+statistics.pointsConsidered);// TODO: close down all DataOutputStreams
+//            System.out.println("  Elapsed time = "+sw.elapsedTime(TimeUnit.SECONDS)+" s");
+//            System.out.println("  Total points considered = "+statistics.pointsConsidered);// TODO: close down all DataOutputStreams
         }
         Path outputFile=outputDirectory.resolve("stats");
         System.out.print("Writing to "+outputFile+"... ");

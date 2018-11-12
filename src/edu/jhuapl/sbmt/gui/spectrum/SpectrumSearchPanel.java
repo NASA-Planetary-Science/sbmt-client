@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -75,10 +76,10 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.eros.SpectraCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.spectrum.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
@@ -514,7 +515,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             try
             {
                 String currentSpectrum = spectrumRawResults.get(i);
-                model.addSpectrum(createSpectrumName(currentSpectrum), instrument);
+                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -1134,7 +1135,9 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
         submitButton.setText("Search");
         submitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 submitButtonActionPerformed(evt);
+                setCursor(Cursor.getDefaultCursor());
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1848,7 +1851,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
-                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist.txt", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
+                    results = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
