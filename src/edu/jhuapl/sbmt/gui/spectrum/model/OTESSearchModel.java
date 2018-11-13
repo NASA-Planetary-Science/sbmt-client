@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.spectrum.model;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -13,6 +14,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
@@ -26,6 +28,24 @@ public class OTESSearchModel extends SpectrumSearchModel
             Renderer renderer, SpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+
+        if (smallBodyConfig.hierarchicalSpectraSearchSpecification == null)
+        {
+            try
+            {
+                //TODO: eventually point this to a URL
+                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+                specIO.setPathString(smallBodyConfig.spectrumMetadataFile);
+                specIO.loadMetadata();
+                smallBodyConfig.hierarchicalSpectraSearchSpecification = specIO;
+                this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         setRedMaxVal(0.000001);
         setGreenMaxVal(0.000001);

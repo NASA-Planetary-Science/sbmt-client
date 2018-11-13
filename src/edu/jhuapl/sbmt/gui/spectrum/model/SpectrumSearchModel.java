@@ -132,7 +132,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
-        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
+
+
+//        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
         spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 
     }
@@ -142,7 +144,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         try
         {
             if (spectraSpec != null)
+            {
                 spectraSpec.loadMetadata();
+            }
         }
         catch (FileNotFoundException e)
         {

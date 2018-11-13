@@ -46,8 +46,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public String[] imageSearchUserDefinedCheckBoxesNames = new String[] {};
     public double imageSearchDefaultMaxSpacecraftDistance;
     public double imageSearchDefaultMaxResolution;
-    public boolean hasHierarchicalImageSearch;
-    public boolean hasHierarchicalSpectraSearch;
+    public boolean hasHierarchicalImageSearch = false;
+    public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
     public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
