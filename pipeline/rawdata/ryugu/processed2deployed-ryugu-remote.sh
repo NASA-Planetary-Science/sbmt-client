@@ -214,6 +214,8 @@ else
 
   echo Rsyncing $srcTop/$processingVersion/$processingModelName to $destTop/$processingModelName-$processingVersion... # >> $log 2>&1
   doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingModelName-$processingVersion
+  echo "Sending /project/sbmt2/prod/ryugu/$processingModelName/. to $destTop/$processingModelName-$processingVersion"
+  rsync -rlptgDH /project/sbmt2/prod/ryugu/$processingModelName/. $destTop/$processingModelName-$processingVersion
 
   # set the soft link to the shared onc directory
   if [ $deployTarget = "apl" ]

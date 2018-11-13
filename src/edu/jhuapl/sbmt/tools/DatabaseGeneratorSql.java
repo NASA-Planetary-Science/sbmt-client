@@ -36,7 +36,6 @@ public class DatabaseGeneratorSql
     private SqlManager db = null;
     private SmallBodyModel smallBodyModel;
     private SmallBodyViewConfig smallBodyConfig;
-    private String betaSuffix = "_beta";
     private String databasePrefix;
     private String databaseSuffix = "";
     private boolean appendTables;
@@ -227,7 +226,7 @@ public class DatabaseGeneratorSql
             if (image.getUnshiftedFootprint() == null)
             {
                 // In this case if image.loadFootprint() finds no frustum intersection
-                System.out.println("skipping this image since no frustum intersection with body");
+                System.out.println("skipping image " + filename + " since no frustum intersection with body");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -237,7 +236,7 @@ public class DatabaseGeneratorSql
             }
             else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
-                System.out.println("skipping this image since no intersecting cells");
+                System.out.println("skipping image " + filename + " since no intersecting cells");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -741,9 +740,9 @@ public class DatabaseGeneratorSql
 //        RYUGU_NASA_004_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
 //                "ryugu/nasa-004/tir"),
-//        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-//                "ryugu/nasa-005/tir"),
+        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
+                "ryugu/nasa-005/tir"),
 
         RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",

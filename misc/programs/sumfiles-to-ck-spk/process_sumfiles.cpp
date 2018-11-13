@@ -12,6 +12,7 @@ struct TimeMatrix
     std::string utc;
     double mat[3][3];
     double pos[3];
+    double vel[3];
 };
 
 
@@ -64,13 +65,17 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 
 void loadSumFile(const std::string& sumfile,
 		const std::string& instrumentframe,
+		const std::string& spacecraftname,
 		const std::string& spacecraftframe,
+		const std::string& bodyname,
+		const std::string& bodyframe,
 		std::string& flipX,
 		std::string& flipY, 
 		std::string& flipZ,
         std::string& utc,
         double asteroid_to_sc[3][3],
-        double position[3])
+        double position[3],
+        double velocity[3])
 {
     std::ifstream fin(sumfile.c_str());
 
@@ -78,9 +83,11 @@ void loadSumFile(const std::string& sumfile,
     {
         double et;
         double scpos[3];
+        double state[6];
         double cx[3];
         double cy[3];
         double cz[3];
+        double lt;
 
         std::string name;
         std::string dummy;
@@ -201,6 +208,21 @@ void loadSumFile(const std::string& sumfile,
         position[0] = scpos[0];
         position[1] = scpos[1];
         position[2] = scpos[2];
+
+        // Sumfiles do not contain velocity. If an SPK has been loaded, use its
+        // velocity in the output data. A zero velocity is assigned if the
+        // spacecraft state cannot be determined.
+        velocity[0] = 0;
+        velocity[1] = 0;
+        velocity[2] = 0;
+
+        spkezr_c (spacecraftname.c_str(), et, bodyframe.c_str(), "NONE", bodyname.c_str(), state, &lt);
+        if (!failed_c())
+        {
+            velocity[0] = state[3];
+            velocity[1] = state[4];
+            velocity[2] = state[5];
+        }
     }
     else
     {
@@ -258,7 +280,10 @@ void createSpkInputDataFile(const std::vector<TimeMatrix>& data)
         fout << tm.utc << " ";
         fout << std::scientific << tm.pos[0] << " ";
         fout << std::scientific << tm.pos[1] << " ";
-        fout << std::scientific << tm.pos[2] << " 0.0 0.0 0.0" << std::endl;
+        fout << std::scientific << tm.pos[2] << " ";
+        fout << std::scientific << tm.vel[0] << " ";
+        fout << std::scientific << tm.vel[1] << " ";
+        fout << std::scientific << tm.vel[2] << " " << std::endl;
     }
 }
 
@@ -270,22 +295,42 @@ std::ifstream::pos_type filesize(const char* filename)
 
 int main(int argc, char** argv)
 {
-    if (argc < 8)
+    if (argc < 11)
     {
-	std::cout << "Usage: process_sumfiles <kernelFiles> <sumfileList> <instrumentFrameName> <spacecraftFrameName> <boolean flipX> <boolean flipY> <boolean flipZ>" << std::endl;
-
+	    std::cout << "Usage: process_sumfiles <metakernel> <sumfileList> <instrumentFrameName> <spacecraftName> <spacecraftFrameName> <bodyName> <bodyFrameName> <boolean flipX> <boolean flipY> <boolean flipZ>" << std::endl;
+	    std::cout <<"E.g.:\n" << std::endl;
+	    std::cout <<"process_sumfiles kernels.txt sumfilelist.txt NEAR_MSI NEAR NEAR_SC_BUS_PRIME EROS IAU_EROS false false false\n" << std::endl;
         return 1;
     }
 
     std::string kernelfiles = argv[1];
     std::string sumfilelist = argv[2];
     std::string instrumentframe = argv[3];
-    std::string spacecraftframe = argv[4];
-    std::string flipX = argv[5];
-    std::string flipY = argv[6];
-    std::string flipZ = argv[7];
+    std::string spacecraftname = argv[4];
+    std::string spacecraftframe = argv[5];
+    std::string bodyname = argv[6];
+    std::string bodyframe = argv[7];
+    std::string flipX = argv[8];
+    std::string flipY = argv[9];
+    std::string flipZ = argv[10];
 
-    //printf("%s\n",flipX);
+    //Need some error handling here to check the data types of the input arguments.
+    //If an incorrect type is passed in, notify the user of what was expected and
+    //what they passed in.
+    std::cout << std::endl;
+    std::cout << "The following parameters were entered on the command line:" << std::endl;
+    std::cout << "metakernel: " << kernelfiles << std::endl;
+    std::cout << "sumfilelist: " << sumfilelist << std::endl;
+    std::cout << "instrumentframe: " << instrumentframe << std::endl;
+    std::cout << "spacecraftname: " << spacecraftname << std::endl;
+    std::cout << "spacecraftframe: " << spacecraftframe << std::endl;
+    std::cout << "bodyname: " << bodyname << std::endl;
+    std::cout << "bodyframe: " << bodyframe << std::endl;
+    std::cout << "Flip X: " << flipX << std::endl;
+    std::cout << "Flip Y: " << flipY << std::endl;
+    std::cout << "Flip Z: " << flipZ << std::endl;
+    std::cout << std::endl;
+
     furnsh_c(kernelfiles.c_str());
 
     std::vector<std::string> sumfiles = loadFileList(sumfilelist);
@@ -301,7 +346,7 @@ int main(int argc, char** argv)
 
         TimeMatrix tm;
 
-	loadSumFile(sumfiles[i], instrumentframe, spacecraftframe, flipX, flipY, flipZ, tm.utc, tm.mat, tm.pos);
+	    loadSumFile(sumfiles[i], instrumentframe, spacecraftname, spacecraftframe, bodyname, bodyframe, flipX, flipY, flipZ, tm.utc, tm.mat, tm.pos, tm.vel);
 
         std::cout << sumfiles[i] << " " << tm.utc << std::endl;
 
