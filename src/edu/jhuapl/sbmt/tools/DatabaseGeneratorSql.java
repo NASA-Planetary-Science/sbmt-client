@@ -36,7 +36,6 @@ public class DatabaseGeneratorSql
     private SqlManager db = null;
     private SmallBodyModel smallBodyModel;
     private SmallBodyViewConfig smallBodyConfig;
-    private String betaSuffix = "_beta";
     private String databasePrefix;
     private String databaseSuffix = "";
     private boolean appendTables;
@@ -227,7 +226,7 @@ public class DatabaseGeneratorSql
             if (image.getUnshiftedFootprint() == null)
             {
                 // In this case if image.loadFootprint() finds no frustum intersection
-                System.out.println("skipping this image since no frustum intersection with body");
+                System.out.println("skipping image " + filename + " since no frustum intersection with body");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -237,7 +236,7 @@ public class DatabaseGeneratorSql
             }
             else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
-                System.out.println("skipping this image since no intersecting cells");
+                System.out.println("skipping image " + filename + " since no intersecting cells");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -301,7 +300,7 @@ public class DatabaseGeneratorSql
             // Now populate cubes table
             vtkPolyData footprintPolyData = image.getUnshiftedFootprint();
             TreeSet<Integer> cubeIds = smallBodyModel.getIntersectingCubes(footprintPolyData);
-            System.out.println("cubeIds:  " + cubeIds);
+//            System.out.println("cubeIds:  " + cubeIds);
             System.out.println("number of cubes: " + cubeIds.size());
             System.out.println("id: " + cubeTablePrimaryKey);
             System.out.println("number of cells in polydata " + footprintPolyData.GetNumberOfCells());
@@ -567,6 +566,10 @@ public class DatabaseGeneratorSql
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
                 "ryugu/jaxa-spc-v20180829/onc"),
 
+        JAXA_SPC_V20181014(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
        JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
@@ -587,6 +590,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/var/www/sbmt/sbmt/data/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
@@ -642,6 +648,11 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
 
+        JAXA_SPC_V20181014_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
+
 
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001",
@@ -658,6 +669,9 @@ public class DatabaseGeneratorSql
         RYUGU_NASA_005_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
                 "ryugu/nasa-005/onc"),
+        RYUGU_NASA_006_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_006),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa006",
+                "ryugu/nasa-006/onc"),
 
         RYUGU_SHARED_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005",
@@ -726,9 +740,9 @@ public class DatabaseGeneratorSql
 //        RYUGU_NASA_004_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
 //                "ryugu/nasa-004/tir"),
-//        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-//                "ryugu/nasa-005/tir"),
+        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
+                "ryugu/nasa-005/tir"),
 
         RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",

@@ -4,6 +4,22 @@
 
 # Release Notes
 
+### November 6, 2018 (SBMT-0.6.6)
+- Added the ability to save the state of the camera view and image panel settings
+- Added tooltips to and improved user-friendliness of toolbar icons
+- Added ability to transfer custom DTM plate colorings when exporting to custom model
+- Made bug fixes and UI improvements to the custom images panel
+- Fixed bug that caused an error when loading a sumfile without deleting the default infofile name
+- Fixed bug that with the "Show Spacecraft" option in the Observing Conditions tab
+
+H2:
+- Added new SPC shape models with the latest ONC, TIR, and LIDAR data
+- Fixed bug that caused the LIDAR hide checkbox to become unsynced with the hide dropdown menu
+
+### October 22, 2018 (SBMT-0.6.5.1)
+
+- Configuration update for H2 lidar data
+
 ### October 18, 2018 (SBMT-0.6.5)
 
 - Made bug fixes, feature enhancements, and UI improvements to the structures panel

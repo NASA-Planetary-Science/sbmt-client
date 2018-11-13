@@ -202,6 +202,9 @@ public class StateHistoryController implements TableModelListener, ItemListener,
                 // once we add an interval, enable the view options
                 //                view.getViewControlPanel().setEnabled(true);
                 setViewControlPanelEnabled(true);
+                String currentView = (String)view.getViewOptions().getSelectedItem();
+                if (currentView.equals(viewChoices.SPACECRAFT.toString()))
+                    view.getShowSpacecraft().setEnabled(false); // show spacecraft should be disabled if spacecraft view
                 view.setCursor(Cursor.getDefaultCursor());
             }
         });
@@ -551,12 +554,12 @@ public class StateHistoryController implements TableModelListener, ItemListener,
 
                     } else*/ if(selectedItem.equals(viewChoices.EARTH.toString())){
                         currentRun.setSpacecraftMovement(false);
-                        currentRun.setEarthView(true);
+                        currentRun.setEarthView(true, view.getShowSpacecraft().isSelected());
                         view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SUN.toString())){
                         currentRun.setSpacecraftMovement(false);
-                        currentRun.setEarthView(false);
-                        currentRun.setSunView(true);
+                        currentRun.setEarthView(false, view.getShowSpacecraft().isSelected());
+                        currentRun.setSunView(true, view.getShowSpacecraft().isSelected());
                         view.getViewInputAngle().setText(Double.toString(renderer.getCameraViewAngle()));
                     } else if(selectedItem.equals(viewChoices.SPACECRAFT.toString())){
                        setSpacecraftView(currentRun);
@@ -692,11 +695,10 @@ public class StateHistoryController implements TableModelListener, ItemListener,
 
     private void setSpacecraftView(StateHistoryModel currentRun)
     {
-        currentRun.setEarthView(false);
-        currentRun.setSunView(false);
+        currentRun.setEarthView(false, view.getShowSpacecraft().isSelected());
+        currentRun.setSunView(false, view.getShowSpacecraft().isSelected());
         currentRun.setSpacecraftMovement(true);
         currentRun.setActorVisibility("Spacecraft", false);
-        view.getShowSpacecraft().setSelected(false);
         view.getShowSpacecraft().setEnabled(false);
         view.getDistanceOptions().setEnabled(false);
         view.getViewInputAngle().setText(Double.toString(currentRun.getRenderer().getCameraViewAngle()));
