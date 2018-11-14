@@ -39,6 +39,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     private String datadir;
     private String mapoutdir;
     private String cacheDir;
+    private String lowResModelPath;
 
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
@@ -115,6 +116,11 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         this.cacheDir = cacheDir;
     }
 
+    public void setLowResModelPath(String path)
+    {
+        this.lowResModelPath = path;
+    }
+
 
     public void setRegionSpecifiedWithLatLonScale(
             boolean regionSpecifiedWithLatLonScale)
@@ -169,6 +175,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             mapmaker.setDatadir(datadir);
             mapmaker.setMapoutdir(mapoutdir);
             mapmaker.setCacheDir(cacheDir);
+            mapmaker.setLowResModelPath(lowResModelPath);
             mapmaker.runMapmaker();
 
 

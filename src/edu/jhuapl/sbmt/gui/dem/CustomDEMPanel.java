@@ -45,6 +45,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FilenameUtils;
+
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.gui.JTextFieldDoubleVerifier;
@@ -57,6 +59,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
@@ -145,6 +148,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         this.selectRegionButton = null;
         this.renderer=renderer;
         this.smallBodyConfig = smallBodyConfig;
+
 
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
@@ -1013,7 +1017,10 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
             String demName = JOptionPane.showInputDialog(this, "Enter a name", "Name the DEM", JOptionPane.PLAIN_MESSAGE);
             if (demName != null && !demName.equals(""))
             {
-                runMapmakerSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()));
+                File lowResPath = FileCache.getFileFromServer(smallBodyConfig.getShapeModelFileNames()[0]);
+
+                String path = lowResPath.getAbsolutePath() + "." + FilenameUtils.getExtension(smallBodyConfig.getShapeModelFileNames()[0]);
+                runMapmakerSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()), new File(path));
             }
             else
             {
@@ -1046,7 +1053,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     }
 
     // Starts and manages a MapmakerSwingWorker
-    private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
+    private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder, File modelDir)
     {
         final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(this, "Running Mapmaker", mapmakerPath);
 
@@ -1076,6 +1083,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         mapmakerWorker.setName(demName);
         mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
         mapmakerWorker.setCacheDir(outputFolder.getAbsolutePath());
+        mapmakerWorker.setLowResModelPath(modelDir.getAbsolutePath());
 
 
 //        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url " + Configuration.getDataRootURL());

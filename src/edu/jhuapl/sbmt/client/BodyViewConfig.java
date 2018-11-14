@@ -296,6 +296,7 @@ public abstract class BodyViewConfig extends ViewConfig
         String[] modelFiles = new String[numberResolutions];
         for (int index = 0; index < numberResolutions; ++index) {
             modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
+            System.out.println("BodyViewConfig: getShapeModelFileNames: model file name " + modelFiles[index]);
         }
 
         return modelFiles;
