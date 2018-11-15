@@ -291,7 +291,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
@@ -375,7 +375,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
