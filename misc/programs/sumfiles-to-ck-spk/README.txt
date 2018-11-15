@@ -50,9 +50,9 @@ executed without any parameters:
                    <spacecraftFrameName> 
                    <bodyName> 
                    <bodyFrameName> 
-                   <boolean flipX> 
-                   <boolean flipY> 
-                   <boolean flipZ>
+                   <flipX> 
+                   <flipY> 
+                   <flipZ>
 
 The program takes 10 arguments:
 
@@ -81,14 +81,20 @@ are specified, e.g. EROS.
 The seventh argument is the name of the body frame in which the sumfile vectors 
 are specified, e.g. IAU_EROS.
 
-The last three arguments are boolean values (true or false), specifying
-whether to flip the orientation relative the the instrument axis in the
-parameter name. The X and Y flips defines the rotation about the boresight. 
-The Z flip determines whether the images are oriented looking into the
-instrument or looking out. Setting all three flips to false has the 
-boresight looking out of the instrument, increasing pixels (instrument X) 
-to the right, and increasing lines (instrument Y) down.
-
+The last three arguments are integer values specifying the orientation of the 
+image. flipI = J sets image axis I to image axis J, where I is an axis name 
+(X, Y, or Z), and J is a signed integer number for an axis. The values of
+J can be (-1, 1, -2, 2, -3, or 3), indicating the (-X, X, -Y, Y, -Z, Z) axis,
+respectively. The user must take care to correctly enter the flipI values
+so that the resulting flipped axes form a well-defined, right-handed coordinate
+system.
+Examples:
+   (flipX, flipY, flipZ) = ( 1, 2, 3) does not alter the image orientation.
+   (flipX, flipY, flipZ) = ( 2,-1, 1) rotates the image 90 degrees about Z.
+   (flipX, flipY, flipZ) = (-2, 1, 1) rotates the image -90 degrees about Z.
+   (flipX, flipY, flipZ) = ( 1,-2,-3) rotates the image 180 degrees about X.
+   
+   
 Then to run the program type:
 
 ./process_sumfiles kernels.txt sumfilelist.txt NEAR_MSI NEAR NEAR_SC_BUS_PRIME EROS IAU_EROS false false false
