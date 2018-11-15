@@ -1,6 +1,6 @@
 \begindata
-LSK_FILE_NAME          = '/project/osiris/ola/spice/Kernels/LSK/naif0011.tls'
-SCLK_FILE_NAME         = '/project/osiris/ola/spice/Kernels/SCLK/ORX_SCLKSCET.00000.example.tsc'
+LSK_FILE_NAME          = '/disks/daz15/osiris/data/Kernels/Flight/lsk/naif0012.tls'
+SCLK_FILE_NAME         = '/disks/daz15/osiris/data/Kernels/Flight/sclk/ORX_SCLKSCET.00038.tsc'
 CK_TYPE                = 3
 INSTRUMENT_ID          = -64000
 REFERENCE_FRAME_NAME   = 'IAU_BENNU'
