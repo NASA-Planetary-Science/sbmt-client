@@ -836,6 +836,15 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
         DEIMOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelType.EXPERIMENTAL),
                 "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
+
+
+        /*
+         * Osiris REx flight models below here.
+         */
+        BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath.txt", "bennu_altwgspcv20181109b_mapcam"),
+        BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath.txt", "bennu_altwgspcv20181109b_polycam"),
         ;
 
 
