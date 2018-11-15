@@ -18,10 +18,10 @@ public class DtmCreationController
 
 	public DtmCreationController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config)
 	{
-		model = new DtmCreationModel(pickManager);
+		model = new DtmCreationModel();
 		panel = new DtmCreationPanel();
 		resultsController = new DEMResultsTableController(modelManager, pickManager);
-		controlController = new DtmCreationControlController(config, model);
+		controlController = new DtmCreationControlController(config, model, pickManager);
 		init();
 	}
 

@@ -10,12 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
@@ -37,6 +34,7 @@ public class DtmCreationModel
     private String mapmakerPath;
     private String bigmapPath;
     private List<DEMInfo> infoList;
+    private int[] selectedIndices;
 
     private boolean initialized = false;
 
@@ -188,12 +186,12 @@ public class DtmCreationModel
     }
 
 
-    private void saveDEM(DEMInfo demInfo) throws IOException
+    public void saveDEM(DEMInfo demInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
 
-        if(demInfo.demfilename.endsWith(".fit") || demInfo.demfilename.endsWith(".fits") ||
-                demInfo.demfilename.endsWith(".FIT") || demInfo.demfilename.endsWith(".FITS"))
+//        if(demInfo.demfilename.endsWith(".fit") || demInfo.demfilename.endsWith(".fits") ||
+//                demInfo.demfilename.endsWith(".FIT") || demInfo.demfilename.endsWith(".FITS"))
         {
             // Copy FIT file to cache
             String newFilename = "dem-" + uuid + ".fit";
@@ -207,18 +205,18 @@ public class DtmCreationModel
             infoList.add(demInfo);
             updateConfigFile();
         }
-        else
-        {
-            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                    "DEM file does not have valid FIT extension.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+//        else
+//        {
+//            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+//                    "DEM file does not have valid FIT extension.",
+//                    "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//        }
     }
 
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        int[] selectedIndices = imageList.getSelectedIndices();
+        int[] selectedIndices = getSelectedIndices();
         Arrays.sort(selectedIndices);
         for (int i=selectedIndices.length-1; i>=0; --i)
         {
@@ -266,11 +264,6 @@ public class DtmCreationModel
 	public Renderer getRenderer()
 	{
 		return renderer;
-	}
-
-	public PickManager getPickManager()
-	{
-		return pickManager;
 	}
 
 	public double getLatitude()
@@ -331,6 +324,21 @@ public class DtmCreationModel
 	public void setBigmapPath(String bigmapPath)
 	{
 		this.bigmapPath = bigmapPath;
+	}
+
+	public int[] getSelectedIndices()
+	{
+		return selectedIndices;
+	}
+
+	public void setSelectedIndex(int[] selectedIndices)
+	{
+		this.selectedIndices = selectedIndices;
+	}
+
+	public DEMInfo getSelectedItem()
+	{
+		return infoList.get(selectedIndices[0]);
 	}
 
 }
