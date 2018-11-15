@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.gui.image.controllers.color;
+package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -62,10 +62,11 @@ public class ColorImageController
                 stringRenderer.setImageRawResults(results);
             }
 
-
             @Override
             public void resultsCountChanged(int count)
             {
+                // TODO Auto-generated method stub
+
             }
         });
         this.colorModel = colorModel;

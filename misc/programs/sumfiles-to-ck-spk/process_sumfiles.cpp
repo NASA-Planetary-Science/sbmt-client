@@ -12,6 +12,7 @@ struct TimeMatrix
     std::string utc;
     double mat[3][3];
     double pos[3];
+    double vel[3];
 };
 
 
@@ -64,13 +65,17 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 
 void loadSumFile(const std::string& sumfile,
 		const std::string& instrumentframe,
+		const std::string& spacecraftname,
 		const std::string& spacecraftframe,
+		const std::string& bodyname,
+		const std::string& bodyframe,
 		std::string& flipX,
 		std::string& flipY, 
 		std::string& flipZ,
-        std::string& utc,
-        double asteroid_to_sc[3][3],
-        double position[3])
+		std::string& utc,
+		double asteroid_to_sc[3][3],
+		double position[3],
+		double velocity[3])
 {
     std::ifstream fin(sumfile.c_str());
 
@@ -78,9 +83,14 @@ void loadSumFile(const std::string& sumfile,
     {
         double et;
         double scpos[3];
+        double state[6];
         double cx[3];
         double cy[3];
         double cz[3];
+        double cx1[3];
+        double cy1[3];
+        double cz1[3];
+        double lt;
 
         std::string name;
         std::string dummy;
@@ -142,36 +152,139 @@ void loadSumFile(const std::string& sumfile,
         vhat_c(cx, cx);
         vhat_c(cy, cy);
         vhat_c(cz, cz);
+        vhat_c(cx, cx1);
+        vhat_c(cy, cy1);
+        vhat_c(cz, cz1);
 
         //Apply flip. Sumfiles assume increasing pixels (instrument X) 
         //is from left to right looking out the boresight, increasing 
         //lines (instrument Y) is from up to down looking out the 
         //boresight, and instrument Z is looking out of the instrument.
 
-        if (flipX == "true" )
-         {
-              vminus_c(cx,cx);
-	     }
-        if (flipY == "true")
-         {
-              vminus_c(cy,cy);
-	     }
-        if (flipZ == "true")
-         {
-             vminus_c(cz,cz);
-	     }
+		double instrument_to_asteroid[3][3];
+		if (flipX == "1") {
+			cout << "X unchanged" << endl;
+			instrument_to_asteroid[0][0] = cx[0];
+			instrument_to_asteroid[1][0] = cx[1];
+			instrument_to_asteroid[2][0] = cx[2];
+		}
+		else if (flipX == "-1") {
+			vminus_c(cx1, cx);
+			instrument_to_asteroid[0][0] = cx[0];
+			instrument_to_asteroid[1][0] = cx[1];
+			instrument_to_asteroid[2][0] = cx[2];
+		}
+		else if (flipX == "2") {
+			instrument_to_asteroid[0][1] = cx[0];
+			instrument_to_asteroid[1][1] = cx[1];
+			instrument_to_asteroid[2][1] = cx[2];
+		}
+		else if (flipX == "-2") {
+			vminus_c(cx1, cx);
+			instrument_to_asteroid[0][1] = cx[0];
+			instrument_to_asteroid[1][1] = cx[1];
+			instrument_to_asteroid[2][1] = cx[2];
+		}
+		else if (flipX == "3") {
+			instrument_to_asteroid[0][2] = cx[0];
+			instrument_to_asteroid[1][2] = cx[1];
+			instrument_to_asteroid[2][2] = cx[2];
+		}
+		else if (flipX == "-3") {
+			vminus_c(cx1, cx);
+			instrument_to_asteroid[0][2] = cx[0];
+			instrument_to_asteroid[1][2] = cx[1];
+			instrument_to_asteroid[2][2] = cx[2];
+		}
+		else {
+			std::cout << "Invalid flipX: " << flipX << ", exiting." << std::endl;
+			exit(1);
+		}
 
-	    double instrument_to_asteroid[3][3];
-        instrument_to_asteroid[0][0] = cx[0];
-        instrument_to_asteroid[1][0] = cx[1];
-        instrument_to_asteroid[2][0] = cx[2];
-        instrument_to_asteroid[0][1] = cy[0];
-        instrument_to_asteroid[1][1] = cy[1];
-        instrument_to_asteroid[2][1] = cy[2];
-        instrument_to_asteroid[0][2] = cz[0];
-        instrument_to_asteroid[1][2] = cz[1];
-        instrument_to_asteroid[2][2] = cz[2];
+		if (flipY == "1") {
+			instrument_to_asteroid[0][0] = cy[0];
+			instrument_to_asteroid[1][0] = cy[1];
+			instrument_to_asteroid[2][0] = cy[2];
+		}
+		else if (flipY == "-1") {
+			vminus_c(cy1, cy);
+			instrument_to_asteroid[0][0] = cy[0];
+			instrument_to_asteroid[1][0] = cy[1];
+			instrument_to_asteroid[2][0] = cy[2];
+		}
+		else if (flipY == "2") {
+			cout << "Y unchanged" << endl;
+			instrument_to_asteroid[0][1] = cy[0];
+			instrument_to_asteroid[1][1] = cy[1];
+			instrument_to_asteroid[2][1] = cy[2];
+		}
+		else if (flipY == "-2") {
+			vminus_c(cy1, cy);
+			instrument_to_asteroid[0][1] = cy[0];
+			instrument_to_asteroid[1][1] = cy[1];
+			instrument_to_asteroid[2][1] = cy[2];
+		}
+		else if (flipY == "3") {
+			instrument_to_asteroid[0][2] = cy[0];
+			instrument_to_asteroid[1][2] = cy[1];
+			instrument_to_asteroid[2][2] = cy[2];
+		}
+		else if (flipY == "-3") {
+			vminus_c(cy1, cy);
+			instrument_to_asteroid[0][2] = cy[0];
+			instrument_to_asteroid[1][2] = cy[1];
+			instrument_to_asteroid[2][2] = cy[2];
+		}
+		else {
+			std::cout << "Invalid flipY: " << flipY << ", exiting." << std::endl;
+			exit(1);
+		}
 
+		if (flipZ == "1") {
+			instrument_to_asteroid[0][0] = cz[0];
+			instrument_to_asteroid[1][0] = cz[1];
+			instrument_to_asteroid[2][0] = cz[2];
+		}
+		else if (flipZ == "-1") {
+			vminus_c(cz1, cz);
+			instrument_to_asteroid[0][0] = cz[0];
+			instrument_to_asteroid[1][0] = cz[1];
+			instrument_to_asteroid[2][0] = cz[2];
+		}
+		else if (flipZ == "2") {
+			instrument_to_asteroid[0][1] = cz[0];
+			instrument_to_asteroid[1][1] = cz[1];
+			instrument_to_asteroid[2][1] = cz[2];
+		}
+		else if (flipZ == "-2") {
+			vminus_c(cz1, cz);
+			instrument_to_asteroid[0][1] = cz[0];
+			instrument_to_asteroid[1][1] = cz[1];
+			instrument_to_asteroid[2][1] = cz[2];
+		}
+		else if (flipZ == "3") {
+			cout << "Z unchanged" << endl;
+			instrument_to_asteroid[0][2] = cz[0];
+			instrument_to_asteroid[1][2] = cz[1];
+			instrument_to_asteroid[2][2] = cz[2];
+		}
+		else if (flipZ == "-3") {
+			vminus_c(cz1, cz);
+			instrument_to_asteroid[0][2] = cz[0];
+			instrument_to_asteroid[1][2] = cz[1];
+			instrument_to_asteroid[2][2] = cz[2];
+		}
+		else {
+			std::cout << "Invalid flipZ: " << flipZ << ", exiting." << std::endl;
+			exit(1);
+		}
+
+		//Check whether the flip values formed a valid rotation.
+		double tolerance = 1e-8;
+		if (!isrot_c(instrument_to_asteroid, tolerance, tolerance)) {
+			std::cout << "flipX, flipY, flipZ do not define a valid rotation, see README.txt for details. Exiting." << std::endl;
+			exit(1);
+		}
 
         /////////////////////////////////////////////////////////////////
         // The sumfiles provide the instrument_to_asteroid rotation. To
@@ -201,6 +314,21 @@ void loadSumFile(const std::string& sumfile,
         position[0] = scpos[0];
         position[1] = scpos[1];
         position[2] = scpos[2];
+
+        // Sumfiles do not contain velocity. If an SPK has been loaded, use its
+        // velocity in the output data. A zero velocity is assigned if the
+        // spacecraft state cannot be determined.
+        velocity[0] = 0;
+        velocity[1] = 0;
+        velocity[2] = 0;
+
+        spkezr_c (spacecraftname.c_str(), et, bodyframe.c_str(), "NONE", bodyname.c_str(), state, &lt);
+        if (!failed_c())
+        {
+            velocity[0] = state[3];
+            velocity[1] = state[4];
+            velocity[2] = state[5];
+        }
     }
     else
     {
@@ -258,7 +386,10 @@ void createSpkInputDataFile(const std::vector<TimeMatrix>& data)
         fout << tm.utc << " ";
         fout << std::scientific << tm.pos[0] << " ";
         fout << std::scientific << tm.pos[1] << " ";
-        fout << std::scientific << tm.pos[2] << " 0.0 0.0 0.0" << std::endl;
+        fout << std::scientific << tm.pos[2] << " ";
+        fout << std::scientific << tm.vel[0] << " ";
+        fout << std::scientific << tm.vel[1] << " ";
+        fout << std::scientific << tm.vel[2] << " " << std::endl;
     }
 }
 
@@ -270,22 +401,64 @@ std::ifstream::pos_type filesize(const char* filename)
 
 int main(int argc, char** argv)
 {
-    if (argc < 8)
+    if (argc < 11)
     {
-	std::cout << "Usage: process_sumfiles <kernelFiles> <sumfileList> <instrumentFrameName> <spacecraftFrameName> <boolean flipX> <boolean flipY> <boolean flipZ>" << std::endl;
-
+    	std::cout <<"\nThis program generates CK and SPK from sumfiles. " << std::endl;
+    	std::cout <<"See README.txt in the distribution for detailed usage. " << std::endl;
+    	std::cout <<"Usage: process_sumfiles <metakernel> <sumfileList> <instrumentFrameName> <spacecraftName> <spacecraftFrameName> <bodyName> <bodyFrameName> <flipX> <flipY> <flipZ>" << std::endl;
+	    std::cout <<"E.g.:" << std::endl;
+	    std::cout <<"process_sumfiles kernels.txt sumfilelist.txt NEAR_MSI NEAR NEAR_SC_BUS_PRIME EROS IAU_EROS 1 2 3\n" << std::endl;
         return 1;
     }
 
     std::string kernelfiles = argv[1];
     std::string sumfilelist = argv[2];
     std::string instrumentframe = argv[3];
-    std::string spacecraftframe = argv[4];
-    std::string flipX = argv[5];
-    std::string flipY = argv[6];
-    std::string flipZ = argv[7];
+    std::string spacecraftname = argv[4];
+    std::string spacecraftframe = argv[5];
+    std::string bodyname = argv[6];
+    std::string bodyframe = argv[7];
+    std::string flipX = argv[8];
+    std::string flipY = argv[9];
+    std::string flipZ = argv[10];
 
-    //printf("%s\n",flipX);
+    //Need some error handling here to check the data types of the input arguments.
+    //If an incorrect type is passed in, notify the user of what was expected and
+    //what they passed in.
+    std::cout << std::endl;
+    std::cout << "The following parameters were entered on the command line:" << std::endl;
+    std::cout << "metakernel: " << kernelfiles << std::endl;
+    std::cout << "sumfilelist: " << sumfilelist << std::endl;
+    std::cout << "instrumentframe: " << instrumentframe << std::endl;
+    std::cout << "spacecraftname: " << spacecraftname << std::endl;
+    std::cout << "spacecraftframe: " << spacecraftframe << std::endl;
+    std::cout << "bodyname: " << bodyname << std::endl;
+    std::cout << "bodyframe: " << bodyframe << std::endl;
+    std::cout << "Flip X: " << flipX << std::endl;
+    std::cout << "Flip Y: " << flipY << std::endl;
+    std::cout << "Flip Z: " << flipZ << std::endl;
+    std::cout << std::endl;
+
+    //Check for valid input
+    if (flipX != "1" && flipX != "-1" && flipX != "2" && flipX != "-2" && flipX != "3" && flipX != "-3")
+    {
+    	std::cout << "Invalid flipX: " << flipX << std::endl;
+    	std::cout << "Allowed values: {-1, 1, -2, 2, -3, 3}. See README.txt for details." << std::endl;
+    	return 1;
+    }
+    if (flipY != "1" && flipY != "-1" && flipY != "2" && flipY != "-2" && flipY != "3" && flipY != "-3")
+    {
+    	std::cout << "Invalid flipY: " << flipY << std::endl;
+    	std::cout << "Allowed values: {-1, 1, -2, 2, -3, 3}. See README.txt for details." << std::endl;
+    	return 1;
+    }
+    if (flipZ != "1" && flipZ != "-1" && flipZ != "2" && flipZ != "-2" && flipZ != "3" && flipZ != "-3")
+    {
+    	std::cout << "Invalid flipZ: " << flipZ << std::endl;
+    	std::cout << "Allowed values: {-1, 1, -2, 2, -3, 3}. See README.txt for details." << std::endl;
+    	return 1;
+    }
+
     furnsh_c(kernelfiles.c_str());
 
     std::vector<std::string> sumfiles = loadFileList(sumfilelist);
@@ -301,7 +474,7 @@ int main(int argc, char** argv)
 
         TimeMatrix tm;
 
-	loadSumFile(sumfiles[i], instrumentframe, spacecraftframe, flipX, flipY, flipZ, tm.utc, tm.mat, tm.pos);
+	    loadSumFile(sumfiles[i], instrumentframe, spacecraftname, spacecraftframe, bodyname, bodyframe, flipX, flipY, flipZ, tm.utc, tm.mat, tm.pos, tm.vel);
 
         std::cout << sumfiles[i] << " " << tm.utc << std::endl;
 

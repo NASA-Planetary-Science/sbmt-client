@@ -389,7 +389,7 @@ public class SpectrumResultsTableController
     public void setSpectrumResults(List<List<String>> results)
     {
         JTable resultTable = panel.getResultList();
-        panel.getResultsLabel().setText(results.size() + " images matched");
+        panel.getResultsLabel().setText(results.size() + " spectra found");
         spectrumRawResults = results;
         stringRenderer.setSpectrumRawResults(spectrumRawResults);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
