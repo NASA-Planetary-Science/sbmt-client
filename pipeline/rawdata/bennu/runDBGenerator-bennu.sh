@@ -9,9 +9,9 @@
 # Usage
 if [ "$#" -lt 4 ]
 then
-  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> shared"	
-  echo "runDBGenerator-ryugu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> <model-name> <processing-version>"	
-  echo "Example: runDBGenerator-ryugu.sh tir RYUGU_SHARED_TIR_APL SPICE shared "
+  echo "runDBGenerator-bennu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> shared"	
+  echo "runDBGenerator-bennu.sh <instrumentName> <databaseTableName> <instrumentIndex> <pointingType (GASKELL or SPICE)> <model-name> <processing-version>"	
+  echo "Example: runDBGenerator-bennu.sh polycam BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL 0 GASKELL shared"
   exit 1
 fi
 
@@ -34,7 +34,7 @@ fi
 echo "Processing Model Name: " $processingModelName
 echo "Processing Version: " $processingVersion
 
-bodyName="ryugu"
+bodyName="bennu"
 rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 deployedTop="/project/sbmt2/sbmt/data/bodies"
@@ -53,7 +53,7 @@ releaseDir="$rawdataTop/$bodyName/$processingVersion"
 logDir="$rawdataTop/$bodyName/$processingVersion/logs"
 log="$logDir/processed2deployed.log"
 
-echo "Starting runDBGenerator-ryugu.sh script (log file: $log)"
+echo "Starting runDBGenerator-bennu.sh script (log file: $log)"
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
@@ -77,4 +77,4 @@ fi
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
-echo "Finished runDBGenerator-ryugu.sh script"
+echo "Finished runDBGenerator-bennu.sh script"

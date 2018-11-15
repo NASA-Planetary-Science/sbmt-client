@@ -126,7 +126,7 @@ echo fixing permissions
 $scriptDir/data-permissions.pl $destTop/shared
    
 echo removing unused files
-#rm -rf $destTop/shared/onc/images/*.tgz
+#rm -rf $destTop/shared/*/images/*.tgz
 
 --COMMENT--
 

@@ -162,35 +162,55 @@ echo "--------------------------------------------------------------------------
 echo "Begin `date`" >> $log 2>&1
 
    createDirIfNecessary $destTop/$processingModelName/shape
-   #createDirIfNecessary $destTop/$processingModelName/onc
-   #createDirIfNecessary $destTop/$processingModelName/onc/images
-   #createDirIfNecessary $destTop/$processingModelName/onc/gallery
-   #createDirIfNecessary $destTop/$processingModelName/tir
-   #createDirIfNecessary $destTop/$processingModelName/tir/images
-   #createDirIfNecessary $destTop/$processingModelName/tir/gallery
-
+   #createDirIfNecessary $destTop/$processingModelName/mapcam
+   #createDirIfNecessary $destTop/$processingModelName/mapcam/images
+   #createDirIfNecessary $destTop/$processingModelName/mapcam/gallery
+   #createDirIfNecessary $destTop/$processingModelName/polycam
+   #createDirIfNecessary $destTop/$processingModelName/polycam/images
+   #createDirIfNecessary $destTop/$processingModelName/polycam/gallery
+ 
    # Process the shape models.
    doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    doGzipDirIfNecessary $destTop/$processingModelName/shape
 
-   # processes ONC sumfiles *** CANNOT PROCESS TIR SUMFILES ***
-   if [ -d "$srcTop/$rawdataModelName/onc" ]
+   # processes MAPCAM sumfiles
+   if [ -d "$srcTop/$rawdataModelName/mapcam" ]
    then
      echo Beginning sumfile processing
-     createDirIfNecessary $destTop/$processingModelName/onc     
+     createDirIfNecessary $destTop/$processingModelName/mapcam     
 
      # generates imagelist-sum.txt and imagelist-fullpath.txt
-     processMakeSumfiles $srcTop/$rawdataModelName/onc/ 
+     processMakeSumfiles $srcTop/$rawdataModelName/mapcam/ 
      
-     # copies over onc directory
-     doRsync $srcTop/$rawdataModelName/onc/ $destTop/$processingModelName/onc/
+     # copies over mapcam directory
+     doRsync $srcTop/$rawdataModelName/mapcam/ $destTop/$processingModelName/mapcam/
 
      # Skip this for now. This processes images, sumfiles and image lists at the same
      # time, validating and including only images that will work in the destination directory.
      # Currently this script just uses the processMakeSumfiles function to handle this.
      # The latter is not as thorough in its vetting, but it works well enough and correctly
-     # for the case where images are not included in the delivery (like for the current ryugu
-     # use cases.
+     # for the case where images are not included in the delivery.
+     #processImager
+     echo Finished sumfile processing
+   fi
+
+   # processes POLYCAM sumfiles
+   if [ -d "$srcTop/$rawdataModelName/polycam" ]
+   then
+     echo Beginning sumfile processing
+     createDirIfNecessary $destTop/$processingModelName/polycam     
+
+     # generates imagelist-sum.txt and imagelist-fullpath.txt
+     processMakeSumfiles $srcTop/$rawdataModelName/polycam/ 
+     
+     # copies over polycam directory
+     doRsync $srcTop/$rawdataModelName/polycam/ $destTop/$processingModelName/polycam/
+
+     # Skip this for now. This processes images, sumfiles and image lists at the same
+     # time, validating and including only images that will work in the destination directory.
+     # Currently this script just uses the processMakeSumfiles function to handle this.
+     # The latter is not as thorough in its vetting, but it works well enough and correctly
+     # for the case where images are not included in the delivery.
      #processImager
      echo Finished sumfile processing
    fi

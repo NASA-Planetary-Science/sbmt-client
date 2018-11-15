@@ -85,25 +85,42 @@ if test $? -ne -0; then
   exit 1
 fi
   
-###################### FIX THIS FOR BENNU ##################################
 # if there are sum files make the following links, else (no images delivered) make links to 
-if [ -d "$srcTop/$processingVersion/$processingModelName/onc" ]
+if [ -d "$srcTop/$processingVersion/$processingModelName/mapcam" ]
   then 
     # James to Josh: these should be checked for success. Probably need a new function for
     # doMakeLink or some such.
-    # set the soft link to the shared onc directory
-    ln -s ../../shared/onc/images $destTop/$processingModelName-$processingVersion/onc/images
-    ln -s ../../shared/onc/gallery $destTop/$processingModelName-$processingVersion/onc/gallery
-    ln -s ../../shared/onc/imagelist-info.txt $destTop/$processingModelName-$processingVersion/onc/imagelist-info.txt
-    ln -s ../../shared/onc/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/onc/imagelist-fullpath-info.txt
-    ln -s ../../shared/onc/infofiles $destTop/$processingModelName-$processingVersion/onc/infofiles
+    # set the soft link to the shared mapcam directory
+    ln -s ../../shared/mapcam/images $destTop/$processingModelName-$processingVersion/mapcam/images
+    ln -s ../../shared/mapcam/gallery $destTop/$processingModelName-$processingVersion/mapcam/gallery
+    ln -s ../../shared/mapcam/imagelist-info.txt $destTop/$processingModelName-$processingVersion/mapcam/imagelist-info.txt
+    ln -s ../../shared/mapcam/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/mapcam/imagelist-fullpath-info.txt
+    ln -s ../../shared/mapcam/infofiles $destTop/$processingModelName-$processingVersion/mapcam/infofiles
     ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
-    ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
     ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
   else
-    ln -s ../shared/onc $destTop/$processingModelName-$processingVersion/onc
+    ln -s ../shared/mapcam $destTop/$processingModelName-$processingVersion/mapcam
     ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
-    ln -s ../shared/tir/ $destTop/$processingModelName-$processingVersion/tir
+    ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+  fi
+fi
+
+# if there are sum files make the following links, else (no images delivered) make links to 
+if [ -d "$srcTop/$processingVersion/$processingModelName/polycam" ]
+  then 
+    # James to Josh: these should be checked for success. Probably need a new function for
+    # doMakeLink or some such.
+    # set the soft link to the shared polycam directory
+    ln -s ../../shared/polycam/images $destTop/$processingModelName-$processingVersion/polycam/images
+    ln -s ../../shared/polycam/gallery $destTop/$processingModelName-$processingVersion/polycam/gallery
+    ln -s ../../shared/polycam/imagelist-info.txt $destTop/$processingModelName-$processingVersion/polycam/imagelist-info.txt
+    ln -s ../../shared/polycam/imagelist-fullpath-info.txt $destTop/$processingModelName-$processingVersion/polycam/imagelist-fullpath-info.txt
+    ln -s ../../shared/polycam/infofiles $destTop/$processingModelName-$processingVersion/polycam/infofiles
+    ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
+    ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
+  else
+    ln -s ../shared/polycam $destTop/$processingModelName-$processingVersion/polycam
+    ln -s ../shared/"history" $destTop/$processingModelName-$processingVersion/"history"
     ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
   fi
 fi

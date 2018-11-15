@@ -143,9 +143,9 @@ echo fixing permissions
 $scriptDir/data-permissions.pl $destTop/$processingModelName
 
 echo removing unused files
-#rm -rf $destTop/shared/onc/images/*.tgz
-#rm -rf $destTop/shared/onc/images/*.d
-#rm -rf $destTop/shared/onc/images/index.html*
+#rm -rf $destTop/shared/*/images/*.tgz
+#rm -rf $destTop/shared/*/images/*.d
+#rm -rf $destTop/shared/*/images/index.html*
 
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
