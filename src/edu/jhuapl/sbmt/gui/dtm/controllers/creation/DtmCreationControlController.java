@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.gui.dtm.controllers.creation;
 
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -10,9 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -31,9 +28,7 @@ import edu.jhuapl.sbmt.gui.dem.MapmakerSwingWorker;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel.DEMInfo;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DtmCreationControlPanel;
-import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
-import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 public class DtmCreationControlController implements ActionListener, PropertyChangeListener
 {
@@ -46,6 +41,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		panel = new DtmCreationControlPanel(config.hasMapmaker, config.hasBigmap);
 		this.model = model;
 		this.pickManager = pickManager;
+		initControls();
 	}
 
 	public JPanel getPanel()
@@ -91,6 +87,8 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		                	 if(demInfo.demfilename.endsWith(".fit") || demInfo.demfilename.endsWith(".fits") ||
 		                             demInfo.demfilename.endsWith(".FIT") || demInfo.demfilename.endsWith(".FITS"))
 		                     {
+		                		 System.out.println(
+										"DtmCreationControlController.initControls().new ActionListener() {...}: actionPerformed: saving to model");
 		                		 model.saveDEM(demInfo);
 		                     }
 		                	 else
@@ -111,7 +109,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 			}
 		});
 
-		panel.getBigmapSubmitButton().addActionListener(this);
+//		panel.getBigmapSubmitButton().addActionListener(this);
 		panel.getMapmakerSubmitButton().addActionListener(this);
 
 		panel.getRenameButton().addActionListener(new ActionListener()
@@ -342,42 +340,42 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
     // Popup menu for when using right clicks
     private void imageListMaybeShowPopup(MouseEvent e)
     {
-        for (DEM dem : ((DEMCollection)model.getModelManager().getModel(ModelNames.DEM)).getImages())
-        {
-            DEMKey demkey = dem.getKey();
-        }
-        if (e.isPopupTrigger())
-        {
-            int index = imageList.locationToIndex(e.getPoint());
-
-            if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
-            {
-                // If the item right-clicked on is not selected, then deselect all the
-                // other items and select the item right-clicked on.
-                if (!imageList.isSelectedIndex(index))
-                {
-                    imageList.clearSelection();
-                    imageList.setSelectedIndex(index);
-                }
-
-                int[] selectedIndices = imageList.getSelectedIndices();
-                List<DEMKey> demKeys = new ArrayList<DEMKey>();
-                for (int selectedIndex : selectedIndices)
-                {
-                    DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
-                    String name = model.getCustomDataFolder() + File.separator + demInfo.demfilename;
-                    DEMKey demKey = new DEMKey(name, demInfo.name);
-                    demKeys.add(demKey);
-                }
-                demPopupMenu.setCurrentDEMs(demKeys);
-                demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-//                if (demKeys.size() > 0)
+//        for (DEM dem : ((DEMCollection)model.getModelManager().getModel(ModelNames.DEM)).getImages())
+//        {
+//            DEMKey demkey = dem.getKey();
+//        }
+//        if (e.isPopupTrigger())
+//        {
+//            int index = imageList.locationToIndex(e.getPoint());
+//
+//            if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
+//            {
+//                // If the item right-clicked on is not selected, then deselect all the
+//                // other items and select the item right-clicked on.
+//                if (!imageList.isSelectedIndex(index))
 //                {
-//                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
-//                    updateConfigFile();
+//                    imageList.clearSelection();
+//                    imageList.setSelectedIndex(index);
 //                }
-            }
-        }
+//
+//                int[] selectedIndices = imageList.getSelectedIndices();
+//                List<DEMKey> demKeys = new ArrayList<DEMKey>();
+//                for (int selectedIndex : selectedIndices)
+//                {
+//                    DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
+//                    String name = model.getCustomDataFolder() + File.separator + demInfo.demfilename;
+//                    DEMKey demKey = new DEMKey(name, demInfo.name);
+//                    demKeys.add(demKey);
+//                }
+//                demPopupMenu.setCurrentDEMs(demKeys);
+//                demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+////                if (demKeys.size() > 0)
+////                {
+////                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
+////                    updateConfigFile();
+////                }
+//            }
+//        }
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -385,32 +383,32 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))
         {
             PickEvent e = (PickEvent)evt.getNewValue();
-            Model model = model.getModelManager().getModel(e.getPickedProp());
-            if (model instanceof DEMCollection)
+            Model model2 = model.getModelManager().getModel(e.getPickedProp());
+            if (model2 instanceof DEMCollection)
             {
-                String name = ((DEMCollection)model).getDEM((vtkActor)e.getPickedProp()).getKey().fileName;
+                String name = ((DEMCollection)model2).getDEM((vtkActor)e.getPickedProp()).getKey().fileName;
 
                 int idx = -1;
 //                int size = imageList.getModel().getSize();
-                int size = ((DEMCollection) model).getImages().size();
+                int size = ((DEMCollection) model2).getImages().size();
                 for (int i=0; i<size; ++i)
                 {
-                    DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(i);
-                    String demFilename = getCustomDataFolder() + File.separator + demInfo.demfilename;
-                    if (name.equals(demFilename))
-                    {
-                        idx = i;
-                        break;
-                    }
+                    DEMInfo demInfo = model.getInfoList().get(i);
+//                    String demFilename = getCustomDataFolder() + File.separator + demInfo.demfilename;
+//                    if (name.equals(demFilename))
+//                    {
+//                        idx = i;
+//                        break;
+//                    }
                 }
 
-                if (idx >= 0)
-                {
-                    imageList.setSelectionInterval(idx, idx);
-                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
-                    if (cellBounds != null)
-                        imageList.scrollRectToVisible(cellBounds);
-                }
+//                if (idx >= 0)
+//                {
+//                    imageList.setSelectionInterval(idx, idx);
+//                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
+//                    if (cellBounds != null)
+//                        imageList.scrollRectToVisible(cellBounds);
+//                }
             }
         }
     }

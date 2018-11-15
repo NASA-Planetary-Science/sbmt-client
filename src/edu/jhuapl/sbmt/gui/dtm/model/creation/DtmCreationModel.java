@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Vector;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -35,6 +36,7 @@ public class DtmCreationModel
     private String bigmapPath;
     private List<DEMInfo> infoList;
     private int[] selectedIndices;
+    private Vector<DEMCreationModelChangedListener> listeners;
 
     private boolean initialized = false;
 
@@ -51,12 +53,14 @@ public class DtmCreationModel
         }
     }
 
-	public DtmCreationModel()
+	public DtmCreationModel(ModelManager modelManager)
 	{
+		this.modelManager = modelManager;
 		 // Get collections
         dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
         boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
         infoList = new ArrayList<DEMInfo>();
+        this.listeners = new Vector<DEMCreationModelChangedListener>();
 	}
 
     private ModelNames getDEMBoundaryCollectionModelName()
@@ -203,6 +207,8 @@ public class DtmCreationModel
 //            DefaultListModel model = (DefaultListModel)imageList.getModel();
 //            model.addElement(demInfo);
             infoList.add(demInfo);
+            fireInfoChangedListeners(demInfo);
+            System.out.println("DtmCreationModel: saveDEM: updated info list");
             updateConfigFile();
         }
 //        else
@@ -339,6 +345,32 @@ public class DtmCreationModel
 	public DEMInfo getSelectedItem()
 	{
 		return infoList.get(selectedIndices[0]);
+	}
+
+	public List<DEMInfo> getInfoList()
+	{
+		return infoList;
+	}
+
+	public void addModelChangedListener(DEMCreationModelChangedListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void fireInfoChangedListeners(DEMInfo info)
+	{
+		for (DEMCreationModelChangedListener listener : listeners)
+		{
+			listener.demInfoListChanged(info);
+		}
+	}
+
+	public void fireInfoChangedListeners(Vector<DEMInfo> infos)
+	{
+		for (DEMCreationModelChangedListener listener : listeners)
+		{
+			listener.demInfoListChanged(infos);
+		}
 	}
 
 }
