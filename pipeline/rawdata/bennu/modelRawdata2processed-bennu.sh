@@ -6,10 +6,9 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 1 ]
+if [ "$#" -lt 2 ]
 then
   echo "Model data usage:  rawdata2processed-bennu.sh <model-name> <processing-version>"
-  echo "Shared data usage: rawdata2processed-bennu.sh shared"
   exit 1
 fi
 
@@ -19,10 +18,11 @@ processingVersion=$2
 processingModelName=$rawdataModelName
 
 if [ $processingModelName = "shared" ]
-then                                                                                              
-   processingVersion="latest"
-fi                                                                                                
-                                                                                                  
+then
+   echo "Error: this script doesn't process 'shared' data" >&2
+   exit 1
+fi
+
 echo "Body name:$bodyName"
 echo "Processing model name:$processingModelName"
 echo "Processing version:$processingVersion"
@@ -32,16 +32,15 @@ bodyName="bennu"
 bodyNameCaps="BENNU"
 spacecraftName="ORX"
 
-pipelineTop="/sbmt/pipeline"
+pipelineTop="/project/sbmtpipeline"
 
 rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
-scriptDir="/sbmt/scripts"
+scriptDir="/project/sbmt2/sbmt/scripts"
 timeHistoryDir="$pipelineTop/timeHistory"
 importCmd="$scriptDir/import.sh"
-#rsyncCmd='rsync -rlptgDH --copy-links'
-rsyncCmd='rsync -rltgDH --copy-links'
+rsyncCmd='rsync -rlptgDH --copy-links'
 briefPgrm="/project/nearsdc/software/spice/cspice/exe/brief"
 javaCmd="/usr/bin/java"
 
@@ -58,18 +57,18 @@ then
    latestKernel=`ls $latestMKDir/hyb2_analysis_v*.tm | sort -r | head -1`			########### FIX
    echo $latestMKDir
    echo $latestKernel
-fi 
+fi
 
 logDir="$srcTop/logs"
 log="$logDir/rawdata2processed.log"
 
-# echo "Source Top: " $srcTop                                                                       
-# echo "Dest Top: " $destTop                                                                        
+# echo "Source Top: " $srcTop
+# echo "Dest Top: " $destTop
 # echo "Log file: " $log
 
 #-------------------------------------------------------------------------------
-# Reference the commonFuncs file 
-. commonFuncs.sh
+# Reference to commonFuncs file, which contains funcs common to pipeline scripts
+. $(dirname "$0")/commonFuncs.sh
 #-------------------------------------------------------------------------------
 
 # generates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
@@ -101,11 +100,11 @@ processMakeSumfiles() {
 
 # edits the PATH SYMBOL in all the kernels in shared/spice/kernels/mk directory with the path to the metakernel
 editKernel() {
-  echo Editing metakernel to have correct path value 
+  echo Editing metakernel to have correct path value
   for metaKernel in $latestMKDir/*.tm
   do
-    echo Processing $metaKernel 
-    kernelsDir=`dirname $latestMKDir` 
+    echo Processing $metaKernel
+    kernelsDir=`dirname $latestMKDir`
     sed -i "s#\(PATH_VALUES *= *\).*#\1( '$kernelsDir' ) #" $metaKernel
   done
   echo Finished editing metakernels
@@ -154,8 +153,8 @@ if test $? -ne 0; then
 fi
 
 echo "Starting rawdata2processed-bennu.sh script (log file: $log)"
-mkdir -p $destTop                                                                                 
-                        
+mkdir -p $destTop
+
 makeLogDir
 
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
@@ -168,7 +167,7 @@ echo "Begin `date`" >> $log 2>&1
    #createDirIfNecessary $destTop/$processingModelName/polycam
    #createDirIfNecessary $destTop/$processingModelName/polycam/images
    #createDirIfNecessary $destTop/$processingModelName/polycam/gallery
- 
+
    # Process the shape models.
    doRsyncDirIfNecessary $srcTop/$rawdataModelName/shape/ $destTop/$processingModelName/shape/
    doGzipDirIfNecessary $destTop/$processingModelName/shape
@@ -177,11 +176,11 @@ echo "Begin `date`" >> $log 2>&1
    if [ -d "$srcTop/$rawdataModelName/mapcam" ]
    then
      echo Beginning sumfile processing
-     createDirIfNecessary $destTop/$processingModelName/mapcam     
+     createDirIfNecessary $destTop/$processingModelName/mapcam
 
      # generates imagelist-sum.txt and imagelist-fullpath.txt
-     processMakeSumfiles $srcTop/$rawdataModelName/mapcam/ 
-     
+     processMakeSumfiles $srcTop/$rawdataModelName/mapcam/
+
      # copies over mapcam directory
      doRsync $srcTop/$rawdataModelName/mapcam/ $destTop/$processingModelName/mapcam/
 
@@ -198,11 +197,11 @@ echo "Begin `date`" >> $log 2>&1
    if [ -d "$srcTop/$rawdataModelName/polycam" ]
    then
      echo Beginning sumfile processing
-     createDirIfNecessary $destTop/$processingModelName/polycam     
+     createDirIfNecessary $destTop/$processingModelName/polycam
 
      # generates imagelist-sum.txt and imagelist-fullpath.txt
-     processMakeSumfiles $srcTop/$rawdataModelName/polycam/ 
-     
+     processMakeSumfiles $srcTop/$rawdataModelName/polycam/
+
      # copies over polycam directory
      doRsync $srcTop/$rawdataModelName/polycam/ $destTop/$processingModelName/polycam/
 
@@ -216,12 +215,12 @@ echo "Begin `date`" >> $log 2>&1
    fi
 
    # process coloring data and generates the metadata needed to read the colroing data.
-   if [ -d "$srcTop/$rawdataModelName/coloring" ] 
+   if [ -d "$srcTop/$rawdataModelName/coloring" ]
    then
       echo Processing plate colorings
       createDirIfNecessary $destTop/$processingModelName/coloring
       doRsync $srcTop/$rawdataModelName/coloring/ $destTop/$processingModelName/coloring/
-     
+
       # gzips the coloring files
       doGzipDir $destTop/$processingModelName/coloring
 

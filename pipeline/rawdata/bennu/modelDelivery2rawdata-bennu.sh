@@ -6,9 +6,9 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 1 ]
+if [ "$#" -lt 4 ]
 then
-  echo "Model data usage:  delivered2rawdata-bennu.sh <delivered-model-name> <delivered-version> [ <processed-model-name> <processing-version> ]"
+  echo "Model data usage:  modelDelivered2rawdata-bennu.sh <delivered-model-name> <delivered-version> <processed-model-name> <processing-version>"
   exit 1
 fi
 
@@ -20,8 +20,8 @@ processingVersion=$4
 
 bodyName="bennu"
 
-pipelineTop="/sbmt/pipeline"
-deliveriesTop="/sbmt/deliveries"
+pipelineTop="/project/sbmtpipeline"
+deliveriesTop="/project/sbmtpipeline/deliveries-orex"
 
 echo "Delivered version: " $deliveredVersion
 echo "Delivered model name: " $deliveredModelName
@@ -33,8 +33,7 @@ processedTop="$pipelineTop/processed"
 
 scriptDir="/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
-#rsyncCmd='rsync -rlptgDH --copy-links'
-rsyncCmd='rsync -rltgDH --copy-links'
+rsyncCmd='rsync -rlptgDH --copy-links'
 
 srcTop="$deliveriesTop/$bodyName/$deliveredVersion"
 destTop="$rawTop/$bodyName/$processingVersion"
@@ -58,13 +57,10 @@ if test `whoami` = sbmt; then
   exit 1
 fi
 
-# Confirm the source directory points somewhere for MODELS
-if [ $deliveredModelName != "shared" ]
+if [ $processingModelName = "shared" ]
 then
-	if test ! -d $srcTop/$deliveredModelName; then
-	  echo "Error: source directory $srcTop/$deliveredModelName does not exist" >&2
-	  exit 1
-	fi
+   echo "Error: this script doesn't process 'shared' data" >&2
+   exit 1
 fi
 
 export SBMTROOT="$releaseDir/sbmt"
@@ -77,31 +73,20 @@ makeLogDir
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "Begin `date`" >> $log 2>&1
 
-# Check out and build code.
-#checkoutCodeIfNecessary
-#if test $? -ne 0; then
-#  exit 1
-#fi
-#buildCodeIfNecessary
-#if test $? -ne 0; then
-#  exit 1
-#fi
-
-
 # Import everything from the delivery directory
-	
+
 manifest="aamanifest.txt"
 if test ! -f $srcTop/$deliveredModelName/$manifest; then
-  	echo "No manifest $srcTop/$deliveredModelName/$manifest" >> $log 2>&1
-  	exit 1
+  echo "No manifest $srcTop/$deliveredModelName/$manifest" >> $log 2>&1
+  exit 1
 fi
 
 if test ! -d $destTop/$processingModelName; then
-  	mkdir -p $destTop/$processingModelName
-  	if test $? -ne 0; then
-    	echo "Cannot create destination directory $destTop/$processingModelName" >> $log 2>&1
-    	exit 1
-  	fi
+  mkdir -p $destTop/$processingModelName
+  if test $? -ne 0; then
+    echo "Cannot create destination directory $destTop/$processingModelName" >> $log 2>&1
+    exit 1
+  fi
 fi
 
 # Confirm the source directory points somewhere.
@@ -110,10 +95,6 @@ if test ! -d $srcTop/$deliveredModelName; then
   exit 1
 fi
 
-   #echo $srcTop/$deliveredModelName/ Rawdata: $destTop/$processingModelName/ #*** don't uncomment old code ***
-   #doRsyncDir $srcTop/$deliveredModelName/* $destTop/$processingModelName/ #*** don't uncomment old code ***
-
-
 # otherwise, assume this is model data and copy over into a new model
 createDirIfNecessary $destTop/$processingModelName/shape
 
@@ -121,22 +102,21 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -s dirsToCopy=("coloring" "imaging" "ocams" "ola" "otes" "ovirs")
+declare -a dirsToCopy=("coloring" "imaging" "ocams" "ola" "otes" "ovirs")
 
 # copy the shape model
 doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
-   
+
 # Copy coloring files
 #doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
 for dir in ${dirsToCopy[@]}
 do
-	if [ -d "$srcTop/$deliveredModelName/$dir" ]
-	then
-  		createDirIfNecessary $destTop/$processingModelName/$dir
-  		# copy the files
-  		doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir
-	fi
+  if [ -d "$srcTop/$deliveredModelName/$dir" ]
+  then
+    # copy the files
+    doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir
+  fi
 done
 
 echo fixing permissions
