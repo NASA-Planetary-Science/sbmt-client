@@ -5,24 +5,26 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.FixedMetadata;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk.util.MapUtil;
-import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
-import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
 
-public class DtmCreationModel
+public class DtmCreationModel implements MetadataManager
 {
 	private ModelManager modelManager;
     private Renderer renderer;
@@ -40,7 +42,7 @@ public class DtmCreationModel
 
     private boolean initialized = false;
 
-    public static class DEMInfo
+    public static class DEMInfo implements MetadataManager
     {
         public String name = ""; // name to call this image for display purposes
         public String demfilename = ""; // filename of image on disk
@@ -51,6 +53,41 @@ public class DtmCreationModel
             DecimalFormat df = new DecimalFormat("#.#####");
             return name;
         }
+
+        Key<String> nameKey = Key.of("name");
+        Key<String> demfilenameKey = Key.of("demfilename");
+
+		@Override
+		public Metadata store()
+		{
+			SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+			write(nameKey, name, configMetadata);
+			write(demfilenameKey, demfilename, configMetadata);
+			return configMetadata;
+		}
+
+		@Override
+		public void retrieve(Metadata source)
+		{
+			name = read(nameKey, source);
+			demfilename = read(demfilenameKey, source);
+		}
+
+		protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
+	    {
+	        if (value != null)
+	        {
+	            configMetadata.put(key, value);
+	        }
+	    }
+
+	    protected <T> T read(Key<T> key, Metadata configMetadata)
+	    {
+	        T value = configMetadata.get(key);
+	        if (value != null)
+	            return value;
+	        return null;
+	    }
     }
 
 	public DtmCreationModel(ModelManager modelManager)
@@ -84,48 +121,21 @@ public class DtmCreationModel
     }
 
     // Initializes the DEM list from config
-    private void initializeDEMList() throws IOException
+    public void initializeDEMList() throws IOException
     {
         if (initialized)
             return;
 
-        MapUtil configMap = new MapUtil(getDEMConfigFilename());
-
-        if (configMap.containsKey(DEM.DEM_NAMES))
+        if (new File(getDEMConfigFilename()).exists())
         {
-            boolean needToUpgradeConfigFile = false;
-            String[] demNames = configMap.getAsArray(DEM.DEM_NAMES);
-            String[] demFilenames = configMap.getAsArray(DEM.DEM_FILENAMES);
-            if (demFilenames == null)
-            {
-                // for backwards compatibility
-                demFilenames = configMap.getAsArray(DEM.DEM_MAP_PATHS);
-                demNames = new String[demFilenames.length];
-                for (int i=0; i<demFilenames.length; ++i)
-                {
-                    demNames[i] = new File(demFilenames[i]).getName();
-                    demFilenames[i] = "dem" + i + ".FIT";
-                }
+	        FixedMetadata metadata = Serializers.deserialize(new File(getDEMConfigFilename()), "CustomDEMs");
+	        retrieve(metadata);
 
-                // Mark that we need to upgrade config file to latest version
-                // which we'll do at end of function.
-                needToUpgradeConfigFile = true;
-            }
-
-            int numDems = demNames != null ? demNames.length : 0;
-            for (int i=0; i<numDems; ++i)
-            {
-                DEMInfo demInfo = new DEMInfo();
-                demInfo.name = demNames[i];
-                demInfo.demfilename = demFilenames[i];
-                infoList.add(demInfo);
-//                ((DefaultListModel)imageList.getModel()).addElement(demInfo);
-            }
-
-            if (needToUpgradeConfigFile)
-            {
-                updateConfigFile();
-            }
+	        for (DEMInfo info : infoList)
+	        {
+	        	System.out.println("DtmCreationModel: initializeDEMList: firing for " + info.name);
+	        	fireInfoChangedListeners(info);
+	        }
         }
 
         initialized = true;
@@ -133,31 +143,14 @@ public class DtmCreationModel
 
     public void updateConfigFile()
     {
-        MapUtil configMap = new MapUtil(getDEMConfigFilename());
-
-        String demNames = "";
-        String demFilenames = "";
-
-//        DefaultListModel demListModel = (DefaultListModel)imageList.getModel();
-        for (int i=0; i<infoList.size(); ++i)
-        {
-            DEMInfo demInfo = infoList.get(i);
-
-            demFilenames += demInfo.demfilename;
-            demNames += demInfo.name;
-            if (i < infoList.size()-1)
-            {
-                demNames += CustomShapeModel.LIST_SEPARATOR;
-                demFilenames += CustomShapeModel.LIST_SEPARATOR;
-            }
-        }
-
-        Map<String, String> newMap = new LinkedHashMap<String, String>();
-
-        newMap.put(DEM.DEM_NAMES, demNames);
-        newMap.put(DEM.DEM_FILENAMES, demFilenames);
-
-        configMap.put(newMap);
+    	try
+		{
+			Serializers.serialize("CustomDEMs", this, new File(getDEMConfigFilename()));
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     // Removes all DEMs
@@ -194,30 +187,18 @@ public class DtmCreationModel
     {
         String uuid = UUID.randomUUID().toString();
 
-//        if(demInfo.demfilename.endsWith(".fit") || demInfo.demfilename.endsWith(".fits") ||
-//                demInfo.demfilename.endsWith(".FIT") || demInfo.demfilename.endsWith(".FITS"))
-        {
-            // Copy FIT file to cache
-            String newFilename = "dem-" + uuid + ".fit";
-            String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-            FileUtil.copyFile(demInfo.demfilename,  newFilepath);
-            // Change demInfo.demfilename to the new location of the file
-            demInfo.demfilename = newFilename;
+        // Copy FIT file to cache
+        String newFilename = "dem-" + uuid + ".fit";
+        String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+        FileUtil.copyFile(demInfo.demfilename,  newFilepath);
+        // Change demInfo.demfilename to the new location of the file
+        demInfo.demfilename = newFilepath;
 
-//            DefaultListModel model = (DefaultListModel)imageList.getModel();
-//            model.addElement(demInfo);
-            infoList.add(demInfo);
-            fireInfoChangedListeners(demInfo);
-            System.out.println("DtmCreationModel: saveDEM: updated info list");
-            updateConfigFile();
-        }
-//        else
-//        {
-//            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-//                    "DEM file does not have valid FIT extension.",
-//                    "Error",
-//                    JOptionPane.ERROR_MESSAGE);
-//        }
+        infoList.add(demInfo);
+        fireInfoChangedListeners(demInfo);
+        System.out.println("DtmCreationModel: saveDEM: updated info list " + demInfo.demfilename);
+        updateConfigFile();
+
     }
 
 
@@ -365,12 +346,57 @@ public class DtmCreationModel
 		}
 	}
 
-	public void fireInfoChangedListeners(Vector<DEMInfo> infos)
+	public void fireInfoChangedListeners(List<DEMInfo> infos)
 	{
 		for (DEMCreationModelChangedListener listener : listeners)
 		{
 			listener.demInfoListChanged(infos);
 		}
 	}
+
+	Key<Metadata[]> demInfosKey = Key.of("demInfos");
+
+	@Override
+	public Metadata store()
+	{
+		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+		Metadata[] infoArray = new Metadata[infoList.size()];
+		int i=0;
+		for (DEMInfo info : infoList)
+		{
+			infoArray[i] = info.store();
+		}
+		write(demInfosKey, infoArray, configMetadata);
+		return configMetadata;
+	}
+
+	@Override
+	public void retrieve(Metadata source)
+	{
+		Metadata[] metadataArray = read(demInfosKey, source);
+		for (Metadata meta : metadataArray)
+		{
+			DEMInfo info = new DEMInfo();
+			info.retrieve(meta);
+			infoList.add(info);
+		}
+	}
+
+	protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
+    {
+        if (value != null)
+        {
+            configMetadata.put(key, value);
+        }
+    }
+
+    protected <T> T read(Key<T> key, Metadata configMetadata)
+    {
+        T value = configMetadata.get(key);
+        if (value != null)
+            return value;
+        return null;
+    }
+
 
 }

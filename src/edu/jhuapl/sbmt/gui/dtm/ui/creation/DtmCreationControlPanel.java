@@ -34,7 +34,7 @@ public class DtmCreationControlPanel extends JPanel
     private JSpinner halfSizeSpinner;
     private boolean hasBigmap = false;
     private boolean hasMapmaker = true;
-
+    JButton clearRegionButton;
 //    public DtmCreationControlPanel()
 //    {
 //    	this.hasMapmaker = true;
@@ -58,7 +58,7 @@ public class DtmCreationControlPanel extends JPanel
         selectRegionButton.setEnabled(true);
         selectRegionPanel.add(selectRegionButton);
 
-        final JButton clearRegionButton = new JButton("Clear Region");
+        clearRegionButton = new JButton("Clear Region");
         selectRegionPanel.add(clearRegionButton);
 
         renameButton = new JButton("Rename...");
@@ -99,18 +99,18 @@ public class DtmCreationControlPanel extends JPanel
 
         final JPanel submitPanel = new JPanel();
 
-        if(hasMapmaker)
+//        if(hasMapmaker)
         {
             mapmakerSubmitButton = new JButton("Run Mapmaker");
-            mapmakerSubmitButton.setEnabled(true);
+            mapmakerSubmitButton.setEnabled(false);
             submitPanel.add(mapmakerSubmitButton);
         }
-        else if (hasBigmap)
-        {
-            bigmapSubmitButton = new JButton("Run Bigmap");
-            bigmapSubmitButton.setEnabled(true);
-            submitPanel.add(bigmapSubmitButton);
-        }
+//        else if (hasBigmap)
+//        {
+//            bigmapSubmitButton = new JButton("Run Bigmap");
+//            bigmapSubmitButton.setEnabled(true);
+//            submitPanel.add(bigmapSubmitButton);
+//        }
 
         add(selectRegionPanel);
 
@@ -244,6 +244,11 @@ public class DtmCreationControlPanel extends JPanel
 	public boolean isHasMapmaker()
 	{
 		return hasMapmaker;
+	}
+
+	public JButton getClearRegionButton()
+	{
+		return clearRegionButton;
 	}
 
 

@@ -23,22 +23,27 @@ import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.dem.MapmakerSwingWorker;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel.DEMInfo;
+import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DtmCreationControlPanel;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 public class DtmCreationControlController implements ActionListener, PropertyChangeListener
 {
 	DtmCreationControlPanel panel;
 	DtmCreationModel model;
 	PickManager pickManager;
+	private DEMCreator creationTool;
 
-	public DtmCreationControlController(SmallBodyViewConfig config, DtmCreationModel model, final PickManager pickManager)
+
+	public DtmCreationControlController(SmallBodyViewConfig config, DtmCreationModel model, final PickManager pickManager, DEMCreator creationTool)
 	{
 		panel = new DtmCreationControlPanel(config.hasMapmaker, config.hasBigmap);
+		this.creationTool = creationTool;
 		this.model = model;
 		this.pickManager = pickManager;
 		initControls();
@@ -126,8 +131,33 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		        {
 		            demInfo.name = newDEMName;
 		            model.updateConfigFile();
+		            model.fireInfoChangedListeners(model.getInfoList());
 		        }
 
+			}
+		});
+
+		panel.getSelectRegionButton().addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				 if (panel.getSelectRegionButton().isSelected())
+	                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+	                else
+	                    pickManager.setPickMode(PickMode.DEFAULT);
+			}
+		});
+
+		panel.getClearRegionButton().addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+	             selectionModel.removeAllStructures();
 			}
 		});
 	}
@@ -213,11 +243,11 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
         // Download the entire map maker suite to the users computer
         // if it has never been downloaded before.
         // Ask the user beforehand if it's okay to continue.
-        final MapmakerSwingWorker mapmakerWorker =
-                new MapmakerSwingWorker(panel, "Running Mapmaker", model.getMapmakerPath());
+//        final MapmakerDEMCreator mapmakerWorker =
+//                new MapmakerDEMCreator(panel, "Running Mapmaker", model.getMapmakerPath());
 
         // If we need to download, prompt the user that it will take a long time
-        if (mapmakerWorker.getIfNeedToDownload())
+        if (creationTool.needToDownloadExecutable())
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(panel),
                     "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
@@ -228,6 +258,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
                 return;
         }
 
+        Task task;
         if (panel.getSetSpecifyRegionManuallyCheckbox().isSelected())
         {
             if (panel.getLatitudeTextField().getText().isEmpty() || panel.getLongitudeTextField().getText().isEmpty() || panel.getPixelScaleTextField().getText().isEmpty())
@@ -238,28 +269,40 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            mapmakerWorker.setLatitude(model.getLatitude());
-            mapmakerWorker.setLongitude(model.getLongitude());
-            mapmakerWorker.setPixelScale(model.getPixelScale());
-            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+
+            task = creationTool.getCreationTask(demName, model.getLatitude(), model.getLongitude(), model.getPixelScale(), model.getHalfSize());
+
+//            mapmakerWorker.setLatitude(model.getLatitude());
+//            mapmakerWorker.setLongitude(model.getLongitude());
+//            mapmakerWorker.setPixelScale(model.getPixelScale());
+//            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+//            mapmakerWorker.setName(demName);
+//            mapmakerWorker.setHalfSize(model.getHalfSize());
+//            mapmakerWorker.setOutputFolder(outputFolder);
         }
         else
         {
-            mapmakerWorker.setCenterPoint(centerPoint);
-            mapmakerWorker.setRadius(radius);
+        	task = creationTool.getCreationTask(demName, centerPoint, radius, model.getHalfSize());
+//            mapmakerWorker.setCenterPoint(centerPoint);
+//            mapmakerWorker.setRadius(radius);
+//            mapmakerWorker.setName(demName);
+//            mapmakerWorker.setHalfSize(model.getHalfSize());
+//            mapmakerWorker.setOutputFolder(outputFolder);
         }
-        mapmakerWorker.setName(demName);
-        mapmakerWorker.setHalfSize(model.getHalfSize());
-        mapmakerWorker.setOutputFolder(outputFolder);
+//        mapmakerWorker.setName(demName);
+//        mapmakerWorker.setHalfSize(model.getHalfSize());
+//        mapmakerWorker.setOutputFolder(outputFolder);
 
-        mapmakerWorker.executeDialog();
+//        mapmakerWorker.executeDialog();
+//
+//        if (mapmakerWorker.isCancelled())
+//            return;
 
-        if (mapmakerWorker.isCancelled())
-            return;
+        task.run();
 
         DEMInfo newDemInfo = new DEMInfo();
         newDemInfo.name = demName;
-        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+        newDemInfo.demfilename = ((MapmakerNativeWrapper)task).getMapletFile().getAbsolutePath();
         try
         {
             model.saveDEM(newDemInfo);

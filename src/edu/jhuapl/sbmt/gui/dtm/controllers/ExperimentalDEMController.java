@@ -19,14 +19,16 @@ public class ExperimentalDEMController
 	DtmSearchController searchController;
 	DtmBrowseController browseController;
 	DtmCreationController creationController;
+	SmallBodyViewConfig config;
 
 	public ExperimentalDEMController(ModelManager modelManager, PickManager pickManager, DEMCreator creationTool, SmallBodyViewConfig config)
 	{
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		searchController = new DtmSearchController(modelManager, pickManager, creationTool);
+		searchController = new DtmSearchController(modelManager, pickManager);
 		browseController = new DtmBrowseController(modelManager, pickManager, config);
-		creationController = new DtmCreationController(modelManager, pickManager, config);
+		creationController = new DtmCreationController(modelManager, pickManager, config, creationTool);
+		this.config = config;
         init();
 	}
 
@@ -34,8 +36,10 @@ public class ExperimentalDEMController
     {
 		panel.add(tabbedPane);
         tabbedPane.addTab("Create", creationController.getPanel());
-        tabbedPane.addTab("Browse", browseController.getPanel());
-        tabbedPane.addTab("Search", searchController.getPanel());
+        if (!config.dtmBrowseDataSourceMap.isEmpty())
+        	tabbedPane.addTab("Browse", browseController.getPanel());
+        if (!config.dtmSearchDataSourceMap.isEmpty())
+        	tabbedPane.addTab("Search", searchController.getPanel());
     }
 
     public JPanel getPanel()
