@@ -26,12 +26,10 @@ pipelineTop="/project/sbmtpipeline"
 rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
-scriptDir="/project/sbmt2/sbmt/scripts"
-
 deployedTop="/project/sbmt2/sbmt/data/bodies"
 testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$bodyName"
 
-scriptDir="/sbmt/scripts"
+scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 

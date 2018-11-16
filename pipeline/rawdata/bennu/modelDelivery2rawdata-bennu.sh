@@ -31,7 +31,7 @@ echo "Processing model name: " $processingModelName
 rawTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
-scriptDir="/sbmt/scripts"
+scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
