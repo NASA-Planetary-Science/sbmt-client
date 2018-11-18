@@ -35,6 +35,7 @@ public class DtmCreationControlPanel extends JPanel
     private boolean hasBigmap = false;
     private boolean hasMapmaker = true;
     JButton clearRegionButton;
+    private JButton deleteButton;
 //    public DtmCreationControlPanel()
 //    {
 //    	this.hasMapmaker = true;
@@ -54,18 +55,21 @@ public class DtmCreationControlPanel extends JPanel
 	{
         JPanel selectRegionPanel = new JPanel();
         selectRegionPanel.setLayout(new BoxLayout(selectRegionPanel, BoxLayout.X_AXIS));
+
+                loadButton = new JButton("Load...");
+                selectRegionPanel.add(loadButton);
+
+                renameButton = new JButton("Rename...");
+                selectRegionPanel.add(renameButton);
+
+        deleteButton = new JButton("Delete");
+        selectRegionPanel.add(deleteButton);
         selectRegionButton = new JToggleButton("Select Region");
         selectRegionButton.setEnabled(true);
         selectRegionPanel.add(selectRegionButton);
 
         clearRegionButton = new JButton("Clear Region");
         selectRegionPanel.add(clearRegionButton);
-
-        renameButton = new JButton("Rename...");
-        selectRegionPanel.add(renameButton);
-
-        loadButton = new JButton("Load...");
-        selectRegionPanel.add(loadButton);
 
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
         halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
@@ -252,4 +256,7 @@ public class DtmCreationControlPanel extends JPanel
 	}
 
 
+	public JButton getDeleteButton() {
+		return deleteButton;
+	}
 }

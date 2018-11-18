@@ -1,21 +1,31 @@
 package edu.jhuapl.sbmt.gui.dtm.controllers.creation;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
+import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.dem.DEMPopupMenu;
 import edu.jhuapl.sbmt.gui.dtm.controllers.DEMResultsTableController;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DEMCreationModelChangedListener;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel.DEMInfo;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DtmCreationPanel;
+import edu.jhuapl.sbmt.model.dem.DEM;
+import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
+import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 public class DtmCreationController
@@ -24,13 +34,19 @@ public class DtmCreationController
 	DtmCreationModel model;
 	private DEMResultsTableController resultsController;
 	private DtmCreationControlController controlController;
+	private DEMPopupMenu demPopupMenu;
 
-	public DtmCreationController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config, DEMCreator creationTool)
+	public DtmCreationController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config, DEMCreator creationTool, Renderer renderer)
 	{
 		model = new DtmCreationModel(modelManager);
 		panel = new DtmCreationPanel();
 		resultsController = new DEMResultsTableController(modelManager, pickManager);
-		System.out.println("DtmCreationController: DtmCreationController: adding listener");
+
+		// Construct popup menu (right click action)
+		DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+        DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
+        demPopupMenu = new DEMPopupMenu(modelManager.getPolyhedralModel(), dems, boundaries, renderer, panel);
+
 		model.addModelChangedListener(new DEMCreationModelChangedListener()
 		{
 
@@ -48,6 +64,22 @@ public class DtmCreationController
 					resultsController.getJTable().setValueAt(info.name, infos.indexOf(info), 3);
 				}
 				resultsController.getJTable().repaint();
+			}
+
+			@Override
+			public void demInfoRemoved(DEMInfo info)
+			{
+				resultsController.getTable().removeRow(model.getInfoList().indexOf(info));
+			}
+
+			@Override
+			public void demInfosRemoved(DEMInfo[] infos)
+			{
+				for (int i=infos.length-1; i>=0; i--)
+				{
+					int index = model.getInfoList().indexOf(infos[i]);
+					resultsController.getTable().removeRow(index);
+				}
 			}
 		});
 
@@ -74,9 +106,65 @@ public class DtmCreationController
 			}
 		});
 
+		resultsController.getJTable().addMouseListener(new MouseAdapter()
+        {
+            public void mousePressed(MouseEvent e)
+            {
+            	imageListMaybeShowPopup(e);
+            }
+
+            public void mouseReleased(MouseEvent e)
+            {
+            	imageListMaybeShowPopup(e);
+            }
+        });
+
 
 		init();
 	}
+
+    // Popup menu for when using right clicks
+    private void imageListMaybeShowPopup(MouseEvent e)
+    {
+    	System.out.println("DtmCreationControlController: imageListMaybeShowPopup: popup");
+    	if (model.getSelectedIndices() == null) return;
+        for (DEM dem : ((DEMCollection)model.getModelManager().getModel(ModelNames.DEM)).getImages())
+        {
+            DEMKey demkey = dem.getKey();
+        }
+        if (e.isPopupTrigger())
+        {
+        	int index = model.getSelectedIndices()[0];
+//            int index = imageList.locationToIndex(e.getPoint());
+
+            // If the item right-clicked on is not selected, then deselect all the
+            // other items and select the item right-clicked on.
+//            if (!imageList.isSelectedIndex(index))
+//            {
+//                imageList.clearSelection();
+//                imageList.setSelectedIndex(index);
+//            }
+
+            int[] selectedIndices = model.getSelectedIndices();
+            List<DEMKey> demKeys = new ArrayList<DEMKey>();
+            for (int selectedIndex : selectedIndices)
+            {
+//                DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
+                DEMInfo demInfo = model.getSelectedItem();
+                String name = /*model.getCustomDataFolder() + File.separator +*/ demInfo.demfilename;
+                DEMKey demKey = new DEMKey(name, demInfo.name);
+                demKeys.add(demKey);
+            }
+            demPopupMenu.setCurrentDEMs(demKeys);
+            demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+//                if (demKeys.size() > 0)
+//                {
+//                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
+//                    updateConfigFile();
+//                }
+
+        }
+    }
 
 	public void init()
     {

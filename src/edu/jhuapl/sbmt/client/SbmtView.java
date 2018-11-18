@@ -573,7 +573,7 @@ public class SbmtView extends View implements PropertyChangeListener
             {
 
 //                DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
-                addTab("Experimental DTM tab", new ExperimentalDEMController(getModelManager(), getPickManager(), null, /*creationTool,*/ getPolyhedralModelConfig()).getPanel());
+                addTab("Experimental DTM tab", new ExperimentalDEMController(getModelManager(), getPickManager(), null, /*creationTool,*/ getPolyhedralModelConfig(), getRenderer()).getPanel());
             }
         }
     }

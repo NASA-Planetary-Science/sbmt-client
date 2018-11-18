@@ -133,7 +133,6 @@ public class DtmCreationModel implements MetadataManager
 
 	        for (DEMInfo info : infoList)
 	        {
-	        	System.out.println("DtmCreationModel: initializeDEMList: firing for " + info.name);
 	        	fireInfoChangedListeners(info);
 	        }
         }
@@ -161,25 +160,39 @@ public class DtmCreationModel implements MetadataManager
     }
 
     // Removes a DEM
-    private void removeDEM(int index)
+    public void removeDEM(int[] index)
     {
+
         // Get the DEM info
-        DEMInfo demInfo = infoList.get(index);
+    	for (int idx : index)
+    	{
+    		DEMInfo demInfo = infoList.get(idx);
+    		removeDEM(new DEMInfo[] { demInfo });
+    	}
 
-        // Remove from cache
-        String name = getCustomDataFolder() + File.separator + demInfo.demfilename;
-        new File(name).delete();
+    }
 
-        // Remove the DEM from the renderer
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        DEMKey demKey = new DEMKey(name, demInfo.name);
-        demCollection.removeDEM(demKey);
+    public void removeDEM(DEMInfo[] demInfos)
+    {
+    	// Remove from cache
+    	for (DEMInfo demInfo : demInfos)
+    	{
+	        String name = getCustomDataFolder() + File.separator + demInfo.demfilename;
+	        new File(name).delete();
 
-        // Remove from the list
-        infoList.remove(index);
-        DEMBoundaryCollection boundaries =
-                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
-        boundaries.removeBoundary(demKey);
+	        // Remove the DEM from the renderer
+	        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
+	        DEMKey demKey = new DEMKey(name, demInfo.name);
+	        demCollection.removeDEM(demKey);
+
+	        // Remove from the list
+	        infoList.remove(demInfo);
+	        DEMBoundaryCollection boundaries =
+	                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
+	        boundaries.removeBoundary(demKey);
+
+	        updateConfigFile();
+    	}
     }
 
 
@@ -196,22 +209,21 @@ public class DtmCreationModel implements MetadataManager
 
         infoList.add(demInfo);
         fireInfoChangedListeners(demInfo);
-        System.out.println("DtmCreationModel: saveDEM: updated info list " + demInfo.demfilename);
         updateConfigFile();
 
     }
 
 
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        int[] selectedIndices = getSelectedIndices();
-        Arrays.sort(selectedIndices);
-        for (int i=selectedIndices.length-1; i>=0; --i)
-        {
-            removeDEM(selectedIndices[i]);
-        }
-
-        updateConfigFile();
-    }//GEN-LAST:event_deleteButtonActionPerformed
+//    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+//        int[] selectedIndices = getSelectedIndices();
+//        Arrays.sort(selectedIndices);
+//        for (int i=selectedIndices.length-1; i>=0; --i)
+//        {
+//            removeDEM(selectedIndices[i]);
+//        }
+//
+//        updateConfigFile();
+//    }//GEN-LAST:event_deleteButtonActionPerformed
 
 //    private void imageListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMousePressed
 //        imageListMaybeShowPopup(evt);
@@ -315,6 +327,8 @@ public class DtmCreationModel implements MetadataManager
 
 	public int[] getSelectedIndices()
 	{
+		if (selectedIndices == null) return null;
+		Arrays.sort(selectedIndices);
 		return selectedIndices;
 	}
 
@@ -326,6 +340,16 @@ public class DtmCreationModel implements MetadataManager
 	public DEMInfo getSelectedItem()
 	{
 		return infoList.get(selectedIndices[0]);
+	}
+
+	public DEMInfo[] getSelectedItems()
+	{
+		DEMInfo[] infos = new DEMInfo[getSelectedIndices().length];
+		for (int i=0; i<infos.length; i++)
+		{
+			infos[i] = infoList.get(getSelectedIndices()[i]);
+		}
+		return infos;
 	}
 
 	public List<DEMInfo> getInfoList()
@@ -354,6 +378,22 @@ public class DtmCreationModel implements MetadataManager
 		}
 	}
 
+	public void fireInfoRemovedListeners(DEMInfo info)
+	{
+		for (DEMCreationModelChangedListener listener : listeners)
+		{
+			listener.demInfoRemoved(info);
+		}
+	}
+
+	public void fireInfosRemovedListeners(DEMInfo[] info)
+	{
+		for (DEMCreationModelChangedListener listener : listeners)
+		{
+			listener.demInfosRemoved(info);
+		}
+	}
+
 	Key<Metadata[]> demInfosKey = Key.of("demInfos");
 
 	@Override
@@ -364,7 +404,7 @@ public class DtmCreationModel implements MetadataManager
 		int i=0;
 		for (DEMInfo info : infoList)
 		{
-			infoArray[i] = info.store();
+			infoArray[i++] = info.store();
 		}
 		write(demInfosKey, infoArray, configMetadata);
 		return configMetadata;

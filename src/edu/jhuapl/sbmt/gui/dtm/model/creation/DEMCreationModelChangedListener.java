@@ -10,4 +10,8 @@ public interface DEMCreationModelChangedListener
 
 	public void demInfoListChanged(List<DEMInfo> infos);
 
+	public void demInfoRemoved(DEMInfo info);
+
+	public void demInfosRemoved(DEMInfo[] info);
+
 }

@@ -18,6 +18,7 @@ public class DtmBrowseController
 {
 	private DtmBrowsePanel panel;
 	private DEMResultsTableController resultsController;
+	private DtmBrowseControlController controlsController;
 	private DtmBrowseModel model;
 
 	public DtmBrowseController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config)
@@ -25,6 +26,7 @@ public class DtmBrowseController
 		resultsController = new DEMResultsTableController(modelManager, pickManager);
 		panel = new DtmBrowsePanel();
         model = new DtmBrowseModel(modelManager, pickManager, config);
+		controlsController = new DtmBrowseControlController(model);
 
 
         model.addModelChangedListener(new DEMBrowseModelChangedListener()
@@ -67,6 +69,7 @@ public class DtmBrowseController
     {
 
         panel.addSubPanel(resultsController.getPanel());
+        panel.addSubPanel(controlsController.getPanel());
 
     }
 

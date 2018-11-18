@@ -4,6 +4,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -21,13 +22,13 @@ public class ExperimentalDEMController
 	DtmCreationController creationController;
 	SmallBodyViewConfig config;
 
-	public ExperimentalDEMController(ModelManager modelManager, PickManager pickManager, DEMCreator creationTool, SmallBodyViewConfig config)
+	public ExperimentalDEMController(ModelManager modelManager, PickManager pickManager, DEMCreator creationTool, SmallBodyViewConfig config, Renderer renderer)
 	{
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		searchController = new DtmSearchController(modelManager, pickManager);
 		browseController = new DtmBrowseController(modelManager, pickManager, config);
-		creationController = new DtmCreationController(modelManager, pickManager, config, creationTool);
+		creationController = new DtmCreationController(modelManager, pickManager, config, creationTool, renderer);
 		this.config = config;
         init();
 	}

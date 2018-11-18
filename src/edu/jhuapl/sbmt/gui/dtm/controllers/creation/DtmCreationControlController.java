@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.gui.dtm.controllers.creation;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -58,6 +57,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 	{
 		pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
+
 		panel.getLoadButton().addActionListener(new ActionListener()
 		{
 
@@ -92,8 +92,6 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		                	 if(demInfo.demfilename.endsWith(".fit") || demInfo.demfilename.endsWith(".fits") ||
 		                             demInfo.demfilename.endsWith(".FIT") || demInfo.demfilename.endsWith(".FITS"))
 		                     {
-		                		 System.out.println(
-										"DtmCreationControlController.initControls().new ActionListener() {...}: actionPerformed: saving to model");
 		                		 model.saveDEM(demInfo);
 		                     }
 		                	 else
@@ -143,10 +141,10 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				 if (panel.getSelectRegionButton().isSelected())
+				if (panel.getSelectRegionButton().isSelected())
 	                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
-	                else
-	                    pickManager.setPickMode(PickMode.DEFAULT);
+                else
+                    pickManager.setPickMode(PickMode.DEFAULT);
 			}
 		});
 
@@ -158,6 +156,18 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 			{
 				 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
 	             selectionModel.removeAllStructures();
+			}
+		});
+
+		panel.getDeleteButton().addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				DEMInfo[] infos = model.getSelectedItems();
+				model.fireInfosRemovedListeners(infos);
+				model.removeDEM(infos);
 			}
 		});
 	}
@@ -380,46 +390,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 //        }
 //    }
 
-    // Popup menu for when using right clicks
-    private void imageListMaybeShowPopup(MouseEvent e)
-    {
-//        for (DEM dem : ((DEMCollection)model.getModelManager().getModel(ModelNames.DEM)).getImages())
-//        {
-//            DEMKey demkey = dem.getKey();
-//        }
-//        if (e.isPopupTrigger())
-//        {
-//            int index = imageList.locationToIndex(e.getPoint());
-//
-//            if (index >= 0 && imageList.getCellBounds(index, index).contains(e.getPoint()))
-//            {
-//                // If the item right-clicked on is not selected, then deselect all the
-//                // other items and select the item right-clicked on.
-//                if (!imageList.isSelectedIndex(index))
-//                {
-//                    imageList.clearSelection();
-//                    imageList.setSelectedIndex(index);
-//                }
-//
-//                int[] selectedIndices = imageList.getSelectedIndices();
-//                List<DEMKey> demKeys = new ArrayList<DEMKey>();
-//                for (int selectedIndex : selectedIndices)
-//                {
-//                    DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
-//                    String name = model.getCustomDataFolder() + File.separator + demInfo.demfilename;
-//                    DEMKey demKey = new DEMKey(name, demInfo.name);
-//                    demKeys.add(demKey);
-//                }
-//                demPopupMenu.setCurrentDEMs(demKeys);
-//                demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-////                if (demKeys.size() > 0)
-////                {
-////                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
-////                    updateConfigFile();
-////                }
-//            }
-//        }
-    }
+
 
     public void propertyChange(PropertyChangeEvent evt)
     {
