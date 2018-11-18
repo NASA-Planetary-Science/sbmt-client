@@ -1,7 +1,9 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -89,6 +91,9 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasLidarData = false;
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
+
+    //default configs
+    List<SbmtMultiMissionTool.Mission> missions = new ArrayList<SbmtMultiMissionTool.Mission>();
 
     // Flag for beta mode
     public static boolean betaMode = false;

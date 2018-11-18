@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -162,6 +163,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(lidarBrowseBinaryRecordSize, c.lidarBrowseBinaryRecordSize, configMetadata);
         write(lidarOffsetScale, c.lidarOffsetScale, configMetadata);
         writeEnum(lidarInstrumentName, c.lidarInstrumentName, configMetadata);
+
+        String[] missionsToSave = new String[c.missions.size()];
+        write(missions, c.missions.toArray(missionsToSave), configMetadata);
+
         return configMetadata;
     }
 
@@ -202,6 +207,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             configMetadata.put(key, value.name());
         }
     }
+
 
     private <T> void writeDate(Key<Long> key, Date value, SettableMetadata configMetadata)
     {
@@ -333,7 +339,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
         c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
         c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
-
+        String[] missionsToAdd = read(missions, configMetadata);
+        c.missions = new ArrayList<>();
+        if (missionsToAdd != null)
+        {
+            for (String mission : missionsToAdd)
+            {
+                SbmtMultiMissionTool.Mission msn = SbmtMultiMissionTool.Mission.getMissionForName(mission);
+                c.missions.add(msn);
+                if (SbmtMultiMissionTool.getMission() == msn)
+                {
+                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                }
+            }
+        }
     }
 
     public List<ViewConfig> getConfigs()
@@ -356,6 +375,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");
     final Key<Boolean> hasImageMap = Key.of("hasImageMap");
     final Key<Boolean> hasStateHistory = Key.of("hasStateHistory");
+    final Key<String[]> missions = Key.of("missions");
 
     //capture imaging instruments here
     final Key<Metadata[]> imagingInstruments = Key.of("imagingInstruments");

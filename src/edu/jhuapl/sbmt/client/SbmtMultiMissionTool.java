@@ -68,6 +68,16 @@ public class SbmtMultiMissionTool
 		{
 			return hashedName;
 		}
+
+		public static Mission getMissionForName(String name)
+		{
+		    for (Mission msn : values())
+		    {
+		        if (name.equals(msn.hashedName))
+		            return msn;
+		    }
+		    return null;
+		}
 	}
 
 	private static final String OUTPUT_FILE_NAME = "sbmtLogFile.txt";
