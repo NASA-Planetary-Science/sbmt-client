@@ -47,7 +47,7 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
@@ -220,10 +220,10 @@ public class LidarSearchController implements ItemListener
 
             return;
         }
-        Picker.setPickingEnabled(false);
+        PickUtil.setPickingEnabled(false);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
         radialOffsetChanger.reset();
-        Picker.setPickingEnabled(true);
+        PickUtil.setPickingEnabled(true);
         view.setCursor(Cursor.getDefaultCursor());
     }
 
