@@ -6,15 +6,16 @@
 #-------------------------------------------------------------------------------
 
 # Usage
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 3 ]
 then
-  echo "Model data usage:  rawdata2processed-bennu.sh <model-name> <processing-version>"
+  echo "Model data usage:  rawdata2processed-bennu.sh <model-name> <processing-version> <processing-model-label>"
   exit 1
 fi
 
 # Command line parameters
 rawdataModelName=$1
 processingVersion=$2
+processingModelLabel=$3
 processingModelName=$rawdataModelName
 
 if [ $processingModelName = "shared" ]
@@ -118,7 +119,7 @@ discoverPlateColorings() {
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
-    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelName/101955 Bennu" >> $log 2>&1
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/101955 Bennu" >> $log 2>&1
     if test $? -ne 0; then
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
