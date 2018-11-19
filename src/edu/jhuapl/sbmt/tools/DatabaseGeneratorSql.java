@@ -409,9 +409,11 @@ public class DatabaseGeneratorSql
         String dburl = null;
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
             dburl = "hyb2sbmt.jhuapl.edu";
-        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEV)
+        else if (SbmtMultiMissionTool.getMission() == Mission.OSIRIS_REX_DEPLOY)
+            throw new AssertionError("NEED TO SET UP THE LOCATION OF THE OREX DEPLOYED DATABASE");
+        else
             dburl = "sd-mysql.jhuapl.edu";
 
         try
