@@ -38,7 +38,9 @@ public class DEMResultsTableController
         tableWrapper = DEMTable.createSwingWrapper(table);
 
         propertyChangeListener = new DtmResultsPropertyChangeListener();
-//        tableModelListener = new DtmResultsTableModeListener();
+
+        this.dems.addPropertyChangeListener(propertyChangeListener);
+        boundaries.addPropertyChangeListener(propertyChangeListener);
 	}
 
 
@@ -72,32 +74,14 @@ public class DEMResultsTableController
             {
                 JTable resultList = getJTable();
                 resultList.getModel().removeTableModelListener(tableModelListener);
-//                int size = imageRawResults.size();
                 for (int i=0; i<table.getNumberOfRows(); ++i)
                 {
-//                    String name = imageRawResults.get(i).get(0);
-//                    ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                 	DEMKey key = table.getKey(i);
-//                	DEMInfo info = new DEMInfo();
-//                	info.demfilename = key.fileName;
-//                	info.name = key.displayName;
+                	resultList.setValueAt(dems.containsDEM(key), i, 0);
+                	resultList.setValueAt(boundaries.containsBoundary(key), i, 2);
+                	if (dems.getDEM(key) == null) continue;
+                	resultList.setValueAt(dems.getDEM(key).isVisible(), i, 1);
 
-                	if (dems.containsDEM(key))
-                    {
-                        resultList.setValueAt(true, i, 0); //was imageResultsTableView.getMapColumnIndex()
-//                        PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                        //TODO FIX THIS
-                        resultList.setValueAt(true, i, 1);	//was imageResultsTableView.getShowFootprintColumnIndex()
-                    }
-                    else
-                    {
-                        resultList.setValueAt(false, i, 0); //was imageResultsTableView.getMapColumnIndex()
-                        resultList.setValueAt(false, i, 1); //was imageResultsTableView.getShowFootprintColumnIndex()
-                    }
-                    if (boundaries.containsBoundary(key))
-                        resultList.setValueAt(true, i, 2);	//was imageResultsTableView.getBndrColumnIndex()
-                    else
-                        resultList.setValueAt(false, i, 2);
                 }
                 getJTable().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
@@ -105,70 +89,4 @@ public class DEMResultsTableController
             }
         }
     }
-
-//    class DtmResultsTableModeListener implements TableModelListener
-//    {
-//        public void tableChanged(TableModelEvent e)
-//        {
-//            ImageSource sourceOfLastQuery = imageSearchModel.getImageSourceOfLastQuery();
-//            List<List<String>> imageRawResults = imageSearchModel.getImageResults();
-//            ModelManager modelManager = imageSearchModel.getModelManager();
-//            if (e.getColumn() == imageResultsTableView.getMapColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                String namePrefix = name.substring(0, name.length()-4);
-//                if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
-//                    imageSearchModel.loadImages(namePrefix);
-//                else
-//                {
-//                    imageSearchModel.unloadImages(namePrefix);
-//                    renderer.setLighting(LightingType.LIGHT_KIT);
-//                }
-//            }
-//            else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                String namePrefix = name.substring(0, name.length()-4);
-//                boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
-//                imageSearchModel.setImageVisibility(namePrefix, visible);
-//            }
-//            else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, imageSearchModel.getInstrument());
-//                ImageCollection images = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
-//                if (images.containsImage(key))
-//                {
-//                    PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-//                    image.setShowFrustum(!image.isFrustumShowing());
-//                }
-//            }
-//            else if (e.getColumn() == imageResultsTableView.getBndrColumnIndex())
-//            {
-//                int row = e.getFirstRow();
-//                String name = imageRawResults.get(row).get(0);
-//                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, imageSearchModel.getInstrument());
-//                try
-//                {
-//                    if (!boundaries.containsBoundary(key))
-//                        boundaries.addBoundary(key);
-//                    else
-//                        boundaries.removeBoundary(key);
-//                }
-//                catch (Exception e1) {
-//                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),
-//                            "There was an error mapping the boundary.",
-//                            "Error",
-//                            JOptionPane.ERROR_MESSAGE);
-//
-//                    e1.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    }
-
 }

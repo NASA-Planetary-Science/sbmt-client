@@ -2,7 +2,6 @@ package edu.jhuapl.sbmt.gui.dtm.controllers.creation;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel.DEMInfo;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DtmCreationPanel;
-import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
@@ -126,30 +124,13 @@ public class DtmCreationController
     // Popup menu for when using right clicks
     private void imageListMaybeShowPopup(MouseEvent e)
     {
-    	System.out.println("DtmCreationControlController: imageListMaybeShowPopup: popup");
     	if (model.getSelectedIndices() == null) return;
-        for (DEM dem : ((DEMCollection)model.getModelManager().getModel(ModelNames.DEM)).getImages())
-        {
-            DEMKey demkey = dem.getKey();
-        }
         if (e.isPopupTrigger())
         {
-        	int index = model.getSelectedIndices()[0];
-//            int index = imageList.locationToIndex(e.getPoint());
-
-            // If the item right-clicked on is not selected, then deselect all the
-            // other items and select the item right-clicked on.
-//            if (!imageList.isSelectedIndex(index))
-//            {
-//                imageList.clearSelection();
-//                imageList.setSelectedIndex(index);
-//            }
-
             int[] selectedIndices = model.getSelectedIndices();
             List<DEMKey> demKeys = new ArrayList<DEMKey>();
             for (int selectedIndex : selectedIndices)
             {
-//                DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
                 DEMInfo demInfo = model.getSelectedItem();
                 String name = /*model.getCustomDataFolder() + File.separator +*/ demInfo.demfilename;
                 DEMKey demKey = new DEMKey(name, demInfo.name);
@@ -157,12 +138,6 @@ public class DtmCreationController
             }
             demPopupMenu.setCurrentDEMs(demKeys);
             demPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-//                if (demKeys.size() > 0)
-//                {
-//                    ((DEMInfo)imageList.getModel().getElementAt(index-1)).name = (((DEMCollection)modelManager.getModel(ModelNames.DEM)).getDEM(demKeys.get(0))).getKey().displayName;
-//                    updateConfigFile();
-//                }
-
         }
     }
 
