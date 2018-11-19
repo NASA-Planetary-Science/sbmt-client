@@ -105,13 +105,13 @@ public class LidarShiftPicker extends Picker
         }
         else
         {
-            if (renWin.getComponent().getCursor().getType() != getDefaultCursor())
-                renWin.getComponent().setCursor(new Cursor(getDefaultCursor()));
+            if (renWin.getComponent().getCursor().getType() != getCursorType())
+                renWin.getComponent().setCursor(new Cursor(getCursorType()));
         }
     }
 
     @Override
-    public int getDefaultCursor()
+    public int getCursorType()
     {
         return Cursor.CROSSHAIR_CURSOR;
     }
