@@ -489,14 +489,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_V4_IMAGE,
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
-                            ImageType.MAPCAM_V4_IMAGE,
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL},
                             Instrument.MAPCAM
                             )
