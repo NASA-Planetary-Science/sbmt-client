@@ -92,8 +92,7 @@ processMakeSumfiles() {
   for line in $fileNames
   do
      # extracts the time from the file name
-     fileTime=`echo $line | sed 's:[^_]*_[^_]*_::' | sed 's:\(.*[0-9][0-9][0-9][0-9]\).*:\1:' |
-     sed 's:\(..\)$:\:\1:' | sed 's:\(..\:\):\:\1:' | sed 's:_:T:' | sed 's:\(..T\):-\1:' | sed 's:\(..-\):-\1:'`
+     fileTime=`echo $line | sed 's/[^0-9]*\([0-9]\{4\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)T\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\).*/\1-\2-\3T\4:\5:\6/i'`
      echo "$line $fileTime" >> $imageDir/imagelist-sum.txt
   done
 }
