@@ -285,8 +285,6 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         {
             String instrumentName = (String)data.get(Key.of("displayName"));
             BasicSpectrumInstrument inst = SpectrumInstrumentFactory.getInstrumentForName(instrumentName);
-            System.out
-                    .println("SmallBodyViewConfigMetadataIO: retrieve: inst is " + inst + " is " + instrumentName);
             inst.retrieve(data);
             c.spectralInstruments[i++] = inst;
         }

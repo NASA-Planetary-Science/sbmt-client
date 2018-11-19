@@ -2953,14 +2953,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
         List<ViewConfig> configArray = getBuiltInConfigs();
 
-        configArray.addAll(addRemoteEntries());
-
-//        addConfigsBeingRemoved(configArray);
-
-        addNewHorizonsModels(configArray);
-
-        addMarsModels(configArray);
-
         // Gaskell Eros
         SmallBodyViewConfig c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EROS;
@@ -4756,6 +4748,15 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             configArray.add(c);
         }
+
+        configArray.addAll(addRemoteEntries());
+
+//      addConfigsBeingRemoved(configArray);
+
+        addNewHorizonsModels(configArray);
+
+        addMarsModels(configArray);
+
     }
 
     // Imaging instrument helper methods.
