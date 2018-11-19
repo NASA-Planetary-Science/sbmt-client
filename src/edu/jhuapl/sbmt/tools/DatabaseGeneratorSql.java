@@ -197,6 +197,8 @@ public class DatabaseGeneratorSql
             System.out.println("\n\nstarting image " + count + " of " + totalFiles + ": " + filename);
 
             String keyName = filename;
+            keyName = keyName.replace(".FITS", "");
+            keyName = keyName.replace(".fits", "");
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
