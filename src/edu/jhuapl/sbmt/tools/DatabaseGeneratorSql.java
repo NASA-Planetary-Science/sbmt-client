@@ -841,9 +841,9 @@ public class DatabaseGeneratorSql
         /*
          * Osiris REx flight models below here.
          */
-        BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL),
+        BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath.txt", "bennu_altwgspcv20181109b_mapcam"),
-        BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.GASKELL),
+        BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath.txt", "bennu_altwgspcv20181109b_polycam"),
         ;
 
