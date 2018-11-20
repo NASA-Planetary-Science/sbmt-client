@@ -509,17 +509,17 @@ public class SmallBodyViewConfig extends BodyViewConfig
             };
 
             c.hasStateHistory = true;
-            c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2","/earth/osirisrex/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3","/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF","/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF","/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
             try
             {
                 //TODO: eventually point this to a URL
