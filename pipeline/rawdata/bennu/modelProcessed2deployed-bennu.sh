@@ -119,6 +119,17 @@ else
   ln -s ../shared/lidar/ $destTop/$processingModelName-$processingVersion/lidar
 fi
 
+# THIS BLOCK WAS NOT YET TESTED!
+if [ -d "$srcTop/$processingVersion/$processingModelName/otes" ]; then
+  # James to Josh: these should be checked for success. Probably need a new function for
+  # doMakeLink or some such.
+  # set the soft link to the shared polycam directory
+  echo "Need to write this section of modelProcessed2Deployed script!" >&2
+  exit 1
+else
+  ln -s ../shared/otes $destTop/$processingModelName-$processingVersion/otes
+  ln -s ../shared/ovirs $destTop/$processingModelName-$processingVersion/ovirs
+fi
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
