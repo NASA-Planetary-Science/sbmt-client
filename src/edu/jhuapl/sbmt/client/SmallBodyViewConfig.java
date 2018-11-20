@@ -490,14 +490,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
             };
@@ -505,7 +505,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
                     new OTES(),
-                    new OVIRS()
+//                    new OVIRS()
             };
 
             c.hasStateHistory = true;
