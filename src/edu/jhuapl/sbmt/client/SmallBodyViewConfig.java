@@ -571,6 +571,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 c.hasBigmap = true;
             }
 
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
             configArray.add(c);
         }
 
