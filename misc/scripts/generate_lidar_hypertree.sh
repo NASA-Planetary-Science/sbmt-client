@@ -2,7 +2,11 @@
 
 cd `dirname $0`
 
-TREEDIR=/project/sbmt2/sbmt/data/servers/multi-mission/test/ryugu/shared/lidar/search/hypertree
+#TREEDIR=/project/sbmt2/sbmt/data/servers/multi-mission/test/ryugu/shared/lidar/search/hypertree
+
+# This is run during the raw2processed script, so this needs to get generated in the processed area
+TREEDIR=/project/sbmtpipeline/processed/ryugu/latest/shared/lidar/search/hypertree
+
 
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
