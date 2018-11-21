@@ -16,6 +16,7 @@ import edu.jhuapl.sbmt.model.bennu.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamImage;
 import edu.jhuapl.sbmt.model.bennu.MapCamV4Image;
+import edu.jhuapl.sbmt.model.bennu.OcamsFlightImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamEarthImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamImage;
 import edu.jhuapl.sbmt.model.bennu.PolyCamV4Image;
@@ -30,7 +31,6 @@ import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.gaspra.SSIGaspraImage;
 import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
@@ -62,6 +62,7 @@ import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
+import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
@@ -155,12 +156,18 @@ public class SbmtModelFactory
                     return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.MAPCAM_V4_IMAGE)
                     return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
+                else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
                     return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
+                else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
                     return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
+                else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
                     return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+                else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_TRUTH_IMAGE)
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.instrument.type == ImageType.ONC_IMAGE)
@@ -207,12 +214,18 @@ public class SbmtModelFactory
                 return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MAPCAM_V4_IMAGE)
                 return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.POLYCAM_EARTH_IMAGE)
                 return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SAMCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.SAMCAM_EARTH_IMAGE)
                 return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.MAPCAM_EARTH_IMAGE)
                 return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
+            else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+            else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+            else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)

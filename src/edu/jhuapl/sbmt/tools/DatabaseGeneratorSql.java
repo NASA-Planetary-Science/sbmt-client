@@ -197,6 +197,8 @@ public class DatabaseGeneratorSql
             System.out.println("\n\nstarting image " + count + " of " + totalFiles + ": " + filename);
 
             String keyName = filename;
+            keyName = keyName.replace(".FITS", "");
+            keyName = keyName.replace(".fits", "");
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
@@ -409,9 +411,11 @@ public class DatabaseGeneratorSql
         String dburl = null;
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
             dburl = "hyb2sbmt.jhuapl.edu";
-        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEV)
+        else if (SbmtMultiMissionTool.getMission() == Mission.OSIRIS_REX_DEPLOY)
+            throw new AssertionError("NEED TO SET UP THE LOCATION OF THE OREX DEPLOYED DATABASE");
+        else
             dburl = "sd-mysql.jhuapl.edu";
 
         try
@@ -836,6 +840,20 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
         DEIMOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelType.EXPERIMENTAL),
                 "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
+
+
+        /*
+         * Osiris REx flight models below here.
+         */
+        BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_mapcam"),
+        BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_polycam"),
+
+        BENNU_ALTWG_SPICE_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_mapcam"),
+        BENNU_ALTWG_SPICE_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_polycam"),
         ;
 
 
