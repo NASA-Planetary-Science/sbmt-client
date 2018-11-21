@@ -544,6 +544,36 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20181115;
+            c.modelLabel = "ALTWG-SPC-v20181115";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20181115";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1260;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.00040613;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            configArray.add(c);
+        }
+
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BETULIA;
         c.type = BodyType.ASTEROID;
