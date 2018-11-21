@@ -365,16 +365,6 @@ public class SbmtMultiMissionTool
 
 		// Start up the client.
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		if (initialShapeModelPath != null && (!initialShapeModelPath.contains(File.separator) /*|| initialShapeModelPath.contains("..")*/))
-		{
-		    initialShapeModelPath = new File(initialShapeModelPath).getAbsolutePath();
-
-		}
-		if (initialShapeModelPath.contains(".."))
-		{
-		    initialShapeModelPath = new File(initialShapeModelPath).getCanonicalPath();
-		}
-
 		executor.execute(new SbmtRunnable(initialShapeModelPath));
 
 		// Kill the splash screen after a suitable pause.
