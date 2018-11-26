@@ -845,15 +845,23 @@ public class DatabaseGeneratorSql
         /*
          * Osiris REx flight models below here.
          */
+        // 1109B SUMFILES
         BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_mapcam"),
         BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_polycam"),
 
+        // 1109B INFOFILES
         BENNU_ALTWG_SPICE_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_mapcam"),
         BENNU_ALTWG_SPICE_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_polycam"),
+
+        // 1115 INFOFILES
+        BENNU_ALTWG_SPICE_V20181115_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181115),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181115/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181115_mapcam"),
+        BENNU_ALTWG_SPICE_V20181115_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181115),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181115/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181115_polycam"),
         ;
 
 
