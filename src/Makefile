@@ -40,9 +40,9 @@ int_mac_dir   := ${int_dist_dir}/mac64
 int_linux_dir := ${int_dist_dir}/linux64
 int_win_dir   := ${int_dist_dir}/win64
 
-int_mac_sbmt_dir   := ${int_mac_dir}/sbmt
-int_linux_sbmt_dir := ${int_linux_dir}/sbmt
-int_win_sbmt_dir   := ${int_win_dir}/sbmt
+int_mac_sbmt_dir   := ${int_mac_dir}/${RELEASE}
+int_linux_sbmt_dir := ${int_linux_dir}/${RELEASE}
+int_win_sbmt_dir   := ${int_win_dir}/${RELEASE}
 
 int_mac_sbmt_lib_dir   := ${int_mac_sbmt_dir}/lib
 int_linux_sbmt_lib_dir := ${int_linux_sbmt_dir}/lib
@@ -58,9 +58,9 @@ pub_mac_dir   := ${pub_dist_dir}/mac64
 pub_linux_dir := ${pub_dist_dir}/linux64
 pub_win_dir   := ${pub_dist_dir}/win64
 
-pub_mac_sbmt_dir   := ${pub_mac_dir}/sbmt
-pub_linux_sbmt_dir := ${pub_linux_dir}/sbmt
-pub_win_sbmt_dir   := ${pub_win_dir}/sbmt
+pub_mac_sbmt_dir   := ${pub_mac_dir}/${RELEASE}
+pub_linux_sbmt_dir := ${pub_linux_dir}/${RELEASE}
+pub_win_sbmt_dir   := ${pub_win_dir}/${RELEASE}
 
 pub_mac_sbmt_lib_dir   := ${pub_mac_sbmt_dir}/lib
 pub_linux_sbmt_lib_dir := ${pub_linux_sbmt_dir}/lib
@@ -168,7 +168,8 @@ ${int_mac_zip} : ${NEARAPLJAR}
 		mv ${int_mac_sbmt_dir}/jre-mac64 ${int_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR}
-		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} sbmt)
+		cp ${int_mac_dir}/sbmt/runsbmt ${int_mac_dir}/${RELEASE}
+		(cd ${int_mac_dir} ; zip -q -r ${mac_zip} ${RELEASE})
 
 # Note this uses near-apl.jar, and creating 'runsbmt' is same as mac64 but different than win64
 # and generate_runsbmt.sh takes the INTERNAL parameters.
@@ -191,7 +192,8 @@ ${int_linux_zip} : ${NEARAPLJAR}
 		mv ${int_linux_sbmt_dir}/jre-linux64 ${int_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${INTERNAL_OUTPUT_DIR}
-		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} sbmt)
+		cp ${int_linux_dir}/sbmt/runsbmt ${int_linux_dir}/${RELEASE}
+		(cd ${int_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
 
 # Note this uses near-apl.jar, and creating 'runsbmt' script is different here.
 ${int_win_zip} : ${NEARAPLJAR}
@@ -212,7 +214,8 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
 		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
-		(cd ${int_win_dir} ; zip -q -r ${win_zip} sbmt)
+		cp ${int_win_sbmt_dir}/runsbmt.exe ${int_win_dir}/${RELEASE}
+		(cd ${int_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
  
 # Note this uses near.jar, and creating 'runsbmt' is same as linux64 but different than win64
@@ -234,7 +237,8 @@ ${pub_mac_zip} : ${NEARJAR}
 		mv ${pub_mac_sbmt_dir}/jre-mac64 ${pub_mac_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_mac_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
-		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} sbmt)
+		cp ${pub_mac_dir}/sbmt/runsbmt ${pub_mac_dir}/${RELEASE}
+		(cd ${pub_mac_dir} ; zip -q -r ${mac_zip} ${RELEASE})
 
 # Note this uses near.jar, and creating 'runsbmt' is same as mac64 but different than win64
 # and generate_runsbmt.sh takes the PUBLIC parameters.
@@ -257,7 +261,8 @@ ${pub_linux_zip} : ${NEARJAR}
 		mv ${pub_linux_sbmt_dir}/jre-linux64 ${pub_linux_sbmt_dir}/jre
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_linux_sbmt_lib_dir}
 		${SBMTROOT}/config/generate_runsbmt.sh ${PUBLIC_OUTPUT_DIR}
-		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} sbmt)
+		cp ${pub_linux_dir}/sbmt/runsbmt ${pub_linux_dir}/${RELEASE}
+		(cd ${pub_linux_dir} ; zip -q -r ${linux_zip} ${RELEASE})
 
 # Note this uses near.jar, and creating the 'runsbmt' script is different here.
 ${pub_win_zip} : ${NEARJAR}
@@ -278,6 +283,7 @@ ${pub_win_zip} : ${NEARJAR}
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
 		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
-		(cd ${pub_win_dir} ; zip -q -r ${win_zip} sbmt)
+		cp ${pub_win_sbmt_dir}/runsbmt.exe ${pub_win_dir}/${RELEASE}
+		(cd ${pub_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
 include ${SBMTROOT}/config/Makefiles/Master
