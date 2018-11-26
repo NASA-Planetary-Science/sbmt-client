@@ -214,7 +214,7 @@ ${int_win_zip} : ${NEARAPLJAR}
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${int_win_sbmt_lib_dir}
 		cp ${jre_dir}/runsbmt.exe ${int_win_sbmt_dir}
 		@chmod +x ${int_win_sbmt_dir}/runsbmt.exe
-		cp ${int_win_sbmt_dir}/runsbmt.exe ${int_win_dir}/${RELEASE}
+#		cp ${int_win_sbmt_dir}/runsbmt.exe ${int_win_dir}/${RELEASE}
 		(cd ${int_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
  
@@ -283,7 +283,7 @@ ${pub_win_zip} : ${NEARJAR}
 		cp ${top_level_dir}/src/edu/jhuapl/sbmt/data/license.txt ${pub_win_sbmt_lib_dir}
 		cp ${jre_dir}/runsbmt.exe ${pub_win_sbmt_dir}
 		@chmod +x ${pub_win_sbmt_dir}/runsbmt.exe
-		cp ${pub_win_sbmt_dir}/runsbmt.exe ${pub_win_dir}/${RELEASE}
+#		cp ${pub_win_sbmt_dir}/runsbmt.exe ${pub_win_dir}/${RELEASE}
 		(cd ${pub_win_dir} ; zip -q -r ${win_zip} ${RELEASE})
 
 include ${SBMTROOT}/config/Makefiles/Master
