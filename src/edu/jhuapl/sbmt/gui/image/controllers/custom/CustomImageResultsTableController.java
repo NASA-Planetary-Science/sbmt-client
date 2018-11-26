@@ -196,6 +196,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
                     ImageType imageType = imageInfo.imageType;
                     ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+                    System.out.println(
+                            "CustomImageResultsTableController: resultsListMaybeShowPopup: filetype is " + fileType);
                     ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
                     imageKeys.add(imageKey);
                 }

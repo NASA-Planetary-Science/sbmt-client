@@ -100,7 +100,7 @@ public class SbmtModelFactory
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-
+        System.out.println("SbmtModelFactory: createImage: key is " + key);
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.GASKELL_UPDATED.equals(key.source) ||
@@ -220,11 +220,11 @@ public class SbmtModelFactory
                 return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.MAPCAM_EARTH_IMAGE)
                 return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.POLYCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.MAPCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
+            else if (key.imageType == ImageType.SAMCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.imageType == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);

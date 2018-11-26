@@ -128,9 +128,11 @@ public class CustomImagesModel extends ImageSearchModel
 
         ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         for (ImageKey key : keys)
         {
-            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, key.fileType, info.imageType, key.instrument, key.band, key.slice);
+            System.out.println("CustomImagesModel: loadImages: filetype " + fileType);
+            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
                 if (!imageCollection.containsImage(revisedKey))
@@ -296,7 +298,15 @@ public class CustomImagesModel extends ImageSearchModel
 
         updateConfigFile();
         fireResultsChanged();
-
+        try
+        {
+            remapImageToRenderer(index);
+        }
+        catch (FitsException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void editButtonActionPerformed(ActionEvent evt)
@@ -339,6 +349,7 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        System.out.println("CustomImagesModel: getKeyForImageInfo: file type is " + fileType);
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
         return imageKey;
     }
@@ -358,6 +369,7 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+        System.out.println("CustomImagesModel: remapImageToRenderer: file type is " + fileType);
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
 
 //        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
@@ -385,6 +397,7 @@ public class CustomImagesModel extends ImageSearchModel
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        System.out.println("CustomImagesModel: getImageKeyForIndex: filetype " + fileType);
         return imageKey;
     }
 

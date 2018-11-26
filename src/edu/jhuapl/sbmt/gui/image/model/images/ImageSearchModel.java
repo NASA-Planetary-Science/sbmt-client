@@ -341,6 +341,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public List<ImageKey> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
+        System.out.println("ImageSearchModel: createImageKeys: creating image keys");
         List<ImageKey> result = new ArrayList<ImageKey>();
         result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
         return result;
@@ -350,6 +351,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
+        System.out.println("ImageSearchModel: createImageKey: filetype null");
         ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
         return key;
     }
