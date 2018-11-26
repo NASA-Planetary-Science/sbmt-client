@@ -131,7 +131,6 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         for (ImageKey key : keys)
         {
-            System.out.println("CustomImagesModel: loadImages: filetype " + fileType);
             ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
@@ -342,6 +341,19 @@ public class CustomImagesModel extends ImageSearchModel
       }
   }
 
+    @Override
+    public ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    {
+        for (ImageInfo info : customImages)
+        {
+            if (info.name.contains(imagePathName))
+            {
+                return getKeyForImageInfo(info);
+            }
+        }
+        return super.createImageKey(imagePathName, sourceOfLastQuery, instrument);
+    }
+
     private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
     {
         String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
@@ -349,7 +361,6 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        System.out.println("CustomImagesModel: getKeyForImageInfo: file type is " + fileType);
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
         return imageKey;
     }
@@ -369,7 +380,6 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        System.out.println("CustomImagesModel: remapImageToRenderer: file type is " + fileType);
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
 
 //        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
@@ -397,7 +407,6 @@ public class CustomImagesModel extends ImageSearchModel
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
         ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
-        System.out.println("CustomImagesModel: getImageKeyForIndex: filetype " + fileType);
         return imageKey;
     }
 

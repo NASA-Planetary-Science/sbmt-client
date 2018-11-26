@@ -100,7 +100,7 @@ public class SbmtModelFactory
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
-        System.out.println("SbmtModelFactory: createImage: key is " + key);
+
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
                 ImageSource.GASKELL_UPDATED.equals(key.source) ||

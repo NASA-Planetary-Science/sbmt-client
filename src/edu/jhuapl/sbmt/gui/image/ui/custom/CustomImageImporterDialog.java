@@ -94,7 +94,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             else
             {
                 if (imageType == ImageType.GENERIC_IMAGE)
-                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip + " sumfile " + sumfilename + " infofilename " + infofilename;
+                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
                 else
                     return name + ", Perspective" + ", " + imageType;
             }
@@ -261,9 +261,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         info.name = imageNameTextField.getText();
         if ((info.name == null || info.name.isEmpty()) && info.imagefilename != null)
             info.name = new File(info.imagefilename).getName();
-        System.out.println("CustomImageImporterDialog: getImageInfo: flip is " + info.flip);
-        System.out.println("CustomImageImporterDialog: getImageInfo: rotation is " + info.rotation);
-        System.out.println("CustomImageImporterDialog: getImageInfo: info is " + info);
+
         return info;
     }
 
