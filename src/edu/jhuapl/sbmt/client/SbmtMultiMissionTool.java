@@ -27,7 +27,7 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -41,8 +41,9 @@ import edu.jhuapl.sbmt.tools.SbmtRunnable;
  */
 public class SbmtMultiMissionTool
 {
+    private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
 
-	public enum Mission
+    public enum Mission
 	{
 		APL_INTERNAL("b1bc7ed"),
 		PUBLIC_RELEASE("3ee38f0"),
@@ -364,11 +365,6 @@ public class SbmtMultiMissionTool
 
 		// Start up the client.
 		ExecutorService executor = Executors.newSingleThreadExecutor();
-		if (initialShapeModelPath != null && !initialShapeModelPath.contains(File.separator))
-		{
-		    initialShapeModelPath = new File(initialShapeModelPath).getAbsolutePath();
-
-		}
 		executor.execute(new SbmtRunnable(initialShapeModelPath));
 
 		// Kill the splash screen after a suitable pause.
@@ -416,7 +412,7 @@ public class SbmtMultiMissionTool
 
 		if (redirectStreams)
 		{
-			Path outputFilePath = SafePaths.get(Configuration.getApplicationDataDir(), OUTPUT_FILE_NAME);
+			Path outputFilePath = SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), OUTPUT_FILE_NAME);
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
@@ -445,7 +441,7 @@ public class SbmtMultiMissionTool
 				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
 				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				String parent = new File(jarLocation).getParentFile().getParent();
-				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"), SafePaths.get(parent, "password.txt"));
+				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
 
 				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
 			}

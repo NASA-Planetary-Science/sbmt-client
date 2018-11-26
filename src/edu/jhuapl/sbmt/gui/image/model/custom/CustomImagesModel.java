@@ -128,9 +128,10 @@ public class CustomImagesModel extends ImageSearchModel
 
         ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         for (ImageKey key : keys)
         {
-            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, key.fileType, info.imageType, key.instrument, key.band, key.slice);
+            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
                 if (!imageCollection.containsImage(revisedKey))
@@ -296,7 +297,15 @@ public class CustomImagesModel extends ImageSearchModel
 
         updateConfigFile();
         fireResultsChanged();
-
+        try
+        {
+            remapImageToRenderer(index);
+        }
+        catch (FitsException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void editButtonActionPerformed(ActionEvent evt)
@@ -331,6 +340,19 @@ public class CustomImagesModel extends ImageSearchModel
           }
       }
   }
+
+    @Override
+    public ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    {
+        for (ImageInfo info : customImages)
+        {
+            if (info.name.contains(imagePathName))
+            {
+                return getKeyForImageInfo(info);
+            }
+        }
+        return super.createImageKey(imagePathName, sourceOfLastQuery, instrument);
+    }
 
     private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
     {

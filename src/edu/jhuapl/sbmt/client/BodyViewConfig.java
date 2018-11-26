@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -24,6 +24,8 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
  */
 public abstract class BodyViewConfig extends ViewConfig
 {
+    private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
+
     public String rootDirOnServer;
     protected String shapeModelFileBaseName = "shape/shape";
     protected String shapeModelFileExtension = ".vtk";
@@ -164,12 +166,12 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName)
     {
-        return SafePaths.getString(rootDirOnServer, fileName);
+        return SAFE_URL_PATHS.getString(rootDirOnServer, fileName);
     }
 
     public String serverPath(String fileName, Instrument instrument)
     {
-        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
+        return SAFE_URL_PATHS.getString(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
     }
 
     public String serverImagePath(String fileName, Instrument instrument)
@@ -179,7 +181,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName, Instrument instrument, String subdir)
     {
-        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
+        return SAFE_URL_PATHS.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
     }
 
     // methods

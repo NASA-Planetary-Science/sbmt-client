@@ -43,7 +43,8 @@ and the file process_sumfiles will be created
 Program usage is given on the command line if the program is
 executed without any parameters:
 
-./process_sumfiles <metakernel> 
+./process_sumfiles [flag]
+                   <metakernel> 
                    <sumfileList> 
                    <instrumentFrameName> 
                    <spacecraftName>
@@ -54,7 +55,11 @@ executed without any parameters:
                    <flipY> 
                    <flipZ>
 
-The program takes 10 arguments:
+The program takes 10 required arguments and an optional flag.
+
+Setting the optional flag to -J2000SPK writes the output position
+and velocity in the J2000 reference frame. If this option is set,
+the mkspksetupfile MUST also specify J2000, see below.
 
 The first argument is the name of a SPICE metakernel file. See the
 kernels.txt file included as an example. You will need to modify 
@@ -137,9 +142,11 @@ with, if necessary:
     OBJECT_ID         = -93        (NAIF id of the spacecraft) 
     OBJECT_NAME       = 'NEAR'     (name of the spacecraft)
     CENTER_ID         = 2000433    (NAIF id of the asteroid)
-    CENTER_NAME       = 'EROS'     (name of the asteroid)
+    CENTER_NAME       = 'EROS'     (name of the asteroid) 
     REF_FRAME_NAME    = 'IAU_EROS' (NAIF name of the asteroid body-fixed frame  
                                     in which the sumfile vectors are specified)
+       ** OR **       = 'J2000'    (If the "-J2000SPK" optional argument was
+                                    used in the call to process_sumfiles)
     PRODUCER_ID       = 'JHUAPL'
     LEAPSECONDS_FILE  = 'NAIF0007.TLS'
 
