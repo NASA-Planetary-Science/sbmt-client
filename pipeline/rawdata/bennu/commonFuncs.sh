@@ -85,6 +85,60 @@ doRsyncDirIfNecessary() {
   if test $? -ne 0; then exit 1; fi
 }
 
+moveDirectory() {
+  (
+    src=$1
+    dest=$2
+    if test -d $src; then
+      if test -e $dest; then
+        rm -rf $dest-bak
+        mv -f $dest $dest-bak
+        if test $? -ne 0; then
+          echo "Unable to back up $dest; not moving directory $src" >> $log
+          exit 1
+        fi
+      fi
+      destParent=`echo $dest | sed 's:/[^/][^/]*/?$::'`
+      if test ! -d $destParent; then
+        mkdir -p $destParent
+      fi
+      echo "mv $src $dest" >> $log
+      mv -f $src $dest >> $log 2>&1
+    else
+      echo "Not moving/renaming $src (is not a directory)" >> $log
+      exit 1
+    fi
+  )
+  if test $? -ne 0; then exit 1; fi
+}
+
+moveFile() {
+  (
+    src=$1
+    dest=$2
+    if test -f $src; then
+      if test -e $dest; then
+        rm -rf $dest-bak
+        mv $dest $dest-bak
+        if test $? -ne 0; then
+          echo "Unable to back up $dest; not moving file $src" >> $log
+          exit 1
+        fi
+      fi
+      destParent=`echo $dest | sed 's:/[^/][^/]*/?$::'`
+      if test ! -d $destParent; then
+        mkdir -p $destParent
+      fi
+      echo "mv $src $dest" >> $log
+      mv $src $dest >> $log 2>&1
+    else
+      echo "Not moving/renaming $src (is not a file)" >> $log
+      exit 1
+    fi
+  )
+  if test $? -ne 0; then exit 1; fi
+}
+
 makeLogDir() {
   (
     if test -e $logDir -a ! -d $logDir; then
