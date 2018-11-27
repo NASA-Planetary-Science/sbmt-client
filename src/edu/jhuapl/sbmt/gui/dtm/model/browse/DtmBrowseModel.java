@@ -27,6 +27,8 @@ public class DtmBrowseModel
     private SmallBodyViewConfig smallBodyViewConfig;
     private Vector<DEMKey> keys;
     private Vector<DEMBrowseModelChangedListener> listeners;
+    private String currentDataSet;
+    private String[] dataSets;
 
 	public DtmBrowseModel(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig smallBodyViewConfig)
 	{
@@ -35,31 +37,32 @@ public class DtmBrowseModel
         this.smallBodyViewConfig = smallBodyViewConfig;
         this.keys = new Vector<DEMKey>();
         this.listeners = new Vector<DEMBrowseModelChangedListener>();
+        this.dataSets = new String[smallBodyViewConfig.dtmBrowseDataSourceMap.keySet().size()];
+        smallBodyViewConfig.dtmBrowseDataSourceMap.keySet().toArray(this.dataSets);
 	}
 
 
 	public void loadAllDtmPaths() throws FileNotFoundException
     {
-//        List<LidarDataFileSpec> lidarSpecs = new ArrayList<LidarDataFileSpec>();
+        loadDtmSet("Default");
+    }
 
-        InputStream is = null;
-//        if (polyhedralModelConfig.lidarBrowseFileListResourcePath.startsWith("/edu"))
-//        {
-//            is = getClass().getResourceAsStream(polyhedralModelConfig.lidarBrowseFileListResourcePath);
-//        }
-//        else
-//        {
+	public void loadDtmSet(String sourceName) throws FileNotFoundException
+	{
+		InputStream is = null;
         if (smallBodyViewConfig.dtmBrowseDataSourceMap.get("Default") == null) return;
-            try
+        try
+        {
+            if (FileCache.isFileGettable(smallBodyViewConfig.dtmBrowseDataSourceMap.get("Default")))
             {
-                if (FileCache.isFileGettable(smallBodyViewConfig.dtmBrowseDataSourceMap.get("Default")))
-                    is = new FileInputStream(FileCache.getFileFromServer(smallBodyViewConfig.dtmBrowseDataSourceMap.get("Default")));
+                is = new FileInputStream(FileCache.getFileFromServer(smallBodyViewConfig.dtmBrowseDataSourceMap.get(sourceName)));
+                currentDataSet = "Default";
             }
-            catch (UnauthorizedAccessException e)
-            {
-                return;
-            }
-//        }
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return;
+        }
         System.out.println("DtmBrowseModel: loadAllDtmPaths: generating dem keys");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
@@ -72,27 +75,7 @@ public class DtmBrowseModel
             	String[] parts = line.split(",");
             	FileInfo fileInfoFromServer = FileCache.getFileInfoFromServer(smallBodyViewConfig.rootDirOnServer + File.separator + "dtm/browse" + File.separator + parts[0]);
             	DEMKey key = new DEMKey(fileInfoFromServer.getURL().toString(), parts[1]);
-//            	DEMKey key = new DEMKey(smallBodyViewConfig.rootDirOnServer + File.separator + "dtm/browse" + File.separator + parts[0], parts[1]);
             	keys.add(key);
-
-//            	FileCache.getFileFromServer(parts[0]);
-//            	dems.addDEM(key);
-//                LidarDataFileSpec lidarSpec = new LidarDataFileSpec();
-//                int indexFirstSpace = line.indexOf(' ');
-//                if (indexFirstSpace == -1)
-//                {
-//                    lidarSpec.path = line;
-//                    lidarSpec.comment = "";
-//                }
-//                else
-//                {
-//                    lidarSpec.path = line.substring(0,indexFirstSpace);
-//                    lidarSpec.comment = line.substring(indexFirstSpace+1);
-//                }
-//                lidarSpec.name = new File(lidarSpec.path).getName();
-//                if (lidarSpec.name.toLowerCase().endsWith(".gz"))
-//                    lidarSpec.name = lidarSpec.name.substring(0, lidarSpec.name.length()-3);
-//                lidarSpecs.add(lidarSpec);
             }
             System.out.println("DtmBrowseModel: loadAllDtmPaths: firing listeners");
             fireKeysChangedListeners(keys);
@@ -101,14 +84,7 @@ public class DtmBrowseModel
         {
             e.printStackTrace();
         }
-//        catch (FitsException e)
-//        {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-//        return lidarSpecs;
-    }
+	}
 
 	public void addModelChangedListener(DEMBrowseModelChangedListener listener)
 	{
@@ -125,11 +101,22 @@ public class DtmBrowseModel
 
 	public void fireKeysChangedListeners(Vector<DEMKey> keys)
 	{
-		System.out.println("DtmBrowseModel: fireKeysChangedListeners: number of listeners " + listeners.size());
 		for (DEMBrowseModelChangedListener listener : listeners)
 		{
 			listener.demKeysListChanged(keys);
 		}
+	}
+
+
+	public String getCurrentDataSet()
+	{
+		return currentDataSet;
+	}
+
+
+	public String[] getDataSets()
+	{
+		return dataSets;
 	}
 
 }

@@ -407,7 +407,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
                 int size = ((DEMCollection) model2).getImages().size();
                 for (int i=0; i<size; ++i)
                 {
-                    DEMInfo demInfo = model.getInfoList().get(i);
+//                    DEMInfo demInfo = model.getInfoList().get(i);
 //                    String demFilename = getCustomDataFolder() + File.separator + demInfo.demfilename;
 //                    if (name.equals(demFilename))
 //                    {
