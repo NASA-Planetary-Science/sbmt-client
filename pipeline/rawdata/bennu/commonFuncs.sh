@@ -102,11 +102,19 @@ moveDirectory() {
           exit 1
         fi
       fi
+
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDirIfNecessary $destParent
       if test $? -ne 0; then exit 1; fi
-      echo "mv $src $dest" >> $log
+
+      echo "mv $src $dest" >> $log 2>&1
       mv -f $src $dest >> $log 2>&1
+      if test $? -ne 0; then exit 1; fi
+
+      # Prune an orphaned parent directory, but ignore failures.
+      srcParent=`echo $src | sed 's:/[^/][^/]*/*$::'`
+      rmdir $srcParent >> /dev/null 2>&1
+      exit 0
     else
       echo "Not moving/renaming $src (is not a directory)" >> $log
     fi
@@ -131,11 +139,19 @@ moveFile() {
           exit 1
         fi
       fi
+
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       createDirIfNecessary $destParent
       if test $? -ne 0; then exit 1; fi
-      echo "mv $src $dest" >> $log
+
+      echo "mv $src $dest" >> $log 2>&1
       mv $src $dest >> $log 2>&1
+      if test $? -ne 0; then exit 1; fi
+
+      # Prune an orphaned parent directory, but ignore failures.
+      srcParent=`echo $src | sed 's:/[^/][^/]*/*$::'`
+      rmdir $srcParent >> /dev/null 2>&1
+      exit 0
     else
       echo "Not moving/renaming $src (is not a file)" >> $log
     fi
