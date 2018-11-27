@@ -106,7 +106,6 @@ moveDirectory() {
       mv -f $src $dest >> $log 2>&1
     else
       echo "Not moving/renaming $src (is not a directory)" >> $log
-      exit 1
     fi
   )
   if test $? -ne 0; then exit 1; fi
@@ -133,7 +132,6 @@ moveFile() {
       mv $src $dest >> $log 2>&1
     else
       echo "Not moving/renaming $src (is not a file)" >> $log
-      exit 1
     fi
   )
   if test $? -ne 0; then exit 1; fi
