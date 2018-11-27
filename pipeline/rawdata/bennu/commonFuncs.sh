@@ -98,7 +98,7 @@ moveDirectory() {
           exit 1
         fi
       fi
-      destParent=`echo $dest | sed 's:/[^/][^/]*/?$::'`
+      destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       if test ! -d $destParent; then
         mkdir -p $destParent
       fi
@@ -124,7 +124,7 @@ moveFile() {
           exit 1
         fi
       fi
-      destParent=`echo $dest | sed 's:/[^/][^/]*/?$::'`
+      destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
       if test ! -d $destParent; then
         mkdir -p $destParent
       fi
