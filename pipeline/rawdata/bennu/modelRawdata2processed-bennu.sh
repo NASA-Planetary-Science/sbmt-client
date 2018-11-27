@@ -115,7 +115,7 @@ discoverPlateColorings() {
   coloringDir=$destTop/$processingModelName/coloring
   if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
     "$scriptDir/ls-pc.sh" $coloringDir
-    if test `grep -c . $coloringDir/coloringlist.txt` -eq 0; then
+    if test `grep -c . $coloringDir/../coloringlist.txt` -eq 0; then
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
@@ -124,7 +124,7 @@ discoverPlateColorings() {
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
     fi
-    rm -f $destTop/$processingModelName/coloring/coloringlist.txt* >> $log 2>&1
+    rm -f $coloringDir/../coloringlist.txt* >> $log 2>&1
   else
     echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata" >> $log 2>&1
   fi
