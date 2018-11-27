@@ -13,6 +13,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.common.io.Files;
 
 import vtk.vtkActor;
@@ -198,16 +200,15 @@ public class CustomImagesModel extends ImageSearchModel
             if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
                 // We were given an ENVI file (binary or header)
                 // Can assume at this point that both binary + header files exist in the same directory
-
+                String extension = FilenameUtils.getExtension(newImageInfo.imagefilename);
                 // Get filenames of the binary and header files
                 String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
                 String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
-
                 // Rename newImageInfo as that of the binary file
-                newImageInfo.imagefilename = "image-" + uuid;
+                newImageInfo.imagefilename = "image-" + uuid + "." + extension;
 
                 // Copy over the binary file
-                Files.copy(new File(enviBinaryFilename),
+                Files.copy(new File(enviBinaryFilename + "." + extension),
                         new File(getCustomDataFolder() + File.separator
                                 + newImageInfo.imagefilename));
 
