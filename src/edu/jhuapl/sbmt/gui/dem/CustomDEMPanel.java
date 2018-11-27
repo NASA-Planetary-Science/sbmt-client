@@ -1017,7 +1017,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
             String demName = JOptionPane.showInputDialog(this, "Enter a name", "Name the DEM", JOptionPane.PLAIN_MESSAGE);
             if (demName != null && !demName.equals(""))
             {
-                File lowResPath = FileCache.getFileFromServer(smallBodyConfig.getShapeModelFileNames()[0]);
+                File lowResPath = FileCache.getFileFromServer(smallBodyConfig.bodyLowestResModelName);
 
                 String path = lowResPath.getAbsolutePath() + "." + FilenameUtils.getExtension(smallBodyConfig.getShapeModelFileNames()[0]);
                 runMapmakerSwingWorker(demName, centerPoint, radius, new File(getCustomDataFolder()), new File(path));
@@ -1055,118 +1055,127 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     // Starts and manages a MapmakerSwingWorker
     private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder, File modelDir)
     {
-        final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(this, "Running Mapmaker", mapmakerPath);
-
-        if (setSpecifyRegionManuallyCheckbox.isSelected())
+        if (smallBodyConfig.hasRemoteMapmaker == true)
         {
-            if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+            final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(this, "Running Mapmaker", mapmakerPath);
+            mapmakerWorker.setRotationRate(smallBodyConfig.bodyRotationRate);
+            mapmakerWorker.setReferencePotential(smallBodyConfig.bodyReferencePotential);
+            mapmakerWorker.setDensity(smallBodyConfig.bodyDensity);
+            mapmakerWorker.setBodyLowestResModelName(smallBodyConfig.bodyLowestResModelName);
+
+            if (setSpecifyRegionManuallyCheckbox.isSelected())
             {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-                        "Please enter values for the latitude, longitude, and pixel scale.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
+                if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                            "Please enter values for the latitude, longitude, and pixel scale.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
+                mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
+                mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
+                mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
             }
-            mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
-            mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
-            mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
-            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+            else
+            {
+                mapmakerWorker.setRegionSpecifiedWithLatLonScale(false);
+                mapmakerWorker.setCenterPoint(centerPoint);
+                mapmakerWorker.setRadius(radius);
+            }
+
+
+            mapmakerWorker.setName(demName);
+            mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+            mapmakerWorker.setCacheDir(outputFolder.getAbsolutePath());
+            mapmakerWorker.setLowResModelPath(modelDir.getAbsolutePath());
+
+
+    //        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url " + Configuration.getDataRootURL());
+    //        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url file version" + Configuration.getDataRootURL().getFile());
+    //        String rootDir = FileCache.createURL(smallBodyConfig.rootDirOnServer).toString();
+            mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
+            mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
+            mapmakerWorker.executeDialog();
+
+            if (mapmakerWorker.isCancelled())
+                return;
+
+            DEMInfo newDemInfo = new DEMInfo();
+            newDemInfo.name = demName;
+    //        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+            newDemInfo.demfilename = new File(outputFolder + File.separator + demName + ".fits").getAbsolutePath();
+            try
+            {
+                saveDEM(newDemInfo);
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
         }
-        else
+        else if (smallBodyConfig.hasMapmaker == true)
         {
-            mapmakerWorker.setRegionSpecifiedWithLatLonScale(false);
-            mapmakerWorker.setCenterPoint(centerPoint);
-            mapmakerWorker.setRadius(radius);
+            // Download the entire map maker suite to the users computer
+            // if it has never been downloaded before.
+            // Ask the user beforehand if it's okay to continue.
+            final MapmakerSwingWorker mapmakerWorker =
+                    new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
+
+            // If we need to download, prompt the user that it will take a long time
+            if (mapmakerWorker.getIfNeedToDownload())
+            {
+                int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
+                        "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
+                        "This may take several minutes. Would you like to continue?",
+                        "Confirm Download",
+                        JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.NO_OPTION)
+                    return;
+            }
+
+            if (setSpecifyRegionManuallyCheckbox.isSelected())
+            {
+                if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
+                            "Please enter values for the latitude, longitude, and pixel scale.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
+                mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
+                mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
+                mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+            }
+            else
+            {
+                mapmakerWorker.setCenterPoint(centerPoint);
+                mapmakerWorker.setRadius(radius);
+            }
+            mapmakerWorker.setName(demName);
+            mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
+            mapmakerWorker.setOutputFolder(outputFolder);
+
+            mapmakerWorker.executeDialog();
+
+            if (mapmakerWorker.isCancelled())
+                return;
+
+            DEMInfo newDemInfo = new DEMInfo();
+            newDemInfo.name = demName;
+            newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+            try
+            {
+                saveDEM(newDemInfo);
+            }
+            catch (IOException e1)
+            {
+                e1.printStackTrace();
+            }
         }
-
-
-        mapmakerWorker.setName(demName);
-        mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
-        mapmakerWorker.setCacheDir(outputFolder.getAbsolutePath());
-        mapmakerWorker.setLowResModelPath(modelDir.getAbsolutePath());
-
-
-//        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url " + Configuration.getDataRootURL());
-//        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url file version" + Configuration.getDataRootURL().getFile());
-//        String rootDir = FileCache.createURL(smallBodyConfig.rootDirOnServer).toString();
-        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
-        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
-        mapmakerWorker.executeDialog();
-
-        if (mapmakerWorker.isCancelled())
-            return;
-
-        DEMInfo newDemInfo = new DEMInfo();
-        newDemInfo.name = demName;
-//        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
-        newDemInfo.demfilename = new File(outputFolder + File.separator + demName + ".fits").getAbsolutePath();
-        try
-        {
-            saveDEM(newDemInfo);
-        }
-        catch (IOException e1)
-        {
-            e1.printStackTrace();
-        }
-
-//        // Download the entire map maker suite to the users computer
-//        // if it has never been downloaded before.
-//        // Ask the user beforehand if it's okay to continue.
-//        final MapmakerSwingWorker mapmakerWorker =
-//                new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
-//
-//        // If we need to download, prompt the user that it will take a long time
-//        if (mapmakerWorker.getIfNeedToDownload())
-//        {
-//            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
-//                    "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
-//                    "This may take several minutes. Would you like to continue?",
-//                    "Confirm Download",
-//                    JOptionPane.YES_NO_OPTION);
-//            if (result == JOptionPane.NO_OPTION)
-//                return;
-//        }
-//
-//        if (setSpecifyRegionManuallyCheckbox.isSelected())
-//        {
-//            if (latitudeTextField.getText().isEmpty() || longitudeTextField.getText().isEmpty() || pixelScaleTextField.getText().isEmpty())
-//            {
-//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-//                        "Please enter values for the latitude, longitude, and pixel scale.",
-//                        "Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            mapmakerWorker.setLatitude(Double.parseDouble(latitudeTextField.getText()));
-//            mapmakerWorker.setLongitude(Double.parseDouble(longitudeTextField.getText()));
-//            mapmakerWorker.setPixelScale(Double.parseDouble(pixelScaleTextField.getText()));
-//            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
-//        }
-//        else
-//        {
-//            mapmakerWorker.setCenterPoint(centerPoint);
-//            mapmakerWorker.setRadius(radius);
-//        }
-//        mapmakerWorker.setName(demName);
-//        mapmakerWorker.setHalfSize((Integer)halfSizeSpinner.getValue());
-//        mapmakerWorker.setOutputFolder(outputFolder);
-//
-//        mapmakerWorker.executeDialog();
-//
-//        if (mapmakerWorker.isCancelled())
-//            return;
-//
-//        DEMInfo newDemInfo = new DEMInfo();
-//        newDemInfo.name = demName;
-//        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
-//        try
-//        {
-//            saveDEM(newDemInfo);
-//        }
-//        catch (IOException e1)
-//        {
-//            e1.printStackTrace();
-//        }
     }
 
     // Starts and manages a BigmapSwingWorker

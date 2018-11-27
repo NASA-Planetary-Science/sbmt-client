@@ -37,6 +37,14 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasImageMap = false;
 
     public boolean hasMapmaker = false;
+    public boolean hasRemoteMapmaker = false;
+    public double bodyDensity = 0.0;
+    public double bodyRotationRate = 0.0;
+    public double bodyReferencePotential = 0.0;
+    public String bodyLowestResModelName = "";
+
+
+
     public boolean hasBigmap = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;

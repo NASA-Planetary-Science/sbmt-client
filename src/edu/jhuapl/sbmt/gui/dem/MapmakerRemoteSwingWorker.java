@@ -40,6 +40,10 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     private String mapoutdir;
     private String cacheDir;
     private String lowResModelPath;
+    private double density;
+    private double rotationRate;
+    private double referencePotential;
+    private String bodyLowestResModelName;
 
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
@@ -155,7 +159,11 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 //            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
             MapMakerRemote mapmaker = new MapMakerRemote();
+            mapmaker.setRotationRate(rotationRate);
+            mapmaker.setReferencePotential(referencePotential);
+            mapmaker.setDensity(density);
             mapmaker.setName(name);
+            mapmaker.setBodyLowestResModelName(bodyLowestResModelName);
             if (regionSpecifiedWithLatLonScale)
             {
                 mapmaker.setLatitude(latitude);
@@ -223,5 +231,35 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         setProgress(100);
 
         return null;
+    }
+
+
+    public void setDensity(double density)
+    {
+        this.density = density;
+    }
+
+
+    public void setReferencePotential(double referencePotential)
+    {
+        this.referencePotential = referencePotential;
+    }
+
+
+    public double getDensity()
+    {
+        return density;
+    }
+
+
+    public void setRotationRate(double rotationRate)
+    {
+        this.rotationRate = rotationRate;
+    }
+
+
+    public void setBodyLowestResModelName(String bodyLowestResModelName)
+    {
+        this.bodyLowestResModelName = bodyLowestResModelName;
     }
 }
