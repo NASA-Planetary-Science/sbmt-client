@@ -15,7 +15,7 @@ import edu.jhuapl.saavtk.model.BasicColoringDataManager;
 import edu.jhuapl.saavtk.model.ColoringData;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
 import edu.jhuapl.saavtk.util.file.DataFileReader;
 import edu.jhuapl.saavtk.util.file.DataObjectInfo;
@@ -41,15 +41,15 @@ public class DiscoverPlateColorings
 		File topDirectory = new File(args[0]);
 		Preconditions.checkArgument(topDirectory.isDirectory(), "Not a directory " + topDirectory);
 
-		String coloringDirectory = SafePaths.getString(args[1]).replace("\\", "/");
+		String coloringDirectory = SafeURLPaths.instance().getString(args[1]).replace("\\", "/");
 
 		String dataId = args[2];
 
-		File txtFile = SafePaths.get(topDirectory.getPath(), args.length > 3 ? args[3] : "coloringlist.txt").toFile();
+		File txtFile = SafeURLPaths.instance().get(topDirectory.getPath(), args.length > 3 ? args[3] : "coloringlist.txt").toFile();
 		Preconditions.checkArgument(txtFile.isFile(), "Not a file " + txtFile);
 
 		String defaultColoringMetadataFileName = BasicColoringDataManager.getMetadataFileName(Serializers.of().getVersion());
-		File metadataFile = SafePaths.get(topDirectory.getPath(), args.length > 4 ? args[4] : defaultColoringMetadataFileName).toFile();
+		File metadataFile = SafeURLPaths.instance().get(topDirectory.getPath(), args.length > 4 ? args[4] : defaultColoringMetadataFileName).toFile();
 
 		this.topDirectory = topDirectory;
 		this.coloringDirectory = coloringDirectory;
@@ -67,7 +67,7 @@ public class DiscoverPlateColorings
 
 			while ((line = bufferedReader.readLine()) != null)
 			{
-				File colorFile = SafePaths.get(topDirectory.getAbsolutePath(), line).toFile();
+				File colorFile = SafeURLPaths.instance().get(topDirectory.getAbsolutePath(), line).toFile();
 
 				if (colorFile.isFile())
 				{

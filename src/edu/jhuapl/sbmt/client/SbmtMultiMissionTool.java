@@ -27,7 +27,7 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -411,7 +411,7 @@ public class SbmtMultiMissionTool
 
 		if (redirectStreams)
 		{
-			Path outputFilePath = SafePaths.get(Configuration.getApplicationDataDir(), OUTPUT_FILE_NAME);
+			Path outputFilePath = SafeURLPaths.instance().get(Configuration.getApplicationDataDir(), OUTPUT_FILE_NAME);
 			outputStream = new PrintStream(Files.newOutputStream(outputFilePath));
 			System.setOut(outputStream);
 			System.setErr(outputStream);
@@ -440,7 +440,7 @@ public class SbmtMultiMissionTool
 				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
 				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				String parent = new File(jarLocation).getParentFile().getParent();
-				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SafePaths.get(Configuration.getApplicationDataDir(), "password.txt"), SafePaths.get(parent, "password.txt"));
+				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SafeURLPaths.instance().get(Configuration.getApplicationDataDir(), "password.txt"), SafeURLPaths.instance().get(parent, "password.txt"));
 
 				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
 			}
