@@ -102,13 +102,19 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -a dirsToCopy=("coloring" "imaging" "ocams" "ola" "otes" "ovirs")
+declare -a dirsToCopy=("coloring" "imaging/SUMFILES" "imaging/mapcam/SUMFILES" \
+                       "imaging/polycam/SUMFILES" "imaging/samcam/SUMFILES" \
+                       "ocams/SUMFILES" "ocams/mapcam/SUMFILES" \
+                       "ocams/polycam/SUMFILES" "ocams/samcam/SUMFILES" \
+                       "ola" "otes" "ovirs")
+# Define a series of specific files to copy
+declare -a filesToCopy=("imaging/make_sumfiles.in" "imaging/mapcam/make_sumfiles.in" \
+                        "imaging/polycam/make_sumfiles.in" "imaging/samcam/make_sumfiles.in" \
+                        "ocams/make_sumfiles.in" "ocams/mapcam/make_sumfiles.in" \
+                        "ocams/polycam/make_sumfiles.in" "ocams/samcam/make_sumfiles.in")
 
 # copy the shape model
 doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
-
-# Copy coloring files
-#doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
 for dir in ${dirsToCopy[@]}
 do
@@ -116,6 +122,15 @@ do
   then
     # copy the files
     doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir
+  fi
+done
+
+for file in ${filesToCopy[@]}
+do
+  if [ -f "$srcTop/$deliveredModelName/$file" ]
+  then
+    # copy the files
+    doRsync $srcTop/$deliveredModelName/$file $destTop/$processingModelName/$file
   fi
 done
 
