@@ -89,6 +89,10 @@ moveDirectory() {
   (
     src=$1
     dest=$2
+    if test "x$src" = x -o "x$dest" = x; then
+      echo "Missing argument(s) to moveDirectory" >> $log 2>&1
+      exit 1
+    fi
     if test -d $src; then
       if test -e $dest; then
         rm -rf $dest-bak
@@ -99,9 +103,8 @@ moveDirectory() {
         fi
       fi
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
-      if test ! -d $destParent; then
-        mkdir -p $destParent
-      fi
+      createDirIfNecessary $destParent
+      if test $? -ne 0; then exit 1; fi
       echo "mv $src $dest" >> $log
       mv -f $src $dest >> $log 2>&1
     else
@@ -115,6 +118,10 @@ moveFile() {
   (
     src=$1
     dest=$2
+    if test "x$src" = x -o "x$dest" = x; then
+      echo "Missing argument(s) to moveDirectory" >> $log 2>&1
+      exit 1
+    fi
     if test -f $src; then
       if test -e $dest; then
         rm -rf $dest-bak
@@ -125,9 +132,8 @@ moveFile() {
         fi
       fi
       destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
-      if test ! -d $destParent; then
-        mkdir -p $destParent
-      fi
+      createDirIfNecessary $destParent
+      if test $? -ne 0; then exit 1; fi
       echo "mv $src $dest" >> $log
       mv $src $dest >> $log 2>&1
     else
@@ -287,3 +293,10 @@ doGzipDirIfNecessary() {
   )
   if test $? -ne 0; then exit 1; fi
 }
+
+# Test code -- do not commit.
+#destTop=$PWD
+#processingModelName='altwg-spc-v20181116'
+#log="$destTop/bozo.log"
+#moveDirectory $destTop/$processingModelName/imaging/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
+#moveFile $destTop/$processingModelName/imaging/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in
