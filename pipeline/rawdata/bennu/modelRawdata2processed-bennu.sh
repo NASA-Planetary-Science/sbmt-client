@@ -184,6 +184,9 @@ echo "Begin `date`" >> $log 2>&1
      # copies over mapcam directory
      doRsync $srcTop/$rawdataModelName/mapcam/ $destTop/$processingModelName/mapcam/
 
+     # Make some moves so the output directories agree with prior conventions.
+     moveDirectory $destTop/$processingModelName/mapcam/SUMFILES $destTop/$processingModelName/mapcam/sumfiles
+
      # Skip this for now. This processes images, sumfiles and image lists at the same
      # time, validating and including only images that will work in the destination directory.
      # Currently this script just uses the processMakeSumfiles function to handle this.
@@ -205,6 +208,9 @@ echo "Begin `date`" >> $log 2>&1
      # copies over polycam directory
      doRsync $srcTop/$rawdataModelName/polycam/ $destTop/$processingModelName/polycam/
 
+     # Make some moves so the output directories agree with prior conventions.
+     moveDirectory $destTop/$processingModelName/polycam/SUMFILES $destTop/$processingModelName/polycam/sumfiles
+
      # Skip this for now. This processes images, sumfiles and image lists at the same
      # time, validating and including only images that will work in the destination directory.
      # Currently this script just uses the processMakeSumfiles function to handle this.
@@ -214,7 +220,7 @@ echo "Begin `date`" >> $log 2>&1
      echo Finished sumfile processing
    fi
 
-   # process coloring data and generates the metadata needed to read the colroing data.
+   # process coloring data and generates the metadata needed to read the coloring data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ]
    then
       echo Processing plate colorings

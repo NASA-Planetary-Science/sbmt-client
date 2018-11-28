@@ -135,12 +135,14 @@ do
 done
 
 # Make some moves so the output directories agree with prior conventions.
+moveDirectory $destTop/$processingModelName/imaging/sumfiles $destTop/$processingModelName/polycam/sumfiles
 moveDirectory $destTop/$processingModelName/imaging/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
 moveFile $destTop/$processingModelName/imaging/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in
 moveDirectory $destTop/$processingModelName/imaging/mapcam $destTop/$processingModelName/mapcam
 moveDirectory $destTop/$processingModelName/imaging/polycam $destTop/$processingModelName/polycam
 moveDirectory $destTop/$processingModelName/imaging/samcam $destTop/$processingModelName/samcam
 
+moveDirectory $destTop/$processingModelName/ocams/sumfiles $destTop/$processingModelName/polycam/sumfiles
 moveDirectory $destTop/$processingModelName/ocams/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
 moveFile $destTop/$processingModelName/ocams/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in
 moveDirectory $destTop/$processingModelName/ocams/mapcam $destTop/$processingModelName/mapcam
