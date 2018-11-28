@@ -20,6 +20,7 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -932,11 +933,12 @@ public class DatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
 //        String appName = "neartool";
 //        String cacheVersion = "2";
         boolean aplVersion = true;
-        String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
 
         boolean appendTables = false;
         boolean modifyMain = false;
@@ -950,7 +952,7 @@ public class DatabaseGeneratorSql
         {
             if (args[i].equals("--root-url"))
             {
-                rootURL = FileCache.createURL(args[++i]).toString();
+                rootURL = safeUrlPaths.getUrl(args[++i]);
             }
             else if (args[i].equals("--append-tables"))
             {
