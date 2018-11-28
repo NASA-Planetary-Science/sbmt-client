@@ -119,7 +119,7 @@ discoverPlateColorings() {
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
-    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/101955 Bennu" >> $log 2>&1
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/101955 Bennu" ../coloringlist.txt >> $log 2>&1
     if test $? -ne 0; then
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
