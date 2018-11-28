@@ -291,7 +291,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
@@ -378,7 +378,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.body = ShapeModelBody.RQ36;
             c.type = BodyType.ASTEROID;
             c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.dataUsed = ShapeModelDataUsed.SIMULATED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
@@ -455,11 +455,148 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
 
+//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20181109b;
+            c.modelLabel = "ALTWG-SPC-v20181109b";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20181109b";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1260;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.00040613;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
+
+            c.hasSpectralData=false;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = true;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            try
+            {
+                //TODO: eventually point this to a URL
+                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+                specIO.setPathString(c.spectrumMetadataFile);
+                c.hierarchicalSpectraSearchSpecification = specIO;
+
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
                 ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20181115;
+            c.modelLabel = "ALTWG-SPC-v20181115";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20181115";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1260;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.00040613;
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[] { ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            )
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
             configArray.add(c);
         }
 
@@ -2294,7 +2431,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_FLIGHT_IMAGE);
+                        ImageType.MAPCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2312,7 +2449,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_FLIGHT_IMAGE);
+                        ImageType.POLYCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2330,7 +2467,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_FLIGHT_IMAGE);
+                        ImageType.SAMCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2421,7 +2558,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.MAPCAM_FLIGHT_IMAGE);
+                        ImageType.MAPCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2439,7 +2576,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.POLYCAM_FLIGHT_IMAGE);
+                        ImageType.POLYCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -2457,7 +2594,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         queryBase,
                         new ImageSource[] { ImageSource.SPICE },
                         fileLocator,
-                        ImageType.SAMCAM_FLIGHT_IMAGE);
+                        ImageType.SAMCAM_EARTH_IMAGE);
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -3839,9 +3976,98 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 case HAYABUSA2_DEV:
                 case HAYABUSA2_DEPLOY:
                 case HAYABUSA2_STAGE:
+//                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                default:
+                    break;
+            }
+
+            configArray.add(c);
+
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            // Set up body -- one will suffice.
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
+                    ShapeModelBody.RYUGU.name(),
+                    BodyType.ASTEROID.name(),
+                    ShapeModelPopulation.NEO.name()).build();
+
+            // Set up shape model -- one will suffice.
+            ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20181014", ShapeModelDataUsed.IMAGE_BASED).build();
+
+            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20181014/onc", "/ryugu/jaxa-spc-v20181014/onc/gallery");
+            QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014", "ryugu_nasa005", "/ryugu/jaxa-spc-v20181014/onc/gallery");
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
+//            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20181014/tir", "/ryugu/jaxa-spc-v20181014/tir/gallery", false);
+            QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20181014/tir", "", "ryugu_nasa005_tir", "/ryugu/jaxa-spc-v20181014/tir/gallery");
+            ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
+
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RYUGU;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.JAXA_SPC_v20181014;
+            c.modelLabel = "JAXA-SPC-v20181014";
+            c.rootDirOnServer = "/ryugu/jaxa-spc-v20181014";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileExtension = ".obj";
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    oncCam, tirCam
+            };
+
+            c.imageSearchFilterNames = new String[]{};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchDefaultMaxSpacecraftDistance = 0;
+            c.imageSearchDefaultMaxResolution = 0;
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/ryugu/jaxa-spc-v20181014/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 5, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
+            c.imageSearchDefaultMaxResolution = 300.0;
+            c.density = 1200.; // (kg/m^3)
+            c.rotationRate = 0.00022871; // (rad/sec)
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.LASER;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            switch (SbmtMultiMissionTool.getMission()) {
+                case HAYABUSA2_DEV:
+                case HAYABUSA2_DEPLOY:
+                case HAYABUSA2_STAGE:
                     ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-            default:
-                break;
+                default:
+                    break;
             }
 
             configArray.add(c);

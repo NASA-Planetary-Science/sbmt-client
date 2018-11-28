@@ -4,9 +4,9 @@ Spacecraft Orientation CK File
 Orientation Data in the File 
 -------------------------------------------------------- 
   
-     This file contains orientation and angular velocity for the
-     spacecraft frame relative to the Earth Mean Equator and Equinox 
-     of J2000 frame, 'J2000' (ID 1) 
+     This file was generated with procedure sumfiles-to-ck-spk
+     and contains orientation and angular velocity for the
+     spacecraft frame relative to the target body fixed frame. 
   
 Pedigree 
 -------------------------------------------------------- 
