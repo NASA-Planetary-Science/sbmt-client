@@ -875,16 +875,16 @@ public class DatabaseGeneratorSql
         BENNU_ALTWG_SPICE_V20181116_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181116),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181116/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181116_polycam"),
 
-        // 1123b SUMFILES
-        BENNU_ALTWG_SPC_V20181123b_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+        // 1123B SUMFILES
+        BENNU_ALTWG_SPC_V20181123B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181123b_mapcam"),
-        BENNU_ALTWG_SPC_V20181123b_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+        BENNU_ALTWG_SPC_V20181123B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181123b_polycam"),
 
-        // 1123b INFOFILES
-        BENNU_ALTWG_SPICE_V20181123b_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+        // 1123B INFOFILES
+        BENNU_ALTWG_SPICE_V20181123B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181123b_mapcam"),
-        BENNU_ALTWG_SPICE_V20181123b_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+        BENNU_ALTWG_SPICE_V20181123B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181123b_polycam"),
         ;
 
