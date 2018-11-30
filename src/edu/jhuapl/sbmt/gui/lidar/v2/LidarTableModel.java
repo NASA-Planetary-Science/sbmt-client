@@ -87,11 +87,16 @@ public class LidarTableModel extends DefaultTableModel
     public void addTrack(Track track, int id, boolean hidden)
     {
         String sourceFiles="";
+        StringBuilder builder = new StringBuilder();
         for (int i=0; i<track.getNumberOfSourceFiles(); i++)
         {
-            sourceFiles+=track.getSourceFileName(i);
+            builder.append(track.getSourceFileName(i));
+//            sourceFiles+=track.getSourceFileName(i);
             if (i<track.getNumberOfSourceFiles()-1)
-                sourceFiles+=" | ";
+            {
+                builder.append(" | ");
+//                sourceFiles+=" | ";
+            }
         }
         addRow(new Object[]{
                 hidden,
