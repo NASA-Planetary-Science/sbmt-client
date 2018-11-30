@@ -102,13 +102,19 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -a dirsToCopy=("coloring" "imaging" "ocams" "ola" "otes" "ovirs")
+declare -a dirsToCopy=("coloring" "imaging/SUMFILES" "imaging/mapcam/SUMFILES" \
+                       "imaging/polycam/SUMFILES" "imaging/samcam/SUMFILES" \
+                       "ocams/SUMFILES" "ocams/mapcam/SUMFILES" \
+                       "ocams/polycam/SUMFILES" "ocams/samcam/SUMFILES" \
+                       "ola" "otes" "ovirs")
+# Define a series of specific files to copy
+declare -a filesToCopy=("imaging/make_sumfiles.in" "imaging/mapcam/make_sumfiles.in" \
+                        "imaging/polycam/make_sumfiles.in" "imaging/samcam/make_sumfiles.in" \
+                        "ocams/make_sumfiles.in" "ocams/mapcam/make_sumfiles.in" \
+                        "ocams/polycam/make_sumfiles.in" "ocams/samcam/make_sumfiles.in")
 
 # copy the shape model
 doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
-
-# Copy coloring files
-#doRsyncDirIfNecessary $srcTop/$deliveredModelName/coloring $destTop/$processingModelName/coloring
 
 for dir in ${dirsToCopy[@]}
 do
@@ -118,6 +124,30 @@ do
     doRsyncDir $srcTop/$deliveredModelName/$dir $destTop/$processingModelName/$dir
   fi
 done
+
+for file in ${filesToCopy[@]}
+do
+  if [ -f "$srcTop/$deliveredModelName/$file" ]
+  then
+    # copy the files
+    doRsync $srcTop/$deliveredModelName/$file $destTop/$processingModelName/$file
+  fi
+done
+
+# Make some moves so the output directories agree with prior conventions.
+moveDirectory $destTop/$processingModelName/imaging/sumfiles $destTop/$processingModelName/polycam/sumfiles
+moveDirectory $destTop/$processingModelName/imaging/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
+moveFile $destTop/$processingModelName/imaging/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in
+moveDirectory $destTop/$processingModelName/imaging/mapcam $destTop/$processingModelName/mapcam
+moveDirectory $destTop/$processingModelName/imaging/polycam $destTop/$processingModelName/polycam
+moveDirectory $destTop/$processingModelName/imaging/samcam $destTop/$processingModelName/samcam
+
+moveDirectory $destTop/$processingModelName/ocams/sumfiles $destTop/$processingModelName/polycam/sumfiles
+moveDirectory $destTop/$processingModelName/ocams/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
+moveFile $destTop/$processingModelName/ocams/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in
+moveDirectory $destTop/$processingModelName/ocams/mapcam $destTop/$processingModelName/mapcam
+moveDirectory $destTop/$processingModelName/ocams/polycam $destTop/$processingModelName/polycam
+moveDirectory $destTop/$processingModelName/ocams/samcam $destTop/$processingModelName/samcam
 
 echo fixing permissions
 $scriptDir/data-permissions.pl $destTop/$processingModelName

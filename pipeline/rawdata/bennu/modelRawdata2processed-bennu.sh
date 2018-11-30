@@ -115,16 +115,16 @@ discoverPlateColorings() {
   coloringDir=$destTop/$processingModelName/coloring
   if test `ls $coloringDir/coloring*.smd 2> /dev/null | wc -c` -eq 0; then
     "$scriptDir/ls-pc.sh" $coloringDir
-    if test `grep -c . $coloringDir/coloringlist.txt` -eq 0; then
+    if test `grep -c . $coloringDir/../coloringlist.txt` -eq 0; then
       echo "No coloring files found in $coloringDir" >> $log 2>&1
       exit 1
     fi
-    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/101955 Bennu" >> $log 2>&1
+    $releaseDir/sbmt/bin/DiscoverPlateColorings.sh $destTop/$processingModelName/coloring $bodyName/$processingModelName/coloring "$processingModelLabel/101955 Bennu" ../coloringlist.txt >> $log 2>&1
     if test $? -ne 0; then
       echo "Failed to generate plate coloring metadata" >> $log 2>&1
       exit 1
     fi
-    rm -f $destTop/$processingModelName/coloring/coloringlist.txt* >> $log 2>&1
+    rm -f $coloringDir/../coloringlist.txt* >> $log 2>&1
   else
     echo "File(s) coloring*.smd exist -- skipping generation of plate coloring metadata" >> $log 2>&1
   fi
@@ -184,6 +184,9 @@ echo "Begin `date`" >> $log 2>&1
      # copies over mapcam directory
      doRsync $srcTop/$rawdataModelName/mapcam/ $destTop/$processingModelName/mapcam/
 
+     # Make some moves so the output directories agree with prior conventions.
+     moveDirectory $destTop/$processingModelName/mapcam/SUMFILES $destTop/$processingModelName/mapcam/sumfiles
+
      # Skip this for now. This processes images, sumfiles and image lists at the same
      # time, validating and including only images that will work in the destination directory.
      # Currently this script just uses the processMakeSumfiles function to handle this.
@@ -205,6 +208,9 @@ echo "Begin `date`" >> $log 2>&1
      # copies over polycam directory
      doRsync $srcTop/$rawdataModelName/polycam/ $destTop/$processingModelName/polycam/
 
+     # Make some moves so the output directories agree with prior conventions.
+     moveDirectory $destTop/$processingModelName/polycam/SUMFILES $destTop/$processingModelName/polycam/sumfiles
+
      # Skip this for now. This processes images, sumfiles and image lists at the same
      # time, validating and including only images that will work in the destination directory.
      # Currently this script just uses the processMakeSumfiles function to handle this.
@@ -214,7 +220,7 @@ echo "Begin `date`" >> $log 2>&1
      echo Finished sumfile processing
    fi
 
-   # process coloring data and generates the metadata needed to read the colroing data.
+   # process coloring data and generates the metadata needed to read the coloring data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ]
    then
       echo Processing plate colorings
