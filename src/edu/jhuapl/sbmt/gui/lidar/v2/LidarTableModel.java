@@ -98,6 +98,7 @@ public class LidarTableModel extends DefaultTableModel
 //                sourceFiles+=" | ";
             }
         }
+        sourceFiles = builder.toString();
         addRow(new Object[]{
                 hidden,
                 "Trk "+id,
