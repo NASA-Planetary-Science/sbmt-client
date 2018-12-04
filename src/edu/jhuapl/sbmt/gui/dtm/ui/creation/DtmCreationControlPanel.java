@@ -106,7 +106,7 @@ public class DtmCreationControlPanel extends JPanel
 //        if(hasMapmaker)
         {
             mapmakerSubmitButton = new JButton("Run Mapmaker");
-            mapmakerSubmitButton.setEnabled(false);
+            mapmakerSubmitButton.setEnabled(hasMapmaker);
             submitPanel.add(mapmakerSubmitButton);
         }
 //        else if (hasBigmap)

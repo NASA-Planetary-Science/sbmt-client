@@ -33,8 +33,8 @@ public class DEMResultsTableController
 		this.dems = (DEMCollection) modelManager.getModel(ModelNames.DEM);
         this.boundaries = (DEMBoundaryCollection) modelManager.getModel(ModelNames.DEM_BOUNDARY);
 		table = new DEMTable();
-        table.addListener(dems);
-        table.addListener(boundaries);
+        table.addListener(dems);		//dems contains the handle method for the table
+        table.addListener(boundaries);	//boundaries contains the handle method for the table
         tableWrapper = DEMTable.createSwingWrapper(table);
 
         propertyChangeListener = new DtmResultsPropertyChangeListener();

@@ -24,6 +24,7 @@ import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.dem.MapmakerSwingWorker;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel;
 import edu.jhuapl.sbmt.gui.dtm.model.creation.DtmCreationModel.DEMInfo;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
@@ -37,6 +38,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 	DtmCreationModel model;
 	PickManager pickManager;
 	private DEMCreator creationTool;
+	private SmallBodyViewConfig config;
 
 
 	public DtmCreationControlController(SmallBodyViewConfig config, DtmCreationModel model, final PickManager pickManager, DEMCreator creationTool)
@@ -45,6 +47,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		this.creationTool = creationTool;
 		this.model = model;
 		this.pickManager = pickManager;
+		this.config = config;
 		initControls();
 	}
 
@@ -247,8 +250,71 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 //        }
     }
 
-	// Starts and manages a MapmakerSwingWorker
+    // Starts and manages a MapmakerSwingWorker
     private void runMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
+    {
+        // Download the entire map maker suite to the users computer
+        // if it has never been downloaded before.
+        // Ask the user beforehand if it's okay to continue.
+        final MapmakerSwingWorker mapmakerWorker =
+                new MapmakerSwingWorker(panel, "Running Mapmaker", config.rootDirOnServer + "/mapmaker.zip");
+
+        // If we need to download, prompt the user that it will take a long time
+        if (mapmakerWorker.getIfNeedToDownload())
+        {
+            int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(panel),
+                    "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
+                    "This may take several minutes. Would you like to continue?",
+                    "Confirm Download",
+                    JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        if (panel.getSetSpecifyRegionManuallyCheckbox().isSelected())
+        {
+            if (panel.getLatitudeTextField().getText().isEmpty() || panel.getLongitudeTextField().getText().isEmpty() || panel.getPixelScaleTextField().getText().isEmpty())
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
+                        "Please enter values for the latitude, longitude, and pixel scale.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            mapmakerWorker.setLatitude(Double.parseDouble(panel.getLatitudeTextField().getText()));
+            mapmakerWorker.setLongitude(Double.parseDouble(panel.getLongitudeTextField().getText()));
+            mapmakerWorker.setPixelScale(Double.parseDouble(panel.getPixelScaleTextField().getText()));
+            mapmakerWorker.setRegionSpecifiedWithLatLonScale(true);
+        }
+        else
+        {
+            mapmakerWorker.setCenterPoint(centerPoint);
+            mapmakerWorker.setRadius(radius);
+        }
+        mapmakerWorker.setName(demName);
+        mapmakerWorker.setHalfSize((Integer)panel.getHalfSizeSpinner().getValue());
+        mapmakerWorker.setOutputFolder(outputFolder);
+
+        mapmakerWorker.executeDialog();
+
+        if (mapmakerWorker.isCancelled())
+            return;
+
+        DEMInfo newDemInfo = new DEMInfo();
+        newDemInfo.name = demName;
+        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
+        try
+        {
+            model.saveDEM(newDemInfo);
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
+        }
+    }
+
+	// Starts and manages a MapmakerSwingWorker
+    private void runNewMapmakerSwingWorker(String demName, double[] centerPoint, double radius, File outputFolder)
     {
         // Download the entire map maker suite to the users computer
         // if it has never been downloaded before.

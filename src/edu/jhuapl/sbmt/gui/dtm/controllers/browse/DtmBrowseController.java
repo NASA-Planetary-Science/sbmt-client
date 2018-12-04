@@ -43,12 +43,8 @@ public class DtmBrowseController
 			{
 				for (DEMKey key : keys)
 				{
-					System.out.println(
-							"DtmBrowseController.DtmBrowseController(...).new DEMBrowseModelChangedListener() {...}: demKeysListChanged: key is " + key.fileName);
 					resultsController.getTable().appendRow(key);
 				}
-				System.out.println(
-						"DtmBrowseController.DtmBrowseController(...).new DEMBrowseModelChangedListener() {...}: demKeysListChanged: number of rows " + resultsController.getTable().getNumberOfRows());
 			}
 		});
 
