@@ -14,16 +14,16 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.OffLimbPlaneCalculator;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 
 import nom.tam.fits.FitsException;
 
@@ -32,18 +32,24 @@ public class PerspectiveImagePreRenderer
     private PerspectiveImage image;
     private int resolutionIndex;
     private String outputDir;
+    private boolean reprocess = false;
 
-    public PerspectiveImagePreRenderer(PerspectiveImage image, String outputDir)
+    public PerspectiveImagePreRenderer(PerspectiveImage image, String outputDir, boolean reprocess)
     {
         this.image = image;
         this.resolutionIndex = image.getSmallBodyModel().getModelResolution();
         this.outputDir = outputDir;
+        this.reprocess = reprocess;
         calculateFootprint();
         calculateOffLimb();
     }
 
     private void calculateFootprint()
     {
+        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
+        File intersectionFile = new File(intersectionFileName);
+        if (intersectionFile.exists() && (reprocess == false)) return;
+
         SmallBodyModel smallBodyModel = image.getSmallBodyModel();
         double[] frustum1Adjusted = image.getFrustum1Adjusted()[image.getDefaultSlice()];
         double[] frustum2Adjusted = image.getFrustum2Adjusted()[image.getDefaultSlice()];
@@ -62,7 +68,6 @@ public class PerspectiveImagePreRenderer
         writer.SetInputData(footprint);
         System.out.println("PerspectiveImage: loadFootprint: fit file full path " + image.getFitFileFullPath());
 //        String intersectionFileName = new File(image.getFitFileFullPath()).getParent() + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
-        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
 
         System.out.println("PerspectiveImage: loadFootprint: saving footprint to " + intersectionFileName);
         if (!(new File(intersectionFileName).exists()))new File(intersectionFileName).getParentFile().mkdir();
@@ -73,10 +78,13 @@ public class PerspectiveImagePreRenderer
 
     private void calculateOffLimb()
     {
+//      String filename = new File(image.getFitFileFullPath()).getParent() +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
+        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
+        File file = new File(filename);
+        if (file.exists() && (reprocess == false)) return;
+
         OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator(image);
         calculator.generateOffLimbPlane(image);
-//        String filename = new File(image.getFitFileFullPath()).getParent() +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
-        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
         if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
         calculator.saveToDisk(filename);
     }
@@ -89,10 +97,12 @@ public class PerspectiveImagePreRenderer
         ShapeModelType type = ShapeModelType.valueOf(args[3]);
         int imagerIndex = Integer.parseInt(args[4]);
         String outputDirectory = args[5] + "/" + args[1];
+        boolean reprocess = Boolean.parseBoolean(args[6]);
 
         boolean aplVersion = true;
-//        String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
-        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
+//        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
 
@@ -146,7 +156,7 @@ public class PerspectiveImagePreRenderer
                 {
                     smallBodyModel.setModelResolution(i);
                     image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                    PerspectiveImagePreRenderer preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory);
+                    PerspectiveImagePreRenderer preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
                 }
             }
             catch (NonexistentRemoteFile nerf)
