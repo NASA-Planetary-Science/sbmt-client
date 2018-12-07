@@ -103,6 +103,7 @@ public class PerspectiveImagePreRenderer
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/multi-mission/test");
 //        String rootURL = "http://sbmt.jhuapl.edu/sbmt/prod/";
+
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
 
@@ -120,7 +121,7 @@ public class PerspectiveImagePreRenderer
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
         ImagingInstrument instrument = config.imagingInstruments[imagerIndex];
-
+        System.out.println("PerspectiveImagePreRenderer: main: input directory is " + inputDirectory);
         File[] fileList = new File(inputDirectory).listFiles(new FilenameFilter()
         {
             @Override
@@ -133,7 +134,8 @@ public class PerspectiveImagePreRenderer
         {
             //may need to massage name here, need it to be /bennu/jfkfjksf, also need to strip .fits
             String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
-            basename = basename.substring(basename.indexOf("2") + 2);
+//            basename = basename.substring(basename.indexOf("2") + 2);
+            basename = basename.substring(basename.indexOf("prod/") + 4);
             ImageKey key = new ImageKey(basename, source, instrument);
             System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
             SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
