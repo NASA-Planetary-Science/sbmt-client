@@ -808,7 +808,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "mapcam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
             };
