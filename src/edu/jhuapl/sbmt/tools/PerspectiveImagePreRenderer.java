@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.model.image;
+package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -18,8 +18,12 @@ import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.image.Image;
+import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
+import edu.jhuapl.sbmt.model.image.OffLimbPlaneCalculator;
+import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
-import edu.jhuapl.sbmt.tools.Authenticator;
 
 import nom.tam.fits.FitsException;
 
@@ -112,26 +116,7 @@ public class PerspectiveImagePreRenderer
             @Override
             public boolean accept(File dir, String name)
             {
-                boolean fitsFile = FilenameUtils.getExtension(name).contains("fit");
-                return fitsFile;
-//                boolean hasPointingFile = false;
-//                String pointingFileString = "";
-//                if (source == ImageSource.SPICE)
-//                {
-//
-//                    pointingFileString = dir.getParentFile().getAbsolutePath() + File.separator + "infofiles" + File.separator +  FilenameUtils.getBaseName(name) + ".INFO";
-//                }
-//                else if (source == ImageSource.GASKELL)
-//                {
-//                    pointingFileString = dir.getParentFile().getAbsolutePath() + File.separator + "sumfiles" + File.separator + FilenameUtils.getBaseName(name) + ".SUM";
-//
-//                }
-//                System.out.println(
-//                        "PerspectiveImagePreRenderer.main(...).new FilenameFilter() {...}: accept: pointingfile string " + pointingFileString);
-//                File pointingFile = new File(pointingFileString);
-//                if (pointingFile.exists()) hasPointingFile = true;
-//
-//                return fitsFile && hasPointingFile;
+                return FilenameUtils.getExtension(name).contains("fit");
             }
         });
         for (File filename : fileList)
