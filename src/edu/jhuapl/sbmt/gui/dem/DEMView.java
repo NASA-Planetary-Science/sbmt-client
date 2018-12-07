@@ -48,6 +48,7 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.camera.StandardCamera;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -153,7 +154,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
 
-        PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
+        // Retrieve the camera and force it to focus on the reference model
+        ((StandardCamera) renderer.getCamera()).setLockToModelCenter(true);
+
+         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
@@ -190,6 +194,9 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         updateControlPanel(null);
+
+        // Force the renderer's camera to the "reset" default view
+        renderer.getCamera().reset();
     }
 
     @Override
@@ -865,9 +872,12 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     @Override
     public void windowClosing(WindowEvent e)
     {
+        // Notify the Renderer that it will no longer be needed
+        renderer.dispose();
+
         // Remove self as the macro DEM's view
         DEM secDEM = demCollection.getDEM(key);
-        if(secDEM != null)
+        if (secDEM != null)
             secDEM.removeView();
 
         // Garbage collect
