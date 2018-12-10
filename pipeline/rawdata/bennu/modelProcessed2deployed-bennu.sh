@@ -129,6 +129,7 @@ if [ -d "$srcTop/$processingVersion/$processingModelName/otes" ]; then
 else
   ln -s ../shared/otes $destTop/$processingModelName-$processingVersion/otes
   ln -s ../shared/ovirs $destTop/$processingModelName-$processingVersion/ovirs
+  ln -s ../shared/ola $destTop/$processingModelName-$processingVersion/ola
 fi
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
