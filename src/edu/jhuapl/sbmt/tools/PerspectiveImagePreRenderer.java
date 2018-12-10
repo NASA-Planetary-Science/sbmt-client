@@ -220,7 +220,7 @@ public class PerspectiveImagePreRenderer
                     }
                 }
             }
-
+            if ((fileList.length == 1) && imagesWithPointing.isEmpty()) System.exit(0);
             for (File filename : imagesWithPointing)
             {
                 System.out.println("PerspectiveImagePreRenderer: main: processing file " + filename.getAbsolutePath());
