@@ -55,8 +55,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             public void actionPerformed(ActionEvent e)
             {
                 String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
-//                name = name.substring(0, name.length()-4);
-                ImageKey key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
                 OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
                 controller.getControlsFrame().setVisible(true);
@@ -143,8 +142,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         for (List<String> str : results)
         {
             String name = imageRawResults.get(i).get(0);
-//            name = name.substring(0, name.length()-4);
-            ImageKey key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
+            ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
             if (imageCollection.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
@@ -169,18 +167,18 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-//                String namePrefix = name.substring(0, name.length()-4);
+                String namePrefix = name.substring(0, name.length()-4);
                 super.tableChanged(e);
                 offlimbTableView.getResultList().setValueAt(false, row, offlimbTableView.getOffLimbIndex());
-                setOffLimbFootprintVisibility(name, false);   // set visibility to false if we are mapping or unmapping the image
+                setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
             }
             else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-//                String namePrefix = name.substring(0, name.length()-4);
+                String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
-                setOffLimbFootprintVisibility(name, visible);
+                setOffLimbFootprintVisibility(namePrefix, visible);
                 ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
@@ -216,8 +214,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
-//                name = name.substring(0, name.length()-4);
-                ImageKey key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
                 return images.containsImage(key);
             }

@@ -77,6 +77,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         final Key<String> sumfilenameKey = Key.of("sumfilename");
         final Key<String> infofileKey = Key.of("infofilename");
 
+
         @Override
         public String toString()
         {
@@ -102,11 +103,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         public List<String> toList()
         {
             List<String> string = new Vector<String>();
-            string.add(imagefilename);
+            string.add(name);
 //            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 //            string.add(formatter.format(new Date()));
             string.add("" + new Date().getTime());
-            string.add(name);
             return string;
 
         }
@@ -244,10 +244,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             info.projectionType = ProjectionType.PERSPECTIVE;
             info.sumfilename = null;
             if (sumfilePathRB.isSelected() == true)
-            info.sumfilename = sumfilePathTextField.getText();
+                info.sumfilename = sumfilePathTextField.getText();
             info.infofilename = null;
             if (infofilePathRB.isSelected() == true)
-            info.infofilename = infofilePathTextField.getText();
+                info.infofilename = infofilePathTextField.getText();
             if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
                 info.sumfilename = null;
             if (LEAVE_UNMODIFIED.equals(info.infofilename) || info.infofilename == null || info.infofilename.isEmpty())

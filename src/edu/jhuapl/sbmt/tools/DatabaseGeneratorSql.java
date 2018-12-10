@@ -20,6 +20,7 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
@@ -36,7 +37,6 @@ public class DatabaseGeneratorSql
     private SqlManager db = null;
     private SmallBodyModel smallBodyModel;
     private SmallBodyViewConfig smallBodyConfig;
-    private String betaSuffix = "_beta";
     private String databasePrefix;
     private String databaseSuffix = "";
     private boolean appendTables;
@@ -198,6 +198,8 @@ public class DatabaseGeneratorSql
             System.out.println("\n\nstarting image " + count + " of " + totalFiles + ": " + filename);
 
             String keyName = filename;
+            keyName = keyName.replace(".FITS", "");
+            keyName = keyName.replace(".fits", "");
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
             ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
@@ -227,7 +229,7 @@ public class DatabaseGeneratorSql
             if (image.getUnshiftedFootprint() == null)
             {
                 // In this case if image.loadFootprint() finds no frustum intersection
-                System.out.println("skipping this image since no frustum intersection with body");
+                System.out.println("skipping image " + filename + " since no frustum intersection with body");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -237,7 +239,7 @@ public class DatabaseGeneratorSql
             }
             else if (image.getUnshiftedFootprint().GetNumberOfCells() == 0)
             {
-                System.out.println("skipping this image since no intersecting cells");
+                System.out.println("skipping image " + filename + " since no intersecting cells");
                 image.Delete();
                 System.gc();
                 System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
@@ -410,9 +412,11 @@ public class DatabaseGeneratorSql
         String dburl = null;
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
             dburl = "hyb2sbmt.jhuapl.edu";
-        if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
+        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEPLOY)
             dburl = "hyb2sbmt.u-aizu.ac.jp";
-        else if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_DEV)
+        else if (SbmtMultiMissionTool.getMission() == Mission.OSIRIS_REX_DEPLOY)
+            throw new AssertionError("NEED TO SET UP THE LOCATION OF THE OREX DEPLOYED DATABASE");
+        else
             dburl = "sd-mysql.jhuapl.edu";
 
         try
@@ -567,6 +571,10 @@ public class DatabaseGeneratorSql
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829",
                 "ryugu/jaxa-spc-v20180829/onc"),
 
+        JAXA_SPC_V20181014(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
        JAXA_SFM_V20180804(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
@@ -644,6 +652,11 @@ public class DatabaseGeneratorSql
         JAXA_SFM_V20180804_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SFM_v20180804),
                 "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804",
                 "ryugu/jaxa-sfm-v20180804/onc"),
+
+        JAXA_SPC_V20181014_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20181014),
+                "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014",
+                "ryugu/jaxa-spc-v20181014/onc"),
+
 
 
         RYUGU_NASA_001_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_001),
@@ -732,9 +745,9 @@ public class DatabaseGeneratorSql
 //        RYUGU_NASA_004_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_004),
 //                "/var/www/sbmt/sbmt/data/ryugu/nasa-004/tir", "ryugu_nasa004_tir",
 //                "ryugu/nasa-004/tir"),
-//        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
-//                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
-//                "ryugu/nasa-005/tir"),
+        RYUGU_NASA_005_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.NASA_005),
+                "/var/www/sbmt/sbmt/data/ryugu/nasa-005/tir", "ryugu_nasa005_tir",
+                "ryugu/nasa-005/tir"),
 
         RYUGU_SHARED_TIR(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RYUGU, ShapeModelType.JAXA_SPC_v20180829),
                 "/var/www/sbmt/sbmt/data/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir",
@@ -828,6 +841,64 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
         DEIMOS_ERNST_2018(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.DEIMOS, ShapeModelType.EXPERIMENTAL),
                 "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
+
+
+        /*
+         * Osiris REx flight models below here.
+         */
+        // 1109B SUMFILES
+        BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_mapcam"),
+        BENNU_ALTWG_SPC_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_polycam"),
+
+        // 1109B INFOFILES
+        BENNU_ALTWG_SPICE_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_mapcam"),
+        BENNU_ALTWG_SPICE_V20181109B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181109b_polycam"),
+
+        // 1115 INFOFILES
+        BENNU_ALTWG_SPICE_V20181115_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181115),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181115/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181115_mapcam"),
+        BENNU_ALTWG_SPICE_V20181115_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181115),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181115/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181115_polycam"),
+
+        // 1116 SUMFILES
+        BENNU_ALTWG_SPC_V20181116_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181116),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181116/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181116_mapcam"),
+        BENNU_ALTWG_SPC_V20181116_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181116),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181116/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181116_polycam"),
+
+        // 1116 INFOFILES
+        BENNU_ALTWG_SPICE_V20181116_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181116),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181116/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181116_mapcam"),
+        BENNU_ALTWG_SPICE_V20181116_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181116),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181116/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181116_polycam"),
+
+        // 1123B SUMFILES
+        BENNU_ALTWG_SPC_V20181123B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181123b_mapcam"),
+        BENNU_ALTWG_SPC_V20181123B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181123b_polycam"),
+
+        // 1123B INFOFILES
+        BENNU_ALTWG_SPICE_V20181123B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181123b_mapcam"),
+        BENNU_ALTWG_SPICE_V20181123B_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181123b),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181123b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181123b_polycam"),
+
+        // 1202 SUMFILES
+        BENNU_ALTWG_SPC_V20181202_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181202),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181202_mapcam"),
+        BENNU_ALTWG_SPC_V20181202_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181202),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181202_polycam"),
+
+        // 1202 INFOFILES
+        BENNU_ALTWG_SPICE_V20181202_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181202),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181202_mapcam"),
+        BENNU_ALTWG_SPICE_V20181202_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181202),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181202_polycam"),
         ;
 
 
@@ -898,11 +969,12 @@ public class DatabaseGeneratorSql
      */
     public static void main(String[] args) throws IOException
     {
+        final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
 //        String appName = "neartool";
 //        String cacheVersion = "2";
         boolean aplVersion = true;
-        String rootURL = FileCache.createFileURL("/disks/d0180/htdocs-sbmt/internal/sbmt").toString();
+        String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
 
         boolean appendTables = false;
         boolean modifyMain = false;
@@ -916,7 +988,7 @@ public class DatabaseGeneratorSql
         {
             if (args[i].equals("--root-url"))
             {
-                rootURL = FileCache.createURL(args[++i]).toString();
+                rootURL = safeUrlPaths.getUrl(args[++i]);
             }
             else if (args[i].equals("--append-tables"))
             {

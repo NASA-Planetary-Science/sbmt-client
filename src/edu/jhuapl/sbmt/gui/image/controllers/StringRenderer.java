@@ -7,8 +7,8 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class StringRenderer extends DefaultTableCellRenderer
@@ -33,8 +33,7 @@ public class StringRenderer extends DefaultTableCellRenderer
         Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         String name = imageRawResults.get(row).get(0);
 //        ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-//        name = name.substring(0, name.length()-4);
-        ImageKey key = imageSearchModel.createImageKey(name, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+        ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
             int[] c = model.getBoundary(key).getBoundaryColor();

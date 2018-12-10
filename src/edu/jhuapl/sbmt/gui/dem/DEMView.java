@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -40,10 +41,14 @@ import vtk.vtkProp;
 import vtk.vtkRenderer;
 
 import edu.jhuapl.saavtk.colormap.Colorbar;
+import edu.jhuapl.saavtk.colormap.Colormap;
+import edu.jhuapl.saavtk.colormap.ColormapUtil;
+import edu.jhuapl.saavtk.colormap.Colormaps;
 import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.camera.StandardCamera;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -63,9 +68,10 @@ import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 
+import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
 
-public class DEMView extends JFrame implements PropertyChangeListener, WindowListener
+public class DEMView extends JFrame implements ActionListener, PropertyChangeListener, WindowListener
 {
     // Constants
     private static final String Profile = "Profile";
@@ -82,22 +88,26 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private final ModelManager modelManager;
     private final PickManager pickManager;
     private final DEMPlot plot;
-    private final DEM dem;
+    private final DEM priDEM;
     private final DEMKey key;
     private final DEMCollection demCollection;
     private final Colorbar refColorbar;
-    private int numColors;
 
     // Gui vars
     private ScaleDataRangeDialog scaleDataDialog;
+    private JComboBox<Object> colormapBox;
+    private JLabel colormapL;
+
+    private JComboBox<?> coloringTypeBox;
+    private JButton scaleColoringButton;
+    private JCheckBox syncColoringCB;
+
     private JButton newButton;
     private JToggleButton editButton;
     private JButton deleteAllButton;
-    private JButton scaleColoringButton;
     private JButton loadButton;
     private JButton saveButton;
-    private JComboBox<?> coloringTypeComboBox;
-    private JCheckBox syncColoringCB;
+    private JLabel fileL;
     private Renderer renderer;
 
     public Renderer getRenderer()
@@ -119,54 +129,53 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         add(statusBar, BorderLayout.PAGE_END);
 
         // Look up dem object in main view
-        DEM macroDEM = demCollection.getDEM(key);
+        DEM secDEM = demCollection.getDEM(key);
 
         // Create an entirely new DEM object to go with this model manager
         // We must do this, things get screwed up if we use the same DEM object in both main and DEM views
-        dem = new DEM(macroDEM); // Use copy constructor, much faster than creating DEM file from scratch
+        priDEM = new DEM(secDEM); // Use copy constructor, much faster than creating DEM file from scratch
 
-        // Set this micro DEM to have the same properties as the macroDEM
-        for(int i=0; i<macroDEM.getNumberOfColors(); i++)
+        // Set this primary DEM to have the same properties as the macroDEM
+        for(int i=0; i<secDEM.getNumberOfColors(); i++)
         {
-            dem.setCurrentColoringRange(i, macroDEM.getCurrentColoringRange(i));
+            priDEM.setCurrentColoringRange(i, secDEM.getCurrentColoringRange(i));
         }
-        dem.setColoringIndex(macroDEM.getColoringIndex());
+        priDEM.setColoringIndex(secDEM.getColoringIndex());
 
-        lineModel = new LineModel(dem, true);
+        lineModel = new LineModel(priDEM, true);
         lineModel.setMaximumVerticesPerLine(2);
         HashMap<ModelNames, Model> allModels = new HashMap<ModelNames, Model>();
-        allModels.put(ModelNames.SMALL_BODY, dem);
+        allModels.put(ModelNames.SMALL_BODY, priDEM);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
-        modelManager = new SbmtModelManager(dem);
+        modelManager = new SbmtModelManager(priDEM);
         modelManager.setModels(allModels);
 
         renderer = new Renderer(modelManager);
+        renderer.setMinimumSize(new Dimension(0, 0));
 
-        PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
+        // Retrieve the camera and force it to focus on the reference model
+        ((StandardCamera) renderer.getCamera()).setLockToModelCenter(true);
+
+         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
 
         pickManager = new PickManager(renderer, statusBar, modelManager, popupManager);
 
-        renderer.setMinimumSize(new Dimension(100, 100));
-        renderer.setPreferredSize(new Dimension(400, 400));
-
         refColorbar = new Colorbar(renderer);
 
-        plot = new DEMPlot(lineModel, dem, macroDEM.getColoringIndex());
-        plot.getChartPanel().setMinimumSize(new Dimension(100, 100));
-        plot.getChartPanel().setPreferredSize(new Dimension(400, 400));
+        plot = new DEMPlot(lineModel, priDEM, secDEM.getColoringIndex());
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-               renderer, plot.getChartPanel());
+                renderer, plot.getChartPanel());
         splitPane.setResizeWeight(0.5);
         splitPane.setOneTouchExpandable(true);
 
         JPanel panel = new JPanel(new BorderLayout());
+        panel.add(createControlPanel(secDEM.getColoringIndex()), BorderLayout.WEST);
         panel.add(splitPane, BorderLayout.CENTER); // twupy1: This is what messes up main shape model
-        panel.add(createButtonsPanel(macroDEM.getColoringIndex()), BorderLayout.SOUTH);
         add(panel, BorderLayout.CENTER);
 
         addWindowListener(this);
@@ -174,16 +183,188 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
 
         // Finally make the frame visible
         setTitle("DEM View: " + key.displayName);
-     //   pack();
+//        pack();
         setVisible(true);
-
-        setSize(600, 300);
+        setSize(800, 450);
 
         // Register for events of interest
-        dem.addPropertyChangeListener(this);
+        priDEM.addPropertyChangeListener(this);
         lineModel.addPropertyChangeListener(this);
         modelManager.addPropertyChangeListener(this);
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+        updateControlPanel(null);
+
+        // Force the renderer's camera to the "reset" default view
+        renderer.getCamera().reset();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent aEvent)
+    {
+        Object source = aEvent.getSource();
+
+        // ColorMap ComboBox UI
+        if (source == colormapBox)
+        {
+            doUpdateColoringConfig();
+            updateControlPanel(source);
+        }
+        else if (source == coloringTypeBox)
+        {
+            doUpdateColoringConfig();
+            updateControlPanel(source);
+        }
+        else if (source == loadButton)
+        {
+            File file = CustomFileChooser.showOpenDialog(loadButton, "Load Profiles");
+            if (file == null)
+                return;
+            try
+            {
+                loadView(file);
+                fileL.setText("File: " + file.getName());
+                fileL.setToolTipText(file.getPath());
+            }
+            catch (Exception aExp)
+            {
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(loadButton),
+                        "Unable to load file " + file.getAbsolutePath(),
+                        "Error Loading File", JOptionPane.ERROR_MESSAGE);
+                aExp.printStackTrace();
+            }
+        }
+        else if (source == saveButton)
+        {
+            File file = CustomFileChooser.showSaveDialog(saveButton, "Save Profiles", "profiles.txt");
+            if (file == null)
+                return;
+            try
+            {
+                saveView(file);
+                fileL.setText("File: " + file.getName());
+                fileL.setToolTipText(file.getPath());
+            }
+            catch (Exception aExp)
+            {
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getFrameForComponent(saveButton),
+                        "Unable to save file to " + file.getAbsolutePath(),
+                        "Error Saving File", JOptionPane.ERROR_MESSAGE);
+                aExp.printStackTrace();
+            }
+        }
+        else if (source == syncColoringCB)
+        {
+            // Synchronize the coloring if selected
+            if (syncColoringCB.isSelected() == true)
+                doSynchronizeColoring();
+        }
+        else if (source == scaleColoringButton)
+        {
+            // Lazy init
+            if (scaleDataDialog == null)
+                scaleDataDialog = new ScaleDataRangeDialog(JOptionPane.getFrameForComponent(scaleColoringButton));
+
+            boolean isSyncColoring = syncColoringCB.isSelected();
+            scaleDataDialog.setModelConfiguration(priDEM, demCollection.getDEM(key), isSyncColoring);
+            scaleDataDialog.setVisible(true);
+        }
+        else if (source == newButton)
+        {
+            removeFaultyProfiles();
+
+            lineModel.addNewStructure();
+
+            // Set the color of this new structure
+            int idx = lineModel.getNumberOfStructures() - 1;
+            lineModel.setStructureColor(idx, getDefaultColor(idx));
+
+            pickManager.setPickMode(PickMode.LINE_DRAW);
+            editButton.setSelected(true);
+        }
+        else if (source == editButton)
+        {
+            removeFaultyProfiles();
+
+            if (editButton.isSelected())
+                pickManager.setPickMode(PickMode.LINE_DRAW);
+            else
+                pickManager.setPickMode(PickMode.DEFAULT);
+        }
+        else if (source == deleteAllButton)
+        {
+            removeAllProfiles();
+        }
+    }
+
+    /**
+     * Helper method to create the control panel.
+     */
+    private JPanel createControlPanel(int initialSelectedOption)
+    {
+        JPanel retPanel = new JPanel(new MigLayout("", "[fill]", ""));
+
+        // Feature area
+        String[] coloringOptions = getColoringOptionsFor(priDEM);
+        coloringTypeBox = new JComboBox<>(coloringOptions);
+        coloringTypeBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
+        coloringTypeBox.addActionListener(this);
+        retPanel.add(coloringTypeBox, "w 0:0:,wrap");
+
+        scaleColoringButton = new JButton("Rescale Data Range");
+        scaleColoringButton.addActionListener(this);
+        retPanel.add(scaleColoringButton, "wrap");
+
+        syncColoringCB = new JCheckBox("Sync Coloring");
+        syncColoringCB.addActionListener(this);
+        syncColoringCB.setToolTipText("Sync coloring with main window");
+        retPanel.add(syncColoringCB, "wrap 20");
+
+        // ColorMap area
+        colormapL = new JLabel();
+        retPanel.add(colormapL, "wrap");
+
+        colormapBox = new JComboBox<>();
+        colormapBox.setRenderer(ColormapUtil.getFancyColormapRender2(colormapBox));
+        for (String aStr : Colormaps.getAllBuiltInColormapNames())
+        {
+            Colormap cmap = Colormaps.getNewInstanceOfBuiltInColormap(aStr);
+            colormapBox.addItem(cmap);
+            if (cmap.getName().equals(Colormaps.getDefaultColormapName()))
+                colormapBox.setSelectedItem(cmap);
+        }
+        colormapBox.addActionListener(this);
+        retPanel.add(colormapBox, "w 0:0:,wrap 20");
+
+        // Profile edit area
+        newButton = new JButton("New Profile");
+        newButton.addActionListener(this);
+        retPanel.add(newButton, "sg 2,wrap");
+
+        editButton = new JToggleButton("Edit Profiles");
+        editButton.addActionListener(this);
+        retPanel.add(editButton, "sg 2,wrap");
+
+        deleteAllButton = new JButton("Delete All Profiles");
+        deleteAllButton.addActionListener(this);
+        retPanel.add(deleteAllButton, "sg 2,wrap 20");
+
+        // File area
+        loadButton = new JButton("Load...");
+        loadButton.addActionListener(this);
+        loadButton.setToolTipText("Load Profile Data");
+        saveButton = new JButton("Save...");
+        saveButton.addActionListener(this);
+        saveButton.setToolTipText("Save Profile Data");
+        retPanel.add(loadButton, "sg 3,span,split");
+        retPanel.add(saveButton, "sg 3,wrap");
+
+        fileL = new JLabel("");
+        retPanel.add(fileL, "w 0:0:");
+
+        return retPanel;
     }
 
     private void createMenus()
@@ -217,200 +398,48 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         setJMenuBar(menuBar);
     }
 
-    private JPanel createButtonsPanel(int initialSelectedOption)
+    /**
+     * Helper method that will synchronize the DEM(s) to reflect the coloring as
+     * specified on the GUI.
+     */
+    private void doUpdateColoringConfig()
     {
-        JPanel panel = new JPanel();
-
-        String[] coloringNames = dem.getColoringNames();
-        numColors = coloringNames.length;
-        Object[] coloringOptions = new Object[numColors + 1];
-        for(int i=0; i<numColors; i++)
+        // Update the primary DEM's ColorMap if necessary
+        String name = ((Colormap) colormapBox.getSelectedItem()).getName();
+        if (name.equals(priDEM.getColormap().getName()) == false)
         {
-            coloringOptions[i] = coloringNames[i];
+            Colormap tmpColormap = Colormaps.getNewInstanceOfBuiltInColormap(name);
+            priDEM.setColormap(tmpColormap);
         }
-        coloringOptions[numColors] = "No coloring";
 
-        coloringTypeComboBox = new JComboBox<>(coloringOptions);
-        coloringTypeComboBox.setSelectedIndex(initialSelectedOption < 0 ? coloringOptions.length-1 : initialSelectedOption);
-        coloringTypeComboBox.setMaximumSize(new Dimension(150, 23));
-        coloringTypeComboBox.addActionListener(new ActionListener()
+        try
         {
-            public void actionPerformed(ActionEvent e)
+            int index = coloringTypeBox.getSelectedIndex();
+            if (index == coloringTypeBox.getItemCount() - 1)
             {
-                try
-                {
-                    boolean isSyncColoring = syncColoringCB.isSelected();
-                    int index = coloringTypeComboBox.getSelectedIndex();
-                    if (index == numColors)
-                    {
-                        // No coloring
-                        scaleColoringButton.setEnabled(false);
-                        dem.setColoringIndex(-1);
-                        plot.setColoringIndex(-1);
-
-                        if(isSyncColoring)
-                            demCollection.getDEM(key).setColoringIndex(-1);
-                    }
-                    else
-                    {
-                        // Coloring
-                        scaleColoringButton.setEnabled(true);
-                        dem.setColoringIndex(index);
-                        plot.setColoringIndex(index);
-
-                        // Reset the primary model's coloring range to the defaults
-                        double[] tmpArr = dem.getDefaultColoringRange(index);
-                        dem.setCurrentColoringRange(index, tmpArr);
-
-                        if(isSyncColoring)
-                            doSynchronizeColoring();
-                    }
-                }
-                catch (IOException e1)
-                {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                // No coloring
+                priDEM.setColoringIndex(-1);
+                plot.setColoringIndex(-1);
             }
-        });
-        panel.add(coloringTypeComboBox);
-
-        syncColoringCB = new JCheckBox("Sync Coloring");
-        syncColoringCB.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent aEvent)
+            else
             {
-                // Sychronize the coloring if selected
-                if (syncColoringCB.isSelected() == true)
-                    doSynchronizeColoring();
-            }
-        });
-        panel.add(syncColoringCB);
+                // Coloring
+                priDEM.setColoringIndex(index);
+                plot.setColoringIndex(index);
 
-        scaleColoringButton = new JButton("Rescale Data Range");
-        if(coloringTypeComboBox.getSelectedIndex() == numColors)
-        {
-            // Initially no coloring selected, scaling does not make sense
-            scaleColoringButton.setEnabled(false);
+                // Reset the primary model's coloring range to the defaults
+                double[] tmpArr = priDEM.getDefaultColoringRange(index);
+                priDEM.setCurrentColoringRange(index, tmpArr);
+            }
+
+            // Synchronize the coloring
+            if (syncColoringCB.isSelected() == true)
+                doSynchronizeColoring();
         }
-        else
+        catch (IOException aExp)
         {
-            // Initially a valid coloring type, we can scale
-            scaleColoringButton.setEnabled(true);
+            aExp.printStackTrace();
         }
-        scaleColoringButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                // Lazy init
-                if (scaleDataDialog == null)
-                    scaleDataDialog = new ScaleDataRangeDialog(JOptionPane.getFrameForComponent(scaleColoringButton));
-
-                boolean isSyncColoring = syncColoringCB.isSelected();
-                scaleDataDialog.setModelConfiguration(dem, demCollection.getDEM(key), isSyncColoring);
-                scaleDataDialog.setVisible(true);
-            }
-        });
-        panel.add(scaleColoringButton);
-
-        newButton = new JButton("New Profile");
-        newButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                removeFaultyProfiles();
-
-                lineModel.addNewStructure();
-
-                // Set the color of this new structure
-                int idx = lineModel.getNumberOfStructures() - 1;
-                lineModel.setStructureColor(idx, getDefaultColor(idx));
-
-                pickManager.setPickMode(PickMode.LINE_DRAW);
-                editButton.setSelected(true);
-            }
-        });
-        panel.add(newButton);
-
-        editButton = new JToggleButton("Edit Profiles");
-        editButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                removeFaultyProfiles();
-
-                if (editButton.isSelected())
-                    pickManager.setPickMode(PickMode.LINE_DRAW);
-                else
-                    pickManager.setPickMode(PickMode.DEFAULT);
-            }
-        });
-        panel.add(editButton);
-
-        deleteAllButton = new JButton("Delete All Profiles");
-        deleteAllButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                removeAllProfiles();
-            }
-        });
-        panel.add(deleteAllButton);
-
-        saveButton = new JButton("Save...");
-        saveButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                File file = null;
-                try
-                {
-                    file = CustomFileChooser.showSaveDialog(saveButton, "Save Profiles", "profiles.txt");
-                    if (file != null)
-                    {
-                        saveView(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(saveButton),
-                            "Unable to save file to " + file.getAbsolutePath(),
-                            "Error Saving File",
-                            JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
-            }
-        });
-        panel.add(saveButton);
-
-        loadButton = new JButton("Load...");
-        loadButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                File file = null;
-                try
-                {
-                    file = CustomFileChooser.showOpenDialog(loadButton, "Load Profiles");
-                    if (file != null)
-                    {
-                        loadView(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(loadButton),
-                            "Unable to load file " + file.getAbsolutePath(),
-                            "Error Loading File",
-                            JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
-            }
-        });
-        panel.add(loadButton);
-
-        return panel;
     }
 
     /**
@@ -419,7 +448,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     private void doConfigureColorbar()
     {
         // Disable the Colorbar if it is not needed
-        if (dem.isColoringDataAvailable() == false || dem.getColoringIndex() < 0)
+        if (priDEM.isColoringDataAvailable() == false || priDEM.getColoringIndex() < 0)
         {
             refColorbar.setVisible(false);
             return;
@@ -429,16 +458,16 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         if (!refColorbar.isVisible())
             refColorbar.setVisible(true);
 
-        refColorbar.setColormap(dem.getColormap());
-        int index = dem.getColoringIndex();
-        String title = dem.getColoringName(index).trim();
-        String units = dem.getColoringUnits(index).trim();
+        refColorbar.setColormap(priDEM.getColormap());
+        int index = priDEM.getColoringIndex();
+        String title = priDEM.getColoringName(index).trim();
+        String units = priDEM.getColoringUnits(index).trim();
         if (units != null && !units.isEmpty())
             title += " (" + units + ")";
         refColorbar.setTitle(title);
 
         registerIfNotRegistered(renderer.getRenderWindowPanel().getRenderer(), refColorbar.getActor());
-        refColorbar.getActor().SetNumberOfLabels(dem.getColormap().getNumberOfLabels());
+        refColorbar.getActor().SetNumberOfLabels(priDEM.getColormap().getNumberOfLabels());
     }
 
     /**
@@ -456,17 +485,38 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
      */
     private void doSynchronizeColoring()
     {
-        // Get the macroDEM
-        DEM macroDEM = demCollection.getDEM(key);
+        // Bail if the coloring should not be synchronizing
+        if (syncColoringCB.isSelected() == false)
+            return;
+
+        // Get the secondary DEM
+        DEM secDEM = demCollection.getDEM(key);
+
+        // Update the ColorMap to reflect the primary DEM
+        Colormap priColorMap = priDEM.getColormap();
+        Colormap secColorMap = secDEM.getColormap();
+        if (secColorMap == null || priColorMap.getName().equals(secColorMap.getName()) == false)
+        {
+            Colormap tmpColorMap = Colormaps.getNewInstanceOfBuiltInColormap(priColorMap.getName());
+            secDEM.setColormap(tmpColorMap);
+        }
 
         try
         {
-            // Synchronize coloring ranges
-            for (int i = 0; i < dem.getNumberOfColors(); i++)
-                macroDEM.setCurrentColoringRange(i, dem.getCurrentColoringRange(i));
+            // Update the secondary DEM's coloring index to match the primary DEM
+            int coloringIndex = priDEM.getColoringIndex();
+            secDEM.setColoringIndex(coloringIndex);
+            if (coloringIndex == -1)
+                return;
 
-            // Synchronize coloring index
-            macroDEM.setColoringIndex(dem.getColoringIndex());
+            // Synchronize coloring ranges
+            for (int i = 0; i < priDEM.getNumberOfColors(); i++)
+                secDEM.setCurrentColoringRange(i, priDEM.getCurrentColoringRange(i));
+
+            // Reset the primary model's coloring range to the defaults
+//            double[] tmpArr = dem.getCurrentColoringRange(coloringIndex);
+            double[] tmpArr = priDEM.getDefaultColoringRange(coloringIndex);
+            secDEM.setCurrentColoringRange(coloringIndex, tmpArr);
         }
         catch (Exception aExp)
         {
@@ -614,6 +664,30 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         editButton.setSelected(false);
     }
 
+    /**
+     * Helper method to update the control panel.
+     */
+    private void updateControlPanel(Object aSource)
+    {
+        // Update the colormap icon (if necessary)
+        if (aSource == colormapBox || aSource == null)
+        {
+            int iconW = colormapL.getWidth();
+            int iconH = colormapL.getHeight();
+            if (iconH < 16)
+                iconH = 16;
+
+            Colormap evalColormap = (Colormap) colormapBox.getSelectedItem();
+            colormapL.setIcon(ColormapUtil.createIcon(evalColormap, iconW, iconH));
+        }
+
+        // Update enable state of various UI elements
+        boolean isEnabled = coloringTypeBox.getSelectedIndex() != coloringTypeBox.getItemCount() - 1;
+        scaleColoringButton.setEnabled(isEnabled);
+        colormapBox.setEnabled(isEnabled);
+        colormapL.setEnabled(isEnabled);
+    }
+
     private class SaveImageAction extends AbstractAction
     {
         private Renderer renderer;
@@ -644,7 +718,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             try
             {
                 if (file != null)
-                    dem.saveAsPLT(file);
+                    priDEM.saveAsPLT(file);
             }
             catch (Exception e1)
             {
@@ -672,7 +746,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             try
             {
                 if (file != null)
-                    dem.saveAsOBJ(file);
+                    priDEM.saveAsOBJ(file);
             }
             catch (Exception e1)
             {
@@ -700,7 +774,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             try
             {
                 if (file != null)
-                    dem.saveAsSTL(file);
+                    priDEM.saveAsSTL(file);
             }
             catch (Exception e1)
             {
@@ -729,7 +803,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
             try
             {
                 if (file != null)
-                    dem.savePlateData(file);
+                    priDEM.savePlateData(file);
             }
             catch (Exception e1)
             {
@@ -749,7 +823,7 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
         Object source = aEvent.getSource();
 
         // Configure the Colorbar whenever the DEM model has changed
-        if (source == dem && aEvent.getPropertyName().equals(Properties.MODEL_CHANGED))
+        if (source == priDEM && aEvent.getPropertyName().equals(Properties.MODEL_CHANGED))
             doConfigureColorbar();
 
         if (source == modelManager)
@@ -798,12 +872,13 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
     @Override
     public void windowClosing(WindowEvent e)
     {
+        // Notify the Renderer that it will no longer be needed
+        renderer.dispose();
+
         // Remove self as the macro DEM's view
-        DEM macroDEM = demCollection.getDEM(key);
-        if(macroDEM != null)
-        {
-            macroDEM.removeView();
-        }
+        DEM secDEM = demCollection.getDEM(key);
+        if (secDEM != null)
+            secDEM.removeView();
 
         // Garbage collect
         System.gc();
@@ -830,6 +905,29 @@ public class DEMView extends JFrame implements PropertyChangeListener, WindowLis
 
         // Register the vtkProp to be rendered
         aVtkRenderer.AddActor(aVtkProp);
+    }
+
+    /**
+     * Utility method that returns a list of available coloring options for the
+     * specified DEM.
+     * <P>
+     * Included in this list is the None selection ("No coloring").
+     * <P>
+     * TODO: Move this to a proper utility class.
+     *
+     * @param aDEM
+     */
+    public static String[] getColoringOptionsFor(DEM aDEM)
+    {
+        String[] coloringNames = aDEM.getColoringNames();
+        int numColors = coloringNames.length;
+
+        String[] retColoringOptions = new String[numColors + 1];
+        for (int i = 0; i < numColors; i++)
+            retColoringOptions[i] = coloringNames[i];
+        retColoringOptions[numColors] = "No coloring";
+
+        return retColoringOptions;
     }
 
 }

@@ -15,7 +15,7 @@ import edu.jhuapl.saavtk.model.BasicColoringDataManager;
 import edu.jhuapl.saavtk.model.ColoringData;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.file.DataFileInfo;
 import edu.jhuapl.saavtk.util.file.DataFileReader;
 import edu.jhuapl.saavtk.util.file.DataObjectInfo;
@@ -26,6 +26,7 @@ import edu.jhuapl.saavtk.util.file.TableInfo.ColumnInfo;
 public class DiscoverPlateColorings
 {
 	private static final String MAP_NAME = "map_name";
+	private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
 
 	private final File topDirectory;
 	private final String coloringDirectory;
@@ -41,15 +42,15 @@ public class DiscoverPlateColorings
 		File topDirectory = new File(args[0]);
 		Preconditions.checkArgument(topDirectory.isDirectory(), "Not a directory " + topDirectory);
 
-		String coloringDirectory = SafePaths.getString(args[1]).replace("\\", "/");
+		String coloringDirectory = SAFE_URL_PATHS.getString(args[1]).replace("\\", "/");
 
 		String dataId = args[2];
 
-		File txtFile = SafePaths.get(topDirectory.getPath(), args.length > 3 ? args[3] : "coloringlist.txt").toFile();
+		File txtFile = SAFE_URL_PATHS.get(topDirectory.getPath(), args.length > 3 ? args[3] : "coloringlist.txt").toFile();
 		Preconditions.checkArgument(txtFile.isFile(), "Not a file " + txtFile);
 
 		String defaultColoringMetadataFileName = BasicColoringDataManager.getMetadataFileName(Serializers.of().getVersion());
-		File metadataFile = SafePaths.get(topDirectory.getPath(), args.length > 4 ? args[4] : defaultColoringMetadataFileName).toFile();
+		File metadataFile = SAFE_URL_PATHS.get(topDirectory.getPath(), args.length > 4 ? args[4] : defaultColoringMetadataFileName).toFile();
 
 		this.topDirectory = topDirectory;
 		this.coloringDirectory = coloringDirectory;
@@ -67,7 +68,7 @@ public class DiscoverPlateColorings
 
 			while ((line = bufferedReader.readLine()) != null)
 			{
-				File colorFile = SafePaths.get(topDirectory.getAbsolutePath(), line).toFile();
+				File colorFile = SAFE_URL_PATHS.get(topDirectory.getAbsolutePath(), line).toFile();
 
 				if (colorFile.isFile())
 				{
