@@ -1,9 +1,12 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -35,6 +38,7 @@ public class PerspectiveImagePreRenderer
     private String outputDir;
     private boolean reprocess = false;
 
+
     public PerspectiveImagePreRenderer(PerspectiveImage image, String outputDir, boolean reprocess)
     {
         this.image = image;
@@ -43,6 +47,31 @@ public class PerspectiveImagePreRenderer
         this.reprocess = reprocess;
         calculateFootprint();
         calculateOffLimb();
+    }
+
+    private void compressFile(String filePath)
+    {
+        try
+        {
+            byte[] buffer = new byte[1024];
+            FileOutputStream fos = new FileOutputStream(new File(filePath + ".gz"));
+            GZIPOutputStream gos = new GZIPOutputStream(fos);
+            FileInputStream is = new FileInputStream(filePath);
+            int bytesRead;
+
+            while ((bytesRead = is.read(buffer)) > 0)
+            {
+                gos.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            gos.finish();
+            gos.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void calculateFootprint()
@@ -80,6 +109,7 @@ public class PerspectiveImagePreRenderer
         writer.SetFileName(new File(intersectionFileName).toString());
         writer.SetFileTypeToBinary();
         writer.Write();
+        compressFile(intersectionFileName);
     }
 
     private void calculateOffLimb()
@@ -93,6 +123,7 @@ public class PerspectiveImagePreRenderer
         calculator.generateOffLimbPlane(image);
         if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
         calculator.saveToDisk(filename);
+        compressFile(filename);
     }
 
     public static void main(String[] args) throws FitsException, IOException
