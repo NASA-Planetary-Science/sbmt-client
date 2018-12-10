@@ -519,6 +519,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
@@ -575,6 +577,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 c.hasBigmap = true;
             }
 
+
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
                             SpectralMode.MONO,
@@ -596,6 +599,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
             configArray.add(c);
         }
 

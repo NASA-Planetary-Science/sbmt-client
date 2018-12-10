@@ -42,7 +42,6 @@ import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.dtm.controllers.ExperimentalDEMController;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
@@ -410,10 +409,6 @@ public class SbmtView extends View implements PropertyChangeListener
             String displayName = instrument.getDisplayName();
             if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
             {
-//                JComponent component = new NISSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
                 NISSearchModel model = new NISSearchModel(getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
@@ -425,44 +420,12 @@ public class SbmtView extends View implements PropertyChangeListener
             }
             else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
             {
-            	//From Colleen:
             	JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-            	//Old way
-//                JComponent component = new OTESSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, false).getView();
-            	//My way
-//                OTESSearchModel model = new OTESSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//
-//                JComponent component = new SpectrumSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
             {
-            //From Colleen
                 JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-
-               //Old way
-//                JComponent component = new OVIRSSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, false).getView();
-
-                //My Way
-//                OVIRSSearchModel model = new OVIRSSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//
-//                JComponent component = new SpectrumSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
@@ -474,10 +437,6 @@ public class SbmtView extends View implements PropertyChangeListener
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument, model).getPanel();
-//                JComponent component = new NIRS3SearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
             }
 
@@ -515,54 +474,20 @@ public class SbmtView extends View implements PropertyChangeListener
                     break;
                 }
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
-
-//                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            if (getPolyhedralModelConfig().spectralInstruments.length > 0)
-            {
-//                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
-//                CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//                JComponent component = new CustomSpectraSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
-//                customDataPane.addTab("Spectra", component);
-//                customDataPane.addTab("Spectra", new CustomSpectrumPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
-
-            }
-
-//            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
             customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
 
-            /*if (getSmallBodyConfig().hasMapmaker)
-            {
-                JComponent component = new MapmakerPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/mapmaker.zip");
-                addTab("Mapmaker", component);
-            }
 
-            if (getSmallBodyConfig().hasBigmap)
-            {
-                JComponent component = new BigmapPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/bigmap.zip");
-                addTab("Bigmap", component);
-            }*/
+//            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
+//            addTab("Regional DTMs", component);
 
-            /*if(getSmallBodyConfig().hasMapmaker || getSmallBodyConfig().hasBigmap)
-            {
-                JComponent component = new DEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
-                        getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
-                addTab("Regional DTMs", component);
-            }*/
-
-            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
-                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
-            addTab("Regional DTMs", component);
+            DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+            addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
 
             if (getConfig().hasStateHistory)
             {
-//                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
                 StateHistoryController controller = null;
                 if (getConfig().body == ShapeModelBody.EARTH)
                     controller = new StateHistoryController(getModelManager(), getRenderer(), false);
@@ -570,13 +495,6 @@ public class SbmtView extends View implements PropertyChangeListener
                     controller = new StateHistoryController(getModelManager(), getRenderer(), true);
                 addTab("Observing Conditions", controller.getView());
 
-            }
-
-//            if (getPolyhedralModelConfig().body==ShapeModelBody.EROS || getPolyhedralModelConfig().body == ShapeModelBody.RQ36 )
-            {
-
-                DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
-                addTab("Experimental DTM tab", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
             }
         }
     }

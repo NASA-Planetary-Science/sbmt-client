@@ -39,11 +39,16 @@ public class DtmCreationController
 		model = new DtmCreationModel(modelManager);
 		panel = new DtmCreationPanel();
 		resultsController = new DEMResultsTableController(modelManager, pickManager);
+		controlController = new DtmCreationControlController(config, model, pickManager, creationTool);
 
 		// Construct popup menu (right click action)
 		DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
         DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
         demPopupMenu = new DEMPopupMenu(modelManager.getPolyhedralModel(), dems, boundaries, renderer, panel);
+        if (config.hasBigmap == false && config.hasMapmaker == false)
+        {
+        	controlController.panel.getMapmakerSubmitButton().setVisible(false);
+        }
 
 		model.addModelChangedListener(new DEMCreationModelChangedListener()
 		{
@@ -91,7 +96,6 @@ public class DtmCreationController
 			e1.printStackTrace();
 		}
 
-		controlController = new DtmCreationControlController(config, model, pickManager, creationTool);
 
 
 		resultsController.getJTable().getSelectionModel().addListSelectionListener(new ListSelectionListener()
