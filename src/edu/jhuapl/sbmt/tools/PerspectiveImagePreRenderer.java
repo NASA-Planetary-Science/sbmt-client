@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -130,6 +131,7 @@ public class PerspectiveImagePreRenderer
                 return FilenameUtils.getExtension(name).contains("fit");
             }
         });
+        Arrays.sort(fileList);
         for (File filename : fileList)
         {
             //may need to massage name here, need it to be /bennu/jfkfjksf, also need to strip .fits
