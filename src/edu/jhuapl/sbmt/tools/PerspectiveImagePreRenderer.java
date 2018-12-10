@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
@@ -168,46 +169,54 @@ public class PerspectiveImagePreRenderer
             }
         });
         Arrays.sort(fileList);
-        for (File filename : fileList)
+        ArrayList<File> imagesWithPointing = new ArrayList<File>();
+        SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
-            //may need to massage name here, need it to be /bennu/jfkfjksf, also need to strip .fits
-            String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
-//            basename = basename.substring(basename.indexOf("2") + 2);
-            basename = basename.substring(basename.indexOf("prod/") + 4);
-            ImageKey key = new ImageKey(basename, source, instrument);
-            System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
-            SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-            smallBodyModel.setModelResolution(0);
-            try
+            System.out.println("PerspectiveImagePreRenderer: main: running model resolution " + (i+1) + " of " + smallBodyModel.getNumberResolutionLevels());
+            smallBodyModel.setModelResolution(i);
+            if (imagesWithPointing.isEmpty())
             {
-                PerspectiveImage image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                String pointingFileString = "";
-                if (source == ImageSource.SPICE)
+                for (File filename : fileList)
                 {
-                    pointingFileString = image.getInfoFileFullPath();
-                }
-                else if (source == ImageSource.GASKELL)
-                {
-                    pointingFileString = image.getSumfileFullPath();
+                    //may need to massage name here, need it to be /bennu/jfkfjksf, also need to strip .fits
+                    String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
+        //            basename = basename.substring(basename.indexOf("2") + 2);
+                    basename = basename.substring(basename.indexOf("prod/") + 4);
+                    ImageKey key = new ImageKey(basename, source, instrument);
+                    System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
+                    try
+                    {
+                        PerspectiveImage image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        String pointingFileString = "";
+                        if (source == ImageSource.SPICE)
+                        {
+                            pointingFileString = image.getInfoFileFullPath();
+                        }
+                        else if (source == ImageSource.GASKELL)
+                        {
+                            pointingFileString = image.getSumfileFullPath();
 
-                }
-                if (!new File(pointingFileString).exists())
-                {
-                    System.out.println(
-                            "PerspectiveImagePreRenderer: main: pointing file doesn't exist; skipping");
-                    continue;
-                }
-                System.out.println("PerspectiveImagePreRenderer: main: pointing file is " + pointingFileString + " and reprocess is " + reprocess);
-                for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
-                {
-                    smallBodyModel.setModelResolution(i);
-                    image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                    PerspectiveImagePreRenderer preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
+                        }
+                        System.out.println("PerspectiveImagePreRenderer: main: pointing file is " + pointingFileString + " and reprocess is " + reprocess);
+                        imagesWithPointing.add(filename);
+
+                    }
+                    catch (NonexistentRemoteFile nerf)
+                    {
+                        continue;
+                    }
                 }
             }
-            catch (NonexistentRemoteFile nerf)
+
+            for (File filename : imagesWithPointing)
             {
-                continue;
+                System.out.println("PerspectiveImagePreRenderer: main: processing file " + filename.getAbsolutePath());
+                String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
+                basename = basename.substring(basename.indexOf("prod/") + 4);
+                ImageKey key = new ImageKey(basename, source, instrument);
+                PerspectiveImage image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                PerspectiveImagePreRenderer preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
             }
         }
     }
