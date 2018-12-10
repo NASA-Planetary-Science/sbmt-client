@@ -159,15 +159,24 @@ public class PerspectiveImagePreRenderer
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(body, type);
         ImagingInstrument instrument = config.imagingInstruments[imagerIndex];
-        System.out.println("PerspectiveImagePreRenderer: main: input directory is " + inputDirectory);
-        File[] fileList = new File(inputDirectory).listFiles(new FilenameFilter()
+        System.out.println("PerspectiveImagePreRenderer: main: input is " + inputDirectory);
+        File input = new File(inputDirectory);
+        File[] fileList;
+        if (input.isDirectory())
         {
-            @Override
-            public boolean accept(File dir, String name)
+            fileList = new File(inputDirectory).listFiles(new FilenameFilter()
             {
-                return FilenameUtils.getExtension(name).contains("fit");
-            }
-        });
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return FilenameUtils.getExtension(name).contains("fit");
+                }
+            });
+        }
+        else
+        {
+            fileList = new File[] {input};
+        }
         Arrays.sort(fileList);
         ArrayList<File> imagesWithPointing = new ArrayList<File>();
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
