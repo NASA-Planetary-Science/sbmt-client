@@ -390,7 +390,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
             c.hasMapmaker = true;
 
@@ -487,7 +487,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -574,7 +574,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
 
 
@@ -599,7 +599,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+//            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
             configArray.add(c);
         }
 
