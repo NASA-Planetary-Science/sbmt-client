@@ -116,7 +116,8 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		});
 
 //		panel.getBigmapSubmitButton().addActionListener(this);
-		panel.getMapmakerSubmitButton().addActionListener(this);
+		if (config.hasMapmaker)
+			panel.getMapmakerSubmitButton().addActionListener(this);
 
 		panel.getRenameButton().addActionListener(new ActionListener()
 		{
@@ -138,29 +139,32 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 			}
 		});
 
-		panel.getSelectRegionButton().addActionListener(new ActionListener()
+		if (config.hasBigmap || config.hasMapmaker)
 		{
-
-			@Override
-			public void actionPerformed(ActionEvent e)
+			panel.getSelectRegionButton().addActionListener(new ActionListener()
 			{
-				if (panel.getSelectRegionButton().isSelected())
-	                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
-                else
-                    pickManager.setPickMode(PickMode.DEFAULT);
-			}
-		});
 
-		panel.getClearRegionButton().addActionListener(new ActionListener()
-		{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					if (panel.getSelectRegionButton().isSelected())
+		                    pickManager.setPickMode(PickMode.CIRCLE_SELECTION);
+	                else
+	                    pickManager.setPickMode(PickMode.DEFAULT);
+				}
+			});
 
-			@Override
-			public void actionPerformed(ActionEvent e)
+			panel.getClearRegionButton().addActionListener(new ActionListener()
 			{
-				 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
-	             selectionModel.removeAllStructures();
-			}
-		});
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					 AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+		             selectionModel.removeAllStructures();
+				}
+			});
+		}
 
 		panel.getDeleteButton().addActionListener(new ActionListener()
 		{
