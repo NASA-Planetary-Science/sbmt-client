@@ -49,7 +49,12 @@ public class PerspectiveImagePreRenderer
     {
         String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
         File intersectionFile = new File(intersectionFileName);
-        if (intersectionFile.exists() && (reprocess == false)) return;
+        if (intersectionFile.exists() && (reprocess == false))
+        {
+            System.out.println(
+                    "PerspectiveImagePreRenderer: calculateFootprint: intersection file exists and reprocess is false");
+            return;
+        }
 
         SmallBodyModel smallBodyModel = image.getSmallBodyModel();
         double[] frustum1Adjusted = image.getFrustum1Adjusted()[image.getDefaultSlice()];
@@ -155,7 +160,13 @@ public class PerspectiveImagePreRenderer
                     pointingFileString = image.getSumfileFullPath();
 
                 }
-                if (!new File(pointingFileString).exists()) continue;
+                if (!new File(pointingFileString).exists())
+                {
+                    System.out.println(
+                            "PerspectiveImagePreRenderer: main: pointing file doesn't exist; skipping");
+                    continue;
+                }
+                System.out.println("PerspectiveImagePreRenderer: main: pointing file is " + pointingFileString + " and reprocess is " + reprocess);
                 for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
                 {
                     smallBodyModel.setModelResolution(i);
