@@ -23,7 +23,7 @@ import edu.jhuapl.sbmt.model.dem.DEMKey;
 public class DtmBrowseModel
 {
 	protected final DEMCollection dems;
-    protected final DEMBoundaryCollection boundaries;
+	protected final DEMBoundaryCollection boundaries;
     private SmallBodyViewConfig smallBodyViewConfig;
     private Vector<DEMKey> keys;
     private Vector<DEMBrowseModelChangedListener> listeners;
@@ -119,4 +119,14 @@ public class DtmBrowseModel
 		return dataSets;
 	}
 
+    public DEMCollection getDems()
+	{
+		return dems;
+	}
+
+
+	public DEMBoundaryCollection getBoundaries()
+	{
+		return boundaries;
+	}
 }

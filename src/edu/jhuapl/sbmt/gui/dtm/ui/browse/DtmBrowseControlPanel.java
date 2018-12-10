@@ -8,9 +8,10 @@ import javax.swing.JPanel;
 
 public class DtmBrowseControlPanel extends JPanel
 {
-	private JButton toggleAllDEMsButton;
+	private JButton unmapAllDEMsButton;
 	private JComboBox<String> datasetComboBox;
 	private JButton toggleAllBoundariesButton;
+	private JButton removeAllBoundariesButton;
 
 	public DtmBrowseControlPanel()
 	{
@@ -28,16 +29,22 @@ public class DtmBrowseControlPanel extends JPanel
 		JPanel panel = new JPanel();
 		add(panel);
 
-		toggleAllDEMsButton = new JButton("Toggle All DEMs");
-		panel.add(toggleAllDEMsButton);
+		unmapAllDEMsButton = new JButton("Unmap All DEMs");
+		unmapAllDEMsButton.setEnabled(false);
+		panel.add(unmapAllDEMsButton);
 
 		toggleAllBoundariesButton = new JButton("Toggle All Boundaries");
+		toggleAllBoundariesButton.setEnabled(false);
 		panel.add(toggleAllBoundariesButton);
+
+		removeAllBoundariesButton = new JButton("Remove All Boundaries");
+		removeAllBoundariesButton.setEnabled(false);
+		panel.add(removeAllBoundariesButton);
 	}
 
-	public JButton getToggleAllDEMsButton()
+	public JButton getUnmapAllDEMsButton()
 	{
-		return toggleAllDEMsButton;
+		return unmapAllDEMsButton;
 	}
 
 	public JComboBox<String> getDatasetComboBox()
@@ -53,6 +60,11 @@ public class DtmBrowseControlPanel extends JPanel
 	public JButton getToggleAllBoundariesButton()
 	{
 		return toggleAllBoundariesButton;
+	}
+
+	public JButton getRemoveAllBoundariesButton()
+	{
+		return removeAllBoundariesButton;
 	}
 
 }

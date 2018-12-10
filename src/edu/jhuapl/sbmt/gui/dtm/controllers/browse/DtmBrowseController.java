@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.dtm.controllers.browse;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.util.Vector;
 
@@ -57,6 +59,39 @@ public class DtmBrowseController
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 		}
+
+
+        model.getDems().addPropertyChangeListener(new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (model.getDems().getImages().size() > 0)
+					controlsController.getPanel().getUnmapAllDEMsButton().setEnabled(true);
+				else
+					controlsController.getPanel().getUnmapAllDEMsButton().setEnabled(false);
+			}
+		});
+
+        model.getBoundaries().addPropertyChangeListener(new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (model.getBoundaries().getProps().size() > 0)
+				{
+					controlsController.getPanel().getRemoveAllBoundariesButton().setEnabled(true);
+					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(true);
+				}
+				else
+				{
+					controlsController.getPanel().getRemoveAllBoundariesButton().setEnabled(false);
+					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(false);
+				}
+			}
+		});
 
 		init();
 	}

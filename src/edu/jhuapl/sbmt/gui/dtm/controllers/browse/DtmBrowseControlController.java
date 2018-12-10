@@ -3,11 +3,14 @@ package edu.jhuapl.sbmt.gui.dtm.controllers.browse;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
 
 import edu.jhuapl.sbmt.gui.dtm.model.browse.DtmBrowseModel;
 import edu.jhuapl.sbmt.gui.dtm.ui.browse.DtmBrowseControlPanel;
+import edu.jhuapl.sbmt.model.dem.DEM;
+import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 
 public class DtmBrowseControlController
 {
@@ -29,23 +32,45 @@ public class DtmBrowseControlController
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Auto-generated method stub
-
+				Set<DEM> images = model.getDems().getImages();
+				DEMBoundaryCollection boundaries = model.getBoundaries();
+				for (DEM dem : images)
+				{
+					if (boundaries.containsBoundary(dem.getKey()))
+					{
+						boundaries.removeBoundary(dem);
+					}
+					else
+					{
+						boundaries.addBoundary(dem);
+					}
+				}
 			}
 		});
 
-		panel.getToggleAllDEMsButton().addActionListener(new ActionListener()
+		panel.getRemoveAllBoundariesButton().addActionListener(new ActionListener()
 		{
 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// TODO Auto-generated method stub
-
+				DEMBoundaryCollection boundaries = model.getBoundaries();
+				boundaries.removeAllBoundaries();
+				panel.getRemoveAllBoundariesButton().setEnabled(false);
 			}
 		});
 
-//		panel.setDatasetComboBox(new JComboBox<String>(model.getDataSets()));
+		panel.getUnmapAllDEMsButton().addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				model.getDems().removeDEMs();
+				panel.getUnmapAllDEMsButton().setEnabled(false);
+			}
+		});
+
 		panel.getDatasetComboBox().setModel(new DefaultComboBoxModel<String>(model.getDataSets()));
 
 		panel.getDatasetComboBox().addActionListener(new ActionListener()
