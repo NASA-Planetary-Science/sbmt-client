@@ -171,6 +171,9 @@ public class PerspectiveImagePreRenderer
         Arrays.sort(fileList);
         ArrayList<File> imagesWithPointing = new ArrayList<File>();
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
+        PerspectiveImage image;
+        PerspectiveImagePreRenderer preRenderer;
+        ImageKey key;
         for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
             System.out.println("PerspectiveImagePreRenderer: main: running model resolution " + (i+1) + " of " + smallBodyModel.getNumberResolutionLevels());
@@ -183,11 +186,11 @@ public class PerspectiveImagePreRenderer
                     String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
         //            basename = basename.substring(basename.indexOf("2") + 2);
                     basename = basename.substring(basename.indexOf("prod/") + 4);
-                    ImageKey key = new ImageKey(basename, source, instrument);
+                    key = new ImageKey(basename, source, instrument);
                     System.out.println("PerspectiveImagePreRenderer: main: filename is " + basename);
                     try
                     {
-                        PerspectiveImage image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                        image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
                         String pointingFileString = "";
                         if (source == ImageSource.SPICE)
                         {
@@ -214,9 +217,9 @@ public class PerspectiveImagePreRenderer
                 System.out.println("PerspectiveImagePreRenderer: main: processing file " + filename.getAbsolutePath());
                 String basename = filename.getParent() + File.separator + FilenameUtils.getBaseName(filename.getAbsolutePath());
                 basename = basename.substring(basename.indexOf("prod/") + 4);
-                ImageKey key = new ImageKey(basename, source, instrument);
-                PerspectiveImage image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
-                PerspectiveImagePreRenderer preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
+                key = new ImageKey(basename, source, instrument);
+                image = (PerspectiveImage)SbmtModelFactory.createImage(key, smallBodyModel, false);
+                preRenderer = new PerspectiveImagePreRenderer(image, outputDirectory, reprocess);
             }
         }
     }
