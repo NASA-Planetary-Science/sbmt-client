@@ -70,7 +70,7 @@ public class DistributedPerspectiveImagePreRenderer
 
     //String inputDirectory, ImageSource, ShapeModelBody, ShapeModelType, int imagerIndex, String outputDir = args[5] + args[1], reproecess
 
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         String inputDirectory = args[0];
 //        final ImageSource source = ImageSource.valueOf(args[1]);
@@ -83,8 +83,8 @@ public class DistributedPerspectiveImagePreRenderer
         SessionFactory factory = SessionFactory.getFactory();
         Session session = factory.getSession();
         {
-//            try
-//            {
+            try
+            {
                 session.init("");
                 JobTemplate jt = session.createJobTemplate();
 //                String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -113,11 +113,11 @@ public class DistributedPerspectiveImagePreRenderer
                 session.deleteJobTemplate(jt);
                 session.exit();
 
-//            }
-//            catch (DrmaaException e)
-//            {
-//                System.out.println("Error: "  + e.getMessage());
-//            }
+            }
+            catch (DrmaaException e)
+            {
+                System.out.println("Error: "  + e.getMessage());
+            }
         }
     }
 
