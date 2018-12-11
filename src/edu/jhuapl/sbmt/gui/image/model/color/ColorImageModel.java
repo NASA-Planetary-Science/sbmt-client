@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Vector;
 
-import edu.jhuapl.saavtk.metadata.api.Metadata;
-import edu.jhuapl.saavtk.metadata.api.MetadataManager;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
@@ -14,6 +12,8 @@ import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
 import nom.tam.fits.FitsException;
 
 public class ColorImageModel implements Controller.Model, MetadataManager
