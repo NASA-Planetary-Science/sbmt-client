@@ -504,7 +504,9 @@ public class ImagePopupMenu extends PopupMenu
             {
                 imageCollection.addImage(imageKey);
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                String path = image.getFitFileFullPath();
+                String path = image.getImageFileFullPath();
+
+//                String path = image.getFitFileFullPath();
                 String extension = path.substring(path.lastIndexOf("."));
                 String imageFileName = new File(path).getName();
 
@@ -687,9 +689,11 @@ public class ImagePopupMenu extends PopupMenu
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                 // Default name
-                String fullPathName = image.getFitFileFullPath();
-                if (fullPathName == null)
-                    fullPathName = image.getPngFileFullPath();
+                String fullPathName = image.getImageFileFullPath();
+
+//                String fullPathName = image.getFitFileFullPath();
+//                if (fullPathName == null)
+//                    fullPathName = image.getPngFileFullPath();
                 String imageFileName = new File(fullPathName).getName();
 
                 String defaultFileName = null;
@@ -730,9 +734,10 @@ public class ImagePopupMenu extends PopupMenu
                     {
                         imageCollection.addImage(imageKey);
                         PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
-                        String fullPathName = image.getFitFileFullPath();
-                        if (fullPathName == null)
-                            fullPathName = image.getPngFileFullPath();
+                        String fullPathName = image.getImageFileFullPath();
+//                        String fullPathName = image.getFitFileFullPath();
+//                        if (fullPathName == null)
+//                            fullPathName = image.getPngFileFullPath();
                         String imageFileName = new File(fullPathName).getName();
 
                         String defaultFileName = null;

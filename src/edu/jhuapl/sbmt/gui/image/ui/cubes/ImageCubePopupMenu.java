@@ -453,7 +453,9 @@ public class ImageCubePopupMenu extends PopupMenu
             {
                 imageCollection.addImage(imageKey);
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                String path = image.getFitFileFullPath();
+                String path = image.getImageFileFullPath();
+
+//                String path = image.getFitFileFullPath();
                 String extension = path.substring(path.lastIndexOf("."));
                 String imageFileName = new File(path).getName();
 
@@ -639,11 +641,13 @@ public class ImageCubePopupMenu extends PopupMenu
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
 
                 // Default name
-                String fullPathName = image.getFitFileFullPath();
-                if (fullPathName == null)
-                    fullPathName = image.getPngFileFullPath();
-                if (fullPathName == null)
-                    fullPathName = image.getSumfileFullPath();
+                String fullPathName = image.getImageFileFullPath();
+
+//                String fullPathName = image.getFitFileFullPath();
+//                if (fullPathName == null)
+//                    fullPathName = image.getPngFileFullPath();
+//                if (fullPathName == null)
+//                    fullPathName = image.getSumfileFullPath();
                 String imageFileName = fullPathName != null ? new File(fullPathName).getName() : null;
 
                 String defaultFileName = null;
@@ -685,9 +689,11 @@ public class ImageCubePopupMenu extends PopupMenu
                 {
                     imageCollection.addImage(imageKey);
                     PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                    String fullPathName = image.getFitFileFullPath();
-                    if (fullPathName == null)
-                        fullPathName = image.getPngFileFullPath();
+                    String fullPathName = image.getImageFileFullPath();
+
+//                    String fullPathName = image.getFitFileFullPath();
+//                    if (fullPathName == null)
+//                        fullPathName = image.getPngFileFullPath();
                     String imageFileName = new File(fullPathName).getName();
 
 
