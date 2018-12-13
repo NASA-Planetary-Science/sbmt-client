@@ -280,12 +280,26 @@ public class SpectrumResultsTableController
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the prev block if there's something left to show.
-            if (resultIntervalCurrentlyShown.id1 >= 0)
+            if (resultIntervalCurrentlyShown.id1 > 0)
             {
                 resultIntervalCurrentlyShown.prevBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
+            else
+            {
+                resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
+                model.showFootprints(resultIntervalCurrentlyShown);
+                showImageBoundaries(resultIntervalCurrentlyShown);
+                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
+            }
+        }
+        else
+        {
+            resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
+            model.showFootprints(resultIntervalCurrentlyShown);
+            showImageBoundaries(resultIntervalCurrentlyShown);
+            model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
     }
 
@@ -302,6 +316,14 @@ public class SpectrumResultsTableController
                 resultIntervalCurrentlyShown.nextBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
                 showImageBoundaries(resultIntervalCurrentlyShown);
+                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
+            }
+            else
+            {
+                resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
+                model.showFootprints(resultIntervalCurrentlyShown);
+                showImageBoundaries(resultIntervalCurrentlyShown);
+                model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
         }
         else
@@ -309,6 +331,7 @@ public class SpectrumResultsTableController
             resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
             model.showFootprints(resultIntervalCurrentlyShown);
             showImageBoundaries(resultIntervalCurrentlyShown);
+            model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
     }
 
@@ -328,8 +351,8 @@ public class SpectrumResultsTableController
 
     private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
     {
-        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
-        collection.deselectAll();
+        SpectrumBoundaryCollection collection = (SpectrumBoundaryCollection)model.getModelManager().getModel(ModelNames.SPECTRA_BOUNDARIES);
+        collection.removeAllBoundaries();
         model.setResultIntervalCurrentlyShown(null);
     }
 

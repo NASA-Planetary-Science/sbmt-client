@@ -43,8 +43,8 @@ public class OVIRSSearchModel extends SpectrumSearchModel
         if (matchedImages.size() > 0)
             fileExtension = FilenameUtils.getExtension(matchedImages.get(0));
         super.setSpectrumRawResults(spectrumRawResults);
-        fireResultsChanged();
-        fireResultsCountChanged(this.results.size());
+//        fireResultsChanged();
+//        fireResultsCountChanged(this.results.size());
     }
 
     @Override
