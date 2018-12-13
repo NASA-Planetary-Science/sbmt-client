@@ -35,6 +35,7 @@ import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
@@ -133,11 +134,12 @@ public class CustomImagesModel extends ImageSearchModel
         FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         for (ImageKey key : keys)
         {
-            ImageKey revisedKey = new ImageKey(getCustomDataFolder() + File.separator + info.imagefilename, source, fileType, info.imageType, key.instrument, key.band, key.slice);
+            ImageKey revisedKey = new ImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.imagefilename), source, fileType, info.imageType, key.instrument, key.band, key.slice);
             try
             {
                 if (!imageCollection.containsImage(revisedKey))
                 {
+                    System.out.println("CustomImagesModel: loadImages: key is " + revisedKey);
                     loadImage(revisedKey, imageCollection);
                 }
             }
