@@ -374,6 +374,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public List<List<String>> processResults(List<List<String>> input)
     {
+        this.imageResults = input;
         return input;
     }
 
