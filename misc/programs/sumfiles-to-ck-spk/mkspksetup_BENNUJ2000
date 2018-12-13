@@ -5,7 +5,7 @@
         OBJECT_NAME       = 'ORX'
         CENTER_ID         = 2101955 
         CENTER_NAME       = 'BENNU'
-        REF_FRAME_NAME    = 'IAU_BENNU'
+        REF_FRAME_NAME    = 'J2000'
         PRODUCER_ID       = 'JHUAPL'
         DATA_ORDER        = 'EPOCH X Y Z VX VY VZ'
         INPUT_DATA_UNITS  = ('ANGLES=DEGREES' 'DISTANCES=km')

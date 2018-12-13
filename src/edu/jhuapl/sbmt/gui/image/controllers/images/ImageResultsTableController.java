@@ -577,7 +577,7 @@ public class ImageResultsTableController
                 Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = imageRawResults.get(i).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 if (imageCollection.containsImage(key))
                 {
                     resultTable.setValueAt(true, i, mapColumnIndex);
@@ -655,7 +655,7 @@ public class ImageResultsTableController
             try
             {
                 String currentImage = imageRawResults.get(i).get(0);
-                String boundaryName = currentImage.substring(0,currentImage.length()-4);
+                String boundaryName = FileUtil.removeExtension(currentImage);
                 ImageKey key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                 boundaries.addBoundary(key);
             }
@@ -685,7 +685,7 @@ public class ImageResultsTableController
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                 ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
                 return imageCollection.containsImage(key);
             }
@@ -728,7 +728,7 @@ public class ImageResultsTableController
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, imageSearchModel.getInstrument());
+                    ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                     imageKeys.add(key);
                 }
                 imageResultsTableView.getImagePopupMenu().setCurrentImages(imageKeys);
@@ -755,7 +755,7 @@ public class ImageResultsTableController
                 for (int i=0; i<size; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
-                    ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                    ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                     if (imageCollection.containsImage(key))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
@@ -792,7 +792,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                String namePrefix = name.substring(0, name.length()-4);
+                String namePrefix = FileUtil.removeExtension(name);
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
                     imageSearchModel.loadImages(namePrefix);
                 else
@@ -805,7 +805,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                String namePrefix = name.substring(0, name.length()-4);
+                String namePrefix = FileUtil.removeExtension(name);
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
                 imageSearchModel.setImageVisibility(namePrefix, visible);
             }
@@ -813,7 +813,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, imageSearchModel.getInstrument());
+                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 ImageCollection images = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
                 if (images.containsImage(key))
                 {
@@ -825,7 +825,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, imageSearchModel.getInstrument());
+                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 try
                 {
                     if (!boundaries.containsBoundary(key))

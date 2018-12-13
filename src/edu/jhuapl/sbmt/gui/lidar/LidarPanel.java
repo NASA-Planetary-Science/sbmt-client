@@ -54,9 +54,13 @@ public class LidarPanel extends JTabbedPane
         else if (smallBodyConfig.lidarInstrumentName.equals(Instrument.OLA))
         {
             lidarBrowsePanel = new OlaLidarBrowsePanel(modelManager, smallBodyConfig);
-            lidarSearchController=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
             addTab("Browse", lidarBrowsePanel);
-            addTab("Search", lidarSearchController.getView());
+
+            if (smallBodyConfig.hasHypertreeBasedLidarSearch)
+            {
+                lidarSearchController=new OlaLidarHyperTreeSearchPanel(smallBodyConfig,modelManager,pickManager,renderer,(OlaLidarBrowsePanel)lidarBrowsePanel);
+                addTab("Search", lidarSearchController.getView());
+            }
         }
         else
         {
