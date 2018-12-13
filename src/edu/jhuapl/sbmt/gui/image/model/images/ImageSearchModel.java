@@ -350,7 +350,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
+        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
         return key;
     }
 

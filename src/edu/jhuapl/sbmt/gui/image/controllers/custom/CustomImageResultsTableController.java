@@ -194,9 +194,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     String name = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + imageInfo.imagefilename;
                     ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
                     FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+                    String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+                    pointingFile = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + pointingFile;
                     ImageType imageType = imageInfo.imageType;
                     ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
@@ -215,12 +217,17 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
-
+                System.out.println(
+                        "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: model changed");
                 for (int i=0; i<size; ++i)
                 {
                     ImageKey key = model.getImageKeyForIndex(i);
+                    System.out.println(
+                            "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: key is " + key);
                     if (imageCollection.containsImage(key))
                     {
+                        System.out.println(
+                                "CustomImageResultsTableController.CustomImageResultsPropertyChangeListener: propertyChange: settig map col to true");
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
                         resultList.setValueAt(imageCollection.getImage(key).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
                         if (imageCollection.getImage(key).getClass() == PerspectiveImage.class)
@@ -297,6 +304,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     model.unloadImages(name);
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
+                System.out.println(
+                        "CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: map col touched row " + row);
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
             {
