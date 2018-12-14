@@ -267,7 +267,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
     public ModelNames getSpectrumBoundaryCollectionModelName()
     {
-        return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
+        return ModelNames.SPECTRA_BOUNDARIES;
     }
 
     public void updateColoring()

@@ -46,8 +46,8 @@ public class OTESSearchModel extends SpectrumSearchModel
             fileExtension = FilenameUtils.getExtension(matchedImages.get(0));
 
         super.setSpectrumRawResults(spectrumRawResults);
-        fireResultsChanged();
-        fireResultsCountChanged(this.results.size());
+//        fireResultsChanged();
+//        fireResultsCountChanged(this.results.size());
     }
 
     @Override
