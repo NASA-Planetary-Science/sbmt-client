@@ -66,7 +66,7 @@ public class DEMCreationPanel extends JPanel implements ActionListener
     protected final JLabel lblHalfSizepixels = new JLabel("Half Size (pixels)");;
     protected final JButton runCreationToolButton;
     protected final JToggleButton selectRegionButton = new JToggleButton("Select Region");;
-    protected final JButton clearRegionButton = new JButton("Clear Region");;
+    protected final JButton clearRegionButton = new JButton("Clear Region");
     protected final JCheckBox manualRegionCheckbox = new JCheckBox("Enter Manual Region:");
     protected final JLabel progressBarLabel;
 

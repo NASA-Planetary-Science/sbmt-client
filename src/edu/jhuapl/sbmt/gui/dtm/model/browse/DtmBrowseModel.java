@@ -63,7 +63,6 @@ public class DtmBrowseModel
         {
             return;
         }
-        System.out.println("DtmBrowseModel: loadAllDtmPaths: generating dem keys");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader in = new BufferedReader(isr);
 

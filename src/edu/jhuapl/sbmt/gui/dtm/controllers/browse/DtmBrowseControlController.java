@@ -67,6 +67,7 @@ public class DtmBrowseControlController
 			public void actionPerformed(ActionEvent e)
 			{
 				model.getDems().removeDEMs();
+				model.getBoundaries().removeAllBoundaries();
 				panel.getUnmapAllDEMsButton().setEnabled(false);
 			}
 		});

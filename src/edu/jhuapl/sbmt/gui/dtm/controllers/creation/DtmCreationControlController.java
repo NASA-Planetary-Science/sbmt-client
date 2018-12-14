@@ -164,6 +164,21 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 		             selectionModel.removeAllStructures();
 				}
 			});
+
+			panel.getSetSpecifyRegionManuallyCheckbox().addActionListener(new ActionListener()
+			{
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					panel.getLatitudeTextField().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+					panel.getLatitudeLabel().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+					panel.getLongitudeTextField().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+					panel.getLongitudeLabel().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+					panel.getPixelScaleTextField().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+					panel.getPixelScaleLabel().setEnabled(panel.getSetSpecifyRegionManuallyCheckbox().isSelected());
+				}
+			});
 		}
 
 		panel.getDeleteButton().addActionListener(new ActionListener()

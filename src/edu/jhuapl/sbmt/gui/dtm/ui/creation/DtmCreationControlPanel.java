@@ -36,6 +36,9 @@ public class DtmCreationControlPanel extends JPanel
     private boolean hasMapmaker = true;
     JButton clearRegionButton;
     private JButton deleteButton;
+    private JLabel latitudeLabel;
+    private JLabel longitudeLabel;
+    private JLabel pixelScaleLabel;
 //    public DtmCreationControlPanel()
 //    {
 //    	this.hasMapmaker = true;
@@ -85,10 +88,10 @@ public class DtmCreationControlPanel extends JPanel
 	            grotesqueModelCheckbox.setSelected(true);
 	        }
 
-	        final JLabel pixelScaleLabel = new JLabel("Pixel Scale (meters)");
+	        pixelScaleLabel = new JLabel("Pixel Scale (meters)");
 	        pixelScaleLabel.setEnabled(false);
 
-	        final JLabel latitudeLabel = new JLabel("Latitude (deg)");
+	        latitudeLabel = new JLabel("Latitude (deg)");
 	        latitudeLabel.setEnabled(false);
 	        latitudeTextField = new JTextField();
 	        latitudeTextField.setPreferredSize(new Dimension(200, 24));
@@ -96,7 +99,7 @@ public class DtmCreationControlPanel extends JPanel
 	        latitudeTextField.setInputVerifier(JTextFieldDoubleVerifier.getVerifier(latitudeTextField, -90.0, 90.0));
 	        latitudeTextField.setEnabled(false);
 
-	        final JLabel longitudeLabel = new JLabel("Longitude (deg)");
+	        longitudeLabel = new JLabel("Longitude (deg)");
 	        longitudeLabel.setEnabled(false);
 	        longitudeTextField = new JTextField();
 	        longitudeTextField.setPreferredSize(new Dimension(200, 24));
@@ -266,5 +269,20 @@ public class DtmCreationControlPanel extends JPanel
 
 	public JButton getDeleteButton() {
 		return deleteButton;
+	}
+
+	public JLabel getLatitudeLabel()
+	{
+		return latitudeLabel;
+	}
+
+	public JLabel getLongitudeLabel()
+	{
+		return longitudeLabel;
+	}
+
+	public JLabel getPixelScaleLabel()
+	{
+		return pixelScaleLabel;
 	}
 }

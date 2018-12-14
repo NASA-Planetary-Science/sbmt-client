@@ -29,15 +29,15 @@ public class DtmBrowseControlPanel extends JPanel
 		JPanel panel = new JPanel();
 		add(panel);
 
-		unmapAllDEMsButton = new JButton("Unmap All DEMs");
+		unmapAllDEMsButton = new JButton("Unmap All");
 		unmapAllDEMsButton.setEnabled(false);
 		panel.add(unmapAllDEMsButton);
 
-		toggleAllBoundariesButton = new JButton("Toggle All Boundaries");
+		toggleAllBoundariesButton = new JButton("Toggle Boundaries for Mapped DTMs");
 		toggleAllBoundariesButton.setEnabled(false);
 		panel.add(toggleAllBoundariesButton);
 
-		removeAllBoundariesButton = new JButton("Remove All Boundaries");
+		removeAllBoundariesButton = new JButton("Remove All");
 		removeAllBoundariesButton.setEnabled(false);
 		panel.add(removeAllBoundariesButton);
 	}
