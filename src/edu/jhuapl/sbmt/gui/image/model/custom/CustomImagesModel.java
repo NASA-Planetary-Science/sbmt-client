@@ -35,6 +35,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -129,7 +130,6 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void loadImages(String name, ImageInfo info)
     {
-        System.out.println("CustomImagesModel: loadImages: info file name " + info.infofilename);
         ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
         List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
@@ -143,7 +143,6 @@ public class CustomImagesModel extends ImageSearchModel
             {
                 if (!imageCollection.containsImage(revisedKey))
                 {
-                    System.out.println("CustomImagesModel: loadImages: key is " + revisedKey);
                     loadImage(revisedKey, imageCollection);
                 }
             }
@@ -350,6 +349,7 @@ public class CustomImagesModel extends ImageSearchModel
 
     public void deleteButtonActionPerformed(ActionEvent evt)
     {
+        if (getSelectedImageIndex().length == 0) return;
         int selectedItem = getSelectedImageIndex()[0];
         if (selectedItem >= 0)
         {
@@ -618,6 +618,7 @@ public class CustomImagesModel extends ImageSearchModel
         {
             fireInfoChangedListeners(info);
         }
+        setResultIntervalCurrentlyShown(new IdPair(0, getNumBoundaries()));
 //        MapUtil configMap = new MapUtil(getConfigFilename());
 //
 //        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
@@ -792,6 +793,18 @@ public class CustomImagesModel extends ImageSearchModel
     }
 
     @Override
+    public IdPair getResultIntervalCurrentlyShown()
+    {
+        return resultIntervalCurrentlyShown;
+    }
+
+    @Override
+    public void setResultIntervalCurrentlyShown(IdPair resultIntervalCurrentlyShown)
+    {
+        this.resultIntervalCurrentlyShown = resultIntervalCurrentlyShown;
+    }
+
+    @Override
     public Metadata store()
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
@@ -837,6 +850,55 @@ public class CustomImagesModel extends ImageSearchModel
 //            info.retrieve(image);
 //            customImages.add(info);
 //        }
+    }
+
+    public void saveImages(List<ImageInfo> customImages, String filename)
+    {
+        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
+        Metadata[] infoArray = new Metadata[customImages.size()];
+        int i=0;
+        final Key<Metadata[]> customImagesKey = Key.of("SavedImages");
+        for (ImageInfo info : customImages)
+        {
+            infoArray[i++] = info.store();
+        }
+        write(customImagesKey, infoArray, configMetadata);
+        try
+        {
+            Serializers.serialize("SavedImages", configMetadata, new File(filename));
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void loadImages(String file)
+    {
+        FixedMetadata metadata;
+        try
+        {
+            final Key<Metadata[]> customImagesKey = Key.of("SavedImages");
+            metadata = Serializers.deserialize(new File(file), "SavedImages");
+//            retrieve(metadata);
+            Metadata[] metadataArray = read(customImagesKey, metadata);
+            for (Metadata meta : metadataArray)
+            {
+                ImageInfo info = new ImageInfo();
+                info.retrieve(meta);
+                customImages.add(info);
+            }
+            fireResultsChanged();
+            setResultIntervalCurrentlyShown(new IdPair(0, getNumBoundaries()));
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     protected <T> void write(Key<T> key, T value, SettableMetadata configMetadata)
