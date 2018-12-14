@@ -1542,7 +1542,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public int getNumBoundaries()
+    public int getNumBoundaries() 
     {
         return numBoundaries;
     }
