@@ -618,7 +618,8 @@ public class CustomImagesModel extends ImageSearchModel
         {
             fireInfoChangedListeners(info);
         }
-        setResultIntervalCurrentlyShown(new IdPair(0, getNumBoundaries()));
+
+//        setResultIntervalCurrentlyShown(new IdPair(0, getNumBoundaries()));
 //        MapUtil configMap = new MapUtil(getConfigFilename());
 //
 //        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) || configMap.containsKey(Image.PROJECTION_TYPES))
@@ -890,7 +891,6 @@ public class CustomImagesModel extends ImageSearchModel
                 customImages.add(info);
             }
             fireResultsChanged();
-            setResultIntervalCurrentlyShown(new IdPair(0, getNumBoundaries()));
 
         }
         catch (IOException e)

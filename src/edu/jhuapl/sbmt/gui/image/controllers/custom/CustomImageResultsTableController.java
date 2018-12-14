@@ -151,6 +151,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         try
         {
             model.initializeImageList();
+            this.showImageBoundaries(null);
+
         }
         catch (IOException e)
         {
@@ -189,6 +191,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             try
             {
                 model.loadImages(file.getAbsolutePath());
+                model.setResultIntervalCurrentlyShown(new IdPair(0, model.getNumBoundaries()));
 
 //                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 //                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -286,6 +289,11 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     @Override
     protected void showImageBoundaries(IdPair idPair)
     {
+        if (idPair == null)
+        {
+            boundaries.removeAllBoundaries();
+            return;
+        }
         int startId = idPair.id1;
         int endId = idPair.id2;
         boundaries.removeAllBoundaries();
