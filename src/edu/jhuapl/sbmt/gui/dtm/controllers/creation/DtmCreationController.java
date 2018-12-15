@@ -38,7 +38,7 @@ public class DtmCreationController
 	{
 		model = new DtmCreationModel(modelManager);
 		panel = new DtmCreationPanel();
-		resultsController = new DEMResultsTableController(modelManager, pickManager);
+		resultsController = new DEMResultsTableController(modelManager, pickManager, renderer);
 		controlController = new DtmCreationControlController(config, model, pickManager, creationTool);
 
 		// Construct popup menu (right click action)

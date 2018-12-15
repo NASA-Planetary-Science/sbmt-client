@@ -26,8 +26,8 @@ public class ExperimentalDEMController
 	{
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		searchController = new DtmSearchController(modelManager, pickManager);
-		browseController = new DtmBrowseController(modelManager, pickManager, config);
+		searchController = new DtmSearchController(modelManager, pickManager, renderer);
+		browseController = new DtmBrowseController(modelManager, pickManager, config, renderer);
 		creationController = new DtmCreationController(modelManager, pickManager, config, creationTool, renderer);
 		this.config = config;
         init();

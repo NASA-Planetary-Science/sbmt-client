@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
+import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -23,9 +24,9 @@ public class DtmBrowseController
 	private DtmBrowseControlController controlsController;
 	private DtmBrowseModel model;
 
-	public DtmBrowseController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config)
+	public DtmBrowseController(ModelManager modelManager, PickManager pickManager, SmallBodyViewConfig config, Renderer renderer)
 	{
-		resultsController = new DEMResultsTableController(modelManager, pickManager);
+		resultsController = new DEMResultsTableController(modelManager, pickManager, renderer);
 		panel = new DtmBrowsePanel();
         model = new DtmBrowseModel(modelManager, pickManager, config);
 		controlsController = new DtmBrowseControlController(model);
@@ -83,12 +84,12 @@ public class DtmBrowseController
 				if (model.getBoundaries().getProps().size() > 0)
 				{
 					controlsController.getPanel().getRemoveAllBoundariesButton().setEnabled(true);
-					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(true);
+//					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(true);
 				}
 				else
 				{
 					controlsController.getPanel().getRemoveAllBoundariesButton().setEnabled(false);
-					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(false);
+//					controlsController.getPanel().getToggleAllBoundariesButton().setEnabled(false);
 				}
 			}
 		});

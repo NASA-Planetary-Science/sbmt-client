@@ -392,7 +392,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 // Right now bigmap only works on Macs
                 c.hasBigmap = false;
             }
-            c.hasMapmaker = true;
+            c.hasMapmaker = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -873,7 +873,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;

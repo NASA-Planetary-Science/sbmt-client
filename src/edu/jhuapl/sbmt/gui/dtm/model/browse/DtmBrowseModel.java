@@ -73,10 +73,12 @@ public class DtmBrowseModel
             {
             	String[] parts = line.split(",");
             	FileInfo fileInfoFromServer = FileCache.getFileInfoFromServer(smallBodyViewConfig.rootDirOnServer + File.separator + "dtm/browse" + File.separator + parts[0]);
-            	DEMKey key = new DEMKey(fileInfoFromServer.getURL().toString(), parts[1]);
+//            	System.out.println("DtmBrowseModel: loadDtmSet: path is " + fileInfoFromServer.getFile().getAbsolutePath());
+//            	System.out.println("DtmBrowseModel: loadDtmSet: " + fileInfoFromServer.getURL());
+            	DEMKey key = new DEMKey(fileInfoFromServer.getFile().getAbsolutePath(), parts[1]);
             	keys.add(key);
             }
-            System.out.println("DtmBrowseModel: loadAllDtmPaths: firing listeners");
+//            System.out.println("DtmBrowseModel: loadAllDtmPaths: firing listeners");
             fireKeysChangedListeners(keys);
         }
         catch (IOException e)
