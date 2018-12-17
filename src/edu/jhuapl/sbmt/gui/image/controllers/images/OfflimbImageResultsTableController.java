@@ -146,7 +146,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (imageCollection.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                image.getOfflimb().setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
+                image.setOffLimbFootprintVisibility(false);   // hide off limb footprint by default
                 getResultList().setValueAt(false, i, offlimbTableView.getOffLimbIndex());   // hide off limb footprint by default
             }
             else
@@ -195,7 +195,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (images.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) images.getImage(key);
-                image.getOfflimb().setOffLimbFootprintVisibility(visible);
+                image.setOffLimbFootprintVisibility(visible);
             }
         }
     }

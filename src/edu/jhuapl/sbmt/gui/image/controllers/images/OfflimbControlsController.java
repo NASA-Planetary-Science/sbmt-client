@@ -61,7 +61,7 @@ public class OfflimbControlsController
             @Override
             public void currentDepthChanged(int depth)
             {
-                int sliderValue = depthSlider.convertDepthToSliderValue(((PerspectiveImage)controlsModel.getImage()).getOfflimb().getOffLimbPlaneDepth());
+                int sliderValue = depthSlider.convertDepthToSliderValue(((PerspectiveImage)controlsModel.getImage()).getOffLimbPlaneDepth());
                 controlsFrame.getPanel().getFootprintDepthValue().setText("" + sliderValue);
             }
 
@@ -160,7 +160,7 @@ public class OfflimbControlsController
         {
             depthMin = image.getMinFrustumDepth(currentSlice);
             depthMax = image.getMaxFrustumDepth(currentSlice);
-            image.getOfflimb().setOffLimbPlaneDepth(getDepthValue());
+            image.setOffLimbPlaneDepth(getDepthValue());
         }
 
         public double getDepthValue()
@@ -172,7 +172,7 @@ public class OfflimbControlsController
 
         public int convertDepthToSliderValue(double depth)
         {
-            double depthNorm = (image.getOfflimb().getOffLimbPlaneDepth() - depthMin)
+            double depthNorm = (image.getOffLimbPlaneDepth() - depthMin)
                     / (depthMax - depthMin);
             return (int) ((double) (getMaximum() - getMinimum()) * depthNorm);
         }
@@ -189,7 +189,7 @@ public class OfflimbControlsController
 
         public void applyAlphaToImage()
         {
-            image.getOfflimb().setOffLimbFootprintAlpha(getAlphaValue());
+            image.setOffLimbFootprintAlpha(getAlphaValue());
         }
 
         public double getAlphaValue()
@@ -223,7 +223,7 @@ public class OfflimbControlsController
 
         public void showBoundary(boolean selected)
         {
-           image.getOfflimb().setOffLimbBoundaryVisibility(selected);
+           image.setOffLimbBoundaryVisibility(selected);
         }
 
     }

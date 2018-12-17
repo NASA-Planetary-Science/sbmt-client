@@ -330,8 +330,7 @@ public class DatabaseGeneratorSql
 
     boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
     {
-//        File fitfile = new File(image.getFitFileFullPath());
-        File fitfile = new File(image.getImageFileFullPath());
+        File fitfile = new File(image.getFitFileFullPath());
         System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
         if (!fitfile.exists())
             return false;

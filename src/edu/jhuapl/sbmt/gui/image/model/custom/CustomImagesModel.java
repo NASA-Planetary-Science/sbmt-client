@@ -890,6 +890,8 @@ public class CustomImagesModel extends ImageSearchModel
                 info.retrieve(meta);
                 customImages.add(info);
             }
+            System.out.println("CustomImagesModel: loadImages: number of images now " + customImages.size());
+            updateConfigFile();
             fireResultsChanged();
 
         }
