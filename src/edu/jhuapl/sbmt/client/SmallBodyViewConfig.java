@@ -945,9 +945,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
+                    new OTES(),
 //                    new OVIRS()
             };
 
