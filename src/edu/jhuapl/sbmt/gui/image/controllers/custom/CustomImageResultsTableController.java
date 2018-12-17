@@ -373,7 +373,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
                         resultList.setValueAt(imageCollection.getImage(key).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
-                        if (imageCollection.getImage(key).getClass() == PerspectiveImage.class)
+                        if (imageCollection.getImage(key) instanceof PerspectiveImage)
                         {
                             PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
                             resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());

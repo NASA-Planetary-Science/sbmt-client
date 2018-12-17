@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
@@ -101,6 +100,14 @@ public class ImageCubeController
                 panel.getImageCubeTable().setValueAt(true, i-1, panel.getMapColumnIndex());
                 panel.getImageCubeTable().setValueAt(true, i-1, panel.getShowFootprintColumnIndex());
                 panel.getImageCubeTable().setValueAt(imageCubeKey.toString(), i-1, panel.getFilenameColumnIndex());
+            }
+
+            @Override
+            public void imageCubeRemoved(ImageCubeKey imageCubeKey)
+            {
+                DefaultTableModel tableModel = (DefaultTableModel)panel.getImageCubeTable().getModel();
+                int index = panel.getImageCubeTable().getSelectedRow();
+                tableModel.removeRow(index);
             }
 
             @Override
@@ -228,7 +235,8 @@ public class ImageCubeController
         int index = imageCubesDisplayedList.getSelectedRow();
         if (index >= 0)
         {
-            ImageCubeKey imageCubeKey = (ImageCubeKey)((DefaultListModel)imageCubesDisplayedList.getModel()).remove(index);
+            ImageCubeKey imageCubeKey = (ImageCubeKey)imageCubes.getLoadedImages().get(index).getKey();
+//            ImageCubeKey imageCubeKey = (ImageCubeKey)((ImageCubesTableModel)imageCubesDisplayedList.getModel())
             cubeModel.removeImageCube(imageCubeKey);
         }
     }
@@ -326,6 +334,8 @@ public class ImageCubeController
                 resultList.getModel().removeTableModelListener(tableModelListener);
                 Set<ImageCube> imageCubeSet = imageCubes.getImages();
                 int i=0;
+                if (resultList.getModel().getRowCount() != imageCubeSet.size()) { return; }
+
                 for (ImageCube image : imageCubeSet)
                 {
                     ImageCubeKey key = image.getImageCubeKey();

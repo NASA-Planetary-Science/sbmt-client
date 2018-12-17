@@ -107,6 +107,14 @@ public class CustomImageCubeController
             }
 
             @Override
+            public void imageCubeRemoved(ImageCubeKey imageCubeKey)
+            {
+                DefaultTableModel tableModel = (DefaultTableModel)panel.getImageCubeTable().getModel();
+                int index = panel.getImageCubeTable().getSelectedRow();
+                tableModel.removeRow(index);
+            }
+
+            @Override
             public void presentErrorMessage(String message)
             {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),

@@ -99,6 +99,14 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         resultsListeners.removeAllElements();
     }
 
+    protected void fireDeleteListeners(ImageCubeKey key)
+    {
+        for (ImageCubeResultsListener listener : resultsListeners)
+        {
+          listener.imageCubeRemoved(key);
+        }
+    }
+
     protected void fireErrorMessage(String message)
     {
         for (ImageCubeResultsListener listener : resultsListeners)
@@ -213,6 +221,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
     public void removeImageCube(ImageCubeKey imageCubeKey)
     {
         imageCubeCollection.removeImage(imageCubeKey);
+        fireDeleteListeners(imageCubeKey);
     }
 
     @Override

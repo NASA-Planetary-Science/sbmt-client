@@ -354,6 +354,7 @@ public class CustomImagesModel extends ImageSearchModel
         if (selectedItem >= 0)
         {
             ImageInfo info = customImages.get(selectedItem);
+            unloadImage(getKeyForImageInfo(info), imageCollection);
             customImages.remove(info);
             updateConfigFile();
             fireResultsChanged();
