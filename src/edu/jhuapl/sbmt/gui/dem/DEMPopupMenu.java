@@ -45,10 +45,10 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 import nom.tam.fits.FitsException;
 
@@ -145,6 +145,11 @@ public class DEMPopupMenu extends PopupMenu
 
     }
 
+    public void removeCenterMenu()
+    {
+    	this.remove(centerDemMenuItem);
+    }
+
     public void setCurrentDEM(DEMKey key)
     {
         demKeys.clear();
@@ -163,6 +168,7 @@ public class DEMPopupMenu extends PopupMenu
 
     private void updateMenuItems()
     {
+    	if (demKeys.size() == 0) return;
         boolean selectMapImage = true;
         boolean enableMapImage = true;
         boolean selectMapBoundary = true;
@@ -308,6 +314,8 @@ public class DEMPopupMenu extends PopupMenu
 
             // Find center of DEM. Arbitrarily create an origin exactly opposite this center.
             final double[] centerArray = dem.getCenter();
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: centerArray " + centerArray[0] + " " + centerArray[1] + " " + centerArray[2]);
+
             final double[] origin = new double[] { -centerArray[0], -centerArray[1], -centerArray[2] };
 
             // Figure out roughly the size of the DEM and from it compute a maximum radius
@@ -315,13 +323,18 @@ public class DEMPopupMenu extends PopupMenu
             // "center" array computed above.
             final Vector3D center = new Vector3D(centerArray);
             final double mPerKm = 1000.;
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: dem scale " + dem.getScale());
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: dem halfsize " + dem.getHalfSize());
             final double maximumRadius = dem.getScale() * dem.getHalfSize() / mPerKm;
             final double maximumAngle = maximumRadius / (center.getNorm() * 2.);
 
             // Find vectors roughly along the DEM surface, roughly oriented by latitude/longitude.
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: origin " + origin);
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: max angle " + maximumAngle);
             Vector3D latVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, true);
             Vector3D lonVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, false);
-
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: lat vec " + latVec);
+            System.out.println("DEMPopupMenu.CenterDemAction: actionPerformed: lonVec " + lonVec);
             // Compute a normal from these two vectors.
             Vector3D normal = lonVec.crossProduct(latVec).normalize();
 
@@ -581,9 +594,11 @@ public class DEMPopupMenu extends PopupMenu
             {
                 vtkPolyData demPolydata = dem.getDem();
                 demFilename = dem.getKey().fileName;
+                System.out.println("DEMPopupMenu.ExportCustomModelAction: actionPerformed: dem file name is " + demFilename);
+                final int extensionLength = FilenameUtils.getExtension(demFilename).length();
 
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
-                writer.SetFileName(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                writer.SetFileName(demFilename.substring(0, demFilename.length()-extensionLength) + "vtk");
                 writer.SetFileTypeToBinary();
                 writer.SetInputData(demPolydata);
                 writer.Write();
@@ -596,7 +611,7 @@ public class DEMPopupMenu extends PopupMenu
                 dialog = new ShapeModelImporterDialog(null);
 
                 String extension = FilenameUtils.getExtension(demFilename);
-                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + extension, extension);
+                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-extensionLength) + extension, extension);
                 dialog.beforeOKRunner = new Runnable()
                 {
                     final String filename = demFilename;
@@ -610,7 +625,7 @@ public class DEMPopupMenu extends PopupMenu
                             config2.customTemporary = false;
                             config2.author = ShapeModelType.CUSTOM;
                             SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
-                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-extensionLength) + "json"), dialog.getNameOfImportedShapeModel());
                             SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
                             dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
                         }

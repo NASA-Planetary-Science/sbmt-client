@@ -65,8 +65,8 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;

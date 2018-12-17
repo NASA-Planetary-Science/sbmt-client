@@ -91,6 +91,10 @@ public abstract class BodyViewConfig extends ViewConfig
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
 
+    //DTMs
+    public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
+    public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
+
     // Flag for beta mode
     public static boolean betaMode = false;
 
