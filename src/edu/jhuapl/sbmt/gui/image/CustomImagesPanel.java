@@ -527,7 +527,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
 
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
 
@@ -563,7 +565,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
         FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
         ImageType imageType = imageInfo.imageType;
         ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+
+        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
 
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(ModelNames.IMAGES);
         imageCollection.removeImage(imageKey);
@@ -697,7 +701,9 @@ public class CustomImagesPanel extends javax.swing.JPanel implements PropertyCha
                     FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
                     ImageType imageType = imageInfo.imageType;
                     ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0);
+                    String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+
+                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
                     imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);

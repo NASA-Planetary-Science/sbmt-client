@@ -687,7 +687,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        return new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
+        return new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
     }
 
     protected void showImageBoundaries(IdPair idPair)
