@@ -56,7 +56,8 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
 
     public void loadImage(ImageCubeKey key) throws FitsException, IOException, NoOverlapException
     {
-        imageCubeCollection.addImage(key);
+        if (!imageCubeCollection.containsImage(key))
+            imageCubeCollection.addImage(key);
     }
 
     public void unloadImage(ImageCubeKey key)
@@ -69,7 +70,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         this.imageCubeCollection = images;
     }
 
-    public ImageCubeCollection getColorImageCollection()
+    public ImageCubeCollection getImageCubeCollection()
     {
         return imageCubeCollection;
     }

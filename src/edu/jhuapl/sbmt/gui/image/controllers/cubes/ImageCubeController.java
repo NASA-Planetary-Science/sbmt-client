@@ -8,7 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -292,7 +292,6 @@ public class ImageCubeController
                 int row = e.getFirstRow();
                 ImageCube image = imageCubes.getLoadedImages().get(row);
                 ImageCubeKey key = image.getImageCubeKey();
-
                 if ((Boolean)panel.getImageCubeTable().getValueAt(row, panel.getMapColumnIndex()))
                 {
                     try
@@ -308,7 +307,7 @@ public class ImageCubeController
                 else
                 {
                     cubeModel.unloadImage(key);
-                    panel.getImageCubeTable().getModel().setValueAt(false, 0, panel.getShowFootprintColumnIndex());
+                    panel.getImageCubeTable().getModel().setValueAt(false, row, panel.getShowFootprintColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -332,9 +331,9 @@ public class ImageCubeController
                 JTable resultList = panel.getImageCubeTable();
                 if (resultList.getRowCount() == 0) return;
                 resultList.getModel().removeTableModelListener(tableModelListener);
-                Set<ImageCube> imageCubeSet = imageCubes.getImages();
+                Vector<ImageCube> imageCubeSet = imageCubes.getLoadedImages();
                 int i=0;
-                if (resultList.getModel().getRowCount() != imageCubeSet.size()) { return; }
+                if (resultList.getModel().getRowCount() != imageCubeSet.size()) { resultList.getModel().addTableModelListener(tableModelListener); return; }
 
                 for (ImageCube image : imageCubeSet)
                 {
