@@ -390,8 +390,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
+            c.hasMapmaker = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -450,6 +451,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasStateHistory = true;
             c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
 
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+//            c.dtmSearchDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/search/hypertree/dataSource.lidar");
+
+
 //            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
 //                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
 //            {
@@ -482,7 +487,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -514,6 +519,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
@@ -535,7 +542,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
@@ -593,8 +599,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if(Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
-                c.hasBigmap = true;
+                c.hasBigmap = false;
             }
+
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(
@@ -733,7 +740,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = true;
+//            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+		c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");

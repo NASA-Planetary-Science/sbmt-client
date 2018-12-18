@@ -239,7 +239,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
     public void itemStateChanged(ItemEvent e)
     {
         int lidarIndex=view.getSourceComboBox().getSelectedIndex();
-        System.out.println("Lidar Datasource Changed: " + lidarIndex);
+//        System.out.println("Lidar Datasource Changed: " + lidarIndex);
         if (sourceComboBoxEnumeration!=null)
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);

@@ -50,7 +50,7 @@ public class CustomImageCubeController
     private Renderer renderer;
     ImageCubeCollection imageCubes;
     private StringRenderer stringRenderer;
-    private ImageCubeResultsTableModeListener tableModelListener;
+    private CustomImageCubeResultsTableModeListener tableModelListener;
     private ImageCubeResultsPropertyChangeListener propertyChangeListener;
     private PerspectiveImageBoundaryCollection boundaries;
 
@@ -87,7 +87,8 @@ public class CustomImageCubeController
         this.cubeModel.setImageSearchModel(model);
         this.panel = new SpectralImageCubeGenerationPanel();
         propertyChangeListener = new ImageCubeResultsPropertyChangeListener();
-        tableModelListener = new ImageCubeResultsTableModeListener();
+        panel.getImageCubeTable().getModel().removeTableModelListener(tableModelListener);
+        tableModelListener = new CustomImageCubeResultsTableModeListener();
         System.out.println("ImageCubeController: ImageCubeController: calling");
         setupPanel();
         System.out.println("ImageCubeController: ImageCubeController: called");
@@ -104,6 +105,14 @@ public class CustomImageCubeController
                 panel.getImageCubeTable().setValueAt(true, i-1, panel.getMapColumnIndex());
                 panel.getImageCubeTable().setValueAt(true, i-1, panel.getShowFootprintColumnIndex());
                 panel.getImageCubeTable().setValueAt(imageCubeKey.toString(), i-1, panel.getFilenameColumnIndex());
+            }
+
+            @Override
+            public void imageCubeRemoved(ImageCubeKey imageCubeKey)
+            {
+                DefaultTableModel tableModel = (DefaultTableModel)panel.getImageCubeTable().getModel();
+                int index = panel.getImageCubeTable().getSelectedRow();
+                tableModel.removeRow(index);
             }
 
             @Override
@@ -157,7 +166,7 @@ public class CustomImageCubeController
                 "Show",
                 "Filename",
         };
-        panel.getImageCubeTable().setModel(new ImageCubesTableModel(new Object[0][3], columnNames));
+        panel.getImageCubeTable().setModel(new CustomImageCubesTableModel(new Object[0][3], columnNames));
         stringRenderer = new StringRenderer(model, model.getImageResults());
         panel.getImageCubeTable().setDefaultRenderer(String.class, stringRenderer);
         panel.getImageCubeTable().getColumnModel().getColumn(panel.getMapColumnIndex()).setPreferredWidth(31);
@@ -250,9 +259,9 @@ public class CustomImageCubeController
         return panel;
     }
 
-    public class ImageCubesTableModel extends DefaultTableModel
+    public class CustomImageCubesTableModel extends DefaultTableModel
     {
-        public ImageCubesTableModel(Object[][] data, String[] columnNames)
+        public CustomImageCubesTableModel(Object[][] data, String[] columnNames)
         {
             super(data, columnNames);
         }
@@ -279,7 +288,7 @@ public class CustomImageCubeController
         }
     }
 
-    class ImageCubeResultsTableModeListener implements TableModelListener
+    class CustomImageCubeResultsTableModeListener implements TableModelListener
     {
         public void tableChanged(TableModelEvent e)
         {

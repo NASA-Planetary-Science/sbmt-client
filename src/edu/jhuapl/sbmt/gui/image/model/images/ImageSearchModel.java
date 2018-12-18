@@ -124,6 +124,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private boolean excludeGaskell;
     private boolean excludeGaskellEnabled;
     private Set<String> selectedFilenames;
+    protected int numBoundaries = 10;
 
     private static final SimpleDateFormat STANDARD_UTC_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -350,7 +351,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice);
+        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
         return key;
     }
 
@@ -374,8 +375,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public List<List<String>> processResults(List<List<String>> input)
     {
-        this.imageResults = input;
-        return input;
+        imageResults.addAll(input);
+        setResultIntervalCurrentlyShown(new IdPair(0, imageResults.size()));
+        return imageResults;
     }
 
     private void fireResultsChanged()
@@ -1537,6 +1539,18 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         fireModelChanged();
 
+    }
+
+
+    public int getNumBoundaries() 
+    {
+        return numBoundaries;
+    }
+
+
+    public void setNumBoundaries(int numBoundaries)
+    {
+        this.numBoundaries = numBoundaries;
     }
 
 }

@@ -56,7 +56,8 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
 
     public void loadImage(ImageCubeKey key) throws FitsException, IOException, NoOverlapException
     {
-        imageCubeCollection.addImage(key);
+        if (!imageCubeCollection.containsImage(key))
+            imageCubeCollection.addImage(key);
     }
 
     public void unloadImage(ImageCubeKey key)
@@ -69,7 +70,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         this.imageCubeCollection = images;
     }
 
-    public ImageCubeCollection getColorImageCollection()
+    public ImageCubeCollection getImageCubeCollection()
     {
         return imageCubeCollection;
     }
@@ -97,6 +98,14 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
     public void removeAllResultsChangedListeners()
     {
         resultsListeners.removeAllElements();
+    }
+
+    protected void fireDeleteListeners(ImageCubeKey key)
+    {
+        for (ImageCubeResultsListener listener : resultsListeners)
+        {
+          listener.imageCubeRemoved(key);
+        }
     }
 
     protected void fireErrorMessage(String message)
@@ -213,6 +222,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
     public void removeImageCube(ImageCubeKey imageCubeKey)
     {
         imageCubeCollection.removeImage(imageCubeKey);
+        fireDeleteListeners(imageCubeKey);
     }
 
     @Override

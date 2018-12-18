@@ -45,9 +45,9 @@ public class SpectralImageCubeController extends ImageCubeController
             @Override
             public void valueChanged(ListSelectionEvent e)
             {
-                if (!e.getValueIsAdjusting())
+                if (!e.getValueIsAdjusting() && (panel.getImageCubeTable().getSelectedRow() >= 0))
                 {
-                    ImageCube cube = cubeModel.getColorImageCollection().getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
+                    ImageCube cube = cubeModel.getImageCubeCollection().getLoadedImages().get(panel.getImageCubeTable().getSelectedRow());
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setEnabled(true);
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(0);
                     ((SpectralImageCubeGenerationPanel)panel).getLayerSlider().setMaximum(cube.getNimages()-1);
