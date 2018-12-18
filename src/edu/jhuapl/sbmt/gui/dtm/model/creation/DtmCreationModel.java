@@ -155,8 +155,7 @@ public class DtmCreationModel implements MetadataManager
     // Removes all DEMs
     private void removeAllDEMsFromRenderer()
     {
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        demCollection.removeDEMs();
+        dems.removeDEMs();
     }
 
     // Removes a DEM
@@ -181,14 +180,11 @@ public class DtmCreationModel implements MetadataManager
 	        new File(name).delete();
 
 	        // Remove the DEM from the renderer
-	        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-	        DEMKey demKey = new DEMKey(name, demInfo.name);
-	        demCollection.removeDEM(demKey);
+	        DEMKey demKey = dems.getDEMKeyFromInfo(demInfo);
+	        dems.removeDEM(demKey);
 
 	        // Remove from the list
 	        infoList.remove(demInfo);
-	        DEMBoundaryCollection boundaries =
-	                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
 	        boundaries.removeBoundary(demKey);
 
 	        updateConfigFile();
