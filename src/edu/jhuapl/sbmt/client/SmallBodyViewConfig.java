@@ -509,10 +509,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
-//                    new OVIRS()
+                    new OTES(),
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
@@ -522,7 +522,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
 
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -620,10 +620,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
-//                    new OVIRS()
+                    new OTES(),
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
@@ -631,7 +631,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -730,10 +730,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
-//                    new OVIRS()
+                    new OTES(),
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
@@ -741,8 +741,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = false;
 //            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
-		c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -842,10 +842,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
-//                    new OVIRS()
+                    new OTES(),
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
@@ -853,7 +853,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -964,7 +964,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
@@ -1064,10 +1064,10 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             )
             };
 
-            c.hasSpectralData=false;
+            c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
-//                    new OTES(),
-//                    new OVIRS()
+                    new OTES(),
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
@@ -1075,7 +1075,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
             c.hasMapmaker = false;
             c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");

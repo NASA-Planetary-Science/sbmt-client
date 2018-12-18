@@ -48,7 +48,8 @@ public class SpectrumPanel extends JTabbedPane
 
 //            spectrumBrowseController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
             addTab("Browse", component);
-            addTab("Search", controller.getPanel());
+            if (smallBodyConfig.hasHypertreeBasedSpectraSearch)
+            	addTab("Search", controller.getPanel());
         }
         else if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) {
             spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
@@ -60,7 +61,8 @@ public class SpectrumPanel extends JTabbedPane
             JComponent component = new edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController(
                     smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, model).getPanel();
             addTab("Browse", component);
-            addTab("Search", controller.getPanel());
+            if (smallBodyConfig.hasHypertreeBasedSpectraSearch)
+            	addTab("Search", controller.getPanel());
         }
 
 
