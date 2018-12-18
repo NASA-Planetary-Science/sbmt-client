@@ -948,7 +948,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasSpectralData=true;
             c.spectralInstruments=new BasicSpectrumInstrument[] {
                     new OTES(),
-//                    new OVIRS()
+                    new OVIRS()
             };
 
             c.hasStateHistory = true;
