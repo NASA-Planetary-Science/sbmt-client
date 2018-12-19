@@ -12,7 +12,6 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumHypertreeSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.OTESSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.OVIRSSearchModel;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSearchPanel;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
@@ -31,12 +30,13 @@ public class SpectrumPanel extends JTabbedPane
     {
         setBorder(BorderFactory.createEmptyBorder());
 
-        SpectrumSearchController spectrumSearchController;
+//        SpectrumSearchController spectrumSearchController;
 //        SpectrumSearchController spectrumBrowseController;
         if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName())) {
 //            spectrumSearchController = new OTESSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
 
             OTESSearchModel model = new OTESSearchModel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument);
+
 
             SpectrumHypertreeSearchController controller = new SpectrumHypertreeSearchController(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, model);
 
@@ -52,7 +52,7 @@ public class SpectrumPanel extends JTabbedPane
             	addTab("Search", controller.getPanel());
         }
         else if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName())) {
-            spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
+//            spectrumSearchController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, true);
 //            spectrumBrowseController = new OVIRSSearchPanel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument, false);
             OVIRSSearchModel model = new OVIRSSearchModel(smallBodyConfig, modelManager, sbmtInfoWindowManager, pickManager, renderer, instrument);
 
