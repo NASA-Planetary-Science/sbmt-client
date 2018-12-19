@@ -132,7 +132,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
-        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification.clone();
+        if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)
+        	this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification.clone();
+        else
+        	this.spectraSpec = null;
         spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 
     }

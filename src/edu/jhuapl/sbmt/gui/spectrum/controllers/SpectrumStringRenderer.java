@@ -33,6 +33,7 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
             int row, int column)
     {
         Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (spectrumRawResults.size() == 0) return co;
         String name = spectrumRawResults.get(row).get(0);
         SpectrumKey key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
         if (model.containsBoundary(key))
