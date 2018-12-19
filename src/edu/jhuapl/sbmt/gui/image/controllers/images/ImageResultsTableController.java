@@ -435,7 +435,7 @@ public class ImageResultsTableController
 
                 //TODO needed?
 //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
-
+                imageSearchModel.setImageResults(new ArrayList<List<String>>());
                 setImageResults(imageSearchModel.processResults(results));
             }
             catch (Exception e)
