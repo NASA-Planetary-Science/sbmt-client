@@ -54,6 +54,7 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import nom.tam.fits.FitsException;
@@ -519,6 +520,14 @@ public class CustomImagesModel extends ImageSearchModel
             updateConfigFile();
             return true;
         }
+        else if (configMap.getAsArray(Spectrum.SPECTRUM_NAMES) != null)
+        {
+            //backup the old config file
+        	String dir = new File(getConfigFilename()).getParent();
+            FileUtils.copyFile(new File(getConfigFilename()), new File(dir + File.separator + FilenameUtils.getBaseName(getConfigFilename()) + "_spect.txt"));
+            FileUtils.deleteQuietly(new File(getConfigFilename()));
+            return true;
+        }
         else
             return false;
 
@@ -606,6 +615,7 @@ public class CustomImagesModel extends ImageSearchModel
     {
         if (initialized)
             return;
+        System.out.println("CustomImagesModel: initializeImageList: get config filename " + getConfigFilename());
 
         boolean updated = migrateConfigFileIfNeeded();
         if (!updated)
