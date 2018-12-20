@@ -16,6 +16,11 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.metadata.Key;
+import edu.jhuapl.saavtk.metadata.Metadata;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
+import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
@@ -35,13 +40,50 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         PERSPECTIVE
     }
 
-    public static class SpectrumInfo
+    public static class SpectrumInfo implements MetadataManager
     {
       public String name = ""; // name to call this image for display purposes
       public String spectrumfilename = ""; // filename of image on disk
       public String sumfilename = "null"; // filename of sumfile on disk
       public String infofilename = "null"; // filename of infofile on disk
       public SpectraType spectraType = null;
+
+      final Key<String> nameKey = Key.of("name");
+      final Key<String> sumfilenameKey = Key.of("sumfilename");
+      final Key<String> infofileKey = Key.of("infofilename");
+      final Key<String> spectrumFileNameKey = Key.of("spectrumfilename");
+      final Key<String> spectraTypeKey = Key.of("spectratype");
+//      final Key<String> projectionKey = Key.of("projectionType");
+//      final Key<String> imageTypeKey = Key.of("imageType");
+//      final Key<Double> rotationKey = Key.of("rotation");
+//      final Key<String> flipKey = Key.of("flip");
+//      final Key<Double> lllatKey = Key.of("lllat");
+//      final Key<Double> lllonKey = Key.of("lllon");
+//      final Key<Double> urlatKey = Key.of("urlat");
+//      final Key<Double> urlonKey = Key.of("urlon");
+
+
+      @Override
+      public Metadata store()
+      {
+          SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+          result.put(nameKey, name);
+          result.put(sumfilenameKey, sumfilename);
+          result.put(infofileKey, infofilename);
+          result.put(spectrumFileNameKey, spectrumfilename);
+          result.put(spectraTypeKey, spectraType.toString());
+          return result;
+      }
+
+      @Override
+      public void retrieve(Metadata source)
+      {
+          name = source.get(nameKey);
+          sumfilename = source.get(sumfilenameKey);
+          infofilename = source.get(infofileKey);
+          spectrumfilename = source.get(spectrumFileNameKey);
+          spectraType = SpectraType.valueOf(source.get(spectraTypeKey));
+      }
     }
 
 //    public static class ImageInfo

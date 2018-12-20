@@ -611,6 +611,7 @@ public class CustomImagesModel extends ImageSearchModel
         if (!updated)
         {
             if (!(new File(getConfigFilename()).exists())) return;
+            System.out.println("CustomImagesModel: initializeImageList: config is " + getConfigFilename());
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
             retrieve(metadata);
         }

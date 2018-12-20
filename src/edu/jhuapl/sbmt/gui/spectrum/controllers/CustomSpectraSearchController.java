@@ -33,12 +33,13 @@ public class CustomSpectraSearchController
 
     public CustomSpectraSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            PickManager pickManager, Renderer renderer, SpectralInstrument instrument, CustomSpectraSearchModel model)
+            PickManager pickManager, Renderer renderer, SpectralInstrument instrument)
     {
         this.modelManager = modelManager;
         this.renderer = renderer;
 
-        this.spectrumSearchModel = model;
+        this.spectrumSearchModel =  new CustomSpectraSearchModel(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+
         this.spectrumSearchModel.loadSearchSpecMetadata();
 
         SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
@@ -73,10 +74,10 @@ public class CustomSpectraSearchController
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
 
-        this.searchParametersController = new CustomSpectraControlController(model);
+        this.searchParametersController = new CustomSpectraControlController(spectrumSearchModel);
 //        this.searchParametersController.setupSearchParametersPanel();
 
-        this.coloringController = new SpectrumColoringController(model);
+        this.coloringController = new SpectrumColoringController(spectrumSearchModel);
 
 
 //        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))

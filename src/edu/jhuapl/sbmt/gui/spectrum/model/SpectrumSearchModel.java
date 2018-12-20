@@ -38,6 +38,7 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
@@ -72,7 +73,7 @@ import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
-public abstract class SpectrumSearchModel implements ISpectrumSearchModel
+public abstract class SpectrumSearchModel implements ISpectrumSearchModel, MetadataManager
 {
     protected SpectralInstrument instrument;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
@@ -130,6 +131,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.pickManager = pickManager;
         this.renderer = renderer;
         this.instrument = instrument;
+        System.out.println("SpectrumSearchModel: SpectrumSearchModel: instrument " + instrument.getDisplayName());
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
         if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)

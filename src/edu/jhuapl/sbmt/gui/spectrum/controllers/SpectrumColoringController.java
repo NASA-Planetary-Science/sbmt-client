@@ -143,6 +143,7 @@ public class SpectrumColoringController
     protected void setupComboBoxes()
     {
         SpectralInstrument instrument = model.getInstrument();
+        System.out.println("SpectrumColoringController: setupComboBoxes: band centers is " + instrument);
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
