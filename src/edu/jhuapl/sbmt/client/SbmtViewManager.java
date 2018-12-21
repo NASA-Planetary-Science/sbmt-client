@@ -276,7 +276,7 @@ public class SbmtViewManager extends ViewManager
 		{
 			// Form a CoordinateSystem relative to tmpPolyModel
 			Vector3D centerVect = CameraUtil.calcCenterPoint(tmpPolyModel);
-			Vector3D normalVect = CameraUtil.calcSurfaceNormal(tmpPolyModel);
+			Vector3D normalVect = tmpPolyModel.getAverageSurfaceNormal();
 			CoordinateSystem tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
 
 			// Retrieve the camera and update it's defaults to relative to tmpPolyModel

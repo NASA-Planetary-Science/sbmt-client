@@ -159,12 +159,12 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         // Form a CoordinateSystem relative to priDEM
         Vector3D centerVect = CameraUtil.calcCenterPoint(priDEM);
-        Vector3D normalVect = CameraUtil.calcSurfaceNormal(priDEM);
+        Vector3D normalVect = priDEM.getAverageSurfaceNormal();
         CoordinateSystem tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
 
         // Retrieve the camera and update it's defaults to reflect values relative to priDEM
-        double defDistance = priDEM.getBoundingBoxDiagonalLength() * 2;
-        ((StandardCamera) renderer.getCamera()).setDefaults(tmpCoordinateSystem, defDistance);
+        double tmpDefDistance = priDEM.getBoundingBoxDiagonalLength() * 2;
+        ((StandardCamera) renderer.getCamera()).setDefaults(tmpCoordinateSystem, tmpDefDistance);
 
          PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
