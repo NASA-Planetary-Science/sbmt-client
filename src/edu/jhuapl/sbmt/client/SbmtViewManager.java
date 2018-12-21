@@ -14,6 +14,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -29,14 +31,20 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.menu.FavoritesMenu;
 import edu.jhuapl.saavtk.gui.menu.FileMenu;
+import edu.jhuapl.saavtk.gui.render.camera.Camera;
+import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
+import edu.jhuapl.saavtk.gui.render.camera.CoordinateSystem;
+import edu.jhuapl.saavtk.gui.render.camera.StandardCamera;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
+import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 
 public class SbmtViewManager extends ViewManager
 {
@@ -255,6 +263,30 @@ public class SbmtViewManager extends ViewManager
             });
         }
     }
+
+	@Override
+	public void setCurrentView(View view)
+	{
+		super.setCurrentView(view);
+
+		// Configure the camera with a relative CoordinateSystem for CustomShapModels
+		GenericPolyhedralModel tmpPolyModel = view.getRenderer().getGenericPolyhedralModel();
+		Camera tmpCamera = view.getRenderer().getCamera();
+		if (tmpPolyModel instanceof CustomShapeModel)
+		{
+			// Form a CoordinateSystem relative to tmpPolyModel
+			Vector3D centerVect = CameraUtil.calcCenterPoint(tmpPolyModel);
+			Vector3D normalVect = CameraUtil.calcSurfaceNormal(tmpPolyModel);
+			CoordinateSystem tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
+
+			// Retrieve the camera and update it's defaults to relative to tmpPolyModel
+			double tmpDefDistance = tmpPolyModel.getBoundingBoxDiagonalLength() * 2;
+			((StandardCamera) tmpCamera).setDefaults(tmpCoordinateSystem, tmpDefDistance);
+		}
+
+		// Set the camera to the default view
+		tmpCamera.reset();
+	}
 
     /**
      * Return whether this body/model/view should be preceded by an informational label.
