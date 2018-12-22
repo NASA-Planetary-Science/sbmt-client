@@ -324,7 +324,7 @@ public class DEMPopupMenu extends PopupMenu
             if (tmpCoordinateSystem == null)
             {
                 // Form a CoordinateSystem relative to the DEM
-                Vector3D centerVect = CameraUtil.calcCenterPoint(dem);
+                Vector3D centerVect = dem.getGeometricCenterPoint();
                 Vector3D normalVect = dem.getAverageSurfaceNormal();
                 tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
 
