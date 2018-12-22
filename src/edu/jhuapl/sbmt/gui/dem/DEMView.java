@@ -34,7 +34,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 
 import vtk.vtkObject;
@@ -49,9 +48,6 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
-import edu.jhuapl.saavtk.gui.render.camera.CoordinateSystem;
-import edu.jhuapl.saavtk.gui.render.camera.StandardCamera;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -156,15 +152,6 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
-
-        // Form a CoordinateSystem relative to priDEM
-        Vector3D centerVect = CameraUtil.calcCenterPoint(priDEM);
-        Vector3D normalVect = priDEM.getAverageSurfaceNormal();
-        CoordinateSystem tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
-
-        // Retrieve the camera and update it's defaults to reflect values relative to priDEM
-        double tmpDefDistance = priDEM.getBoundingBoxDiagonalLength() * 2;
-        ((StandardCamera) renderer.getCamera()).setDefaults(tmpCoordinateSystem, tmpDefDistance);
 
          PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
