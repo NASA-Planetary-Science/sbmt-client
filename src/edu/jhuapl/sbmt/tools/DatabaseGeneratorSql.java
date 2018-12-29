@@ -912,6 +912,18 @@ public class DatabaseGeneratorSql
         BENNU_ALTWG_SPICE_V20181206_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181206),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181206/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181206_polycam"),
 
+        // 1217 SUMFILES
+        BENNU_ALTWG_SPC_V20181217_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181217_mapcam"),
+        BENNU_ALTWG_SPC_V20181217_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181217_polycam"),
+
+        // 1217 INFOFILES
+        BENNU_ALTWG_SPICE_V20181217_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181217_mapcam"),
+        BENNU_ALTWG_SPICE_V20181217_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181217_polycam"),
+
         // 1227 SUMFILES
         BENNU_ALTWG_SPC_V20181227_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181227_mapcam"),
