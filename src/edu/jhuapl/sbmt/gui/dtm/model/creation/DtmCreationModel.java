@@ -152,7 +152,7 @@ public class DtmCreationModel implements MetadataManager
             {
                 DEMInfo demInfo = new DEMInfo();
                 demInfo.name = demNames[i];
-                demInfo.demfilename = demFilenames[i];
+                demInfo.demfilename = new File(getDEMConfigFilename()).getParent() + File.separator + demFilenames[i];
                 infoList.add(demInfo);
 //                ((DefaultListModel)imageList.getModel()).addElement(demInfo);
             }
