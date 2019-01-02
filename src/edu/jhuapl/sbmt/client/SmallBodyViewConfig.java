@@ -1162,7 +1162,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181217_polycam", "bennu_altwgspcv20181217_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181217_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
@@ -1170,7 +1170,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "mapcam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
             };
@@ -1273,7 +1273,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181227_polycam", "bennu_altwgspcv20181227_polycam", c.rootDirOnServer + "/polycam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181227_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.POLYCAM
                             ),
                     new ImagingInstrument(
@@ -1281,7 +1281,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "mapcam/gallery"),
 //                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
                             )
             };
