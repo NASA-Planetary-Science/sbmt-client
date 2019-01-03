@@ -2,7 +2,10 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.Date;
 import java.util.TreeSet;
+
+import javax.swing.SpinnerDateModel;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.BiMap;
@@ -244,6 +247,19 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);
             browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+
+            /*
+             *  change the min/max times for the search based on the datasource
+             */
+            // TODO get start and end times for the datasource from config?
+            Date start = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(0);
+            Date end = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(1);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setValue(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setEnd(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setValue(end);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setEnd(start);
         }
     }
 
