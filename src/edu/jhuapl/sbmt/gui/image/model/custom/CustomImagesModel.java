@@ -615,7 +615,7 @@ public class CustomImagesModel extends ImageSearchModel
     {
         if (initialized)
             return;
-        System.out.println("CustomImagesModel: initializeImageList: get config filename " + getConfigFilename());
+//        System.out.println("CustomImagesModel: initializeImageList: get config filename " + getConfigFilename());
 
         boolean updated = migrateConfigFileIfNeeded();
         if (!updated)
@@ -901,7 +901,7 @@ public class CustomImagesModel extends ImageSearchModel
                 info.retrieve(meta);
                 customImages.add(info);
             }
-            System.out.println("CustomImagesModel: loadImages: number of images now " + customImages.size());
+//            System.out.println("CustomImagesModel: loadImages: number of images now " + customImages.size());
             updateConfigFile();
             fireResultsChanged();
 
