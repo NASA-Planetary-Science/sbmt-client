@@ -10,7 +10,7 @@ START=$2
 STOP=$3
 
 # make directory to store tree and empty if it already exists
-TREEDIR=/project/sbmt2/prod/bennu/shared/ola/search/trees/$NAME
+TREEDIR=/project/sbmt2/prod/bennu/shared/ola/search/%NAME/
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
 
