@@ -246,7 +246,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         if (sourceComboBoxEnumeration!=null)
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);
-            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+//            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
 
             /*
              *  change the min/max times for the search based on the datasource
