@@ -132,7 +132,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
-        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
+        if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)
+        	this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification.clone();
+        else
+        	this.spectraSpec = null;
         spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 
     }
@@ -327,7 +330,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     {
         File file = CustomFileChooser.showSaveDialog(view, "Select File", "spectralist.txt");
         String metadataFilename = getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
-
         if (file != null)
         {
             FileWriter fstream = new FileWriter(file);
@@ -341,6 +343,11 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             String nl = System.getProperty("line.separator");
+
+            SearchSpec spectrumSpec = collection.getSearchSpec(createSpectrumName(0));
+            if (spectrumSpec != null)
+                spectrumSpec.toFile(out);
+
             out.write("#Spectrum_Name Spectrum_Time_UTC Pointing"  + nl);
             for (int selectedIndex : selectedIndices)
             {
@@ -349,10 +356,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 Date dt = new Date(Long.parseLong(dtStr));
 
                 out.write(results.get(selectedIndex).get(0) + "," + dt.getTime() + nl);
-                String result = createSpectrumName(selectedIndex);
-                SearchSpec spectrumSpec = collection.getSearchSpec(result);
-                if (spectrumSpec != null)
-                    spectrumSpec.toFile(out2);
+
             }
 
             out.close();
@@ -368,30 +372,33 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         if (file != null)
         {
             FileWriter fstream = new FileWriter(file);
-            FileWriter fstream2 = new FileWriter(metadataFilename);
+//            FileWriter fstream2 = new FileWriter(metadataFilename);
             BufferedWriter out = new BufferedWriter(fstream);
-            BufferedWriter out2 = new BufferedWriter(fstream2);
+//            BufferedWriter out2 = new BufferedWriter(fstream2);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             String nl = System.getProperty("line.separator");
+            SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
+
+            SearchSpec spectrumSpec = collection.getSearchSpec(createSpectrumName(0));
+            if (spectrumSpec != null)
+                spectrumSpec.toFile(out);
+//            out.write(nl);
+
             out.write("#Spectrum_Name Image_Time_UTC"  + nl);
             int size = getSpectrumRawResults().size();
-            SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 
             for (int i=0; i<size; ++i)
             {
                 String result = createSpectrumName(i);
                 String spectrumPath  = result;
                 out.write(spectrumPath + "," + getSpectrumRawResults().get(i).get(1) + nl);
-                SearchSpec spectrumSpec = collection.getSearchSpec(spectrumPath);
-                if (spectrumSpec != null)
-                    spectrumSpec.toFile(out2);
             }
 
             out.close();
-            out2.close();
+//            out2.close();
         }
     }
 
@@ -399,8 +406,9 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     {
         results.clear();
         File file = CustomFileChooser.showOpenDialog(null, "Select File");
-        String metadataFilename = getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
-        File file2 = new File(metadataFilename);
+        if (file == null) return;
+//        String metadataFilename = getModelManager().getPolyhedralModel().getCustomDataFolder() + File.separator + file.getName() + ".metadata";
+//        File file2 = new File(metadataFilename);
 
         if (file != null)
         {
@@ -409,8 +417,8 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
 //            List<List<String>> results = new ArrayList<List<String>>();
             List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-            List<String> lines2 = FileUtil.getFileLinesAsStringList(file2.getAbsolutePath());
-            for (int i=0; i<lines.size(); ++i)
+//            List<String> lines2 = FileUtil.getFileLinesAsStringList(file2.getAbsolutePath());
+            for (int i=1; i<lines.size(); ++i)
             {
                 if (lines.get(i).startsWith("#")) continue;
                 String[] words = lines.get(i).trim().split("[,\\[\\]]+"); //was \\s+
@@ -419,8 +427,10 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 result.add(words[1].trim());
                 results.add(result);
             }
-            if (lines2.size() > 0)
-                populateSpectrumMetadata(lines2);
+            populateSpectrumMetadata(lines.get(0));
+
+//            if (lines2.size() > 0)
+//                populateSpectrumMetadata(lines2);
 
             fireResultsChanged();
             this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
@@ -490,14 +500,19 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 //                sumOfProductsSearch = true;
                 SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
                 // Process the user's selections
-                getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(selectedPaths);
+//                getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(selectedPaths);
+                spectraSpec.processTreeSelections(selectedPaths);
 
                 // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
+//                System.out.println("SpectrumSearchModel: performSearch: selected data sets size " + productsSelected.get(0));
                 InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+//                System.out.println("SpectrumSearchModel: performSearch: " + instrumentMetadata);
 //                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
                 TreeModel tree = spectraSpec.getTreeModel();
+//                System.out.println("SpectrumSearchModel: performSearch: root is " + tree.getChildCount(tree.getRoot()));
+//                System.out.println("SpectrumSearchModel: performSearch: tree " + tree.getChild(tree.getRoot(), 0).toString());
                 List<SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
@@ -1033,7 +1048,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
     @Override
     public abstract String createSpectrumName(int index);
 
-    abstract public void populateSpectrumMetadata(List<String> lines);
+    abstract public void populateSpectrumMetadata(String line);
 
     public Double getRedMinVal()
     {

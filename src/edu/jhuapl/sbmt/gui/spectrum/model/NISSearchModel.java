@@ -195,7 +195,7 @@ public class NISSearchModel extends SpectrumSearchModel
     }
 
     @Override
-    public void populateSpectrumMetadata(List<String> lines)
+    public void populateSpectrumMetadata(String line)
     {
 //      SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 //      for (int i=0; i<lines.size(); ++i)

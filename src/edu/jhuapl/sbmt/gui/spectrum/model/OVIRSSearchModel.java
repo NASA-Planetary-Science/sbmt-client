@@ -54,13 +54,13 @@ public class OVIRSSearchModel extends SpectrumSearchModel
     }
 
     @Override
-    public void populateSpectrumMetadata(List<String> lines)
+    public void populateSpectrumMetadata(String line)
     {
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
-        for (int i=0; i<lines.size(); ++i)
+        for (int i=0; i<results.size(); ++i)
         {
             OREXSearchSpec spectrumSpec = new OREXSearchSpec();
-            spectrumSpec.fromFile(lines.get(0));
+            spectrumSpec.fromFile(line);
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
     }

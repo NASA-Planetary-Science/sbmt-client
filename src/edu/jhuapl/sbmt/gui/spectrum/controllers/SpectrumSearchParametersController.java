@@ -46,7 +46,9 @@ public class SpectrumSearchParametersController
 
         if(model.getSmallBodyConfig().hasHierarchicalSpectraSearch)
         {
-            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+//            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
+//                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
+            model.getSpectraSpec().processTreeSelections(
                     panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
             panel.getSelectRegionButton().setVisible(false);
             panel.getClearRegionButton().setVisible(false);
@@ -335,7 +337,8 @@ public class SpectrumSearchParametersController
             // Create the tree
             spectraSpec.clearTreeLeaves();
             spectraSpec.readHierarchyForInstrument(model.getInstrument().getDisplayName());
-            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
+//            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
+            panel.setCheckBoxTree(new CheckBoxTree(model.getSpectraSpec().getTreeModel()));
 
             // Place the tree in the panel
                 panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());

@@ -311,7 +311,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 //                String boundaryName = currentImage.substring(0,currentImage.length()-4);
                 ImageKey key = model.getImageKeyForIndex(i);
                 //TODO Can't handle cylindrical and perspective in the same area - should we bother with boundaries for cylindrical?
-                boundaries.addBoundary(key);
+//                boundaries.addBoundary(key);
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),

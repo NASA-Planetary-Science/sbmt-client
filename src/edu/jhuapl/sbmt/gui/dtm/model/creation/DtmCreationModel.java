@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.metadata.FixedMetadata;
 import edu.jhuapl.saavtk.metadata.Key;
@@ -20,6 +22,8 @@ import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
@@ -120,21 +124,68 @@ public class DtmCreationModel implements MetadataManager
         return modelManager.getPolyhedralModel().getDEMConfigFilename();
     }
 
+    private boolean migrateConfigFileIfNeeded() throws IOException
+    {
+    	MapUtil configMap = new MapUtil(getDEMConfigFilename());
+
+        if (configMap.getAsArray(DEM.DEM_NAMES) != null)
+        {
+        	//backup the old config file
+            FileUtils.copyFile(new File(getDEMConfigFilename()), new File(getDEMConfigFilename() + ".orig"));
+
+            String[] demNames = configMap.getAsArray(DEM.DEM_NAMES);
+            String[] demFilenames = configMap.getAsArray(DEM.DEM_FILENAMES);
+            if (demFilenames == null)
+            {
+                // for backwards compatibility
+                demFilenames = configMap.getAsArray(DEM.DEM_MAP_PATHS);
+                demNames = new String[demFilenames.length];
+                for (int i=0; i<demFilenames.length; ++i)
+                {
+                    demNames[i] = new File(demFilenames[i]).getName();
+                    demFilenames[i] = "dem" + i + ".FIT";
+                }
+            }
+
+            int numDems = demNames != null ? demNames.length : 0;
+            for (int i=0; i<numDems; ++i)
+            {
+                DEMInfo demInfo = new DEMInfo();
+                demInfo.name = demNames[i];
+                demInfo.demfilename = new File(getDEMConfigFilename()).getParent() + File.separator + demFilenames[i];
+                infoList.add(demInfo);
+//                ((DefaultListModel)imageList.getModel()).addElement(demInfo);
+            }
+//            fireInfoChangedListeners(infoList);
+
+            updateConfigFile();
+            return true;
+        }
+        else
+        	return false;
+    }
+
     // Initializes the DEM list from config
     public void initializeDEMList() throws IOException
     {
         if (initialized)
             return;
 
-        if (new File(getDEMConfigFilename()).exists())
+        boolean updated = migrateConfigFileIfNeeded();
+        if (!updated)
         {
-	        FixedMetadata metadata = Serializers.deserialize(new File(getDEMConfigFilename()), "CustomDEMs");
-	        retrieve(metadata);
-
-	        for (DEMInfo info : infoList)
+	        if (new File(getDEMConfigFilename()).exists())
 	        {
-	        	fireInfoChangedListeners(info);
+		        FixedMetadata metadata = Serializers.deserialize(new File(getDEMConfigFilename()), "CustomDEMs");
+		        retrieve(metadata);
+
+
 	        }
+        }
+
+        for (DEMInfo info : infoList)
+        {
+        	fireInfoChangedListeners(info);
         }
 
         initialized = true;
@@ -155,8 +206,7 @@ public class DtmCreationModel implements MetadataManager
     // Removes all DEMs
     private void removeAllDEMsFromRenderer()
     {
-        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        demCollection.removeDEMs();
+        dems.removeDEMs();
     }
 
     // Removes a DEM
@@ -181,14 +231,11 @@ public class DtmCreationModel implements MetadataManager
 	        new File(name).delete();
 
 	        // Remove the DEM from the renderer
-	        DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-	        DEMKey demKey = new DEMKey(name, demInfo.name);
-	        demCollection.removeDEM(demKey);
+	        DEMKey demKey = dems.getDEMKeyFromInfo(demInfo);
+	        dems.removeDEM(demKey);
 
 	        // Remove from the list
 	        infoList.remove(demInfo);
-	        DEMBoundaryCollection boundaries =
-	                (DEMBoundaryCollection)modelManager.getModel(getDEMBoundaryCollectionModelName());
 	        boundaries.removeBoundary(demKey);
 
 	        updateConfigFile();
