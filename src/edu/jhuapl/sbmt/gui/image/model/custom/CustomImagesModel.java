@@ -367,7 +367,7 @@ public class CustomImagesModel extends ImageSearchModel
     {
         for (ImageInfo info : customImages)
         {
-            if (info.name.contains(imagePathName))
+            if (info.name.equals(imagePathName))
             {
                 return getKeyForImageInfo(info);
             }
