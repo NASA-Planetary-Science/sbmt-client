@@ -4,6 +4,27 @@
 
 # Release Notes
 
+### January 3, 2019 (SBMT-0.7.2)
+- Model updates for OREX
+
+### December 21, 2018 (SBMT-0.7.1)
+- Improvements when loading saved image lists
+- Improvements to the custom DTM pane
+- Improvements to the custom images pane
+
+OREX:
+- OTES and OVIRS are now enabled
+- Better UI behavior in the OTES and OVIRS panes
+
+### November 28, 2018 (SBMT-0.7.0)
+- Made UI improvements to the properties pane within the Regional DTMs tab 
+- Made the saving of very high resolution plate colorings to a local machine more efficient
+- Added version numbers to the downloaded application once unzipped
+- Fixed bug that caused an error when loading custom plate colorings on Windows machines
+- Fixed bug that caused an error when adding additional plate colorings to a custom fits shape model
+- Fixed bug that prevented users from loading custom models via the command line
+
+
 ### November 6, 2018 (SBMT-0.6.6)
 - Added the ability to save the state of the camera view and image panel settings
 - Added tooltips to and improved user-friendliness of toolbar icons
