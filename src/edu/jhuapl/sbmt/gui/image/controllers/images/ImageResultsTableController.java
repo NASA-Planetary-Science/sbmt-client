@@ -46,6 +46,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTableView;
+import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTableView.Reorderable;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -673,7 +674,7 @@ public class ImageResultsTableController
     }
 
 
-    public class ImagesTableModel extends DefaultTableModel
+    public class ImagesTableModel extends DefaultTableModel implements Reorderable
     {
         public ImagesTableModel(Object[][] data, String[] columnNames)
         {
@@ -703,6 +704,14 @@ public class ImageResultsTableController
             else
                 return String.class;
         }
+
+		@Override
+		public void reorder(int fromIndex, int toIndex)
+		{
+			Object o = getDataVector().remove(fromIndex);
+		    getDataVector().add(toIndex, o);
+		    fireTableDataChanged();
+		}
     }
 
     protected void resultsListMaybeShowPopup(MouseEvent e)
