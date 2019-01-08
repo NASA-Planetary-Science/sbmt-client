@@ -128,7 +128,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
             ((OlaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
         } catch (NonexistentRemoteFile e) {
             JOptionPane.showMessageDialog(this.view,
-                    "There is no existing tree for this survey",
+                    "There is no existing tree for this phase",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
