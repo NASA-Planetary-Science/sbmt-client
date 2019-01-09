@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ import com.google.common.collect.Maps;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
-import edu.jhuapl.saavtk.util.SafePaths;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -35,6 +36,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
+    public String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
     public boolean hasBigmap = false;
@@ -94,6 +96,10 @@ public abstract class BodyViewConfig extends ViewConfig
 
     //default configs
     List<SbmtMultiMissionTool.Mission> missions = new ArrayList<SbmtMultiMissionTool.Mission>();
+    
+    //DTMs
+    public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
+    public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
 
     // Flag for beta mode
     public static boolean betaMode = false;
@@ -165,12 +171,12 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName)
     {
-        return SafePaths.getString(rootDirOnServer, fileName);
+        return serverPath(rootDirOnServer, fileName);
     }
 
     public String serverPath(String fileName, Instrument instrument)
     {
-        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
+        return serverPath(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
     }
 
     public String serverImagePath(String fileName, Instrument instrument)
@@ -180,7 +186,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName, Instrument instrument, String subdir)
     {
-        return SafePaths.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
+        return serverPath(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
     }
 
     // methods
@@ -305,6 +311,36 @@ public abstract class BodyViewConfig extends ViewConfig
 
         return modelFiles;
     }
+    
+    private static String serverPath(String firstSegment, String... segments)
+    {
+        // Prevent trailing delimiters coming from empty segments at the end.
+        int length = segments.length;
+        while (length > 0)
+        {
+            if (segments[length - 1].isEmpty())
+            {
+                --length;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (length < segments.length)
+        {
+            segments = Arrays.copyOfRange(segments, 0, length);
+        }
+        return SafeURLPaths.instance().getString(firstSegment, segments);
+    }
+
+    public static void main(String[] args)
+    {
+        System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
+        System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
+        System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
+    }
+    
 
 //    //metadata management
 //    /**

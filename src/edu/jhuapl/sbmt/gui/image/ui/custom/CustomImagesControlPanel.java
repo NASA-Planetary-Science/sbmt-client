@@ -8,6 +8,7 @@ public class CustomImagesControlPanel extends JPanel
 {
     JButton newButton;
     JButton editButton;
+    JButton deleteButton;
 
     public CustomImagesControlPanel()
     {
@@ -18,6 +19,9 @@ public class CustomImagesControlPanel extends JPanel
 
         editButton = new JButton("Edit...");
         add(editButton);
+
+        deleteButton = new JButton("Delete");
+        add(deleteButton);
     }
 
     public JButton getNewButton()
@@ -28,6 +32,11 @@ public class CustomImagesControlPanel extends JPanel
     public JButton getEditButton()
     {
         return editButton;
+    }
+
+    public JButton getDeleteButton()
+    {
+        return deleteButton;
     }
 
 }
