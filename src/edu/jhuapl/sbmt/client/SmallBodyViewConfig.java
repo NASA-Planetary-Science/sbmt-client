@@ -502,7 +502,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -723,7 +723,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -835,7 +835,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -946,7 +946,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -1056,8 +1056,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -1167,8 +1167,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181217_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
@@ -1278,8 +1278,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             ),
                     new ImagingInstrument(
                             SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "mapcam/gallery"),
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
