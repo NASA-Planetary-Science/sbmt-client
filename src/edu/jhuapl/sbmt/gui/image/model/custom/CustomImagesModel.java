@@ -211,12 +211,12 @@ public class CustomImagesModel extends ImageSearchModel
                 String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
                 String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
                 // Rename newImageInfo as that of the binary file
-                newImageInfo.imagefilename = "image-" + uuid + "." + extension;
+                newImageInfo.imagefilename = "image-" + uuid /*+ "." + extension*/;
 
                 // Copy over the binary file
-                Files.copy(new File(enviBinaryFilename + "." + extension),
+                Files.copy(new File(enviBinaryFilename /*+ "." + extension*/),
                         new File(getCustomDataFolder() + File.separator
-                                + newImageInfo.imagefilename));
+                                + FilenameUtils.getBaseName(newImageInfo.imagefilename)));
 
                 // Copy over the header file
                 Files.copy(new File(enviHeaderFilename),
@@ -367,7 +367,7 @@ public class CustomImagesModel extends ImageSearchModel
     {
         for (ImageInfo info : customImages)
         {
-            if (info.name.contains(imagePathName))
+            if (info.name.equals(imagePathName))
             {
                 return getKeyForImageInfo(info);
             }
