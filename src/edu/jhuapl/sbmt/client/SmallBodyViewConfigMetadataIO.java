@@ -25,6 +25,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
@@ -43,7 +44,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
             SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
             String version = config.version == null ? "" : config.version;
-            File file = new File("/Users/steelrj1/Desktop/configs/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            File file = new File("/Users/steelrj1/Desktop/configs2/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
 
             allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
 
@@ -52,7 +53,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             io.write(config.getUniqueName(), file, io.store());
         }
 
-        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs/allBodies.json"));
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs2/allBodies.json"));
 
 
     }
@@ -166,6 +167,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
         String[] missionsToSave = new String[c.missions.size()];
         write(missions, c.missions.toArray(missionsToSave), configMetadata);
+
+        writeMetadataArray(runInfos, c.databaseRunInfos, configMetadata);
 
         return configMetadata;
     }
@@ -351,6 +354,16 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
                 }
             }
         }
+
+        Metadata[] runInfoMetadata = readMetadataArray(runInfos, configMetadata);
+        c.databaseRunInfos = new DBRunInfo[runInfoMetadata.length];
+        i=0;
+        for (Metadata data : runInfoMetadata)
+        {
+        	DBRunInfo info = new DBRunInfo();
+        	info.retrieve(data);
+        	c.databaseRunInfos[i++] = info;
+        }
     }
 
     public List<ViewConfig> getConfigs()
@@ -427,5 +440,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<Boolean> lidarBrowseIsBinary = Key.of("lidarBrowseIsBinary");
     final Key<Integer> lidarBrowseBinaryRecordSize = Key.of("lidarBrowseBinaryRecordSize");
     final Key<String> lidarInstrumentName = Key.of("lidarInstrumentName");
+
+    final Key<Metadata[]> runInfos = Key.of("runInfos");
 
 }

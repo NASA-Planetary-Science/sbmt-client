@@ -17,6 +17,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 
 /**
@@ -96,7 +97,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     //default configs
     List<SbmtMultiMissionTool.Mission> missions = new ArrayList<SbmtMultiMissionTool.Mission>();
-    
+
     //DTMs
     public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
     public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
@@ -133,6 +134,8 @@ public abstract class BodyViewConfig extends ViewConfig
     public Instrument lidarInstrumentName = Instrument.LIDAR;
 
     public BasicSpectrumInstrument[] spectralInstruments = {};
+
+    public DBRunInfo[] databaseRunInfos = {};
 
     protected BodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {
@@ -311,7 +314,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
         return modelFiles;
     }
-    
+
     private static String serverPath(String firstSegment, String... segments)
     {
         // Prevent trailing delimiters coming from empty segments at the end.
@@ -340,7 +343,7 @@ public abstract class BodyViewConfig extends ViewConfig
         System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
         System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
-    
+
 
 //    //metadata management
 //    /**
