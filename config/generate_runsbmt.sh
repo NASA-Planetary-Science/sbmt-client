@@ -30,6 +30,7 @@ echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export DYLD_LIBRARY_PATH=\"\$DIR/lib/mac64\":\$DYLD_LIBRARY_PATH
+export LC_NUMERIC="en_US.UTF-8"
 MEMSIZE=\`sysctl hw.memsize | awk '{print int(\$2/1024)}'\`
 \"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/mac64\" -jar \"\$DIR/lib/near.jar\" \$@ &
 " > $output_dir/mac64/sbmt/runsbmt
@@ -39,6 +40,7 @@ echo -n -e "#!/bin/sh
 DIR=\`dirname \"\$0\"\`
 DIR=\"\`(cd \"\$DIR\"; pwd)\`\"
 export LD_LIBRARY_PATH=\"\$DIR/lib/linux64\":\$LD_LIBRARY_PATH
+export LC_NUMERIC="en_US.UTF-8"
 MEMSIZE=\`grep MemTotal /proc/meminfo | awk '{print \$2}'\`
 \"\$DIR/jre/bin/java\" -Xmx\${MEMSIZE}K -Djava.library.path=\"\$DIR/lib/linux64\" -jar \"\$DIR/lib/near.jar\" \$@ &
 " > $output_dir/linux64/sbmt/runsbmt
