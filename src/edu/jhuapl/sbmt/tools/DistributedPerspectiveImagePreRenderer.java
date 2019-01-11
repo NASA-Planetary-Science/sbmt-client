@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.ggf.drmaa.DrmaaException;
+//import org.ggf.drmaa.DrmaaException;
 import org.ggf.drmaa.JobTemplate;
 import org.ggf.drmaa.Session;
 import org.ggf.drmaa.SessionFactory;
@@ -68,7 +68,7 @@ public class DistributedPerspectiveImagePreRenderer
                  session.exit();
 
              }
-             catch (DrmaaException e)
+             catch (Exception e)
              {
                  System.out.println("Error: "  + e.getMessage());
 //                 session.exit();
@@ -96,17 +96,17 @@ public class DistributedPerspectiveImagePreRenderer
         System.out.println("Done");
     }
 
-    private static void processImage(String[] args, JobTemplate jt, Session session) throws DrmaaException
-    {
-        System.out.println(
-                "DistributedPerspectiveImagePreRenderer: processImage: processing file " + args[0]);
-        jt.setRemoteCommand("/homes/sbmt/workspace2/preRenderImage.sh");        //script Directory
-        List<String> list = new ArrayList<String>();
-
-        jt.setArgs(list);
-        String id = session.runJob(jt);
-        System.out.println("Your job has been submitted with id " + id + " for image " + args[0]);
-    }
+//    private static void processImage(String[] args, JobTemplate jt, Session session) throws DrmaaException
+//    {
+//        System.out.println(
+//                "DistributedPerspectiveImagePreRenderer: processImage: processing file " + args[0]);
+//        jt.setRemoteCommand("/homes/sbmt/workspace2/preRenderImage.sh");        //script Directory
+//        List<String> list = new ArrayList<String>();
+//
+//        jt.setArgs(list);
+//        String id = session.runJob(jt);
+//        System.out.println("Your job has been submitted with id " + id + " for image " + args[0]);
+//    }
 
 }
 
