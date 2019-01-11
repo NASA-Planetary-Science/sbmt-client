@@ -64,8 +64,8 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
@@ -153,7 +153,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
 
-        PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
+         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
@@ -190,6 +190,9 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         updateControlPanel(null);
+
+        // Force the renderer's camera to the "reset" default view
+        renderer.getCamera().reset();
     }
 
     @Override
@@ -865,9 +868,12 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     @Override
     public void windowClosing(WindowEvent e)
     {
+        // Notify the Renderer that it will no longer be needed
+        renderer.dispose();
+
         // Remove self as the macro DEM's view
         DEM secDEM = demCollection.getDEM(key);
-        if(secDEM != null)
+        if (secDEM != null)
             secDEM.removeView();
 
         // Garbage collect

@@ -12,7 +12,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
 
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.util.Mapmaker;
+import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 public class ConvertCUBToFITS
 {
@@ -25,24 +25,24 @@ public class ConvertCUBToFITS
             DataInputStream in = new DataInputStream(bs);
 
             int liveSize = 2 * halfSize + 1;
-            int startPixel = (Mapmaker.MAX_HEIGHT - liveSize) / 2;
+            int startPixel = (MapmakerNativeWrapper.MAX_HEIGHT - liveSize) / 2;
 
-            float[] indata = new float[Mapmaker.MAX_WIDTH*Mapmaker.MAX_HEIGHT*Mapmaker.MAX_PLANES];
+            float[] indata = new float[MapmakerNativeWrapper.MAX_WIDTH*MapmakerNativeWrapper.MAX_HEIGHT*MapmakerNativeWrapper.MAX_PLANES];
             for (int i=0;i<indata.length; ++i)
             {
                 indata[i] = FileUtil.readFloatAndSwap(in);
             }
 
-            float[][][] outdata = new float[Mapmaker.MAX_PLANES][liveSize][liveSize];
+            float[][][] outdata = new float[MapmakerNativeWrapper.MAX_PLANES][liveSize][liveSize];
 
             int endPixel = startPixel + liveSize - 1;
-            for (int p=0; p<Mapmaker.MAX_PLANES; ++p)
-                for (int m=0; m<Mapmaker.MAX_HEIGHT; ++m)
-                    for (int n=0; n<Mapmaker.MAX_WIDTH; ++n)
+            for (int p=0; p<MapmakerNativeWrapper.MAX_PLANES; ++p)
+                for (int m=0; m<MapmakerNativeWrapper.MAX_HEIGHT; ++m)
+                    for (int n=0; n<MapmakerNativeWrapper.MAX_WIDTH; ++n)
                     {
                         if (m >= startPixel && m <= endPixel && n >= startPixel && n <= endPixel)
                         {
-                            outdata[p][m-startPixel][n-startPixel] = indata[Mapmaker.index(n,m,p)];
+                            outdata[p][m-startPixel][n-startPixel] = indata[MapmakerNativeWrapper.index(n,m,p)];
                         }
                     }
 
