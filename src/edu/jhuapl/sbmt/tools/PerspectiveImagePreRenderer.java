@@ -188,6 +188,7 @@ public class PerspectiveImagePreRenderer
         ImageKey key;
         for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
+        	if (i < 3) continue;
             System.out.println("PerspectiveImagePreRenderer: main: running model resolution " + (i+1) + " of " + smallBodyModel.getNumberResolutionLevels());
             smallBodyModel.setModelResolution(i);
             if (imagesWithPointing.isEmpty())
