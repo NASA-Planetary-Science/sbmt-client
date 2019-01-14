@@ -9,6 +9,6 @@ public interface ISpectrumSearchModel
 
     public String createSpectrumName(int index);
 
-    public void populateSpectrumMetadata(List<String> lines);
+    public void populateSpectrumMetadata(String line);
 
 }

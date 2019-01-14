@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
@@ -48,7 +49,11 @@ public class CustomImageCubeModel extends ImageCubeModel
         boolean multipleFrustumVisible = false;
 
         List<ImageKey> selectedKeys = new ArrayList<>();
-        for (ImageKey key : imageSearchModel.getSelectedImageKeys()) { selectedKeys.add(key); }
+        for (ImageKey key : imageSearchModel.getSelectedImageKeys())
+        {
+            ImageKey newKey = new ImageKey(SafeURLPaths.instance().getUrl(key.name), key.source, key.fileType, key.imageType, key.instrument, key.band, key.slice, key.pointingFile);
+            selectedKeys.add(newKey);
+        }
         for (ImageKey selectedKey : selectedKeys)
         {
             PerspectiveImage selectedImage = (PerspectiveImage)imageCollection.getImage(selectedKey);

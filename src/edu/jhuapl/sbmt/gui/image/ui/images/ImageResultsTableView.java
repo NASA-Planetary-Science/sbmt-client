@@ -249,4 +249,9 @@ public class ImageResultsTableView extends JPanel
         return resultList.filenameColumnIndex;
     }
 
+    public JLabel getLblNumberBoundaries()
+    {
+        return lblNumberBoundaries;
+    }
+
 }

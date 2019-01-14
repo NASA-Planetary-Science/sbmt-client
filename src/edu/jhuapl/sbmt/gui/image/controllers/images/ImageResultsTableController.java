@@ -366,10 +366,11 @@ public class ImageResultsTableController
                 resultIntervalCurrentlyShown.id2 = newMaxId;
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
+            imageSearchModel.setNumBoundaries(Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
         }
     }
 
-    private void saveImageListButtonActionPerformed(ActionEvent evt) {
+    protected void saveImageListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -408,7 +409,7 @@ public class ImageResultsTableController
         }
     }
 
-    private void loadImageListButtonActionPerformed(ActionEvent evt) {
+    protected void loadImageListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showOpenDialog(imageResultsTableView, "Select File");
 
         if (file != null)
@@ -434,7 +435,7 @@ public class ImageResultsTableController
 
                 //TODO needed?
 //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
-
+                imageSearchModel.setImageResults(new ArrayList<List<String>>());
                 setImageResults(imageSearchModel.processResults(results));
             }
             catch (Exception e)
@@ -451,7 +452,7 @@ public class ImageResultsTableController
     }
 
 
-    private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    protected void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -510,7 +511,7 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
     }
 
-    private void prevButtonActionPerformed(ActionEvent evt)
+    protected void prevButtonActionPerformed(ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         if (resultIntervalCurrentlyShown != null)
@@ -525,7 +526,7 @@ public class ImageResultsTableController
 
     }
 
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
+    protected void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         if (resultIntervalCurrentlyShown != null)
@@ -669,6 +670,7 @@ public class ImageResultsTableController
                 break;
             }
         }
+        imageSearchModel.setResultIntervalCurrentlyShown(idPair);
     }
 
 
