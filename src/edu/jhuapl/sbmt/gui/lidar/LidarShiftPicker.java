@@ -2,117 +2,157 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
-import java.util.List;
+
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
 import vtk.vtkCellPicker;
-import vtk.vtkProp;
-import vtk.vtkPropCollection;
 import vtk.rendering.jogl.vtkJoglPanelComponent;
 
+import edu.jhuapl.saavtk.gui.GuiUtil;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
+import edu.jhuapl.saavtk.pick.EditMode;
+import edu.jhuapl.saavtk.pick.PickUtilEx;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
 /**
- * This class is used to allow the user to translate a lidar track to a new location.
- * This works as follows. All the tracks are translated such that the currently selected
- * point is translated to the point on the asteroid the user clicked on.
+ * Class which provides the functionality that enables a user to translate a
+ * lidar track to a new location. All points associated with the lidar track
+ * will be translated an equal amount.
+ * <P>
+ * The translation action is triggered when the user selects on a specific point
+ * on the lidar track and then proceeds to drag that point to a new location.
  */
 public class LidarShiftPicker extends Picker
 {
-    private ModelManager modelManager;
-    private vtkJoglPanelComponent renWin;
-    private PolyhedralModel smallBodyModel;
-    private LidarSearchDataCollection lidarModel;
-    private vtkCellPicker smallBodyPicker;
-    private vtkCellPicker pointPicker;
+	// Reference vars
+	private ModelManager refModelManager;
+	private PolyhedralModel refSmallBodyModel;
+	private LidarSearchDataCollection refLidarModel;
+	private vtkJoglPanelComponent refRenWin;
 
-    public LidarShiftPicker(
-            Renderer renderer,
-            ModelManager modelManager,
-            LidarSearchDataCollection lidarModel
-            )
-    {
-        this.renWin = renderer.getRenderWindowPanel();
-        this.modelManager = modelManager;
-        this.lidarModel = lidarModel;
+	// VTK vars
+	private vtkCellPicker smallBodyPicker;
+	private vtkCellPicker pointPicker;
 
-        smallBodyPicker = new vtkCellPicker();
-        smallBodyPicker.PickFromListOn();
-        smallBodyPicker.InitializePickList();
-        smallBodyModel = (PolyhedralModel)modelManager.getPolyhedralModel();
-        List<vtkProp> actors = smallBodyModel.getProps();
-        vtkPropCollection smallBodyPickList = smallBodyPicker.GetPickList();
-        smallBodyPickList.RemoveAllItems();
-        for (vtkProp act : actors)
-        {
-            smallBodyPicker.AddPickList(act);
-        }
-        smallBodyPicker.AddLocator(smallBodyModel.getCellLocator());
+	// State vars
+	private EditMode currEditMode;
+	private Vector3D origPt;
+	private int trackIdx = -1;
 
-        pointPicker = new vtkCellPicker();
-        pointPicker.PickFromListOn();
-        pointPicker.InitializePickList();
-        vtkPropCollection pointPickList = pointPicker.GetPickList();
-        pointPickList.RemoveAllItems();
-        pointPicker.AddPickList(lidarModel.getProps().get(0));
-    }
+	public LidarShiftPicker(Renderer renderer, ModelManager modelManager, LidarSearchDataCollection lidarModel)
+	{
+		refModelManager = modelManager;
+		refSmallBodyModel = (PolyhedralModel) modelManager.getPolyhedralModel();
+		refLidarModel = lidarModel;
+		refRenWin = renderer.getRenderWindowPanel();
 
-    public void mousePressed(MouseEvent e)
-    {
-        mouseDragged(e);
-    }
+		smallBodyPicker = PickUtilEx.formSmallBodyPicker(refSmallBodyModel);
+		pointPicker = PickUtilEx.formStructurePicker((vtkActor) lidarModel.getProps().get(0));
 
-    public void mouseDragged(MouseEvent e)
-    {
-        double[] selectedPoint = lidarModel.getSelectedPoint();
-        if (selectedPoint != null)
-        {
-            int selectedTrackIndex = lidarModel.getTrackIdFromSelectedPoint();
-            int pickSucceeded = doPick(e, smallBodyPicker, renWin);
-            if (pickSucceeded == 1)
-            {
-                vtkActor pickedActor = smallBodyPicker.GetActor();
-                Model model = modelManager.getModel(pickedActor);
+		currEditMode = EditMode.CLICKABLE;
+		origPt = null;
+		trackIdx = -1;
+	}
 
-                if (model == smallBodyModel)
-                {
-                    double[] pickPosition = smallBodyPicker.GetPickPosition();
-                    double[] shift = {
-                            pickPosition[0]-selectedPoint[0],
-                            pickPosition[1]-selectedPoint[1],
-                            pickPosition[2]-selectedPoint[2]};
+	@Override
+	public int getCursorType()
+	{
+		if (currEditMode == EditMode.DRAGGABLE)
+			return Cursor.HAND_CURSOR;
 
-                    lidarModel.setTranslation(shift, selectedTrackIndex);
-                }
-            }
-        }
-    }
+		return Cursor.CROSSHAIR_CURSOR;
+	}
 
+	@Override
+	public boolean isExclusiveMode()
+	{
+		if (origPt != null)
+			return true;
 
-    public void mouseMoved(MouseEvent e)
-    {
-        int pickSucceeded = doPick(e, pointPicker, renWin);
-        if (pickSucceeded == 1 &&
-                pointPicker.GetActor() == lidarModel.getProps().get(0))
-        {
-            if (renWin.getComponent().getCursor().getType() != Cursor.HAND_CURSOR)
-                renWin.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
-        }
-        else
-        {
-            if (renWin.getComponent().getCursor().getType() != getCursorType())
-                renWin.getComponent().setCursor(new Cursor(getCursorType()));
-        }
-    }
+		return false;
+	}
 
-    @Override
-    public int getCursorType()
-    {
-        return Cursor.CROSSHAIR_CURSOR;
-    }
+	@Override
+	public void mousePressed(MouseEvent aEvent)
+	{
+		// Assume nothing will be picked
+		origPt = null;
+		trackIdx = -1;
+
+		// Bail if we are not ready to do a drag operation
+		if (currEditMode != EditMode.DRAGGABLE)
+			return;
+
+		// Bail if the button-1 or button-3 are not selected
+		if (aEvent.getButton() != MouseEvent.BUTTON1 && aEvent.getButton() != MouseEvent.BUTTON3)
+			return;
+
+		// Bail if we failed to pick something
+		int pickSucceeded = doPick(aEvent, smallBodyPicker, refRenWin);
+		if (pickSucceeded != 1)
+			return;
+
+		// Retrieve the selected track
+		pickSucceeded = doPick(aEvent, pointPicker, refRenWin);
+		if (pickSucceeded != 1 || pointPicker.GetActor() != refLidarModel.getProps().get(0))
+			return;
+
+		int cellId = pointPicker.GetCellId();
+		trackIdx = refLidarModel.getTrackIdFromCellId(cellId);
+		if (trackIdx >= 0)
+			origPt = refLidarModel.getLidarPointFromCellId(cellId).getTargetPosition();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		// Reset the state vars
+		origPt = null;
+		trackIdx = -1;
+	}
+
+	public void mouseDragged(MouseEvent aEvent)
+	{
+		// Bail if we are not in the proper edit mode
+		if (currEditMode != EditMode.DRAGGABLE)
+			return;
+
+		// Bail if do not have a valid origPt
+		if (origPt == null)
+			return;
+
+		// Bail if we failed to pick something
+		int pickSucceeded = doPick(aEvent, smallBodyPicker, refRenWin);
+		if (pickSucceeded != 1)
+			return;
+
+		vtkActor pickedActor = smallBodyPicker.GetActor();
+		Model model = refModelManager.getModel(pickedActor);
+		if (model != refSmallBodyModel)
+			return;
+
+		// Perform the translation
+		double[] currPt = smallBodyPicker.GetPickPosition();
+		double[] shift = { currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ() };
+		refLidarModel.setTranslation(shift, trackIdx);
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent aEvent)
+	{
+		int pickSucceeded = doPick(aEvent, pointPicker, refRenWin);
+
+		if (pickSucceeded == 1 && pointPicker.GetActor() == refLidarModel.getProps().get(0))
+			currEditMode = EditMode.DRAGGABLE;
+		else
+			currEditMode = EditMode.CLICKABLE;
+
+		GuiUtil.updateCursor(refRenWin.getComponent(), getCursorType());
+	}
+
 }
