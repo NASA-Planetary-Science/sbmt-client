@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 //import org.ggf.drmaa.DrmaaException;
@@ -44,12 +43,13 @@ public class DistributedPerspectiveImagePreRenderer
                  File[] fileList = new File(inputDir).listFiles();
                  Arrays.sort(fileList);
                  int i=0;
-                 for (; i<fileList.length;)
-                 {
-                	 int nextBatchLength = Math.min(100, fileList.length - i);
-	                 for (int j=0; j<nextBatchLength; j++)
-	                 {
-	                     argList.add(fileList[i+j].getAbsolutePath());
+//                 for (; i<fileList.length;)
+//                 {
+//                	 int nextBatchLength = Math.min(100, fileList.length - i);
+//	                 for (int j=0; j<nextBatchLength; j++)
+//	                 {
+//	                     argList.add(fileList[i+j].getAbsolutePath());
+	                     argList.add(fileList[i].getAbsolutePath());
 	                     argList.add(pointingSource.toString());
 	                     argList.add(body.toString());
 	                     argList.add(type.toString());
@@ -58,16 +58,16 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath());
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i].getAbsolutePath());
 	                     argList.clear();
-	                 }
-	                 //wait for this batch of 100 to finish
-	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
-	                 i += nextBatchLength;
-
-	                 System.out.println(
-							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
-                 }
+//	                 }
+//	                 //wait for this batch of 100 to finish
+//	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
+//	                 i += nextBatchLength;
+//
+//	                 System.out.println(
+//							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
+//                 }
                  System.out.println ("Number of jobs completed = " + i);
 
                  session.deleteJobTemplate(jt);
