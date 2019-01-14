@@ -369,7 +369,7 @@ public class LidarSearchPanel extends javax.swing.JPanel implements PropertyChan
                 int id = e.getPickedCellId();
                 lidarModel.selectPoint(id);
 
-                int idx = lidarModel.getTrackIdFromPointId(id);
+                int idx = lidarModel.getTrackIdFromCellId(id);
 
 
                 if (idx >= 0)

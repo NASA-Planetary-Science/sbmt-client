@@ -139,7 +139,7 @@ public class LidarSearchController implements ItemListener
                         int id = e.getPickedCellId();
                         model.getLidarModel().selectPoint(id);
 
-                        int idx = model.getLidarModel().getTrackIdFromPointId(id);
+                        int idx = model.getLidarModel().getTrackIdFromCellId(id);
 
 
                         if (idx >= 0)
