@@ -46,6 +46,7 @@ public class PerspectiveImagePreRenderer
         this.resolutionIndex = image.getSmallBodyModel().getModelResolution();
         this.outputDir = outputDir;
         this.reprocess = reprocess;
+        System.out.println("PerspectiveImagePreRenderer: PerspectiveImagePreRenderer: processing " + image.getFitFileFullPath());
         calculateFootprint();
         calculateOffLimb();
     }
