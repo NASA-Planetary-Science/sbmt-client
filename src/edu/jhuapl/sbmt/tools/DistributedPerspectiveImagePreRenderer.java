@@ -45,9 +45,9 @@ public class DistributedPerspectiveImagePreRenderer
                  for (; i<fileList.length;)
                  {
                 	 int nextBatchLength = Math.min(100, fileList.length - i);
-	                 for (int j=0; j<100; j++)
+	                 for (int j=0; j<nextBatchLength; j++)
 	                 {
-	                     argList.add(fileList[i].getAbsolutePath());
+	                     argList.add(fileList[i+j].getAbsolutePath());
 	                     argList.add(pointingSource.toString());
 	                     argList.add(body.toString());
 	                     argList.add(type.toString());
@@ -56,7 +56,7 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i].getAbsolutePath());
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath());
 	                     argList.clear();
 	                 }
 	                 //wait for this batch of 100 to finish
