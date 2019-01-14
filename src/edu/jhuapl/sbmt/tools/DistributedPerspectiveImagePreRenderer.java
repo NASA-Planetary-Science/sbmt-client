@@ -65,7 +65,7 @@ public class DistributedPerspectiveImagePreRenderer
 //	                 //wait for this batch of 100 to finish
 //	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
 //	                 i += nextBatchLength;
-//
+	                 i++;
 //	                 System.out.println(
 //							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
                  }
