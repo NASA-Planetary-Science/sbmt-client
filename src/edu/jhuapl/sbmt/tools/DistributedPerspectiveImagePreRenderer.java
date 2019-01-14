@@ -62,7 +62,7 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath());
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath() + " to ouput dir " + outputPath);
 	                 }
 //	                 //wait for this batch of 100 to finish
 	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
