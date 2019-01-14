@@ -1,8 +1,6 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +19,8 @@ public class DistributedPerspectiveImagePreRenderer
 
     public DistributedPerspectiveImagePreRenderer(String inputDir, String outputPath, ImageSource pointingSource, int instrumentIndex, ShapeModelBody body, ShapeModelType type, boolean reprocess)
     {
+    	 File outputPathDir = new File(outputPath);
+    	 if (outputPathDir.exists() == false) outputPathDir.mkdirs();
     	 SessionFactory factory = SessionFactory.getFactory();
          Session session = factory.getSession();
          {
@@ -32,8 +32,10 @@ public class DistributedPerspectiveImagePreRenderer
                  String outputLogPath = "/clusterOutputFiles/";
                  File outputDir = new File(System.getProperty("user.home")+outputLogPath);
                  if (!outputDir.exists()) outputDir.mkdirs();
-                 jt.setOutputPath(":" + JobTemplate.HOME_DIRECTORY + outputPath);
-                 jt.setErrorPath(":" + JobTemplate.HOME_DIRECTORY + outputPath);
+//                 jt.setOutputPath(":" + JobTemplate.HOME_DIRECTORY + outputPath);
+//                 jt.setErrorPath(":" + JobTemplate.HOME_DIRECTORY + outputPath);
+                 jt.setOutputPath(":" + outputDir);
+                 jt.setErrorPath(":" + outputDir);
 
                  //imageFileName GASKELL RQ36 ALTWG-SPC-v20181109b 0 $baseDir/support $reprocess
                  jt.setRemoteCommand("/homes/workspace2/preRenderImage.sh");
@@ -54,7 +56,7 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering");
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i].getAbsolutePath());
 	                     argList.clear();
 	                 }
 	                 //wait for this batch of 100 to finish
@@ -94,13 +96,13 @@ public class DistributedPerspectiveImagePreRenderer
         String outputDirectory = args[5] + "/" + args[1];
         boolean reprocess = Boolean.parseBoolean(args[6]);
 
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-
-        URL[] urls = ((URLClassLoader)cl).getURLs();
-
-        for(URL url: urls){
-        	System.out.println(url.getFile());
-        }
+//        ClassLoader cl = ClassLoader.getSystemClassLoader();
+//
+//        URL[] urls = ((URLClassLoader)cl).getURLs();
+//
+//        for(URL url: urls){
+//        	System.out.println(url.getFile());
+//        }
 
 
         new DistributedPerspectiveImagePreRenderer(inputDirectory, outputDirectory, source, imagerIndex, body, type, reprocess);
