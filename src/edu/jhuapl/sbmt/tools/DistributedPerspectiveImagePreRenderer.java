@@ -3,8 +3,10 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.ggf.drmaa.DrmaaException;
 //import org.ggf.drmaa.DrmaaException;
 import org.ggf.drmaa.JobTemplate;
 import org.ggf.drmaa.Session;
@@ -63,7 +65,7 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.clear();
 //	                 }
 //	                 //wait for this batch of 100 to finish
-//	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
+	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
 //	                 i += nextBatchLength;
 	                 i++;
 //	                 System.out.println(
@@ -75,7 +77,7 @@ public class DistributedPerspectiveImagePreRenderer
                  session.exit();
 
              }
-             catch (Exception e)
+             catch (DrmaaException e)
              {
                  System.out.println("Error: "  + e.getMessage());
 //                 session.exit();
