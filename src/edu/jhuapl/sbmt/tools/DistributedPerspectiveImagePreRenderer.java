@@ -40,19 +40,20 @@ public class DistributedPerspectiveImagePreRenderer
                  jt.setErrorPath(":" + outputDir);
 
                  //imageFileName GASKELL RQ36 ALTWG-SPC-v20181109b 0 $baseDir/support $reprocess
-                 jt.setRemoteCommand("/homes/workspace2/preRenderImage.sh");
+                 jt.setRemoteCommand("/homes/sbmt/workspace2/preRenderImage.sh");
                  List<String> argList = new ArrayList<String>();
                  File[] fileList = new File(inputDir).listFiles();
                  Arrays.sort(fileList);
                  int i=0;
-//                 for (; i<fileList.length;)
-              	 for (; i<4;)
+                 for (; i<fileList.length;)
                  {
-//                	 int nextBatchLength = Math.min(100, fileList.length - i);
-//	                 for (int j=0; j<nextBatchLength; j++)
-//	                 {
-//	                     argList.add(fileList[i+j].getAbsolutePath());
-	                     argList.add(fileList[i].getAbsolutePath());
+                	 int nextBatchLength = Math.min(100, fileList.length - i);
+	                 for (int j=0; j<nextBatchLength; j++)
+	                 {
+              		 	argList.clear();
+
+	                     argList.add(fileList[i+j].getAbsolutePath());
+//	                     argList.add(fileList[i].getAbsolutePath());
 	                     argList.add(pointingSource.toString());
 	                     argList.add(body.toString());
 	                     argList.add(type.toString());
@@ -61,15 +62,14 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i].getAbsolutePath());
-	                     argList.clear();
-//	                 }
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath());
+	                 }
 //	                 //wait for this batch of 100 to finish
 	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
-//	                 i += nextBatchLength;
-	                 i++;
-//	                 System.out.println(
-//							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
+	                 i += nextBatchLength;
+//	                 i++;
+	                 System.out.println(
+							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
                  }
                  System.out.println ("Number of jobs completed = " + i);
 
