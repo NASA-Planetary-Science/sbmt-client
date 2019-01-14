@@ -44,7 +44,8 @@ public class DistributedPerspectiveImagePreRenderer
                  Arrays.sort(fileList);
                  int i=0;
 //                 for (; i<fileList.length;)
-//                 {
+              	 for (; i<4;)
+                 {
 //                	 int nextBatchLength = Math.min(100, fileList.length - i);
 //	                 for (int j=0; j<nextBatchLength; j++)
 //	                 {
@@ -67,7 +68,7 @@ public class DistributedPerspectiveImagePreRenderer
 //
 //	                 System.out.println(
 //							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
-//                 }
+                 }
                  System.out.println ("Number of jobs completed = " + i);
 
                  session.deleteJobTemplate(jt);
