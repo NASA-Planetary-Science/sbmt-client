@@ -54,9 +54,9 @@ public class DistributedPerspectiveImagePreRenderer
 
 	                     argList.add(fileList[i+j].getAbsolutePath());
 //	                     argList.add(fileList[i].getAbsolutePath());
-	                     argList.add(pointingSource.toString());
-	                     argList.add(body.toString());
-	                     argList.add(type.toString());
+	                     argList.add(pointingSource.name());
+	                     argList.add(body.name());
+	                     argList.add(type.name());
 	                     argList.add("" + instrumentIndex);
 	                     argList.add(outputPath);
 	                     argList.add(""+reprocess);
