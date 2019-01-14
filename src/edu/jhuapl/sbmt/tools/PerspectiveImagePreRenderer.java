@@ -81,6 +81,7 @@ public class PerspectiveImagePreRenderer
     private void calculateFootprint()
     {
         String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
+        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: trying to calculate footprint " + intersectionFileName);
         File intersectionFile = new File(intersectionFileName);
         if (intersectionFile.exists() && (reprocess == false))
         {

@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class DistributedPerspectiveImagePreRenderer
                  jt.setRemoteCommand("/homes/workspace2/preRenderImage.sh");
                  List<String> argList = new ArrayList<String>();
                  File[] fileList = new File(inputDir).listFiles();
+                 Arrays.sort(fileList);
                  int i=0;
                  for (; i<fileList.length;)
                  {
