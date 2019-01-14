@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.tools;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,6 +93,15 @@ public class DistributedPerspectiveImagePreRenderer
         int imagerIndex = Integer.parseInt(args[4]);
         String outputDirectory = args[5] + "/" + args[1];
         boolean reprocess = Boolean.parseBoolean(args[6]);
+
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+        URL[] urls = ((URLClassLoader)cl).getURLs();
+
+        for(URL url: urls){
+        	System.out.println(url.getFile());
+        }
+
 
         new DistributedPerspectiveImagePreRenderer(inputDirectory, outputDirectory, source, imagerIndex, body, type, reprocess);
         System.out.println("Done");
