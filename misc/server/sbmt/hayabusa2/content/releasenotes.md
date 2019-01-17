@@ -4,6 +4,13 @@
 
 # Release Notes
 
+### January 17, 2019 (SBMT-0.7.3)
+- Loading structures on higher resolution models now presents a progress dialog to show the user something is indeed happning
+- Improvements to the custom images tab (NOTE: we are aware of continuing problems with the state of the checkboxes in this pane; this will be fixed in a future release)
+- Improvements to LIDAR displays
+- Improvements to the DTM tab
+- Color images with perspective projection are now colored properly
+
 ### January 3, 2019 (SBMT-0.7.2)
 - Model updates for OREX
 

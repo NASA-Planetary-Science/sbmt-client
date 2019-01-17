@@ -4,6 +4,19 @@
 
 # Release Notes
 
+### January 17, 2019 (SBMT-0.7.3)
+- Loading structures on higher resolution models now presents a progress dialog to show the user something is indeed happning
+- Improvements to the custom images tab (NOTE: we are aware of continuing problems with the state of the checkboxes in this pane; this will be fixed in a future release)
+- Improvements to LIDAR displays
+- Improvements to the DTM tab
+- Color images with perspective projection are now colored properly
+
+OREX: 
+- List of images now match the boundaries for MAPCAM and POLYCAM
+- MAPCAM image gallery button on the last few models has been fixed
+- Updates to the 1217 and 1227 models
+- Bennu basemap can now be displayed from the main Bennu tab.    
+
 ### January 3, 2019 (SBMT-0.7.2)
 - Model updates for OREX
 
