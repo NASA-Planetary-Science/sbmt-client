@@ -147,8 +147,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         allModels.put(ModelNames.SMALL_BODY, priDEM);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
-        modelManager = new SbmtModelManager(priDEM);
-        modelManager.setModels(allModels);
+        modelManager = new SbmtModelManager(priDEM, allModels);
 
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));

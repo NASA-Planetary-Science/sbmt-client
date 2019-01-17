@@ -176,7 +176,6 @@ public class SbmtView extends View implements PropertyChangeListener
     protected void setupModelManager()
     {
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
-        setModelManager(new SbmtModelManager(smallBodyModel));
 
         Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
 
@@ -254,7 +253,7 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, getModelManager()));
         allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
 
-        setModels(allModels);
+        setModelManager(new SbmtModelManager(smallBodyModel, allModels));
 
         getModelManager().addPropertyChangeListener(this);
     }
