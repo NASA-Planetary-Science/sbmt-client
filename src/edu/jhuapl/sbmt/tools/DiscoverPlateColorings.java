@@ -10,7 +10,6 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.BasicColoringDataManager;
 import edu.jhuapl.saavtk.model.ColoringData;
 import edu.jhuapl.saavtk.model.ColoringDataManager;
@@ -22,6 +21,8 @@ import edu.jhuapl.saavtk.util.file.DataObjectInfo;
 import edu.jhuapl.saavtk.util.file.DataObjectInfo.InfoRow;
 import edu.jhuapl.saavtk.util.file.TableInfo;
 import edu.jhuapl.saavtk.util.file.TableInfo.ColumnInfo;
+
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class DiscoverPlateColorings
 {
