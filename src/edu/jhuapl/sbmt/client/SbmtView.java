@@ -681,10 +681,12 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
                     Utilities.bulkRetrieve(metadataManagers, metadata);
 
-                    ModelManager modelManager = getModelManager();
-                    if (modelManager instanceof MetadataManager)
-                    {
-                    	((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    if (state.hasKey(MODEL_MANAGER_KEY)) {
+                    	ModelManager modelManager = getModelManager();
+                    	if (modelManager instanceof MetadataManager)
+                    	{
+                    		((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    	}
                     }
 
 
