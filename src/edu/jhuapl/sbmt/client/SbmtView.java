@@ -93,8 +93,6 @@ import crucible.crust.metadata.impl.Utilities;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
-    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
-    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
     private final Map<String, MetadataManager> metadataManagers;
@@ -574,15 +572,19 @@ public class SbmtView extends View implements PropertyChangeListener
         smallBodyColorbar = new Colorbar(renderer);
     }
 
+    private static final Version METADATA_VERSION = Version.of(1, 0);
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
+    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
+    private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
+    private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
+    private static final Key<double[]> UP_KEY = Key.of("cameraUp");
+    private static final Key<String> CURRENT_TAB_KEY = Key.of("currentTab");
+
     @Override
     public void initializeStateManager()
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
-                final Key<double[]> positionKey = Key.of("cameraPosition");
-                final Key<double[]> upKey = Key.of("cameraUp");
-                final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
                 public Metadata store()
@@ -592,16 +594,16 @@ public class SbmtView extends View implements PropertyChangeListener
                         return EmptyMetadata.instance();
                     }
 
-                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+                    SettableMetadata result = SettableMetadata.of(METADATA_VERSION);
 
-                    result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
+                    result.put(RESOLUTION_LEVEL_KEY, getModelManager().getPolyhedralModel().getModelResolution());
 
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
-                        result.put(positionKey, camera.GetPosition());
-                        result.put(upKey, camera.GetViewUp());
+                        result.put(POSITION_KEY, camera.GetPosition());
+                        result.put(UP_KEY, camera.GetViewUp());
                     }
 
                     // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
@@ -632,7 +634,7 @@ public class SbmtView extends View implements PropertyChangeListener
                     {
                         int selectedIndex = controlPanel.getSelectedIndex();
                         String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
-                        result.put(currentTabKey, title);
+                        result.put(CURRENT_TAB_KEY, title);
                     }
                     return result;
                 }
@@ -640,12 +642,12 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(Metadata state)
                 {
-                        initialize();
-                    if (state.hasKey(resolutionLevelKey))
+                    initialize();
+                    if (state.hasKey(RESOLUTION_LEVEL_KEY))
                     {
                         try
                         {
-                            getModelManager().getPolyhedralModel().setModelResolution(state.get(resolutionLevelKey));
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(RESOLUTION_LEVEL_KEY));
                         }
                         catch (IOException e)
                         {
@@ -658,8 +660,8 @@ public class SbmtView extends View implements PropertyChangeListener
                         {
                             RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                             vtkCamera camera = panel.getActiveCamera();
-                            camera.SetPosition(state.get(positionKey));
-                            camera.SetViewUp(state.get(upKey));
+                            camera.SetPosition(state.get(POSITION_KEY));
+                            camera.SetViewUp(state.get(UP_KEY));
                             panel.resetCameraClippingRange();
                             panel.Render();
                         }
@@ -690,13 +692,13 @@ public class SbmtView extends View implements PropertyChangeListener
                     }
 
 
-                    if (state.hasKey(currentTabKey))
+                    if (state.hasKey(CURRENT_TAB_KEY))
                     {
                         JTabbedPane controlPanel = getControlPanel();
                         if (controlPanel != null)
                         {
                             int selectedIndex = 0;
-                            String currentTab = state.get(currentTabKey);
+                            String currentTab = state.get(CURRENT_TAB_KEY);
                             if (currentTab != null)
                             {
                                 for (int index = 0; index < controlPanel.getTabCount(); ++index)
