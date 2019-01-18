@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -93,6 +94,7 @@ import crucible.crust.metadata.impl.Utilities;
 public class SbmtView extends View implements PropertyChangeListener
 {
     private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
+    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
     private final Map<String, MetadataManager> metadataManagers;
@@ -619,6 +621,12 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
                     result.put(METADATA_MANAGERS_KEY, metadata);
 
+                    ModelManager modelManager = getModelManager();
+                    if (modelManager instanceof MetadataManager)
+                    {
+                    	result.put(MODEL_MANAGER_KEY, ((MetadataManager) modelManager).store());
+                    }
+
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
@@ -672,6 +680,13 @@ public class SbmtView extends View implements PropertyChangeListener
 //                    }
                     Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
                     Utilities.bulkRetrieve(metadataManagers, metadata);
+
+                    ModelManager modelManager = getModelManager();
+                    if (modelManager instanceof MetadataManager)
+                    {
+                    	((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    }
+
 
                     if (state.hasKey(currentTabKey))
                     {
