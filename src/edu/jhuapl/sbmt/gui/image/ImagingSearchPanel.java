@@ -71,11 +71,6 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.impl.SettableMetadata;
-import crucible.crust.metadata.api.Version;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -115,6 +110,11 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 @Deprecated
@@ -3414,7 +3414,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     // Save region selected.
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                    result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+                    result.put(circleSelectionKey, selectionModel.store());
 
                     // Save list of images.
                     result.put(imageListKey, listToOutputFormat(imageRawResults));
@@ -3540,7 +3540,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                     PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
-                    selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+                    selectionModel.retrieve(source.get(circleSelectionKey));
 
                     // Restore list of images.
                     List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
