@@ -242,10 +242,10 @@ public class ColorImageController
 
     private void redButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getRedLabel().setText(new File(name).getName());
@@ -255,10 +255,10 @@ public class ColorImageController
 
     private void greenButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getGreenLabel().setText(new File(name).getName());
@@ -268,10 +268,10 @@ public class ColorImageController
 
     private void blueButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getBlueLabel().setText(new File(name).getName());

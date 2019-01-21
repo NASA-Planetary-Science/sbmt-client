@@ -2,19 +2,18 @@ package edu.jhuapl.sbmt.gui.image.model.custom;
 
 import java.text.DecimalFormat;
 
+import edu.jhuapl.saavtk.metadata.InstanceGetter;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
+import edu.jhuapl.saavtk.metadata.StorableAsMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
-public class CustomCylindricalImageKey extends ImageKey implements MetadataManager
+public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylindricalImageKey>, CustomImageKeyInterface
 {
     public String name = ""; // name to call this image for display purposes
     public String imagefilename = ""; // filename of image on disk
@@ -23,33 +22,26 @@ public class CustomCylindricalImageKey extends ImageKey implements MetadataManag
     public double lllon = 0.0;
     public double urlat = 90.0;
     public double urlon = 360.0;
+    public ImageType imageType;
+    public final ImageSource source;
 
-    final Key<String> nameKey = Key.of("name");
-    final Key<String> imageFileNameKey = Key.of("imagefilename");
-    final Key<String> projectionKey = Key.of("projectionType");
-    final Key<String> imageTypeKey = Key.of("imageType");
-    final Key<Double> lllatKey = Key.of("lllat");
-    final Key<Double> lllonKey = Key.of("lllon");
-    final Key<Double> urlatKey = Key.of("urlat");
-    final Key<Double> urlonKey = Key.of("urlon");
 
-	public CustomCylindricalImageKey(String name, ImageSource source)
+    private static final  Key<String> nameKey = Key.of("name");
+    private static final  Key<String> imageFileNameKey = Key.of("imagefilename");
+    private static final  Key<String> imageTypeKey = Key.of("imageType");
+    private static final  Key<String> sourceKey = Key.of("source");
+    private static final  Key<Double> lllatKey = Key.of("lllat");
+    private static final  Key<Double> lllonKey = Key.of("lllon");
+    private static final  Key<Double> urlatKey = Key.of("urlat");
+    private static final  Key<Double> urlonKey = Key.of("urlon");
+    private static final Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
+
+	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source)
 	{
-		super(name, source);
-		// TODO Auto-generated constructor stub
-	}
-
-	public CustomCylindricalImageKey(String name, ImageSource source, ImagingInstrument instrument)
-	{
-		super(name, source, instrument);
-		// TODO Auto-generated constructor stub
-	}
-
-	public CustomCylindricalImageKey(String name, ImageSource source, FileType fileType, ImageType imageType,
-			ImagingInstrument instrument, String band, int slice, String pointingFile)
-	{
-		super(name, source, fileType, imageType, instrument, band, slice, pointingFile);
-		// TODO Auto-generated constructor stub
+		this.name = name;
+		this.imagefilename = imagefilename;
+		this.imageType = imageType;
+		this.source = source;
 	}
 
     public String getName()
@@ -62,7 +54,62 @@ public class CustomCylindricalImageKey extends ImageKey implements MetadataManag
     	return imagefilename;
     }
 
-    @Override
+    public double getLllat()
+	{
+		return lllat;
+	}
+
+	public void setLllat(double lllat)
+	{
+		this.lllat = lllat;
+	}
+
+	public double getLllon()
+	{
+		return lllon;
+	}
+
+	public void setLllon(double lllon)
+	{
+		this.lllon = lllon;
+	}
+
+	public double getUrlat()
+	{
+		return urlat;
+	}
+
+	public void setUrlat(double urlat)
+	{
+		this.urlat = urlat;
+	}
+
+	public double getUrlon()
+	{
+		return urlon;
+	}
+
+	public void setUrlon(double urlon)
+	{
+		this.urlon = urlon;
+	}
+
+	public ProjectionType getProjectionType()
+	{
+		return projectionType;
+	}
+
+	public ImageSource getSource()
+	{
+		return source;
+	}
+
+	public ImageType getImageType()
+	{
+		return imageType;
+	}
+
+	@Override
     public String toString()
     {
         DecimalFormat df = new DecimalFormat("#.#####");
@@ -79,10 +126,11 @@ public class CustomCylindricalImageKey extends ImageKey implements MetadataManag
     public Metadata store()
     {
         SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+        result.put(Key.of("customimagetype"), CUSTOM_CYLINDRICAL_IMAGE_KEY.toString());
         result.put(nameKey, name);
         result.put(imageFileNameKey, imagefilename);
-        result.put(projectionKey, projectionType.toString());
         result.put(imageTypeKey, imageType.toString());
+        result.put(sourceKey, source.toString());
         result.put(lllatKey, lllat);
         result.put(lllonKey, lllon);
         result.put(urlatKey, urlat);
@@ -90,17 +138,52 @@ public class CustomCylindricalImageKey extends ImageKey implements MetadataManag
         return result;
     }
 
-    @Override
-    public void retrieve(Metadata source)
-    {
-        name = source.get(nameKey);
-        imagefilename = source.get(imageFileNameKey);
-        projectionType = ProjectionType.valueOf(source.get(projectionKey));
-        imageType = ImageType.valueOf(source.get(imageTypeKey));
-        lllat = source.get(lllatKey);
-        lllon = source.get(lllonKey);
-        urlat = source.get(urlatKey);
-        urlon = source.get(urlonKey);
-    }
+	public static void initializeSerializationProxy()
+	{
+		InstanceGetter.defaultInstanceGetter().register(CUSTOM_CYLINDRICAL_IMAGE_KEY, (metadata) -> {
+
+	        String name = metadata.get(nameKey);
+	        String imagefilename = metadata.get(imageFileNameKey);
+	        ImageType imageType = ImageType.valueOf(metadata.get(imageTypeKey));
+	        ImageSource source = ImageSource.valueOf(metadata.get(sourceKey));
+	        double lllat = metadata.get(lllatKey);
+	        double lllon = metadata.get(lllonKey);
+	        double urlat = metadata.get(urlatKey);
+	        double urlon = metadata.get(urlonKey);
+
+	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source);
+	        result.setLllat(lllat);
+	        result.setLllon(lllon);
+	        result.setUrlat(urlat);
+	        result.setUrlon(urlon);
+
+			return result;
+		});
+	}
+
+	@Override
+	public Key<CustomCylindricalImageKey> getKey()
+	{
+		return CUSTOM_CYLINDRICAL_IMAGE_KEY;
+	}
+
+	@Override
+	public void setImagefilename(String imagefilename)
+	{
+		this.setImagefilename(imagefilename);
+	}
+
+//    @Override
+//    public void retrieve(Metadata source)
+//    {
+//        name = source.get(nameKey);
+//        imagefilename = source.get(imageFileNameKey);
+//        projectionType = ProjectionType.valueOf(source.get(projectionKey));
+//        imageType = ImageType.valueOf(source.get(imageTypeKey));
+//        lllat = source.get(lllatKey);
+//        lllon = source.get(lllonKey);
+//        urlat = source.get(urlatKey);
+//        urlon = source.get(urlonKey);
+//    }
 
 }

@@ -21,6 +21,7 @@ import org.joda.time.format.DateTimeFormat;
 import com.google.common.collect.Sets;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
@@ -64,14 +65,14 @@ public class TimeIntervalTable extends JTable
 
     Set<StateHistoryKey> allKeys = Sets.newHashSet();
     StateHistoryCollection intervals;
-    SmallBodyModel bodyModel;
+    ISmallBodyModel bodyModel;
     Renderer renderer;
 
 
     /**
      * Create the Table
      */
-    public TimeIntervalTable(StateHistoryCollection intervals, SmallBodyModel model, Renderer renderer)
+    public TimeIntervalTable(StateHistoryCollection intervals, ISmallBodyModel model, Renderer renderer)
     {
         this.intervals = intervals;
         this.renderer = renderer;

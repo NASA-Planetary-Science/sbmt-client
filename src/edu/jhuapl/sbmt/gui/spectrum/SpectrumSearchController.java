@@ -78,6 +78,7 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -1080,7 +1081,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             if (e.getKeyChar()=='v')
             {
                 Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
-                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                ISmallBodyModel smallBodyModel=(ISmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                 //
                 vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
                 normalsFilter.SetInputData(spectrum.getUnshiftedFootprint());

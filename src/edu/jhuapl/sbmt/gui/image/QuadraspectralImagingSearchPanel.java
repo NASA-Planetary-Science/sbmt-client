@@ -38,6 +38,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -155,7 +156,7 @@ public class QuadraspectralImagingSearchPanel extends ImagingSearchPanel impleme
         image.firePropertyChange();
    }
 
-    protected void unloadImage(ImageKey key, ImageCollection images)
+    protected void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
         super.unloadImage(key, images);
     }

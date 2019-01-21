@@ -103,6 +103,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -616,7 +617,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 String name = imageRawResults.get(i).get(0);
                 //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, mapColumnIndex);
@@ -1022,7 +1023,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 String name = imageRawResults.get(i).get(0);
                 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, mapColumnIndex);
@@ -3092,7 +3093,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    protected void unloadImage(ImageKey key, ImageCollection images)
+    protected void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
         images.removeImage(key);
 
@@ -3102,7 +3103,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
 
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             unloadImage(key, images);
@@ -3118,7 +3119,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
             {
@@ -3156,7 +3157,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             if (images.containsImage(key))
             {
@@ -3201,7 +3202,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             String name = imageRawResults.get(row).get(0);
             //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
@@ -3248,7 +3249,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 String name = imageRawResults.get(row).get(0);
                 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 return images.containsImage(key);
             }
@@ -3458,7 +3459,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                             frus.put(name, perspectiveImage.isFrustumShowing());
                         }
-                        ImageKey key = image.getKey();
+                        ImageKeyInterface key = image.getKey();
                     }
                     result.put(isShowingKey, showing.build());
                     result.put(isFrustrumShowingKey, frus.build());

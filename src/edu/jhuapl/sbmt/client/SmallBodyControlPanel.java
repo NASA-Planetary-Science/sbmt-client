@@ -21,6 +21,7 @@ import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.util.PolyDataUtil2;
 import edu.jhuapl.sbmt.util.PolyDataUtil2.PolyDataStatistics;
@@ -31,7 +32,7 @@ import nom.tam.fits.FitsException;
 public class SmallBodyControlPanel extends SbmtPolyhedralModelControlPanel
 {
     private final List<OpacityChangeListener> imageChangeListeners;
-    private ImageKey currentImageMapKey;
+    private ImageKeyInterface currentImageMapKey;
 
     public SmallBodyControlPanel(ModelManager modelManager, String bodyName)
     {

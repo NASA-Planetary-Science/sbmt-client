@@ -33,6 +33,7 @@ import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
@@ -243,10 +244,10 @@ public class ColorImageController
 
     private void redButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getRedLabel().setText(new File(name).getName());
@@ -256,10 +257,10 @@ public class ColorImageController
 
     private void greenButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getGreenLabel().setText(new File(name).getName());
@@ -269,10 +270,10 @@ public class ColorImageController
 
     private void blueButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = model.getSelectedImageKeys()[0];
+        ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
-            String name = selectedKey.name;
+            String name = selectedKey.getName();
 //            if (!selectedKey.band.equals("0"))
 //                name = selectedKey.band + ":" + name;
             panel.getBlueLabel().setText(new File(name).getName());

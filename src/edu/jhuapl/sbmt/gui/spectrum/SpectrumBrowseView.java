@@ -17,7 +17,7 @@ import javax.swing.border.TitledBorder;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumBrowseView extends SpectrumView
@@ -50,7 +50,7 @@ public class SpectrumBrowseView extends SpectrumView
     private JPanel rgbColoringPanel;
     private JButton saveSpectraListButton;
     private JButton loadSpectraListButton;
-    public SpectrumBrowseView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument)
+    public SpectrumBrowseView(ISmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument)
     {
 
         super(smallBodyConfig, modelManager, pickManager2, renderer, instrument);

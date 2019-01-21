@@ -8,7 +8,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class StringRenderer extends DefaultTableCellRenderer
@@ -34,7 +34,7 @@ public class StringRenderer extends DefaultTableCellRenderer
         String name = imageRawResults.get(row).get(0);
 //        ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
         String filename = name.substring(0, name.lastIndexOf("."));
-        ImageKey key = imageSearchModel.createImageKey(filename, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+        ImageKeyInterface key = imageSearchModel.createImageKey(filename, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
             int[] c = model.getBoundary(key).getBoundaryColor();

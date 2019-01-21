@@ -29,7 +29,6 @@ import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.Serializers;
-import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -40,16 +39,17 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -61,7 +61,7 @@ import nom.tam.fits.FitsException;
 
 public class CustomImagesModel extends ImageSearchModel
 {
-    private List<ImageInfo> customImages;
+    private List<CustomImageKeyInterface> customImages;
     private Vector<CustomImageResultsListener> customImageListeners;
     private boolean initialized = false;
 //    private int numImagesInCollection = -1;
@@ -74,7 +74,7 @@ public class CustomImagesModel extends ImageSearchModel
             ImagingInstrument instrument)
     {
         super(smallBodyConfig, modelManager, renderer, instrument);
-        this.customImages = new Vector<ImageInfo>();
+        this.customImages = new Vector<CustomImageKeyInterface>();
         this.customImageListeners = new Vector<CustomImageResultsListener>();
 
         this.imageCollection = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -96,12 +96,12 @@ public class CustomImagesModel extends ImageSearchModel
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
     }
 
-    public List<ImageInfo> getCustomImages()
+    public List<CustomImageKeyInterface> getCustomImages()
     {
         return customImages;
     }
 
-    public void setCustomImages(List<ImageInfo> customImages)
+    public void setCustomImages(List<CustomImageKeyInterface> customImages)
     {
         this.customImages = customImages;
     }
@@ -124,28 +124,28 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
-    public void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    public void loadImage(CustomImageKeyInterface key, ImageCollection images) throws FitsException, IOException
     {
         images.addImage(key);
     }
 
-    public void loadImages(String name, ImageInfo info)
+    public void loadImages(String name, CustomImageKeyInterface info)
     {
-        ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-//        if (info.sumfilename != null && !info.sumfilename.equals("null")) source = ImageSource.SPICE;
-//        List<ImageKey> keys = createImageKeys(getCustomDataFolder() + File.separator + info.imagefilename, imageSourceOfLastQuery, instrument);
-        FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        String pointingFile = info.sumfilename != null && !info.sumfilename.equals("null") ? info.sumfilename : info.infofilename;
-        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
+//        ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+////        if (info.sumfilename != null && !info.sumfilename.equals("null")) source = ImageSource.SPICE;
+////        List<ImageKey> keys = createImageKeys(getCustomDataFolder() + File.separator + info.imagefilename, imageSourceOfLastQuery, instrument);
+//        FileType fileType = info.sumfilename != null && !info.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//        String pointingFile = info.sumfilename != null && !info.sumfilename.equals("null") ? info.sumfilename : info.infofilename;
+//        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
 
 //        for (ImageKey key : keys)
 //        {
-            ImageKey revisedKey = new ImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.imagefilename), source, fileType, info.imageType, instrument, getCurrentBand(), getCurrentSlice(), pointingFile);
+//            ImageKey revisedKey = new ImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.imagefilename), source, fileType, info.imageType, instrument, getCurrentBand(), getCurrentSlice(), pointingFile);
             try
             {
-                if (!imageCollection.containsImage(revisedKey))
+                if (!imageCollection.containsImage(info))
                 {
-                    loadImage(revisedKey, imageCollection);
+                    loadImage(info, imageCollection);
                 }
             }
             catch (Exception e1) {
@@ -159,7 +159,7 @@ public class CustomImagesModel extends ImageSearchModel
 //        }
    }
 
-    public void unloadImage(ImageKey key, ImageCollection images)
+    public void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
     	System.out.println("CustomImagesModel: unloadImage: removing key " + key);
         images.removeImage(key);
@@ -168,8 +168,8 @@ public class CustomImagesModel extends ImageSearchModel
     public void unloadImages(String name)
     {
 
-        List<ImageKey> keys = createImageKeys(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + getFilePathForName(name)), imageSourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        List<ImageKeyInterface> keys = createImageKeys(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + getFilePathForName(name)), imageSourceOfLastQuery, instrument);
+        for (ImageKeyInterface key : keys)
         {
             unloadImage(key, imageCollection);
         }
@@ -192,55 +192,56 @@ public class CustomImagesModel extends ImageSearchModel
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
     }
 
-    public void saveImage(int index, ImageInfo oldImageInfo, ImageInfo newImageInfo) throws IOException
+    public void saveImage(int index, CustomImageKeyInterface oldImageInfo, CustomImageKeyInterface newImageInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
 
         // If newImageInfo.imagefilename is null, that means we are in edit mode
         // and should continue to use the existing image
-        if (newImageInfo.imagefilename == null)
+        if (newImageInfo.getImageFilename() == null)
         {
-            newImageInfo.imagefilename = oldImageInfo.imagefilename;
+            newImageInfo.setImagefilename(oldImageInfo.getImageFilename());
         }
         else
         {
             // Check if this image is any of the supported formats
-            if(VtkENVIReader.isENVIFilename(newImageInfo.imagefilename)){
+        	String newImageFilename = newImageInfo.getImageFilename();
+            if(VtkENVIReader.isENVIFilename(newImageFilename)){
                 // We were given an ENVI file (binary or header)
                 // Can assume at this point that both binary + header files exist in the same directory
-                String extension = FilenameUtils.getExtension(newImageInfo.imagefilename);
+                String extension = FilenameUtils.getExtension(newImageFilename);
                 // Get filenames of the binary and header files
-                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageInfo.imagefilename);
-                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename);
+                String enviBinaryFilename = VtkENVIReader.getBinaryFilename(newImageFilename);
+                String enviHeaderFilename = VtkENVIReader.getHeaderFilename(newImageFilename);
                 // Rename newImageInfo as that of the binary file
-                newImageInfo.imagefilename = "image-" + uuid /*+ "." + extension*/;
+                newImageInfo.setImagefilename("image-" + uuid /*+ "." + extension*/);
 
                 // Copy over the binary file
                 Files.copy(new File(enviBinaryFilename /*+ "." + extension*/),
                         new File(getCustomDataFolder() + File.separator
-                                + FilenameUtils.getBaseName(newImageInfo.imagefilename)));
+                                + FilenameUtils.getBaseName(newImageFilename)));
 
                 // Copy over the header file
                 Files.copy(new File(enviHeaderFilename),
                         new File(getCustomDataFolder() + File.separator
-                                + VtkENVIReader.getHeaderFilename(newImageInfo.imagefilename)));
+                                + VtkENVIReader.getHeaderFilename(newImageFilename)));
             }
-            else if(newImageInfo.imagefilename.endsWith(".fit") || newImageInfo.imagefilename.endsWith(".fits") ||
-                    newImageInfo.imagefilename.endsWith(".FIT") || newImageInfo.imagefilename.endsWith(".FITS"))
+            else if(newImageFilename.endsWith(".fit") || newImageFilename.endsWith(".fits") ||
+            		newImageFilename.endsWith(".FIT") || newImageFilename.endsWith(".FITS"))
             {
                 // Copy FIT file to cache
                 String newFilename = "image-" + uuid + ".fit";
                 String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                FileUtil.copyFile(newImageInfo.imagefilename,  newFilepath);
+                FileUtil.copyFile(newImageFilename,  newFilepath);
                 // Change newImageInfo.imagefilename to the new location of the file
-                newImageInfo.imagefilename = newFilename;
+                newImageInfo.setImagefilename(newFilename);
             }
             else
             {
 
                 // Convert native VTK supported image to PNG and save to cache
                 vtkImageReader2Factory imageFactory = new vtkImageReader2Factory();
-                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageInfo.imagefilename);
+                vtkImageReader2 imageReader = imageFactory.CreateImageReader2(newImageFilename);
                 if (imageReader == null)
                 {
                     JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
@@ -249,22 +250,22 @@ public class CustomImagesModel extends ImageSearchModel
                         JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                imageReader.SetFileName(newImageInfo.imagefilename);
+                imageReader.SetFileName(newImageFilename);
                 imageReader.Update();
 
                 vtkAlgorithmOutput imageReaderOutput = imageReader.GetOutputPort();
                 vtkPNGWriter imageWriter = new vtkPNGWriter();
                 imageWriter.SetInputConnection(imageReaderOutput);
                 // We save out the image using a new name that makes use of a UUID
-                newImageInfo.imagefilename = "image-" + uuid + ".png";
-                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.imagefilename);
+                newImageInfo.setImagefilename("image-" + uuid + ".png");
+                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageFilename);
                 //imageWriter.SetFileTypeToBinary();
                 imageWriter.Write();
             }
         }
 
         // Operations specific for perspective projection type
-        if (newImageInfo.projectionType == ProjectionType.PERSPECTIVE)
+        if (newImageInfo.getProjectionType() == ProjectionType.PERSPECTIVE)
         {
             // If newImageInfo.sumfilename and infofilename are both null, that means we are in edit mode
             // and should continue to use the existing sumfile
@@ -322,7 +323,7 @@ public class CustomImagesModel extends ImageSearchModel
       int selectedItem = getSelectedImageIndex()[0];
       if (selectedItem >= 0)
       {
-          ImageInfo oldImageInfo = customImages.get(selectedItem);
+    	  CustomImageKeyInterface oldImageInfo = customImages.get(selectedItem);
 
           CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, getInstrument());
           dialog.setImageInfo(oldImageInfo, getModelManager().getPolyhedralModel().isEllipsoid());
@@ -332,7 +333,7 @@ public class CustomImagesModel extends ImageSearchModel
           // If user clicks okay replace item in list
           if (dialog.getOkayPressed())
           {
-              ImageInfo newImageInfo = dialog.getImageInfo();
+        	  CustomImageKeyInterface newImageInfo = dialog.getImageInfo();
               try
               {
                   saveImage(selectedItem, oldImageInfo, newImageInfo);
@@ -356,7 +357,7 @@ public class CustomImagesModel extends ImageSearchModel
         int selectedItem = getSelectedImageIndex()[0];
         if (selectedItem >= 0)
         {
-            ImageInfo info = customImages.get(selectedItem);
+        	CustomImageKeyInterface info = customImages.get(selectedItem);
             unloadImage(getKeyForImageInfo(info), imageCollection);
             customImages.remove(info);
             updateConfigFile();
@@ -366,28 +367,28 @@ public class CustomImagesModel extends ImageSearchModel
 
     public String getFilePathForName(String infoName)
     {
-    	for (ImageInfo info : customImages)
+    	for (CustomImageKeyInterface info : customImages)
         {
-    		if (info.name.equals(infoName)) return info.imagefilename;
+    		if (info.getName().equals(infoName)) return info.getImageFilename();
         }
     	return null;
     }
 
-    public ImageInfo getImageInfoForName(String infoName)
+    public CustomImageKeyInterface getImageInfoForName(String infoName)
     {
-    	for (ImageInfo info : customImages)
+    	for (CustomImageKeyInterface info : customImages)
         {
-    		if (info.name.equals(infoName)) return info;
+    		if (info.getName().equals(infoName)) return info;
         }
     	return null;
     }
 
     @Override
-    public ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
-        for (ImageInfo info : customImages)
+        for (CustomImageKeyInterface info : customImages)
         {
-            if (FilenameUtils.getBaseName(info.name).equals(imagePathName))
+            if (FilenameUtils.getBaseName(info.getName()).equals(imagePathName))
             {
                 return getKeyForImageInfo(info);
             }
@@ -395,20 +396,21 @@ public class CustomImagesModel extends ImageSearchModel
         return super.createImageKey(imagePathName, sourceOfLastQuery, instrument);
     }
 
-    private ImageKey getKeyForImageInfo(ImageInfo imageInfo)
+    private ImageKeyInterface getKeyForImageInfo(CustomImageKeyInterface imageInfo)
     {
-        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-//        if (imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null")) source = ImageSource.SPICE;
-        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        ImageType imageType = imageInfo.imageType;
-        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
-        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
-
-//        System.out.println("CustomImagesModel: getKeyForImageInfo: name is " + name);
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
-        return imageKey;
+    	return imageInfo;
+//        String name = getCustomDataFolder() + File.separator + imageInfo.getImageFilename();
+//        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+////        if (imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null")) source = ImageSource.SPICE;
+//        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//        ImageType imageType = imageInfo.imageType;
+//        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+//        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+//        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
+//
+////        System.out.println("CustomImagesModel: getKeyForImageInfo: name is " + name);
+//        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
+//        return imageKey;
     }
 
     /**
@@ -419,17 +421,17 @@ public class CustomImagesModel extends ImageSearchModel
      */
     public void remapImageToRenderer(int index) throws FitsException, IOException
     {
-        ImageInfo imageInfo = customImages.get(index);
-        // Remove the image from the renderer
-        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        ImageType imageType = imageInfo.imageType;
-        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
-        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
-
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
+    	CustomImageKeyInterface imageKey = customImages.get(index);
+//        // Remove the image from the renderer
+//        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+//        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+//        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//        ImageType imageType = imageInfo.imageType;
+//        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+//        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+//        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
+//
+//        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
 
 //        ImageCollection imageCollection = (ImageCollection)getModelManager().getModel(ModelNames.IMAGES);
 
@@ -446,21 +448,21 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
-    public ImageKey getImageKeyForIndex(int index)
+    public ImageKeyInterface getImageKeyForIndex(int index)
     {
-        ImageInfo imageInfo = customImages.get(index);
+    	CustomImageKeyInterface imageKey = customImages.get(index);
         // Remove the image from the renderer
-        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-//        if (imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null")) source = ImageSource.SPICE;
-        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        ImageType imageType = imageInfo.imageType;
-        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
-        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
-
-//        System.out.println("CustomImagesModel: getImageKeyForIndex: name is " + name);
-        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
+//        String name = getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+//        ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+////        if (imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null")) source = ImageSource.SPICE;
+//        FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//        ImageType imageType = imageInfo.imageType;
+//        ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+//        String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+//        pointingFile = getCustomDataFolder() + File.separator + pointingFile;
+//
+////        System.out.println("CustomImagesModel: getImageKeyForIndex: name is " + name);
+//        ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
         return imageKey;
     }
 
@@ -516,7 +518,7 @@ public class CustomImagesModel extends ImageSearchModel
 
                 for (int i=0; i<numImages; ++i)
                 {
-                    ImageInfo imageInfo = new ImageInfo();
+                	CustomImageKeyInterface imageInfo = new CustomImageKeyInterface();
                     imageInfo.name = imageNames[i];
                     imageInfo.imagefilename = imageFilenames[i];
                     imageInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
@@ -649,7 +651,7 @@ public class CustomImagesModel extends ImageSearchModel
             retrieve(metadata);
         }
 
-        for (ImageInfo info : customImages)
+        for (CustomImageKeyInterface info : customImages)
         {
             fireInfoChangedListeners(info);
         }
@@ -748,8 +750,8 @@ public class CustomImagesModel extends ImageSearchModel
                 for (int i=0; i<size; ++i)
                 {
                     // We want to compare the actual image filename here, not the displayed name which may not be unique
-                    ImageInfo imageInfo = customImages.get(i);
-                    String imageFilename = imageInfo.imagefilename;
+                	CustomImageKeyInterface imageInfo = customImages.get(i);
+                    String imageFilename = imageInfo.getImageFilename();
                     if (name.equals(imageFilename))
                     {
                         idx = i;
@@ -781,7 +783,7 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
-    public void setImageVisibility(ImageKey key, boolean visible)
+    public void setImageVisibility(ImageKeyInterface key, boolean visible)
     {
 //        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
 //        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
@@ -796,10 +798,10 @@ public class CustomImagesModel extends ImageSearchModel
     }
 
     @Override
-    public ImageKey[] getSelectedImageKeys()
+    public ImageKeyInterface[] getSelectedImageKeys()
     {
         int[] indices = selectedImageIndices;
-        ImageKey[] selectedKeys = new ImageKey[indices.length];
+        ImageKeyInterface[] selectedKeys = new ImageKey[indices.length];
         if (indices.length > 0)
         {
             int i=0;
@@ -809,7 +811,7 @@ public class CustomImagesModel extends ImageSearchModel
                 String name = new File(image).getName();
                 image = image.substring(0,image.length()-4);
 //                ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
-                ImageKey selectedKey = getImageKeyForIndex(index);
+                ImageKeyInterface selectedKey = getImageKeyForIndex(index);
 //                if (!selectedKey.band.equals("0"))
 //                    name = selectedKey.band + ":" + name;
                 selectedKeys[i++] = selectedKey;
@@ -846,7 +848,7 @@ public class CustomImagesModel extends ImageSearchModel
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
         Metadata[] infoArray = new Metadata[customImages.size()];
         int i=0;
-        for (ImageInfo info : customImages)
+        for (CustomImageKeyInterface info : customImages)
         {
             infoArray[i++] = info.store();
         }
@@ -873,8 +875,9 @@ public class CustomImagesModel extends ImageSearchModel
         Metadata[] metadataArray = read(customImagesKey, source);
         for (Metadata meta : metadataArray)
         {
-            ImageInfo info = new ImageInfo();
-            info.retrieve(meta);
+//        	CustomImageKeyInterface info = new CustomImageKeyInterface();
+//            info.retrieve(meta);
+            CustomImageKeyInterface info = CustomImageKeyInterface.retrieve(meta);
             customImages.add(info);
         }
 ////        super.retrieve(source);
@@ -888,13 +891,13 @@ public class CustomImagesModel extends ImageSearchModel
 //        }
     }
 
-    public void saveImages(List<ImageInfo> customImages, String filename)
+    public void saveImages(List<CustomImageKeyInterface> customImages, String filename)
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
         Metadata[] infoArray = new Metadata[customImages.size()];
         int i=0;
         final Key<Metadata[]> customImagesKey = Key.of("SavedImages");
-        for (ImageInfo info : customImages)
+        for (CustomImageKeyInterface info : customImages)
         {
             infoArray[i++] = info.store();
         }
@@ -921,8 +924,9 @@ public class CustomImagesModel extends ImageSearchModel
             Metadata[] metadataArray = read(customImagesKey, metadata);
             for (Metadata meta : metadataArray)
             {
-                ImageInfo info = new ImageInfo();
-                info.retrieve(meta);
+            	CustomImageKeyInterface info = CustomImageKeyInterface.retrieve(meta);
+//            	CustomImageKeyInterface info = new CustomImageKeyInterface();
+//                info.retrieve(meta);
                 customImages.add(info);
             }
 //            System.out.println("CustomImagesModel: loadImages: number of images now " + customImages.size());
@@ -954,7 +958,7 @@ public class CustomImagesModel extends ImageSearchModel
         return null;
     }
 
-    public void fireInfoChangedListeners(ImageInfo info)
+    public void fireInfoChangedListeners(CustomImageKeyInterface info)
     {
 //        for (ImageCreationModelChangedListener listener : listeners)
 //        {

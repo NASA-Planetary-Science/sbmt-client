@@ -46,6 +46,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -167,7 +168,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
 
-    public void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    public void loadImage(ImageKeyInterface key, ImageCollection images) throws FitsException, IOException
     {
         images.addImage(key);
     }
@@ -175,8 +176,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void loadImages(String name)
     {
 
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        for (ImageKeyInterface key : keys)
         {
             try
             {
@@ -198,7 +199,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
    }
 
-    public void unloadImage(ImageKey key, ImageCollection images)
+    public void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
         images.removeImage(key);
     }
@@ -206,8 +207,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void unloadImages(String name)
     {
 
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        for (ImageKeyInterface key : keys)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             unloadImage(key, images);
@@ -216,9 +217,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public void setImageVisibility(String name, boolean visible)
     {
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
             {
@@ -340,18 +341,18 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         this.currentBand = currentBand;
     }
 
-    public List<ImageKey> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
-        List<ImageKey> result = new ArrayList<ImageKey>();
+        List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
         result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
         return result;
     }
 
-    public ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
+        ImageKeyInterface key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
         return key;
     }
 
@@ -434,10 +435,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         modelListeners.removeAllElements();
     }
 
-    public ImageKey[] getSelectedImageKeys()
+    public ImageKeyInterface[] getSelectedImageKeys()
     {
         int[] indices = selectedImageIndices;
-        ImageKey[] selectedKeys = new ImageKey[indices.length];
+        ImageKeyInterface[] selectedKeys = new ImageKeyInterface[indices.length];
         if (indices.length > 0)
         {
             int i=0;
@@ -446,7 +447,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                 String image = imageResults.get(index).get(0);
                 String name = new File(image).getName();
                 image = image.substring(0,image.length()-4);
-                ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
+                ImageKey selectedKey = (ImageKey)createImageKey(image, imageSourceOfLastQuery, instrument);
                 if (!selectedKey.band.equals("0"))
                     name = selectedKey.band + ":" + name;
                 selectedKeys[i++] = selectedKey;
@@ -1361,12 +1362,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Save boundary info.
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-        for (ImageKey key : boundaries.getImageKeys())
+        for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
             {
                 PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                String fullName = key.name;
+                String fullName = key.getName();
                 String name = new File(fullName).getName();
                 bndr.put(name, boundary.isVisible());
             }
@@ -1387,7 +1388,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                 PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                 frus.put(name, perspectiveImage.isFrustumShowing());
             }
-            ImageKey key = image.getKey();
+            ImageKeyInterface key = image.getKey();
         }
         result.put(isShowingKey, showing.build());
         result.put(isFrustrumShowingKey, frus.build());
@@ -1493,9 +1494,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //        }
 
         // Restore boundaries. First clear any associated with this model.
-        for (ImageKey key : boundaries.getImageKeys())
+        for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
             {
                 boundaries.removeBoundary(key);
             }
@@ -1506,7 +1507,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             try
             {
                 String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
-                ImageKey imageKey = createImageKey(fullName, pointing, instrument);
+                ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
                 boundaries.addBoundary(imageKey);
                 boundaries.getBoundary(imageKey).setVisible(entry.getValue());
             }
@@ -1542,7 +1543,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public int getNumBoundaries() 
+    public int getNumBoundaries()
     {
         return numBoundaries;
     }

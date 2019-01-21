@@ -10,7 +10,7 @@ import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 import nom.tam.fits.FitsException;
 
@@ -35,9 +35,9 @@ public class CustomColorImageModel extends ColorImageModel
 
     public void generateColorImage(ActionEvent e) throws IOException, FitsException, NoOverlapException
     {
-        ImageKey selectedRedKey = getSelectedRedKey();
-        ImageKey selectedGreenKey = getSelectedGreenKey();
-        ImageKey selectedBlueKey = getSelectedBlueKey();
+        ImageKeyInterface selectedRedKey = getSelectedRedKey();
+        ImageKeyInterface selectedGreenKey = getSelectedGreenKey();
+        ImageKeyInterface selectedBlueKey = getSelectedBlueKey();
 
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)

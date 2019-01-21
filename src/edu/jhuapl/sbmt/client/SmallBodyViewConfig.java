@@ -47,7 +47,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 * imaging data. This class is also used when creating (to know which tabs
 * to create).
 */
-public class SmallBodyViewConfig extends BodyViewConfig
+public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
@@ -2340,7 +2340,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
             //  configArray.add(c);
-            SmallBodyViewConfig callisto = new SmallBodyViewConfig();
+            ISmallBodyViewConfig callisto = new SmallBodyViewConfig();
             callisto = c.clone();
 
             c = new SmallBodyViewConfig();
@@ -5610,6 +5610,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
         return c;
     }
 
+    /* (non-Javadoc)
+	 * @see edu.jhuapl.sbmt.client.ISmallBodyViewConfig#isAccessible()
+	 */
     @Override
     public boolean isAccessible()
     {
