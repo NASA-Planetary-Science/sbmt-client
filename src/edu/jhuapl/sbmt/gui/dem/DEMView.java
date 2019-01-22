@@ -48,7 +48,6 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ScaleDataRangeDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.camera.StandardCamera;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -153,9 +152,6 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
-
-        // Retrieve the camera and force it to focus on the reference model
-        ((StandardCamera) renderer.getCamera()).setLockToModelCenter(true);
 
          PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
