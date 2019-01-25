@@ -1,15 +1,20 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
+
+import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
@@ -572,13 +577,15 @@ public class SbmtView extends View implements PropertyChangeListener
         smallBodyColorbar = new Colorbar(renderer);
     }
 
-    private static final Version METADATA_VERSION = Version.of(1, 0);
+    private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
+    private static final Version METADATA_VERSION_1_0 = Version.of(1, 0); // Top level CURRENT_TAB only stored as a single string.
     private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
     private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
     private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
     private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
     private static final Key<double[]> UP_KEY = Key.of("cameraUp");
-    private static final Key<String> CURRENT_TAB_KEY = Key.of("currentTab");
+    private static final Key<List<String>> CURRENT_TAB_KEY = Key.of("currentTab");
+    private static final Key<String> CURRENT_TAB_KEY_1_0 = Key.of("currentTab");
 
     @Override
     public void initializeStateManager()
@@ -632,9 +639,9 @@ public class SbmtView extends View implements PropertyChangeListener
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
-                        int selectedIndex = controlPanel.getSelectedIndex();
-                        String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
-                        result.put(CURRENT_TAB_KEY, title);
+                    	List<String> currentTabs = new ArrayList<>();
+                    	compileCurrentTabs(controlPanel, currentTabs);
+                        result.put(CURRENT_TAB_KEY, currentTabs);
                     }
                     return result;
                 }
@@ -643,6 +650,9 @@ public class SbmtView extends View implements PropertyChangeListener
                 public void retrieve(Metadata state)
                 {
                     initialize();
+
+                    Version serializedVersion = state.getVersion();
+
                     if (state.hasKey(RESOLUTION_LEVEL_KEY))
                     {
                         try
@@ -691,28 +701,54 @@ public class SbmtView extends View implements PropertyChangeListener
                     	}
                     }
 
-
-                    if (state.hasKey(CURRENT_TAB_KEY))
+                    List<String> currentTabs = ImmutableList.of();
+                    if (serializedVersion.compareTo(METADATA_VERSION_1_0) > 0)
                     {
-                        JTabbedPane controlPanel = getControlPanel();
-                        if (controlPanel != null)
-                        {
-                            int selectedIndex = 0;
-                            String currentTab = state.get(CURRENT_TAB_KEY);
-                            if (currentTab != null)
-                            {
-                                for (int index = 0; index < controlPanel.getTabCount(); ++index)
-                                {
-                                    if (currentTab.equalsIgnoreCase(controlPanel.getTitleAt(index)))
-                                    {
-                                        selectedIndex = index;
-                                        break;
-                                    }
-                                }
-                            }
-                            controlPanel.setSelectedIndex(selectedIndex);
-                        }
+                    	currentTabs = state.get(CURRENT_TAB_KEY);
                     }
+                    else if (state.hasKey(CURRENT_TAB_KEY_1_0))
+                    {
+                    	currentTabs = ImmutableList.of(state.get(CURRENT_TAB_KEY_1_0));
+                    }
+
+                    restoreCurrentTabs(getControlPanel(), currentTabs);
+                }
+
+                private void compileCurrentTabs(JTabbedPane tabbedPane, List<String> tabs)
+                {
+                	int selectedIndex = tabbedPane.getSelectedIndex();
+                	if (selectedIndex >= 0)
+                	{
+                		tabs.add(tabbedPane.getTitleAt(selectedIndex));
+                		Component component = tabbedPane.getSelectedComponent();
+                		if (component instanceof JTabbedPane) {
+                			compileCurrentTabs((JTabbedPane) component, tabs);
+                		}
+                	}
+                }
+
+                private void restoreCurrentTabs(JTabbedPane tabbedPane, List<String> tabTitles) {
+                	if (tabbedPane != null)
+                	{
+                		if (!tabTitles.isEmpty())
+                		{
+                			String title = tabTitles.get(0);
+                			for (int index = 0; index < tabbedPane.getTabCount(); ++index)
+                			{
+                				String tabTitle = tabbedPane.getTitleAt(index);
+                				if (title.equalsIgnoreCase(tabTitle))
+                				{
+                					tabbedPane.setSelectedIndex(index);
+                					Component component = tabbedPane.getSelectedComponent();
+                					if (component instanceof JTabbedPane)
+                					{
+                						restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
+                					}
+                					break;
+                				}
+                			}
+                		}
+                	}
                 }
 
             });
