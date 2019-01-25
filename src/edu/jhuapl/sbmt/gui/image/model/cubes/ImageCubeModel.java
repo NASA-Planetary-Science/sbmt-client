@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.impl.SettableMetadata;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
@@ -22,6 +18,10 @@ import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 public class ImageCubeModel implements Controller.Model, MetadataManager

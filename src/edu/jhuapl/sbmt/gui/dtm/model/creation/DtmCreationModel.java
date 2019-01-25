@@ -12,13 +12,6 @@ import java.util.Vector;
 import org.apache.commons.io.FileUtils;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import crucible.crust.metadata.impl.FixedMetadata;
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.impl.SettableMetadata;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.gson.Serializers;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
@@ -27,6 +20,14 @@ import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class DtmCreationModel implements MetadataManager
 {
