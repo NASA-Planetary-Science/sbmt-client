@@ -25,14 +25,15 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 
 
 public class CustomImageImporterDialog extends javax.swing.JDialog

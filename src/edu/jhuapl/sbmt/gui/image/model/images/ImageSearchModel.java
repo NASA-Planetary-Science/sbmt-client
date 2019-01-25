@@ -29,11 +29,6 @@ import com.google.common.collect.Ranges;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -56,6 +51,11 @@ import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 public class ImageSearchModel implements Controller.Model, MetadataManager
@@ -1542,7 +1542,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public int getNumBoundaries() 
+    public int getNumBoundaries()
     {
         return numBoundaries;
     }
