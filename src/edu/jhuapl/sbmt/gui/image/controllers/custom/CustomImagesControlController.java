@@ -50,6 +50,16 @@ public class CustomImagesControlController
                 editButtonActionPerformed(e);
             }
         });
+
+        panel.getDeleteButton().addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                deleteButtonActionPerformed(e);
+            }
+        });
     }
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt)
@@ -77,6 +87,10 @@ public class CustomImagesControlController
 
     private void editButtonActionPerformed(ActionEvent evt) {
         model.editButtonActionPerformed(evt);
+    }
+
+    private void deleteButtonActionPerformed(ActionEvent evt) {
+        model.deleteButtonActionPerformed(evt);
     }
 
     private void saveImage(int index, ImageInfo oldImageInfo, ImageInfo newImageInfo) throws IOException

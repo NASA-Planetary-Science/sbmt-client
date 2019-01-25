@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.util.Mapmaker;
+import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 /**
  * Program to runs the Gaskell's mapmaker program
@@ -45,7 +45,7 @@ public class RunMapmaker
         double lon = Double.parseDouble(args[i++]);
         File outputFolder = new File(args[i++]);
 
-        Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
+        MapmakerNativeWrapper mapmaker = new MapmakerNativeWrapper(mapmakerRootDir);
         mapmaker.setName(name);
         mapmaker.setLatitude(lat);
         mapmaker.setLongitude(lon);

@@ -2,7 +2,11 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.Date;
 import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
+import javax.swing.SpinnerDateModel;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.BiMap;
@@ -20,6 +24,7 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
@@ -112,19 +117,22 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 
-        //int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
-        //String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
-        //String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        // get current lidar source
         int lidarIndex=view.getSourceComboBox().getSelectedIndex();
         String lidarDatasourceName=sourceComboBoxEnumeration.get(lidarIndex);
-        String lidarDatasourcePath=lidarModel.getLidarDataSourceMap().get(lidarDatasourceName);
-//        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
-//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+
 
         // read in the skeleton, if it hasn't been read in already
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setCurrentDatasourceSkeleton(lidarDatasourceName);
-        ((OlaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        try {
+            ((OlaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        } catch (NonexistentRemoteFile e) {
+            JOptionPane.showMessageDialog(this.view,
+                    "There is no existing tree for this phase",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
@@ -239,11 +247,24 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
     public void itemStateChanged(ItemEvent e)
     {
         int lidarIndex=view.getSourceComboBox().getSelectedIndex();
-        System.out.println("Lidar Datasource Changed: " + lidarIndex);
+//        System.out.println("Lidar Datasource Changed: " + lidarIndex);
         if (sourceComboBoxEnumeration!=null)
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);
-            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+//            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+
+            /*
+             *  change the min/max times for the search based on the datasource
+             */
+            // TODO get start and end times for the datasource from config?
+            Date start = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(0);
+            Date end = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(1);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setValue(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setEnd(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setValue(end);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setEnd(start);
         }
     }
 
