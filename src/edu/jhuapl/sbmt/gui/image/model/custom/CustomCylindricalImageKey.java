@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.model.custom;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 
 import edu.jhuapl.saavtk.metadata.InstanceGetter;
 import edu.jhuapl.saavtk.metadata.Key;
@@ -8,14 +9,16 @@ import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.StorableAsMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
+import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylindricalImageKey>, CustomImageKeyInterface
 {
-    public String name = ""; // name to call this image for display purposes
+	public String name = ""; // name to call this image for display purposes
     public String imagefilename = ""; // filename of image on disk
     public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
     public double lllat = -90.0;
@@ -24,7 +27,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     public double urlon = 360.0;
     public ImageType imageType;
     public final ImageSource source;
-
+    private final Date date;
 
     private static final  Key<String> nameKey = Key.of("name");
     private static final  Key<String> imageFileNameKey = Key.of("imagefilename");
@@ -34,14 +37,16 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     private static final  Key<Double> lllonKey = Key.of("lllon");
     private static final  Key<Double> urlatKey = Key.of("urlat");
     private static final  Key<Double> urlonKey = Key.of("urlon");
+    private static final  Key<Date> dateKey = Key.of("date");
     private static final Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
 
-	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source)
+	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source, Date date)
 	{
 		this.name = name;
 		this.imagefilename = imagefilename;
 		this.imageType = imageType;
 		this.source = source;
+		this.date = date;
 	}
 
     public String getName()
@@ -135,6 +140,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
         result.put(lllonKey, lllon);
         result.put(urlatKey, urlat);
         result.put(urlonKey, urlon);
+        result.put(dateKey, date);
         return result;
     }
 
@@ -145,13 +151,14 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	        String name = metadata.get(nameKey);
 	        String imagefilename = metadata.get(imageFileNameKey);
 	        ImageType imageType = ImageType.valueOf(metadata.get(imageTypeKey));
-	        ImageSource source = ImageSource.valueOf(metadata.get(sourceKey));
+	        ImageSource source = ImageSource.valueFor(metadata.get(sourceKey));
 	        double lllat = metadata.get(lllatKey);
 	        double lllon = metadata.get(lllonKey);
 	        double urlat = metadata.get(urlatKey);
 	        double urlon = metadata.get(urlonKey);
+	        Date date = metadata.get(dateKey);
 
-	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source);
+	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date);
 	        result.setLllat(lllat);
 	        result.setLllon(lllon);
 	        result.setUrlat(urlat);
@@ -171,6 +178,47 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	public void setImagefilename(String imagefilename)
 	{
 		this.setImagefilename(imagefilename);
+	}
+
+	@Override
+	public int getSlice()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ImagingInstrument getInstrument()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileType getFileType()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getBand()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPointingFile()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Date getDate()
+	{
+		return date;
 	}
 
 //    @Override

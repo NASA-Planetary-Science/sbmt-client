@@ -73,7 +73,6 @@ import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -450,7 +449,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             if (e.getKeyChar()=='v')
             {
                 Vector3D footprintCenter=new Vector3D(spectrum.getShiftedFootprint().GetCenter());
-                ISmallBodyModel smallBodyModel=(ISmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                SmallBodyModel smallBodyModel=(SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
                 //
                 vtkPolyDataNormals normalsFilter = new vtkPolyDataNormals();
                 normalsFilter.SetInputData(spectrum.getUnshiftedFootprint());

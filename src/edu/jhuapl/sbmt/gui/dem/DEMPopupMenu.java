@@ -44,7 +44,6 @@ import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
@@ -572,7 +571,7 @@ public class DEMPopupMenu extends PopupMenu
                             config2.author = ShapeModelType.CUSTOM;
                             SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
                             metadataIO.write(new File(demFilename.substring(0, demFilename.length()-extensionLength) + "json"), dialog.getNameOfImportedShapeModel());
-                            ISmallBodyViewConfig config = (ISmallBodyViewConfig)metadataIO.getConfigs().get(0);
+                            SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
                             dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
                         }
                         catch (IOException e1)

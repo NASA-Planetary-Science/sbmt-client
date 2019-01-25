@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.model.custom;
 
+import java.util.Date;
+
 import edu.jhuapl.saavtk.metadata.InstanceGetter;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
@@ -11,10 +13,11 @@ import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPerspectiveImageKey>, CustomImageKeyInterface
 {
-    public String name = ""; // name to call this image for display purposes
+	public String name = ""; // name to call this image for display purposes
     public String imagefilename = ""; // filename of image on disk
     public ProjectionType projectionType = ProjectionType.PERSPECTIVE;
     public double rotation = 0.0;
@@ -23,6 +26,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
     public final ImageType imageType;
     public final FileType fileType;
     public final ImageSource source;
+    private final Date date;
 
     private static final Key<String> nameKey = Key.of("name");
     private static final Key<String> imageFileNameKey = Key.of("imagefilename");
@@ -32,10 +36,14 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
     private static final Key<String> flipKey = Key.of("flip");
     private static final Key<String> fileTypeKey = Key.of("fileTypeKey");
     private static final Key<String> pointingFilenameKey = Key.of("pointingfilename");
+    private static final  Key<Date> dateKey = Key.of("date");
+
     private static final Key<CustomPerspectiveImageKey> CUSTOM_PERSPECTIVE_IMAGE_KEY = Key.of("customPerspectiveImage");
 
+
+
     public CustomPerspectiveImageKey(String name, String imagefilename, ImageSource source, ImageType imageType,
-    		double rotation, String flip, FileType fileType, String pointingFilename)
+    		double rotation, String flip, FileType fileType, String pointingFilename, Date date)
     {
     	this.name = name;
     	this.imagefilename = imagefilename;
@@ -45,6 +53,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
     	this.flip = flip;
     	this.fileType = fileType;
     	this.pointingFilename = pointingFilename;
+    	this.date = date;
 
     }
 
@@ -54,7 +63,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
         if (imageType == ImageType.GENERIC_IMAGE)
             return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
         else
-            return name + ", Perspective" + ", " + imageType;
+            return name + "Image name: " + imagefilename +", Perspective" + ", " + imageType;
     }
 
     public String getName()
@@ -102,7 +111,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
     public Metadata store()
     {
         SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-        result.put(Key.of("customimagetype"), CUSTOM_PERSPECTIVE_IMAGE_KEY.toString());
+//        result.put(Key.of("customimagetype"), CUSTOM_PERSPECTIVE_IMAGE_KEY.toString());
         result.put(nameKey, name);
         result.put(imageFileNameKey, imagefilename);
         result.put(sourceKey, source.toString());
@@ -111,6 +120,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
         result.put(flipKey, flip);
         result.put(fileTypeKey, fileType.toString());
         result.put(pointingFilenameKey, pointingFilename);
+        result.put(dateKey, date);
         return result;
     }
 
@@ -120,14 +130,15 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
 
 	        String name = metadata.get(nameKey);
 	        String imagefilename = metadata.get(imageFileNameKey);
-	        ImageSource source = ImageSource.valueOf(metadata.get(sourceKey));
+	        ImageSource source = ImageSource.valueFor(metadata.get(sourceKey));
 	        ImageType imageType = ImageType.valueOf(metadata.get(imageTypeKey));
 	        double rotation = metadata.get(rotationKey);
 	        String flip = metadata.get(flipKey);
 	        FileType fileType = FileType.valueOf(metadata.get(fileTypeKey));
 	        String pointingFilename = metadata.get(pointingFilenameKey);
+	        Date date = metadata.get(dateKey);
 
-	        CustomPerspectiveImageKey result = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename);
+	        CustomPerspectiveImageKey result = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, date);
 	        result.imagefilename = imagefilename;
 
 			return result;
@@ -138,6 +149,132 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
 	public Key<CustomPerspectiveImageKey> getKey()
 	{
 		return CUSTOM_PERSPECTIVE_IMAGE_KEY;
+	}
+
+	@Override
+	public int getSlice()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ImagingInstrument getInstrument()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileType getFileType()
+	{
+		return fileType;
+	}
+
+	@Override
+	public String getBand()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPointingFile()
+	{
+		return pointingFilename;
+	}
+
+	@Override
+	public Date getDate()
+	{
+		return date;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((fileType == null) ? 0 : fileType.hashCode());
+		result = prime * result + ((flip == null) ? 0 : flip.hashCode());
+		result = prime * result + ((imageType == null) ? 0 : imageType.hashCode());
+		result = prime * result + ((imagefilename == null) ? 0 : imagefilename.hashCode());
+		result = prime * result + ((pointingFilename == null) ? 0 : pointingFilename.hashCode());
+		result = prime * result + ((projectionType == null) ? 0 : projectionType.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(rotation);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		CustomPerspectiveImageKey other = (CustomPerspectiveImageKey) obj;
+		if (fileType != other.fileType)
+		{
+			return false;
+		}
+		if (flip == null)
+		{
+			if (other.flip != null)
+			{
+				return false;
+			}
+		} else if (!flip.equals(other.flip))
+		{
+			return false;
+		}
+		if (imageType != other.imageType)
+		{
+			return false;
+		}
+		if (imagefilename == null)
+		{
+			if (other.imagefilename != null)
+			{
+				return false;
+			}
+		} else if (!imagefilename.equals(other.imagefilename))
+		{
+			return false;
+		}
+		if (pointingFilename == null)
+		{
+			if (other.pointingFilename != null)
+			{
+				return false;
+			}
+		} else if (!pointingFilename.equals(other.pointingFilename))
+		{
+			return false;
+		}
+		if (projectionType != other.projectionType)
+		{
+			return false;
+		}
+		if (Double.doubleToLongBits(rotation) != Double.doubleToLongBits(other.rotation))
+		{
+			return false;
+		}
+		if (source != other.source)
+		{
+			return false;
+		}
+		return true;
 	}
 
 //    @Override

@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
@@ -31,7 +31,7 @@ public class CustomSpectraSearchController
     private CustomSpectraSearchModel spectrumSearchModel;
 
 
-    public CustomSpectraSearchController(ISmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
+    public CustomSpectraSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer, SpectralInstrument instrument, CustomSpectraSearchModel model)
     {

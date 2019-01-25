@@ -5,8 +5,8 @@ import javax.swing.JPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.model.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumSearchPanel;
@@ -26,7 +26,7 @@ public class SpectrumSearchController
     private SpectrumSearchModel spectrumSearchModel;
 
 
-    public SpectrumSearchController(ISmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
+    public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
     {

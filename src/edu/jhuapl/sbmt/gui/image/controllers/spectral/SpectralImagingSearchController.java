@@ -6,7 +6,6 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -35,7 +34,7 @@ public class SpectralImagingSearchController implements Controller<ImageSearchMo
     private final ImageSearchModel model;
     private final ImagingSearchPanel panel;
 
-    private ISmallBodyViewConfig smallBodyConfig;
+    private SmallBodyViewConfig smallBodyConfig;
     protected final ModelManager modelManager;
     private final SbmtInfoWindowManager infoPanelManager;
     private final SbmtSpectrumWindowManager spectrumPanelManager;

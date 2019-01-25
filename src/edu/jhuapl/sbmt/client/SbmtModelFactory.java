@@ -90,7 +90,7 @@ public class SbmtModelFactory
             Renderer renderer,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        ISmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
         return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
     }
 
@@ -99,7 +99,7 @@ public class SbmtModelFactory
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        ISmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
 
         if (ImageSource.SPICE.equals(key.source) ||
                 ImageSource.GASKELL.equals(key.source) ||
@@ -433,7 +433,7 @@ public class SbmtModelFactory
 
     static public DEM createDEM(
             DEMKey key,
-            ISmallBodyModel smallBodyModel) throws IOException, FitsException
+            SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
         return new DEM(key);
     }

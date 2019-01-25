@@ -1,5 +1,9 @@
 package edu.jhuapl.sbmt.gui.image.model;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
 import edu.jhuapl.saavtk.metadata.InstanceGetter;
 import edu.jhuapl.saavtk.metadata.Key;
 import edu.jhuapl.saavtk.metadata.Metadata;
@@ -11,6 +15,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 public interface CustomImageKeyInterface extends ImageKeyInterface
 {
+	public Date getDate();
 
 	public ProjectionType getProjectionType();
 
@@ -18,7 +23,8 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 
 	static CustomImageKeyInterface retrieve(Metadata objectMetadata)
 	{
-		Key key = objectMetadata.get(Key.of("customimagetype"));
+		final Key<String> key = Key.of("customimagetype");
+//		Key<String> key = objectMetadata.get(Key.of("customimagetype"));
 		if (key.toString().equals("CUSTOM_CYLINDRICAL_IMAGE_KEY"))
 		{
 			Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
@@ -32,4 +38,13 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 			return metadata.provide(objectMetadata);
 		}
 	}
+
+    default List<String> toList()
+    {
+        List<String> string = new Vector<String>();
+        string.add(getName());
+        string.add(""+getDate().getTime());
+        return string;
+
+    }
 }

@@ -25,7 +25,6 @@ import org.apache.commons.io.FilenameUtils;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.gui.time.TimeIntervalTable.TimeIntervalTableModel;
 import edu.jhuapl.sbmt.gui.time.TimeIntervalTable.columns;
@@ -65,7 +64,7 @@ public class TimeIntervalTablePanel extends JPanel implements TableModelListener
         gbl_timeTablePanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
         setLayout(gbl_timeTablePanel);
 
-        ISmallBodyModel bodyModel = (ISmallBodyModel) modelManager.getPolyhedralModel();
+        SmallBodyModel bodyModel = (SmallBodyModel) modelManager.getPolyhedralModel();
         timeTable = new TimeIntervalTable(intervals, bodyModel, renderer);
         timeTable.getModel().addTableModelListener(this);
         timeTable.addMouseListener(new TableMouseHandler());

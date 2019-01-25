@@ -29,6 +29,7 @@ import edu.jhuapl.saavtk.metadata.Metadata;
 import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.metadata.serialization.Serializers;
+import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -264,36 +265,33 @@ public class CustomImagesModel extends ImageSearchModel
             }
         }
 
-        // Operations specific for perspective projection type
+     // Operations specific for perspective projection type
         if (newImageInfo.getProjectionType() == ProjectionType.PERSPECTIVE)
         {
+
             // If newImageInfo.sumfilename and infofilename are both null, that means we are in edit mode
             // and should continue to use the existing sumfile
-            if (newImageInfo.sumfilename == null && newImageInfo.infofilename == null)
+        	if (newImageInfo.getPointingFile() == null)
             {
-                newImageInfo.sumfilename = oldImageInfo.sumfilename;
-                newImageInfo.infofilename = oldImageInfo.infofilename;
+            	((CustomPerspectiveImageKey)newImageInfo).pointingFilename = oldImageInfo.getPointingFile();
             }
             else
             {
-                if (newImageInfo.sumfilename != null)
+            	String newFilename;
+                if (newImageInfo.getFileType() == FileType.SUM)
                 {
                     // We save out the sumfile using a new name that makes use of a UUID
-                    String newFilename = "sumfile-" + uuid + ".SUM";
-                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                    FileUtil.copyFile(newImageInfo.sumfilename, newFilepath);
-                    // Change newImageInfo.sumfilename to the new location of the file
-                    newImageInfo.sumfilename = newFilename;
+                    newFilename = "sumfile-" + uuid + ".SUM";
                 }
-                else if (newImageInfo.infofilename != null)
+                else
                 {
                     // We save out the infofile using a new name that makes use of a UUID
-                    String newFilename = "infofile-" + uuid + ".INFO";
-                    String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-                    FileUtil.copyFile(newImageInfo.infofilename, newFilepath);
-                    // Change newImageInfo.infofilename to the new location of the file
-                    newImageInfo.infofilename = newFilename;
+                    newFilename = "infofile-" + uuid + ".INFO";
                 }
+                String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+                FileUtil.copyFile(newImageInfo.getPointingFile(), newFilepath);
+                // Change newImageInfo.infofilename to the new location of the file
+                ((CustomPerspectiveImageKey)newImageInfo).pointingFilename = newFilename;
             }
         }
         if (index >= customImages.size())

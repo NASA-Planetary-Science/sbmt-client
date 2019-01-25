@@ -4,8 +4,9 @@ import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.sbmt.model.image.Instrument;
 
-public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBodyModel
+public class SmallBodyModel extends GenericPolyhedralModel
 {
     private static final String[] DEFAULT_COLORING_NAMES = {
             SlopeStr, ElevStr, GravAccStr, GravPotStr
@@ -15,28 +16,20 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     };
     private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
 
-    /* (non-Javadoc)
-	 * @see edu.jhuapl.sbmt.client.ISmallBodyModel#getSmallBodyConfig()
-	 */
-    @Override
 	public SmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
     }
 
-    /* (non-Javadoc)
-	 * @see edu.jhuapl.sbmt.client.ISmallBodyModel#serverPath(java.lang.String)
-	 */
-    @Override
 	public String serverPath(String fileName)
     {
         return getSmallBodyConfig().serverPath(fileName);
     }
 
-//    public String serverPath(String fileName, Instrument instrument)
-//    {
-//        return getSmallBodyConfig().serverPath(fileName, instrument);
-//    }
+    public String serverPath(String fileName, Instrument instrument)
+    {
+        return getSmallBodyConfig().serverPath(fileName, instrument);
+    }
 
     /**
      * Default constructor. Must be followed by a call to setSmallBodyPolyData.
