@@ -80,17 +80,17 @@ public class ImageKey implements ImageKeyInterface, StorableAsMetadata<ImageKey>
 
 //        String cleanedUpOtherName2 = SafeURLPaths.instance().getString(((ImageKey)obj).name);
 //        return cleanedUpName.equals(cleanedUpOtherName2) && source.equals(((ImageKey)obj).source);
-    	if (((ImageKey)obj).name.startsWith("C:") && (name.startsWith("C:")))
-    		return name.equals(((ImageKey)obj).name) && source.equals(((ImageKey)obj).source);
-    	else if (((ImageKey)obj).name.startsWith("C:"))
-    		return name.equals(SafeURLPaths.instance().getUrl(((ImageKey)obj).name)) && source.equals(((ImageKey)obj).source);
+    	if (((ImageKeyInterface)obj).getName().startsWith("C:") && (name.startsWith("C:")))
+    		return name.equals(((ImageKeyInterface)obj).getName()) && source.equals(((ImageKeyInterface)obj).getSource());
+    	else if (((ImageKeyInterface)obj).getName().startsWith("C:"))
+    		return name.equals(SafeURLPaths.instance().getUrl(((ImageKeyInterface)obj).getName())) && source.equals(((ImageKeyInterface)obj).getSource());
     	else
     	{
     		String cleanedUpName = name.replace("file://", "");
-    		String cleanedUpOtherName = ((ImageKey)obj).name.replace("file://", "");
+    		String cleanedUpOtherName = ((ImageKeyInterface)obj).getName().replace("file://", "");
 //    		System.out.println("Image.ImageKey: equals: cleaned up name " + cleanedUpName + " and source " + source);
 //    		System.out.println("Image.ImageKey: equals: cleaned upname2 " + cleanedUpOtherName + " and source " + ((ImageKey)obj).source);
-    		return FilenameUtils.getBaseName(cleanedUpName).equals(FilenameUtils.getBaseName(cleanedUpOtherName)) && source.equals(((ImageKey)obj).source);
+    		return FilenameUtils.getBaseName(cleanedUpName).equals(FilenameUtils.getBaseName(cleanedUpOtherName)) && source.equals(((ImageKeyInterface)obj).getSource());
     	}
 
 //        return name.equals(((ImageKey)obj).name)
