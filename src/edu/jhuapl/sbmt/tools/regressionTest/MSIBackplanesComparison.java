@@ -7,15 +7,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.BackplanesGenerator;
@@ -168,7 +168,7 @@ public class MSIBackplanesComparison
         ImageKey key = new ImageKey(fitsImageFile.replace(".FIT", ""), pointing, smallBodyModel.getSmallBodyConfig().imagingInstruments[0]);
 
         //Write out the FITS file
-        (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.instrumentName, outputFolder, smallBodyModel, fmt, pointing);
+        (new BackplanesGenerator()).generateBackplanes(fitsImageFile, key.instrument.getInstrumentName(), outputFolder, smallBodyModel, fmt, pointing);
 
         //Return the fits backplanes file name
         String backplanesFilename = BackplanesGenerator.getBaseFilename(key, outputFolder) + fmt.getExtension();

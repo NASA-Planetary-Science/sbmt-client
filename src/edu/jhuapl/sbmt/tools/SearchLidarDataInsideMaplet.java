@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.TreeSet;
 
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
-import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel.EllipsePolygon;
+import edu.jhuapl.saavtk.model.structure.CircleSelectionModel;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;

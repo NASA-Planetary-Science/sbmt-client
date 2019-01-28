@@ -41,14 +41,14 @@ import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
+import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
@@ -95,7 +95,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     protected IdPair resultIntervalCurrentlyShown = null;
     protected List<List<String>> imageResults = new ArrayList<List<String>>();
     protected ImageCollection imageCollection;
-    protected ImagingInstrument instrument;
+    protected IImagingInstrument instrument;
     protected ImageSource imageSourceOfLastQuery = ImageSource.SPICE;
     private Date startDate = null;
     private Date endDate = null;
@@ -136,7 +136,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public ImageSearchModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             Renderer renderer,
-            ImagingInstrument instrument)
+            IImagingInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
@@ -266,12 +266,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public ImagingInstrument getInstrument()
+    public IImagingInstrument getInstrument()
     {
         return instrument;
     }
 
-    public void setInstrument(ImagingInstrument instrument)
+    public void setInstrument(IImagingInstrument instrument)
     {
         this.instrument = instrument;
     }
@@ -341,14 +341,14 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         this.currentBand = currentBand;
     }
 
-    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
     {
         List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
         result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
         return result;
     }
 
-    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
@@ -447,9 +447,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                 String image = imageResults.get(index).get(0);
                 String name = new File(image).getName();
                 image = image.substring(0,image.length()-4);
-                ImageKey selectedKey = (ImageKey)createImageKey(image, imageSourceOfLastQuery, instrument);
-                if (!selectedKey.band.equals("0"))
-                    name = selectedKey.band + ":" + name;
+                ImageKeyInterface selectedKey = (ImageKeyInterface)createImageKey(image, imageSourceOfLastQuery, instrument);
+                if (!selectedKey.getBand().equals("0"))
+                    name = selectedKey.getBand() + ":" + name;
                 selectedKeys[i++] = selectedKey;
             }
         }
@@ -571,9 +571,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //            }
         }
         List<List<String>> results = null;
-        if (getInstrument().searchQuery instanceof FixedListQuery)
+        if (getInstrument().getSearchQuery() instanceof FixedListQuery)
         {
-            FixedListQuery query = (FixedListQuery) getInstrument().searchQuery;
+            FixedListQuery query = (FixedListQuery) getInstrument().getSearchQuery();
             results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
         }
         else
@@ -588,7 +588,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                     sumOfProductsSearch, camerasSelected, filtersSelected,
                     Ranges.closed(minResolutionQuery, maxResolutionQuery),
                     cubeList, imageSource, selectedLimbIndex);
-            results = getInstrument().searchQuery.runQuery(searchMetadata).getResultlist();
+            results = getInstrument().getSearchQuery().runQuery(searchMetadata).getResultlist();
        }
 
         // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
@@ -597,9 +597,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         if (imageSource == ImageSource.SPICE && excludeGaskell)
         {
             List<List<String>> resultsOtherSource = null;
-            if (getInstrument().searchQuery instanceof FixedListQuery)
+            if (getInstrument().getSearchQuery() instanceof FixedListQuery)
             {
-                FixedListQuery query = (FixedListQuery)getInstrument().searchQuery;
+                FixedListQuery query = (FixedListQuery)getInstrument().getSearchQuery();
 //                FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
 //                if (!info.isExistsOnServer().equals(YesOrNo.YES))
 //                {
@@ -621,7 +621,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                         Ranges.closed(minResolutionQuery, maxResolutionQuery),
                         cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, selectedLimbIndex);
 
-                    resultsOtherSource = getInstrument().searchQuery.runQuery(searchMetadataOther).getResultlist();
+                    resultsOtherSource = getInstrument().getSearchQuery().runQuery(searchMetadataOther).getResultlist();
 
             }
 
@@ -1249,7 +1249,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
                 if (index == 0)
                 {
-                    list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
+                    list.add(instrument.getSearchQuery().getDataPath() + "/" + inputArray[index]);
                 }
                 else if (index == 1)
                 {
@@ -1506,7 +1506,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         {
             try
             {
-                String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
+                String fullName = instrument.getSearchQuery().getDataPath() + "/" + entry.getKey();
                 ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
                 boundaries.addBoundary(imageKey);
                 boundaries.getBoundary(imageKey).setVisible(entry.getValue());
@@ -1523,7 +1523,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
         for (String name : showing.keySet())
         {
-            String fullName = instrument.searchQuery.getDataPath() + "/" + name;
+            String fullName = instrument.getSearchQuery().getDataPath() + "/" + name;
             loadImages(fullName);
         }
 

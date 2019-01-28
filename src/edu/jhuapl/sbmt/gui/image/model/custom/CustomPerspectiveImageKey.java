@@ -11,9 +11,9 @@ import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
+import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPerspectiveImageKey>, CustomImageKeyInterface
 {
@@ -159,7 +159,7 @@ public class CustomPerspectiveImageKey implements StorableAsMetadata<CustomPersp
 	}
 
 	@Override
-	public ImagingInstrument getInstrument()
+	public IImagingInstrument getInstrument()
 	{
 		// TODO Auto-generated method stub
 		return null;

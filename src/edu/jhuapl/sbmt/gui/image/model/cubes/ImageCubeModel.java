@@ -15,11 +15,11 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
@@ -136,12 +136,12 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
 
     public void generateImageCube(ActionEvent e) //throws edu.jhuapl.sbmt.model.image.ImageCube.NoOverlapException, IOException, FitsException
     {
-        ImageKey firstKey = null;
+        ImageKeyInterface firstKey = null;
         boolean multipleFrustumVisible = false;
 
-        List<ImageKey> selectedKeys = new ArrayList<>();
-        for (ImageKey key : imageSearchModel.getSelectedImageKeys()) { selectedKeys.add(key); }
-        for (ImageKey selectedKey : selectedKeys)
+        List<ImageKeyInterface> selectedKeys = new ArrayList<>();
+        for (ImageKeyInterface key : imageSearchModel.getSelectedImageKeys()) { selectedKeys.add(key); }
+        for (ImageKeyInterface selectedKey : selectedKeys)
         {
             PerspectiveImage selectedImage = (PerspectiveImage)imageCollection.getImage(selectedKey);
             if(selectedImage == null)

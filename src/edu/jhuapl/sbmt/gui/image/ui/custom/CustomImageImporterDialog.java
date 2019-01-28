@@ -12,6 +12,7 @@ package edu.jhuapl.sbmt.gui.image.ui.custom;
 
 import java.awt.Dialog;
 import java.io.File;
+import java.util.Date;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -25,8 +26,9 @@ import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.model.image.IImagingInstrument;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 
@@ -35,7 +37,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean okayPressed = false;
     private boolean isEllipsoid;
     private boolean isEditMode;
-    private ImagingInstrument instrument;
+    private IImagingInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
 
     public enum ProjectionType
@@ -144,7 +146,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 //    }
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, ImagingInstrument instrument)
+    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, IImagingInstrument instrument)
     {
         super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
@@ -164,25 +166,37 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
     public void setImageInfo(CustomImageKeyInterface info, boolean isEllipsoid)
     {
+    	String keyName = info == null ? "" : info.getName();
+    	String keyImageFilename = info == null ? "" : info.getImageFilename();
+    	ProjectionType projection = info == null ? ProjectionType.CYLINDRICAL : info.getProjectionType();
+    	ImageType currentImageType = info == null ? ImageType.GENERIC_IMAGE : info.getImageType();
+
+
+
+
         this.isEllipsoid = isEllipsoid;
 
         if (isEditMode)
             imagePathTextField.setText(LEAVE_UNMODIFIED);
         else
-            imagePathTextField.setText(info.getImageFilename());
+            imagePathTextField.setText(keyImageFilename);
 
-        imageNameTextField.setText(info.getName());
+        imageNameTextField.setText(keyName);
 
-        if (info.getProjectionType() == ProjectionType.CYLINDRICAL)
+        if (projection == ProjectionType.CYLINDRICAL)
         {
             cylindricalProjectionRadioButton.setSelected(true);
 
-            lllatFormattedTextField.setText(String.valueOf(((CustomCylindricalImageKey)info).lllat));
-            lllonFormattedTextField.setText(String.valueOf(((CustomCylindricalImageKey)info).lllon));
-            urlatFormattedTextField.setText(String.valueOf(((CustomCylindricalImageKey)info).urlat));
-            urlonFormattedTextField.setText(String.valueOf(((CustomCylindricalImageKey)info).urlon));
+            double lllat = info == null ?  -90.0 : ((CustomCylindricalImageKey)info).lllat;
+            double lllon = info == null ?  0.0 : ((CustomCylindricalImageKey)info).lllon;
+            double urlat = info == null ?  90.0 : ((CustomCylindricalImageKey)info).urlat;
+            double urlon = info == null ?  360.0 : ((CustomCylindricalImageKey)info).urlon;
+            lllatFormattedTextField.setText(String.valueOf(lllat));
+            lllonFormattedTextField.setText(String.valueOf(lllon));
+            urlatFormattedTextField.setText(String.valueOf(urlat));
+            urlonFormattedTextField.setText(String.valueOf(urlon));
         }
-        else if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
+        else if (projection == ProjectionType.PERSPECTIVE)
         {
             perspectiveProjectionRadioButton.setSelected(true);
 
@@ -191,13 +205,14 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
                 infofilePathTextField.setText(LEAVE_UNMODIFIED);
             }
-
-            imageFlipComboBox.setSelectedItem(((CustomPerspectiveImageKey)info).getFlip());
-            imageRotateComboBox.setSelectedItem(Integer.toString((int)((CustomPerspectiveImageKey)info).getRotation()));
+            double rotation = info == null ?  0.0 : ((CustomPerspectiveImageKey)info).getRotation();
+            String flip = info == null ?  "None" : ((CustomPerspectiveImageKey)info).getFlip();
+            imageFlipComboBox.setSelectedItem(flip);
+            imageRotateComboBox.setSelectedItem(Integer.toString((int)rotation));
         }
 
-        ImageType currentImageType = info.getImageType();
-        if (info.getImageFilename().toUpperCase().endsWith(".FITS") || info.getImageFilename().toUpperCase().endsWith(".FIT"))
+//        ImageType currentImageType = info.getImageType();
+        if (keyImageFilename.toUpperCase().endsWith(".FITS") || keyImageFilename.toUpperCase().endsWith(".FIT"))
         {
             imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
             imageTypeComboBox.setSelectedItem(currentImageType);
@@ -206,7 +221,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
 
 
-        imageTypeComboBox.setSelectedItem(info.getImageType());
+        imageTypeComboBox.setSelectedItem(currentImageType);
 
 
         updateEnabledItems();
@@ -245,28 +260,31 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 //            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
 //            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
 
-            CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, source);
+            CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date());
             key.setLllat(Double.parseDouble(lllatFormattedTextField.getText()));
             key.setLllon(Double.parseDouble(lllonFormattedTextField.getText()));
             key.setUrlat(Double.parseDouble(urlatFormattedTextField.getText()));
             key.setUrlon(Double.parseDouble(urlonFormattedTextField.getText()));
             return key;
         }
-        else if (perspectiveProjectionRadioButton.isSelected())
+        else
         {
 //            info.projectionType = ProjectionType.PERSPECTIVE;
-            String pointingFilename = null;
-            FileType fileType;
+        	String pointingFilename = null;
+            FileType fileType = null;
+            ImageSource source = null;
             if (sumfilePathRB.isSelected() == true)
             {
             	fileType = FileType.SUM;
             	pointingFilename = sumfilePathTextField.getText();
+            	source = ImageSource.LOCAL_PERSPECTIVE;
             }
 //            String pointingFilename = null;
             if (infofilePathRB.isSelected() == true)
             {
             	pointingFilename = infofilePathTextField.getText();
             	fileType = FileType.INFO;
+            	source = ImageSource.LOCAL_PERSPECTIVE;
             }
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
             	pointingFilename = null;
@@ -278,7 +296,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             double rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
             String flip = imageFlipComboBox.getSelectedItem().toString();
 
-            CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename);
+            CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, new Date());
             return key;
         }
 
@@ -808,7 +826,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
         {
             ImageType[] allImageTypes = ImageType.values();
-            ImageType currentImageType = instrument != null ? instrument.type : ImageType.GENERIC_IMAGE;
+            ImageType currentImageType = instrument != null ? instrument.getType() : ImageType.GENERIC_IMAGE;
             imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
             imageTypeComboBox.setSelectedItem(currentImageType);
 

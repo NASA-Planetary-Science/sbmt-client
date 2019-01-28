@@ -33,8 +33,8 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageType;
@@ -144,8 +144,8 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         for (Image i : imageSet)
         {
             PerspectiveImage image = (PerspectiveImage)i;
-            ImageKey key = image.getKey();
-            ImageType type = key.instrument.type;
+            ImageKeyInterface key = image.getKey();
+            ImageType type = key.getInstrument().getType();
             if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
             {
                 if (image instanceof PerspectiveImage)
@@ -169,8 +169,8 @@ public class HyperspectralImagingSearchPanel extends ImagingSearchPanel implemen
         for (Image i : imageSet)
         {
             PerspectiveImage image = (PerspectiveImage)i;
-            ImageKey key = image.getKey();
-            ImageType type = key.instrument.type;
+            ImageKeyInterface key = image.getKey();
+            ImageType type = key.getInstrument().getType();
             if (type == ImageType.LEISA_JUPITER_IMAGE) // this should not be specific to a given image type, should it? -turnerj1
             {
                image.setCurrentSlice(currentSlice);

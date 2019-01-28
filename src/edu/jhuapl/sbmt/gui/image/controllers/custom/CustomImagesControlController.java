@@ -64,16 +64,15 @@ public class CustomImagesControlController
 
     private void newButtonActionPerformed(ActionEvent evt)
     {
-        CustomImageKeyInterface imageInfo = new CustomKeyInterface();
         CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, model.getInstrument());
-        dialog.setImageInfo(imageInfo, model.getModelManager().getPolyhedralModel().isEllipsoid());
+        dialog.setImageInfo(null, model.getModelManager().getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
 
         // If user clicks okay add to list
         if (dialog.getOkayPressed())
         {
-            imageInfo = dialog.getImageInfo();
+            CustomImageKeyInterface imageInfo = dialog.getImageInfo();
             try
             {
                 saveImage(model.getImageResults().size(), null, imageInfo);

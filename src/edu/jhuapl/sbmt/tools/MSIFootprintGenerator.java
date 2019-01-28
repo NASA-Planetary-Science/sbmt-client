@@ -4,22 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import nom.tam.fits.FitsException;
-
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 import vtk.vtkXMLPolyDataWriter;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+
+import nom.tam.fits.FitsException;
 
 public class MSIFootprintGenerator
 {

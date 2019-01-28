@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -33,7 +32,7 @@ import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 import nom.tam.fits.FitsException;
@@ -93,6 +92,14 @@ public class ColorImageController
                 colorImagesDisplayedList.setValueAt(true, i-1, showFootprintColumnIndex);
                 colorImagesDisplayedList.setValueAt(colorKey.toString(), i-1, filenameColumnIndex);
 
+            }
+
+            @Override
+            public void colorImageRemoved(ColorImageKey image)
+            {
+            	 DefaultTableModel tableModel = (DefaultTableModel)panel.getDisplayedImageList().getModel();
+                 int index = panel.getDisplayedImageList().getSelectedRow();
+                 tableModel.removeRow(index);
             }
         });
     }
@@ -235,14 +242,14 @@ public class ColorImageController
         int index = panel.getDisplayedImageList().getSelectedRow();
         if (index >= 0)
         {
-            ColorImageKey colorKey = (ColorImageKey)((DefaultListModel)panel.getDisplayedImageList().getModel()).remove(index);
+        	ColorImageKey colorKey = (ColorImageKey)colorImages.getLoadedImageKeys().get(index);
             colorModel.removeColorImage(colorKey);
         }
     }
 
     private void redButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
+        ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
             String name = selectedKey.getName();
@@ -255,7 +262,7 @@ public class ColorImageController
 
     private void greenButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
+    	ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
             String name = selectedKey.getName();
@@ -268,7 +275,7 @@ public class ColorImageController
 
     private void blueButtonActionPerformed(ActionEvent evt)
     {
-        ImageKey selectedKey = (ImageKey)model.getSelectedImageKeys()[0];
+    	ImageKeyInterface selectedKey = model.getSelectedImageKeys()[0];
         if (selectedKey != null)
         {
             String name = selectedKey.getName();

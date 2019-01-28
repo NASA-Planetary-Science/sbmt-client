@@ -177,7 +177,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	@Override
 	public void setImagefilename(String imagefilename)
 	{
-		this.setImagefilename(imagefilename);
+		this.imagefilename = imagefilename;
 	}
 
 	@Override
