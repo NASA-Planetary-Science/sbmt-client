@@ -235,6 +235,16 @@ echo "Begin `date`" >> $log 2>&1
       echo finished processing plate colorings
    fi
 
+   # process DTMs.
+   if [ -d "$srcTop/$rawdataModelName/dtm" ]
+   then
+      echo Processing DTMs
+      createDirIfNecessary $destTop/$processingModelName/dtm/browse
+      doRsync $srcTop/$rawdataModelName/dtm/ $destTop/$processingModelName/dtm/browse/
+      
+      (cd $destTop/$processingModelName/dtm/browse; ls | sed 's:\(.*\):\1\,\1:' > fileList.txt)    
+   fi
+
    # fix any bad permissions
    echo Correcting permissions >> $log 2>&1
    $scriptDir/data-permissions.pl $destTop/$processingModelName
