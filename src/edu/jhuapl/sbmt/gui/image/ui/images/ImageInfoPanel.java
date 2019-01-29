@@ -43,7 +43,7 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
-import edu.jhuapl.saavtk.util.IntensityRange;
+import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -74,9 +74,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             PerspectiveImageBoundaryCollection imageBoundaryCollection,
             StatusBar statusBar)
     {
+        this.image = image;
+
         initComponents();
 
-        this.image = image;
         this.imageCollection = imageCollection;
         this.imageBoundaryCollection = imageBoundaryCollection;
         this.statusBar = statusBar;
@@ -487,7 +488,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         java.awt.GridBagConstraints gridBagConstraints;
 
         factorLabel = new javax.swing.JLabel();
-        slider = new com.jidesoft.swing.RangeSlider();
+        slider = new ContrastSlider(image);
         jLabel1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -526,14 +527,21 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         setPreferredSize(new java.awt.Dimension(725, 900));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        slider.setMajorTickSpacing(10);
+        slider.setMinimum(0);
         slider.setMaximum(255);
-        slider.setPaintTicks(true);
-        slider.setHighValue(255);
-        slider.setLowValue(0);
+        int lowValue = 0;
+        int hiValue = 255;
+        // get existing contrast and set slider appropriately
+        if (image instanceof PerspectiveImage)
+        {
+           lowValue = ((PerspectiveImage)image).getDisplayedRange().min;
+           hiValue  = ((PerspectiveImage)image).getDisplayedRange().max;
+        }
+        slider.setHighValue(hiValue);
+        slider.setLowValue(lowValue);
         slider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                sliderStateChanged(evt);
+                slider.sliderStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -882,16 +890,16 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             pack();
         }// </editor-fold>//GEN-END:initComponents
 
-    private void sliderStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sliderStateChanged
-    {//GEN-HEADEREND:event_sliderStateChanged
-        if (slider.getValueIsAdjusting())
-            return;
-
-        int lowVal = slider.getLowValue();
-        int highVal = slider.getHighValue();
-        if (image != null)
-            image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
-    }//GEN-LAST:event_sliderStateChanged
+//    private void sliderStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_sliderStateChanged
+//    {//GEN-HEADEREND:event_sliderStateChanged
+//        if (slider.getValueIsAdjusting())
+//            return;
+//
+//        int lowVal = slider.getLowValue();
+//        int highVal = slider.getHighValue();
+//        if (image != null)
+//            image.setDisplayedImageRange(new IntensityRange(lowVal, highVal));
+//    }//GEN-LAST:event_sliderStateChanged
 
     private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
         croppingChanged();
@@ -1066,7 +1074,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JSpinner rightSpinner;
     private javax.swing.JButton rotateLeftButton;
     private javax.swing.JButton rotateRightButton;
-    protected com.jidesoft.swing.RangeSlider slider;
+    protected ContrastSlider slider;
     private javax.swing.JTable table;
     private javax.swing.JSpinner topSpinner;
     private javax.swing.JButton upButton;

@@ -8,9 +8,6 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.jidesoft.swing.RangeSlider;
-
-import edu.jhuapl.saavtk.util.IntensityRange;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbControlsFrame;
@@ -34,7 +31,12 @@ public class OfflimbControlsController
 
         depthSlider = new DepthSlider();
         alphaSlider = new AlphaSlider();
-        contrastSlider = new ContrastSlider();
+        contrastSlider = new ContrastSlider(image);
+        contrastSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+            	contrastSlider.sliderStateChanged(evt);
+            }
+        });
         showBoundaryBtn = new ShowBoundaryButton();
         showBoundaryBtn.setSelected(controlsModel.getShowBoundary());
         showBoundaryBtn.addActionListener(new ActionListener() {
@@ -111,8 +113,6 @@ public class OfflimbControlsController
                 else if (e.getSource() == controlsFrame.getPanel().getImageContrastSlider() && !controlsFrame.getPanel().getImageContrastSlider().getValueIsAdjusting())
                 {
                     contrastSlider.applyContrastToImage();
-                    controlsModel.setContrastLow(contrastSlider.getLowValue());
-                    controlsModel.setContrastHigh(contrastSlider.getHighValue());
                 }
                 else if (e.getSource() == controlsFrame.getPanel().getShowBoundaryButton())
                 {
@@ -196,21 +196,6 @@ public class OfflimbControlsController
         {
             return (double) (getValue() - getMinimum())
                     / (double) (getMaximum() - getMinimum());
-        }
-    }
-
-    public class ContrastSlider extends RangeSlider
-    {
-        public ContrastSlider()
-        {
-            setMinimum(0);
-            setMaximum(255);
-        }
-
-        public void applyContrastToImage()
-        {
-            image.setDisplayedImageRange(
-                    new IntensityRange(getLowValue(), getHighValue()));
         }
     }
 
