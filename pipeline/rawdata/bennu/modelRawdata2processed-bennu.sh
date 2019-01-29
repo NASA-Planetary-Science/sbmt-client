@@ -242,7 +242,7 @@ echo "Begin `date`" >> $log 2>&1
       createDirIfNecessary $destTop/$processingModelName/dtm/browse
       doRsync $srcTop/$rawdataModelName/dtm/ $destTop/$processingModelName/dtm/browse/
       
-      (cd $destTop/$processingModelName/dtm/browse; ls | sed 's:\(.*\):\1\,\1:' > fileList.txt)    
+      (cd $destTop/$processingModelName/dtm/browse; ls | sed 's:\(.*\):\1\,\1:' | grep -v 'fileList.txt' > fileList.txt)    
    fi
 
    # fix any bad permissions
