@@ -88,7 +88,6 @@ public class OfflimbControlsController
 
         controlsFrame.getPanel().getFootprintDepthValue().setText("" + controlsFrame.getPanel().getFootprintDepthSlider().getValue());
         controlsFrame.getPanel().getFootprintTransparencyValue().setText("" + controlsFrame.getPanel().getFootprintTransparencySlider().getValue());
-        controlsFrame.getPanel().getImageContrastValue().setText("(" + controlsFrame.getPanel().getImageContrastSlider().getLowValue() + "," + controlsFrame.getPanel().getImageContrastSlider().getHighValue() + ")");
         init();
     }
 
