@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
@@ -185,6 +186,7 @@ public class DtmCreationModel implements MetadataManager
 
         for (DEMInfo info : infoList)
         {
+        	info.demfilename = SafeURLPaths.instance().getUrl(info.demfilename);
         	fireInfoChangedListeners(info);
         }
 
