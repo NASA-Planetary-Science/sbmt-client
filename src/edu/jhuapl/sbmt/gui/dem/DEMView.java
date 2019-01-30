@@ -581,8 +581,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         String line;
 
-        LatLon start = new LatLon();
-        LatLon end = new LatLon();
+        double[] start = new LatLon().get();
+        double[] end = new LatLon().get();
         int lineId = 0;
 
         while ((line = in.readLine()) != null)
@@ -602,17 +602,17 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             String value = tokens[1].trim();
 
             if (StartLatitude.equals(key))
-                start.lat = Double.parseDouble(value);
+                start[0] = Double.parseDouble(value);
             else if (StartLongitude.equals(key))
-                start.lon = Double.parseDouble(value);
+                start[1] = Double.parseDouble(value);
             else if (StartRadius.equals(key))
-                start.rad = Double.parseDouble(value);
+                start[2] = Double.parseDouble(value);
             else if (EndLatitude.equals(key))
-                end.lat = Double.parseDouble(value);
+                end[0] = Double.parseDouble(value);
             else if (EndLongitude.equals(key))
-                end.lon = Double.parseDouble(value);
+                end[1] = Double.parseDouble(value);
             else if (EndRadius.equals(key))
-                end.rad = Double.parseDouble(value);
+                end[2] = Double.parseDouble(value);
             else if (Color.equals(key))
             {
                 String[] c = value.split("\\s+");
@@ -623,8 +623,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
                 color[2] = Integer.parseInt(c[2]);
                 color[3] = Integer.parseInt(c[3]);
 
-                double[] p1 = MathUtil.latrec(start);
-                double[] p2 = MathUtil.latrec(end);
+                double[] p1 = MathUtil.latrec(new LatLon(start));
+                double[] p2 = MathUtil.latrec(new LatLon(end));
 
                 lineModel.addNewStructure();
                 lineModel.activateStructure(lineId);
