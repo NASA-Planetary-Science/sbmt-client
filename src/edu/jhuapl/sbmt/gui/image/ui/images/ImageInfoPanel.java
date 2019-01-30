@@ -694,6 +694,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         leftButton.setText("<");
+        leftButton.setToolTipText("left");
         leftButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 leftButtonActionPerformed(evt);
@@ -707,6 +708,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jPanel2.add(leftButton, gridBagConstraints);
 
         rightButton.setText(">");
+        rightButton.setToolTipText("right");
         rightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rightButtonActionPerformed(evt);
@@ -717,6 +719,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jPanel2.add(rightButton, gridBagConstraints);
 
         upButton.setText("^");
+        upButton.setToolTipText("up");
         upButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upButtonActionPerformed(evt);
@@ -729,6 +732,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jPanel2.add(upButton, gridBagConstraints);
 
         downButton.setText("v");
+        downButton.setToolTipText("down");
         downButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downButtonActionPerformed(evt);
@@ -741,6 +745,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jPanel2.add(downButton, gridBagConstraints);
 
         rotateLeftButton.setText("\\");
+        rotateLeftButton.setToolTipText("rotate left");
             rotateLeftButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     rotateLeftButtonActionPerformed(evt);
@@ -753,6 +758,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             jPanel2.add(rotateLeftButton, gridBagConstraints);
 
             zoomOutButton.setText("-><-");
+            zoomOutButton.setToolTipText("zoom out");
             zoomOutButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     zoomOutButtonActionPerformed(evt);
@@ -765,6 +771,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             jPanel2.add(zoomOutButton, gridBagConstraints);
 
             zoomInButton.setText("<-->");
+            zoomInButton.setToolTipText("zoom in");
             zoomInButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     zoomInButtonActionPerformed(evt);
@@ -775,6 +782,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             jPanel2.add(zoomInButton, gridBagConstraints);
 
             rotateRightButton.setText("/");
+            rotateRightButton.setToolTipText("rotate right");
             rotateRightButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     rotateRightButtonActionPerformed(evt);

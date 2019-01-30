@@ -68,18 +68,6 @@ public class OfflimbControlsController
             }
 
             @Override
-            public void currentContrastLowChanged(int contrastMin)
-            {
-                controlsFrame.getPanel().getImageContrastValue().setText("(" + contrastSlider.getLowValue() + "," + contrastSlider.getHighValue() + ")");
-            }
-
-            @Override
-            public void currentContrastHighChanged(int contrastMax)
-            {
-                controlsFrame.getPanel().getImageContrastValue().setText("(" + contrastSlider.getLowValue() + "," + contrastSlider.getHighValue() + ")");
-            }
-
-            @Override
             public void currentAlphaChanged(int alpha)
             {
                 controlsFrame.getPanel().getFootprintTransparencyValue().setText("" + alphaSlider.getValue());
