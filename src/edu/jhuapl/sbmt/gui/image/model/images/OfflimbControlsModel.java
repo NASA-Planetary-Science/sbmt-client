@@ -17,12 +17,16 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     private int currentSlice;
     private int currentAlpha;
     private int currentDepth;
+    private int contrastLow;
+    private int contrastHigh;
     private boolean showBoundary = true; // true by default
     Vector<OfflimbModelChangedListener> listeners;
 
     final Key<Integer> currentSliceKey = Key.of("currentSlice");
     final Key<Integer> currentAlphaKey = Key.of("currentAlpha");
     final Key<Integer> currentDepthKey = Key.of("currentDepth");
+    final Key<Integer> contrastLowKey = Key.of("contrastLow");
+    final Key<Integer> contrastHighKey = Key.of("contrastHigh");
 
     public OfflimbControlsModel(PerspectiveImage image, int currentSlice)
     {
@@ -74,10 +78,38 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         }
     }
 
+    public int getContrastLow()
+    {
+        return contrastLow;
+    }
+
+    public void setContrastLow(int contrastLow)
+    {
+        this.contrastLow = contrastLow;
+        for (OfflimbModelChangedListener listener : listeners)
+        {
+            listener.currentContrastLowChanged(contrastLow);
+        }
+    }
+
+    public int getContrastHigh()
+    {
+        return contrastHigh;
+    }
+
 
     public boolean getShowBoundary()
     {
         return showBoundary;
+    }
+
+    public void setContrastHigh(int contrastHigh)
+    {
+        this.contrastHigh = contrastHigh;
+        for (OfflimbModelChangedListener listener : listeners)
+        {
+            listener.currentContrastHighChanged(contrastHigh);
+        }
     }
 
     public void setImage(PerspectiveImage image)
@@ -106,6 +138,9 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         result.put(currentAlphaKey, currentAlpha);
         result.put(currentDepthKey, currentDepth);
         result.put(currentSliceKey, currentSlice);
+        result.put(contrastLowKey, contrastLow);
+        result.put(contrastHighKey, contrastHigh);
+
 
         return result;
     }
@@ -116,6 +151,8 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         currentAlpha = source.get(currentAlphaKey);
         currentDepth = source.get(currentDepthKey);
         currentSlice = source.get(currentSliceKey);
+        contrastLow = source.get(contrastLowKey);
+        contrastHigh = source.get(contrastHighKey);
     }
 
 }

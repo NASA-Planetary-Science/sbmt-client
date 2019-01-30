@@ -46,7 +46,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     @Override
     protected void setupWidgets()
     {
-        // TODO Auto-generated method stub
         super.setupWidgets();
         offlimbTableView.getOfflimbControlsButton().addActionListener(new ActionListener()
         {

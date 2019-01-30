@@ -1,8 +1,5 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -32,28 +29,16 @@ public class OfflimbControlsController
         depthSlider = new DepthSlider();
         alphaSlider = new AlphaSlider();
         contrastSlider = new ContrastSlider(image);
-        contrastSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-            	contrastSlider.sliderStateChanged(evt);
-            }
-        });
+
         showBoundaryBtn = new ShowBoundaryButton();
         showBoundaryBtn.setSelected(controlsModel.getShowBoundary());
-        showBoundaryBtn.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
-                controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
-            }
-
-        });
         controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn);
+
         controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
         {
 
-            @Override
+        	@Override
             public void currentSliceChanged(int slice)
             {
                 // TODO Auto-generated method stub
@@ -68,14 +53,32 @@ public class OfflimbControlsController
             }
 
             @Override
+            public void currentContrastLowChanged(int contrastMin)
+            {
+                controlsFrame.getPanel().getImageContrastValue().setText("(" + contrastSlider.getLowValue() + "," + contrastSlider.getHighValue() + ")");
+            }
+
+            @Override
+            public void currentContrastHighChanged(int contrastMax)
+            {
+                controlsFrame.getPanel().getImageContrastValue().setText("(" + contrastSlider.getLowValue() + "," + contrastSlider.getHighValue() + ")");
+            }
+
+            @Override
             public void currentAlphaChanged(int alpha)
             {
                 controlsFrame.getPanel().getFootprintTransparencyValue().setText("" + alphaSlider.getValue());
             }
+
+			@Override
+			public void showBoundaryChanged() {
+				 showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
+				 controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
+			}
+
+
         });
 
-        controlsFrame.getPanel().getFootprintDepthValue().setText("" + controlsFrame.getPanel().getFootprintDepthSlider().getValue());
-        controlsFrame.getPanel().getFootprintTransparencyValue().setText("" + controlsFrame.getPanel().getFootprintTransparencySlider().getValue());
         init();
     }
 
@@ -91,28 +94,32 @@ public class OfflimbControlsController
                 {
                     depthSlider.applyDepthToImage(controlsModel.getCurrentSlice());
                     controlsModel.setCurrentDepth(depthSlider.getValue());
+                    controlsModel.getImage().firePropertyChange();
                 }
                 else if (e.getSource() == controlsFrame.getPanel().getFootprintTransparencySlider() && !controlsFrame.getPanel().getFootprintTransparencySlider().getValueIsAdjusting())
                 {
                     alphaSlider.applyAlphaToImage();
                     controlsModel.setCurrentAlpha(alphaSlider.getValue());
+                    controlsModel.getImage().firePropertyChange();
                 }
                 else if (e.getSource() == controlsFrame.getPanel().getImageContrastSlider() && !controlsFrame.getPanel().getImageContrastSlider().getValueIsAdjusting())
                 {
-                    contrastSlider.applyContrastToImage();
+                    contrastSlider.sliderStateChanged(e);
+                    controlsModel.setContrastLow(contrastSlider.getLowValue());
+                    controlsModel.setContrastHigh(contrastSlider.getHighValue());
                 }
                 else if (e.getSource() == controlsFrame.getPanel().getShowBoundaryButton())
                 {
                     showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
                     controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
                 }
-                controlsModel.getImage().firePropertyChange();
             }
         };
 
         controlsFrame.getPanel().getFootprintDepthSlider().addChangeListener(changeListener);
-        controlsFrame.getPanel().getImageContrastSlider().addChangeListener(changeListener);
         controlsFrame.getPanel().getFootprintTransparencySlider().addChangeListener(changeListener);
+        controlsFrame.getPanel().getImageContrastSlider().addChangeListener(changeListener);
+        controlsFrame.getPanel().getShowBoundaryButton().addChangeListener(changeListener);
 
 
     }

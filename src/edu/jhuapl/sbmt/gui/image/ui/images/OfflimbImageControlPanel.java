@@ -60,6 +60,9 @@ public class OfflimbImageControlPanel extends JPanel
         imageContrastLabel = new JLabel("Image Contrast:");
         contrastPanel.add(imageContrastLabel);
 
+        imageContrastValue = new JLabel("0");
+        contrastPanel.add(imageContrastValue);
+
         imageContrastSlider = contrastSlider;
         contrastPanel.add(imageContrastSlider);
 
@@ -121,7 +124,7 @@ public class OfflimbImageControlPanel extends JPanel
         this.footprintTransparencySlider = footprintTransparencySlider;
     }
 
-    public void getShowBoundaryButton(ShowBoundaryButton showbounds)
+    public void setShowBoundaryButton(ShowBoundaryButton showbounds)
     {
         this.showBoundaryButton = showbounds;
     }
