@@ -550,8 +550,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             if (line.controlPointIds.size() != 2)
                 continue;
 
-            LatLon ll0 = line.controlPoints.get(0);
-            LatLon ll1 = line.controlPoints.get(1);
+            LatLon ll0 = line.getControlPoints().get(0);
+            LatLon ll1 = line.getControlPoints().get(1);
             int[] color = line.getColor();
             out.write(eol + Profile + "=" + i + eol);
             out.write(StartLatitude + "=" + ll0.lat + eol);
