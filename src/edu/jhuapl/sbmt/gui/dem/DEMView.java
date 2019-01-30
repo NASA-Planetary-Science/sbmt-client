@@ -552,6 +552,7 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
             LatLon ll0 = line.controlPoints.get(0);
             LatLon ll1 = line.controlPoints.get(1);
+            int[] color = line.getColor();
             out.write(eol + Profile + "=" + i + eol);
             out.write(StartLatitude + "=" + ll0.lat + eol);
             out.write(StartLongitude + "=" + ll0.lon + eol);
@@ -560,10 +561,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             out.write(EndLongitude + "=" + ll1.lon + eol);
             out.write(EndRadius + "=" + ll1.rad + eol);
             out.write(Color + "=" +
-                    line.color[0] + " " +
-                    line.color[1] + " " +
-                    line.color[2] + " " +
-                    line.color[3] + eol);
+                    color[0] + " " +
+                    color[1] + " " +
+                    color[2] + " " +
+                    color[3] + eol);
             out.write(plot.getProfileAsString(i));
         }
 
