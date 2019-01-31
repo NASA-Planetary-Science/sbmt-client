@@ -23,6 +23,7 @@ import edu.jhuapl.saavtk.gui.StatusBar;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.AxisType;
 import edu.jhuapl.saavtk.gui.render.camera.Camera;
+import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
@@ -477,17 +478,17 @@ public class ImageDefaultPicker extends DefaultPicker
 
             Camera tmpCamera = renderer.getCamera();
             if ('X' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.NEGATIVE_X, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.NEGATIVE_X);
             else if ('x' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.POSITIVE_X, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.POSITIVE_X);
             else if ('Y' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.NEGATIVE_Y, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.NEGATIVE_Y);
             else if ('y' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.POSITIVE_Y, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.POSITIVE_Y);
             else if ('Z' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.NEGATIVE_Z, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.NEGATIVE_Z);
             else if ('z' == keyChar)
-                tmpCamera.setOrientationInDirectionOfAxis(AxisType.POSITIVE_Z, true);
+                CameraUtil.setOrientationInDirectionOfAxis(tmpCamera, AxisType.POSITIVE_Z);
         }
         else if (keyCode == KeyEvent.VK_N &&
                  renWin.getRenderWindowInteractor().GetInteractorStyle() != null)

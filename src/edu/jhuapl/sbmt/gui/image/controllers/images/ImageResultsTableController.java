@@ -670,6 +670,7 @@ public class ImageResultsTableController
                 break;
             }
         }
+        imageSearchModel.setResultIntervalCurrentlyShown(idPair);
     }
 
 

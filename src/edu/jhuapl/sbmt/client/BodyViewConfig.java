@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -34,6 +35,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
+    public String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
     public boolean hasBigmap = false;
@@ -60,6 +62,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
 
     // Required if hasLidarData is true:
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
