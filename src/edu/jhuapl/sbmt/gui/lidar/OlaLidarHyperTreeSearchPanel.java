@@ -22,7 +22,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -195,7 +195,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
 //        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
-        Picker.setPickingEnabled(false);
+        PickUtil.setPickingEnabled(false);
 
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
@@ -239,7 +239,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         writer.Write();*/
 
 
-        Picker.setPickingEnabled(true);
+        PickUtil.setPickingEnabled(true);
 
     }
 

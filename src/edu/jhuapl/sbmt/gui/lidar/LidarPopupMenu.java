@@ -346,7 +346,7 @@ public class LidarPopupMenu extends PopupMenu
             double[] pickedPosition)
     {
         System.out.println("LidarPopupMenu: showPopup: picked cell id " + pickedCellId);
-        setCurrentTrack(lidarModel.getTrackIdFromPointId(pickedCellId));
+        setCurrentTrack(lidarModel.getTrackIdFromCellId(pickedCellId));
         show(e.getComponent(), e.getX(), e.getY());
     }
 

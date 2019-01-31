@@ -1,33 +1,50 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
-import edu.jhuapl.saavtk.gui.StatusBar;
+import java.util.Map;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.pick.StructuresPickManager;
+import edu.jhuapl.saavtk.pick.DefaultPicker;
+import edu.jhuapl.saavtk.pick.PickManager;
+import edu.jhuapl.saavtk.pick.PickUtil;
+import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
-public class LidarPickManager extends StructuresPickManager
+public class LidarPickManager extends PickManager
 {
     public LidarPickManager(
             Renderer renderer,
-            StatusBar statusBar,
+            PopupManager popupManager,
             ModelManager modelManager,
-            PopupManager popupManager)
+            DefaultPicker aDefaultPicker)
     {
-        super(renderer, statusBar, modelManager, popupManager);
+        super(renderer, popupManager,
+                formNonDefaultPickers(renderer, modelManager), aDefaultPicker);
+    }
 
-        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_SEARCH);
+    /**
+     * Utility helper method to form the relevant collection of non-default
+     * pickers
+     */
+    public static Map<PickMode, Picker> formNonDefaultPickers(Renderer aRenderer, ModelManager aModelManager)
+    {
+        Map<PickMode, Picker> retMap = PickUtil.formNonDefaultPickerMap(aRenderer, aModelManager);
+
+        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) aModelManager.getModel(ModelNames.LIDAR_SEARCH);
         if (lidarModel != null)
-            getNonDefaultPickers().put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
-        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.TRACKS);
+            retMap.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(aRenderer, aModelManager, lidarModel));
+        lidarModel = (LidarSearchDataCollection) aModelManager.getModel(ModelNames.TRACKS);
         if (lidarModel != null)
-            getNonDefaultPickers().put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+            retMap.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(aRenderer, aModelManager, lidarModel));
 
         // added by Mike Z 2016-Jul-22
-        lidarModel = (LidarSearchDataCollection) modelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
+        lidarModel = (LidarSearchDataCollection) aModelManager.getModel(ModelNames.LIDAR_HYPERTREE_SEARCH);
         if (lidarModel != null)
-            getNonDefaultPickers().put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(renderer, modelManager, lidarModel));
+            retMap.put(PickMode.LIDAR_SHIFT, new LidarShiftPicker(aRenderer, aModelManager, lidarModel));
+
+        return retMap;
+
     }
 }
