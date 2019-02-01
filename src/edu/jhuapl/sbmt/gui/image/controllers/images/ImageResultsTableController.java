@@ -81,6 +81,9 @@ public class ImageResultsTableController
             "Date"
     };
 
+//    private ArrayList<Integer> modifiedTableRows = new ArrayList<Integer>();
+    int modifiedTableRow = -1;
+
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
         this.modelManager = model.getModelManager();
@@ -751,7 +754,24 @@ public class ImageResultsTableController
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
-                for (int i=0; i<size; ++i)
+
+//                //check if row in viewport
+//                JViewport viewport = resultList.getview
+//                Rectangle rect = resultList.getCellRect( 20, 1, true );
+//                if( !viewport.contains( rect.getLocation() ) )
+//                {
+//                	System.out.println(
+//							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
+//                }
+                int startIndex = 0;
+                int endIndex = size;
+                if (modifiedTableRow != -1)
+                {
+                	startIndex = modifiedTableRow;
+                	endIndex = startIndex + 1;
+                }
+
+                for (int i=startIndex; i<endIndex; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
                     ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
@@ -776,6 +796,7 @@ public class ImageResultsTableController
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();
+                modifiedTableRow = -1;
             }
         }
     }
@@ -784,6 +805,7 @@ public class ImageResultsTableController
     {
         public void tableChanged(TableModelEvent e)
         {
+        	modifiedTableRow = e.getFirstRow();
             ImageSource sourceOfLastQuery = imageSearchModel.getImageSourceOfLastQuery();
             List<List<String>> imageRawResults = imageSearchModel.getImageResults();
             ModelManager modelManager = imageSearchModel.getModelManager();
