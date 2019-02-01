@@ -12,10 +12,7 @@ package edu.jhuapl.sbmt.gui.image.ui.custom;
 
 import java.awt.Dialog;
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -25,8 +22,14 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+
+import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.model.image.IImagingInstrument;
+import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;
@@ -41,7 +44,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean okayPressed = false;
     private boolean isEllipsoid;
     private boolean isEditMode;
-    private ImagingInstrument instrument;
+    private IImagingInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
 
     public enum ProjectionType
@@ -50,107 +53,107 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         PERSPECTIVE
     }
 
-    public static class ImageInfo implements MetadataManager
-    {
-        public String name = ""; // name to call this image for display purposes
-        public String imagefilename = ""; // filename of image on disk
-        public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
-        public ImageType imageType = ImageType.GENERIC_IMAGE;
-        public double rotation = 0.0;
-        public String flip = "None";
-        public double lllat = -90.0;
-        public double lllon = 0.0;
-        public double urlat = 90.0;
-        public double urlon = 360.0;
-        public String sumfilename = "null"; // filename of sumfile on disk
-        public String infofilename = "null"; // filename of infofile on disk
-
-        final Key<String> nameKey = Key.of("name");
-        final Key<String> imageFileNameKey = Key.of("imagefilename");
-        final Key<String> projectionKey = Key.of("projectionType");
-        final Key<String> imageTypeKey = Key.of("imageType");
-        final Key<Double> rotationKey = Key.of("rotation");
-        final Key<String> flipKey = Key.of("flip");
-        final Key<Double> lllatKey = Key.of("lllat");
-        final Key<Double> lllonKey = Key.of("lllon");
-        final Key<Double> urlatKey = Key.of("urlat");
-        final Key<Double> urlonKey = Key.of("urlon");
-        final Key<String> sumfilenameKey = Key.of("sumfilename");
-        final Key<String> infofileKey = Key.of("infofilename");
-
-
-        @Override
-        public String toString()
-        {
-            DecimalFormat df = new DecimalFormat("#.#####");
-            if (projectionType == ProjectionType.CYLINDRICAL)
-            {
-                return name + ", Cylindrical  ["
-                        + df.format(lllat) + ", "
-                        + df.format(lllon) + ", "
-                        + df.format(urlat) + ", "
-                        + df.format(urlon)
-                        + "]";
-            }
-            else
-            {
-                if (imageType == ImageType.GENERIC_IMAGE)
-                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
-                else
-                    return name + ", Perspective" + ", " + imageType;
-            }
-        }
-
-        public List<String> toList()
-        {
-            List<String> string = new Vector<String>();
-            string.add(name);
-//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-//            string.add(formatter.format(new Date()));
-            string.add("" + new Date().getTime());
-            return string;
-
-        }
-
-        @Override
-        public Metadata store()
-        {
-            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-            result.put(nameKey, name);
-            result.put(imageFileNameKey, imagefilename);
-            result.put(projectionKey, projectionType.toString());
-            result.put(imageTypeKey, imageType.toString());
-            result.put(rotationKey, rotation);
-            result.put(flipKey, flip);
-            result.put(lllatKey, lllat);
-            result.put(lllonKey, lllon);
-            result.put(urlatKey, urlat);
-            result.put(urlonKey, urlon);
-            result.put(sumfilenameKey, sumfilename);
-            result.put(infofileKey, infofilename);
-            return result;
-        }
-
-        @Override
-        public void retrieve(Metadata source)
-        {
-            name = source.get(nameKey);
-            imagefilename = source.get(imageFileNameKey);
-            projectionType = ProjectionType.valueOf(source.get(projectionKey));
-            imageType = ImageType.valueOf(source.get(imageTypeKey));
-            rotation = source.get(rotationKey);
-            flip = source.get(flipKey);
-            lllat = source.get(lllatKey);
-            lllon = source.get(lllonKey);
-            urlat = source.get(urlatKey);
-            urlon = source.get(urlonKey);
-            sumfilename = source.get(sumfilenameKey);
-            infofilename = source.get(infofileKey);
-        }
-    }
+//    public static class ImageInfo implements MetadataManager
+//    {
+//        public String name = ""; // name to call this image for display purposes
+//        public String imagefilename = ""; // filename of image on disk
+//        public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
+//        public ImageType imageType = ImageType.GENERIC_IMAGE;
+//        public double rotation = 0.0;
+//        public String flip = "None";
+//        public double lllat = -90.0;
+//        public double lllon = 0.0;
+//        public double urlat = 90.0;
+//        public double urlon = 360.0;
+//        public String sumfilename = "null"; // filename of sumfile on disk
+//        public String infofilename = "null"; // filename of infofile on disk
+//
+//        final Key<String> nameKey = Key.of("name");
+//        final Key<String> imageFileNameKey = Key.of("imagefilename");
+//        final Key<String> projectionKey = Key.of("projectionType");
+//        final Key<String> imageTypeKey = Key.of("imageType");
+//        final Key<Double> rotationKey = Key.of("rotation");
+//        final Key<String> flipKey = Key.of("flip");
+//        final Key<Double> lllatKey = Key.of("lllat");
+//        final Key<Double> lllonKey = Key.of("lllon");
+//        final Key<Double> urlatKey = Key.of("urlat");
+//        final Key<Double> urlonKey = Key.of("urlon");
+//        final Key<String> sumfilenameKey = Key.of("sumfilename");
+//        final Key<String> infofileKey = Key.of("infofilename");
+//
+//
+//        @Override
+//        public String toString()
+//        {
+//            DecimalFormat df = new DecimalFormat("#.#####");
+//            if (projectionType == ProjectionType.CYLINDRICAL)
+//            {
+//                return name + ", Cylindrical  ["
+//                        + df.format(lllat) + ", "
+//                        + df.format(lllon) + ", "
+//                        + df.format(urlat) + ", "
+//                        + df.format(urlon)
+//                        + "]";
+//            }
+//            else
+//            {
+//                if (imageType == ImageType.GENERIC_IMAGE)
+//                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
+//                else
+//                    return name + ", Perspective" + ", " + imageType;
+//            }
+//        }
+//
+//        public List<String> toList()
+//        {
+//            List<String> string = new Vector<String>();
+//            string.add(name);
+////            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+////            string.add(formatter.format(new Date()));
+//            string.add("" + new Date().getTime());
+//            return string;
+//
+//        }
+//
+//        @Override
+//        public Metadata store()
+//        {
+//            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+//            result.put(nameKey, name);
+//            result.put(imageFileNameKey, imagefilename);
+//            result.put(projectionKey, projectionType.toString());
+//            result.put(imageTypeKey, imageType.toString());
+//            result.put(rotationKey, rotation);
+//            result.put(flipKey, flip);
+//            result.put(lllatKey, lllat);
+//            result.put(lllonKey, lllon);
+//            result.put(urlatKey, urlat);
+//            result.put(urlonKey, urlon);
+//            result.put(sumfilenameKey, sumfilename);
+//            result.put(infofileKey, infofilename);
+//            return result;
+//        }
+//
+//        @Override
+//        public void retrieve(Metadata source)
+//        {
+//            name = source.get(nameKey);
+//            imagefilename = source.get(imageFileNameKey);
+//            projectionType = ProjectionType.valueOf(source.get(projectionKey));
+//            imageType = ImageType.valueOf(source.get(imageTypeKey));
+//            rotation = source.get(rotationKey);
+//            flip = source.get(flipKey);
+//            lllat = source.get(lllatKey);
+//            lllon = source.get(lllonKey);
+//            urlat = source.get(urlatKey);
+//            urlon = source.get(urlonKey);
+//            sumfilename = source.get(sumfilenameKey);
+//            infofilename = source.get(infofileKey);
+//        }
+//    }
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, ImagingInstrument instrument)
+    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, IImagingInstrument instrument)
     {
         super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
@@ -168,27 +171,39 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
     }
 
-    public void setImageInfo(ImageInfo info, boolean isEllipsoid)
+    public void setImageInfo(CustomImageKeyInterface info, boolean isEllipsoid)
     {
+    	String keyName = info == null ? "" : info.getName();
+    	String keyImageFilename = info == null ? "" : info.getImageFilename();
+    	ProjectionType projection = info == null ? ProjectionType.CYLINDRICAL : info.getProjectionType();
+    	ImageType currentImageType = info == null ? ImageType.GENERIC_IMAGE : info.getImageType();
+
+
+
+
         this.isEllipsoid = isEllipsoid;
 
         if (isEditMode)
             imagePathTextField.setText(LEAVE_UNMODIFIED);
         else
-            imagePathTextField.setText(info.imagefilename);
+            imagePathTextField.setText(keyImageFilename);
 
-        imageNameTextField.setText(info.name);
+        imageNameTextField.setText(keyName);
 
-        if (info.projectionType == ProjectionType.CYLINDRICAL)
+        if (projection == ProjectionType.CYLINDRICAL)
         {
             cylindricalProjectionRadioButton.setSelected(true);
 
-            lllatFormattedTextField.setText(String.valueOf(info.lllat));
-            lllonFormattedTextField.setText(String.valueOf(info.lllon));
-            urlatFormattedTextField.setText(String.valueOf(info.urlat));
-            urlonFormattedTextField.setText(String.valueOf(info.urlon));
+            double lllat = info == null ?  -90.0 : ((CustomCylindricalImageKey)info).lllat;
+            double lllon = info == null ?  0.0 : ((CustomCylindricalImageKey)info).lllon;
+            double urlat = info == null ?  90.0 : ((CustomCylindricalImageKey)info).urlat;
+            double urlon = info == null ?  360.0 : ((CustomCylindricalImageKey)info).urlon;
+            lllatFormattedTextField.setText(String.valueOf(lllat));
+            lllonFormattedTextField.setText(String.valueOf(lllon));
+            urlatFormattedTextField.setText(String.valueOf(urlat));
+            urlonFormattedTextField.setText(String.valueOf(urlon));
         }
-        else if (info.projectionType == ProjectionType.PERSPECTIVE)
+        else if (projection == ProjectionType.PERSPECTIVE)
         {
             perspectiveProjectionRadioButton.setSelected(true);
 
@@ -197,10 +212,14 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
                 infofilePathTextField.setText(LEAVE_UNMODIFIED);
             }
+            double rotation = info == null ?  0.0 : ((CustomPerspectiveImageKey)info).getRotation();
+            String flip = info == null ?  "None" : ((CustomPerspectiveImageKey)info).getFlip();
+            imageFlipComboBox.setSelectedItem(flip);
+            imageRotateComboBox.setSelectedItem(Integer.toString((int)rotation));
         }
 
-        ImageType currentImageType = info.imageType;
-        if (info.imagefilename.toUpperCase().endsWith(".FITS") || info.imagefilename.toUpperCase().endsWith(".FIT"))
+//        ImageType currentImageType = info.getImageType();
+        if (keyImageFilename.toUpperCase().endsWith(".FITS") || keyImageFilename.toUpperCase().endsWith(".FIT"))
         {
             imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
             imageTypeComboBox.setSelectedItem(currentImageType);
@@ -209,9 +228,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
 
 
-        imageTypeComboBox.setSelectedItem(info.imageType);
-        imageFlipComboBox.setSelectedItem(info.flip);
-        imageRotateComboBox.setSelectedItem(Integer.toString((int)info.rotation));
+        imageTypeComboBox.setSelectedItem(currentImageType);
+
 
         updateEnabledItems();
     }
@@ -224,46 +242,72 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             return ProjectionType.PERSPECTIVE;
     }
 
-    public ImageInfo getImageInfo()
+    public CustomImageKeyInterface getImageInfo()
     {
-        ImageInfo info = new ImageInfo();
+//        ImageInfo info = new ImageInfo();
 
-        info.imagefilename = imagePathTextField.getText();
-        if (LEAVE_UNMODIFIED.equals(info.imagefilename) || info.imagefilename == null || info.imagefilename.isEmpty())
-            info.imagefilename = null;
+//        info.imagefilename = imagePathTextField.getText();
+    	String imagefilename = imagePathTextField.getText();
+        if (LEAVE_UNMODIFIED.equals(imagefilename) || imagefilename == null || imagefilename.isEmpty())
+            imagefilename = null;
+
+        // If name is not provided, set name to filename
+//        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+        ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
+//        info.name = imageNameTextField.getText();
+        String name = imageNameTextField.getText();
+        if ((name == null || name.isEmpty()) && imagefilename != null)
+            name = new File(imagefilename).getName();
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
-            info.projectionType = ProjectionType.CYLINDRICAL;
-            info.lllat = Double.parseDouble(lllatFormattedTextField.getText());
-            info.lllon = Double.parseDouble(lllonFormattedTextField.getText());
-            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
-            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
+//            info.projectionType = ProjectionType.CYLINDRICAL;
+//            info.lllat = Double.parseDouble(lllatFormattedTextField.getText());
+//            info.lllon = Double.parseDouble(lllonFormattedTextField.getText());
+//            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
+//            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
+
+            CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date());
+            key.setLllat(Double.parseDouble(lllatFormattedTextField.getText()));
+            key.setLllon(Double.parseDouble(lllonFormattedTextField.getText()));
+            key.setUrlat(Double.parseDouble(urlatFormattedTextField.getText()));
+            key.setUrlon(Double.parseDouble(urlonFormattedTextField.getText()));
+            return key;
         }
-        else if (perspectiveProjectionRadioButton.isSelected())
+        else
         {
-            info.projectionType = ProjectionType.PERSPECTIVE;
-            info.sumfilename = null;
+//            info.projectionType = ProjectionType.PERSPECTIVE;
+        	String pointingFilename = null;
+            FileType fileType = null;
+            ImageSource source = null;
             if (sumfilePathRB.isSelected() == true)
-                info.sumfilename = sumfilePathTextField.getText();
-            info.infofilename = null;
+            {
+            	fileType = FileType.SUM;
+            	pointingFilename = sumfilePathTextField.getText();
+            	source = ImageSource.LOCAL_PERSPECTIVE;
+            }
+//            String pointingFilename = null;
             if (infofilePathRB.isSelected() == true)
-                info.infofilename = infofilePathTextField.getText();
-            if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
-                info.sumfilename = null;
-            if (LEAVE_UNMODIFIED.equals(info.infofilename) || info.infofilename == null || info.infofilename.isEmpty())
-                info.infofilename = null;
+            {
+            	pointingFilename = infofilePathTextField.getText();
+            	fileType = FileType.INFO;
+            	source = ImageSource.LOCAL_PERSPECTIVE;
+        }
+            if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
+            	pointingFilename = null;
+            if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
+            	pointingFilename = null;
+
+//            info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
+//            info.flip = imageFlipComboBox.getSelectedItem().toString();
+            double rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
+            String flip = imageFlipComboBox.getSelectedItem().toString();
+
+            CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, new Date());
+            return key;
         }
 
-        // If name is not provided, set name to filename
-        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-        info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
-        info.flip = imageFlipComboBox.getSelectedItem().toString();
-        info.name = imageNameTextField.getText();
-        if ((info.name == null || info.name.isEmpty()) && info.imagefilename != null)
-            info.name = new File(info.imagefilename).getName();
-
-        return info;
+//        return info;
     }
 
     private String validateInput()
@@ -789,7 +833,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         if (imageFileName.toUpperCase().endsWith(".FITS") || imageFileName.toUpperCase().endsWith(".FIT"))
         {
             ImageType[] allImageTypes = ImageType.values();
-            ImageType currentImageType = instrument != null ? instrument.type : ImageType.GENERIC_IMAGE;
+            ImageType currentImageType = instrument != null ? instrument.getType() : ImageType.GENERIC_IMAGE;
             imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
             imageTypeComboBox.setSelectedItem(currentImageType);
 

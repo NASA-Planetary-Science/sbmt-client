@@ -22,26 +22,26 @@ import javax.swing.table.DefaultTableModel;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
-import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class CustomImageResultsTableController extends ImageResultsTableController
 {
-    private List<ImageInfo> results;
+    private List<CustomImageKeyInterface> results;
     private CustomImagesModel model;
 
     public CustomImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, CustomImagesModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
@@ -116,18 +116,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         imageResultsTableView.getRemoveAllImagesButton().removeActionListener(imageResultsTableView.getRemoveAllImagesButton().getActionListeners()[0]);
         imageResultsTableView.getRemoveAllButton().removeActionListener(imageResultsTableView.getRemoveAllButton().getActionListeners()[0]);
 
-//        imageResultsTableView.getNextButton().removeActionListener(imageResultsTableView.getNextButton().getActionListeners()[0]);
-//
-//        imageResultsTableView.getNextButton().addActionListener(new ActionListener()
-//        {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e)
-//            {
-//                model.n
-//            }
-//        });
-
         imageResultsTableView.getRemoveAllImagesButton().addActionListener(new ActionListener()
         {
 
@@ -192,28 +180,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 model.loadImages(file.getAbsolutePath());
                 model.setResultIntervalCurrentlyShown(new IdPair(0, model.getNumBoundaries()));
-
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-//                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//                List<List<String>> results = new ArrayList<List<String>>();
-//                List<String> lines = FileUtil.getFileLinesAsStringList(file.getAbsolutePath());
-//                for (int i=0; i<lines.size(); ++i)
-//                {
-//                    if (lines.get(i).startsWith("#")) continue;
-//                    String[] words = lines.get(i).trim().split("\\s+");
-//                    List<String> result = new ArrayList<String>();
-//                    String name = instrument.searchQuery.getDataPath() + "/" + words[0];
-//                    result.add(name);
-//                    Date dt = sdf.parse(words[1]);
-//                    result.add(String.valueOf(dt.getTime()));
-//                    results.add(result);
-//                }
-
-                //TODO needed?
-//                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
-
-//                setImageResults(imageSearchModel.processResults(results));
             }
             catch (Exception e)
             {
@@ -258,7 +224,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         {
             try
             {
-                ArrayList<ImageInfo> infos = new ArrayList<ImageInfo>();
+                ArrayList<CustomImageKeyInterface> infos = new ArrayList<CustomImageKeyInterface>();
                 int[] selectedIndices = imageResultsTableView.getResultList().getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
@@ -307,11 +273,21 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 
             try
             {
-                String currentImage = imageRawResults.get(i).get(0);
+//                String currentImage = imageRawResults.get(i).get(0);
 //                String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                ImageKey key = model.getImageKeyForIndex(i);
-                //TODO Can't handle cylindrical and perspective in the same area - should we bother with boundaries for cylindrical?
-//                boundaries.addBoundary(key);
+                CustomImageKeyInterface key = model.getImageKeyForIndex(i);
+                CustomImageKeyInterface info;
+                if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
+        		{
+        			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate());
+                    boundaries.addBoundary(info);
+
+        		}
+        		else
+        		{
+        			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate());
+        		}
+                //TODO For now, we don't handle cylindrical image boundaries, since it is a PerspectiveImageBoundary - need to make new classes for this.
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView),
@@ -336,19 +312,20 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             if (index >= 0)
             {
                 int[] selectedIndices = resultList.getSelectedRows();
-                List<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                List<CustomImageKeyInterface> imageKeys = new ArrayList<CustomImageKeyInterface>();
                 for (int selectedIndex : selectedIndices)
                 {
-                    ImageInfo imageInfo = ((CustomImagesModel)imageSearchModel).getCustomImages().get(selectedIndex);
-                    String name = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + imageInfo.imagefilename;
-                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-                    FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-                    String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
-                    pointingFile = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + pointingFile;
-                    ImageType imageType = imageInfo.imageType;
-                    ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
-                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
-                    imageKeys.add(imageKey);
+                    CustomImageKeyInterface imageInfo = ((CustomImagesModel)imageSearchModel).getCustomImages().get(selectedIndex);
+                    imageKeys.add(imageInfo);
+//                    String name = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + imageInfo.imagefilename;
+//                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+//                    FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
+//                    String pointingFile = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? imageInfo.sumfilename : imageInfo.infofilename;
+//                    pointingFile = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + pointingFile;
+//                    ImageType imageType = imageInfo.imageType;
+//                    ImagingInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(imageInfo.rotation, imageInfo.flip) : null;
+//                    ImageKey imageKey = new ImageKey(name, source, fileType, imageType, instrument, null, 0, pointingFile);
+//                    imageKeys.add(imageKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -368,7 +345,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 int size = imageRawResults.size();
                 for (int i=0; i<size; ++i)
                 {
-                    ImageKey key = model.getImageKeyForIndex(i);
+                    CustomImageKeyInterface key = model.getImageKeyForIndex(i);
                     if (imageCollection.containsImage(key))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
@@ -385,10 +362,24 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                         resultList.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
                         resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
                     }
-                    if (boundaries.containsBoundary(key))
+                    CustomImageKeyInterface info;
+                    if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
+            		{
+            			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate());
+            		}
+            		else
+            		{
+            			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate());
+            		}
+
+                    if (boundaries.containsBoundary(info))
+                    {
                         resultList.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
+                    }
                     else
+                    {
                         resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
+                    }
                 }
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
@@ -409,7 +400,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             // Only allow editing the hide column if the image is mapped
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
-                ImageKey key = model.getImageKeyForIndex(row);
+                ImageKeyInterface key = model.getImageKeyForIndex(row);
                 return imageCollection.containsImage(key);
             }
             else
@@ -427,12 +418,18 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         }
     }
 
+    public String getCustomDataFolder()
+    {
+        return model.getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
 
     class CustomImageResultsTableModeListener implements TableModelListener
     {
         public void tableChanged(TableModelEvent e)
         {
             List<List<String>> imageRawResults = model.getImageResults();
+            results = model.getCustomImages();
             if (e.getColumn() == imageResultsTableView.getMapColumnIndex())
             {
                 int row = e.getFirstRow();
@@ -444,7 +441,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 }
                 else
                 {
-                    model.unloadImages(name);
+                    model.unloadImages(name, results.get(row));
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -452,13 +449,13 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
-                ImageKey key = model.getImageKeyForIndex(row);
+                ImageKeyInterface key = model.getImageKeyForIndex(row);
                 model.setImageVisibility(key, visible);
             }
             else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
             {
                 int row = e.getFirstRow();
-                ImageKey key = model.getImageKeyForIndex(row);
+                ImageKeyInterface key = model.getImageKeyForIndex(row);
                 if (imageCollection.containsImage(key) && (imageCollection.getImage(key) instanceof PerspectiveImage))
                 {
                     PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
@@ -468,8 +465,17 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             else if (e.getColumn() == imageResultsTableView.getBndrColumnIndex())
             {
                 int row = e.getFirstRow();
-                ImageKey key = model.getImageKeyForIndex(row);
-
+                CustomImageKeyInterface key;
+//                ImageKeyInterface key = model.getImageKeyForIndex(row);
+                CustomImageKeyInterface info = results.get(row);
+                if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
+        		{
+        			key = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate());
+        		}
+        		else
+        		{
+        			key = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate());
+        		}
                 // There used to be an assignment here of the key.imageType, but that field is now immutable.
                 // However, it appears that this assignment is not necessary -- the correct ImageType is
                 // injected when the key is created. Replaced the assignment with a check for mismatch inside
@@ -478,7 +484,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 try
                 {
                 	// TODO remove this check if it never triggers the AssertionError.
-                    if (key.imageType != results.get(row).imageType)
+                    if (key.getImageType() != results.get(row).getImageType())
                     {
                         throw new AssertionError("Image type mismatch");
                     }
