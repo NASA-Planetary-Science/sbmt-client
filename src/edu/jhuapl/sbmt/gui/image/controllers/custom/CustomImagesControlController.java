@@ -5,16 +5,16 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImagesControlPanel;
 
 public class CustomImagesControlController
 {
     CustomImagesControlPanel panel;
     CustomImagesModel model;
-    List<ImageInfo> customImages;
+    List<CustomImageKeyInterface> customImages;
 
     public CustomImagesControlController(CustomImagesModel model)
     {
@@ -62,18 +62,17 @@ public class CustomImagesControlController
         });
     }
 
-    private void newButtonActionPerformed(java.awt.event.ActionEvent evt)
+    private void newButtonActionPerformed(ActionEvent evt)
     {
-        ImageInfo imageInfo = new ImageInfo();
         CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, model.getInstrument());
-        dialog.setImageInfo(imageInfo, model.getModelManager().getPolyhedralModel().isEllipsoid());
+        dialog.setImageInfo(null, model.getModelManager().getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
 
         // If user clicks okay add to list
         if (dialog.getOkayPressed())
         {
-            imageInfo = dialog.getImageInfo();
+            CustomImageKeyInterface imageInfo = dialog.getImageInfo();
             try
             {
                 saveImage(model.getImageResults().size(), null, imageInfo);
@@ -93,7 +92,7 @@ public class CustomImagesControlController
         model.deleteButtonActionPerformed(evt);
     }
 
-    private void saveImage(int index, ImageInfo oldImageInfo, ImageInfo newImageInfo) throws IOException
+    private void saveImage(int index, CustomImageKeyInterface oldImageInfo, CustomImageKeyInterface newImageInfo) throws IOException
     {
         model.saveImage(index, oldImageInfo, newImageInfo);
     }

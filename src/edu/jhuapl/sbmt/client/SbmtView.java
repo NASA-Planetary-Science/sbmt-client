@@ -1,15 +1,20 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
+
+import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
@@ -19,16 +24,9 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.EmptyMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Utilities;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -81,6 +79,15 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.EmptyMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.TrackedMetadataManager;
+import crucible.crust.metadata.impl.Utilities;
+
 
 /**
  * A view is a container which contains a control panel and renderer
@@ -91,7 +98,6 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
-    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
     private final Map<String, MetadataManager> metadataManagers;
@@ -175,7 +181,6 @@ public class SbmtView extends View implements PropertyChangeListener
     protected void setupModelManager()
     {
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
-        setModelManager(new SbmtModelManager(smallBodyModel));
 
         Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
 
@@ -253,7 +258,7 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, getModelManager()));
         allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
 
-        setModels(allModels);
+        setModelManager(new SbmtModelManager(smallBodyModel, allModels));
 
         getModelManager().addPropertyChangeListener(this);
     }
@@ -572,15 +577,21 @@ public class SbmtView extends View implements PropertyChangeListener
         smallBodyColorbar = new Colorbar(renderer);
     }
 
+    private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
+    private static final Version METADATA_VERSION_1_0 = Version.of(1, 0); // Top level CURRENT_TAB only stored as a single string.
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
+    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
+    private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
+    private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
+    private static final Key<double[]> UP_KEY = Key.of("cameraUp");
+    private static final Key<List<String>> CURRENT_TAB_KEY = Key.of("currentTab");
+    private static final Key<String> CURRENT_TAB_KEY_1_0 = Key.of("currentTab");
+
     @Override
     public void initializeStateManager()
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
-                final Key<double[]> positionKey = Key.of("cameraPosition");
-                final Key<double[]> upKey = Key.of("cameraUp");
-                final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
                 public Metadata store()
@@ -590,16 +601,16 @@ public class SbmtView extends View implements PropertyChangeListener
                         return EmptyMetadata.instance();
                     }
 
-                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+                    SettableMetadata result = SettableMetadata.of(METADATA_VERSION);
 
-                    result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
+                    result.put(RESOLUTION_LEVEL_KEY, getModelManager().getPolyhedralModel().getModelResolution());
 
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
-                        result.put(positionKey, camera.GetPosition());
-                        result.put(upKey, camera.GetViewUp());
+                        result.put(POSITION_KEY, camera.GetPosition());
+                        result.put(UP_KEY, camera.GetViewUp());
                     }
 
                     // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
@@ -619,12 +630,18 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
                     result.put(METADATA_MANAGERS_KEY, metadata);
 
+                    ModelManager modelManager = getModelManager();
+                    if (modelManager instanceof MetadataManager)
+                    {
+                    	result.put(MODEL_MANAGER_KEY, ((MetadataManager) modelManager).store());
+                    }
+
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
-                        int selectedIndex = controlPanel.getSelectedIndex();
-                        String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
-                        result.put(currentTabKey, title);
+                    	List<String> currentTabs = new ArrayList<>();
+                    	compileCurrentTabs(controlPanel, currentTabs);
+                        result.put(CURRENT_TAB_KEY, currentTabs);
                     }
                     return result;
                 }
@@ -632,12 +649,15 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(Metadata state)
                 {
-                        initialize();
-                    if (state.hasKey(resolutionLevelKey))
+                    initialize();
+
+                    Version serializedVersion = state.getVersion();
+
+                    if (state.hasKey(RESOLUTION_LEVEL_KEY))
                     {
                         try
                         {
-                            getModelManager().getPolyhedralModel().setModelResolution(state.get(resolutionLevelKey));
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(RESOLUTION_LEVEL_KEY));
                         }
                         catch (IOException e)
                         {
@@ -650,8 +670,8 @@ public class SbmtView extends View implements PropertyChangeListener
                         {
                             RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                             vtkCamera camera = panel.getActiveCamera();
-                            camera.SetPosition(state.get(positionKey));
-                            camera.SetViewUp(state.get(upKey));
+                            camera.SetPosition(state.get(POSITION_KEY));
+                            camera.SetViewUp(state.get(UP_KEY));
                             panel.resetCameraClippingRange();
                             panel.Render();
                         }
@@ -673,27 +693,62 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
                     Utilities.bulkRetrieve(metadataManagers, metadata);
 
-                    if (state.hasKey(currentTabKey))
-                    {
-                        JTabbedPane controlPanel = getControlPanel();
-                        if (controlPanel != null)
-                        {
-                            int selectedIndex = 0;
-                            String currentTab = state.get(currentTabKey);
-                            if (currentTab != null)
-                            {
-                                for (int index = 0; index < controlPanel.getTabCount(); ++index)
-                                {
-                                    if (currentTab.equalsIgnoreCase(controlPanel.getTitleAt(index)))
-                                    {
-                                        selectedIndex = index;
-                                        break;
-                                    }
-                                }
-                            }
-                            controlPanel.setSelectedIndex(selectedIndex);
-                        }
+                    if (state.hasKey(MODEL_MANAGER_KEY)) {
+                    	ModelManager modelManager = getModelManager();
+                    	if (modelManager instanceof MetadataManager)
+                    	{
+                    		((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    	}
                     }
+
+                    List<String> currentTabs = ImmutableList.of();
+                    if (serializedVersion.compareTo(METADATA_VERSION_1_0) > 0)
+                    {
+                    	currentTabs = state.get(CURRENT_TAB_KEY);
+                    }
+                    else if (state.hasKey(CURRENT_TAB_KEY_1_0))
+                    {
+                    	currentTabs = ImmutableList.of(state.get(CURRENT_TAB_KEY_1_0));
+                    }
+
+                    restoreCurrentTabs(getControlPanel(), currentTabs);
+                }
+
+                private void compileCurrentTabs(JTabbedPane tabbedPane, List<String> tabs)
+                {
+                	int selectedIndex = tabbedPane.getSelectedIndex();
+                	if (selectedIndex >= 0)
+                	{
+                		tabs.add(tabbedPane.getTitleAt(selectedIndex));
+                		Component component = tabbedPane.getSelectedComponent();
+                		if (component instanceof JTabbedPane) {
+                			compileCurrentTabs((JTabbedPane) component, tabs);
+                		}
+                	}
+                }
+
+                private void restoreCurrentTabs(JTabbedPane tabbedPane, List<String> tabTitles) {
+                	if (tabbedPane != null)
+                	{
+                		if (!tabTitles.isEmpty())
+                		{
+                			String title = tabTitles.get(0);
+                			for (int index = 0; index < tabbedPane.getTabCount(); ++index)
+                			{
+                				String tabTitle = tabbedPane.getTitleAt(index);
+                				if (title.equalsIgnoreCase(tabTitle))
+                				{
+                					tabbedPane.setSelectedIndex(index);
+                					Component component = tabbedPane.getSelectedComponent();
+                					if (component instanceof JTabbedPane)
+                					{
+                						restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
+                					}
+                					break;
+                				}
+                			}
+                		}
+                	}
                 }
 
             });

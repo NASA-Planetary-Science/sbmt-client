@@ -34,10 +34,10 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 
 @Deprecated
@@ -151,7 +151,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         Set<ImageCube> imageSet = images.getImages();
         for (ImageCube image : imageSet)
         {
-            ImageKey key = image.getKey();
+            ImageKeyInterface key = image.getKey();
             String name = image.getImageName();
 
             if(name.equals(imagename))
@@ -191,7 +191,7 @@ public class CubicalImagingSearchPanel extends ImagingSearchPanel implements Pro
         Set<ImageCube> imageSet = images.getImages();
         for (ImageCube image : imageSet)
         {
-            ImageKey key = image.getKey();
+            ImageKeyInterface key = image.getKey();
             String name = image.getImageName();
             if (name.equals(imagename))
             {

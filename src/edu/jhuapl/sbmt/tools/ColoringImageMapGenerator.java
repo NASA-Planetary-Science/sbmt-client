@@ -3,8 +3,8 @@ package edu.jhuapl.sbmt.tools;
 import vtk.vtkImageData;
 import vtk.vtkStructuredPointsWriter;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.VtkDataTypes;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;

@@ -364,12 +364,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 //            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/with_range2/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", "/bennu/bennu-simulated-v4/ola/search/hypertree/dataSource.lidar");
+
             c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
-
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
@@ -605,6 +605,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 
 
+
+
+
+
+
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
@@ -754,6 +759,8 @@ public class SmallBodyViewConfig extends BodyViewConfig
             /*
              *
              */
+
+
 
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -908,8 +915,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
              */
 
 
-
-
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
@@ -1062,6 +1067,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             /*
              *
              */
+
+
+
 
 
 
@@ -1556,6 +1564,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
             /*
              *
              */
+
+
+
+
+
+
 
 
 

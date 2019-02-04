@@ -19,8 +19,8 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageResultsTableView;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
@@ -55,7 +55,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             public void actionPerformed(ActionEvent e)
             {
                 String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
                 OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
                 controller.getControlsFrame().setVisible(true);
@@ -142,7 +142,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         for (List<String> str : results)
         {
             String name = imageRawResults.get(i).get(0);
-            ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+            ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
             if (imageCollection.containsImage(key))
             {
                 PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
@@ -188,9 +188,9 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
     protected void setOffLimbFootprintVisibility(String name, boolean visible)
     {
-        List<ImageKey> keys = imageSearchModel.createImageKeys(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
+        List<ImageKeyInterface> keys = imageSearchModel.createImageKeys(name, imageSearchModel.getImageSourceOfLastQuery(), instrument);
         ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
             {
@@ -214,7 +214,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             if (column == offlimbTableView.getShowFootprintColumnIndex() || column == offlimbTableView.getOffLimbIndex() || column == offlimbTableView.getFrusColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 ImageCollection images = (ImageCollection)imageSearchModel.getModelManager().getModel(imageSearchModel.getImageCollectionModelName());
                 return images.containsImage(key);
             }

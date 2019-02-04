@@ -17,10 +17,10 @@ import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.spectral.SpectralImageCubeGenerationPanel;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 public class SpectralImageCubeController extends ImageCubeController
 {
@@ -87,7 +87,7 @@ public class SpectralImageCubeController extends ImageCubeController
                 Set<ImageCube> imageSet = images.getImages();
                 for (ImageCube image : imageSet)
                 {
-                    ImageKey key = image.getKey();
+                    ImageKeyInterface key = image.getKey();
                     String name = image.getImageName();
 
                     if(name.equals(imagename))
