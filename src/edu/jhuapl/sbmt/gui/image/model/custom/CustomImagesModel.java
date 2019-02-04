@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -689,7 +690,22 @@ public class CustomImagesModel extends ImageSearchModel
     @Override
     public void retrieve(Metadata source)
     {
-    	customImages = source.get(customImagesKey);
+    	try
+    	{
+    		customImages = source.get(customImagesKey);
+    	}
+    	catch (ClassCastException cce)
+    	{
+    		Key<Metadata[]> oldCustomImagesKey = Key.of("customImages");
+    		Metadata[] oldCustomImages = source.get(oldCustomImagesKey);
+    		List<CustomImageKeyInterface> migratedImages = new ArrayList<CustomImageKeyInterface>();
+    		for (Metadata meta : oldCustomImages)
+    		{
+    			migratedImages.add(CustomImageKeyInterface.retrieveOldFormat(meta));
+    		}
+    		customImages = migratedImages;
+    		updateConfigFile();
+    	}
     }
 
     public void saveImages(List<CustomImageKeyInterface> customImages, String filename)
