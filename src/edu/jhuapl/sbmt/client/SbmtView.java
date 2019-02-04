@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
@@ -56,9 +57,10 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
@@ -78,6 +80,8 @@ import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
+
+import net.miginfocom.swing.MigLayout;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -483,8 +487,15 @@ public class SbmtView extends View implements PropertyChangeListener
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
             }
 
-            customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
-
+            // Add the "lidar tracks" tab
+            ModelManager tmpModelManager = getModelManager();
+            LidarSearchDataCollection tmpLidarModel = (LidarSearchDataCollection)tmpModelManager.getModel(ModelNames.TRACKS);
+            LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpLidarModel);
+            LidarListPanel tmpLidarListPanel = new LidarListPanel(tmpModelManager, tmpLidarModel, getPickManager(), getRenderer());
+            JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
+            tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
+            tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
+            customDataPane.addTab("Tracks", tmpPanel);
 
 //            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
