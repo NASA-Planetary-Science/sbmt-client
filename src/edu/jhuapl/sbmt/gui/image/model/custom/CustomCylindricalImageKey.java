@@ -41,7 +41,6 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     private static final  Key<Double> urlonKey = Key.of("urlon");
     private static final  Key<Date> dateKey = Key.of("date");
     private static final Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
-    private static final Key<String> originalNameKey = Key.of("originalname");
 
 
 	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source, Date date, String originalName)
@@ -162,8 +161,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	        double urlat = metadata.get(urlatKey);
 	        double urlon = metadata.get(urlonKey);
 	        Date date = metadata.get(dateKey);
-	        String originalName = metadata.get(originalNameKey);
-	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, originalName);
+	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, name);
 	        result.setLllat(lllat);
 	        result.setLllon(lllon);
 	        result.setUrlat(urlat);
@@ -235,18 +233,4 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	{
 		return date;
 	}
-
-//    @Override
-//    public void retrieve(Metadata source)
-//    {
-//        name = source.get(nameKey);
-//        imagefilename = source.get(imageFileNameKey);
-//        projectionType = ProjectionType.valueOf(source.get(projectionKey));
-//        imageType = ImageType.valueOf(source.get(imageTypeKey));
-//        lllat = source.get(lllatKey);
-//        lllon = source.get(lllonKey);
-//        urlat = source.get(urlatKey);
-//        urlon = source.get(urlonKey);
-//    }
-
 }
