@@ -244,7 +244,7 @@ public class DiscoverPlateColorings
 
 	private String getUnits(String name, TableInfo tableInfo, int columnNumber)
 	{
-		String units = null;
+		String units = "";
 		try
 		{
 			ColumnInfo columnInfo = tableInfo.getColumnInfo(columnNumber);
