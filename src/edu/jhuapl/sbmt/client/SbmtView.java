@@ -1,14 +1,20 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
+
+import com.google.common.collect.ImmutableList;
 
 import vtk.vtkCamera;
 
@@ -18,16 +24,9 @@ import edu.jhuapl.saavtk.gui.View;
 import edu.jhuapl.saavtk.gui.panel.StructuresControlPanel;
 import edu.jhuapl.saavtk.gui.render.RenderPanel;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.EmptyMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Utilities;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.TrackedMetadataManager;
 import edu.jhuapl.saavtk.model.Graticule;
 import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -41,8 +40,10 @@ import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.gui.dem.CustomDEMPanel;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
+import edu.jhuapl.sbmt.gui.dtm.controllers.ExperimentalDEMController;
+import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
+import edu.jhuapl.sbmt.gui.dtm.ui.creation.MapmakerDEMCreator;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
@@ -73,10 +74,19 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.EmptyMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.TrackedMetadataManager;
+import crucible.crust.metadata.impl.Utilities;
 
 /**
  * A view is a container which contains a control panel and renderer
@@ -87,7 +97,6 @@ import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
  */
 public class SbmtView extends View implements PropertyChangeListener
 {
-    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
     private static final long serialVersionUID = 1L;
     private final TrackedMetadataManager stateManager;
     private final Map<String, MetadataManager> metadataManagers;
@@ -171,7 +180,6 @@ public class SbmtView extends View implements PropertyChangeListener
     protected void setupModelManager()
     {
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
-        setModelManager(new SbmtModelManager(smallBodyModel));
 
         Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
 
@@ -212,6 +220,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
         if (getPolyhedralModelConfig().hasSpectralData)
         {
+            allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel));
             allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
             //if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
                 allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
@@ -248,7 +257,7 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, getModelManager()));
         allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
 
-        setModels(allModels);
+        setModelManager(new SbmtModelManager(smallBodyModel, allModels));
 
         getModelManager().addPropertyChangeListener(this);
     }
@@ -406,10 +415,6 @@ public class SbmtView extends View implements PropertyChangeListener
             String displayName = instrument.getDisplayName();
             if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
             {
-//                JComponent component = new NISSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
                 NISSearchModel model = new NISSearchModel(getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument);
@@ -421,44 +426,12 @@ public class SbmtView extends View implements PropertyChangeListener
             }
             else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
             {
-            	//From Colleen:
             	JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-            	//Old way
-//                JComponent component = new OTESSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, false).getView();
-            	//My way
-//                OTESSearchModel model = new OTESSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//
-//                JComponent component = new SpectrumSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
             {
-            //From Colleen
                 JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-
-               //Old way
-//                JComponent component = new OVIRSSearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, false).getView();
-
-                //My Way
-//                OVIRSSearchModel model = new OVIRSSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//
-//                JComponent component = new SpectrumSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
                 addTab(instrument.getDisplayName(), component);
             }
             else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
@@ -470,10 +443,6 @@ public class SbmtView extends View implements PropertyChangeListener
                         getPolyhedralModelConfig(), getModelManager(),
                         (SbmtInfoWindowManager) getInfoPanelManager(),
                         getPickManager(), getRenderer(), instrument, model).getPanel();
-//                JComponent component = new NIRS3SearchPanel(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
                 addTab(instrument.getDisplayName(), component);
             }
 
@@ -511,54 +480,32 @@ public class SbmtView extends View implements PropertyChangeListener
                     break;
                 }
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
-
-//                customDataPane.addTab("Images", new CustomImagesPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
             }
 
-            if (getPolyhedralModelConfig().spectralInstruments.length > 0)
-            {
-//                SpectralInstrument instrument = getPolyhedralModelConfig().spectralInstruments[0];
-//                CustomSpectraSearchModel model = new CustomSpectraSearchModel(getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument);
-//                JComponent component = new CustomSpectraSearchController(
-//                        getPolyhedralModelConfig(), getModelManager(),
-//                        (SbmtInfoWindowManager) getInfoPanelManager(),
-//                        getPickManager(), getRenderer(), instrument, model).getPanel();
-//                customDataPane.addTab("Spectra", component);
-//                customDataPane.addTab("Spectra", new CustomSpectrumPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).init());
-
-            }
-
-//            customDataPane.addTab("Tracks", new TrackPanel(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()));
             customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
 
-            /*if (getSmallBodyConfig().hasMapmaker)
+
+//            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
+//            addTab("Regional DTMs", component);
+
+            if ( getPolyhedralModelConfig().rootDirOnServer != null)
             {
-                JComponent component = new MapmakerPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/mapmaker.zip");
-                addTab("Mapmaker", component);
+            	DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+            	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
             }
-
-            if (getSmallBodyConfig().hasBigmap)
+            else
             {
-                JComponent component = new BigmapPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer + "/bigmap.zip");
-                addTab("Bigmap", component);
-            }*/
+               	getPolyhedralModelConfig().hasMapmaker = false;
+            	getPolyhedralModelConfig().hasBigmap = false;
+            	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), null, getPolyhedralModelConfig(), getRenderer()).getPanel());
 
-            /*if(getSmallBodyConfig().hasMapmaker || getSmallBodyConfig().hasBigmap)
-            {
-                JComponent component = new DEMPanel(getModelManager(), getPickManager(), getSmallBodyConfig().rootDirOnServer,
-                        getSmallBodyConfig().hasMapmaker, getSmallBodyConfig().hasBigmap);
-                addTab("Regional DTMs", component);
-            }*/
-
-            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
-                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer, getPolyhedralModelConfig());
-            addTab("Regional DTMs", component);
-
+//            	JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer, getPolyhedralModelConfig());
+//            	addTab("Regional DTMs", component);
+			}
             if (getConfig().hasStateHistory)
             {
-//                addTab("Observing Conditions", new StateHistoryPanel(getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer()));
                 StateHistoryController controller = null;
                 if (getConfig().body == ShapeModelBody.EARTH)
                     controller = new StateHistoryController(getModelManager(), getRenderer(), false);
@@ -633,15 +580,21 @@ public class SbmtView extends View implements PropertyChangeListener
         smallBodyColorbar = new Colorbar(renderer);
     }
 
+    private static final Version METADATA_VERSION = Version.of(1, 1); // Nested CURRENT_TAB stored as an array of strings.
+    private static final Version METADATA_VERSION_1_0 = Version.of(1, 0); // Top level CURRENT_TAB only stored as a single string.
+    private static final Key<Map<String, Metadata>> METADATA_MANAGERS_KEY = Key.of("metadataManagers");
+    private static final Key<Metadata> MODEL_MANAGER_KEY = Key.of("modelState");
+    private static final Key<Integer> RESOLUTION_LEVEL_KEY = Key.of("resolutionLevel");
+    private static final Key<double[]> POSITION_KEY = Key.of("cameraPosition");
+    private static final Key<double[]> UP_KEY = Key.of("cameraUp");
+    private static final Key<List<String>> CURRENT_TAB_KEY = Key.of("currentTab");
+    private static final Key<String> CURRENT_TAB_KEY_1_0 = Key.of("currentTab");
+
     @Override
     public void initializeStateManager()
     {
         if (!stateManager.isRegistered()) {
             stateManager.register(new MetadataManager() {
-                final Key<Integer> resolutionLevelKey = Key.of("resolutionLevel");
-                final Key<double[]> positionKey = Key.of("cameraPosition");
-                final Key<double[]> upKey = Key.of("cameraUp");
-                final Key<String> currentTabKey = Key.of("currentTab");
 
                 @Override
                 public Metadata store()
@@ -651,16 +604,16 @@ public class SbmtView extends View implements PropertyChangeListener
                         return EmptyMetadata.instance();
                     }
 
-                    SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+                    SettableMetadata result = SettableMetadata.of(METADATA_VERSION);
 
-                    result.put(resolutionLevelKey, getModelManager().getPolyhedralModel().getModelResolution());
+                    result.put(RESOLUTION_LEVEL_KEY, getModelManager().getPolyhedralModel().getModelResolution());
 
                     Renderer localRenderer = SbmtView.this.getRenderer();
                     if (localRenderer != null) {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
-                        result.put(positionKey, camera.GetPosition());
-                        result.put(upKey, camera.GetViewUp());
+                        result.put(POSITION_KEY, camera.GetPosition());
+                        result.put(UP_KEY, camera.GetViewUp());
                     }
 
                     // Redmine #1320/1439: this is what used to be here to save the state of imaging search panels.
@@ -680,12 +633,18 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = Utilities.bulkStore(metadataManagers);
                     result.put(METADATA_MANAGERS_KEY, metadata);
 
+                    ModelManager modelManager = getModelManager();
+                    if (modelManager instanceof MetadataManager)
+                    {
+                    	result.put(MODEL_MANAGER_KEY, ((MetadataManager) modelManager).store());
+                    }
+
                     JTabbedPane controlPanel = getControlPanel();
                     if (controlPanel != null)
                     {
-                        int selectedIndex = controlPanel.getSelectedIndex();
-                        String title = selectedIndex >= 0 ? controlPanel.getTitleAt(selectedIndex) : null;
-                        result.put(currentTabKey, title);
+                    	List<String> currentTabs = new ArrayList<>();
+                    	compileCurrentTabs(controlPanel, currentTabs);
+                        result.put(CURRENT_TAB_KEY, currentTabs);
                     }
                     return result;
                 }
@@ -694,11 +653,14 @@ public class SbmtView extends View implements PropertyChangeListener
                 public void retrieve(Metadata state)
                 {
                     initialize();
-                    if (state.hasKey(resolutionLevelKey))
+
+                    Version serializedVersion = state.getVersion();
+
+                    if (state.hasKey(RESOLUTION_LEVEL_KEY))
                     {
                         try
                         {
-                            getModelManager().getPolyhedralModel().setModelResolution(state.get(resolutionLevelKey));
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(RESOLUTION_LEVEL_KEY));
                         }
                         catch (IOException e)
                         {
@@ -711,8 +673,8 @@ public class SbmtView extends View implements PropertyChangeListener
                     {
                         RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
                         vtkCamera camera = panel.getActiveCamera();
-                        camera.SetPosition(state.get(positionKey));
-                        camera.SetViewUp(state.get(upKey));
+                            camera.SetPosition(state.get(POSITION_KEY));
+                            camera.SetViewUp(state.get(UP_KEY));
                         panel.resetCameraClippingRange();
                         panel.Render();
                     }
@@ -734,26 +696,61 @@ public class SbmtView extends View implements PropertyChangeListener
                     Map<String, Metadata> metadata = state.get(METADATA_MANAGERS_KEY);
                     Utilities.bulkRetrieve(metadataManagers, metadata);
 
-                    if (state.hasKey(currentTabKey))
+                    if (state.hasKey(MODEL_MANAGER_KEY)) {
+                    	ModelManager modelManager = getModelManager();
+                    	if (modelManager instanceof MetadataManager)
+                    	{
+                    		((MetadataManager) modelManager).retrieve(state.get(MODEL_MANAGER_KEY));
+                    	}
+                    }
+
+                    List<String> currentTabs = ImmutableList.of();
+                    if (serializedVersion.compareTo(METADATA_VERSION_1_0) > 0)
                     {
-                        JTabbedPane controlPanel = getControlPanel();
-                        if (controlPanel != null)
+                    	currentTabs = state.get(CURRENT_TAB_KEY);
+                    }
+                    else if (state.hasKey(CURRENT_TAB_KEY_1_0))
+                    {
+                    	currentTabs = ImmutableList.of(state.get(CURRENT_TAB_KEY_1_0));
+                    }
+
+                    restoreCurrentTabs(getControlPanel(), currentTabs);
+                }
+
+                private void compileCurrentTabs(JTabbedPane tabbedPane, List<String> tabs)
+                {
+                	int selectedIndex = tabbedPane.getSelectedIndex();
+                	if (selectedIndex >= 0)
+                	{
+                		tabs.add(tabbedPane.getTitleAt(selectedIndex));
+                		Component component = tabbedPane.getSelectedComponent();
+                		if (component instanceof JTabbedPane) {
+                			compileCurrentTabs((JTabbedPane) component, tabs);
+                		}
+                	}
+                }
+
+                private void restoreCurrentTabs(JTabbedPane tabbedPane, List<String> tabTitles) {
+                	if (tabbedPane != null)
+                    {
+                		if (!tabTitles.isEmpty())
                         {
-                            int selectedIndex = 0;
-                            String currentTab = state.get(currentTabKey);
-                            if (currentTab != null)
+                			String title = tabTitles.get(0);
+                			for (int index = 0; index < tabbedPane.getTabCount(); ++index)
                             {
-                                for (int index = 0; index < controlPanel.getTabCount(); ++index)
+                				String tabTitle = tabbedPane.getTitleAt(index);
+                				if (title.equalsIgnoreCase(tabTitle))
                                 {
-                                    if (currentTab.equalsIgnoreCase(controlPanel.getTitleAt(index)))
+                					tabbedPane.setSelectedIndex(index);
+                					Component component = tabbedPane.getSelectedComponent();
+                					if (component instanceof JTabbedPane)
                                     {
-                                        selectedIndex = index;
+                						restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
+                					}
                                         break;
                                     }
                                 }
                             }
-                            controlPanel.setSelectedIndex(selectedIndex);
-                        }
                     }
                 }
 

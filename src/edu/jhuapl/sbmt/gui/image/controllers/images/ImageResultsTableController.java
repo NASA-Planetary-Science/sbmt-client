@@ -46,8 +46,8 @@ import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTableView;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -80,6 +80,9 @@ public class ImageResultsTableController
             "Filename",
             "Date"
     };
+
+//    private ArrayList<Integer> modifiedTableRows = new ArrayList<Integer>();
+    int modifiedTableRow = -1;
 
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
@@ -366,10 +369,11 @@ public class ImageResultsTableController
                 resultIntervalCurrentlyShown.id2 = newMaxId;
                 showImageBoundaries(resultIntervalCurrentlyShown);
             }
+            imageSearchModel.setNumBoundaries(Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem()));
         }
     }
 
-    private void saveImageListButtonActionPerformed(ActionEvent evt) {
+    protected void saveImageListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -408,7 +412,7 @@ public class ImageResultsTableController
         }
     }
 
-    private void loadImageListButtonActionPerformed(ActionEvent evt) {
+    protected void loadImageListButtonActionPerformed(ActionEvent evt) {
         File file = CustomFileChooser.showOpenDialog(imageResultsTableView, "Select File");
 
         if (file != null)
@@ -434,7 +438,7 @@ public class ImageResultsTableController
 
                 //TODO needed?
 //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
-
+                imageSearchModel.setImageResults(new ArrayList<List<String>>());
                 setImageResults(imageSearchModel.processResults(results));
             }
             catch (Exception e)
@@ -451,7 +455,7 @@ public class ImageResultsTableController
     }
 
 
-    private void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    protected void saveSelectedImageListButtonActionPerformed(java.awt.event.ActionEvent evt) {
         File file = CustomFileChooser.showSaveDialog(imageResultsTableView, "Select File", "imagelist.txt");
 
         if (file != null)
@@ -499,8 +503,6 @@ public class ImageResultsTableController
 
     private void removeAllImagesButtonActionPerformed(ActionEvent evt)
     {
-        System.out.println(
-                "ImageResultsTableController: removeAllImagesButtonActionPerformed: removing all");
         imageCollection.removeImages(ImageSource.GASKELL);
         imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
         imageCollection.removeImages(ImageSource.SPICE);
@@ -510,7 +512,7 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
     }
 
-    private void prevButtonActionPerformed(ActionEvent evt)
+    protected void prevButtonActionPerformed(ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         if (resultIntervalCurrentlyShown != null)
@@ -525,7 +527,7 @@ public class ImageResultsTableController
 
     }
 
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
+    protected void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
         if (resultIntervalCurrentlyShown != null)
@@ -577,13 +579,13 @@ public class ImageResultsTableController
                 Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = imageRawResults.get(i).get(0);
-                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 if (imageCollection.containsImage(key))
                 {
                     resultTable.setValueAt(true, i, mapColumnIndex);
                     PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
                     resultTable.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                    resultTable.setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+                    resultTable.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
                 }
                 else
                 {
@@ -591,7 +593,6 @@ public class ImageResultsTableController
                     resultTable.setValueAt(false, i, showFootprintColumnIndex);
                     resultTable.setValueAt(false, i, frusColumnIndex);
                 }
-
 
                 if (boundaries.containsBoundary(key))
                     resultTable.setValueAt(true, i, bndrColumnIndex);
@@ -656,7 +657,7 @@ public class ImageResultsTableController
             {
                 String currentImage = imageRawResults.get(i).get(0);
                 String boundaryName = FileUtil.removeExtension(currentImage);
-                ImageKey key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                ImageKeyInterface key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                 boundaries.addBoundary(key);
             }
             catch (Exception e1) {
@@ -669,6 +670,7 @@ public class ImageResultsTableController
                 break;
             }
         }
+        imageSearchModel.setResultIntervalCurrentlyShown(idPair);
     }
 
 
@@ -685,7 +687,7 @@ public class ImageResultsTableController
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                 ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
                 return imageCollection.containsImage(key);
             }
@@ -724,11 +726,11 @@ public class ImageResultsTableController
                 }
 
                 int[] selectedIndices = resultList.getSelectedRows();
-                List<ImageKey> imageKeys = new ArrayList<ImageKey>();
+                List<ImageKeyInterface> imageKeys = new ArrayList<ImageKeyInterface>();
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
+                    ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                     imageKeys.add(key);
                 }
                 imageResultsTableView.getImagePopupMenu().setCurrentImages(imageKeys);
@@ -752,10 +754,27 @@ public class ImageResultsTableController
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
-                for (int i=0; i<size; ++i)
+
+//                //check if row in viewport
+//                JViewport viewport = resultList.getview
+//                Rectangle rect = resultList.getCellRect( 20, 1, true );
+//                if( !viewport.contains( rect.getLocation() ) )
+//                {
+//                	System.out.println(
+//							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
+//                }
+                int startIndex = 0;
+                int endIndex = size;
+                if (modifiedTableRow != -1)
+                {
+                	startIndex = modifiedTableRow;
+                	endIndex = startIndex + 1;
+                }
+
+                for (int i=startIndex; i<endIndex; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
-                    ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                    ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
                     if (imageCollection.containsImage(key))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
@@ -777,6 +796,7 @@ public class ImageResultsTableController
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();
+                modifiedTableRow = -1;
             }
         }
     }
@@ -785,6 +805,7 @@ public class ImageResultsTableController
     {
         public void tableChanged(TableModelEvent e)
         {
+        	modifiedTableRow = e.getFirstRow();
             ImageSource sourceOfLastQuery = imageSearchModel.getImageSourceOfLastQuery();
             List<List<String>> imageRawResults = imageSearchModel.getImageResults();
             ModelManager modelManager = imageSearchModel.getModelManager();
@@ -813,7 +834,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
+                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 ImageCollection images = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
                 if (images.containsImage(key))
                 {
@@ -825,7 +846,7 @@ public class ImageResultsTableController
             {
                 int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
-                ImageKey key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
+                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                 try
                 {
                     if (!boundaries.containsBoundary(key))

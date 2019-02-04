@@ -6,22 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 public class ImageCubeModel implements Controller.Model, MetadataManager
@@ -56,7 +56,8 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
 
     public void loadImage(ImageCubeKey key) throws FitsException, IOException, NoOverlapException
     {
-        imageCubeCollection.addImage(key);
+        if (!imageCubeCollection.containsImage(key))
+            imageCubeCollection.addImage(key);
     }
 
     public void unloadImage(ImageCubeKey key)
@@ -69,7 +70,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
         this.imageCubeCollection = images;
     }
 
-    public ImageCubeCollection getColorImageCollection()
+    public ImageCubeCollection getImageCubeCollection()
     {
         return imageCubeCollection;
     }
@@ -97,6 +98,14 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
     public void removeAllResultsChangedListeners()
     {
         resultsListeners.removeAllElements();
+    }
+
+    protected void fireDeleteListeners(ImageCubeKey key)
+    {
+        for (ImageCubeResultsListener listener : resultsListeners)
+        {
+          listener.imageCubeRemoved(key);
+        }
     }
 
     protected void fireErrorMessage(String message)
@@ -127,12 +136,12 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
 
     public void generateImageCube(ActionEvent e) //throws edu.jhuapl.sbmt.model.image.ImageCube.NoOverlapException, IOException, FitsException
     {
-        ImageKey firstKey = null;
+        ImageKeyInterface firstKey = null;
         boolean multipleFrustumVisible = false;
 
-        List<ImageKey> selectedKeys = new ArrayList<>();
-        for (ImageKey key : imageSearchModel.getSelectedImageKeys()) { selectedKeys.add(key); }
-        for (ImageKey selectedKey : selectedKeys)
+        List<ImageKeyInterface> selectedKeys = new ArrayList<>();
+        for (ImageKeyInterface key : imageSearchModel.getSelectedImageKeys()) { selectedKeys.add(key); }
+        for (ImageKeyInterface selectedKey : selectedKeys)
         {
             PerspectiveImage selectedImage = (PerspectiveImage)imageCollection.getImage(selectedKey);
             if(selectedImage == null)
@@ -213,6 +222,7 @@ public class ImageCubeModel implements Controller.Model, MetadataManager
     public void removeImageCube(ImageCubeKey imageCubeKey)
     {
         imageCubeCollection.removeImage(imageCubeKey);
+        fireDeleteListeners(imageCubeKey);
     }
 
     @Override

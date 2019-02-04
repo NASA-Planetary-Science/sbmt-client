@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,8 +26,6 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
  */
 public abstract class BodyViewConfig extends ViewConfig
 {
-    private static final SafeURLPaths SAFE_URL_PATHS = SafeURLPaths.instance();
-
     public String rootDirOnServer;
     protected String shapeModelFileBaseName = "shape/shape";
     protected String shapeModelFileExtension = ".vtk";
@@ -35,6 +35,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
+    public String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
@@ -69,6 +70,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
 
     // Required if hasLidarData is true:
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
@@ -99,6 +101,10 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasLidarData = false;
     public Date lidarSearchDefaultStartDate;
     public Date lidarSearchDefaultEndDate;
+
+    //DTMs
+    public Map<String, String> dtmBrowseDataSourceMap = Maps.newHashMap();
+    public Map<String, String> dtmSearchDataSourceMap = Maps.newHashMap();
 
     // Flag for beta mode
     public static boolean betaMode = false;
@@ -170,12 +176,12 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName)
     {
-        return SAFE_URL_PATHS.getString(rootDirOnServer, fileName);
+        return serverPath(rootDirOnServer, fileName);
     }
 
     public String serverPath(String fileName, Instrument instrument)
     {
-        return SAFE_URL_PATHS.getString(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
+        return serverPath(rootDirOnServer, instrument.toString().toLowerCase(), fileName);
     }
 
     public String serverImagePath(String fileName, Instrument instrument)
@@ -185,7 +191,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public String serverPath(String fileName, Instrument instrument, String subdir)
     {
-        return SAFE_URL_PATHS.getString(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
+        return serverPath(rootDirOnServer, instrument.toString().toLowerCase(), subdir, fileName);
     }
 
     // methods
@@ -310,5 +316,34 @@ public abstract class BodyViewConfig extends ViewConfig
         }
 
         return modelFiles;
+    }
+
+    private static String serverPath(String firstSegment, String... segments)
+    {
+        // Prevent trailing delimiters coming from empty segments at the end.
+        int length = segments.length;
+        while (length > 0)
+        {
+            if (segments[length - 1].isEmpty())
+            {
+                --length;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (length < segments.length)
+        {
+            segments = Arrays.copyOfRange(segments, 0, length);
+        }
+        return SafeURLPaths.instance().getString(firstSegment, segments);
+    }
+
+    public static void main(String[] args)
+    {
+        System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
+        System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
+        System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
 }

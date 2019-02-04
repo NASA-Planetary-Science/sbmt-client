@@ -85,6 +85,80 @@ doRsyncDirIfNecessary() {
   if test $? -ne 0; then exit 1; fi
 }
 
+moveDirectory() {
+  (
+    src=$1
+    dest=$2
+    if test "x$src" = x -o "x$dest" = x; then
+      echo "Missing argument(s) to moveDirectory" >> $log 2>&1
+      exit 1
+    fi
+    if test -d $src; then
+      if test -e $dest; then
+        rm -rf $dest-bak
+        mv -f $dest $dest-bak
+        if test $? -ne 0; then
+          echo "Unable to back up $dest; not moving directory $src" >> $log
+          exit 1
+        fi
+      fi
+
+      destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
+      createDirIfNecessary $destParent
+      if test $? -ne 0; then exit 1; fi
+
+      echo "mv $src $dest" >> $log 2>&1
+      mv -f $src $dest >> $log 2>&1
+      if test $? -ne 0; then exit 1; fi
+
+      # Prune an orphaned parent directory, but ignore failures.
+      srcParent=`echo $src | sed 's:/[^/][^/]*/*$::'`
+      rmdir $srcParent >> /dev/null 2>&1
+      exit 0
+    else
+      echo "Not moving/renaming $src (is not a directory)" >> $log
+    fi
+  )
+  if test $? -ne 0; then exit 1; fi
+}
+
+moveFile() {
+  (
+    src=$1
+    dest=$2
+    if test "x$src" = x -o "x$dest" = x; then
+      echo "Missing argument(s) to moveDirectory" >> $log 2>&1
+      exit 1
+    fi
+    if test -f $src; then
+      if test -e $dest; then
+        rm -rf $dest-bak
+        mv $dest $dest-bak
+        if test $? -ne 0; then
+          echo "Unable to back up $dest; not moving file $src" >> $log
+          exit 1
+        fi
+      fi
+
+      destParent=`echo $dest | sed 's:/[^/][^/]*/*$::'`
+      createDirIfNecessary $destParent
+      if test $? -ne 0; then exit 1; fi
+
+      echo "mv $src $dest" >> $log 2>&1
+      mv $src $dest >> $log 2>&1
+      if test $? -ne 0; then exit 1; fi
+
+      # Prune an orphaned parent directory, but ignore failures.
+      srcParent=`echo $src | sed 's:/[^/][^/]*/*$::'`
+      rmdir $srcParent >> /dev/null 2>&1
+      exit 0
+    else
+      echo "Not moving/renaming $src (is not a file)" >> $log
+    fi
+  )
+  if test $? -ne 0; then exit 1; fi
+}
+
 makeLogDir() {
   (
     if test -e $logDir -a ! -d $logDir; then
@@ -235,3 +309,10 @@ doGzipDirIfNecessary() {
   )
   if test $? -ne 0; then exit 1; fi
 }
+
+# Test code -- do not commit.
+#destTop=$PWD
+#processingModelName='altwg-spc-v20181116'
+#log="$destTop/bozo.log"
+#moveDirectory $destTop/$processingModelName/imaging/SUMFILES $destTop/$processingModelName/polycam/SUMFILES
+#moveFile $destTop/$processingModelName/imaging/make_sumfiles.in $destTop/$processingModelName/polycam/make_sumfiles.in

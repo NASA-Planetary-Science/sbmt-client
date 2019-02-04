@@ -64,8 +64,8 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtModelManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 import net.miginfocom.swing.MigLayout;
 import nom.tam.fits.FitsException;
@@ -147,13 +147,12 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         allModels.put(ModelNames.SMALL_BODY, priDEM);
         allModels.put(ModelNames.LINE_STRUCTURES, lineModel);
 
-        modelManager = new SbmtModelManager(priDEM);
-        modelManager.setModels(allModels);
+        modelManager = new SbmtModelManager(priDEM, allModels);
 
         renderer = new Renderer(modelManager);
         renderer.setMinimumSize(new Dimension(0, 0));
 
-        PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
+         PopupManager popupManager = new ImagePopupManager(modelManager, null, null, renderer);
         // The following replaces LinesPopupMenu with MapmakerLinesPopupMenu
         PopupMenu popupMenu = new MapmakerLinesPopupMenu(modelManager, parentPolyhedralModel, renderer);
         popupManager.registerPopup(lineModel, popupMenu);
@@ -190,6 +189,9 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
         pickManager.getDefaultPicker().addPropertyChangeListener(this);
 
         updateControlPanel(null);
+
+        // Force the renderer's camera to the "reset" default view
+        renderer.getCamera().reset();
     }
 
     @Override
@@ -548,8 +550,9 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             if (line.controlPointIds.size() != 2)
                 continue;
 
-            LatLon ll0 = line.controlPoints.get(0);
-            LatLon ll1 = line.controlPoints.get(1);
+            LatLon ll0 = line.getControlPoints().get(0);
+            LatLon ll1 = line.getControlPoints().get(1);
+            int[] color = line.getColor();
             out.write(eol + Profile + "=" + i + eol);
             out.write(StartLatitude + "=" + ll0.lat + eol);
             out.write(StartLongitude + "=" + ll0.lon + eol);
@@ -558,10 +561,10 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             out.write(EndLongitude + "=" + ll1.lon + eol);
             out.write(EndRadius + "=" + ll1.rad + eol);
             out.write(Color + "=" +
-                    line.color[0] + " " +
-                    line.color[1] + " " +
-                    line.color[2] + " " +
-                    line.color[3] + eol);
+                    color[0] + " " +
+                    color[1] + " " +
+                    color[2] + " " +
+                    color[3] + eol);
             out.write(plot.getProfileAsString(i));
         }
 
@@ -578,8 +581,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
 
         String line;
 
-        LatLon start = new LatLon();
-        LatLon end = new LatLon();
+        double[] start = new LatLon().get();
+        double[] end = new LatLon().get();
         int lineId = 0;
 
         while ((line = in.readLine()) != null)
@@ -599,17 +602,17 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
             String value = tokens[1].trim();
 
             if (StartLatitude.equals(key))
-                start.lat = Double.parseDouble(value);
+                start[0] = Double.parseDouble(value);
             else if (StartLongitude.equals(key))
-                start.lon = Double.parseDouble(value);
+                start[1] = Double.parseDouble(value);
             else if (StartRadius.equals(key))
-                start.rad = Double.parseDouble(value);
+                start[2] = Double.parseDouble(value);
             else if (EndLatitude.equals(key))
-                end.lat = Double.parseDouble(value);
+                end[0] = Double.parseDouble(value);
             else if (EndLongitude.equals(key))
-                end.lon = Double.parseDouble(value);
+                end[1] = Double.parseDouble(value);
             else if (EndRadius.equals(key))
-                end.rad = Double.parseDouble(value);
+                end[2] = Double.parseDouble(value);
             else if (Color.equals(key))
             {
                 String[] c = value.split("\\s+");
@@ -620,8 +623,8 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
                 color[2] = Integer.parseInt(c[2]);
                 color[3] = Integer.parseInt(c[3]);
 
-                double[] p1 = MathUtil.latrec(start);
-                double[] p2 = MathUtil.latrec(end);
+                double[] p1 = MathUtil.latrec(new LatLon(start));
+                double[] p2 = MathUtil.latrec(new LatLon(end));
 
                 lineModel.addNewStructure();
                 lineModel.activateStructure(lineId);
@@ -865,9 +868,12 @@ public class DEMView extends JFrame implements ActionListener, PropertyChangeLis
     @Override
     public void windowClosing(WindowEvent e)
     {
+        // Notify the Renderer that it will no longer be needed
+        renderer.dispose();
+
         // Remove self as the macro DEM's view
         DEM secDEM = demCollection.getDEM(key);
-        if(secDEM != null)
+        if (secDEM != null)
             secDEM.removeView();
 
         // Garbage collect

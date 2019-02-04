@@ -35,9 +35,7 @@ public class SpectrumHypertreeSearchController
 
         this.spectrumSearchModel = model;
         this.spectrumSearchModel.loadSearchSpecMetadata();
-
         SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
-
         this.spectrumResultsTableController = new SpectrumResultsTableController(instrument, spectrumCollection, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 

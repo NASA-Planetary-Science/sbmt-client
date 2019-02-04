@@ -8,8 +8,9 @@ import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
-import edu.jhuapl.sbmt.util.Mapmaker;
+import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
+@Deprecated // use MapmakerDEMCreator instead
 public class MapmakerSwingWorker extends FileDownloadSwingWorker
 {
     boolean regionSpecifiedWithLatLonScale = false;
@@ -110,7 +111,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
             File file = FileCache.getFileFromServer(this.getFileDownloaded());
             String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
-            Mapmaker mapmaker = new Mapmaker(mapmakerRootDir);
+            MapmakerNativeWrapper mapmaker = new MapmakerNativeWrapper(mapmakerRootDir);
             mapmaker.setName(name);
             if (regionSpecifiedWithLatLonScale)
             {

@@ -658,7 +658,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 {
                         SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                                 Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromDistanceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToDistanceTextField().getText())),
-                                "", null,   //TODO: reinstate polygon types here
+                                "", null,   //TODsteelrj1O: reinstate polygon types here
                                 Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromIncidenceTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToIncidenceTextField().getText())),
                                 Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromEmissionTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToEmissionTextField().getText())),
                                 Ranges.closed(Double.valueOf(((SpectrumSearchView)view).getFromPhaseTextField().getText()), Double.valueOf(((SpectrumSearchView)view).getToPhaseTextField().getText())),

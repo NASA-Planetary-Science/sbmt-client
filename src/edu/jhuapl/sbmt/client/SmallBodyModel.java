@@ -16,12 +16,12 @@ public class SmallBodyModel extends GenericPolyhedralModel
     };
     private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
 
-    public SmallBodyViewConfig getSmallBodyConfig()
+	public SmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
     }
 
-    public String serverPath(String fileName)
+	public String serverPath(String fileName)
     {
         return getSmallBodyConfig().serverPath(fileName);
     }

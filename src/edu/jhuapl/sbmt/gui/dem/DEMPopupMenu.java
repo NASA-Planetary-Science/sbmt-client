@@ -7,8 +7,10 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -21,7 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkActor;
-import vtk.vtkCamera;
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
 import vtk.vtkProp;
@@ -32,6 +33,9 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.OpacityChanger;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.gui.render.Renderer;
+import edu.jhuapl.saavtk.gui.render.camera.Camera;
+import edu.jhuapl.saavtk.gui.render.camera.CameraUtil;
+import edu.jhuapl.saavtk.gui.render.camera.CoordinateSystem;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.popup.PopupMenu;
@@ -39,16 +43,14 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk.util.LatLon;
-import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEM.DEMKey;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection.DEMBoundary;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
+import edu.jhuapl.sbmt.model.dem.DEMKey;
 
 import nom.tam.fits.FitsException;
 
@@ -145,6 +147,11 @@ public class DEMPopupMenu extends PopupMenu
 
     }
 
+    public void removeCenterMenu()
+    {
+    	this.remove(centerDemMenuItem);
+    }
+
     public void setCurrentDEM(DEMKey key)
     {
         demKeys.clear();
@@ -163,6 +170,7 @@ public class DEMPopupMenu extends PopupMenu
 
     private void updateMenuItems()
     {
+    	if (demKeys.size() == 0) return;
         boolean selectMapImage = true;
         boolean enableMapImage = true;
         boolean selectMapBoundary = true;
@@ -294,100 +302,50 @@ public class DEMPopupMenu extends PopupMenu
         }
     }
 
+    /**
+     * Action which will cause the DEM to be centered in the view of the Renderer.
+     */
     public class CenterDemAction extends AbstractAction
     {
-        public void actionPerformed(ActionEvent e)
+        // Cache vars
+        private Map<DEMKey, CoordinateSystem> cacheMap = new HashMap<>();
+
+        @Override
+        public void actionPerformed(ActionEvent aEvent)
         {
             if (demKeys.size() != 1)
                 return;
 
             DEMKey demKey = demKeys.get(0);
-            DEM dem=demCollection.getDEM(demKey);
+            DEM dem = demCollection.getDEM(demKey);
 
-            vtkCamera cam=renderer.getRenderWindowPanel().getActiveCamera();
+            // Calculate cache vars
+            CoordinateSystem tmpCoordinateSystem = cacheMap.get(demKey);
+            if (tmpCoordinateSystem == null)
+            {
+                // Form a CoordinateSystem relative to the DEM
+                Vector3D centerVect = dem.getGeometricCenterPoint();
+                Vector3D normalVect = dem.getAverageSurfaceNormal();
+                tmpCoordinateSystem = CameraUtil.formCoordinateSystem(normalVect, centerVect);
 
-            // Find center of DEM. Arbitrarily create an origin exactly opposite this center.
-            final double[] centerArray = dem.getCenter();
-            final double[] origin = new double[] { -centerArray[0], -centerArray[1], -centerArray[2] };
+                // Update the cache
+                cacheMap.put(demKey, tmpCoordinateSystem);
+            }
 
-            // Figure out roughly the size of the DEM and from it compute a maximum radius
-            // in angle space for a circle centered on the DEM, perpendicular to the
-            // "center" array computed above.
-            final Vector3D center = new Vector3D(centerArray);
-            final double mPerKm = 1000.;
-            final double maximumRadius = dem.getScale() * dem.getHalfSize() / mPerKm;
-            final double maximumAngle = maximumRadius / (center.getNorm() * 2.);
+            // Compute the appropriate view vectors
+            Vector3D focalVect = tmpCoordinateSystem.getOrigin();
 
-            // Find vectors roughly along the DEM surface, roughly oriented by latitude/longitude.
-            Vector3D latVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, true);
-            Vector3D lonVec = findPointNearToCenter(dem, origin, centerArray, maximumAngle, false);
+            double zMag = dem.getBoundingBoxDiagonalLength() * 2.0;
+            Vector3D targVect = tmpCoordinateSystem.getAxisZ().scalarMultiply(zMag).add(focalVect);
 
-            // Compute a normal from these two vectors.
-            Vector3D normal = lonVec.crossProduct(latVec).normalize();
+            Vector3D viewUpVect = tmpCoordinateSystem.getAxisY();
 
-            cam.SetFocalPoint(centerArray);
-            cam.SetPosition(center.add(normal.scalarMultiply(2. * dem.getBoundingBoxDiagonalLength())).toArray());
-            cam.SetViewUp(lonVec.crossProduct(normal).normalize().toArray());
-            renderer.getRenderWindowPanel().resetCameraClippingRange();
-            renderer.getRenderWindowPanel().Render();
+            // Update the camera to reflect the new view
+            Camera tmpCamera = renderer.getCamera();
+            tmpCamera.setView(focalVect, targVect, viewUpVect);
 
             updateMenuItems();
         }
-    }
-
-    private Vector3D findPointNearToCenter(DEM dem, final double[] origin, final double [] center, final double maximumAngle, boolean alongLat)
-    {
-        final int maxIterations = 10;
-        LatLon centerLatLon = MathUtil.reclat(center);
-
-        double [] point0 = new double[] { 0., 0., 0. };
-        double angle = maximumAngle;
-        boolean foundMatch = false;
-        for (int index = 0; index < maxIterations; ++index)
-        {
-            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
-            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point0) >= 0)
-            {
-                foundMatch = true;
-                break;
-            }
-            angle *= .5;
-        }
-
-        if (!foundMatch)
-        {
-            point0 = center;
-        }
-
-        double [] point1 = new double[] { 0., 0., 0. };
-        angle = -maximumAngle;
-        foundMatch = false;
-        for (int index = 0; index < maxIterations; ++index)
-        {
-            LatLon dir = getDirToTry(centerLatLon, angle, alongLat);
-            if (dem.computeRayIntersection(origin, MathUtil.latrec(dir), point1) >= 0)
-            {
-                foundMatch = true;
-                break;
-            }
-            angle *= .5;
-        }
-
-        if (!foundMatch)
-        {
-            point1 = center;
-        }
-
-        if (point0 == point1)
-        {
-            return null;
-        }
-        return new Vector3D(point1).subtract(new Vector3D(point0));
-    }
-
-    private LatLon getDirToTry(final LatLon centerLatLon, double angle, boolean alongLat)
-    {
-        return alongLat ? new LatLon(centerLatLon.lat + angle, centerLatLon.lon) : new LatLon(centerLatLon.lat, centerLatLon.lon + angle);
     }
 
     private class MapBoundaryAction extends AbstractAction
@@ -581,9 +539,11 @@ public class DEMPopupMenu extends PopupMenu
             {
                 vtkPolyData demPolydata = dem.getDem();
                 demFilename = dem.getKey().fileName;
+                System.out.println("DEMPopupMenu.ExportCustomModelAction: actionPerformed: dem file name is " + demFilename);
+                final int extensionLength = FilenameUtils.getExtension(demFilename).length();
 
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
-                writer.SetFileName(demFilename.substring(0, demFilename.length()-3) + "vtk");
+                writer.SetFileName(demFilename.substring(0, demFilename.length()-extensionLength) + "vtk");
                 writer.SetFileTypeToBinary();
                 writer.SetInputData(demPolydata);
                 writer.Write();
@@ -596,7 +556,7 @@ public class DEMPopupMenu extends PopupMenu
                 dialog = new ShapeModelImporterDialog(null);
 
                 String extension = FilenameUtils.getExtension(demFilename);
-                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-3) + extension, extension);
+                dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-extensionLength) + extension, extension);
                 dialog.beforeOKRunner = new Runnable()
                 {
                     final String filename = demFilename;
@@ -610,7 +570,7 @@ public class DEMPopupMenu extends PopupMenu
                             config2.customTemporary = false;
                             config2.author = ShapeModelType.CUSTOM;
                             SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
-                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-3) + "json"), dialog.getNameOfImportedShapeModel());
+                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-extensionLength) + "json"), dialog.getNameOfImportedShapeModel());
                             SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
                             dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
                         }
