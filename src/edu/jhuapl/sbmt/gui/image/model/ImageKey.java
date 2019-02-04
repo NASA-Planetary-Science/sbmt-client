@@ -229,4 +229,10 @@ public class ImageKey implements ImageKeyInterface, StorableAsMetadata<ImageKey>
 		return pointingFile;
 	}
 
+	@Override
+	public String getOriginalName()
+	{
+		return name;
+	}
+
 }

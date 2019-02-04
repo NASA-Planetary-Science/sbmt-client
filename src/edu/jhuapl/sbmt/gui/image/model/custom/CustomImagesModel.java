@@ -136,11 +136,11 @@ public class CustomImagesModel extends ImageSearchModel
 		CustomImageKeyInterface revisedKey = null;
 		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
-			revisedKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate());
+			revisedKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
 		}
 		else
 		{
-			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate());
+			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
 		}
 		try
         {
@@ -482,7 +482,7 @@ public class CustomImagesModel extends ImageSearchModel
 
                     if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
                     {
-                    	CustomCylindricalImageKey imageInfo = new CustomCylindricalImageKey(name, imageFilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date());
+                    	CustomCylindricalImageKey imageInfo = new CustomCylindricalImageKey(name, imageFilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date(), name);
 
                         imageInfo.lllat = lllats[i];
                         imageInfo.lllon = lllons[i];
@@ -509,7 +509,7 @@ public class CustomImagesModel extends ImageSearchModel
                     		fileType = FileType.INFO;
 
                     	}
-                    	CustomPerspectiveImageKey imageInfo = new CustomPerspectiveImageKey(name, imageFilename, ImageSource.LOCAL_PERSPECTIVE, imageType, rotation, flip, fileType, pointingFilename, new Date());
+                    	CustomPerspectiveImageKey imageInfo = new CustomPerspectiveImageKey(name, imageFilename, ImageSource.LOCAL_PERSPECTIVE, imageType, rotation, flip, fileType, pointingFilename, new Date(), name);
 
                         customImages.add(imageInfo);
 

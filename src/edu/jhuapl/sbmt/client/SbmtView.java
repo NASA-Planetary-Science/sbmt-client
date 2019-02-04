@@ -189,14 +189,18 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
         allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
-        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+        ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, customCubeCollection);
+        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, customColorImageCollection);
 
         //all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-        allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+        ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.COLOR_IMAGES, colorImageCollection);
+        allModels.put(ModelNames.CUBE_IMAGES, cubeCollection);
 
 //        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 //        {
@@ -255,10 +259,18 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
-        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
+        DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.DEM, demCollection);
+        DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
         setModelManager(new SbmtModelManager(smallBodyModel, allModels));
+        colorImageCollection.setModelManager(getModelManager());
+        cubeCollection.setModelManager(getModelManager());
+        customColorImageCollection.setModelManager(getModelManager());
+        customCubeCollection.setModelManager(getModelManager());
+        demCollection.setModelManager(getModelManager());
+        demBoundaryCollection.setModelManager(getModelManager());
 
         getModelManager().addPropertyChangeListener(this);
     }
