@@ -29,6 +29,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     public ImageType imageType;
     public final ImageSource source;
     private final Date date;
+    private String originalName;
 
     private static final  Key<String> nameKey = Key.of("name");
     private static final  Key<String> imageFileNameKey = Key.of("imagefilename");
@@ -41,13 +42,15 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     private static final  Key<Date> dateKey = Key.of("date");
     private static final Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
 
-	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source, Date date)
+
+	public CustomCylindricalImageKey(String name, String imagefilename, ImageType imageType, ImageSource source, Date date, String originalName)
 	{
 		this.name = name;
 		this.imagefilename = imagefilename;
 		this.imageType = imageType;
 		this.source = source;
 		this.date = date;
+		this.originalName = originalName;
 	}
 
     public String getName()
@@ -158,8 +161,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	        double urlat = metadata.get(urlatKey);
 	        double urlon = metadata.get(urlonKey);
 	        Date date = metadata.get(dateKey);
-
-	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date);
+	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, name);
 	        result.setLllat(lllat);
 	        result.setLllon(lllon);
 	        result.setUrlat(urlat);
@@ -216,23 +218,19 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 		return null;
 	}
 
+	public String getOriginalName()
+	{
+		return originalName;
+	}
+
+	public void setOriginalName(String originalName)
+	{
+		this.originalName = originalName;
+	}
+
 	@Override
 	public Date getDate()
 	{
 		return date;
 	}
-
-//    @Override
-//    public void retrieve(Metadata source)
-//    {
-//        name = source.get(nameKey);
-//        imagefilename = source.get(imageFileNameKey);
-//        projectionType = ProjectionType.valueOf(source.get(projectionKey));
-//        imageType = ImageType.valueOf(source.get(imageTypeKey));
-//        lllat = source.get(lllatKey);
-//        lllon = source.get(lllonKey);
-//        urlat = source.get(urlatKey);
-//        urlon = source.get(urlonKey);
-//    }
-
 }

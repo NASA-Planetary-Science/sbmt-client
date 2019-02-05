@@ -53,7 +53,7 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 	        	 pointingFileName = metadata.get(sumFilenameKey);
 			 }
 			 return new CustomPerspectiveImageKey(metadata.get(nameKey), metadata.get(imageFileNameKey), imageSource, ImageType.valueOf(metadata.get(imageTypeKey)),
-					 metadata.get(rotationKey), metadata.get(flipKey), fileType, pointingFileName, new Date());
+					 metadata.get(rotationKey), metadata.get(flipKey), fileType, pointingFileName, new Date(), metadata.get(nameKey));
 		 }
 		 else
 		 {
@@ -64,7 +64,7 @@ public interface CustomImageKeyInterface extends ImageKeyInterface
 			 Key<Double> lllonKey = Key.of("lllon");
 			 Key<Double> urlatKey = Key.of("urlat");
 			 Key<Double> urlonKey = Key.of("urlon");
-			 CustomCylindricalImageKey key = new CustomCylindricalImageKey(metadata.get(nameKey), metadata.get(imageFileNameKey), ImageType.valueOf(metadata.get(imageTypeKey)), ImageSource.LOCAL_PERSPECTIVE, new Date());
+			 CustomCylindricalImageKey key = new CustomCylindricalImageKey(metadata.get(nameKey), metadata.get(imageFileNameKey), ImageType.valueOf(metadata.get(imageTypeKey)), ImageSource.LOCAL_PERSPECTIVE, new Date(), metadata.get(nameKey));
 			 key.lllat = metadata.get(lllatKey);
 			 key.lllon = metadata.get(lllonKey);
 			 key.urlat = metadata.get(urlatKey);
