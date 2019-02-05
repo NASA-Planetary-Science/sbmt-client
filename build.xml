@@ -32,7 +32,7 @@
  	 	  </fileset>
  	</copy>
  	
- 	<copy todir="${rootSAAVTKdir}/build/resources/icons">
+ 	<copy todir="${rootSAAVTKdir}/build/classes/resources/icons">
  	 	  <fileset dir="${rootSAAVTKdir}/src/resources/icons/">
  			<include name="**/*.png"/>
  	 	  </fileset>
