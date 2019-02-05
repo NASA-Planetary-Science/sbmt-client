@@ -31,9 +31,9 @@ import javax.swing.table.TableModel;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.ColorCellRenderer;
-import edu.jhuapl.saavtk.gui.IconUtil;
 import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
+import edu.jhuapl.saavtk.gui.icon.IconUtil;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickEvent;
@@ -57,7 +57,7 @@ import net.miginfocom.swing.MigLayout;
  * <LI>Allow user to drag or manually translate tracks
  * </UL>
  */
-public class LidarListPanel extends JPanel implements ActionListener, ChangeListener,  ListSelectionListener,
+public class LidarListPanel extends JPanel implements ActionListener, ChangeListener, ListSelectionListener,
 		PickManagerListener, PropertyChangeListener, TableModelListener
 {
 	// Ref vars
@@ -98,11 +98,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		setLayout(new MigLayout());
 
 		// Table area
-		selectNoneB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectNone.png"));
+		selectNoneB = new JButton(IconUtil.loadIconLocal("itemSelectNone.png"));
 		selectNoneB.addActionListener(this);
 		selectNoneB.setToolTipText("Clear Selection");
 
-		selectAllB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectAll.png"));
+		selectAllB = new JButton(IconUtil.loadIconLocal("itemSelectAll.png"));
 		selectAllB.addActionListener(this);
 		selectAllB.setToolTipText("Select All");
 
