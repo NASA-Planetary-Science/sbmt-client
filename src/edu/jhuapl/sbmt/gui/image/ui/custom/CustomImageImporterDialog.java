@@ -22,7 +22,6 @@ import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
-
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
@@ -31,12 +30,6 @@ import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
-
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.SettableMetadata;
 
 
 public class CustomImageImporterDialog extends javax.swing.JDialog
@@ -267,7 +260,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 //            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
 //            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
 
-            CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date());
+            CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date(), name);
             key.setLllat(Double.parseDouble(lllatFormattedTextField.getText()));
             key.setLllon(Double.parseDouble(lllonFormattedTextField.getText()));
             key.setUrlat(Double.parseDouble(urlatFormattedTextField.getText()));
@@ -303,7 +296,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             double rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
             String flip = imageFlipComboBox.getSelectedItem().toString();
 
-            CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, new Date());
+            CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, new Date(), name);
             return key;
         }
 
