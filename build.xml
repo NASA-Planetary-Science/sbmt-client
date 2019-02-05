@@ -32,6 +32,12 @@
  	 	  </fileset>
  	</copy>
  	
+ 	<copy todir="${rootSAAVTKdir}/build/classes/resources/icons">
+ 	 	  <fileset dir="${rootSAAVTKdir}/src/resources/icons/">
+ 			<include name="**/*.png"/>
+ 	 	  </fileset>
+ 	</copy>
+ 	
  	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
  	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
 
