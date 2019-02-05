@@ -126,7 +126,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		hideB.setToolTipText("Hide Tracks");
 		showB = new JButton("Show");
 		showB.addActionListener(this);
-		showB.setToolTipText("Hide Tracks");
+		showB.setToolTipText("Show Tracks");
 		removeB = new JButton("Remove All");
 		removeB.addActionListener(this);
 		removeB.setToolTipText("Remove Tracks");
@@ -440,7 +440,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		boolean tmpBool = showErrorCB.isSelected();
 		if (tmpBool == true)
 		{
-			SigFigNumberFormat errFormat = new SigFigNumberFormat(4);
+			SigFigNumberFormat errFormat = new SigFigNumberFormat(7);
 			DecimalFormat cntFormat = new DecimalFormat("#,###");
 			double errVal = refModel.getTrackError();
 			int numTracks = refModel.getNumberOfVisibleTracks();
@@ -477,6 +477,9 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		isEnabled = cntPickTracks > 0;
 //		removeB.setEnabled(isEnabled);
 		translateB.setEnabled(isEnabled);
+
+		isEnabled = cntFullTracks > 0;
+		removeB.setEnabled(isEnabled);
 
 		int cntPickPoints = 0;
 		int cntShowTracks = 0;
