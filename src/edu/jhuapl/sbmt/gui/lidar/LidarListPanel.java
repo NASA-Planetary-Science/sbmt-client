@@ -474,12 +474,10 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		isEnabled = cntFullTracks > 0 && cntPickTracks < cntFullTracks;
 		selectAllB.setEnabled(isEnabled);
 
-		isEnabled = cntPickTracks > 0;
-//		removeB.setEnabled(isEnabled);
-		translateB.setEnabled(isEnabled);
-
+//		isEnabled = cntPickTracks > 0;
 		isEnabled = cntFullTracks > 0;
 		removeB.setEnabled(isEnabled);
+		translateB.setEnabled(isEnabled);
 
 		int cntPickPoints = 0;
 		int cntShowTracks = 0;
