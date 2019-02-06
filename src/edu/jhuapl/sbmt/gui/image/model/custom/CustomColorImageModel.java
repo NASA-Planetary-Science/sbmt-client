@@ -1,16 +1,19 @@
 package edu.jhuapl.sbmt.gui.image.model.custom;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
 import nom.tam.fits.FitsException;
 
@@ -35,9 +38,9 @@ public class CustomColorImageModel extends ColorImageModel
 
     public void generateColorImage(ActionEvent e) throws IOException, FitsException, NoOverlapException
     {
-        ImageKey selectedRedKey = getSelectedRedKey();
-        ImageKey selectedGreenKey = getSelectedGreenKey();
-        ImageKey selectedBlueKey = getSelectedBlueKey();
+        ImageKeyInterface selectedRedKey = getSelectedRedKey();
+        ImageKeyInterface selectedGreenKey = getSelectedGreenKey();
+        ImageKeyInterface selectedBlueKey = getSelectedBlueKey();
 
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
@@ -50,6 +53,27 @@ public class CustomColorImageModel extends ColorImageModel
             }
 
         }
+    }
+
+    @Override
+    public ImageKeyInterface getSelectedRedKey()
+    {
+    	ImageKeyInterface newRedKey = new ImageKey(SafeURLPaths.instance().getUrl(imageCollection.getCustomDataFolder() + File.separator + selectedRedKey.getImageFilename()), selectedRedKey.getSource(), selectedRedKey.getFileType(), selectedRedKey.getImageType(), selectedRedKey.getInstrument(), selectedRedKey.getBand(), selectedRedKey.getSlice(), selectedRedKey.getPointingFile());
+        return newRedKey;
+    }
+
+    @Override
+    public ImageKeyInterface getSelectedGreenKey()
+    {
+    	ImageKeyInterface newGreenKey = new ImageKey(SafeURLPaths.instance().getUrl(imageCollection.getCustomDataFolder() + File.separator + selectedGreenKey.getImageFilename()), selectedGreenKey.getSource(), selectedGreenKey.getFileType(), selectedGreenKey.getImageType(), selectedGreenKey.getInstrument(), selectedGreenKey.getBand(), selectedGreenKey.getSlice(), selectedGreenKey.getPointingFile());
+        return newGreenKey;
+    }
+
+    @Override
+    public ImageKeyInterface getSelectedBlueKey()
+    {
+    	ImageKeyInterface newBlueKey = new ImageKey(SafeURLPaths.instance().getUrl(imageCollection.getCustomDataFolder() + File.separator + selectedBlueKey.getImageFilename()), selectedBlueKey.getSource(), selectedBlueKey.getFileType(), selectedBlueKey.getImageType(), selectedBlueKey.getInstrument(), selectedBlueKey.getBand(), selectedBlueKey.getSlice(), selectedBlueKey.getPointingFile());
+        return newBlueKey;
     }
 
 }

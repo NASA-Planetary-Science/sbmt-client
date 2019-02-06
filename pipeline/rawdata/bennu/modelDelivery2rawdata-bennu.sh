@@ -102,10 +102,10 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -a dirsToCopy=("coloring" "imaging/SUMFILES" "imaging/mapcam/SUMFILES" \
-                       "imaging/polycam/SUMFILES" "imaging/samcam/SUMFILES" \
-                       "ocams/SUMFILES" "ocams/mapcam/SUMFILES" \
-                       "ocams/polycam/SUMFILES" "ocams/samcam/SUMFILES" \
+declare -a dirsToCopy=("coloring" "dtm" "imaging/sumfiles" "imaging/mapcam/sumfiles" \
+                       "imaging/polycam/sumfiles" "imaging/samcam/sumfiles" \
+                       "ocams/sumfiles" "ocams/mapcam/sumfiles" \
+                       "ocams/polycam/sumfiles" "ocams/samcam/sumfiles" \
                        "ola" "otes" "ovirs")
 # Define a series of specific files to copy
 declare -a filesToCopy=("imaging/make_sumfiles.in" "imaging/mapcam/make_sumfiles.in" \

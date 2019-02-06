@@ -26,7 +26,7 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
@@ -899,6 +899,66 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181202_mapcam"),
         BENNU_ALTWG_SPICE_V20181202_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181202),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181202/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181202_polycam"),
+
+        // 1206 SUMFILES
+        BENNU_ALTWG_SPC_V20181206_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181206),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181206/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181206_mapcam"),
+        BENNU_ALTWG_SPC_V20181206_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181206),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181206/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181206_polycam"),
+
+        // 1206 INFOFILES
+        BENNU_ALTWG_SPICE_V20181206_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181206),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181206/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181206_mapcam"),
+        BENNU_ALTWG_SPICE_V20181206_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181206),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181206/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181206_polycam"),
+
+        // 1217 SUMFILES
+        BENNU_ALTWG_SPC_V20181217_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181217_mapcam"),
+        BENNU_ALTWG_SPC_V20181217_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181217_polycam"),
+
+        // 1217 INFOFILES
+        BENNU_ALTWG_SPICE_V20181217_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181217_mapcam"),
+        BENNU_ALTWG_SPICE_V20181217_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181217),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181217/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181217_polycam"),
+
+        // 1227 SUMFILES
+        BENNU_ALTWG_SPC_V20181227_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181227_mapcam"),
+        BENNU_ALTWG_SPC_V20181227_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181227_polycam"),
+
+        // 1227 INFOFILES
+        BENNU_ALTWG_SPICE_V20181227_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_mapcam"),
+        BENNU_ALTWG_SPICE_V20181227_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_polycam"),
+
+        // 20190105 SUMFILES
+        BENNU_ALTWG_SPC_V20190105_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_mapcam"),
+        BENNU_ALTWG_SPC_V20190105_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190105_polycam"),
+
+        // 20190105 INFOFILES
+        BENNU_ALTWG_SPICE_V20190105_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_mapcam"),
+        BENNU_ALTWG_SPICE_V20190105_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190105/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190105_polycam"),
+
+        // 20190121 SUMFILES
+        BENNU_ALTWG_SPC_V20190121_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190121),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_mapcam"),
+        BENNU_ALTWG_SPC_V20190121_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190121),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190121_polycam"),
+
+        // 20190121 INFOFILES
+        BENNU_ALTWG_SPICE_V20190121_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190121),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_mapcam"),
+        BENNU_ALTWG_SPICE_V20190121_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190121),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190121/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190121_polycam"),
         ;
 
 

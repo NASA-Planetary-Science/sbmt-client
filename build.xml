@@ -32,6 +32,12 @@
  	 	  </fileset>
  	</copy>
  	
+ 	<copy todir="${rootSAAVTKdir}/build/classes/resources/icons">
+ 	 	  <fileset dir="${rootSAAVTKdir}/src/resources/icons/">
+ 			<include name="**/*.png"/>
+ 	 	  </fileset>
+ 	</copy>
+ 	
  	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
  	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
 
@@ -40,6 +46,8 @@
            destdir="${rootSAAVTKdir}/build/classes"
            debug="off" >
       <classpath>
+      	<pathelement location="${libDir}/crucible-metadata-1.0.jar"/>
+      	<pathelement location="${libDir}/crucible-settings-1.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
@@ -156,6 +164,8 @@
         <fileset dir="${rootdir}/lib">
           <include name="**/*.jar" />
         </fileset>
+      	<pathelement location="${libDir}/crucible-metadata-1.0.jar"/>
+      	<pathelement location="${libDir}/crucible-settings-1.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
@@ -199,6 +209,8 @@
 
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
+        	crucible-metadata-1.0.jar
+        	crucible-settings-1.0.jar
             commons-math3-3.2.jar
             gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
@@ -308,6 +320,8 @@
     
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
+        	crucible-settings-1.0.jar
+        	crucible-metadata-1.0.jar
             commons-math3-3.2.jar
         	gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
@@ -405,6 +419,8 @@
     <jar destfile="${rootSAAVTKdir}/build/jar/saavtk.jar" basedir="${rootSAAVTKdir}/build/classes">
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
+        									crucible-settings-1.0.jar
+        									crucible-metadata-1.0.jar
                                             commons-math3-3.2.jar
                                             gson-2.8.0.jar
                                             nom-tam-fits-1.13.1m0.jar
@@ -533,6 +549,8 @@
   <target name="clean">
     <delete dir="${rootdir}/build"/>
     <delete dir="${rootSAAVTKdir}/build"/>
+  	<delete file="${rootlibDir}/crucible-settings-1.0.jar"/>
+   	<delete file="${rootlibDir}/crucible-metadata-1.0.jar"/>
     <delete file="${rootlibDir}/commons-io-2.0.jar"/>
     <delete file="${rootlibDir}/commons-math3-3.2.jar"/>
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
@@ -595,7 +613,8 @@
         <pathelement location="${rootdir}/build/jar/near.jar"/>
         <pathelement location="${rootSAAVTKdir}/build/jar/saavtk.jar"/>
 -->
-      	
+      	<pathelement location="${libDir}/crucible-settings-1.0.jar"/>
+      	<pathelement location="${libDir}/crucible-metadata-1.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
