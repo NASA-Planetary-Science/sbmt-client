@@ -11,7 +11,7 @@ public enum ShapeModelPopulation
     MAIN_BELT("Main Belt"),
     PLUTO("Pluto System"),
     EARTH("Earth System"),
-    COMETS("Comets");
+    NA("Not applicable");
 
     final private String str;
     private ShapeModelPopulation(String str)

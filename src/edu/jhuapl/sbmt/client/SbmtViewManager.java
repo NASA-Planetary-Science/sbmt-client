@@ -507,6 +507,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelPopulation.SATURN,
             ShapeModelPopulation.NEPTUNE,
             ShapeModelPopulation.EARTH,
+            ShapeModelPopulation.NA,
             null
             ));
 
