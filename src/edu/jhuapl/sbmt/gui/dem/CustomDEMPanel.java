@@ -1057,6 +1057,8 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     {
         if (smallBodyConfig.hasRemoteMapmaker == true)
         {
+
+
             final MapmakerRemoteSwingWorker mapmakerWorker = new MapmakerRemoteSwingWorker(this, "Running Mapmaker", mapmakerPath);
             mapmakerWorker.setRotationRate(smallBodyConfig.bodyRotationRate);
             mapmakerWorker.setReferencePotential(smallBodyConfig.bodyReferencePotential);
