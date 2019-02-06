@@ -219,38 +219,44 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.hasSpectralData = read(hasSpectralData, configMetadata);
         c.hasLineamentData = read(hasLineamentData, configMetadata);
 
-        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
-        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
-        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
-        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
-        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
-        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
-        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
-        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
+        if (c.imagingInstruments.length > 0)
+        {
+	        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
+	        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
+	        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
+	        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
+	        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
+	        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
+	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
+	        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
+        }
 
-        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
-        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
-        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
-        Long lidarSearchDefaultEnd = read(lidarSearchDefaultEndDate, configMetadata);
-        if (lidarSearchDefaultEnd == null) lidarSearchDefaultEnd = 0L;
-        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
-        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
-        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
+        if (c.hasLidarData)
+        {
+	        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
+	        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
+	        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
+	        Long lidarSearchDefaultEnd = read(lidarSearchDefaultEndDate, configMetadata);
+	        if (lidarSearchDefaultEnd == null) lidarSearchDefaultEnd = 0L;
+	        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
+	        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
+	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
-        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
-        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
-        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
-        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
-        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
-        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
-        c.lidarBrowseReceivedIntensityIndex = read(lidarBrowseReceivedIntensityIndex, configMetadata);
-        c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
-        c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
-        c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
-        c.lidarBrowseIsBinary = read(lidarBrowseIsBinary, configMetadata);
-        c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
-        c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
-        c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
+	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
+	        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
+	        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+	        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
+	        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
+	        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
+	        c.lidarBrowseReceivedIntensityIndex = read(lidarBrowseReceivedIntensityIndex, configMetadata);
+	        c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
+	        c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
+	        c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
+	        c.lidarBrowseIsBinary = read(lidarBrowseIsBinary, configMetadata);
+	        c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
+	        c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
+	        c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
+        }
 
     }
 
