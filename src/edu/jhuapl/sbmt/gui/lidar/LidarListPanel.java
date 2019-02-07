@@ -31,6 +31,7 @@ import javax.swing.table.TableModel;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.ColorCellRenderer;
+import edu.jhuapl.saavtk.gui.GuiUtil;
 import edu.jhuapl.saavtk.gui.IconUtil;
 import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
@@ -73,7 +74,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private LidarPopupMenu lidarPopupMenu;
 	private JTable trackTable;
 	private JLabel titleL;
-	private JButton selectAllB, selectNoneB;
+	private JButton selectAllB, selectInvertB, selectNoneB;
 	private JButton hideB, showB, removeB;
 	private JButton translateB;
 	private JToggleButton dragB;
@@ -98,6 +99,10 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		setLayout(new MigLayout());
 
 		// Table area
+		selectInvertB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectInvert.png"));
+		selectInvertB.addActionListener(this);
+		selectInvertB.setToolTipText("Invert Selection");
+
 		selectNoneB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectNone.png"));
 		selectNoneB.addActionListener(this);
 		selectNoneB.setToolTipText("Clear Selection");
@@ -115,6 +120,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		trackTable.setModel(tableModel);
 		installTrackTableMouseListener();
 		add(titleL, "growx,span,split");
+		add(selectInvertB, "w 24!,h 24!");
 		add(selectNoneB, "w 24!,h 24!");
 		add(selectAllB, "w 24!,h 24!,wrap 2");
 		JScrollPane tableScrollPane = new JScrollPane(trackTable);
@@ -209,6 +215,8 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 			trackTable.selectAll();
 		else if (source == selectNoneB)
 			trackTable.clearSelection();
+		else if (source == selectInvertB)
+			GuiUtil.invertSelection(trackTable, this);
 		else if (source == hideB)
 			refModel.setTrackVisible(idArr, false);
 		else if (source == showB)
@@ -314,7 +322,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	}
 
 	/**
-	 * Helper method that handles the show error action
+	 * Helper method that handles the show error action.
 	 */
 	private void doActionError()
 	{
@@ -325,7 +333,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	}
 
 	/**
-	 * Helper method that handles the drag action
+	 * Helper method that handles the drag action.
 	 */
 	private void doActionTranslate(int[] aIdArr)
 	{
@@ -419,14 +427,26 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		if (aEvent.isPopupTrigger() == false)
 			return;
 
-		// Bail if no valid row selected
+		// TODO: Is this necessary?
+		// Force the menu to be hidden by default
 		lidarPopupMenu.setVisible(false);
+
+		// Update the selection to include the selected row
 		int index = trackTable.rowAtPoint(aEvent.getPoint());
-		if (index < 0)
+		if (index > 0)
+		{
+			if (aEvent.isControlDown() == true)
+				trackTable.addRowSelectionInterval(index, index);
+			else
+				trackTable.setRowSelectionInterval(index, index);
+		}
+
+		// Bail if there is no selection
+		int[] idArr = getSelectedTracks();
+		if (idArr.length == 0)
 			return;
 
-		trackTable.setRowSelectionInterval(index, index);
-		lidarPopupMenu.setCurrentTrack(index);
+		lidarPopupMenu.setSelectedTracks(idArr);
 		lidarPopupMenu.show(aEvent.getComponent(), aEvent.getX(), aEvent.getY());
 	}
 
@@ -461,6 +481,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		int cntFullTracks = refModel.getNumberOfTracks();
 		boolean isEnabled = cntFullTracks > 0;
 		dragB.setEnabled(isEnabled);
+		selectInvertB.setEnabled(isEnabled);
 
 		int cntFullPoints = 0;
 		for (Track aTrack : refModel.getTracks())
