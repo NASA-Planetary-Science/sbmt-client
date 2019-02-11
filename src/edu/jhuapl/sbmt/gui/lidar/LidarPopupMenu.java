@@ -36,7 +36,7 @@ public class LidarPopupMenu extends PopupMenu
 
 	// Gui vars
 	private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
-	private LidarTrackTranslationDialog translateDialog;
+	private LidarTrackTranslateDialog translateDialog;
 	private Component invoker;
 	private JMenu colorMenu;
 	private JMenu saveMenu;
@@ -177,9 +177,6 @@ public class LidarPopupMenu extends PopupMenu
 		// TODO: Allow the entire set of selected tracks to be saved, not just one
 		// TODO: Simplify the menu so that it reads 'Save Selected Tracks...'
 		saveMenu.setEnabled(isEnabled);
-
-		// TODO: Allow the selected tracks to be translated, not just one
-		translateTrackMI.setEnabled(isEnabled);
 	}
 
 	private class TrackColorAction extends AbstractAction
@@ -341,13 +338,10 @@ public class LidarPopupMenu extends PopupMenu
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			int tmpId = trackIdArr[0];
-
 			if (translateDialog == null)
-				translateDialog = new LidarTrackTranslationDialog(JOptionPane.getFrameForComponent(LidarPopupMenu.this),
-						true, refModel, tmpId);
-			else
-				translateDialog.setSelectedIndex(tmpId);
+				translateDialog = new LidarTrackTranslateDialog(invoker, refModel);
+
+			translateDialog.setTracks(trackIdArr);
 			translateDialog.setVisible(true);
 		}
 	}

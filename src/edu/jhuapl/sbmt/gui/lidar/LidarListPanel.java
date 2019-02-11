@@ -70,7 +70,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private LidarShiftPicker lidarPicker;
 
 	// GUI vars
-	private LidarTrackTranslationDialog translateDialog;
+	private LidarTrackTranslateDialog translateDialog;
 	private LidarPopupMenu lidarPopupMenu;
 	private JTable trackTable;
 	private JLabel titleL;
@@ -338,9 +338,9 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private void doActionTranslate(int[] aIdArr)
 	{
 		if (translateDialog == null)
-			translateDialog = new LidarTrackTranslationDialog(JOptionPane.getFrameForComponent(this), true, refModel);
+			translateDialog = new LidarTrackTranslateDialog(this, refModel);
 
-		translateDialog.setLocationRelativeTo(this);
+		translateDialog.setTracks(aIdArr);
 		translateDialog.setVisible(true);
 	}
 
@@ -495,10 +495,12 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		isEnabled = cntFullTracks > 0 && cntPickTracks < cntFullTracks;
 		selectAllB.setEnabled(isEnabled);
 
-//		isEnabled = cntPickTracks > 0;
+		isEnabled = cntPickTracks > 0;
+//		removeB.setEnabled(isEnabled);
+		translateB.setEnabled(isEnabled);
+		// TODO: Enable state of removeB should be based on cntPickTracks
 		isEnabled = cntFullTracks > 0;
 		removeB.setEnabled(isEnabled);
-		translateB.setEnabled(isEnabled);
 
 		int cntPickPoints = 0;
 		int cntShowTracks = 0;
