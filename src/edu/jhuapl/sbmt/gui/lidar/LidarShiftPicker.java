@@ -116,6 +116,7 @@ public class LidarShiftPicker extends Picker
 		trackIdx = -1;
 	}
 
+	@Override
 	public void mouseDragged(MouseEvent aEvent)
 	{
 		// Bail if we are not in the proper edit mode
@@ -138,8 +139,9 @@ public class LidarShiftPicker extends Picker
 
 		// Perform the translation
 		double[] currPt = smallBodyPicker.GetPickPosition();
-		double[] shift = { currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ() };
-		refLidarModel.setTranslation(shift, trackIdx);
+		int[] idArr = {trackIdx};
+		Vector3D tmpVect = new Vector3D(currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ());
+		refLidarModel.setTranslation(idArr, tmpVect);
 	}
 
 	@Override
