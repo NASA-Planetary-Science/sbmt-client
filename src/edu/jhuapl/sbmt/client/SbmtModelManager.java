@@ -1,15 +1,18 @@
 package edu.jhuapl.sbmt.client;
 
 import java.beans.PropertyChangeListener;
+import java.util.Map;
 
 import edu.jhuapl.saavtk.model.AbstractModelManager;
+import edu.jhuapl.saavtk.model.Model;
+import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 
 public class SbmtModelManager extends AbstractModelManager implements PropertyChangeListener
 {
-    public SbmtModelManager(PolyhedralModel mainModel)
+    public SbmtModelManager(PolyhedralModel mainModel, Map<ModelNames, Model> allModels)
     {
-        super(mainModel);
+        super(mainModel, allModels);
     }
 
     public SmallBodyModel getPolyhedralModel()

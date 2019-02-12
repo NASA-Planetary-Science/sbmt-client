@@ -21,8 +21,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -109,10 +108,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(propertyChangeListener);
-
-        view.getSelectRegionButton().setSelected(false);
-        pickManager.setPickMode(PickMode.DEFAULT);
+        pickManager.setActivePicker(null);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
@@ -184,10 +180,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
             }*/
 
 //        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(propertyChangeListener);
-        view.getRadialOffsetSlider().setModel(lidarModel);
-        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
-        lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
+        view.injectNewLidarModel(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
         sw.start();
@@ -195,11 +188,10 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
 //        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
-        Picker.setPickingEnabled(false);
+        PickUtil.setPickingEnabled(false);
 
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();
@@ -239,7 +231,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         writer.Write();*/
 
 
-        Picker.setPickingEnabled(true);
+        PickUtil.setPickingEnabled(true);
 
     }
 
