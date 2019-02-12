@@ -2,78 +2,52 @@ package edu.jhuapl.sbmt.gui.lidar.v2;
 
 import java.util.Date;
 
-import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 
 public class LidarSearchModel
 {
-    protected final ModelManager modelManager;
-    protected PickManager pickManager;
-    protected LidarSearchDataCollection lidarModel;
-    private java.util.Date startDate = null;
-    private java.util.Date endDate = null;
-    protected BodyViewConfig smallBodyConfig;
+	// Ref vars
+	private final LidarSearchDataCollection refLidarModel;
+	private final BodyViewConfig refSmallBodyConfig;
 
+	// State vars
+	private Date startDate = null;
+	private Date endDate = null;
 
-    public LidarSearchModel(BodyViewConfig smallBodyConfig,
-            final ModelManager modelManager,
-            final PickManager pickManager,
-            Renderer renderer,
-            ModelNames lidarModelName)
-    {
-        this.modelManager = modelManager;
-        this.pickManager = pickManager;
-        this.smallBodyConfig=smallBodyConfig;
-        this.lidarModel = (LidarSearchDataCollection)modelManager.getModel(lidarModelName);
-    }
+	public LidarSearchModel(BodyViewConfig aSmallBodyConfig, LidarSearchDataCollection aModel)
+	{
+		refSmallBodyConfig = aSmallBodyConfig;
+		refLidarModel = aModel;
+	}
 
-    public ModelManager getModelManager()
-    {
-        return modelManager;
-    }
+	public Date getStartDate()
+	{
+		return startDate;
+	}
 
+	public Date getEndDate()
+	{
+		return endDate;
+	}
 
-    public PickManager getPickManager()
-    {
-        return pickManager;
-    }
+	public void setStartDate(Date aStartDate)
+	{
+		startDate = aStartDate;
+	}
 
+	public void setEndDate(Date aEndDate)
+	{
+		endDate = aEndDate;
+	}
 
-    public Date getStartDate()
-    {
-        return startDate;
-    }
+	public BodyViewConfig getSmallBodyConfig()
+	{
+		return refSmallBodyConfig;
+	}
 
-
-    public Date getEndDate()
-    {
-        return endDate;
-    }
-
-
-    public void setStartDate(Date startDate)
-    {
-        this.startDate = startDate;
-    }
-
-
-    public void setEndDate(Date endDate)
-    {
-        this.endDate = endDate;
-    }
-
-
-    public BodyViewConfig getSmallBodyConfig()
-    {
-        return smallBodyConfig;
-    }
-
-    public LidarSearchDataCollection getLidarModel()
-    {
-        return lidarModel;
-    }
+	public LidarSearchDataCollection getLidarModel()
+	{
+		return refLidarModel;
+	}
 }
