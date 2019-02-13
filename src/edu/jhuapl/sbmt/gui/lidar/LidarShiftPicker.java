@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
@@ -42,7 +43,6 @@ public class LidarShiftPicker extends Picker
 	// State vars
 	private EditMode currEditMode;
 	private Vector3D origPt;
-	private int trackIdx = -1;
 
 	public LidarShiftPicker(Renderer renderer, ModelManager modelManager, LidarSearchDataCollection lidarModel)
 	{
@@ -56,7 +56,6 @@ public class LidarShiftPicker extends Picker
 
 		currEditMode = EditMode.CLICKABLE;
 		origPt = null;
-		trackIdx = -1;
 	}
 
 	@Override
@@ -82,7 +81,6 @@ public class LidarShiftPicker extends Picker
 	{
 		// Assume nothing will be picked
 		origPt = null;
-		trackIdx = -1;
 
 		// Bail if we are not ready to do a drag operation
 		if (currEditMode != EditMode.DRAGGABLE)
@@ -103,7 +101,7 @@ public class LidarShiftPicker extends Picker
 			return;
 
 		int cellId = pointPicker.GetCellId();
-		trackIdx = refLidarModel.getTrackIdFromCellId(cellId);
+		int trackIdx = refLidarModel.getTrackIdFromCellId(cellId);
 		if (trackIdx >= 0)
 			origPt = refLidarModel.getLidarPointFromCellId(cellId).getTargetPosition();
 	}
@@ -113,7 +111,6 @@ public class LidarShiftPicker extends Picker
 	{
 		// Reset the state vars
 		origPt = null;
-		trackIdx = -1;
 	}
 
 	@Override
@@ -139,9 +136,9 @@ public class LidarShiftPicker extends Picker
 
 		// Perform the translation
 		double[] currPt = smallBodyPicker.GetPickPosition();
-		int[] idArr = {trackIdx};
+		List<Integer> tmpL = refLidarModel.getSelectedTracks();
 		Vector3D tmpVect = new Vector3D(currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ());
-		refLidarModel.setTranslation(idArr, tmpVect);
+		refLidarModel.setTranslation(tmpL, tmpVect);
 	}
 
 	@Override

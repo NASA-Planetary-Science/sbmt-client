@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -15,6 +14,8 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+
+import com.google.common.collect.ImmutableList;
 
 import vtk.vtkProp;
 
@@ -32,7 +33,7 @@ public class LidarPopupMenu extends PopupMenu
 	private LidarSearchDataCollection refModel;
 
 	// State vars
-	private int[] trackIdArr;
+	private ImmutableList<Integer> trackL;
 
 	// Gui vars
 	private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
@@ -61,7 +62,7 @@ public class LidarPopupMenu extends PopupMenu
 	 */
 	public LidarPopupMenu(LidarSearchDataCollection aModel, Component aInvoker)
 	{
-		trackIdArr = new int[0];
+		trackL = ImmutableList.of();
 
 		refModel = aModel;
 		invoker = aInvoker;
@@ -133,15 +134,15 @@ public class LidarPopupMenu extends PopupMenu
 	/**
 	 * Sets in the selected tracks (indexes).
 	 */
-	public void setSelectedTracks(int[] aTrackIdArr)
+	public void setSelectedTracks(List<Integer> aTrackL)
 	{
-		trackIdArr = Arrays.copyOf(aTrackIdArr, aTrackIdArr.length);
-		if (trackIdArr.length == 0)
+		trackL = ImmutableList.copyOf(aTrackL);
+		if (trackL.size() == 0)
 			return;
 
 		// Determine if all tracks are shown
 		boolean isAllShown = true;
-		for (int aId : trackIdArr)
+		for (int aId : trackL)
 			isAllShown &= refModel.getTrack(aId).getIsVisible() == true;
 
 		// Determine the display string
@@ -149,16 +150,16 @@ public class LidarPopupMenu extends PopupMenu
 		if (isAllShown == false)
 			displayStr = "Show Track";
 
-		if (trackIdArr.length > 1)
+		if (trackL.size() > 1)
 			displayStr += "s";
 
 		// Update the text of the showTrackMI
 		showTrackMI.setText(displayStr);
 
 		// Determine if all selected tracks have the same color
-		Color tmpColor = refModel.getTrack(trackIdArr[0]).getColor();
+		Color tmpColor = refModel.getTrack(trackL.get(0)).getColor();
 		boolean isSameColor = true;
-		for (int aId : trackIdArr)
+		for (int aId : trackL)
 			isSameColor &= tmpColor.equals(refModel.getTrack(aId).getColor()) == true;
 
 		// If the track color equals one of the predefined colors, then check
@@ -171,7 +172,7 @@ public class LidarPopupMenu extends PopupMenu
 		}
 
 		// Enable the plot menuitem if the number of selected tracks == 1
-		boolean isEnabled = trackIdArr.length == 1;
+		boolean isEnabled = trackL.size() == 1;
 		plotTrackMI.setEnabled(isEnabled);
 
 		// TODO: Allow the entire set of selected tracks to be saved, not just one
@@ -190,7 +191,7 @@ public class LidarPopupMenu extends PopupMenu
 
 		public void actionPerformed(ActionEvent e)
 		{
-			refModel.setTrackColor(trackIdArr, color);
+			refModel.setTrackColor(trackL, color);
 		}
 	}
 
@@ -198,12 +199,12 @@ public class LidarPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			Color tmpColor = refModel.getTrack(trackIdArr[0]).getColor();
+			Color tmpColor = refModel.getTrack(trackL.get(0)).getColor();
 			Color newColor = ColorChooser.showColorChooser(invoker, tmpColor);
 			if (newColor == null)
 				return;
 
-			refModel.setTrackColor(trackIdArr, newColor);
+			refModel.setTrackColor(trackL, newColor);
 		}
 	}
 
@@ -221,7 +222,7 @@ public class LidarPopupMenu extends PopupMenu
 			Component invoker = getInvoker();
 
 			// TODO: The entire set of selected tracks should be saved
-			int trackId = trackIdArr[0];
+			int trackId = trackL.get(0);
 			File file = CustomFileChooser.showSaveDialog(invoker, "Save Lidar Track", "track" + trackId + ".tab");
 
 			try
@@ -316,12 +317,12 @@ public class LidarPopupMenu extends PopupMenu
 		{
 			// Determine if all tracks are shown
 			boolean isAllShown = true;
-			for (int aId : trackIdArr)
+			for (int aId : trackL)
 				isAllShown &= refModel.getTrack(aId).getIsVisible() == true;
 
 			// Update the tracks visibility based on whether they are all shown
 			boolean tmpBool = isAllShown == false;
-			refModel.setTrackVisible(trackIdArr, tmpBool);
+			refModel.setTrackVisible(trackL, tmpBool);
 		}
 	}
 
@@ -329,7 +330,7 @@ public class LidarPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			refModel.hideOtherTracksExcept(trackIdArr);
+			refModel.hideOtherTracksExcept(trackL);
 		}
 	}
 
@@ -341,7 +342,7 @@ public class LidarPopupMenu extends PopupMenu
 			if (translateDialog == null)
 				translateDialog = new LidarTrackTranslateDialog(invoker, refModel);
 
-			translateDialog.setTracks(trackIdArr);
+			translateDialog.setTracks(trackL);
 			translateDialog.setVisible(true);
 		}
 	}
@@ -350,7 +351,7 @@ public class LidarPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			int tmpId = trackIdArr[0];
+			int tmpId = trackL.get(0);
 
 			try
 			{
@@ -380,13 +381,11 @@ public class LidarPopupMenu extends PopupMenu
 	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
 	{
 		// Bail if we do not have selected tracks
-		int trackId = refModel.getTrackIdOfCurrentSelection();
-		if (trackId < 0)
+		List<Integer> tmpL = refModel.getSelectedTracks();
+		if (tmpL.size() == 0)
 			return;
 
-		int idArr[] = { trackId };
-		setSelectedTracks(idArr);
-
+		setSelectedTracks(tmpL);
 		show(e.getComponent(), e.getX(), e.getY());
 	}
 

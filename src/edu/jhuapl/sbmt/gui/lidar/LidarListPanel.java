@@ -10,6 +10,10 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,6 +32,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.Ints;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.ColorCellRenderer;
@@ -210,7 +218,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		Object source = aEvent.getSource();
 
-		int[] idArr = getSelectedTracks();
+		List<Integer> tmpL = refModel.getSelectedTracks();
 		if (source == selectAllB)
 			trackTable.selectAll();
 		else if (source == selectNoneB)
@@ -218,13 +226,13 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		else if (source == selectInvertB)
 			GuiUtil.invertSelection(trackTable, this);
 		else if (source == hideB)
-			refModel.setTrackVisible(idArr, false);
+			refModel.setTrackVisible(tmpL, false);
 		else if (source == showB)
-			refModel.setTrackVisible(idArr, true);
+			refModel.setTrackVisible(tmpL, true);
 		else if (source == removeB)
 			refModel.removeAllLidarData();
 		else if (source == translateB)
-			doActionTranslate(idArr);
+			doActionTranslate(tmpL);
 		else if (source == dragB)
 			doActionDrag();
 		else if (source == showErrorCB)
@@ -243,12 +251,17 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	@Override
 	public void propertyChange(PropertyChangeEvent aEvent)
 	{
-		if (Properties.MODEL_CHANGED.equals(aEvent.getPropertyName()) == true)
+		Object source = aEvent.getSource();
+		if (source == refModel && Properties.MODEL_CHANGED.equals(aEvent.getPropertyName()) == true)
 		{
 			updateErrorUI();
 			updateGui();
 		}
-		else if (Properties.MODEL_PICKED.equals(aEvent.getPropertyName()) == true)
+		else if (source == refModel && Properties.MODEL_PICKED.equals(aEvent.getPropertyName()) == true)
+		{
+			updateTableSelection();
+		}
+		else if (source != refModel && Properties.MODEL_PICKED.equals(aEvent.getPropertyName()) == true)
 		{
 			handleTrackPicked(aEvent);
 		}
@@ -272,6 +285,12 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	@Override
 	public void valueChanged(ListSelectionEvent aEvent)
 	{
+		int[] idxArr = trackTable.getSelectedRows();
+
+		// Update the model's selection
+		List<Integer> pickL = Ints.asList(idxArr);
+		refModel.setSelectedTracks(pickL);
+
 		updateGui();
 	}
 
@@ -335,27 +354,20 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	/**
 	 * Helper method that handles the drag action.
 	 */
-	private void doActionTranslate(int[] aIdArr)
+	private void doActionTranslate(List<Integer> aIdxL)
 	{
 		if (translateDialog == null)
 			translateDialog = new LidarTrackTranslateDialog(this, refModel);
 
-		translateDialog.setTracks(aIdArr);
+		translateDialog.setTracks(aIdxL);
 		translateDialog.setVisible(true);
 	}
 
 	/**
-	 * Helper method that returns an array corresponding to the selected track
-	 * indexes.
-	 */
-	private int[] getSelectedTracks()
-	{
-		return trackTable.getSelectedRows();
-	}
-
-	/**
-	 * Helper method to determine which track is picked and select the
-	 * corresponding table row (and scroll to the selected row).
+	 * Helper method to process the track pick action.
+	 * <P>
+	 * TODO: In the future the LidarListPanel should not be responsible for
+	 * managing the Track pick actions (sourced from the shape model)!
 	 */
 	private void handleTrackPicked(PropertyChangeEvent aEvent)
 	{
@@ -372,10 +384,17 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		if (idx < 0)
 			return;
 
-		trackTable.setRowSelectionInterval(idx, idx);
-		Rectangle cellBounds = trackTable.getCellRect(idx, 0, true);
-		if (cellBounds != null)
-			trackTable.scrollRectToVisible(cellBounds);
+		// Determine the tracks that will be marked as selected
+		List<Integer> tmpL = refModel.getSelectedTracks();
+		tmpL = new ArrayList<>(tmpL);
+
+		if (pickEvent.getMouseEvent().isControlDown() == false)
+			tmpL = ImmutableList.of(idx);
+		else
+			tmpL.add(idx);
+
+		// Update the model's selection
+		refModel.setSelectedTracks(tmpL);
 	}
 
 	/**
@@ -442,11 +461,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		}
 
 		// Bail if there is no selection
-		int[] idArr = getSelectedTracks();
-		if (idArr.length == 0)
+		List<Integer> tmpL = refModel.getSelectedTracks();
+		if (tmpL.size() == 0)
 			return;
 
-		lidarPopupMenu.setSelectedTracks(idArr);
+		lidarPopupMenu.setSelectedTracks(tmpL);
 		lidarPopupMenu.show(aEvent.getComponent(), aEvent.getX(), aEvent.getY());
 	}
 
@@ -487,8 +506,8 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		for (Track aTrack : refModel.getTracks())
 			cntFullPoints += aTrack.getNumberOfPoints();
 
-		int[] idArr = getSelectedTracks();
-		int cntPickTracks = idArr.length;
+		List<Integer> pickL = refModel.getSelectedTracks();
+		int cntPickTracks = pickL.size();
 		isEnabled = cntPickTracks > 0;
 		selectNoneB.setEnabled(isEnabled);
 
@@ -504,7 +523,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		int cntPickPoints = 0;
 		int cntShowTracks = 0;
-		for (int aId : idArr)
+		for (int aId : pickL)
 		{
 			Track tmpTrack = refModel.getTrack(aId);
 			cntPickPoints += tmpTrack.getNumberOfPoints();
@@ -530,6 +549,40 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		}
 		titleL.setText(infoStr);
 		titleL.setToolTipText(helpStr);
+	}
+
+	/**
+	 * Helper method that will synchronize the table selection to match the
+	 * selected items in the refModel. If new items were selected then the table
+	 * will be scrolled (to the first newly selected row).
+	 */
+	private void updateTableSelection()
+	{
+		int[] idxArr = trackTable.getSelectedRows();
+		List<Integer> oldL = Ints.asList(idxArr);
+		Set<Integer> oldS = new LinkedHashSet<>(oldL);
+
+		List<Integer> newL = refModel.getSelectedTracks();
+		Set<Integer> newS = new LinkedHashSet<>(newL);
+
+		// Bail if nothing has changed
+		if (newS.equals(oldS) == true)
+			return;
+
+		// Update the table's selection
+		GuiUtil.setSelection(trackTable, this, newL);
+		updateGui();
+
+		// Bail if there are no new items selected
+		Set<Integer> addS = Sets.difference(newS, oldS);
+		if (addS.size() == 0)
+			return;
+
+		// Ensure the table shows the (newly) selected items
+		int idx = addS.iterator().next();
+		Rectangle cellBounds = trackTable.getCellRect(idx, 0, true);
+		if (cellBounds != null)
+			trackTable.scrollRectToVisible(cellBounds);
 	}
 
 }

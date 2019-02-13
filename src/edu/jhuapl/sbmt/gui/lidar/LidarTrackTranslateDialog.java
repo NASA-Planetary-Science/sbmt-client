@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.gui.lidar;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -10,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
+import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.gui.GNumberField;
 import edu.jhuapl.saavtk.gui.GuiUtil;
@@ -42,7 +45,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private GNumberField zTranslateNF;
 
 	// State vars
-	private int[] idxArr;
+	private ImmutableList<Integer> trackL;
 
 	/**
 	 * Standard Constructor
@@ -53,7 +56,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 
 		refModel = aModel;
 
-		idxArr = new int[0];
+		trackL = ImmutableList.of();
 
 		formGui();
 		pack();
@@ -64,15 +67,15 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	 * Sets in the indexes corresponding to the tracks that will need to be
 	 * updated.
 	 */
-	public void setTracks(int[] aIdArr)
+	public void setTracks(List<Integer> aTrackL)
 	{
-		idxArr = aIdArr;
+		trackL = ImmutableList.copyOf(aTrackL);
 
-		Vector3D tmpVect = refModel.getTranslation(aIdArr[0]);
+		Vector3D tmpVect = refModel.getTranslation(aTrackL.get(0));
 
 		// Check that all translation vectors are equal
 		boolean tmpBool = true;
-		for (int aId : aIdArr)
+		for (int aId : aTrackL)
 		{
 			Vector3D evalVect = refModel.getTranslation(aId);
 			tmpBool &= tmpVect.equals(evalVect);
@@ -107,7 +110,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 		double yVal = yTranslateNF.getValue();
 		double zVal = zTranslateNF.getValue();
 		Vector3D tmpVect = new Vector3D(xVal, yVal, zVal);
-		refModel.setTranslation(idxArr, tmpVect);
+		refModel.setTranslation(trackL, tmpVect);
 	}
 
 	/**
@@ -117,7 +120,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	{
 		Vector3D tmpVect = Vector3D.ZERO;
 		setInputVector(tmpVect);
-		refModel.setTranslation(idxArr, tmpVect);
+		refModel.setTranslation(trackL, tmpVect);
 	}
 
 	/**
