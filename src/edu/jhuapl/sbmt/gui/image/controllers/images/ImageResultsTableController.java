@@ -510,6 +510,8 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.CORRECTED);
         imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+        showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+
     }
 
     protected void prevButtonActionPerformed(ActionEvent evt)
@@ -764,8 +766,8 @@ public class ImageResultsTableController
 //                	System.out.println(
 //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
 //                }
-                int startIndex = 0;
-                int endIndex = size;
+                int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+                int endIndex = imageSearchModel.getResultIntervalCurrentlyShown().id2;
                 if (modifiedTableRow != -1)
                 {
                 	startIndex = modifiedTableRow;
