@@ -635,6 +635,7 @@ public class ImageResultsTableController
 
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+        modifiedTableRow = -1;
     }
 
     protected void showImageBoundaries(IdPair idPair)
