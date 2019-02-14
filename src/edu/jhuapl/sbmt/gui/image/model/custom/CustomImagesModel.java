@@ -619,7 +619,7 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
-    public void setImageVisibility(ImageKeyInterface key, boolean visible)
+    public void setImageVisibility(CustomImageKeyInterface key, boolean visible)
     {
 //        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
 //        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
