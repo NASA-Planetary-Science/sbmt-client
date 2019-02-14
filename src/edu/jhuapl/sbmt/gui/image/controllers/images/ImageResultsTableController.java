@@ -767,13 +767,13 @@ public class ImageResultsTableController
 //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
 //                }
                 int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
-                int endIndex = imageSearchModel.getResultIntervalCurrentlyShown().id2;
+                int endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                if (modifiedTableRow > size) modifiedTableRow = -1;
                 if (modifiedTableRow != -1)
                 {
                 	startIndex = modifiedTableRow;
                 	endIndex = startIndex + 1;
                 }
-
                 for (int i=startIndex; i<endIndex; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
