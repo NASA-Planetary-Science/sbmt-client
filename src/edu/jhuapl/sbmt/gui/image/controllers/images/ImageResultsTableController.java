@@ -583,6 +583,18 @@ public class ImageResultsTableController
         }
     }
 
+    protected void removeTableListeners()
+    {
+    	TableModelListener[] tableModelListeners = ((DefaultTableModel)imageResultsTableView.getResultList().getModel()).getTableModelListeners();
+    	for (TableModelListener listener : tableModelListeners)
+    		((DefaultTableModel)imageResultsTableView.getResultList().getModel()).removeTableModelListener(listener);
+    }
+
+    protected void addTableListeners()
+    {
+    	((DefaultTableModel)imageResultsTableView.getResultList().getModel()).addTableModelListener(tableModelListener);
+    }
+
     public void setImageResults(List<List<String>> results)
     {
         JTable resultTable = imageResultsTableView.getResultList();
@@ -592,7 +604,8 @@ public class ImageResultsTableController
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+//        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+        removeTableListeners();
         imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
 
@@ -679,7 +692,6 @@ public class ImageResultsTableController
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
-
 //        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 //        model.removeAllBoundaries();
         boundaries.removeAllBoundaries();
