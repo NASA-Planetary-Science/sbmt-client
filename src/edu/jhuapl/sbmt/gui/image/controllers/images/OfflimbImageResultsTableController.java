@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.gui.image.controllers.images;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -84,7 +86,38 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
         tableModelListener = new OfflimbImageResultsTableModeListener();
 
-        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+
+			}
+		});
+
 
 
         imageResultsTableView.getResultList().addMouseListener(new MouseAdapter()
