@@ -138,6 +138,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     {
         super.setImageResults(results);
         int i=0;
+        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         for (List<String> str : results)
         {
             String name = imageRawResults.get(i).get(0);
@@ -155,6 +156,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
             ++i;
         }
+        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
     }
 
     class OfflimbImageResultsTableModeListener extends ImageResultsTableModeListener
