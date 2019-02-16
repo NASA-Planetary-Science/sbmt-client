@@ -510,6 +510,8 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.CORRECTED);
         imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+        showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+
     }
 
     protected void prevButtonActionPerformed(ActionEvent evt)
@@ -635,6 +637,7 @@ public class ImageResultsTableController
 
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+        modifiedTableRow = -1;
     }
 
     protected void showImageBoundaries(IdPair idPair)
@@ -763,14 +766,14 @@ public class ImageResultsTableController
 //                	System.out.println(
 //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
 //                }
-                int startIndex = 0;
-                int endIndex = size;
+                int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+                int endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                if (modifiedTableRow > size) modifiedTableRow = -1;
                 if (modifiedTableRow != -1)
                 {
                 	startIndex = modifiedTableRow;
                 	endIndex = startIndex + 1;
                 }
-
                 for (int i=startIndex; i<endIndex; ++i)
                 {
                     String name = imageRawResults.get(i).get(0);
