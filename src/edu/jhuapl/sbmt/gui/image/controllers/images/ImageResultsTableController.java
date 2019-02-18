@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -117,11 +119,44 @@ public class ImageResultsTableController
         propertyChangeListener = new ImageResultsPropertyChangeListener();
         tableModelListener = new ImageResultsTableModeListener();
 
-        this.imageCollection.addPropertyChangeListener(propertyChangeListener);
-        boundaries.addPropertyChangeListener(propertyChangeListener);
+
+
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+				imageCollection.addPropertyChangeListener(propertyChangeListener);
+		        boundaries.addPropertyChangeListener(propertyChangeListener);
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+			    imageCollection.removePropertyChangeListener(propertyChangeListener);
+		        boundaries.removePropertyChangeListener(propertyChangeListener);
+			}
+		});
 
 
     }
+
+
 
     public void setImageResultsPanel()
     {
@@ -548,6 +583,18 @@ public class ImageResultsTableController
         }
     }
 
+    protected void removeTableListeners()
+    {
+    	TableModelListener[] tableModelListeners = ((DefaultTableModel)imageResultsTableView.getResultList().getModel()).getTableModelListeners();
+    	for (TableModelListener listener : tableModelListeners)
+    		((DefaultTableModel)imageResultsTableView.getResultList().getModel()).removeTableModelListener(listener);
+    }
+
+    protected void addTableListeners()
+    {
+    	((DefaultTableModel)imageResultsTableView.getResultList().getModel()).addTableModelListener(tableModelListener);
+    }
+
     public void setImageResults(List<List<String>> results)
     {
         JTable resultTable = imageResultsTableView.getResultList();
@@ -557,7 +604,8 @@ public class ImageResultsTableController
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+//        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+        removeTableListeners();
         imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
 
@@ -644,7 +692,6 @@ public class ImageResultsTableController
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
-
 //        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 //        model.removeAllBoundaries();
         boundaries.removeAllBoundaries();
