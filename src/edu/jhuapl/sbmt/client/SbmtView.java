@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.google.common.collect.ImmutableList;
@@ -56,9 +57,10 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.v2.TrackController;
+import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
@@ -78,6 +80,8 @@ import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
+
+import net.miginfocom.swing.MigLayout;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -189,14 +193,18 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.GRATICULE, graticule);
         allModels.put(ModelNames.IMAGES, new ImageCollection(smallBodyModel));
         allModels.put(ModelNames.CUSTOM_IMAGES, new ImageCollection(smallBodyModel));
-        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
+        ImageCubeCollection customCubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection customColorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.CUSTOM_CUBE_IMAGES, customCubeCollection);
+        allModels.put(ModelNames.CUSTOM_COLOR_IMAGES, customColorImageCollection);
 
         //all bodies can potentially have at least custom images, color images, and cubes, so these models must exist for everything.  Same will happen for spectra when it gets enabled.
         allModels.put(ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
         allModels.put(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES, new PerspectiveImageBoundaryCollection(smallBodyModel));
-        allModels.put(ModelNames.COLOR_IMAGES, new ColorImageCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.CUBE_IMAGES, new ImageCubeCollection(smallBodyModel, getModelManager()));
+        ImageCubeCollection cubeCollection = new ImageCubeCollection(smallBodyModel, getModelManager());
+        ColorImageCollection colorImageCollection = new ColorImageCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.COLOR_IMAGES, colorImageCollection);
+        allModels.put(ModelNames.CUBE_IMAGES, cubeCollection);
 
 //        for (ImagingInstrument instrument : getPolyhedralModelConfig().imagingInstruments)
 //        {
@@ -255,10 +263,18 @@ public class SbmtView extends View implements PropertyChangeListener
         allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
         allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
         allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
-        allModels.put(ModelNames.DEM, new DEMCollection(smallBodyModel, getModelManager()));
-        allModels.put(ModelNames.DEM_BOUNDARY, new DEMBoundaryCollection(smallBodyModel, getModelManager()));
+        DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.DEM, demCollection);
+        DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
+        allModels.put(ModelNames.DEM_BOUNDARY, demBoundaryCollection);
 
         setModelManager(new SbmtModelManager(smallBodyModel, allModels));
+        colorImageCollection.setModelManager(getModelManager());
+        cubeCollection.setModelManager(getModelManager());
+        customColorImageCollection.setModelManager(getModelManager());
+        customCubeCollection.setModelManager(getModelManager());
+        demCollection.setModelManager(getModelManager());
+        demBoundaryCollection.setModelManager(getModelManager());
 
         getModelManager().addPropertyChangeListener(this);
     }
@@ -464,8 +480,7 @@ public class SbmtView extends View implements PropertyChangeListener
             }
 
 
-            boolean supportsEsri=(getConfig().body==ShapeModelBody.RQ36);
-            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), supportsEsri));
+            addTab("Structures", new StructuresControlPanel(getModelManager(), getPickManager(), getStatusBar()));
 
 
             JTabbedPane customDataPane=new JTabbedPane();
@@ -483,8 +498,15 @@ public class SbmtView extends View implements PropertyChangeListener
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
             }
 
-            customDataPane.addTab("Tracks", new TrackController(getPolyhedralModelConfig(), getModelManager(), getPickManager(), getRenderer()).getView());
-
+            // Add the "lidar tracks" tab
+            ModelManager tmpModelManager = getModelManager();
+            LidarSearchDataCollection tmpLidarModel = (LidarSearchDataCollection)tmpModelManager.getModel(ModelNames.TRACKS);
+            LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpLidarModel);
+            LidarListPanel tmpLidarListPanel = new LidarListPanel(tmpModelManager, tmpLidarModel, getPickManager(), getRenderer());
+            JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
+            tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
+            tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
+            customDataPane.addTab("Tracks", tmpPanel);
 
 //            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);

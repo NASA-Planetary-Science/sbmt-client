@@ -123,26 +123,17 @@ public class LidarPopupMenu extends PopupMenu
     {
         currentTrack = trackId;
 
-        hideTrackMenuItem.setSelected(lidarModel.isTrackHidden(trackId));
+        boolean tmpBool = !lidarModel.getTrack(trackId).getIsVisible();
+        hideTrackMenuItem.setSelected(tmpBool);
 
         // If the track color equals one of the predefined colors, then check
         // the corresponding menu item.
-        int[] currentTrackColor = lidarModel.getTrackColor(trackId);
-        for (JCheckBoxMenuItem item : colorMenuItems)
+        Color tmpColor = lidarModel.getTrackColor(trackId);
+        for (JCheckBoxMenuItem aItem : colorMenuItems)
         {
-            TrackColorAction action = (TrackColorAction)item.getAction();
-            Color color = action.color;
-            if (currentTrackColor[0] == color.getRed() &&
-                    currentTrackColor[1] == color.getGreen() &&
-                    currentTrackColor[2] == color.getBlue() &&
-                    currentTrackColor[3] == color.getAlpha())
-            {
-                item.setSelected(true);
-            }
-            else
-            {
-                item.setSelected(false);
-            }
+            TrackColorAction action = (TrackColorAction)aItem.getAction();
+            boolean isSelected = action.color.equals(tmpColor);
+            aItem.setSelected(isSelected);
         }
     }
 
@@ -165,8 +156,8 @@ public class LidarPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            int[] currentColor = lidarModel.getTrackColor(currentTrack);
-            Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
+            Color tmpColor = lidarModel.getTrackColor(currentTrack);
+            Color newColor = ColorChooser.showColorChooser(invoker, tmpColor);
             if (newColor != null)
                 lidarModel.setTrackColor(currentTrack, newColor);
         }
@@ -287,7 +278,8 @@ public class LidarPopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            lidarModel.hideTrack(currentTrack, hideTrackMenuItem.isSelected());
+            boolean tmpBool = !hideTrackMenuItem.isSelected();
+            lidarModel.setTrackVisible(currentTrack, tmpBool);
         }
     }
 
@@ -345,8 +337,12 @@ public class LidarPopupMenu extends PopupMenu
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)
     {
-        System.out.println("LidarPopupMenu: showPopup: picked cell id " + pickedCellId);
-        setCurrentTrack(lidarModel.getTrackIdFromCellId(pickedCellId));
+        // Bail if we do not have a current track
+        int trackId = lidarModel.getTrackIdOfCurrentSelection();
+        if (trackId < 0)
+            return;
+        setCurrentTrack(trackId);
+
         show(e.getComponent(), e.getX(), e.getY());
     }
 
