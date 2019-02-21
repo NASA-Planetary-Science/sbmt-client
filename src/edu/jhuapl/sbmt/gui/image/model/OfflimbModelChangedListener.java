@@ -7,4 +7,5 @@ public interface OfflimbModelChangedListener
     public void currentAlphaChanged(int alpha);
     public void currentContrastLowChanged(int contrastMin);
     public void currentContrastHighChanged(int contrastMax);
+    public void showBoundaryChanged();
 }

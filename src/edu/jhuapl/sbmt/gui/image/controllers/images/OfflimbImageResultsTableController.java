@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.gui.image.controllers.images;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -46,7 +48,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     @Override
     protected void setupWidgets()
     {
-        // TODO Auto-generated method stub
         super.setupWidgets();
         offlimbTableView.getOfflimbControlsButton().addActionListener(new ActionListener()
         {
@@ -85,7 +86,38 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
         tableModelListener = new OfflimbImageResultsTableModeListener();
 
-        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+
+			}
+		});
+
 
 
         imageResultsTableView.getResultList().addMouseListener(new MouseAdapter()
@@ -139,6 +171,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     {
         super.setImageResults(results);
         int i=0;
+        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         for (List<String> str : results)
         {
             String name = imageRawResults.get(i).get(0);
@@ -156,6 +189,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
             ++i;
         }
+        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
     }
 
     class OfflimbImageResultsTableModeListener extends ImageResultsTableModeListener
