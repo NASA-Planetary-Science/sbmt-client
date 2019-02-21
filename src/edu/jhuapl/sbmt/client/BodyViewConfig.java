@@ -123,8 +123,8 @@ public abstract class BodyViewConfig extends ViewConfig
     //
 
     public BodyType type; // e.g. asteroid, comet, satellite
-    public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
-    public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
+    public ShapeModelPopulation population = ShapeModelPopulation.NA; // e.g. Mars for satellites or main belt for asteroids
+    public ShapeModelDataUsed dataUsed = ShapeModelDataUsed.NA; // e.g. images, radar, lidar, or enhanced
 
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;

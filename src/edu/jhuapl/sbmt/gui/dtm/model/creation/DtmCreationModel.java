@@ -235,6 +235,12 @@ public class DtmCreationModel implements MetadataManager
 
 	        // Remove the DEM from the renderer
 	        DEMKey demKey = dems.getDEMKeyFromInfo(demInfo);
+	        if (demKey == null)
+	        {
+	        	 infoList.remove(demInfo);
+	        	 boundaries.removeBoundary(demKey);
+	        	 continue;
+	        }
 	        dems.removeDEM(demKey);
 
 	        // Remove from the list

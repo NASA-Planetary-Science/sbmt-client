@@ -2956,7 +2956,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         c.modelLabel = "Stooke (2016)";
@@ -3723,7 +3723,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.TEMPEL_1;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
@@ -3736,7 +3736,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
@@ -3752,7 +3752,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.WILD_2;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.DUXBURY;
         c.modelLabel = "Farnham et al. (2005)";
@@ -3765,7 +3765,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
@@ -3820,7 +3820,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "V2";
@@ -3871,7 +3871,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "V3";
@@ -3926,7 +3926,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HARTLEY;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
