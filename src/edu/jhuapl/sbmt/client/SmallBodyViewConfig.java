@@ -1887,9 +1887,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
+            c.density = 1186.;
             c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
+            c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
