@@ -2182,7 +2182,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }
             configArray.add(c);
         }
@@ -2341,7 +2341,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
-                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             }
             configArray.add(c);
         }
