@@ -10,7 +10,7 @@ START=$2
 STOP=$3
 
 # make directory to store tree and empty if it already exists
-TREEDIR=/project/sbmt2/prod/bennu/shared/ola/search/$NAME/
+TREEDIR=/project/sbmt2/prod/bennu/shared/ola/search/$NAME.tmp/
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
 
@@ -20,5 +20,6 @@ rm -rf $TREEDIR/*
 #condense the hypertree into a bounds file .spectra
 ./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeCondenser $TREEDIR
 
+mv $TREEDIR /project/sbmt2/prod/bennu/shared/ola/search/$NAME/
 
 

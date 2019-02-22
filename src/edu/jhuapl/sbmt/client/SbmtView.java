@@ -57,10 +57,10 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
@@ -81,8 +81,6 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 
-import net.miginfocom.swing.MigLayout;
-
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
 import crucible.crust.metadata.api.MetadataManager;
@@ -91,6 +89,7 @@ import crucible.crust.metadata.impl.EmptyMetadata;
 import crucible.crust.metadata.impl.SettableMetadata;
 import crucible.crust.metadata.impl.TrackedMetadataManager;
 import crucible.crust.metadata.impl.Utilities;
+import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -146,10 +145,10 @@ public class SbmtView extends View implements PropertyChangeListener
         else
         {
             String path = type.str;
-            if (population != null)
+            if (population != null && population != ShapeModelPopulation.NA)
                 path += " > " + population;
             path += " > " + body;
-            if (dataUsed != null)
+            if (dataUsed != null && dataUsed != ShapeModelDataUsed.NA)
                 path += " > " + dataUsed;
             path += " > " + getDisplayName();
             return Configuration.getAppTitle() + " - " + path;

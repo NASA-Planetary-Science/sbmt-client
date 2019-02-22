@@ -315,7 +315,7 @@ public class ImageCubeController
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)panel.getImageCubeTable().getValueAt(row, panel.getShowFootprintColumnIndex());
                 if (imageCubes.getLoadedImages().size() == 0) return;
-                imageCubes.getLoadedImages().get(row).setVisible(visible);
+                imageCubes.setLoadedImageVisibility(row, visible);
             }
         }
     }
