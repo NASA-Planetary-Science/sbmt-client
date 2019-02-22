@@ -50,11 +50,11 @@ public class SbmtViewMenu extends ViewMenu
         List<String> tree = new ArrayList<>();
         if (smallBodyConfig.type != null)
             tree.add(smallBodyConfig.type.toString());
-        if (smallBodyConfig.population != null)
+        if (smallBodyConfig.population != null && smallBodyConfig.population != ShapeModelPopulation.NA)
             tree.add(smallBodyConfig.population.toString());
         if (smallBodyConfig.body != null)
             tree.add(smallBodyConfig.body.toString());
-        if (smallBodyConfig.dataUsed != null)
+        if (smallBodyConfig.dataUsed != null && smallBodyConfig.dataUsed != ShapeModelDataUsed.NA)
             tree.add(smallBodyConfig.dataUsed.toString());
 
         // Go through the list of strings and generate a hierarchical menu tree.

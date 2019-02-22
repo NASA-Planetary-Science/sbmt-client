@@ -2,6 +2,8 @@ package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -43,6 +45,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 {
     private List<CustomImageKeyInterface> results;
     private CustomImagesModel model;
+    int modifiedTableRow = -1;
 
     public CustomImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, CustomImagesModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
@@ -70,8 +73,40 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
-        this.imageCollection.addPropertyChangeListener(propertyChangeListener);
-        boundaries.addPropertyChangeListener(propertyChangeListener);
+
+
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+				imageCollection.addPropertyChangeListener(propertyChangeListener);
+		        boundaries.addPropertyChangeListener(propertyChangeListener);
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+				imageCollection.removePropertyChangeListener(propertyChangeListener);
+		        boundaries.removePropertyChangeListener(propertyChangeListener);
+			}
+		});
+
 
         tableModel = new CustomImagesTableModel(new Object[0][7], columnNames);
         imageResultsTableView.getResultList().setModel(tableModel);
@@ -343,14 +378,23 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 JTable resultList = imageResultsTableView.getResultList();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
-                for (int i=0; i<size; ++i)
+                int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+                int endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                if (modifiedTableRow > size) modifiedTableRow = -1;
+                if (modifiedTableRow != -1)
                 {
-                    CustomImageKeyInterface key = model.getImageKeyForIndex(i);
-                    if (imageCollection.containsImage(key))
+                	startIndex = modifiedTableRow;
+                	endIndex = startIndex + 1;
+                }
+
+                for (int i=startIndex; i<endIndex; ++i)
+                {
+                    CustomImageKeyInterface info = getConvertedKey(model.getImageKeyForIndex(i));
+                    if (imageCollection.containsImage(info))
                     {
                         resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                        resultList.setValueAt(imageCollection.getImage(key).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
-                        if (imageCollection.getImage(key) instanceof PerspectiveImage)
+                        resultList.setValueAt(imageCollection.getImage(info).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
+                        if (imageCollection.getImage(info) instanceof PerspectiveImage)
                         {
                             PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(model.getImageKeyForIndex(i));
                             resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
@@ -362,15 +406,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                         resultList.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
                         resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
                     }
-                    CustomImageKeyInterface info;
-                    if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
-            		{
-            			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
-            		}
-            		else
-            		{
-            			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getName());
-            		}
+
 
                     if (boundaries.containsBoundary(info))
                     {
@@ -384,8 +420,25 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();
+                modifiedTableRow = -1;
             }
         }
+
+    }
+
+    private CustomImageKeyInterface getConvertedKey(CustomImageKeyInterface key)
+    {
+//    	CustomImageKeyInterface key = model.getImageKeyForIndex(i);
+        CustomImageKeyInterface info;
+        if (key.getProjectionType() == ProjectionType.PERSPECTIVE)
+		{
+			info = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getSource(), key.getImageType(), ((CustomPerspectiveImageKey)key).getRotation(), ((CustomPerspectiveImageKey)key).getFlip(), key.getFileType(), key.getPointingFile(), key.getDate(), key.getName());
+		}
+		else
+		{
+			info = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getImageFilename(), key.getImageType(), key.getSource(), key.getDate(), key.getName());
+		}
+        return info;
     }
 
     public class CustomImagesTableModel extends DefaultTableModel
@@ -400,8 +453,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             // Only allow editing the hide column if the image is mapped
             if (column == imageResultsTableView.getShowFootprintColumnIndex() || column == imageResultsTableView.getFrusColumnIndex())
             {
-                ImageKeyInterface key = model.getImageKeyForIndex(row);
-                return imageCollection.containsImage(key);
+            	CustomImageKeyInterface info = getConvertedKey(model.getImageKeyForIndex(row));
+                return imageCollection.containsImage(info);
             }
             else
             {
@@ -428,6 +481,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     {
         public void tableChanged(TableModelEvent e)
         {
+        	modifiedTableRow = e.getFirstRow();
             List<List<String>> imageRawResults = model.getImageResults();
             results = model.getCustomImages();
             if (e.getColumn() == imageResultsTableView.getMapColumnIndex())
@@ -441,7 +495,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 }
                 else
                 {
-                    model.unloadImages(name, results.get(row));
+                    model.setImageVisibility(getConvertedKey(results.get(row)), false);
+                    model.unloadImages(name, getConvertedKey(results.get(row)));
                     renderer.setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -449,8 +504,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             {
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getShowFootprintColumnIndex());
-                ImageKeyInterface key = model.getImageKeyForIndex(row);
-                model.setImageVisibility(key, visible);
+                CustomImageKeyInterface info = getConvertedKey(model.getImageKeyForIndex(row));
+                model.setImageVisibility(info, visible);
             }
             else if (e.getColumn() == imageResultsTableView.getFrusColumnIndex())
             {

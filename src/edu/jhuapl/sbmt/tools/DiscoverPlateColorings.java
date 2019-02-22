@@ -255,7 +255,7 @@ public class DiscoverPlateColorings
 			units = getUnits(name);
 		}
 		// Except for Joules, all units are lower case.
-		return units != null ? units.toLowerCase().replace('j', 'J') : null;
+		return units != null ? units.toLowerCase().replace('j', 'J') : "";
 	}
 
 	private String guessColoringName(String string)
