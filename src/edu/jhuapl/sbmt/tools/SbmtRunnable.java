@@ -182,14 +182,19 @@ public class SbmtRunnable implements Runnable
 		case STAGE_PUBLIC_RELEASE:
 		case TEST_PUBLIC_RELEASE:
 			if (!ShapeModelBody.EARTH.equals(config.body)
-					&& !(ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.GASKELL.equals(config.author))
+					&& !ShapeModelBody.RQ36.equals(config.body)
 					&& !ShapeModelBody.RYUGU.equals(config.body)
 					&& !ShapeModelPopulation.PLUTO.equals(config.population))
+            {
+                config.enable(true);
+            }
+			else if (ShapeModelBody.RQ36.equals(config.body) && ShapeModelType.NOLAN.equals(config.author))
 			{
-				config.enable(true);
+				// This is the only public Bennu model.
+                config.enable(true);
 			}
-			break;
-		case HAYABUSA2_DEV:
+            break;
+        case HAYABUSA2_DEV:
 			if (ShapeModelBody.EROS.equals(config.body)
 					|| ShapeModelBody.ITOKAWA.equals(config.body)
 					|| ShapeModelBody.RYUGU.equals(config.body)
