@@ -261,7 +261,7 @@ public class DtmCreationModel implements MetadataManager
         String newFilepath = getCustomDataFolder() + File.separator + newFilename;
         FileUtil.copyFile(demInfo.demfilename,  newFilepath);
         // Change demInfo.demfilename to the new location of the file
-        demInfo.demfilename = newFilepath;
+        demInfo.demfilename = SafeURLPaths.instance().getUrl(newFilepath);
 
         infoList.add(demInfo);
         fireInfoChangedListeners(demInfo);
