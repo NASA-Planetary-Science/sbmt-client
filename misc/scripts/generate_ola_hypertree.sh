@@ -20,6 +20,6 @@ rm -rf $TREEDIR/*
 #condense the hypertree into a bounds file .spectra
 ./run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeCondenser $TREEDIR
 
-mv $TREEDIR /project/sbmt2/prod/bennu/shared/ola/search/$NAME/
+mv $TREEDIR /project/sbmt2/prod/bennu/shared/ola/search/$NAME
 
 
