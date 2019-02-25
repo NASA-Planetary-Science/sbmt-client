@@ -65,14 +65,14 @@ public class SbmtRunnable implements Runnable
 			FileCache.showDotsForFiles(false);
 			System.out.println("\nSBMT Ready");
 
+			frame.pack();
 			frame.setVisible(true);
 			Console.hideConsole();
 			Console.setDefaultLocation(frame);
 		}
 		catch (Throwable throwable)
 		{
-			// Something went tragically wrong, so report the error, close the output file and
-			// move it to a more prominent location.
+			// Something went tragically wrong before the tool was displayed, so report the error and exit somewhat gracefully.
 			throwable.printStackTrace();
 			System.err.println("\nThe SBMT had a fatal error during launch. Please view this console window for more information.");
 			System.err.println("Note that the SBMT requires an internet connection the first time it is launched.");
