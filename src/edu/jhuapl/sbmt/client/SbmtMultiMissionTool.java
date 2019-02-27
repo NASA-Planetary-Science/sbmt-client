@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -272,7 +273,7 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected static SbmtSplash createSplash(Mission mission)
+	protected static void displaySplash(Mission mission)
 	{
 		SbmtSplash splash = null;
 		switch (mission)
@@ -303,7 +304,35 @@ public class SbmtMultiMissionTool
 		default:
 			throw new AssertionError();
 		}
-		return splash;
+
+		splash.setAlwaysOnTop(true);
+		splash.validate();
+		splash.setVisible(true);
+
+		if (Console.isEnabled())
+		{
+			Console.showStandaloneConsole();
+		}
+
+		final SbmtSplash finalSplash = splash;
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.execute(() -> {
+			// Kill the splash screen after a suitable pause.
+			try
+			{
+				Thread.sleep(5500);
+			}
+			catch (InterruptedException e)
+			{
+				// Ignore this one.
+			}
+			finally
+			{
+				EventQueue.invokeLater(() -> {
+					finalSplash.setVisible(false);
+				});
+			}
+		});
 	}
 
 	protected static String getOption(String[] args, String option)
@@ -357,29 +386,11 @@ public class SbmtMultiMissionTool
 		clearCache();
 
 		// Display splash screen.
-		SbmtSplash splash = createSplash(mission);
-		splash.setAlwaysOnTop(true);
-		splash.validate();
-		splash.setVisible(true);
-
-		if (Console.isEnabled())
-		{
-			Console.showStandaloneConsole();
-		}
+		displaySplash(mission);
 
 		// Start up the client.
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.execute(new SbmtRunnable(initialShapeModelPath));
+		new SbmtRunnable(initialShapeModelPath).run();
 
-		// Kill the splash screen after a suitable pause.
-		try
-		{
-			Thread.sleep(6000);
-		}
-		finally
-		{
-			splash.setVisible(false);
-		}
 	}
 
 	protected void processArguments(String[] args)
