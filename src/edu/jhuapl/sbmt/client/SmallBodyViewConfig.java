@@ -2887,6 +2887,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2898,7 +2899,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         )
         };
 
-       c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
@@ -2916,6 +2917,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "ida/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of(5040));
         // Provided with the delivery in the file aamanifest.txt.
         c.density = 2600.;
         c.rotationRate = 0.0003766655;
@@ -2931,6 +2933,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(14160));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2972,6 +2975,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 1300.;
         c.rotationRate = 0.0000041780;
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2983,6 +2987,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -3016,6 +3021,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 2700.;
         c.rotationRate = 0.0002478;
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -3026,6 +3032,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham and Jorda (2013)";
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        c.setResolution(ImmutableList.of(20480));
         configArray.add(c);
 
         // This model was delivered on 2018-03-08 to replace the existing model of unknown specific origin.
@@ -3212,6 +3219,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
+        c.setResolution(ImmutableList.of(32040));
 
         c.lidarSearchDataSourceMap=Maps.newHashMap();   // this must be instantiated, but can be empty
 
