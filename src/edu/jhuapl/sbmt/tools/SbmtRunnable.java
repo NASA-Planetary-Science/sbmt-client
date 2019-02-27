@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 
@@ -63,10 +64,11 @@ public class SbmtRunnable implements Runnable
 			MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			MainWindow.setMainWindow(frame);
 			FileCache.showDotsForFiles(false);
-			System.out.println("\nSBMT Ready");
 
 			frame.pack();
 			frame.setVisible(true);
+
+			System.out.println("\nSBMT Ready");
 
 			Console.hideConsole();
 			Console.setDefaultLocation(frame);
@@ -75,9 +77,13 @@ public class SbmtRunnable implements Runnable
 		{
 			// Something went tragically wrong before the tool was displayed, so report the error and exit somewhat gracefully.
 			throwable.printStackTrace();
-			System.err.println("\nThe SBMT had a serious error during launch. Please view this console window for more information.");
-			System.err.println("\nRestarting the tool is recommended. Please report persistent launch problems to sbmt@jhuapl.edu.");
+			System.err.println("\nThe SBMT had a serious error during launch. Please review messages above for more information.");
+			System.err.println("\nTry restarting the tool. Please report persistent launch problems to sbmt@jhuapl.edu.");
 			System.err.println("\nNote that the SBMT requires an internet connection in order to download built-in model data.");
+	        JOptionPane.showMessageDialog(null,
+	                "A problem occurred during start-up. Please review messages in the console window.",
+	                "Warning",
+	                JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
