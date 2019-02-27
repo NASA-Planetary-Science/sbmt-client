@@ -67,6 +67,7 @@ public class SbmtRunnable implements Runnable
 
 			frame.pack();
 			frame.setVisible(true);
+
 			Console.hideConsole();
 			Console.setDefaultLocation(frame);
 		}
@@ -74,10 +75,9 @@ public class SbmtRunnable implements Runnable
 		{
 			// Something went tragically wrong before the tool was displayed, so report the error and exit somewhat gracefully.
 			throwable.printStackTrace();
-			System.err.println("\nThe SBMT had a fatal error during launch. Please view this console window for more information.");
-			System.err.println("Note that the SBMT requires an internet connection the first time it is launched.");
-			System.err.println("Close the console window to exit the SBMT.");
-			SbmtMultiMissionTool.shutDown();
+			System.err.println("\nThe SBMT had a serious error during launch. Please view this console window for more information.");
+			System.err.println("\nRestarting the tool is recommended. Please report persistent launch problems to sbmt@jhuapl.edu.");
+			System.err.println("\nNote that the SBMT requires an internet connection in order to download built-in model data.");
 		}
 	}
 
