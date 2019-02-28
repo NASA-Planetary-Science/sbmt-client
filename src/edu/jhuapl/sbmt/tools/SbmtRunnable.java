@@ -216,6 +216,7 @@ public class SbmtRunnable implements Runnable
 				config.enable(true);
 			}
 			break;
+
 		case OSIRIS_REX:
 		case OSIRIS_REX_DEPLOY:
 		case OSIRIS_REX_MIRROR_DEPLOY:
@@ -224,6 +225,14 @@ public class SbmtRunnable implements Runnable
 					|| ShapeModelBody.EROS.equals(config.body)
 					|| ShapeModelBody.ITOKAWA.equals(config.body)
 					|| ShapeModelType.OREX.equals(config.author))
+			{
+				config.enable(true);
+			}
+			break;
+		case NH_DEPLOY:
+			if (ShapeModelBody.MU69.equals(config.body)
+					|| ShapeModelBody.EROS.equals(config.body)
+					|| ShapeModelBody.ITOKAWA.equals(config.body))
 			{
 				config.enable(true);
 			}
