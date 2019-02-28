@@ -6636,6 +6636,58 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             configArray.add(c);
         }
+
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.MU69;
+            c.type = BodyType.KBO;
+            c.population = ShapeModelPopulation.NA;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.MU69_TEST5H_1_FINAL_ORIENTED;
+            c.rootDirOnServer = "/bennu/mu69_test5h_1_final_oriented";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of("Very Low (25298 plates)"), ImmutableList.of(25298));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e4;
+            c.density = Double.NaN;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = Double.NaN;
+
+            c.hasImageMap = false;
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL},
+                            Instrument.LORRI
+                            ),
+            };
+
+            c.hasSpectralData=false;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            };
+
+            c.hasStateHistory = false;
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = false;
+            c.hasHypertreeBasedSpectraSearch = false;
+
+            c.hasLidarData=false;
+            c.hasHypertreeBasedLidarSearch=false;
+
+            configArray.add(c);
+        }
     }
 
     // Imaging instrument helper methods.
