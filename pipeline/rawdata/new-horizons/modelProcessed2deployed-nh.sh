@@ -101,6 +101,14 @@ elif test -e $testServerTop/$processingModelName; then
   exit 1
 fi
 
+if test ! -d $testServerTop; then
+  mkdir $testServerTop
+  if test $? -ne 0; then
+    echo "Unable to create directory $testServerTop" >> $log 2>&1
+    exit 1
+  fi
+fi
+
 createSymbolicLink $destTop/$processingModelName-$processingVersion $testServerTop/$processingModelName
 if test $? -ne -0; then
   exit 1

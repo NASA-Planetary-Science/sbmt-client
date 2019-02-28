@@ -7,6 +7,7 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
+deliveredBodyName="2014_MU69"
 bodyName="mu69"
 
 pipelineTop="/project/sbmtpipeline"
@@ -37,7 +38,7 @@ scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
-srcTop="$deliveriesTop/$bodyName/$deliveredVersion"
+srcTop="$deliveriesTop/$deliveredBodyName/$deliveredVersion"
 destTop="$rawTop/$bodyName/$processingVersion"
 
 releaseDir="$destTop"
