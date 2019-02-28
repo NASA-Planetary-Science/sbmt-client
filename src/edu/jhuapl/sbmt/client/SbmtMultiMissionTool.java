@@ -57,6 +57,7 @@ public class SbmtMultiMissionTool
 		OSIRIS_REX_STAGE("7cd84587"),
 		OSIRIS_REX_DEPLOY("7cd84588"),
 		OSIRIS_REX_MIRROR_DEPLOY("7cd84589"),
+		NH_DEPLOY("8ff86312"),
 		STAGE_APL_INTERNAL("f7e441b"),
 		STAGE_PUBLIC_RELEASE("8cc8e12"),
 		TEST_APL_INTERNAL("fb404a7"),
@@ -221,6 +222,11 @@ public class SbmtMultiMissionTool
 			Configuration.setCacheVersion("");
 			Configuration.setAppTitle("SBMT/OSIRIS REx");
 			break;
+		case NH_DEPLOY:
+			Configuration.setAppName("sbmtnh");
+			Configuration.setCacheVersion("");
+			Configuration.setAppTitle("SBMT/New Horizons");
+			break;
 		default:
 			throw new AssertionError();
 		}
@@ -284,6 +290,7 @@ public class SbmtMultiMissionTool
 		case STAGE_PUBLIC_RELEASE:
 		case TEST_APL_INTERNAL:
 		case TEST_PUBLIC_RELEASE:
+		case NH_DEPLOY:
 			splash = new SbmtSplash("resources", "splashLogo.png");
 			break;
 		case HAYABUSA2_DEV:

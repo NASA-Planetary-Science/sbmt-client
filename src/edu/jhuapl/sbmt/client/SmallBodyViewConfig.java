@@ -6686,6 +6686,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasLidarData=false;
             c.hasHypertreeBasedLidarSearch=false;
 
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+
             configArray.add(c);
         }
     }
