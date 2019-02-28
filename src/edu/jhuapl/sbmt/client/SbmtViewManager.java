@@ -873,7 +873,7 @@ public class SbmtViewManager extends ViewManager
                 "Neptune",
                 "Larissa",
                 "Proteus",
-                "2014 Mu 69"
+                "2014 MU69"
         };
         return ImmutableList.copyOf(modelOrder);
     }
