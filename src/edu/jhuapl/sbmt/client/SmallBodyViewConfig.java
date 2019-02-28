@@ -6644,9 +6644,9 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.MU69_TEST5H_1_FINAL_ORIENTED;
-            c.rootDirOnServer = "/bennu/mu69_test5h_1_final_oriented";
+            c.rootDirOnServer = "/mu69/mu69-test5h-1-final-oriented";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of("Very Low (25298 plates)"), ImmutableList.of(25298));
+            c.setResolution(ImmutableList.of("Very Low (25708 plates)"), ImmutableList.of(25708));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
