@@ -8,8 +8,6 @@
 
 missionShortName="nh"
 bodyName="mu69"
-bodyNameCaps="MU69"
-spacecraftName="NH"
 
 # Usage
 if [ "$#" -lt 3 ]
