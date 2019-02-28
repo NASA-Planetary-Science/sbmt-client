@@ -633,6 +633,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelBody.PROTEUS,
             // Planets -> Earth
             ShapeModelBody.EARTH,
+            ShapeModelBody.MU69,
             null
             ));
 
@@ -872,6 +873,7 @@ public class SbmtViewManager extends ViewManager
                 "Neptune",
                 "Larissa",
                 "Proteus",
+                "2014 Mu 69"
         };
         return ImmutableList.copyOf(modelOrder);
     }
