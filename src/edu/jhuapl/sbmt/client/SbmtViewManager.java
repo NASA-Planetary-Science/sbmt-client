@@ -198,7 +198,7 @@ public class SbmtViewManager extends ViewManager
         }
         catch (NullPointerException | IllegalArgumentException iae)
         {
-            System.err.println("Custom Model Import Error: nable to read custom model metadata for " + name);
+            System.err.println("Custom Model Import Error: Unable to read custom model metadata for " + name);
             return null;
         }
         catch (IOException e)
@@ -507,6 +507,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelPopulation.SATURN,
             ShapeModelPopulation.NEPTUNE,
             ShapeModelPopulation.EARTH,
+            ShapeModelPopulation.NA,
             null
             ));
 
@@ -632,6 +633,7 @@ public class SbmtViewManager extends ViewManager
             ShapeModelBody.PROTEUS,
             // Planets -> Earth
             ShapeModelBody.EARTH,
+            ShapeModelBody.MU69,
             null
             ));
 
@@ -871,6 +873,7 @@ public class SbmtViewManager extends ViewManager
                 "Neptune",
                 "Larissa",
                 "Proteus",
+                "2014 MU69"
         };
         return ImmutableList.copyOf(modelOrder);
     }

@@ -44,6 +44,7 @@ import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.model.dem.DEM;
@@ -539,7 +540,6 @@ public class DEMPopupMenu extends PopupMenu
             {
                 vtkPolyData demPolydata = dem.getDem();
                 demFilename = dem.getKey().fileName;
-                System.out.println("DEMPopupMenu.ExportCustomModelAction: actionPerformed: dem file name is " + demFilename);
                 final int extensionLength = FilenameUtils.getExtension(demFilename).length();
 
                 vtkPolyDataWriter writer = new vtkPolyDataWriter();
@@ -570,7 +570,8 @@ public class DEMPopupMenu extends PopupMenu
                             config2.customTemporary = false;
                             config2.author = ShapeModelType.CUSTOM;
                             SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
-                            metadataIO.write(new File(demFilename.substring(0, demFilename.length()-extensionLength) + "json"), dialog.getNameOfImportedShapeModel());
+                            File file = SafeURLPaths.instance().get(demFilename.substring(6, demFilename.length()-extensionLength)+ "json").toFile();
+                            metadataIO.write(file, dialog.getNameOfImportedShapeModel());
                             SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
                             dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
                         }

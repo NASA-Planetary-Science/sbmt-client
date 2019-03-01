@@ -141,7 +141,7 @@ public class ImageCubePopupMenu extends PopupMenu
         exportENVIImageMenuItem.setText("Export ENVI Image...");
         this.add(exportENVIImageMenuItem);
 
-        exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
+        exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
 

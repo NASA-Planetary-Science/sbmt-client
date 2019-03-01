@@ -307,7 +307,6 @@ public class ImageCubeController
                 else
                 {
                     cubeModel.unloadImage(key);
-                    panel.getImageCubeTable().getModel().setValueAt(false, row, panel.getShowFootprintColumnIndex());
                     model.getRenderer().setLighting(LightingType.LIGHT_KIT);
                 }
             }
@@ -316,7 +315,7 @@ public class ImageCubeController
                 int row = e.getFirstRow();
                 boolean visible = (Boolean)panel.getImageCubeTable().getValueAt(row, panel.getShowFootprintColumnIndex());
                 if (imageCubes.getLoadedImages().size() == 0) return;
-                imageCubes.getLoadedImages().get(row).setVisible(visible);
+                imageCubes.setLoadedImageVisibility(row, visible);
             }
         }
     }
@@ -334,7 +333,6 @@ public class ImageCubeController
                 Vector<ImageCube> imageCubeSet = imageCubes.getLoadedImages();
                 int i=0;
                 if (resultList.getModel().getRowCount() != imageCubeSet.size()) { resultList.getModel().addTableModelListener(tableModelListener); return; }
-
                 for (ImageCube image : imageCubeSet)
                 {
                     ImageCubeKey key = image.getImageCubeKey();
