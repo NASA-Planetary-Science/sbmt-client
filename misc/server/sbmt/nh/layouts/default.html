@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><%= @item[:title] %></title>
+<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<link rel="stylesheet" type="text/css" href="css/normalize.css">
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+</head>
+<body>
+    <div id="wrapper">
+        <div id="header">
+          <h1><a href="index.html"><img src="resources/logo.png" alt="" width=169 height=80></a>Small Body Mapping Tool (New Horizons Version)</h1>
+        </div>
+        <div id="leftcolumn">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="http://sbmt.jhuapl.edu/index.php#help">User Help</a></li>
+            <li><a href="releasenotes.html">Release Notes</a></li>
+            <li><a href="http://sbmt.jhuapl.edu/index.php#contact-us">Contact</a></li>
+            <li><a href="releases">Previous Releases</a></li>
+          </ul>
+        </div>
+        <div id="content">
+          <%= yield %>
+       </div>
+    </div>
+</body>
+</html>
