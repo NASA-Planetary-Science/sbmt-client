@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="/saavtk/lib/gson-2.8.0.jar" sourcepath="/saavtk/lib/gson-2.8.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
-	<classpathentry kind="lib" path="lib/altwg-java-tools.jar"/>
 	<classpathentry kind="lib" path="lib/altwg.jar"/>
+	<classpathentry kind="lib" path="lib/altwg-java-tools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
