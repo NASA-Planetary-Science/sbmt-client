@@ -8,6 +8,7 @@ import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.AlphaSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.DepthSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ShowBoundaryButton;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.SyncContrastSlidersButton;
 
 
 public class OfflimbImageControlPanel extends JPanel
@@ -26,8 +27,9 @@ public class OfflimbImageControlPanel extends JPanel
     private ContrastSlider imageContrastSlider;
 
     private ShowBoundaryButton showBoundaryButton;
+	private SyncContrastSlidersButton syncContrastButton;
 
-    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn)
+    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton)
     {
         super();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -64,7 +66,12 @@ public class OfflimbImageControlPanel extends JPanel
         contrastPanel.add(imageContrastValue);
 
         imageContrastSlider = contrastSlider;
+        syncContrastButton = syncButton;
         contrastPanel.add(imageContrastSlider);
+
+        JPanel contrastBtnPanel = new JPanel();
+        syncContrastButton = syncButton;
+        contrastBtnPanel.add(syncContrastButton);
 
 
         JPanel boundaryPanel = new JPanel();
@@ -75,6 +82,7 @@ public class OfflimbImageControlPanel extends JPanel
         add(depthPanel);
         add(transparencyPanel);
         add(contrastPanel);
+        add(contrastBtnPanel);
         add(boundaryPanel);
     }
 
@@ -111,6 +119,10 @@ public class OfflimbImageControlPanel extends JPanel
     public ShowBoundaryButton getShowBoundaryButton()
     {
         return showBoundaryButton;
+    }
+    public SyncContrastSlidersButton getSyncContrastButton()
+    {
+        return syncContrastButton;
     }
 
     public void setFootprintDepthSlider(DepthSlider footprintDepthSlider)

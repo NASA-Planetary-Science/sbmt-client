@@ -8,14 +8,15 @@ import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.AlphaSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.DepthSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ShowBoundaryButton;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.SyncContrastSlidersButton;
 
 public class OfflimbControlsFrame extends JFrame
 {
     private OfflimbImageControlPanel panel;
 
-    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn) throws HeadlessException
+    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton) throws HeadlessException
     {
-        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn);
+        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton);
         init();
     }
 

@@ -19,6 +19,7 @@ public class OfflimbControlsController
     AlphaSlider alphaSlider;
     ContrastSlider contrastSlider;
     ShowBoundaryButton showBoundaryBtn;
+    SyncContrastSlidersButton syncButton;
 
     public OfflimbControlsController(PerspectiveImage image, int currentSlice)
     {
@@ -33,7 +34,10 @@ public class OfflimbControlsController
         showBoundaryBtn = new ShowBoundaryButton();
         showBoundaryBtn.setSelected(controlsModel.getShowBoundary());
 
-        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn);
+        syncButton = new SyncContrastSlidersButton();
+        syncButton.setSelected(controlsModel.getSyncContrast());
+
+        controlsFrame = new OfflimbControlsFrame(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton);
 
         controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
         {
@@ -76,6 +80,12 @@ public class OfflimbControlsController
 				 controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
 			}
 
+			@Override
+			public void syncContrastChanged() {
+				 syncButton.syncContrast(syncButton.isSelected());
+				 controlsModel.setSyncContrast(syncButton.isSelected());
+			}
+
 
         });
 
@@ -113,6 +123,11 @@ public class OfflimbControlsController
                     showBoundaryBtn.showBoundary(showBoundaryBtn.isSelected());
                     controlsModel.setShowBoundary(showBoundaryBtn.isSelected());
                 }
+                else if (e.getSource() == controlsFrame.getPanel().getSyncContrastButton())
+                {
+                    syncButton.syncContrast(syncButton.isSelected());
+                    controlsModel.setSyncContrast(syncButton.isSelected());
+                }
             }
         };
 
@@ -120,6 +135,7 @@ public class OfflimbControlsController
         controlsFrame.getPanel().getFootprintTransparencySlider().addChangeListener(changeListener);
         controlsFrame.getPanel().getImageContrastSlider().addChangeListener(changeListener);
         controlsFrame.getPanel().getShowBoundaryButton().addChangeListener(changeListener);
+        controlsFrame.getPanel().getSyncContrastButton().addChangeListener(changeListener);
 
 
     }
@@ -203,6 +219,20 @@ public class OfflimbControlsController
         public void showBoundary(boolean selected)
         {
            image.setOffLimbBoundaryVisibility(selected);
+        }
+
+    }
+
+    public class SyncContrastSlidersButton extends JCheckBox
+    {
+        public SyncContrastSlidersButton()
+        {
+            setText("Sync Contrast with Image");
+        }
+
+        public void syncContrast(boolean selected)
+        {
+           image.setContrastSynced(selected);
         }
 
     }

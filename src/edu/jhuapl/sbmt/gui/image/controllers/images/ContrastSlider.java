@@ -23,8 +23,14 @@ public class ContrastSlider extends RangeSlider
 		// get existing contrast and set slider appropriately
 		if (image!=null && image instanceof PerspectiveImage)
 		{
-			lowValue = ((PerspectiveImage)image).getDisplayedRange().min;
-			hiValue  = ((PerspectiveImage)image).getDisplayedRange().max;
+			if (!offlimb) { // get image contrast
+				lowValue = ((PerspectiveImage)image).getDisplayedRange().min;
+				hiValue  = ((PerspectiveImage)image).getDisplayedRange().max;
+			}
+			else { // get offlimb contrast
+				lowValue = ((PerspectiveImage)image).getOffLimbDisplayedRange().min;
+				hiValue  = ((PerspectiveImage)image).getOffLimbDisplayedRange().max;
+			}
 		}
 		this.setHighValue(hiValue);
 		this.setLowValue(lowValue);
@@ -35,12 +41,34 @@ public class ContrastSlider extends RangeSlider
 
 	public void applyContrastToImage()
 	{
-		if (image != null) {
-			if (!offlimb) {
-				image.setDisplayedImageRange(
-						new IntensityRange(getLowValue(), getHighValue()));
+		if (image != null && image instanceof PerspectiveImage) {
+			PerspectiveImage pimage = (PerspectiveImage)image;
+			IntensityRange range = new IntensityRange(getLowValue(), getHighValue());
+			if (pimage.isContrastSynced()) {
+				adjustOfflimb(pimage, range);
+				adjustImage(pimage, range);
+			}
+			else { // just do the appropriate one if not synced
+				if (!offlimb) {
+					adjustImage(pimage, range);
+				}
+				else {
+					adjustOfflimb(pimage, range);
+				}
 			}
 		}
+	}
+
+
+
+	private void adjustImage(PerspectiveImage image, IntensityRange range) {
+		image.setDisplayedImageRange(
+				new IntensityRange(getLowValue(), getHighValue()));
+	}
+
+	private void adjustOfflimb(PerspectiveImage image, IntensityRange range) {
+		image.setOfflimbImageRange(
+				new IntensityRange(getLowValue(), getHighValue()));
 	}
 
 	public void sliderStateChanged(javax.swing.event.ChangeEvent evt)

@@ -8,4 +8,5 @@ public interface OfflimbModelChangedListener
     public void currentContrastLowChanged(int contrastMin);
     public void currentContrastHighChanged(int contrastMax);
     public void showBoundaryChanged();
+	public void syncContrastChanged();
 }
