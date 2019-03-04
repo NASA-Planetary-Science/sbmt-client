@@ -28,7 +28,7 @@ public class OfflimbControlsController
 
         depthSlider = new DepthSlider();
         alphaSlider = new AlphaSlider();
-        contrastSlider = new ContrastSlider(image);
+        contrastSlider = new ContrastSlider(image, true);
 
         showBoundaryBtn = new ShowBoundaryButton();
         showBoundaryBtn.setSelected(controlsModel.getShowBoundary());

@@ -10,40 +10,45 @@ public class ContrastSlider extends RangeSlider
 {
 
 	Image image;
+	boolean offlimb;
 
-    public ContrastSlider(Image image)
-    {
-    	this.image = image;
-        setMinimum(0);
-        setMaximum(255);
-        int lowValue = 0;
-        int hiValue = 255;
-        // get existing contrast and set slider appropriately
-        if (image!=null && image instanceof PerspectiveImage)
-        {
-           lowValue = ((PerspectiveImage)image).getDisplayedRange().min;
-           hiValue  = ((PerspectiveImage)image).getDisplayedRange().max;
-        }
-        this.setHighValue(hiValue);
-        this.setLowValue(lowValue);
-        setPaintTicks(true);
-        setMajorTickSpacing(10);
+	public ContrastSlider(Image image, boolean offlimb)
+	{
+		this.image = image;
+		this.offlimb = offlimb;
+		setMinimum(0);
+		setMaximum(255);
+		int lowValue = 0;
+		int hiValue = 255;
+		// get existing contrast and set slider appropriately
+		if (image!=null && image instanceof PerspectiveImage)
+		{
+			lowValue = ((PerspectiveImage)image).getDisplayedRange().min;
+			hiValue  = ((PerspectiveImage)image).getDisplayedRange().max;
+		}
+		this.setHighValue(hiValue);
+		this.setLowValue(lowValue);
+		setPaintTicks(true);
+		setMajorTickSpacing(10);
 
-    }
+	}
 
-    public void applyContrastToImage()
-    {
-    	if (image != null)
-	        image.setDisplayedImageRange(
-	                new IntensityRange(getLowValue(), getHighValue()));
-    }
+	public void applyContrastToImage()
+	{
+		if (image != null) {
+			if (!offlimb) {
+				image.setDisplayedImageRange(
+						new IntensityRange(getLowValue(), getHighValue()));
+			}
+		}
+	}
 
-    public void sliderStateChanged(javax.swing.event.ChangeEvent evt)
-    {
-        if (getValueIsAdjusting())
-            return;
+	public void sliderStateChanged(javax.swing.event.ChangeEvent evt)
+	{
+		if (getValueIsAdjusting())
+			return;
 
-        applyContrastToImage();
-    }
+		applyContrastToImage();
+	}
 
 }

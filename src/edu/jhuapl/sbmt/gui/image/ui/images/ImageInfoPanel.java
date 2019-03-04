@@ -488,7 +488,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         java.awt.GridBagConstraints gridBagConstraints;
 
         factorLabel = new javax.swing.JLabel();
-        slider = new ContrastSlider(image);
+        slider = new ContrastSlider(image, false);
         jLabel1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
