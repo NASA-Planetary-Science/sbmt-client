@@ -23,6 +23,8 @@
 - Fixed bugs associated with loading and deleting custom DTMs
 - Fixed bugs associated with image checkboxes
  
+## New Horizons: 
+- Added the MU69 mu69-test5h-1-final-oriented model and a placeholder LORRI panel
 
 ### January 17, 2019 (SBMT-0.7.3)
 - Loading structures on higher resolution models now presents a progress dialog to show the user something is indeed happning
@@ -30,6 +32,12 @@
 - Improvements to LIDAR displays
 - Improvements to the DTM tab
 - Color images with perspective projection are now colored properly
+
+OREX: 
+- List of images now match the boundaries for MAPCAM and POLYCAM
+- MAPCAM image gallery button on the last few models has been fixed
+- Updates to the 1217 and 1227 models
+- Bennu basemap can now be displayed from the main Bennu tab.   
 
 ### January 3, 2019 (SBMT-0.7.2)
 - Model updates for OREX
@@ -51,6 +59,10 @@ OREX:
 - Fixed bug that caused an error when adding additional plate colorings to a custom fits shape model
 - Fixed bug that prevented users from loading custom models via the command line
 
+OREx:
+- Fixed bug that caused an incorrect flip of MAPCAM and POLYCAM images
+- Added ability to load in a global fits image cube
+- Added new SPC shape models
 
 ### November 6, 2018 (SBMT-0.6.6)
 - Added the ability to save the state of the camera view and image panel settings
@@ -64,10 +76,6 @@ H2:
 - Added new SPC shape models with the latest ONC, TIR, and LIDAR data
 - Fixed bug that caused the LIDAR hide checkbox to become unsynced with the hide dropdown menu
 
-### October 22, 2018 (SBMT-0.6.5.1)
-
-- Configuration update for H2 lidar data
-
 ### October 18, 2018 (SBMT-0.6.5)
 
 - Made bug fixes, feature enhancements, and UI improvements to the structures panel
@@ -76,10 +84,9 @@ H2:
 - Made bug fixes and feature enhancements to DTM tab
 - Made performance enhancements when changing the resolution of shape models while also displaying plate colorings
  
- 
-H2:
-- Added hypertree search for LIDAR data
-- Added ability to import custom LIDAR data
+OREx:
+- Added search capabilities for OTES and OVIRS
+
  
 
 ### September 7, 2018 (SBMT-0.6.0)
@@ -90,25 +97,17 @@ H2:
 - Resolved bug with backplane generation
 - Resolved bug with Viking images of Phobos and Deimos
 
-H2: 
-- Added LIDAR data; added new SPC and SFM shape models with the latest ONC and TIR data; added searchable database for TIR data
-
 ### August 16, 2018 (SBMT-0.5.5.1)
 
 - Fixed a startup problem crash when the preferences file didn't exist
 
 ### August 15, 2018 (SBMT-0.5.5)
 
-#### General
 - Updated the way the Tool behaves if user is not connected to the internet when the SBMT starts.
 - Fixed bug with structures not displaying and repositioning correctly on the body.
 - Fixed bug that prevented users on Windows machine from passing shape models to the SBMT using the command line
 - Fixed bugs with plate coloring visualization
-- Fixed bugs with custom images functionality
- 
-#### H2
-- Several new SPC and SFM shape models with the latest ONC and TIR data
- 
+- Fixed bugs with custom images functionality 
 
 ### July 13, 2018 (SBMT-0.5.1)
 
@@ -116,15 +115,19 @@ H2:
 
 ### July 10, 2018 (SBMT-0.5.0)
 
+#### General
 - Added ability for the user to return the SBMT to the same state it was in previously (i.e., to open the SBMT with same shape model and view as the user previously was using)
 - Added ability to read in a csv file that contains ancillary plate coloring data
 - Fixed bugs with plate coloring saving
 - Fixed bugs with custom images functionality
 - Fixed bugs in the camera menu.
+ 
+#### OREX:
+- Fixed bugs with displaying and saving OTES and OVIRS spectra
+- Fixed bugs with loading LIDAR tracks with similar times
+- Fixed bug that led to SBMT returning search results on the wrong part of the body for OCAMS data
 
-
-### May 11, 2018
--   Added image database search functionality for Ryugu body
--   Moved the LIDAR data tab to its correct location on the Ryugu body
+### June 15, 2018
+-   Deployment to SPOC
 
 
