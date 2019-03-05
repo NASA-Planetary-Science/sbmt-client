@@ -813,8 +813,15 @@ public class ImageResultsTableController
 //                	System.out.println(
 //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
 //                }
-                int startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
-                int endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                int startIndex = 0;
+                int endIndex = 10;
+
+                if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
+                {
+                	startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+                	endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                }
+
                 if (modifiedTableRow > size) modifiedTableRow = -1;
                 if (modifiedTableRow != -1)
                 {
