@@ -531,6 +531,8 @@ public class ImageResultsTableController
 
     private void removeAllButtonActionPerformed(ActionEvent evt)
     {
+    	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
+    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
         PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
         model.removeAllBoundaries();
         imageSearchModel.setResultIntervalCurrentlyShown(null);
@@ -538,6 +540,8 @@ public class ImageResultsTableController
 
     private void removeAllImagesButtonActionPerformed(ActionEvent evt)
     {
+    	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
+    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
         imageCollection.removeImages(ImageSource.GASKELL);
         imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
         imageCollection.removeImages(ImageSource.SPICE);
@@ -545,8 +549,8 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.CORRECTED);
         imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
-        if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
-        	showImageBoundaries(imageSearchModel.getResultIntervalCurrentlyShown());
+        if (originalInterval != null)
+        	showImageBoundaries(originalInterval);
 
     }
 
