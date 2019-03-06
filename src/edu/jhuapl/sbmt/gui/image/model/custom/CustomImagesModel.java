@@ -214,12 +214,14 @@ public class CustomImagesModel extends ImageSearchModel
                 // Copy over the binary file
                 Files.copy(new File(enviBinaryFilename /*+ "." + extension*/),
                         new File(getCustomDataFolder() + File.separator
-                                + FilenameUtils.getBaseName(newImageFilename)));
+                        		+ newImageInfo.getImageFilename()));
+//                                + FilenameUtils.getBaseName(newImageFilename)));
 
                 // Copy over the header file
                 Files.copy(new File(enviHeaderFilename),
                         new File(getCustomDataFolder() + File.separator
-                                + VtkENVIReader.getHeaderFilename(newImageFilename)));
+                        		+ newImageInfo.getImageFilename() + ".hdr"));
+//                                + VtkENVIReader.getHeaderFilename(newImageFilename)));
             }
             else if(newImageFilename.endsWith(".fit") || newImageFilename.endsWith(".fits") ||
             		newImageFilename.endsWith(".FIT") || newImageFilename.endsWith(".FITS"))
