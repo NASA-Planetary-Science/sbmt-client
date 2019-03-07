@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.model.custom;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +9,10 @@ import java.util.Vector;
 
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.ImageCubeResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ProjectionType;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -43,19 +45,33 @@ public class CustomImageCubeModel extends ImageCubeModel
         return ModelNames.CUSTOM_CUBE_IMAGES;
     }
 
+    public String getCustomDataFolder()
+    {
+        return imageSearchModel.getModelManager().getPolyhedralModel().getCustomDataFolder();
+    }
+
     public void generateImageCube(ActionEvent e)
     {
-        ImageKey firstKey = null;
-        boolean multipleFrustumVisible = false;
+    	CustomImageKeyInterface firstKey = null;
+         boolean multipleFrustumVisible = false;
 
-        List<ImageKey> selectedKeys = new ArrayList<>();
-        for (ImageKey key : imageSearchModel.getSelectedImageKeys())
-        {
-            ImageKey newKey = new ImageKey(SafeURLPaths.instance().getUrl(key.name), key.source, key.fileType, key.imageType, key.instrument, key.band, key.slice, key.pointingFile);
-            selectedKeys.add(newKey);
-        }
-        for (ImageKey selectedKey : selectedKeys)
-        {
+         List<CustomImageKeyInterface> selectedKeys = new ArrayList<>();
+         for (CustomImageKeyInterface info : imageSearchModel.getSelectedImageKeys())
+         {
+//             ImageKeyInterface newKey = new ImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + key.getImageFilename()), key.getSource(), key.getFileType(), key.getImageType(), key.getInstrument(), key.getBand(), key.getSlice(), key.getPointingFile());
+            CustomImageKeyInterface newKey = null;
+     		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
+     		{
+     			newKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
+                selectedKeys.add(newKey);
+     		}
+     		else
+     		{
+     			newKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
+     		}
+         }
+         for (CustomImageKeyInterface selectedKey : selectedKeys)
+         {
             PerspectiveImage selectedImage = (PerspectiveImage)imageCollection.getImage(selectedKey);
             if(selectedImage == null)
             {
@@ -93,7 +109,7 @@ public class CustomImageCubeModel extends ImageCubeModel
         else
         {
             PerspectiveImage firstImage = (PerspectiveImage)imageCollection.getImage(firstKey);
-            ImageCubeKey imageCubeKey = new ImageCubeKey(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
+            ImageCubeKey<CustomImageKeyInterface> imageCubeKey = new ImageCubeKey<CustomImageKeyInterface>(selectedKeys, firstKey, firstImage.getLabelfileFullPath(), firstImage.getInfoFileFullPath(), firstImage.getSumfileFullPath());
 
             try
             {

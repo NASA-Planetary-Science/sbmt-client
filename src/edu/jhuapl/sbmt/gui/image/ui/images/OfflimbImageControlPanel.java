@@ -4,8 +4,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.AlphaSlider;
-import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ContrastSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.DepthSlider;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ShowBoundaryButton;
 
@@ -124,7 +124,7 @@ public class OfflimbImageControlPanel extends JPanel
         this.footprintTransparencySlider = footprintTransparencySlider;
     }
 
-    public void getShowBoundaryButton(ShowBoundaryButton showbounds)
+    public void setShowBoundaryButton(ShowBoundaryButton showbounds)
     {
         this.showBoundaryButton = showbounds;
     }

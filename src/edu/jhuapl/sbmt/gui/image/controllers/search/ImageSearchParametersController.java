@@ -62,7 +62,7 @@ public class ImageSearchParametersController
         panel.getSourceLabel().setVisible(showSourceLabelAndComboBox);
         panel.getSourceComboBox().setVisible(showSourceLabelAndComboBox);
 
-        ImageSource imageSources[] = model.getInstrument().searchImageSources;
+        ImageSource imageSources[] = model.getInstrument().getSearchImageSources();
         panel.getSourceComboBox().setModel(new DefaultComboBoxModel(imageSources));
 
         panel.getSourceComboBox().addItemListener(new java.awt.event.ItemListener() {

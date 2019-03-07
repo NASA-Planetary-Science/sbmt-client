@@ -4,6 +4,33 @@
 
 # Release Notes
 
+### March 1, 2019 (SBMT-0.7.4)
+
+## New
+- Added the ability to save the state of ellipse, circle, and point structures
+- Added support to allow shape model manipulation while in structures edit mode
+- Added ability to sort structures by attribute
+- Added support to import/export ESRI-compatible structures files
+- Added the ability to view off-limb portions of images
+- Made UI improvements to lidar tabs
+- Re-enabled the ability to drag Lidar tracks
+
+## Bug Fixes
+- Fixed bug that prevented custom images from being loaded
+- Fixed bug that prevented users from saving structures files if offline and plate colorings were not cached
+- Fixed a bug that prevented reset of image search parameters
+- Fixed bug that prevented users with European machines from viewing some shape models
+- Fixed bugs associated with loading and deleting custom DTMs
+- Fixed bugs associated with image checkboxes
+ 
+
+### January 17, 2019 (SBMT-0.7.3)
+- Loading structures on higher resolution models now presents a progress dialog to show the user something is indeed happning
+- Improvements to the custom images tab (NOTE: we are aware of continuing problems with the state of the checkboxes in this pane; this will be fixed in a future release)
+- Improvements to LIDAR displays
+- Improvements to the DTM tab
+- Color images with perspective projection are now colored properly
+
 ### January 3, 2019 (SBMT-0.7.2)
 - Model updates for OREX
 

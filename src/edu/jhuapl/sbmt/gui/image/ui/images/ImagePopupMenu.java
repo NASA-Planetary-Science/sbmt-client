@@ -38,8 +38,8 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
@@ -50,12 +50,12 @@ import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
 import nom.tam.fits.FitsException;
 
 
-public class ImagePopupMenu extends PopupMenu
+public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
 {
     private Component invoker;
     private ImageCollection imageCollection;
     private PerspectiveImageBoundaryCollection imageBoundaryCollection;
-    private List<ImageKey> imageKeys = new ArrayList<Image.ImageKey>();
+    private List<ImageKeyInterface> imageKeys = new ArrayList<ImageKeyInterface>();
     //private List<ImageKey> keySet = new ArrayList<Image.ImageKey>();
     private JMenuItem mapImageMenuItem;
     private JMenuItem mapBoundaryMenuItem;
@@ -151,7 +151,7 @@ public class ImagePopupMenu extends PopupMenu
         exportENVIImageMenuItem.setText("Export ENVI Image...");
         this.add(exportENVIImageMenuItem);
 
-        exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
+        exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
 
@@ -187,7 +187,7 @@ public class ImagePopupMenu extends PopupMenu
 
     }
 
-    public void setCurrentImage(ImageKey key)
+    public void setCurrentImage(ImageKeyInterface key)
     {
         imageKeys.clear();
         imageKeys.add(key);
@@ -195,7 +195,7 @@ public class ImagePopupMenu extends PopupMenu
         updateMenuItems();
     }
 
-    public void setCurrentImages(List<ImageKey> keys)
+    public void setCurrentImages(List<ImageKeyInterface> keys)
     {
         imageKeys.clear();
         imageKeys.addAll(keys);
@@ -223,7 +223,7 @@ public class ImagePopupMenu extends PopupMenu
         boolean enableHideImage = true;
         boolean enableBoundaryColor = true;
 
-        for (ImageKey imageKey : imageKeys)
+        for (ImageKeyInterface imageKey : imageKeys)
         {
             boolean containsImage = imageCollection.containsImage(imageKey);
             boolean containsBoundary = false;
@@ -296,7 +296,7 @@ public class ImagePopupMenu extends PopupMenu
 //            System.out.println("key info: " + imageKeys.get(0).source + imageKeys.get(0).name + imageKeys.get(0).band);
 
 
-            if (imageKey.source == ImageSource.LOCAL_CYLINDRICAL || imageKey.source == ImageSource.IMAGE_MAP)
+            if (imageKey.getSource() == ImageSource.LOCAL_CYLINDRICAL || imageKey.getSource() == ImageSource.IMAGE_MAP)
             {
                 enableMapBoundary = false;
                 enableShowFrustum = false;
@@ -306,13 +306,13 @@ public class ImagePopupMenu extends PopupMenu
                 enableSaveBackplanes = false;
                 enableSaveToDisk = false;
 
-                if (imageKey.source == ImageSource.IMAGE_MAP)
+                if (imageKey.getSource() == ImageSource.IMAGE_MAP)
                 {
                     enableMapImage = false;
                     enableHideImage = false;
                 }
             }
-            else if (imageKey.source == ImageSource.LOCAL_PERSPECTIVE)
+            else if (imageKey.getSource() == ImageSource.LOCAL_PERSPECTIVE)
             {
 //                enableSaveToDisk = false;
                 enableSaveToDisk = true;
@@ -323,7 +323,7 @@ public class ImagePopupMenu extends PopupMenu
         if (enableBoundaryColor)
         {
             HashSet<String> colors = new HashSet<String>();
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 int[] c = imageBoundaryCollection.getBoundary(imageKey).getBoundaryColor();
                 colors.add(c[0] + " " + c[1] + " " + c[2]);
@@ -378,7 +378,7 @@ public class ImagePopupMenu extends PopupMenu
         public void actionPerformed(ActionEvent e)
         {
 //            System.out.println("MapImageAction.actionPerformed()");
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 try
                 {
@@ -411,7 +411,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 try
                 {
@@ -445,7 +445,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             try
             {
@@ -470,7 +470,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             try
             {
@@ -497,7 +497,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             File file = null;
             try
@@ -511,7 +511,7 @@ public class ImagePopupMenu extends PopupMenu
                 file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
                 if (file != null)
                 {
-                    File fitFile = FileCache.getFileFromServer(imageKey.name + extension);
+                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
 
                     FileUtil.copyFile(fitFile, file);
                 }
@@ -533,7 +533,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             double[] spacecraftPosition = new double[3];
             double[] focalPoint = new double[3];
@@ -567,11 +567,11 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             // First generate the DDR
 
-            String defaultFilename = new File(imageKey.name + "_DDR.IMG").getName();
+            String defaultFilename = new File(imageKey.getName() + "_DDR.IMG").getName();
             File file = CustomFileChooser.showSaveDialog(invoker, "Save Backplanes DDR", defaultFilename, "img");
 
             try
@@ -652,7 +652,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 try
                 {
@@ -677,7 +677,7 @@ public class ImagePopupMenu extends PopupMenu
             // Only works for a single image (for now)
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             File file = null;
             try
@@ -721,7 +721,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 if (imageCollection.getImage(imageKey) instanceof PerspectiveImage)
                 {
@@ -767,7 +767,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
@@ -794,7 +794,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
             if (image != null)
@@ -842,7 +842,7 @@ public class ImagePopupMenu extends PopupMenu
         {
             if (imageKeys.size() != 1)
                 return;
-            ImageKey imageKey = imageKeys.get(0);
+            ImageKeyInterface imageKey = imageKeys.get(0);
 
             Image image = imageCollection.getImage(imageKey);
             if (image != null)
@@ -858,7 +858,7 @@ public class ImagePopupMenu extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 try
                 {
@@ -887,7 +887,7 @@ public class ImagePopupMenu extends PopupMenu
 
         public void actionPerformed(ActionEvent e)
         {
-            for (ImageKey imageKey : imageKeys)
+            for (ImageKeyInterface imageKey : imageKeys)
             {
                 PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
                 boundary.setBoundaryColor(color);
@@ -906,7 +906,7 @@ public class ImagePopupMenu extends PopupMenu
             Color newColor = ColorChooser.showColorChooser(invoker, currentColor);
             if (newColor != null)
             {
-                for (ImageKey imageKey : imageKeys)
+                for (ImageKeyInterface imageKey : imageKeys)
                 {
                     boundary = imageBoundaryCollection.getBoundary(imageKey);
                     boundary.setBoundaryColor(newColor);
