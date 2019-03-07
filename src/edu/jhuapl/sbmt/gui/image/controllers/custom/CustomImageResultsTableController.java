@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -13,11 +12,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -29,12 +25,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -42,7 +36,6 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
-import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
@@ -296,103 +289,110 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     @Override
     public void setImageResults(List<List<String>> results)
     {
-//        super.setImageResults(results);
-//        updateTable();
-    	JTable resultTable = imageResultsTableView.getResultList();
-        imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
-        imageRawResults = results;
-        stringRenderer.setImageRawResults(imageRawResults);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
-        imageCollection.removePropertyChangeListener(propertyChangeListener);
-        boundaries.removePropertyChangeListener(propertyChangeListener);
-
-        try
-        {
-            int mapColumnIndex = imageResultsTableView.getMapColumnIndex();
-            int showFootprintColumnIndex = imageResultsTableView.getShowFootprintColumnIndex();
-            int frusColumnIndex = imageResultsTableView.getFrusColumnIndex();
-            int idColumnIndex = imageResultsTableView.getIdColumnIndex();
-            int filenameColumnIndex = imageResultsTableView.getFilenameColumnIndex();
-            int dateColumnIndex = imageResultsTableView.getDateColumnIndex();
-            int bndrColumnIndex = imageResultsTableView.getBndrColumnIndex();
-            int[] widths = new int[resultTable.getColumnCount()];
-            int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
-
-            // add the results to the list
-            ((DefaultTableModel)resultTable.getModel()).setRowCount(results.size());
-            int i=0;
-            for (List<String> str : results)
-            {
-                Date dt = new Date(Long.parseLong(str.get(1)));
-
-                String name = imageRawResults.get(i).get(0);
-                ImageKey key = model.createImageKey(FileUtil.removeExtension(name), model.getImageSourceOfLastQuery(), instrument);
-                System.out.println("CustomImageResultsTableController: setImageResults: key " + key);
-                if (imageCollection.containsImage(key))
-                {
-                	System.out.println("CustomImageResultsTableController: setImageResults: contains image ");
-                    resultTable.getModel().setValueAt(true, i, mapColumnIndex);
-                    PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                    resultTable.getModel().setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                    resultTable.getModel().setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
-                }
-                else
-                {
-                	System.out.println("ImageResultsTableController: setImageResults: does not contain key");
-                    resultTable.getModel().setValueAt(false, i, mapColumnIndex);
-                    resultTable.getModel().setValueAt(false, i, showFootprintColumnIndex);
-                    resultTable.getModel().setValueAt(false, i, frusColumnIndex);
-                }
-
-
-                if (boundaries.containsBoundary(key))
-                    resultTable.getModel().setValueAt(true, i, bndrColumnIndex);
-                else
-                {
-                    resultTable.getModel().setValueAt(false, i, bndrColumnIndex);
-                }
-
-                resultTable.getModel().setValueAt(i+1, i, idColumnIndex);
-                resultTable.getModel().setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-                resultTable.getModel().setValueAt(sdf.format(dt), i, dateColumnIndex);
-
-                for (int j : columnsNeedingARenderer)
-                {
-                    TableCellRenderer renderer = resultTable.getCellRenderer(i, j);
-                    Component comp = resultTable.prepareRenderer(renderer, i, j);
-                    widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
-                }
-
-                ++i;
-            }
-
-            for (int j : columnsNeedingARenderer)
-                imageResultsTableView.getResultList().getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
-
-            boolean enablePostSearchButtons = resultTable.getModel().getRowCount() > 0;
-            imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
-            imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
-            imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && enablePostSearchButtons);
-        }
-        finally
-        {
-            imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
-            imageCollection.addPropertyChangeListener(propertyChangeListener);
-            boundaries.addPropertyChangeListener(propertyChangeListener);
-        }
-
-        // Show the first set of boundaries
-        model.setResultIntervalCurrentlyShown( new IdPair(0, Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
-//        if (boundaries.getProps().size() > 0)
-            this.showImageBoundaries(model.getResultIntervalCurrentlyShown());
-
-        // Enable or disable the image gallery button
-        imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+        super.setImageResults(results);
         model.setResultIntervalCurrentlyShown(new IdPair(0, results.size()));
     }
+
+//    @Override
+//    public void setImageResults(List<List<String>> results)
+//    {
+////        super.setImageResults(results);
+////        updateTable();
+//    	JTable resultTable = imageResultsTableView.getResultList();
+//        imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
+//        imageRawResults = results;
+//        stringRenderer.setImageRawResults(imageRawResults);
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//
+//        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+//        imageCollection.removePropertyChangeListener(propertyChangeListener);
+//        boundaries.removePropertyChangeListener(propertyChangeListener);
+//
+//        try
+//        {
+//            int mapColumnIndex = imageResultsTableView.getMapColumnIndex();
+//            int showFootprintColumnIndex = imageResultsTableView.getShowFootprintColumnIndex();
+//            int frusColumnIndex = imageResultsTableView.getFrusColumnIndex();
+//            int idColumnIndex = imageResultsTableView.getIdColumnIndex();
+//            int filenameColumnIndex = imageResultsTableView.getFilenameColumnIndex();
+//            int dateColumnIndex = imageResultsTableView.getDateColumnIndex();
+//            int bndrColumnIndex = imageResultsTableView.getBndrColumnIndex();
+//            int[] widths = new int[resultTable.getColumnCount()];
+//            int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
+//
+//            // add the results to the list
+//            ((DefaultTableModel)resultTable.getModel()).setRowCount(results.size());
+//            int i=0;
+//            for (List<String> str : results)
+//            {
+//                Date dt = new Date(Long.parseLong(str.get(1)));
+//
+//                String name = imageRawResults.get(i).get(0);
+//                ImageKey key = model.createImageKey(FileUtil.removeExtension(name), model.getImageSourceOfLastQuery(), instrument);
+//                System.out.println("CustomImageResultsTableController: setImageResults: key " + key);
+//                if (imageCollection.containsImage(key))
+//                {
+//                	System.out.println("CustomImageResultsTableController: setImageResults: contains image ");
+//                    resultTable.getModel().setValueAt(true, i, mapColumnIndex);
+//                    PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
+//                    resultTable.getModel().setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+//                    resultTable.getModel().setValueAt(!image.isFrustumShowing(), i, frusColumnIndex);
+//                }
+//                else
+//                {
+//                	System.out.println("ImageResultsTableController: setImageResults: does not contain key");
+//                    resultTable.getModel().setValueAt(false, i, mapColumnIndex);
+//                    resultTable.getModel().setValueAt(false, i, showFootprintColumnIndex);
+//                    resultTable.getModel().setValueAt(false, i, frusColumnIndex);
+//                }
+//
+//
+//                if (boundaries.containsBoundary(key))
+//                    resultTable.getModel().setValueAt(true, i, bndrColumnIndex);
+//                else
+//                {
+//                    resultTable.getModel().setValueAt(false, i, bndrColumnIndex);
+//                }
+//
+//                resultTable.getModel().setValueAt(i+1, i, idColumnIndex);
+//                resultTable.getModel().setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+//                resultTable.getModel().setValueAt(sdf.format(dt), i, dateColumnIndex);
+//
+//                for (int j : columnsNeedingARenderer)
+//                {
+//                    TableCellRenderer renderer = resultTable.getCellRenderer(i, j);
+//                    Component comp = resultTable.prepareRenderer(renderer, i, j);
+//                    widths[j] = Math.max (comp.getPreferredSize().width, widths[j]);
+//                }
+//
+//                ++i;
+//            }
+//
+//            for (int j : columnsNeedingARenderer)
+//                imageResultsTableView.getResultList().getColumnModel().getColumn(j).setPreferredWidth(widths[j] + 5);
+//
+//            boolean enablePostSearchButtons = resultTable.getModel().getRowCount() > 0;
+//            imageResultsTableView.getSaveImageListButton().setEnabled(enablePostSearchButtons);
+//            imageResultsTableView.getSaveSelectedImageListButton().setEnabled(resultTable.getSelectedRowCount() > 0);
+//            imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && enablePostSearchButtons);
+//        }
+//        finally
+//        {
+//            imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+//            imageCollection.addPropertyChangeListener(propertyChangeListener);
+//            boundaries.addPropertyChangeListener(propertyChangeListener);
+//        }
+//
+//        // Show the first set of boundaries
+//        model.setResultIntervalCurrentlyShown( new IdPair(0, Integer.parseInt((String)imageResultsTableView.getNumberOfBoundariesComboBox().getSelectedItem())));
+////        if (boundaries.getProps().size() > 0)
+//            this.showImageBoundaries(model.getResultIntervalCurrentlyShown());
+//
+//        // Enable or disable the image gallery button
+//        imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+//        model.setResultIntervalCurrentlyShown(new IdPair(0, results.size()));
+//    }
 
     @Override
     protected void showImageBoundaries(IdPair idPair)
@@ -506,7 +506,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
             CustomImageKeyInterface info = getConvertedKey(model.getImageKeyForIndex(i));
             if (imageCollection.containsImage(info))
             {
-            	System.out.println("CustomImageResultsTableController: updateTable: contains key");
                 resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
                         resultList.setValueAt(imageCollection.getImage(info).isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
                         if (imageCollection.getImage(info) instanceof PerspectiveImage)
@@ -700,9 +699,12 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 
        class DragDropRowMouseInputHandler extends MouseInputHandler {
 
+    	   int toRow;
+
            public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 startDragPoint = (int)e.getPoint().getY();
+                toRow = table.getSelectedRow();
            }
 
 //           public void mouseDragged(MouseEvent e) {
@@ -724,43 +726,51 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                      int rowHeight = table.getRowHeight();
                      int middleOfSelectedRow = (rowHeight * fromRow) + (rowHeight / 2);
 
-                     int toRow = -1;
+                     toRow = fromRow;
                      int yMousePoint = (int)e.getPoint().getY();
 
                      if (yMousePoint < (middleOfSelectedRow - rowHeight)) {
                           // Move row up
+                    	 System.out.println(
+								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: yMouse " + yMousePoint + " middle " + middleOfSelectedRow + " height " + rowHeight);
                           toRow = fromRow - 1;
                      } else if (yMousePoint > (middleOfSelectedRow + rowHeight)) {
                           // Move row down
+                    	 System.out.println(
+								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: yMouse " + yMousePoint + " middle " + middleOfSelectedRow + " height " + rowHeight);
+
                           toRow = fromRow + 1;
                      }
 
-                     if (toRow >= 0 && toRow < table.getRowCount()) {
-//                          TableModel model = table.getModel();
-
-                          List<String> fromList = imageRawResults.get(fromRow);
-                          List<String> toList = imageRawResults.get(toRow);
-                          System.out.println(
-								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: from list " + fromList);
-                          System.out.println(
-								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: tolist " + toList);
-                          imageRawResults.set(toRow, fromList);
-                          imageRawResults.set(fromRow, toList);
-                          model.setImageResults(imageRawResults);
-                          setImageResults(imageRawResults);
-                          table.setRowSelectionInterval(toRow, toRow);
-                          startDragPoint = yMousePoint;
-                     }
-
-                     dyOffset = (startDragPoint - yMousePoint) * -1;
-                     table.repaint();
+//                     if (toRow >= 0 && toRow < table.getRowCount()) {
+////                          TableModel model = table.getModel();
+//
+//                          List<String> fromList = imageRawResults.get(fromRow);
+//                          List<String> toList = imageRawResults.get(toRow);
+//                          System.out.println(
+//								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: from list " + fromList);
+//                          System.out.println(
+//								"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: tolist " + toList);
+//                          imageRawResults.set(toRow, fromList);
+//                          imageRawResults.set(fromRow, toList);
+//                          model.setImageResults(imageRawResults);
+//                          setImageResults(imageRawResults);
+//                          table.setRowSelectionInterval(toRow, toRow);
+//                          startDragPoint = yMousePoint;
+//                     }
+//
+//                     dyOffset = (startDragPoint - yMousePoint) * -1;
+//                     table.repaint();
                 }
            }
 
            public void mouseReleased(MouseEvent e){
                 super.mouseReleased(e);
-
-                draggingRow = false;
+                DefaultTableModel model = (DefaultTableModel)table.getModel();
+                System.out.println(
+						"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseReleased: moving from row " + table.getSelectedRow() + " to " + toRow);
+                model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
+//                draggingRow = false;
                 table.repaint();
            }
        }
