@@ -23,9 +23,12 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import vtk.vtkImageData;
@@ -44,6 +47,7 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController;
 import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -265,6 +269,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     }
 
     int[] previousLevels=null;
+	private JPanel offLimbPanel;
+	private OfflimbControlsController offlimbController;
 
     private void levelsChanged()
     {
@@ -520,11 +526,17 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         applyAdjustmentsButton1 = new javax.swing.JCheckBox();
         jLabel8 = new javax.swing.JLabel();
 
+        if (image instanceof PerspectiveImage) {
+        	PerspectiveImage perspIm = (PerspectiveImage) image;
+	        offLimbPanel = new JPanel();
+	        offlimbController = new OfflimbControlsController(perspIm, perspIm.getCurrentSlice(), slider);
+        }
+
         factorLabel.setText("Factor");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(500, 500));
-        setPreferredSize(new java.awt.Dimension(725, 900));
+        setPreferredSize(new java.awt.Dimension(775, 900));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         slider.setMinimum(0);
@@ -542,6 +554,15 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         slider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 slider.sliderStateChanged(evt);
+
+                if (image instanceof PerspectiveImage)
+                {
+                   PerspectiveImage pimg = (PerspectiveImage)image;
+                   if (pimg.isContrastSynced()) {
+                	   offlimbController.getControlsPanel().getImageContrastSlider().setHighValue(slider.getHighValue());
+                	   offlimbController.getControlsPanel().getImageContrastSlider().setLowValue(slider.getLowValue());
+                   }
+                }
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -575,7 +596,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -894,6 +915,27 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
             gridBagConstraints.insets = new java.awt.Insets(3, 6, 3, 0);
             getContentPane().add(jLabel8, gridBagConstraints);
+
+
+            // set up panel for offlimb settings
+            if (image instanceof PerspectiveImage) {
+            	gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 5;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+                gridBagConstraints.weightx = 1.0;
+
+                TitledBorder titledBorder = BorderFactory.createTitledBorder("Offlimb Settings");
+                titledBorder.setTitleJustification(TitledBorder.CENTER);
+                offLimbPanel.setBorder(titledBorder);
+                offLimbPanel.add(offlimbController.getControlsPanel());
+                getContentPane().add(offLimbPanel, gridBagConstraints);
+            }
+
+
+
 
             pack();
         }// </editor-fold>//GEN-END:initComponents

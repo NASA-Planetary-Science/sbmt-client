@@ -71,6 +71,7 @@ public class ContrastSlider extends RangeSlider
 				new IntensityRange(getLowValue(), getHighValue()));
 	}
 
+
 	public void sliderStateChanged(javax.swing.event.ChangeEvent evt)
 	{
 		if (getValueIsAdjusting())

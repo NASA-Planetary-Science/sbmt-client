@@ -88,10 +88,10 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     public void setContrastLow(int contrastLow)
     {
         this.contrastLow = contrastLow;
-        for (OfflimbModelChangedListener listener : listeners)
-        {
-            listener.currentContrastLowChanged(contrastLow);
-        }
+//        for (OfflimbModelChangedListener listener : listeners)
+//        {
+//            listener.currentContrastLowChanged(contrastLow);
+//        }
     }
 
     public int getContrastHigh()
@@ -112,10 +112,10 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     public void setContrastHigh(int contrastHigh)
     {
         this.contrastHigh = contrastHigh;
-        for (OfflimbModelChangedListener listener : listeners)
-        {
-            listener.currentContrastHighChanged(contrastHigh);
-        }
+//        for (OfflimbModelChangedListener listener : listeners)
+//        {
+//            listener.currentContrastHighChanged(contrastHigh);
+//        }
     }
 
     public void setImage(PerspectiveImage image)

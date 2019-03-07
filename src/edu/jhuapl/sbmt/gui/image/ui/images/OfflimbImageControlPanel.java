@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
+import java.awt.GridBagConstraints;
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,7 +25,7 @@ public class OfflimbImageControlPanel extends JPanel
     private AlphaSlider footprintTransparencySlider;
 
     private JLabel imageContrastLabel;
-    private JLabel imageContrastValue;
+//    private JLabel imageContrastValue;
     private ContrastSlider imageContrastSlider;
 
     private ShowBoundaryButton showBoundaryButton;
@@ -32,7 +34,11 @@ public class OfflimbImageControlPanel extends JPanel
     public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton)
     {
         super();
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        setLayout(new java.awt.GridBagLayout());
+        GridBagConstraints gridBagConstraints = new java.awt.GridBagConstraints();
+
+
         JPanel depthPanel = new JPanel();
         depthPanel.setLayout(new BoxLayout(depthPanel, BoxLayout.X_AXIS));
         footprintDepthLabel = new JLabel("Off-limb footprint depth:");
@@ -59,31 +65,54 @@ public class OfflimbImageControlPanel extends JPanel
 
         JPanel contrastPanel = new JPanel();
         contrastPanel.setLayout(new BoxLayout(contrastPanel, BoxLayout.X_AXIS));
-        imageContrastLabel = new JLabel("Image Contrast:");
+        imageContrastLabel = new JLabel("Off-limb Contrast:");
         contrastPanel.add(imageContrastLabel);
 
-        imageContrastValue = new JLabel("0");
-        contrastPanel.add(imageContrastValue);
+//        imageContrastValue = new JLabel("0");
+//        contrastPanel.add(imageContrastValue);
 
         imageContrastSlider = contrastSlider;
         syncContrastButton = syncButton;
         contrastPanel.add(imageContrastSlider);
 
-        JPanel contrastBtnPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
         syncContrastButton = syncButton;
-        contrastBtnPanel.add(syncContrastButton);
+        buttonPanel.add(syncContrastButton);
 
-
-        JPanel boundaryPanel = new JPanel();
         showBoundaryButton = showBoundaryBtn;
-        boundaryPanel.add(showBoundaryButton);
+        buttonPanel.add(showBoundaryButton);
 
 
-        add(depthPanel);
-        add(transparencyPanel);
-        add(contrastPanel);
-        add(contrastBtnPanel);
-        add(boundaryPanel);
+
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 3, 10);
+        add(depthPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 10);
+        add(transparencyPanel, gridBagConstraints);
+
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 3, 10);
+        add(contrastPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 3, 10);
+        add(buttonPanel, gridBagConstraints);
+
+//        add(depthPanel);
+//        add(transparencyPanel);
+//        add(contrastPanel);
+//        add(contrastBtnPanel);
+//        add(boundaryPanel);
     }
 
     public JLabel getFootprintDepthValue()
@@ -106,10 +135,10 @@ public class OfflimbImageControlPanel extends JPanel
         return footprintTransparencySlider;
     }
 
-    public JLabel getImageContrastValue()
-    {
-        return imageContrastValue;
-    }
+//    public JLabel getImageContrastValue()
+//    {
+//        return imageContrastValue;
+//    }
 
     public ContrastSlider getImageContrastSlider()
     {
