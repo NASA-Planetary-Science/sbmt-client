@@ -18,12 +18,6 @@ import com.google.common.collect.Lists;
 import vtk.vtkActor;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.FixedMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -36,12 +30,12 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
@@ -49,6 +43,12 @@ import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 import nom.tam.fits.FitsException;
 
 public class CustomSpectraSearchModel extends SpectrumSearchModel
@@ -795,7 +795,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 //        }
     }
 
-    public void saveSpectra(List<ImageInfo> customImages, String filename)
+    public void saveSpectra(List<CustomSpectrumKey> customImages, String filename)
     {
         SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
         Metadata[] infoArray = new Metadata[customImages.size()];

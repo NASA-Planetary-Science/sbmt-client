@@ -16,6 +16,8 @@ import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
+import crucible.crust.metadata.api.Metadata;
+
 public class OTESSearchModel extends SpectrumSearchModel
 {
     String fileExtension = "";
@@ -67,6 +69,20 @@ public class OTESSearchModel extends SpectrumSearchModel
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
     }
+
+	@Override
+	public Metadata store()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void retrieve(Metadata source)
+	{
+		// TODO Auto-generated method stub
+
+	}
 
 //    public OREXSearchSpec getSpec()
 //    {
