@@ -63,7 +63,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
     @Override
     public void setImageResultsPanel()
     {
-
         super.setImageResultsPanel();
         imageResultsTableView.getNextButton().setVisible(false);
         imageResultsTableView.getPrevButton().setVisible(false);
@@ -756,7 +755,10 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                      DefaultTableModel model = (DefaultTableModel)table.getModel();
 
                      model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
-
+                     CustomImageKeyInterface fromKey = results.get(table.getSelectedRow());
+                     CustomImageKeyInterface toKey = results.get(toRow);
+                     results.set(fromRow, toKey);
+                     results.set(toRow, fromKey);
 //                     if (toRow >= 0 && toRow < table.getRowCount()) {
 ////                          TableModel model = table.getModel();
 //
