@@ -79,7 +79,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
-
+//        this.imageResultsTableView.getResultList().setAutoCreateRowSorter(true);
+//        this.imageResultsTableView.getResultList().getRowSorter().toggleSortOrder(4);
 
         this.imageResultsTableView.addComponentListener(new ComponentListener()
 		{
@@ -594,10 +595,20 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         	modifiedTableRow = e.getFirstRow();
             List<List<String>> imageRawResults = model.getImageResults();
             results = model.getCustomImages();
+            DefaultTableModel tableModel = (DefaultTableModel)imageResultsTableView.getResultList().getModel();
             if (e.getColumn() == imageResultsTableView.getMapColumnIndex())
             {
                 int row = e.getFirstRow();
+//                System.out.println(
+//						"CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: row " + row);
+//                row = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(row);
+
+//                System.out.println(
+//						"CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: row now " + row);
                 String name = imageRawResults.get(row).get(0);
+                name = (String)tableModel.getValueAt(row, imageResultsTableView.getFilenameColumnIndex());
+                System.out.println(
+						"CustomImageResultsTableController.CustomImageResultsTableModeListener: tableChanged: name is " + name);
 //                String namePrefix = name.substring(0, name.length()-4);
                 if ((Boolean)imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getMapColumnIndex()))
                 {
@@ -742,6 +753,10 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                           toRow = fromRow + 1;
                      }
 
+                     DefaultTableModel model = (DefaultTableModel)table.getModel();
+
+                     model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
+
 //                     if (toRow >= 0 && toRow < table.getRowCount()) {
 ////                          TableModel model = table.getModel();
 //
@@ -759,18 +774,18 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
 //                          startDragPoint = yMousePoint;
 //                     }
 //
-//                     dyOffset = (startDragPoint - yMousePoint) * -1;
-//                     table.repaint();
+                     dyOffset = (startDragPoint - yMousePoint) * -1;
+                     table.repaint();
                 }
            }
 
            public void mouseReleased(MouseEvent e){
                 super.mouseReleased(e);
-                DefaultTableModel model = (DefaultTableModel)table.getModel();
-                System.out.println(
-						"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseReleased: moving from row " + table.getSelectedRow() + " to " + toRow);
-                model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
-//                draggingRow = false;
+//                DefaultTableModel model = (DefaultTableModel)table.getModel();
+//                System.out.println(
+//						"CustomImageResultsTableController.CustomDragDropRowTableUI.DragDropRowMouseInputHandler: mouseReleased: moving from row " + table.getSelectedRow() + " to " + toRow);
+//                model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
+                draggingRow = false;
                 table.repaint();
            }
        }
