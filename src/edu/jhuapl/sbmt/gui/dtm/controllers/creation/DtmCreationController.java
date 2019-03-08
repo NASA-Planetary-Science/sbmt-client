@@ -136,7 +136,7 @@ public class DtmCreationController
             List<DEMKey> demKeys = new ArrayList<DEMKey>();
             for (int selectedIndex : selectedIndices)
             {
-                DEMInfo demInfo = model.getSelectedItem();
+                DEMInfo demInfo = model.getSelectedItems()[selectedIndex];
                 String name = /*model.getCustomDataFolder() + File.separator +*/ demInfo.demfilename;
                 DEMKey demKey = new DEMKey(name, demInfo.name);
                 demKeys.add(demKey);

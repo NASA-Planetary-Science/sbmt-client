@@ -9,20 +9,26 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
+
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.FixedMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class DtmCreationModel implements MetadataManager
 {
@@ -120,21 +126,69 @@ public class DtmCreationModel implements MetadataManager
         return modelManager.getPolyhedralModel().getDEMConfigFilename();
     }
 
+    private boolean migrateConfigFileIfNeeded() throws IOException
+    {
+    	MapUtil configMap = new MapUtil(getDEMConfigFilename());
+
+        if (configMap.getAsArray(DEM.DEM_NAMES) != null)
+        {
+        	//backup the old config file
+            FileUtils.copyFile(new File(getDEMConfigFilename()), new File(getDEMConfigFilename() + ".orig"));
+
+            String[] demNames = configMap.getAsArray(DEM.DEM_NAMES);
+            String[] demFilenames = configMap.getAsArray(DEM.DEM_FILENAMES);
+            if (demFilenames == null)
+            {
+                // for backwards compatibility
+                demFilenames = configMap.getAsArray(DEM.DEM_MAP_PATHS);
+                demNames = new String[demFilenames.length];
+                for (int i=0; i<demFilenames.length; ++i)
+                {
+                    demNames[i] = new File(demFilenames[i]).getName();
+                    demFilenames[i] = "dem" + i + ".FIT";
+                }
+            }
+
+            int numDems = demNames != null ? demNames.length : 0;
+            for (int i=0; i<numDems; ++i)
+            {
+                DEMInfo demInfo = new DEMInfo();
+                demInfo.name = demNames[i];
+                demInfo.demfilename = new File(getDEMConfigFilename()).getParent() + File.separator + demFilenames[i];
+                infoList.add(demInfo);
+//                ((DefaultListModel)imageList.getModel()).addElement(demInfo);
+            }
+//            fireInfoChangedListeners(infoList);
+
+            updateConfigFile();
+            return true;
+        }
+        else
+        	return false;
+    }
+
     // Initializes the DEM list from config
     public void initializeDEMList() throws IOException
     {
         if (initialized)
             return;
 
-        if (new File(getDEMConfigFilename()).exists())
+        boolean updated = migrateConfigFileIfNeeded();
+        if (!updated)
         {
-	        FixedMetadata metadata = Serializers.deserialize(new File(getDEMConfigFilename()), "CustomDEMs");
-	        retrieve(metadata);
-
-	        for (DEMInfo info : infoList)
+	        if (new File(getDEMConfigFilename()).exists())
 	        {
-	        	fireInfoChangedListeners(info);
+		        FixedMetadata metadata = Serializers.deserialize(new File(getDEMConfigFilename()), "CustomDEMs");
+		        retrieve(metadata);
+
+
 	        }
+        }
+
+        for (DEMInfo info : infoList)
+        {
+        	info.demfilename = SafeURLPaths.instance().getUrl(info.demfilename);
+        	fireInfoChangedListeners(info);
         }
 
         initialized = true;
@@ -181,6 +235,12 @@ public class DtmCreationModel implements MetadataManager
 
 	        // Remove the DEM from the renderer
 	        DEMKey demKey = dems.getDEMKeyFromInfo(demInfo);
+	        if (demKey == null)
+	        {
+	        	 infoList.remove(demInfo);
+	        	 boundaries.removeBoundary(demKey);
+	        	 continue;
+	        }
 	        dems.removeDEM(demKey);
 
 	        // Remove from the list
@@ -201,7 +261,7 @@ public class DtmCreationModel implements MetadataManager
         String newFilepath = getCustomDataFolder() + File.separator + newFilename;
         FileUtil.copyFile(demInfo.demfilename,  newFilepath);
         // Change demInfo.demfilename to the new location of the file
-        demInfo.demfilename = newFilepath;
+        demInfo.demfilename = SafeURLPaths.instance().getUrl(newFilepath);
 
         infoList.add(demInfo);
         fireInfoChangedListeners(demInfo);

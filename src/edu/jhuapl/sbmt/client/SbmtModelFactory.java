@@ -36,7 +36,7 @@ import edu.jhuapl.sbmt.model.ida.SSIIdaImage;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.CylindricalImage;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.Instrument;
@@ -95,148 +95,148 @@ public class SbmtModelFactory
     }
 
     static public Image createImage(
-            ImageKey key,
+            ImageKeyInterface key,
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
         SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
 
-        if (ImageSource.SPICE.equals(key.source) ||
-                ImageSource.GASKELL.equals(key.source) ||
-                ImageSource.GASKELL_UPDATED.equals(key.source) ||
-                ImageSource.LABEL.equals(key.source) ||
-                ImageSource.CORRECTED_SPICE.equals(key.source) ||
-                ImageSource.CORRECTED.equals(key.source))
+        if (ImageSource.SPICE.equals(key.getSource()) ||
+                ImageSource.GASKELL.equals(key.getSource()) ||
+                ImageSource.GASKELL_UPDATED.equals(key.getSource()) ||
+                ImageSource.LABEL.equals(key.getSource()) ||
+                ImageSource.CORRECTED_SPICE.equals(key.getSource()) ||
+                ImageSource.CORRECTED.equals(key.getSource()))
         {
-            if (key.instrument != null && key.instrument.spectralMode == SpectralMode.MULTI)
+            if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.MULTI)
             {
-                if (key.instrument.type == ImageType.MVIC_JUPITER_IMAGE)
+                if (key.getInstrument().getType() == ImageType.MVIC_JUPITER_IMAGE)
                     return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
-            else if (key.instrument != null && key.instrument.spectralMode == SpectralMode.HYPER)
+            else if (key.getInstrument() != null && key.getInstrument().getSpectralMode() == SpectralMode.HYPER)
             {
-                if (key.instrument.type == ImageType.LEISA_JUPITER_IMAGE)
+                if (key.getInstrument().getType() == ImageType.LEISA_JUPITER_IMAGE)
                     return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
             else // SpectralMode.MONO
             {
-                if (key.instrument.type == ImageType.MSI_IMAGE)
+                if (key.getInstrument().getType() == ImageType.MSI_IMAGE)
                     return new MSIImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.AMICA_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.AMICA_IMAGE)
                     return new AmicaImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.FC_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.FC_IMAGE)
                     return new FcImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.FCCERES_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.FCCERES_IMAGE)
                     return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.PHOBOS_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.PHOBOS_IMAGE)
                     return new PhobosImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.DEIMOS_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.DEIMOS_IMAGE)
                     return new DeimosImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.OSIRIS_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.OSIRIS_IMAGE)
                     return new OsirisImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SATURN_MOON_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.SATURN_MOON_IMAGE)
                     return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SSI_GASPRA_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.SSI_GASPRA_IMAGE)
                     return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SSI_IDA_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.SSI_IDA_IMAGE)
                     return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MSI_MATHILDE_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.MSI_MATHILDE_IMAGE)
                     return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.LORRI_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.LORRI_IMAGE)
                     return new LorriImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_V3_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_V3_IMAGE)
                     return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_V3_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.MAPCAM_V3_IMAGE)
                     return new MapCamImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_V4_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_V4_IMAGE)
                     return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_V4_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.MAPCAM_V4_IMAGE)
                     return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_EARTH_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_EARTH_IMAGE)
                     return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SAMCAM_EARTH_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.SAMCAM_EARTH_IMAGE)
                     return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_EARTH_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.MAPCAM_EARTH_IMAGE)
                     return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.POLYCAM_FLIGHT_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.POLYCAM_FLIGHT_IMAGE)
                     return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.MAPCAM_FLIGHT_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.MAPCAM_FLIGHT_IMAGE)
                     return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.SAMCAM_FLIGHT_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.SAMCAM_FLIGHT_IMAGE)
                     return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.ONC_TRUTH_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.ONC_TRUTH_IMAGE)
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.ONC_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.ONC_IMAGE)
                     return new ONCImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.TIR_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.TIR_IMAGE)
                     return new TIRImage(key, smallBodyModel, loadPointingOnly);
-                else if (key.instrument.type == ImageType.GENERIC_IMAGE)
+                else if (key.getInstrument().getType() == ImageType.GENERIC_IMAGE)
                     return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
                 else
                     return null;
             }
         }
-        else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.source))
+        else if (ImageSource.LOCAL_PERSPECTIVE.equals(key.getSource()))
         {
-            if (key.imageType == ImageType.MSI_IMAGE)
+            if (key.getImageType() == ImageType.MSI_IMAGE)
                 return new MSIImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.AMICA_IMAGE)
+            else if (key.getImageType() == ImageType.AMICA_IMAGE)
                 return new AmicaImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.FC_IMAGE)
+            else if (key.getImageType() == ImageType.FC_IMAGE)
                 return new FcImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.FCCERES_IMAGE)
+            else if (key.getImageType() == ImageType.FCCERES_IMAGE)
                 return new FcCeresImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.PHOBOS_IMAGE)
+            else if (key.getImageType() == ImageType.PHOBOS_IMAGE)
                 return new PhobosImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.DEIMOS_IMAGE)
+            else if (key.getImageType() == ImageType.DEIMOS_IMAGE)
                 return new DeimosImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.OSIRIS_IMAGE)
+            else if (key.getImageType() == ImageType.OSIRIS_IMAGE)
                 return new OsirisImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SATURN_MOON_IMAGE)
+            else if (key.getImageType() == ImageType.SATURN_MOON_IMAGE)
                 return new SaturnMoonImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SSI_GASPRA_IMAGE)
+            else if (key.getImageType() == ImageType.SSI_GASPRA_IMAGE)
                 return new SSIGaspraImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SSI_IDA_IMAGE)
+            else if (key.getImageType() == ImageType.SSI_IDA_IMAGE)
                 return new SSIIdaImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MSI_MATHILDE_IMAGE)
+            else if (key.getImageType() == ImageType.MSI_MATHILDE_IMAGE)
                 return new MSIMathildeImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.LORRI_IMAGE)
+            else if (key.getImageType() == ImageType.LORRI_IMAGE)
                 return new LorriImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_V3_IMAGE)
+            else if (key.getImageType() == ImageType.POLYCAM_V3_IMAGE)
                 return new PolyCamImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_V3_IMAGE)
+            else if (key.getImageType() == ImageType.MAPCAM_V3_IMAGE)
                 return new MapCamImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_V4_IMAGE)
+            else if (key.getImageType() == ImageType.POLYCAM_V4_IMAGE)
                 return new PolyCamV4Image(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_V4_IMAGE)
+            else if (key.getImageType() == ImageType.MAPCAM_V4_IMAGE)
                 return new MapCamV4Image(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_EARTH_IMAGE)
+            else if (key.getImageType() == ImageType.POLYCAM_EARTH_IMAGE)
                 return new PolyCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SAMCAM_EARTH_IMAGE)
+            else if (key.getImageType() == ImageType.SAMCAM_EARTH_IMAGE)
                 return new SamCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_EARTH_IMAGE)
+            else if (key.getImageType() == ImageType.MAPCAM_EARTH_IMAGE)
                 return new MapCamEarthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.POLYCAM_FLIGHT_IMAGE)
+            else if (key.getImageType() == ImageType.POLYCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MAPCAM_FLIGHT_IMAGE)
+            else if (key.getImageType() == ImageType.MAPCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.SAMCAM_FLIGHT_IMAGE)
+            else if (key.getImageType() == ImageType.SAMCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.GENERIC_IMAGE)
+            else if (key.getImageType() == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.MVIC_JUPITER_IMAGE)
+            else if (key.getImageType() == ImageType.MVIC_JUPITER_IMAGE)
               return new MVICQuadJupiterImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.LEISA_JUPITER_IMAGE)
+            else if (key.getImageType() == ImageType.LEISA_JUPITER_IMAGE)
                 return new LEISAJupiterImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.ONC_IMAGE)
+            else if (key.getImageType() == ImageType.ONC_IMAGE)
                 return new ONCImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.ONC_TRUTH_IMAGE)
+            else if (key.getImageType() == ImageType.ONC_TRUTH_IMAGE)
                 return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
-            else if (key.imageType == ImageType.TIR_IMAGE)
+            else if (key.getImageType() == ImageType.TIR_IMAGE)
                 return new TIRImage(key, smallBodyModel, loadPointingOnly);
             else
                 return null;
