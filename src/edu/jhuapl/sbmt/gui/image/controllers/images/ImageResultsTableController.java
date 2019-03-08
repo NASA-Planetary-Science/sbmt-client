@@ -33,7 +33,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.plaf.basic.BasicTableUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 
 import vtk.vtkActor;
 
@@ -89,7 +88,6 @@ public class ImageResultsTableController
             "Date"
     };
 
-//    private ArrayList<Integer> modifiedTableRows = new ArrayList<Integer>();
     int modifiedTableRow = -1;
 
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
@@ -102,7 +100,6 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().setUI(new DragDropRowTableUI());
         imageRawResults = model.getImageResults();
         this.imageCollection = imageCollection;
-//        modelManager = model.getModelManager();
         this.imageSearchModel = model;
         this.instrument = instrument;
         this.renderer = renderer;
@@ -134,7 +131,7 @@ public class ImageResultsTableController
 			public void componentShown(ComponentEvent e)
 			{
 				imageCollection.addPropertyChangeListener(propertyChangeListener);
-        boundaries.addPropertyChangeListener(propertyChangeListener);
+				boundaries.addPropertyChangeListener(propertyChangeListener);
 			}
 
 			@Override
@@ -976,20 +973,13 @@ public class ImageResultsTableController
 
        class DragDropRowMouseInputHandler extends MouseInputHandler {
 
+    	   private int toRow;
+
            public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 startDragPoint = (int)e.getPoint().getY();
+                toRow = table.getSelectedRow();
            }
-
-//           public void mouseDragged(MouseEvent e) {
-//               // Only do special handling if we are drag enabled with multiple selection
-//               if (table.getDragEnabled() &&
-//                         table.getSelectionModel().getSelectionMode() == ListSelectionModel.MULTIPLE_INTERVAL_SELECTION) {
-//                    table.getTransferHandler().exportAsDrag(table, e,DnDConstants.ACTION_COPY);
-//               } else {
-//                    super.mouseDragged(e);
-//               }
-//          }
 
            public void mouseDragged(MouseEvent e) {
                 int fromRow = table.getSelectedRow();
@@ -1000,7 +990,7 @@ public class ImageResultsTableController
                      int rowHeight = table.getRowHeight();
                      int middleOfSelectedRow = (rowHeight * fromRow) + (rowHeight / 2);
 
-                     int toRow = -1;
+                     toRow = fromRow;
                      int yMousePoint = (int)e.getPoint().getY();
 
                      if (yMousePoint < (middleOfSelectedRow - rowHeight)) {
@@ -1011,52 +1001,18 @@ public class ImageResultsTableController
                           toRow = fromRow + 1;
                      }
 
-
-
-
-                     if (toRow >= 0 && toRow < table.getRowCount()) {
-                          TableModel model = table.getModel();
+                     DefaultTableModel model = (DefaultTableModel)table.getModel();
+                     if (toRow >= 0 && toRow < table.getRowCount())
+                     {
+                    	 model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
 
                           List<String> fromList = imageRawResults.get(fromRow);
                           List<String> toList = imageRawResults.get(toRow);
 
                           imageRawResults.set(toRow, fromList);
                           imageRawResults.set(fromRow, toList);
-                          setImageResults(imageRawResults);
-//                        //capture checkbox state before and after
-//                          int fromIndex = (Integer)model.getValueAt(fromRow, 4);
-//                          int toIndex = (Integer)model.getValueAt(toRow, 4);
-//                          model.setValueAt(fromIndex, toRow, 4);
-//                          model.setValueAt(toIndex, fromRow, 4);
-//                          boolean fromShow = (Boolean)model.getValueAt(fromRow, 1);
-//                          boolean fromFrus = (Boolean)model.getValueAt(fromRow, 2);
-//                          boolean fromBndr = (Boolean)model.getValueAt(fromRow, 3);
-//
-//                          boolean toMap = (Boolean)model.getValueAt(toRow, 0);
-//                          boolean toShow = (Boolean)model.getValueAt(toRow, 1);
-//                          boolean toFrus = (Boolean)model.getValueAt(toRow, 2);
-//                          boolean toBndr = (Boolean)model.getValueAt(toRow, 3);
-//
-//                          System.out.println(
-//								"ImageResultsTableView.DragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: from frust " + fromFrus);
-//                           for (int i = 0; i < model.getColumnCount(); i++) {
-//                                Object fromValue = model.getValueAt(fromRow, i);
-//                                Object toValue = model.getValueAt(toRow, i);
-////                                System.out.println(
-////										"ImageResultsTableView.DragDropRowTableUI.DragDropRowMouseInputHandler: mouseDragged: from value is " + fromValue);
-//                                model.setValueAt(toValue, fromRow, i);
-//                                model.setValueAt(fromValue, toRow, i);
-//                           }
-//
-//                           model.setValueAt(toMap, fromRow, 0);
-//                           model.setValueAt(toShow, fromRow, 1);
-//                           model.setValueAt(toFrus, fromRow, 2);
-//                           model.setValueAt(toBndr, fromRow, 3);
-//
-//                           model.setValueAt(fromMap, toRow, 0);
-//                           model.setValueAt(fromShow, toRow, 1);
-//                           model.setValueAt(fromFrus, toRow, 2);
-//                           model.setValueAt(fromBndr, toRow, 3);
+//                          setImageResults(imageRawResults);
+
                            table.setRowSelectionInterval(toRow, toRow);
                            startDragPoint = yMousePoint;
                      }
@@ -1068,175 +1024,9 @@ public class ImageResultsTableController
 
            public void mouseReleased(MouseEvent e){
                 super.mouseReleased(e);
-
                 draggingRow = false;
                 table.repaint();
            }
        }
    }
-
-//    class TableCellListener implements PropertyChangeListener, Runnable
-//    {
-//    	private JTable table;
-//    	private Action action;
-//
-//    	private int row;
-//    	private int column;
-//    	private Object oldValue;
-//    	private Object newValue;
-//
-//    	/**
-//    	 *  Create a TableCellListener.
-//    	 *
-//    	 *  @param table   the table to be monitored for data changes
-//    	 *  @param action  the Action to invoke when cell data is changed
-//    	 */
-//    	public TableCellListener(JTable table, Action action)
-//    	{
-//    		this.table = table;
-//    		this.action = action;
-//    		this.table.addPropertyChangeListener( this );
-//    	}
-//
-//    	/**
-//    	 *  Create a TableCellListener with a copy of all the data relevant to
-//    	 *  the change of data for a given cell.
-//    	 *
-//    	 *  @param row  the row of the changed cell
-//    	 *  @param column  the column of the changed cell
-//    	 *  @param oldValue  the old data of the changed cell
-//    	 *  @param newValue  the new data of the changed cell
-//    	 */
-//    	private TableCellListener(JTable table, int row, int column, Object oldValue, Object newValue)
-//    	{
-//    		this.table = table;
-//    		this.row = row;
-//    		this.column = column;
-//    		System.out.println("ImageResultsTableController.TableCellListener: TableCellListener: column " + column);
-//    		this.oldValue = oldValue;
-//    		this.newValue = newValue;
-//    	}
-//
-//    	/**
-//    	 *  Get the column that was last edited
-//    	 *
-//    	 *  @return the column that was edited
-//    	 */
-//    	public int getColumn()
-//    	{
-//    		return column;
-//    	}
-//
-//    	/**
-//    	 *  Get the new value in the cell
-//    	 *
-//    	 *  @return the new value in the cell
-//    	 */
-//    	public Object getNewValue()
-//    	{
-//    		return newValue;
-//    	}
-//
-//    	/**
-//    	 *  Get the old value of the cell
-//    	 *
-//    	 *  @return the old value of the cell
-//    	 */
-//    	public Object getOldValue()
-//    	{
-//    		return oldValue;
-//    	}
-//
-//    	/**
-//    	 *  Get the row that was last edited
-//    	 *
-//    	 *  @return the row that was edited
-//    	 */
-//    	public int getRow()
-//    	{
-//    		return row;
-//    	}
-//
-//    	/**
-//    	 *  Get the table of the cell that was changed
-//    	 *
-//    	 *  @return the table of the cell that was changed
-//    	 */
-//    	public JTable getTable()
-//    	{
-//    		return table;
-//    	}
-//    //
-//    //  Implement the PropertyChangeListener interface
-//    //
-//    	@Override
-//    	public void propertyChange(PropertyChangeEvent e)
-//    	{
-//    		//  A cell has started/stopped editing
-//    		System.out.println("ImageResultsTableController.TableCellListener: propertyChange: " + e.getPropertyName());
-//    		if ("tableCellEditor".equals(e.getPropertyName()))
-//    		{
-//    			if (table.isEditing())
-//    				processEditingStarted();
-//    			else
-//    				processEditingStopped();
-//    		}
-//    	}
-//
-//    	/*
-//    	 *  Save information of the cell about to be edited
-//    	 */
-//    	private void processEditingStarted()
-//    	{
-//    		//  The invokeLater is necessary because the editing row and editing
-//    		//  column of the table have not been set when the "tableCellEditor"
-//    		//  PropertyChangeEvent is fired.
-//    		//  This results in the "run" method being invoked
-//
-//    		SwingUtilities.invokeLater( this );
-//    	}
-//    	/*
-//    	 *  See above.
-//    	 */
-//    	@Override
-//    	public void run()
-//    	{
-//    		System.out.println("ImageResultsTableController.TableCellListener: run: editing row " + table.getEditingRow() + " editing col " + table.getEditingColumn());
-//    		System.out.println("ImageResultsTableController.TableCellListener: run: invoking run");
-////    		if (table.isEditing() == false) return;
-//    		System.out.println("ImageResultsTableController.TableCellListener: run: column " + column);
-//    		row = table.convertRowIndexToModel( row );
-//    		column = table.convertColumnIndexToModel( column );
-//    		System.out.println("ImageResultsTableController.TableCellListener: run: column " + column + " editing col " + table.getEditingColumn() + " row " + row);
-//    		oldValue = table.getModel().getValueAt(row, column);
-//    		newValue = null;
-//    	}
-//
-//    	/*
-//    	 *	Update the Cell history when necessary
-//    	 */
-//    	private void processEditingStopped()
-//    	{
-//    		System.out.println("ImageResultsTableController.TableCellListener: processEditingStopped: editing stopped");
-//    		newValue = table.getModel().getValueAt(row, column);
-//
-//    		//  The data has changed, invoke the supplied Action
-//
-//    		if (! newValue.equals(oldValue))
-//    		{
-//    			//  Make a copy of the data in case another cell starts editing
-//    			//  while processing this change
-//
-//    			TableCellListener tcl = new TableCellListener(
-//    				getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
-//
-//    			ActionEvent event = new ActionEvent(
-//    				tcl,
-//    				ActionEvent.ACTION_PERFORMED,
-//    				"");
-//    			action.actionPerformed(event);
-//    		}
-//    	}
-//    }
-
 }
