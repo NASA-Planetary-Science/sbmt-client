@@ -6,7 +6,7 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
-public class SmallBodyModel extends GenericPolyhedralModel
+public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBodyModel
 {
     private static final String[] DEFAULT_COLORING_NAMES = {
             SlopeStr, ElevStr, GravAccStr, GravPotStr
@@ -16,7 +16,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
     };
     private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
 
-	public SmallBodyViewConfig getSmallBodyConfig()
+	public ISmallBodyViewConfig getSmallBodyConfig()
     {
         return (SmallBodyViewConfig)getConfig();
     }
@@ -87,7 +87,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
             String[] imageMapNames,
             boolean lowestResolutionModelStoredInResource)
     {
-        SmallBodyViewConfig config = getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)getSmallBodyConfig();
         String [] modelFiles = config.getShapeModelFileNames();
 
         initializeConfigParameters(
@@ -101,7 +101,7 @@ public class SmallBodyModel extends GenericPolyhedralModel
             String[] imageMapNames,
             boolean lowestResolutionModelStoredInResource)
     {
-        SmallBodyViewConfig config = getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)getSmallBodyConfig();
         final String[] coloringFiles = {
                 serverPath("coloring/Slope"),
                 serverPath("coloring/Elevation"),

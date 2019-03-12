@@ -23,7 +23,7 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 
 import crucible.crust.metadata.api.Metadata;
 
@@ -68,7 +68,7 @@ public class NISSearchModel extends SpectrumSearchModel
     public NISSearchModel(SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager, SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer,
-            SpectralInstrument instrument)
+            ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager,
                 renderer, instrument);

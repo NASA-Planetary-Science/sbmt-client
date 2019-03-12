@@ -13,8 +13,8 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 import crucible.crust.metadata.api.Metadata;
 
@@ -25,7 +25,7 @@ public class OTESSearchModel extends SpectrumSearchModel
 
     public OTESSearchModel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
-            Renderer renderer, SpectralInstrument instrument)
+            Renderer renderer, ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
 

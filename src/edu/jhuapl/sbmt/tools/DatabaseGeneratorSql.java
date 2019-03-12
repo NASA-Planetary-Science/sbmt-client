@@ -146,7 +146,7 @@ public class DatabaseGeneratorSql
             ImageSource imageSource) throws IOException, SQLException, FitsException
     {
         smallBodyModel.setModelResolution(0);
-        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
 
         PreparedStatement insertStatement = db.preparedStatement(
                 "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");

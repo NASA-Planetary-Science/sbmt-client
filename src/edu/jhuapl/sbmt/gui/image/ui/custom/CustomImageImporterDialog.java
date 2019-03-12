@@ -269,7 +269,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
         else
         {
-//            info.projectionType = ProjectionType.PERSPECTIVE;
         	String pointingFilename = null;
             FileType fileType = null;
             ImageSource source = null;
@@ -279,13 +278,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             	pointingFilename = sumfilePathTextField.getText();
             	source = ImageSource.LOCAL_PERSPECTIVE;
             }
-//            String pointingFilename = null;
             if (infofilePathRB.isSelected() == true)
             {
             	pointingFilename = infofilePathTextField.getText();
             	fileType = FileType.INFO;
             	source = ImageSource.LOCAL_PERSPECTIVE;
-        }
+            }
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
             	pointingFilename = null;
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())

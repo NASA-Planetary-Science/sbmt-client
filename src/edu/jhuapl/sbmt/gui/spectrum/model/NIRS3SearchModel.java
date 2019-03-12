@@ -14,7 +14,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 
 import crucible.crust.metadata.api.Metadata;
 
@@ -25,7 +25,7 @@ public class NIRS3SearchModel extends SpectrumSearchModel
     public NIRS3SearchModel(SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager, SbmtInfoWindowManager infoPanelManager,
             PickManager pickManager, Renderer renderer,
-            SpectralInstrument instrument)
+            ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager,
                 renderer, instrument);

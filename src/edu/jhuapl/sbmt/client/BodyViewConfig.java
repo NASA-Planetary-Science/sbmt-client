@@ -309,7 +309,12 @@ public abstract class BodyViewConfig extends ViewConfig
         return modelFiles;
     }
 
-    private static String serverPath(String firstSegment, String... segments)
+    public Map<String, String> getSpectraSearchDataSourceMap()
+	{
+		return spectraSearchDataSourceMap;
+	}
+
+	private static String serverPath(String firstSegment, String... segments)
     {
         // Prevent trailing delimiters coming from empty segments at the end.
         int length = segments.length;

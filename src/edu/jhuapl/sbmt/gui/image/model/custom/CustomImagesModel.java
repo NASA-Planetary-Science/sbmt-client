@@ -597,14 +597,6 @@ public class CustomImagesModel extends ImageSearchModel
                         break;
                     }
                 }
-
-//                if (idx >= 0)
-//                {
-//                    imageList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        imageList.scrollRectToVisible(cellBounds);
-//                }
             }
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))

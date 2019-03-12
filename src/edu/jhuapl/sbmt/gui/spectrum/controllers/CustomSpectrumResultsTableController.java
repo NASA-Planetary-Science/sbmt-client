@@ -7,18 +7,18 @@ import java.util.List;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class CustomSpectrumResultsTableController
         extends SpectrumResultsTableController
 {
-    private List<SpectrumInfo> results;
+    private List<CustomSpectrumKeyInterface> results;
     private CustomSpectraSearchModel model;
 
-    public CustomSpectrumResultsTableController(SpectralInstrument instrument,
+    public CustomSpectrumResultsTableController(ISpectralInstrument instrument,
             SpectraCollection spectrumCollection, CustomSpectraSearchModel model,
             Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {

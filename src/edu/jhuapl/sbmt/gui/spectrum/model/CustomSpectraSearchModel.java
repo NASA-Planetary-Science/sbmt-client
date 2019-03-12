@@ -31,17 +31,17 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.model.spectrum.ISpectraType;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -54,19 +54,19 @@ import nom.tam.fits.FitsException;
 public class CustomSpectraSearchModel extends SpectrumSearchModel
 {
     String fileExtension = "";
-    private List<SpectrumInfo> customSpectra;
+    private List<CustomSpectrumKeyInterface> customSpectra;
     private Vector<CustomSpectraResultsListener> customSpectraListeners;
     private boolean initialized = false;
     private int numImagesInCollection = -1;
-    final Key<Metadata[]> customSpectraKey = Key.of("customSpectra");
+    final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("customSpectra");
 
 
     public CustomSpectraSearchModel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
-            Renderer renderer, SpectralInstrument instrument)
+            Renderer renderer, ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
-        this.customSpectra = new Vector<SpectrumInfo>();
+        this.customSpectra = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
 
         setRedMaxVal(0.000001);
@@ -110,12 +110,12 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     }
 
 
-    public List<SpectrumInfo> getcustomSpectra()
+    public List<CustomSpectrumKeyInterface> getcustomSpectra()
     {
         return customSpectra;
     }
 
-    public void setCustomSpectra(List<SpectrumInfo> customSpectra)
+    public void setCustomSpectra(List<CustomSpectrumKeyInterface> customSpectra)
     {
         this.customSpectra = customSpectra;
     }
@@ -138,88 +138,110 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
     }
 
-    public void loadSpectrum(SpectrumKey key, SpectraCollection images) throws FitsException, IOException
+    public void loadSpectrum(SpectrumKeyInterface key, SpectraCollection images) throws FitsException, IOException
     {
         images.addSpectrum(key);
     }
 
-    public void loadSpectra(String name, SpectrumInfo info)
+    public void loadSpectra(String name, CustomSpectrumKeyInterface info)
     {
+    	FileType fileType = info.getFileType();
+    	ISpectraType spectrumType = info.getSpectrumType();
+    	String spectrumFilename = info.getSpectrumFilename();
+    	String pointingFilename = info.getPointingFilename();
+    	CustomSpectrumKeyInterface key = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
 
-        List<SpectrumKey> keys = createSpectrumKeys(name, instrument);
-        for (SpectrumKey key : keys)
+    	try
         {
-            key.spectrumType = info.spectraType;
-//            ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-//            key.source = source;
-            key.name = getCustomDataFolder() + File.separator + info.spectrumfilename;
-            try
+            if (!spectrumCollection.containsKey(key))
             {
-                if (!spectrumCollection.containsKey(key))
-                {
-                    loadSpectrum(key, spectrumCollection);
-                }
-            }
-            catch (Exception e1) {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
-                        "There was an error mapping the spectra.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-
-                e1.printStackTrace();
+                loadSpectrum(key, spectrumCollection);
             }
         }
+        catch (Exception e1) {
+            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+                    "There was an error mapping the spectra.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+
+            e1.printStackTrace();
+        }
+//
+//        List<CustomSpectrumKeyInterface> keys = createSpectrumKeys(name, instrument);
+//        for (CustomSpectrumKeyInterface key : keys)
+//        {
+//            key.spectrumType = info.spectraType;
+////            ImageSource source = info.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
+////            key.source = source;
+//            key.name = getCustomDataFolder() + File.separator + info.spectrumfilename;
+//            try
+//            {
+//                if (!spectrumCollection.containsKey(key))
+//                {
+//                    loadSpectrum(key, spectrumCollection);
+//                }
+//            }
+//            catch (Exception e1) {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(null),
+//                        "There was an error mapping the spectra.",
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//
+//                e1.printStackTrace();
+//            }
+//        }
    }
 
-    public void unloadSpectrum(SpectrumKey key, SpectraCollection spectra)
+    public void unloadSpectrum(SpectrumKeyInterface key, SpectraCollection spectra)
     {
         spectra.removeSpectrum(key);
     }
 
-    public void unloadSpectrum(String name)
+    public void unloadSpectrum(String name, CustomSpectrumKeyInterface key)
     {
-        List<SpectrumKey> keys = createSpectrumKeys(name, instrument);
-        for (SpectrumKey key : keys)
-        {
-            unloadSpectrum(key, spectrumCollection);
-        }
+    	unloadSpectrum(key, spectrumCollection);
+//        List<SpectrumKeyInterface> keys = createSpectrumKeys(name, instrument);
+//        for (SpectrumKeyInterface key : keys)
+//        {
+//            unloadSpectrum(key, spectrumCollection);
+//        }
    }
 
-    public List<SpectrumKey> createSpectrumKeys(String boundaryName, SpectralInstrument instrument)
+    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, ISpectralInstrument instrument)
     {
-        List<SpectrumKey> result = new ArrayList<SpectrumKey>();
+        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
         result.add(createSpectrumKey(boundaryName, instrument));
         return result;
     }
 
-    public SpectrumKey createSpectrumKey(String imagePathName, SpectralInstrument instrument)
+    public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
     {
-        SpectrumKey key = new SpectrumKey(getCustomDataFolder() + File.separator + imagePathName, null, null, instrument);
+        SpectrumKey key = new SpectrumKey(getCustomDataFolder() + File.separator + imagePathName, null, null, instrument, "");
         return key;
     }
 
     //TODO: UPDATE THIS TO SAVE SPECTRA
-    public void saveSpectrum(int index, SpectrumInfo oldSpectrumInfo, SpectrumInfo newSpectrumInfo) throws IOException
+    public void saveSpectrum(int index, CustomSpectrumKeyInterface oldSpectrumInfo, CustomSpectrumKeyInterface newSpectrumInfo) throws IOException
     {
         String uuid = UUID.randomUUID().toString();
 
         // If newSpectrumInfo.imagefilename is null, that means we are in edit mode
         // and should continue to use the existing image
-        if (newSpectrumInfo.spectrumfilename == null)
+        if (newSpectrumInfo.getSpectrumFilename() == null)
         {
-            newSpectrumInfo.spectrumfilename = oldSpectrumInfo.spectrumfilename;
+            newSpectrumInfo.setSpectrumFilename(oldSpectrumInfo.getSpectrumFilename());
         }
         else
         {
             String newFilename = "spectrum-" + uuid + ".spect";
             String newFilepath = getCustomDataFolder() + File.separator + newFilename;
-            FileUtil.copyFile(newSpectrumInfo.spectrumfilename,  newFilepath);
+            FileUtil.copyFile(newSpectrumInfo.getSpectrumFilename(),  newFilepath);
             String newFileInfoname = "spectrum-" + uuid + ".INFO";
             String newFileInfopath = getCustomDataFolder() + File.separator + newFileInfoname;
-            FileUtil.copyFile(newSpectrumInfo.infofilename,  newFileInfopath);
+            FileUtil.copyFile(newSpectrumInfo.getPointingFilename(),  newFileInfopath);
             // Change newImageInfo.imagefilename to the new location of the file
-            newSpectrumInfo.spectrumfilename = newFilename;
-            newSpectrumInfo.infofilename = newFileInfoname;
+            newSpectrumInfo.setSpectrumFilename(newFilename);
+            newSpectrumInfo.setPointingFilename(newFileInfoname);
 
 //            // Check if this image is any of the supported formats
 //            if(VtkENVIReader.isENVIFilename(newSpectrumInfo.spectrumfilename)){
@@ -323,11 +345,11 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
 
         List<List<String>> tempResults = new ArrayList<List<String>>();
-        for (SpectrumInfo info : customSpectra)
+        for (CustomSpectrumKeyInterface info : customSpectra)
         {
             List<String> res = new ArrayList<String>();
-            res.add(info.spectrumfilename);
-            res.add(getCustomDataFolder() + File.separator + info.spectrumfilename);
+            res.add(info.getSpectrumFilename());
+            res.add(getCustomDataFolder() + File.separator + info.getSpectrumFilename());
             tempResults.add(res);
         }
         updateConfigFile();
@@ -343,7 +365,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
       int selectedItem = getSelectedImageIndex()[0];
       if (selectedItem >= 0)
       {
-          SpectrumInfo oldSpectrumInfo = customSpectra.get(selectedItem);
+          CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
 
           CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, getInstrument());
           dialog.setSpectrumInfo(oldSpectrumInfo, getModelManager().getPolyhedralModel().isEllipsoid());
@@ -353,7 +375,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
           // If user clicks okay replace item in list
           if (dialog.getOkayPressed())
           {
-              SpectrumInfo newSpectrumInfo = dialog.getSpectrumInfo();
+              CustomSpectrumKeyInterface newSpectrumInfo = dialog.getSpectrumInfo();
               try
               {
                   saveSpectrum(selectedItem, oldSpectrumInfo, newSpectrumInfo);
@@ -379,41 +401,26 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
      */
     public void remapSpectrumToRenderer(int index) throws FitsException, IOException
     {
-        SpectrumInfo SpectrumInfo = customSpectra.get(index);
+        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
         // Remove the image from the renderer
-        String name = getCustomDataFolder() + File.separator + SpectrumInfo.spectrumfilename;
-//        ImageSource source = SpectrumInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-        FileType fileType = SpectrumInfo.sumfilename != null && !SpectrumInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        SpectraType spectraType = SpectrumInfo.spectraType;
-//        SpectralInstrument instrument = SpectraType.findSpectraTypeForDisplayName(instrument.getDisplayName());
-//        SpectralInstrument instrument = spectraType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(SpectrumInfo.rotation, SpectrumInfo.flip) : null;
-        SpectrumKey SpectrumKey = new SpectrumKey(name, fileType, spectraType, instrument);
 
-        if (spectrumCollection.containsKey(SpectrumKey))
+        if (spectrumCollection.containsKey(spectrumKey))
         {
-            Spectrum spectrum = spectrumCollection.getSpectrumFromKey(SpectrumKey);
+            Spectrum spectrum = spectrumCollection.getSpectrumFromKey(spectrumKey);
             boolean visible = spectrum.isVisible();
             if (visible)
                 spectrum.setVisible(false);
-            spectrumCollection.removeSpectrum(SpectrumKey);
-            spectrumCollection.addSpectrum(SpectrumKey);
+            spectrumCollection.removeSpectrum(spectrumKey);
+            spectrumCollection.addSpectrum(spectrumKey);
             if (visible)
                 spectrum.setVisible(true);
         }
     }
 
-    public SpectrumKey getSpectrumKeyForIndex(int index)
+    public CustomSpectrumKeyInterface getSpectrumKeyForIndex(int index)
     {
-        SpectrumInfo SpectrumInfo = customSpectra.get(index);
-        // Remove the image from the renderer
-        String name = getCustomDataFolder() + File.separator + SpectrumInfo.spectrumfilename;
-//        ImageSource source = SpectrumInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
-        FileType fileType = SpectrumInfo.sumfilename != null && !SpectrumInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
-        SpectraType spectraType = SpectrumInfo.spectraType;
-//        SpectralInstrument instrument = SpectraType.findSpectraTypeForDisplayName(instrument.getDisplayName());
-//        SpectralInstrument instrument = imageType == ImageType.GENERIC_IMAGE ? new ImagingInstrument(SpectrumInfo.rotation, SpectrumInfo.flip) : null;
-        SpectrumKey SpectrumKey = new SpectrumKey(name, fileType, spectraType, instrument);
-        return SpectrumKey;
+        CustomSpectrumKeyInterface spectrumKey = customSpectra.get(index);
+        return spectrumKey;
     }
 
     private boolean migrateConfigFileIfNeeded() throws IOException
@@ -453,13 +460,24 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             int numImages = spectrumNames.length;
             for (int i=0; i<numImages; ++i)
             {
-                SpectrumInfo spectrumInfo = new SpectrumInfo();
-                spectrumInfo.name = spectrumNames[i];
-                spectrumInfo.spectrumfilename = spectrumFilenames[i];
-                if (sumfileNames.length > 0)
-                    spectrumInfo.sumfilename = sumfileNames[i];
-                if (infofileNames.length > 0)
-                    spectrumInfo.infofilename = infofileNames[i];
+            	String name = spectrumNames[i];
+            	String spectrumFilename = spectrumFilenames[i];
+            	String infoname = infofileNames[i];
+            	String sumname = sumfileNames[i];
+            	String pointingFilename = "";
+            	FileType fileType;
+            	if (infoname.equals(""))
+            	{
+            		pointingFilename = sumname;
+            		fileType = FileType.SUM;
+            	}
+            	else
+            	{
+            		pointingFilename = infoname;
+            		fileType = FileType.INFO;
+            	}
+
+                CustomSpectrumKeyInterface spectrumInfo = new CustomSpectrumKey(name, fileType, getInstrument(), null, spectrumFilename, pointingFilename);
 
                 customSpectra.add(spectrumInfo);
             }
@@ -482,68 +500,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
-//        MapUtil configMap = new MapUtil(getConfigFilename());
-//        String spectrumNames = "";
-//        String spectrumFilenames = "";
-//        String projectionTypes = "";
-//        String spectrumTypes = "";
-//        String lllats = "";
-//        String lllons = "";
-//        String urlats = "";
-//        String urlons = "";
-//        String sumfilenames = "";
-//        String infofilenames = "";
-//
-//        for (int i=0; i<customSpectra.size(); ++i)
-//        {
-//            SpectrumInfo spectrumInfo = customSpectra.get(i);
-//            spectrumFilenames += spectrumInfo.spectrumfilename;
-//            spectrumNames += spectrumInfo.name;
-////            projectionTypes += spectrumInfo.projectionType;
-//            spectrumTypes += spectrumInfo.spectraType;
-//
-////            lllats += String.valueOf(spectrumInfo.lllat);
-////            lllons += String.valueOf(spectrumInfo.lllon);
-////            urlats += String.valueOf(spectrumInfo.urlat);
-////            urlons += String.valueOf(spectrumInfo.urlon);
-//            sumfilenames += spectrumInfo.sumfilename;
-//            infofilenames += spectrumInfo.infofilename;
-//
-//            if (i < customSpectra.size()-1)
-//            {
-//                spectrumNames += CustomShapeModel.LIST_SEPARATOR;
-//                spectrumFilenames += CustomShapeModel.LIST_SEPARATOR;
-//                projectionTypes += CustomShapeModel.LIST_SEPARATOR;
-//                spectrumTypes += CustomShapeModel.LIST_SEPARATOR;
-////                imageRotations += CustomShapeModel.LIST_SEPARATOR;
-////                imageFlips += CustomShapeModel.LIST_SEPARATOR;
-//                lllats += CustomShapeModel.LIST_SEPARATOR;
-//                lllons += CustomShapeModel.LIST_SEPARATOR;
-//                urlats += CustomShapeModel.LIST_SEPARATOR;
-//                urlons += CustomShapeModel.LIST_SEPARATOR;
-//                sumfilenames += CustomShapeModel.LIST_SEPARATOR;
-//                infofilenames += CustomShapeModel.LIST_SEPARATOR;
-//            }
-//        }
-//
-//        Map<String, String> newMap = new LinkedHashMap<String, String>();
-//
-//        newMap.put(Spectrum.SPECTRUM_NAMES, spectrumNames);
-//        newMap.put(Spectrum.SPECTRUM_FILENAMES, spectrumFilenames);
-////        newMap.put(Image.PROJECTION_TYPES, projectionTypes);
-//        newMap.put(Spectrum.SPECTRUM_TYPES, spectrumTypes);
-////        newMap.put(Image.IMAGE_ROTATIONS, imageRotations);
-////        newMap.put(Image.IMAGE_FLIPS, imageFlips);
-////        newMap.put(CylindricalImage.LOWER_LEFT_LATITUDES, lllats);
-////        newMap.put(CylindricalImage.LOWER_LEFT_LONGITUDES, lllons);
-////        newMap.put(CylindricalImage.UPPER_RIGHT_LATITUDES, urlats);
-////        newMap.put(CylindricalImage.UPPER_RIGHT_LONGITUDES, urlons);
-//        newMap.put(CustomPerspectiveImage.SUMFILENAMES, sumfilenames);
-//        newMap.put(CustomPerspectiveImage.INFOFILENAMES, infofilenames);
-//
-//        configMap.put(newMap);
     }
 
     public void initializeSpecList() throws IOException
@@ -562,93 +518,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
         fireResultsChanged();
         fireResultsCountChanged(customSpectra.size());
-
-//        MapUtil configMap = new MapUtil(getConfigFilename());
-//        if (configMap.containsKey(CylindricalImage.LOWER_LEFT_LATITUDES) /*|| configMap.containsKey(Image.PROJECTION_TYPES)*/)
-//        {
-//            boolean needToUpgradeConfigFile = false;
-//            String[] spectrumNames = configMap.getAsArray(Spectrum.SPECTRUM_NAMES);
-//            if (spectrumNames == null || (spectrumNames.length == 0)) return;
-//            String[] spectrumFilenames = configMap.getAsArray(Spectrum.SPECTRUM_FILENAMES);
-////            String[] projectionTypes = configMap.getAsArray(Image.PROJECTION_TYPES);
-//            String[] imageTypes = configMap.getAsArray(Spectrum.SPECTRUM_TYPES);
-//            if (spectrumFilenames == null)
-//            {
-//                // for backwards compatibility
-////                imageFilenames = configMap.getAsArray(Image.IMAGE_MAP_PATHS);
-//                spectrumNames = new String[spectrumFilenames.length];
-////                projectionTypes = new String[imageFilenames.length];
-//                imageTypes = new String[spectrumFilenames.length];
-//
-//                for (int i=0; i<spectrumFilenames.length; ++i)
-//                {
-//                    spectrumNames[i] = new File(spectrumFilenames[i]).getName();
-//                    spectrumFilenames[i] = "image" + i + ".png";
-////                    projectionTypes[i] = ProjectionType.CYLINDRICAL.toString();
-//                    imageTypes[i] = ImageType.GENERIC_IMAGE.toString();
-//
-//                }
-//
-//                // Mark that we need to upgrade config file to latest version
-//                // which we'll do at end of function.
-//                needToUpgradeConfigFile = true;
-//            }
-////            double[] lllats = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LATITUDES);
-////            double[] lllons = configMap.getAsDoubleArray(CylindricalImage.LOWER_LEFT_LONGITUDES);
-////            double[] urlats = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LATITUDES);
-////            double[] urlons = configMap.getAsDoubleArray(CylindricalImage.UPPER_RIGHT_LONGITUDES);
-//            String[] sumfileNames = configMap.getAsArray(CustomPerspectiveImage.SUMFILENAMES);
-//            String[] infofileNames = configMap.getAsArray(CustomPerspectiveImage.INFOFILENAMES);
-//
-////            int numImages = lllats != null ? lllats.length : (projectionTypes != null ? projectionTypes.length : 0);
-//            int numImages = spectrumNames.length;
-//            for (int i=0; i<numImages; ++i)
-//            {
-//                SpectrumInfo spectrumInfo = new SpectrumInfo();
-//                spectrumInfo.name = spectrumNames[i];
-//                spectrumInfo.spectrumfilename = spectrumFilenames[i];
-////                SpectrumInfo.projectionType = ProjectionType.valueOf(projectionTypes[i]);
-////                SpectralInstrument instrument = instrument;
-//
-////                SpectrumInfo.spectraType = imageTypes == null ? ImageType.GENERIC_IMAGE : ImageType.valueOf(imageTypes[i]);
-//
-////                if (projectionTypes == null || ProjectionType.CYLINDRICAL.toString().equals(projectionTypes[i]))
-////                {
-////                    SpectrumInfo.lllat = lllats[i];
-////                    SpectrumInfo.lllon = lllons[i];
-////                    SpectrumInfo.urlat = urlats[i];
-////                    SpectrumInfo.urlon = urlons[i];
-////                }
-////                else if (ProjectionType.PERSPECTIVE.toString().equals(projectionTypes[i]))
-////                {
-//                if (sumfileNames.length > 0)
-//                    spectrumInfo.sumfilename = sumfileNames[i];
-//                if (infofileNames.length > 0)
-//                    spectrumInfo.infofilename = infofileNames[i];
-////                }
-//
-//                customSpectra.add(spectrumInfo);
-//            }
-//
-//            if (needToUpgradeConfigFile)
-//                updateConfigFile();
-//        }
-//
-//        List<List<String>> tempResults = new ArrayList<List<String>>();
-//        for (SpectrumInfo info : customSpectra)
-//        {
-//            List<String> res = new ArrayList<String>();
-//            res.add(info.spectrumfilename);
-//            res.add(getCustomDataFolder() + File.separator + info.spectrumfilename);
-//            tempResults.add(res);
-//        }
-//        updateConfigFile();
-//        setSpectrumRawResults(tempResults);
-//        fireResultsChanged();
-//        fireResultsCountChanged(this.results.size());
-//
-//        initialized = true;
-//        fireResultsChanged();
     }
 
     public void propertyChange(PropertyChangeEvent evt)
@@ -657,19 +526,19 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         {
             PickEvent e = (PickEvent)evt.getNewValue();
             Model model = modelManager.getModel(e.getPickedProp());
-            if (model instanceof SpectraCollection)// || model instanceof PerspectiveImageBoundaryCollection)
+            if (model instanceof SpectraCollection)
             {
                 // Get the actual filename of the selected image
-                SpectrumKey key = ((SpectraCollection)model).getSpectrum((vtkActor)e.getPickedProp()).getKey();
-                String name = new File(key.name).getName();
+                SpectrumKeyInterface key = ((SpectraCollection)model).getSpectrum((vtkActor)e.getPickedProp()).getKey();
+                String name = new File(key.getName()).getName();
 
                 int idx = -1;
                 int size = customSpectra.size();
                 for (int i=0; i<size; ++i)
                 {
                     // We want to compare the actual image filename here, not the displayed name which may not be unique
-                    SpectrumInfo SpectrumInfo = customSpectra.get(i);
-                    String imageFilename = SpectrumInfo.spectrumfilename;
+                    CustomSpectrumKeyInterface SpectrumInfo = customSpectra.get(i);
+                    String imageFilename = SpectrumInfo.getSpectrumFilename();
                     if (name.equals(imageFilename))
                     {
                         idx = i;
@@ -690,10 +559,10 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     }
 
     @Override
-    public SpectrumKey[] getSelectedSpectrumKeys()
+    public CustomSpectrumKeyInterface[] getSelectedSpectrumKeys()
     {
         int[] indices = selectedImageIndices;
-        SpectrumKey[] selectedKeys = new SpectrumKey[indices.length];
+        CustomSpectrumKeyInterface[] selectedKeys = new CustomSpectrumKeyInterface[indices.length];
         if (indices.length > 0)
         {
             int i=0;
@@ -702,9 +571,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
                 String spectrum = getSpectrumRawResults().get(index).get(0);
                 String name = new File(spectrum).getName();
                 spectrum = spectrum.substring(0, spectrum.length()-4);
-                SpectrumKey selectedKey = getSpectrumKeyForIndex(index);
-//                if (!selectedKey.band.equals("0"))
-//                    name = selectedKey.band + ":" + name;
+                CustomSpectrumKeyInterface selectedKey = getSpectrumKeyForIndex(index);
                 selectedKeys[i++] = selectedKey;
             }
         }
@@ -713,7 +580,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     private String getConfigFilename()
     {
-        return getModelManager().getPolyhedralModel().getConfigFilename();
+        return new File(getModelManager().getPolyhedralModel().getConfigFilename()).getParent() + File.separator + "specConfig.txt";
     }
 
     public String getCustomDataFolder()
@@ -750,49 +617,31 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     @Override
     public Metadata store()
     {
-        SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
-        Metadata[] infoArray = new Metadata[customSpectra.size()];
-        int i=0;
-        for (SpectrumInfo info : customSpectra)
-        {
-            infoArray[i++] = info.store();
-        }
-        write(customSpectraKey, infoArray, configMetadata);
-        return configMetadata;
-
-////        SettableMetadata data = (SettableMetadata)super.store();
-//        SettableMetadata data = SettableMetadata.of(Version.of(1, 0));
-//        //store the ImageInfo objects that make up this custom model
-//        Vector<Metadata> images = new Vector<Metadata>();
-////        ImmutableSortedSet.Builder<Metadata> images = ImmutableSortedSet.naturalOrder();
-//        for (ImageInfo info : customImages)
-//        {
-//            images.add(info.store());
-//        }
-//        data.put(customImagesKey, images);
-//        return data;
+    	SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    	result.put(customSpectraKey, customSpectra);
+    	return result;
     }
 
     @Override
     public void retrieve(Metadata source)
     {
-
-        Metadata[] metadataArray = read(customSpectraKey, source);
-        for (Metadata meta : metadataArray)
-        {
-            SpectrumInfo info = new SpectrumInfo();
-            info.retrieve(meta);
-            customSpectra.add(info);
-        }
-////        super.retrieve(source);
-//        //get the ImageInfo objects for this custom model
-//        ArrayList<Metadata> images = source.get(customImagesKey);
-//        for (Metadata image : images)
-//        {
-//            ImageInfo info = new ImageInfo();
-//            info.retrieve(image);
-//            customImages.add(info);
-//        }
+    	try
+    	{
+    		customSpectra = source.get(customSpectraKey);
+    	}
+    	catch (ClassCastException cce)
+    	{
+    		//not sure if we need to worry about this
+//    		Key<Metadata[]> oldCustomSpectraKey = Key.of("customSpectra");
+//    		Metadata[] oldCustomSpectra = source.get(oldCustomSpectraKey);
+//    		List<CustomSpectrumKeyInterface> migratedSpectra = new ArrayList<CustomSpectrumKeyInterface>();
+//    		for (Metadata meta : oldCustomSpectra)
+//    		{
+//    			migratedSpectra.add(CustomSpectrumKeyInterface.retrieveOldFormat(meta));
+//    		}
+//    		customSpectra = migratedSpectra;
+//    		updateConfigFile();
+    	}
     }
 
     public void saveSpectra(List<CustomSpectrumKey> customImages, String filename)
@@ -801,7 +650,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         Metadata[] infoArray = new Metadata[customImages.size()];
         int i=0;
         final Key<Metadata[]> customSpectraKey = Key.of("SavedSpectra");
-        for (SpectrumInfo info : customSpectra)
+        for (CustomSpectrumKeyInterface info : customSpectra)
         {
             infoArray[i++] = info.store();
         }
@@ -828,8 +677,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             Metadata[] metadataArray = read(customSpectraKey, metadata);
             for (Metadata meta : metadataArray)
             {
-                SpectrumInfo info = new SpectrumInfo();
-                info.retrieve(meta);
+                CustomSpectrumKeyInterface info = CustomSpectrumKeyInterface.retrieve(meta);
                 customSpectra.add(info);
             }
             System.out.println("CustomSpectrumModel: loadSpectra: number of spectra now " + customSpectra.size());

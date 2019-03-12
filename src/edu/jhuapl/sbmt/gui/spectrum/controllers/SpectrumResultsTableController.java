@@ -33,19 +33,19 @@ import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchResultsListener;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumResultsTableView;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumResultsTableController
 {
     protected SpectrumResultsTableView panel;
     protected SpectrumSearchModel model;
     protected List<List<String>> spectrumRawResults;
-    protected SpectralInstrument instrument;
+    protected ISpectralInstrument instrument;
     protected Renderer renderer;
     protected SpectrumStringRenderer stringRenderer;
     protected PropertyChangeListener propertyChangeListener;
@@ -64,11 +64,11 @@ public class SpectrumResultsTableController
             "Date"
     };
 
-    public SpectrumResultsTableController(SpectralInstrument instrument, SpectraCollection spectrumCollection, SpectrumSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
+    public SpectrumResultsTableController(ISpectralInstrument instrument, SpectraCollection spectrumCollection, SpectrumSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         spectrumPopupMenu = new SpectrumPopupMenu(model.getModelManager(), infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
-        panel = new SpectrumResultsTableView(instrument, spectrumCollection, spectrumPopupMenu);
+        panel = new SpectrumResultsTableView(spectrumCollection, spectrumPopupMenu);
         panel.setup();
         boundaries = (SpectrumBoundaryCollection)model.getModelManager().getModel(model.getSpectrumBoundaryCollectionModelName());
 
@@ -387,11 +387,11 @@ public class SpectrumResultsTableController
                 }
 
                 int[] selectedIndices = resultList.getSelectedRows();
-                List<SpectrumKey> spectrumKeys = new ArrayList<SpectrumKey>();
+                List<SpectrumKeyInterface> spectrumKeys = new ArrayList<SpectrumKeyInterface>();
                 for (int selectedIndex : selectedIndices)
                 {
                     String name = imageRawResults.get(selectedIndex).get(0);
-                    SpectrumKey key = model.createSpectrumKey(name, model.getInstrument());
+                    SpectrumKeyInterface key = model.createSpectrumKey(name, model.getInstrument());
                     spectrumKeys.add(key);
                 }
                 panel.getSpectrumPopupMenu().setCurrentSpectra(spectrumKeys);
@@ -435,7 +435,7 @@ public class SpectrumResultsTableController
             {
                 String currentImage = spectrumRawResults.get(i).get(0);
                 String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                SpectrumKey key = model.createSpectrumKey(currentImage, model.getInstrument());
+                SpectrumKeyInterface key = model.createSpectrumKey(currentImage, model.getInstrument());
                 boundaries.addBoundary(key, spectrumCollection);
             }
             catch (Exception e1) {
@@ -483,7 +483,7 @@ public class SpectrumResultsTableController
 //                Date dt = new Date(Long.parseLong(str.get(1)));
 
                 String name = spectrumRawResults.get(i).get(0);
-                SpectrumKey key = model.createSpectrumKey(name,  instrument);
+                SpectrumKeyInterface key = model.createSpectrumKey(name,  instrument);
                 Spectrum spectrum = (Spectrum) spectrumCollection.getSpectrumFromKey(key);
                 if (spectrum != null)
                 {
@@ -569,7 +569,7 @@ public class SpectrumResultsTableController
 //                            "SpectrumResultsTableController.SpectrumResultsPropertyChangeListener: propertyChange: actual row " + actualRow);
                     int j = (Integer)panel.getResultList().getValueAt(i, panel.getIdColumnIndex())-1;
                     String name = model.getSpectrumRawResults().get(j).get(0);
-                    SpectrumKey key = model.createSpectrumKey(name, model.getInstrument());
+                    SpectrumKeyInterface key = model.createSpectrumKey(name, model.getInstrument());
                     Spectrum spectrum = (Spectrum) spectrumCollection.getSpectrumFromKey(key);
                     if (spectrumCollection.containsKey(key))
                     {
@@ -622,7 +622,7 @@ public class SpectrumResultsTableController
             int actualRow = panel.getResultList().getRowSorter().convertRowIndexToView(e.getFirstRow());
             int row = (Integer)panel.getResultList().getValueAt(actualRow, panel.getIdColumnIndex())-1;
             String name = spectrumRawResults.get(row).get(0);
-            SpectrumKey key = model.createSpectrumKey(name, model.getInstrument());
+            SpectrumKeyInterface key = model.createSpectrumKey(name, model.getInstrument());
             Spectrum spectrum = (Spectrum) spectra.getSpectrumFromKey(key);
             if (spectrum == null)
             {
@@ -630,7 +630,7 @@ public class SpectrumResultsTableController
                 {
                     try
                     {
-                        spectra.addSpectrum(key.name, key.instrument, SpectrumColoringStyle.getStyleForName(model.getSpectrumColoringStyleName()));
+                        spectra.addSpectrum(key.getName(), key.getInstrument(), SpectrumColoringStyle.getStyleForName(model.getSpectrumColoringStyleName()));
                         model.updateColoring();
                     }
                     catch (IOException e1)
@@ -721,7 +721,7 @@ public class SpectrumResultsTableController
             if (column == panel.getShowFootprintColumnIndex() || column == panel.getFrusColumnIndex())
             {
                 String name = spectrumRawResults.get(sortedRow).get(0);
-                SpectrumKey key = model.createSpectrumKey(name, model.getInstrument());
+                SpectrumKeyInterface key = model.createSpectrumKey(name, model.getInstrument());
                 return spectrumCollection.containsKey(key);
             }
             else

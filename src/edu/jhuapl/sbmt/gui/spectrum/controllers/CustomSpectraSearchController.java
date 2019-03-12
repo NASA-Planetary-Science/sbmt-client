@@ -10,11 +10,12 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumSearchPanel;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
@@ -33,7 +34,7 @@ public class CustomSpectraSearchController
 
     public CustomSpectraSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            PickManager pickManager, Renderer renderer, SpectralInstrument instrument)
+            PickManager pickManager, Renderer renderer, ISpectralInstrument instrument)
     {
         this.modelManager = modelManager;
         this.renderer = renderer;
@@ -50,15 +51,15 @@ public class CustomSpectraSearchController
         {
 
             @Override
-            public void resultsChanged(List<SpectrumInfo> results)
+            public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
                 List<List<String>> formattedResults = new ArrayList<List<String>>();
-                for (SpectrumInfo info : results)
+                for (CustomSpectrumKeyInterface info : results)
                 {
                     List<String> res = new ArrayList<String>();
-                    res.add(info.spectrumfilename);
+                    res.add(info.getSpectrumFilename());
                     res.add(""+0); //TODO need time here
-                    res.add(info.name);
+                    res.add(info.getName());
                     formattedResults.add(res);
                 }
 

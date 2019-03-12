@@ -10,14 +10,14 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.model.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumSearchPanel;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumHypertreeSearchController
 {
     private ISpectrumSearchModel model;
     private SpectrumSearchPanel panel;
-    protected SpectralInstrument instrument;
+    protected ISpectralInstrument instrument;
     protected ModelManager modelManager;
     protected Renderer renderer;
     private SpectrumResultsTableController spectrumResultsTableController;
@@ -28,7 +28,7 @@ public class SpectrumHypertreeSearchController
 
     public SpectrumHypertreeSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            PickManager pickManager, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
+            PickManager pickManager, Renderer renderer, ISpectralInstrument instrument, SpectrumSearchModel model)
     {
         this.modelManager = modelManager;
         this.renderer = renderer;

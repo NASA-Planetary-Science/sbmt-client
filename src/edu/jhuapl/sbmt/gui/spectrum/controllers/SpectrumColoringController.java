@@ -16,9 +16,9 @@ import edu.jhuapl.sbmt.gui.spectrum.SpectrumMathPanel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumColoringPanel;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumColoringController
 {
@@ -142,7 +142,7 @@ public class SpectrumColoringController
 
     protected void setupComboBoxes()
     {
-        SpectralInstrument instrument = model.getInstrument();
+        ISpectralInstrument instrument = model.getInstrument();
         System.out.println("SpectrumColoringController: setupComboBoxes: band centers is " + instrument);
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {

@@ -90,7 +90,7 @@ public class SbmtModelFactory
             Renderer renderer,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
         return new StateHistoryModel(key, start, end, smallBodyModel, renderer);
     }
 
@@ -99,7 +99,7 @@ public class SbmtModelFactory
             SmallBodyModel smallBodyModel,
             boolean loadPointingOnly) throws FitsException, IOException
     {
-        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
 
         if (ImageSource.SPICE.equals(key.getSource()) ||
                 ImageSource.GASKELL.equals(key.getSource()) ||
@@ -354,7 +354,7 @@ public class SbmtModelFactory
 
     static public Graticule createGraticule(SmallBodyModel smallBodyModel)
     {
-        SmallBodyViewConfig config = smallBodyModel.getSmallBodyConfig();
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
         ShapeModelType author = config.author;
 
         if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
@@ -399,7 +399,7 @@ public class SbmtModelFactory
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
-        if (smallBodyModel.getSmallBodyConfig().lidarInstrumentName==Instrument.LASER)
+        if (smallBodyModel.getSmallBodyConfig().getLidarInstrument()==Instrument.LASER)
         {
             models.put(ModelNames.LIDAR_BROWSE, new Hayabusa2LidarBrowseDataCollection(smallBodyModel));
         }
@@ -408,9 +408,9 @@ public class SbmtModelFactory
             models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
         }
         models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
-        if (smallBodyModel.getSmallBodyConfig().hasHypertreeBasedLidarSearch)
+        if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
         {
-            switch (smallBodyModel.getSmallBodyConfig().lidarInstrumentName)
+            switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
             {
             case MOLA:
                 models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
