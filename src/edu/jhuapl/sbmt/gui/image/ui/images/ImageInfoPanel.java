@@ -105,8 +105,8 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 //            jLabel1.setEnabled(false);
 //        }
 
-        if (image instanceof PerspectiveImage)
-            applyAdjustmentsButton1.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
+//        if (image instanceof PerspectiveImage)
+//            applyAdjustmentsButton1.setSelected(((PerspectiveImage)image).getApplyFramedAdjustments());
 
         int[] masking = image.getCurrentMask();
         leftSpinner.setValue(masking[0]);
@@ -508,7 +508,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         jLabel6 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        pointingPanel = new javax.swing.JPanel();
         leftButton = new javax.swing.JButton();
         rightButton = new javax.swing.JButton();
         upButton = new javax.swing.JButton();
@@ -523,7 +523,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         adjustFrameCheckBox3 = new javax.swing.JCheckBox();
         factorLabel1 = new javax.swing.JLabel();
         factorTextField1 = new javax.swing.JTextField();
-        applyAdjustmentsButton1 = new javax.swing.JCheckBox();
+//        applyAdjustmentsButton1 = new javax.swing.JCheckBox();
         jLabel8 = new javax.swing.JLabel();
 
         if (image instanceof PerspectiveImage) {
@@ -581,13 +581,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.insets = new java.awt.Insets(3, 6, 3, 0);
         getContentPane().add(jLabel1, gridBagConstraints);
 
-        jLabel7.setText("Adjust:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(3, 6, 3, 0);
-        getContentPane().add(jLabel7, gridBagConstraints);
+//        jLabel7.setText("Adjust:");
+//        gridBagConstraints = new java.awt.GridBagConstraints();
+//        gridBagConstraints.gridx = 0;
+//        gridBagConstraints.gridy = 3;
+//        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//        gridBagConstraints.insets = new java.awt.Insets(3, 6, 3, 0);
+//        getContentPane().add(jLabel7, gridBagConstraints);
 
         jScrollPane1.setMinimumSize(new java.awt.Dimension(452, 200));
         jScrollPane1.setPreferredSize(new java.awt.Dimension(452, 200));
@@ -712,7 +712,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        pointingPanel.setLayout(new java.awt.GridBagLayout());
 
         leftButton.setText("<");
         leftButton.setToolTipText("left");
@@ -723,10 +723,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        jPanel2.add(leftButton, gridBagConstraints);
+        pointingPanel.add(leftButton, gridBagConstraints);
 
         rightButton.setText(">");
         rightButton.setToolTipText("right");
@@ -737,7 +737,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.weightx = 1.0;
-        jPanel2.add(rightButton, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        pointingPanel.add(rightButton, gridBagConstraints);
 
         upButton.setText("^");
         upButton.setToolTipText("up");
@@ -748,9 +750,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.weightx = 1.0;
-        jPanel2.add(upButton, gridBagConstraints);
+        pointingPanel.add(upButton, gridBagConstraints);
 
         downButton.setText("v");
         downButton.setToolTipText("down");
@@ -761,9 +763,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.weightx = 1.0;
-        jPanel2.add(downButton, gridBagConstraints);
+        pointingPanel.add(downButton, gridBagConstraints);
 
         rotateLeftButton.setText("\\");
         rotateLeftButton.setToolTipText("rotate left");
@@ -774,9 +776,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 6;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridy = 1;
             gridBagConstraints.weightx = 1.0;
-            jPanel2.add(rotateLeftButton, gridBagConstraints);
+            pointingPanel.add(rotateLeftButton, gridBagConstraints);
 
             zoomOutButton.setText("-><-");
             zoomOutButton.setToolTipText("zoom out");
@@ -787,9 +789,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 4;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridy = 1;
             gridBagConstraints.weightx = 1.0;
-            jPanel2.add(zoomOutButton, gridBagConstraints);
+            pointingPanel.add(zoomOutButton, gridBagConstraints);
 
             zoomInButton.setText("<-->");
             zoomInButton.setToolTipText("zoom in");
@@ -800,7 +802,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.weightx = 1.0;
-            jPanel2.add(zoomInButton, gridBagConstraints);
+            gridBagConstraints.gridx = 5;
+            gridBagConstraints.gridy = 1;
+            pointingPanel.add(zoomInButton, gridBagConstraints);
 
             rotateRightButton.setText("/");
             rotateRightButton.setToolTipText("rotate right");
@@ -811,18 +815,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 7;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridy = 1;
             gridBagConstraints.weightx = 1.0;
-            jPanel2.add(rotateRightButton, gridBagConstraints);
-
-            gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 1;
-            gridBagConstraints.gridy = 4;
-            gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-            gridBagConstraints.weightx = 1.0;
-            getContentPane().add(jPanel2, gridBagConstraints);
-
-            jPanel3.setLayout(new java.awt.GridBagLayout());
+            pointingPanel.add(rotateRightButton, gridBagConstraints);
 
             interpolateCheckBox1.setSelected(true);
             interpolateCheckBox1.setText("Interpolate Pixels");
@@ -834,7 +829,10 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.ipadx = 15;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(interpolateCheckBox1, gridBagConstraints);
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridwidth = 2;
+            pointingPanel.add(interpolateCheckBox1, gridBagConstraints);
 
             resetFrameAdjustmentsButton.setText("Reset Pointing");
             resetFrameAdjustmentsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -843,10 +841,11 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 }
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 5;
+            gridBagConstraints.gridx = 6;
             gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridwidth = 2;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(resetFrameAdjustmentsButton, gridBagConstraints);
+            pointingPanel.add(resetFrameAdjustmentsButton, gridBagConstraints);
 
             adjustFrameCheckBox3.setText("Select Target");
             adjustFrameCheckBox3.setName(""); // NOI18N
@@ -856,21 +855,22 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 }
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 1;
+            gridBagConstraints.gridx = 2;
             gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridwidth = 2;
             gridBagConstraints.ipadx = 15;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(adjustFrameCheckBox3, gridBagConstraints);
+            pointingPanel.add(adjustFrameCheckBox3, gridBagConstraints);
 
             factorLabel1.setText("Factor");
             gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 4;
+            gridBagConstraints.gridx = 5;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.ipadx = 15;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(factorLabel1, gridBagConstraints);
+            pointingPanel.add(factorLabel1, gridBagConstraints);
 
-            factorTextField1.setColumns(5);
+//            factorTextField1.setColumns(5);
             factorTextField1.setText("1.0");
             factorTextField1.setPreferredSize(new java.awt.Dimension(14, 28));
             factorTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -879,26 +879,41 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
                 }
             });
             gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 3;
+            gridBagConstraints.gridx = 4;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.ipadx = 50;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(factorTextField1, gridBagConstraints);
+            pointingPanel.add(factorTextField1, gridBagConstraints);
 
-            applyAdjustmentsButton1.setSelected(true);
-            applyAdjustmentsButton1.setText("Apply Adjustments");
-            applyAdjustmentsButton1.setName(""); // NOI18N
-            applyAdjustmentsButton1.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    applyAdjustmentsButton1ActionPerformed(evt);
-                }
-            });
+            TitledBorder pointingBorder = BorderFactory.createTitledBorder("Pointing Adjustments");
+            pointingBorder.setTitleJustification(TitledBorder.CENTER);
+            pointingPanel.setBorder(pointingBorder);
+
             gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 2;
-            gridBagConstraints.gridy = 0;
-            gridBagConstraints.ipadx = 15;
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = 4;
+            gridBagConstraints.gridwidth = 2;
+            gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
             gridBagConstraints.weightx = 1.0;
-            jPanel3.add(applyAdjustmentsButton1, gridBagConstraints);
+
+            getContentPane().add(pointingPanel, gridBagConstraints);
+
+
+//            applyAdjustmentsButton1.setSelected(true);
+//            applyAdjustmentsButton1.setText("Apply Adjustments");
+//            applyAdjustmentsButton1.setName(""); // NOI18N
+//            applyAdjustmentsButton1.addActionListener(new java.awt.event.ActionListener() {
+//                public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                    applyAdjustmentsButton1ActionPerformed(evt);
+//                }
+//            });
+//            gridBagConstraints = new java.awt.GridBagConstraints();
+//            gridBagConstraints.gridx = 2;
+//            gridBagConstraints.gridy = 0;
+//            gridBagConstraints.ipadx = 15;
+//            gridBagConstraints.weightx = 1.0;
+//            pointingPanel.add(applyAdjustmentsButton1, gridBagConstraints);
 
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 1;
@@ -1067,9 +1082,9 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         // TODO add your handling code here:
     }//GEN-LAST:event_factorTextField1ActionPerformed
 
-    private void applyAdjustmentsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_applyAdjustmentsButton1ActionPerformed
+//    private void applyAdjustmentsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyAdjustmentsButton1ActionPerformed
+//        // TODO add your handling code here:
+//    }//GEN-LAST:event_applyAdjustmentsButton1ActionPerformed
 
     private double getAdjustFactor()
     {
@@ -1099,7 +1114,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox adjustFrameCheckBox3;
-    private javax.swing.JCheckBox applyAdjustmentsButton1;
+//    private javax.swing.JCheckBox applyAdjustmentsButton1;
     private javax.swing.JSpinner bottomSpinner;
     private javax.swing.JButton downButton;
     private javax.swing.JLabel factorLabel;
@@ -1114,7 +1129,7 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel pointingPanel;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton leftButton;
