@@ -4,9 +4,15 @@
 
 # Release Notes
 
-### March 1, 2019 (SBMT-0.7.4)
+## March 8, 2019 (SBMT-0.7.4.1)
 
-## New
+### Bug Fixes
+- Fixed problems with item selections in image table
+- Fixed ENVI loading problem in custom image pane on windows
+
+## March 1, 2019 (SBMT-0.7.4)
+
+### New
 - Added the ability to save the state of ellipse, circle, and point structures
 - Added support to allow shape model manipulation while in structures edit mode
 - Added ability to sort structures by attribute
@@ -15,7 +21,7 @@
 - Made UI improvements to lidar tabs
 - Re-enabled the ability to drag Lidar tracks
 
-## Bug Fixes
+### Bug Fixes
 - Fixed bug that prevented custom images from being loaded
 - Fixed bug that prevented users from saving structures files if offline and plate colorings were not cached
 - Fixed a bug that prevented reset of image search parameters
