@@ -164,8 +164,8 @@ public class OfflimbControlsController
 
 		public DepthSlider()
 		{
-			setMinimum(0);
-			setMaximum(100);
+			setMinimum(-50);
+			setMaximum(50);
 		}
 
 		public void setDepthBounds(double depthMin, double depthMax)
@@ -183,16 +183,17 @@ public class OfflimbControlsController
 
 		public double getDepthValue()
 		{
-			double depthNorm = (double) (getValue() - getMinimum())
-					/ (double) (getMaximum() - getMinimum());
-			return depthMin + depthNorm * (depthMax - depthMin);
+			double value = getValue();
+			double sliderRange = getMaximum() - getMinimum();
+			double imgRange = depthMax - depthMin;
+			return (int) ((value - getMinimum()) * (imgRange/sliderRange) + depthMin);
 		}
 
 		public int convertDepthToSliderValue(double depth)
 		{
-			double depthNorm = (image.getOffLimbPlaneDepth() - depthMin)
-					/ (depthMax - depthMin);
-			return (int) ((double) (getMaximum() - getMinimum()) * depthNorm);
+			double sliderRange = getMaximum() - getMinimum();
+			double imgRange = depthMax - depthMin;
+		    return (int) Math.ceil((sliderRange * (depth - depthMin) / imgRange + getMinimum()));
 		}
 
 	}

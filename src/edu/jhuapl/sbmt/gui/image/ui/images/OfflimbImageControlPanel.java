@@ -108,11 +108,6 @@ public class OfflimbImageControlPanel extends JPanel
         gridBagConstraints.insets = new java.awt.Insets(3, 10, 3, 10);
         add(buttonPanel, gridBagConstraints);
 
-//        add(depthPanel);
-//        add(transparencyPanel);
-//        add(contrastPanel);
-//        add(contrastBtnPanel);
-//        add(boundaryPanel);
     }
 
     public JLabel getFootprintDepthValue()
