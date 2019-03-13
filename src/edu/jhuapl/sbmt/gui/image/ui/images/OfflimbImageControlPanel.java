@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.gui.image.ui.images;
 import java.awt.GridBagConstraints;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -30,8 +31,9 @@ public class OfflimbImageControlPanel extends JPanel
 
     private ShowBoundaryButton showBoundaryButton;
 	private SyncContrastSlidersButton syncContrastButton;
+	private JButton resetButton;
 
-    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton)
+    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton resetButton)
     {
         super();
 
@@ -48,6 +50,7 @@ public class OfflimbImageControlPanel extends JPanel
         depthPanel.add(footprintDepthValue);
 
         footprintDepthSlider = depthSlider;
+        depthSlider.setValue(0);
         depthPanel.add(footprintDepthSlider);
 
         JPanel transparencyPanel = new JPanel();
@@ -57,10 +60,11 @@ public class OfflimbImageControlPanel extends JPanel
                 "Off-limb footprint opacity:"); // changed to opacity because of the way it works (opposite of transparency)
         transparencyPanel.add(footprintTransparencyLabel);
 
-        footprintTransparencyValue = new JLabel("0");
+        footprintTransparencyValue = new JLabel("50");
         transparencyPanel.add(footprintTransparencyValue);
 
         footprintTransparencySlider = alphaSlider;
+        alphaSlider.setValue(50);
         transparencyPanel.add(footprintTransparencySlider);
 
         JPanel contrastPanel = new JPanel();
@@ -82,6 +86,9 @@ public class OfflimbImageControlPanel extends JPanel
         showBoundaryButton = showBoundaryBtn;
         buttonPanel.add(showBoundaryButton);
 
+
+        this.resetButton = resetButton;
+        buttonPanel.add(resetButton);
 
 
         gridBagConstraints.gridx = 0;
@@ -105,6 +112,7 @@ public class OfflimbImageControlPanel extends JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(3, 10, 3, 10);
         add(buttonPanel, gridBagConstraints);
 
@@ -169,6 +177,10 @@ public class OfflimbImageControlPanel extends JPanel
     {
         this.imageContrastSlider = imageContrastSlider;
     }
+
+	public JButton getResetButton() {
+		return resetButton;
+	}
 
 
 }

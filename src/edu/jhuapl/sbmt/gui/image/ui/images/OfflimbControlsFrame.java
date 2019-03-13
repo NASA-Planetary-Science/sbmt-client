@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.HeadlessException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import edu.jhuapl.sbmt.gui.image.controllers.images.ContrastSlider;
@@ -14,9 +15,9 @@ public class OfflimbControlsFrame extends JFrame
 {
     private OfflimbImageControlPanel panel;
 
-    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton) throws HeadlessException
+    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton resetBtn) throws HeadlessException
     {
-        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton);
+        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, resetBtn);
         init();
     }
 

@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -20,6 +21,7 @@ public class OfflimbControlsController
 	ContrastSlider contrastSlider;
 	ShowBoundaryButton showBoundaryBtn;
 	SyncContrastSlidersButton syncButton;
+	JButton resetButton;
 
 	// reference to image slider in case they are synced
 	ContrastSlider imageContrastSlider;
@@ -42,7 +44,9 @@ public class OfflimbControlsController
 		syncButton = new SyncContrastSlidersButton();
 		syncButton.setSelected(controlsModel.getSyncContrast());
 
-		controlsPanel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton);
+		resetButton = new JButton("Reset Off-limb Settings");
+
+		controlsPanel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, resetButton);
 
 		controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
 		{
@@ -136,6 +140,14 @@ public class OfflimbControlsController
 						controlsModel.setContrastHigh(contrastSlider.getHighValue());
 					}
 				}
+				else if (e.getSource() == controlsPanel.getResetButton())
+				{
+					// let everyone know that we're syncing or unsyncing
+					syncButton.setSelected(false);
+					showBoundaryBtn.setSelected(true);
+					depthSlider.setValue(0);
+					alphaSlider.setValue(50);
+				}
 			}
 		};
 
@@ -144,6 +156,7 @@ public class OfflimbControlsController
 		controlsPanel.getImageContrastSlider().addChangeListener(changeListener);
 		controlsPanel.getShowBoundaryButton().addChangeListener(changeListener);
 		controlsPanel.getSyncContrastButton().addChangeListener(changeListener);
+		controlsPanel.getResetButton().addChangeListener(changeListener);
 
 
 	}
