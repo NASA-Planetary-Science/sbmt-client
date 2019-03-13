@@ -2,6 +2,7 @@ package edu.jhuapl.sbmt.client;
 
 import java.util.Map;
 
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 public interface ISmallBodyViewConfig
@@ -23,5 +24,7 @@ public interface ISmallBodyViewConfig
 	public Instrument getLidarInstrument();
 
 	public boolean hasHypertreeLidarSearch();
+
+	public SpectraHierarchicalSearchSpecification getHierarchicalSpectraSearchSpecification();
 
 }

@@ -233,10 +233,10 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
         else
         {
-            String newFilename = "spectrum-" + uuid + ".spect";
+            String newFilename = "spectrum-" + newSpectrumInfo.getName() + "-" + uuid + ".spect";
             String newFilepath = getCustomDataFolder() + File.separator + newFilename;
             FileUtil.copyFile(newSpectrumInfo.getSpectrumFilename(),  newFilepath);
-            String newFileInfoname = "spectrum-" + uuid + ".INFO";
+            String newFileInfoname = "spectrum-" + newSpectrumInfo.getName() + "-" + uuid + ".INFO";
             String newFileInfopath = getCustomDataFolder() + File.separator + newFileInfoname;
             FileUtil.copyFile(newSpectrumInfo.getPointingFilename(),  newFileInfopath);
             // Change newImageInfo.imagefilename to the new location of the file

@@ -314,6 +314,7 @@ public abstract class BodyViewConfig extends ViewConfig
 		return spectraSearchDataSourceMap;
 	}
 
+
 	private static String serverPath(String firstSegment, String... segments)
     {
         // Prevent trailing delimiters coming from empty segments at the end.

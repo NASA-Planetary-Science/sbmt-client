@@ -27,6 +27,7 @@ import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -2336,6 +2337,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -6763,6 +6765,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 	public boolean hasHypertreeLidarSearch()
 	{
 		return hasHypertreeBasedLidarSearch;
+	}
+
+	public SpectraHierarchicalSearchSpecification getHierarchicalSpectraSearchSpecification()
+	{
+		return hierarchicalSpectraSearchSpecification;
 	}
 
 
