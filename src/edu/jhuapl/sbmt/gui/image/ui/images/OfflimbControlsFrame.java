@@ -11,6 +11,12 @@ import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.De
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.ShowBoundaryButton;
 import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbControlsController.SyncContrastSlidersButton;
 
+/**
+ * This frame is no longer used. Can likely be deleted, but leaving for now just in case.
+ * This was moved to the Properties Panel  (ImageInfoPanel)
+ * @author osheacm1
+ *
+ */
 public class OfflimbControlsFrame extends JFrame
 {
     private OfflimbImageControlPanel panel;
