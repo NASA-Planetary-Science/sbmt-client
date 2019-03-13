@@ -1054,13 +1054,13 @@ public class ImageInfoPanel extends ModelInfoWindow implements MouseListener, Mo
         centerFrustumMode = adjustFrameCheckBox3.isSelected();
     }//GEN-LAST:event_adjustFrameCheckBox3ActionPerformed
 
-    private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
-//        System.out.println("Zoom Out");
-        if (image instanceof PerspectiveImage)
-        {
-            ((PerspectiveImage)image).moveZoomFactorBy(Math.pow(1.01, getAdjustFactor()));
-            ((PerspectiveImage)image).firePropertyChange();
-        }
+        private void zoomOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutButtonActionPerformed
+//          System.out.println("Zoom In");
+          if (image instanceof PerspectiveImage)
+          {
+              ((PerspectiveImage)image).moveZoomFactorBy(Math.pow(1.1, getAdjustFactor()));
+              ((PerspectiveImage)image).firePropertyChange();
+          }
     }//GEN-LAST:event_zoomOutButtonActionPerformed
 
     private void factorTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_factorTextField1ActionPerformed
