@@ -5875,6 +5875,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[]
+                    {
+                        new NIRS3()
+                    };
+
+
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
