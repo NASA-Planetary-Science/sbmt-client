@@ -10,6 +10,7 @@ public enum ShapeModelDataUsed
     WGS84("WGS84"),
     TRIAXIAL("Triaxial"),
     SIMULATED("Simulated"),
+    NA("Not applicable")
     ;
 
     final private String str;

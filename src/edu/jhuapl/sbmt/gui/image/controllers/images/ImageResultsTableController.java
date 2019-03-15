@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -117,11 +119,44 @@ public class ImageResultsTableController
         propertyChangeListener = new ImageResultsPropertyChangeListener();
         tableModelListener = new ImageResultsTableModeListener();
 
-        this.imageCollection.addPropertyChangeListener(propertyChangeListener);
-        boundaries.addPropertyChangeListener(propertyChangeListener);
+
+
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+				imageCollection.addPropertyChangeListener(propertyChangeListener);
+		        boundaries.addPropertyChangeListener(propertyChangeListener);
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+			    imageCollection.removePropertyChangeListener(propertyChangeListener);
+		        boundaries.removePropertyChangeListener(propertyChangeListener);
+			}
+		});
 
 
     }
+
+
 
     public void setImageResultsPanel()
     {
@@ -496,6 +531,8 @@ public class ImageResultsTableController
 
     private void removeAllButtonActionPerformed(ActionEvent evt)
     {
+    	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
+    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
         PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
         model.removeAllBoundaries();
         imageSearchModel.setResultIntervalCurrentlyShown(null);
@@ -503,6 +540,8 @@ public class ImageResultsTableController
 
     private void removeAllImagesButtonActionPerformed(ActionEvent evt)
     {
+    	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
+    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
         imageCollection.removeImages(ImageSource.GASKELL);
         imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
         imageCollection.removeImages(ImageSource.SPICE);
@@ -510,6 +549,9 @@ public class ImageResultsTableController
         imageCollection.removeImages(ImageSource.CORRECTED);
         imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
         imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+        if (originalInterval != null)
+        	showImageBoundaries(originalInterval);
+
     }
 
     protected void prevButtonActionPerformed(ActionEvent evt)
@@ -546,18 +588,35 @@ public class ImageResultsTableController
         }
     }
 
+    protected void removeTableListeners()
+    {
+    	TableModelListener[] tableModelListeners = ((DefaultTableModel)imageResultsTableView.getResultList().getModel()).getTableModelListeners();
+    	for (TableModelListener listener : tableModelListeners)
+    		((DefaultTableModel)imageResultsTableView.getResultList().getModel()).removeTableModelListener(listener);
+    }
+
+    protected void addTableListeners()
+    {
+    	((DefaultTableModel)imageResultsTableView.getResultList().getModel()).addTableModelListener(tableModelListener);
+    }
+
     public void setImageResults(List<List<String>> results)
     {
         JTable resultTable = imageResultsTableView.getResultList();
+        DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
+        tableModel.setRowCount(0);
         imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
         imageRawResults = results;
         stringRenderer.setImageRawResults(imageRawResults);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+//        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+        removeTableListeners();
         imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
+        removeAllButtonActionPerformed(null);
+        removeAllImagesButtonActionPerformed(null);
 
         try
         {
@@ -572,7 +631,7 @@ public class ImageResultsTableController
             int[] columnsNeedingARenderer=new int[]{idColumnIndex,filenameColumnIndex,dateColumnIndex};
 
             // add the results to the list
-            ((DefaultTableModel)resultTable.getModel()).setRowCount(results.size());
+            tableModel.setRowCount(results.size());
             int i=0;
             for (List<String> str : results)
             {
@@ -582,26 +641,26 @@ public class ImageResultsTableController
                 ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), instrument);
                 if (imageCollection.containsImage(key))
                 {
-                    resultTable.setValueAt(true, i, mapColumnIndex);
+                	tableModel.setValueAt(true, i, mapColumnIndex);
                     PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                    resultTable.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
-                    resultTable.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
+                    tableModel.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
+                    tableModel.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
                 }
                 else
                 {
-                    resultTable.setValueAt(false, i, mapColumnIndex);
-                    resultTable.setValueAt(false, i, showFootprintColumnIndex);
-                    resultTable.setValueAt(false, i, frusColumnIndex);
+                	tableModel.setValueAt(false, i, mapColumnIndex);
+                	tableModel.setValueAt(false, i, showFootprintColumnIndex);
+                	tableModel.setValueAt(false, i, frusColumnIndex);
                 }
 
                 if (boundaries.containsBoundary(key))
-                    resultTable.setValueAt(true, i, bndrColumnIndex);
+                	tableModel.setValueAt(true, i, bndrColumnIndex);
                 else
-                    resultTable.setValueAt(false, i, bndrColumnIndex);
+                	tableModel.setValueAt(false, i, bndrColumnIndex);
 
-                resultTable.setValueAt(i+1, i, idColumnIndex);
-                resultTable.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
-                resultTable.setValueAt(sdf.format(dt), i, dateColumnIndex);
+                tableModel.setValueAt(i+1, i, idColumnIndex);
+                tableModel.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
+                tableModel.setValueAt(sdf.format(dt), i, dateColumnIndex);
 
                 for (int j : columnsNeedingARenderer)
                 {
@@ -635,13 +694,13 @@ public class ImageResultsTableController
 
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
+        modifiedTableRow = -1;
     }
 
     protected void showImageBoundaries(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
-
 //        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 //        model.removeAllBoundaries();
         boundaries.removeAllBoundaries();
@@ -752,6 +811,7 @@ public class ImageResultsTableController
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
                 JTable resultList = imageResultsTableView.getResultList();
+                DefaultTableModel tableModel = (DefaultTableModel)resultList.getModel();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
                 int size = imageRawResults.size();
 
@@ -764,34 +824,44 @@ public class ImageResultsTableController
 //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
 //                }
                 int startIndex = 0;
-                int endIndex = size;
+                int endIndex = Math.min(10, size);
+
+                if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
+                {
+                	startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+                	endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+                }
+
+                if (modifiedTableRow > size) modifiedTableRow = -1;
                 if (modifiedTableRow != -1)
                 {
                 	startIndex = modifiedTableRow;
                 	endIndex = startIndex + 1;
                 }
-
-                for (int i=startIndex; i<endIndex; ++i)
+                if (size > 0)
                 {
-                    String name = imageRawResults.get(i).get(0);
-                    ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
-                    if (imageCollection.containsImage(key))
-                    {
-                        resultList.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                        PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                        resultList.setValueAt(image.isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
-                        resultList.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
-                    }
-                    else
-                    {
-                        resultList.setValueAt(false, i, imageResultsTableView.getMapColumnIndex());
-                        resultList.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
-                        resultList.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
-                    }
-                    if (boundaries.containsBoundary(key))
-                        resultList.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
-                    else
-                        resultList.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
+	                for (int i=startIndex; i<endIndex; ++i)
+	                {
+	                    String name = imageRawResults.get(i).get(0);
+	                    ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+	                    if (imageCollection.containsImage(key))
+	                    {
+	                    	tableModel.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
+	                        PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
+	                        tableModel.setValueAt(image.isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
+	                        tableModel.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
+	                    }
+	                    else
+	                    {
+	                    	tableModel.setValueAt(false, i, imageResultsTableView.getMapColumnIndex());
+	                    	tableModel.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
+	                    	tableModel.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
+	                    }
+	                    if (boundaries.containsBoundary(key))
+	                    	tableModel.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
+	                    else
+	                    	tableModel.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
+	                }
                 }
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
