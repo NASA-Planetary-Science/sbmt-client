@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.saavtk.gui.GNumberField;
 import edu.jhuapl.saavtk.gui.GuiUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Track;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -45,7 +46,7 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	private GNumberField zTranslateNF;
 
 	// State vars
-	private ImmutableList<Integer> trackL;
+	private ImmutableList<Track> trackL;
 
 	/**
 	 * Standard Constructor
@@ -64,10 +65,9 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 	}
 
 	/**
-	 * Sets in the indexes corresponding to the tracks that will need to be
-	 * updated.
+	 * Sets in the list of Tracks that will need to be updated.
 	 */
-	public void setTracks(List<Integer> aTrackL)
+	public void setTracks(List<Track> aTrackL)
 	{
 		trackL = ImmutableList.copyOf(aTrackL);
 
@@ -75,9 +75,9 @@ public class LidarTrackTranslateDialog extends JDialog implements ActionListener
 
 		// Check that all translation vectors are equal
 		boolean tmpBool = true;
-		for (int aId : aTrackL)
+		for (Track aTrack : aTrackL)
 		{
-			Vector3D evalVect = refModel.getTranslation(aId);
+			Vector3D evalVect = refModel.getTranslation(aTrack);
 			tmpBool &= tmpVect.equals(evalVect);
 		}
 

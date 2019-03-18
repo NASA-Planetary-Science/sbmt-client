@@ -26,6 +26,7 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Track;
 
 public class LidarPopupMenu extends PopupMenu
 {
@@ -33,7 +34,7 @@ public class LidarPopupMenu extends PopupMenu
 	private LidarSearchDataCollection refModel;
 
 	// State vars
-	private ImmutableList<Integer> trackL;
+	private ImmutableList<Track> trackL;
 
 	// Gui vars
 	private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
@@ -132,9 +133,9 @@ public class LidarPopupMenu extends PopupMenu
 	}
 
 	/**
-	 * Sets in the selected tracks (indexes).
+	 * Sets in the selected Tracks.
 	 */
-	public void setSelectedTracks(List<Integer> aTrackL)
+	public void setSelectedTracks(List<Track> aTrackL)
 	{
 		trackL = ImmutableList.copyOf(aTrackL);
 		if (trackL.size() == 0)
@@ -142,8 +143,8 @@ public class LidarPopupMenu extends PopupMenu
 
 		// Determine if all tracks are shown
 		boolean isAllShown = true;
-		for (int aId : trackL)
-			isAllShown &= refModel.getTrack(aId).getIsVisible() == true;
+		for (Track aTrack : trackL)
+			isAllShown &= aTrack.getIsVisible() == true;
 
 		// Determine the display string
 		String displayStr = "Hide Track";
@@ -157,10 +158,10 @@ public class LidarPopupMenu extends PopupMenu
 		showTrackMI.setText(displayStr);
 
 		// Determine if all selected tracks have the same color
-		Color tmpColor = refModel.getTrack(trackL.get(0)).getColor();
+		Color tmpColor = trackL.get(0).getColor();
 		boolean isSameColor = true;
-		for (int aId : trackL)
-			isSameColor &= tmpColor.equals(refModel.getTrack(aId).getColor()) == true;
+		for (Track aTrack : trackL)
+			isSameColor &= tmpColor.equals(aTrack.getColor()) == true;
 
 		// If the track color equals one of the predefined colors, then check
 		// the corresponding menu item.
@@ -199,7 +200,7 @@ public class LidarPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			Color tmpColor = refModel.getTrack(trackL.get(0)).getColor();
+			Color tmpColor = trackL.get(0).getColor();
 			Color newColor = ColorChooser.showColorChooser(invoker, tmpColor);
 			if (newColor == null)
 				return;
@@ -222,13 +223,14 @@ public class LidarPopupMenu extends PopupMenu
 			Component invoker = getInvoker();
 
 			// TODO: The entire set of selected tracks should be saved
-			int trackId = trackL.get(0);
+			Track tmpTrack = trackL.get(0);
+			int trackId = refModel.getTracks().indexOf(tmpTrack);
 			File file = CustomFileChooser.showSaveDialog(invoker, "Save Lidar Track", "track" + trackId + ".tab");
 
 			try
 			{
 				if (file != null)
-					refModel.saveTrack(trackId, file, transformTrack);
+					refModel.saveTrack(tmpTrack, file, transformTrack);
 			}
 			catch (IOException e1)
 			{
@@ -317,8 +319,8 @@ public class LidarPopupMenu extends PopupMenu
 		{
 			// Determine if all tracks are shown
 			boolean isAllShown = true;
-			for (int aId : trackL)
-				isAllShown &= refModel.getTrack(aId).getIsVisible() == true;
+			for (Track aTrack: trackL)
+				isAllShown &= aTrack.getIsVisible() == true;
 
 			// Update the tracks visibility based on whether they are all shown
 			boolean tmpBool = isAllShown == false;
@@ -351,7 +353,7 @@ public class LidarPopupMenu extends PopupMenu
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			int tmpId = trackL.get(0);
+			Track tmpTrack = trackL.get(0);
 
 			try
 			{
@@ -361,7 +363,7 @@ public class LidarPopupMenu extends PopupMenu
 				List<Double> distance = new ArrayList<>();
 				List<Double> time = new ArrayList<>();
 
-				refModel.getGravityDataForTrack(tmpId, potential, acceleration, elevation, distance, time);
+				refModel.getGravityDataForTrack(tmpTrack, potential, acceleration, elevation, distance, time);
 
 				LidarPlot lidarPlot = new LidarPlot(refModel, potential, distance, time, "Potential", "J/kg");
 				lidarPlot.setVisible(true);
@@ -381,7 +383,7 @@ public class LidarPopupMenu extends PopupMenu
 	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
 	{
 		// Bail if we do not have selected tracks
-		List<Integer> tmpL = refModel.getSelectedTracks();
+		List<Track> tmpL = refModel.getSelectedTracks();
 		if (tmpL.size() == 0)
 			return;
 

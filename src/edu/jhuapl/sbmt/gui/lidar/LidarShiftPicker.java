@@ -18,7 +18,9 @@ import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.EditMode;
 import edu.jhuapl.saavtk.pick.PickUtilEx;
 import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Track;
 
 /**
  * Class which provides the functionality that enables a user to translate a
@@ -52,7 +54,7 @@ public class LidarShiftPicker extends Picker
 		refRenWin = renderer.getRenderWindowPanel();
 
 		smallBodyPicker = PickUtilEx.formSmallBodyPicker(refSmallBodyModel);
-		pointPicker = PickUtilEx.formStructurePicker((vtkActor) lidarModel.getProps().get(0));
+		pointPicker = PickUtilEx.formStructurePicker(lidarModel.getProps());
 
 		currEditMode = EditMode.CLICKABLE;
 		origPt = null;
@@ -95,15 +97,19 @@ public class LidarShiftPicker extends Picker
 		if (pickSucceeded != 1)
 			return;
 
-		// Retrieve the selected track
+		// Bail if we fail to pick something via our pointPicker
 		pickSucceeded = doPick(aEvent, pointPicker, refRenWin);
-		if (pickSucceeded != 1 || pointPicker.GetActor() != refLidarModel.getProps().get(0))
+		if (pickSucceeded != 1)
 			return;
 
-		int cellId = pointPicker.GetCellId();
-		int trackIdx = refLidarModel.getTrackIdFromCellId(cellId);
-		if (trackIdx >= 0)
-			origPt = refLidarModel.getLidarPointFromCellId(cellId).getTargetPosition();
+		// Retrieve the position of the selected LidarPoint
+		vtkActor tmpActor = pointPicker.GetActor();
+		int tmpCellId = pointPicker.GetCellId();
+		LidarPoint tmpLP = refLidarModel.getLidarPointFromVtkPick(tmpActor, tmpCellId);
+		if (tmpLP == null)
+			return;
+
+		origPt = tmpLP.getTargetPosition();
 	}
 
 	@Override
@@ -136,7 +142,7 @@ public class LidarShiftPicker extends Picker
 
 		// Perform the translation
 		double[] currPt = smallBodyPicker.GetPickPosition();
-		List<Integer> tmpL = refLidarModel.getSelectedTracks();
+		List<Track> tmpL = refLidarModel.getSelectedTracks();
 		Vector3D tmpVect = new Vector3D(currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ());
 		refLidarModel.setTranslation(tmpL, tmpVect);
 	}
@@ -145,8 +151,7 @@ public class LidarShiftPicker extends Picker
 	public void mouseMoved(MouseEvent aEvent)
 	{
 		int pickSucceeded = doPick(aEvent, pointPicker, refRenWin);
-
-		if (pickSucceeded == 1 && pointPicker.GetActor() == refLidarModel.getProps().get(0))
+		if (pickSucceeded == 1)
 			currEditMode = EditMode.DRAGGABLE;
 		else
 			currEditMode = EditMode.CLICKABLE;
