@@ -21,9 +21,9 @@ import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
 {
-
     Path exePathOnServer;
     Path demOutputBasePath;
+    DEMKey demKey;
 
     static protected class DEMCreationTask extends BasicTask
     {
@@ -59,9 +59,6 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
                 mapmakerProcess = wrapper.runMapmaker();
                 while (true)
                 {
-                    // if (isCancelled())
-                    // break;
-
                     fire(new TaskProgressEvent(DEMCreationTask.this, -1));
 
                     try
@@ -90,14 +87,14 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         protected DEMKey postProcessAndCreate(MapmakerNativeWrapper wrapper)
         {
             wrapper.convertCubeToFitsAndSaveInOutputFolder(false);
-            return new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
+            DEMKey demKey = new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
+            return demKey;
         }
 
     }
 
     public MapmakerDEMCreator(Path exePathOnServer, Path demOutputBasePath)
     {
-
         this.demOutputBasePath = demOutputBasePath;
         this.exePathOnServer = exePathOnServer;
     }
@@ -123,7 +120,6 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     @Override
     public boolean needToDownloadExecutable()
     {
-    	System.out.println("MapmakerDEMCreator: needToDownloadExecutable: looking for " + getExecutablePathOnServer().toString());
         return FileCache.getFileInfoFromServer(getExecutablePathOnServer().toString()).isNeedToDownload();
     }
 
@@ -173,7 +169,15 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         }
     }
 
+	@Override
+	public void setCompletionBlock(Runnable completionBlock)
+	{
+		// TODO Auto-generated method stub
+	}
 
-
-
+	@Override
+	public DEMKey getDEMKey()
+	{
+		return demKey;
+	}
 }

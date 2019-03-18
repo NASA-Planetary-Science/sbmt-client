@@ -108,22 +108,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         public String toString()
         {
             DecimalFormat df = new DecimalFormat("#.#####");
-            /*if (projectionType == ProjectionType.CYLINDRICAL)
-            {
-                return name + ", Cylindrical  ["
-                        + df.format(lllat) + ", "
-                        + df.format(lllon) + ", "
-                        + df.format(urlat) + ", "
-                        + df.format(urlon)
-                        + "]";
-            }
-            else
-            {
-                if (imageType == ImageType.GENERIC_IMAGE)
-                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
-                else
-                    return name + ", Perspective" + ", " + imageType;
-            }*/
             return name;
         }
     }
@@ -237,11 +221,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         });
         selectRegionPanel.add(clearRegionButton);
 
-//        final JLabel nameLabel = new JLabel("Name");
-//        nameTextField = new JFormattedTextField();
-//        nameTextField.setPreferredSize(new Dimension(200, 24));
-//        nameTextField.setText("map");
-
         final JLabel halfSizeLabel = new JLabel("Half Size (pixels)");
         halfSizeSpinner = new JSpinner(new SpinnerNumberModel(512, 1, 512, 1));
         halfSizeSpinner.setPreferredSize(new Dimension(75, 23));
@@ -327,8 +306,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
         pane.add(longitudeTextField, "width 200!, gapleft push, wrap");
         pane.add(pixelScaleLabel, ", gapleft 25, split 2");
         pane.add(pixelScaleTextField, "width 200!, gapleft push, wrap");
-//        pane.add(nameLabel, "split 2");
-//        pane.add(nameTextField);
         pane.add(halfSizeLabel, "split 2");
         pane.add(halfSizeSpinner);
 
@@ -783,34 +760,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
                 }
             }
         }
-
-        /*
-        ImageInfo imageInfo = new ImageInfo();
-        CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, instrument);
-        dialog.setImageInfo(imageInfo, modelManager.getSmallBodyModel().isEllipsoid());
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-
-        // If user clicks okay add to list
-        if (dialog.getOkayPressed())
-        {
-            imageInfo = dialog.getImageInfo();
-
-            System.out.println("Image Type: " + imageInfo.imageType);
-            System.out.println("Image Rotate: " + imageInfo.rotation);
-            System.out.println("Image Flip: " + imageInfo.flip);
-            SmallBodyModel body = modelManager.getSmallBodyModel();
-
-            try
-            {
-                saveImage(((DefaultListModel)imageList.getModel()).getSize(), null, imageInfo);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        */
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
@@ -897,69 +846,13 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
     @Override
     public void stateChanged(ChangeEvent e)
     {
-        /*ImageCollection images = (ImageCollection)modelManager().getModel(getImageCollectionModelName());
 
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            if (i instanceof PerspectiveImage)
-            {
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-
-                if (image.getImageDepth() > 1)
-                {
-                    if (image.isVisible())
-                    {
-                       image.setDisplayedImageRange(null);
-                       if (!source.getValueIsAdjusting())
-                       {
-                            image.loadFootprint();
-                            image.firePropertyChange();
-                       }
-                    }
-                }
-            }
-        }*/
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e)
     {
-       /* int index = imageList.getSelectedIndex();
-        Object selectedValue = imageList.getSelectedValue();
-        if (selectedValue == null)
-            return;
 
-        String imagestring = selectedValue.toString();
-        String[]tokens = imagestring.split(",");
-        String imagename = tokens[0].trim();
-
-        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-
-        Set<Image> imageSet = images.getImages();
-        for (Image i : imageSet)
-        {
-            if (i instanceof PerspectiveImage)
-            {
-                PerspectiveImage image = (PerspectiveImage)i;
-                ImageKey key = image.getKey();
-                String name = i.getImageName();
-                Boolean isVisible = i.isVisible();
-                System.out.println(name + ", " + isVisible);
-                if (name.equals(imagename))
-                {
-                    int depth = image.getImageDepth();
-                    if (image.isVisible())
-                    {
-                       image.setDisplayedImageRange(null);
-                       return;
-                    }
-                }
-            }
-        }*/
 
     }
 
@@ -1000,16 +893,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
                 return;
             }
         }
-
-//        final String demName = this.nameTextField.getText();
-//        if (demName == null || demName.length() == 0)
-//        {
-//            JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(this),
-//                    "Please enter a name.",
-//                    "Error",
-//                    JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
 
         // Start and manage the appropriate swing worker
         if(e.getSource() == mapmakerSubmitButton)
@@ -1093,10 +976,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
             mapmakerWorker.setCacheDir(outputFolder.getAbsolutePath());
             mapmakerWorker.setLowResModelPath(modelDir.getAbsolutePath());
 
-
-    //        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url " + Configuration.getDataRootURL());
-    //        System.out.println("CustomDEMPanel: runMapmakerSwingWorker: root url file version" + Configuration.getDataRootURL().getFile());
-    //        String rootDir = FileCache.createURL(smallBodyConfig.rootDirOnServer).toString();
             mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
             mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
             mapmakerWorker.executeDialog();
@@ -1106,7 +985,6 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
 
             DEMInfo newDemInfo = new DEMInfo();
             newDemInfo.name = demName;
-    //        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
             newDemInfo.demfilename = new File(outputFolder + File.separator + demName + ".fits").getAbsolutePath();
             try
             {

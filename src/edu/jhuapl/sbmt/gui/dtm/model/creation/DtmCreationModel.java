@@ -222,7 +222,6 @@ public class DtmCreationModel implements MetadataManager
     		DEMInfo demInfo = infoList.get(idx);
     		removeDEM(new DEMInfo[] { demInfo });
     	}
-
     }
 
     public void removeDEM(DEMInfo[] demInfos)
@@ -259,6 +258,8 @@ public class DtmCreationModel implements MetadataManager
         // Copy FIT file to cache
         String newFilename = "dem-" + uuid + ".fit";
         String newFilepath = getCustomDataFolder() + File.separator + newFilename;
+        System.out.println("DtmCreationModel: saveDEM: demfilename " + demInfo.demfilename);
+        System.out.println("DtmCreationModel: saveDEM: new file path " + newFilepath);
         FileUtil.copyFile(demInfo.demfilename,  newFilepath);
         // Change demInfo.demfilename to the new location of the file
         demInfo.demfilename = SafeURLPaths.instance().getUrl(newFilepath);
@@ -266,50 +267,15 @@ public class DtmCreationModel implements MetadataManager
         infoList.add(demInfo);
         fireInfoChangedListeners(demInfo);
         updateConfigFile();
-
     }
 
-
-//    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-//        int[] selectedIndices = getSelectedIndices();
-//        Arrays.sort(selectedIndices);
-//        for (int i=selectedIndices.length-1; i>=0; --i)
-//        {
-//            removeDEM(selectedIndices[i]);
-//        }
-//
-//        updateConfigFile();
-//    }//GEN-LAST:event_deleteButtonActionPerformed
-
-//    private void imageListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMousePressed
-//        imageListMaybeShowPopup(evt);
-//    }//GEN-LAST:event_imageListMousePressed
-//
-//    private void imageListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageListMouseReleased
-//        imageListMaybeShowPopup(evt);
-//    }//GEN-LAST:event_imageListMouseReleased
-//
-//    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-//        removeAllDEMsFromRenderer();
-//    }//GEN-LAST:event_removeAllButtonActionPerformed
-//
-//    private void imageListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_imageListValueChanged
-//        int[] indices = imageList.getSelectedIndices();
-//        if (indices == null || indices.length == 0)
-//        {
-//            moveUpButton.setEnabled(false);
-//            moveDownButton.setEnabled(false);
-//            deleteButton.setEnabled(false);
-//        }
-//        else
-//        {
-//            deleteButton.setEnabled(true);
-//            int minSelectedItem = imageList.getMinSelectionIndex();
-//            int maxSelectedItem = imageList.getMaxSelectionIndex();
-//            moveUpButton.setEnabled(minSelectedItem > 0);
-//            moveDownButton.setEnabled(maxSelectedItem < imageList.getModel().getSize()-1);
-//        }
-//    }
+    public void saveDEM(DEMKey demKey) throws IOException
+    {
+    	DEMInfo info = new DEMInfo();
+    	info.demfilename = demKey.fileName;
+    	info.name = demKey.displayName;
+    	saveDEM(info);
+    }
 
 	public ModelManager getModelManager()
 	{
@@ -493,6 +459,4 @@ public class DtmCreationModel implements MetadataManager
             return value;
         return null;
     }
-
-
 }

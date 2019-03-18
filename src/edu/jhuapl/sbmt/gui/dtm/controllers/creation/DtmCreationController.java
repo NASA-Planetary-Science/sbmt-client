@@ -45,12 +45,6 @@ public class DtmCreationController
 		DEMCollection dems = (DEMCollection)modelManager.getModel(ModelNames.DEM);
         DEMBoundaryCollection boundaries = (DEMBoundaryCollection)modelManager.getModel(ModelNames.DEM_BOUNDARY);
         demPopupMenu = new DEMPopupMenu(modelManager.getPolyhedralModel(), dems, boundaries, renderer, panel);
-//        if (config.hasBigmap == false && config.hasMapmaker == false)
-//        {
-//        	System.out.println("DtmCreationController: DtmCreationController: hiding mapmaker button");
-//        	controlController.panel.setVisible(false);
-//        }
-
 		model.addModelChangedListener(new DEMCreationModelChangedListener()
 		{
 
