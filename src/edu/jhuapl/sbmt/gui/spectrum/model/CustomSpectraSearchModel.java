@@ -89,6 +89,36 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             setGreenIndex(70);
             setBlueIndex(40);
         }
+        else if (instrument.getDisplayName().equals(SpectraType.NIS_SPECTRA.getDisplayName()))
+        {
+        	setRedMaxVal(0.05);
+            setGreenMaxVal(0.05);
+            setBlueMaxVal(0.05);
+
+            setRedIndex(1);
+            setGreenIndex(25);
+            setBlueIndex(50);
+        }
+        else if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
+        {
+        	setRedMaxVal(0.000001);
+            setGreenMaxVal(0.000001);
+            setBlueMaxVal(0.000001);
+
+            setRedIndex(50);
+            setGreenIndex(100);
+            setBlueIndex(150);
+        }
+        else if (instrument.getDisplayName().equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
+        {
+        	setRedMaxVal(0.00005);
+            setGreenMaxVal(0.0001);
+            setBlueMaxVal(0.002);
+
+            setRedIndex(736);
+            setGreenIndex(500);
+            setBlueIndex(50);
+        }
         else
         {
 	        setRedMaxVal(0.000001);
