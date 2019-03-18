@@ -54,6 +54,8 @@ public class CustomSpectraSearchController
             public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
                 List<List<String>> formattedResults = new ArrayList<List<String>>();
+                System.out.println(
+						"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: results size " + results.size());
                 for (CustomSpectrumKeyInterface info : results)
                 {
                     List<String> res = new ArrayList<String>();
@@ -64,6 +66,7 @@ public class CustomSpectraSearchController
                 }
 
                 spectrumResultsTableController.setSpectrumResults(formattedResults);
+                spectrumSearchModel.updateColoring();
             }
 
             @Override
@@ -79,7 +82,6 @@ public class CustomSpectraSearchController
 //        this.searchParametersController.setupSearchParametersPanel();
 
         this.coloringController = new SpectrumColoringController(spectrumSearchModel);
-
 
 //        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
 //        {

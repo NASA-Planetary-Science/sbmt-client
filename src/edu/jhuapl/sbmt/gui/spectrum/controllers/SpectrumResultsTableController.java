@@ -616,7 +616,9 @@ public class SpectrumResultsTableController
     {
         public void tableChanged(TableModelEvent e)
         {
+        	System.out.println("SpectrumResultsTableController.SpectrumResultsTableModeListener: tableChanged: model is " + model.getClass());
             List<List<String>> spectrumRawResults = model.getSpectrumRawResults();
+            System.out.println("SpectrumResultsTableController.SpectrumResultsTableModeListener: tableChanged: raw results size " + spectrumRawResults.size());
             ModelManager modelManager = model.getModelManager();
             SpectraCollection spectra = (SpectraCollection)modelManager.getModel(model.getSpectrumCollectionModelName());
             int actualRow = panel.getResultList().getRowSorter().convertRowIndexToView(e.getFirstRow());

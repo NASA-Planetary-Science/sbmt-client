@@ -31,14 +31,14 @@ import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
-import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.model.image.CustomPerspectiveImage;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
-import edu.jhuapl.sbmt.model.spectrum.ISpectraType;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
@@ -59,7 +59,17 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
     private boolean initialized = false;
     private int numImagesInCollection = -1;
     final Key<List<CustomSpectrumKeyInterface>> customSpectraKey = Key.of("customSpectra");
-
+    private Vector<SpectrumColoringChangedListener> colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
+    private Double redMinVal = 0.0;
+    private Double redMaxVal;
+    private Double greenMinVal = 0.0;
+    private Double greenMaxVal;
+    private Double blueMinVal = 0.0;
+    private Double blueMaxVal;
+    private boolean greyScaleSelected;
+    private int redIndex;
+    private int greenIndex;
+    private int blueIndex;
 
     public CustomSpectraSearchModel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
@@ -69,13 +79,26 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         this.customSpectra = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
 
-        setRedMaxVal(0.000001);
-        setGreenMaxVal(0.000001);
-        setBlueMaxVal(0.000001);
+        if (instrument.getDisplayName().equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
+        {
+        	setRedMaxVal(0.00005);
+            setGreenMaxVal(0.0001);
+            setBlueMaxVal(0.002);
 
-        setRedIndex(1);
-        setGreenIndex(1);
-        setBlueIndex(1);
+            setRedIndex(100);
+            setGreenIndex(70);
+            setBlueIndex(40);
+        }
+        else
+        {
+	        setRedMaxVal(0.000001);
+	        setGreenMaxVal(0.000001);
+	        setBlueMaxVal(0.000001);
+
+	        setRedIndex(1);
+	        setGreenIndex(25);
+	        setBlueIndex(50);
+        }
     }
 
     @Override
@@ -103,7 +126,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         for (int i=0; i<results.size(); ++i)
         {
-            OREXSearchSpec spectrumSpec = new OREXSearchSpec();
+            SpectrumSearchSpec spectrumSpec = new SpectrumSearchSpec();
             spectrumSpec.fromFile(line);
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
@@ -132,30 +155,92 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     protected void fireResultsChanged()
     {
+    	System.out.println("CustomSpectraSearchModel: fireResultsChanged: number of listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
             listener.resultsChanged(customSpectra);
         }
     }
 
+    @Override
+    public void addColoringChangedListener(SpectrumColoringChangedListener listener)
+    {
+        colorChangedListeners.add(listener);
+    }
+
+    @Override
+    public void removeColoringChangedListener(SpectrumColoringChangedListener listener)
+    {
+        colorChangedListeners.remove(listener);
+    }
+
+    @Override
+    public void removeAllColoringChangedListeners()
+    {
+        colorChangedListeners.removeAllElements();
+    }
+
+    @Override
+    public void coloringOptionChanged()
+    {
+        fireColoringChanged();
+    }
+
+    private void fireColoringChanged()
+    {
+        for (SpectrumColoringChangedListener listener : colorChangedListeners)
+        {
+            listener.coloringChanged();
+        }
+    }
+
+    @Override
+    public void updateColoring()
+    {
+        // If we are currently editing user defined functions
+        // (i.e. the dialog is open), do not update the coloring
+        // since we may be in an inconsistent state.
+        if (isCurrentlyEditingUserDefinedFunction())
+            return;
+        System.out.println("CustomSpectrumSearchModel: updateColoring: indices " + redIndex + " " + greenIndex + " " + blueIndex);
+        SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
+        if (isGreyScaleSelected())
+        {
+            collection.setChannelColoring(
+                    new int[]{redIndex, redIndex, redIndex},
+                    new double[]{redMinVal, redMinVal, redMinVal},
+                    new double[]{redMaxVal, redMaxVal, redMaxVal},
+                    instrument);
+        }
+        else
+        {
+            collection.setChannelColoring(
+                    new int[]{redIndex, greenIndex, blueIndex},
+                    new double[]{redMinVal, greenMinVal, blueMinVal},
+                    new double[]{redMaxVal, greenMaxVal, blueMaxVal},
+                    instrument);
+        }
+        fireColoringChanged();
+    }
+
     public void loadSpectrum(SpectrumKeyInterface key, SpectraCollection images) throws FitsException, IOException
     {
-        images.addSpectrum(key);
+        images.addSpectrum(key, true);
     }
 
     public void loadSpectra(String name, CustomSpectrumKeyInterface info)
     {
-    	FileType fileType = info.getFileType();
-    	ISpectraType spectrumType = info.getSpectrumType();
-    	String spectrumFilename = info.getSpectrumFilename();
-    	String pointingFilename = info.getPointingFilename();
-    	CustomSpectrumKeyInterface key = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
+//    	FileType fileType = info.getFileType();
+//    	ISpectraType spectrumType = info.getSpectrumType();
+//    	String spectrumFilename = info.getSpectrumFilename();
+//    	String pointingFilename = info.getPointingFilename();
+//    	CustomSpectrumKeyInterface key = new CustomSpectrumKey(, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
 
     	try
         {
-            if (!spectrumCollection.containsKey(key))
+            if (!spectrumCollection.containsKey(info))
             {
-                loadSpectrum(key, spectrumCollection);
+                loadSpectrum(info, spectrumCollection);
             }
         }
         catch (Exception e1) {
@@ -216,7 +301,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
     {
-        SpectrumKey key = new SpectrumKey(getCustomDataFolder() + File.separator + imagePathName, null, null, instrument, "");
+        SpectrumKeyInterface key = new SpectrumKey(getCustomDataFolder() + File.separator + imagePathName, null, null, instrument, "");
         return key;
     }
 
@@ -233,10 +318,10 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
         else
         {
-            String newFilename = "spectrum-" + newSpectrumInfo.getName() + "-" + uuid + ".spect";
+            String newFilename = newSpectrumInfo.getName() + "-" + uuid + ".spect";
             String newFilepath = getCustomDataFolder() + File.separator + newFilename;
             FileUtil.copyFile(newSpectrumInfo.getSpectrumFilename(),  newFilepath);
-            String newFileInfoname = "spectrum-" + newSpectrumInfo.getName() + "-" + uuid + ".INFO";
+            String newFileInfoname = newSpectrumInfo.getName() + "-" + uuid + ".INFO";
             String newFileInfopath = getCustomDataFolder() + File.separator + newFileInfoname;
             FileUtil.copyFile(newSpectrumInfo.getPointingFilename(),  newFileInfopath);
             // Change newImageInfo.imagefilename to the new location of the file
@@ -516,7 +601,18 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
             retrieve(metadata);
         }
 
+        List<List<String>> tempResults = new ArrayList<List<String>>();
+        for (CustomSpectrumKeyInterface info : customSpectra)
+        {
+            List<String> res = new ArrayList<String>();
+            res.add(info.getSpectrumFilename());
+            res.add(getCustomDataFolder() + File.separator + info.getSpectrumFilename());
+            tempResults.add(res);
+        }
+        setSpectrumRawResults(tempResults);
+
         fireResultsChanged();
+        System.out.println("CustomSpectraSearchModel: initializeSpecList: num of custom " + customSpectra.size());
         fireResultsCountChanged(customSpectra.size());
     }
 
@@ -549,7 +645,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
     }
 
-    public void setSpectrumVisibility(SpectrumKey key, boolean visible)
+    public void setSpectrumVisibility(SpectrumKeyInterface key, boolean visible)
     {
         if (spectrumCollection.containsKey(key))
         {
@@ -707,5 +803,137 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         if (value != null)
             return value;
         return null;
+    }
+
+
+    public Double getRedMinVal()
+    {
+        return redMinVal;
+    }
+
+
+    public void setRedMinVal(Double redMinVal)
+    {
+        this.redMinVal = redMinVal;
+    }
+
+
+    public Double getRedMaxVal()
+    {
+        return redMaxVal;
+    }
+
+
+    public void setRedMaxVal(Double redMaxVal)
+    {
+        this.redMaxVal = redMaxVal;
+    }
+
+
+    public Double getGreenMinVal()
+    {
+        return greenMinVal;
+    }
+
+
+    public void setGreenMinVal(Double greenMinVal)
+    {
+        this.greenMinVal = greenMinVal;
+    }
+
+
+    public Double getGreenMaxVal()
+    {
+        return greenMaxVal;
+    }
+
+
+    public void setGreenMaxVal(Double greenMaxVal)
+    {
+        this.greenMaxVal = greenMaxVal;
+    }
+
+
+    public Double getBlueMinVal()
+    {
+        return blueMinVal;
+    }
+
+
+    public void setBlueMinVal(Double blueMinVal)
+    {
+        this.blueMinVal = blueMinVal;
+    }
+
+
+    public Double getBlueMaxVal()
+    {
+        return blueMaxVal;
+    }
+
+
+    public void setBlueMaxVal(Double blueMaxVal)
+    {
+        this.blueMaxVal = blueMaxVal;
+    }
+
+
+    public boolean isGreyScaleSelected()
+    {
+        return greyScaleSelected;
+    }
+
+
+    public void setGreyScaleSelected(boolean greyScaleSelected)
+    {
+        this.greyScaleSelected = greyScaleSelected;
+    }
+
+
+    public int getRedIndex()
+    {
+        return redIndex;
+    }
+
+
+    public void setRedIndex(int redIndex)
+    {
+        this.redIndex = redIndex;
+    }
+
+
+    public int getGreenIndex()
+    {
+        return greenIndex;
+    }
+
+
+    public void setGreenIndex(int greenIndex)
+    {
+        this.greenIndex = greenIndex;
+    }
+
+
+    public int getBlueIndex()
+    {
+        return blueIndex;
+    }
+
+
+    public void setBlueIndex(int blueIndex)
+    {
+        this.blueIndex = blueIndex;
+    }
+
+
+    public String getSpectrumColoringStyleName()
+    {
+        return spectrumColoringStyleName;
+    }
+
+
+    public void setSpectrumColoringStyleName(String spectrumColoringStyleName)
+    {
+        this.spectrumColoringStyleName = spectrumColoringStyleName;
     }
 }

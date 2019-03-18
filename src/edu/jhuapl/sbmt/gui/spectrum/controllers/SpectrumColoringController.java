@@ -186,19 +186,23 @@ public class SpectrumColoringController
         boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
         panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
         panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
+        System.out.println("SpectrumColoringController: coloringComboBoxActionPerformed: is emission selected " + isEmissionSelected);
         model.setSpectrumColoringStyleName(coloringName);
         model.coloringOptionChanged();
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
+    	model.setBlueIndex(panel.getRedComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
+    	model.setBlueIndex(panel.getGreenComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void blueComboBoxActionPerformed(ActionEvent evt) {
+    	model.setBlueIndex(panel.getBlueComboBox().getSelectedIndex());
         model.updateColoring();
     }
 

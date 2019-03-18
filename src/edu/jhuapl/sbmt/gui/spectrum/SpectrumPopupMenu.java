@@ -38,7 +38,6 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
@@ -190,11 +189,11 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     ISpectralInstrument instrument;
 
-    public void setCurrentSpectrum(SpectrumKey key)
+    public void setCurrentSpectrum(SpectrumKeyInterface key)
     {
         spectrumKeys.clear();
         spectrumKeys.add(key);
-        currentSpectrum = key.name;
+        currentSpectrum = key.getName();
         updateMenuItems();
     }
 

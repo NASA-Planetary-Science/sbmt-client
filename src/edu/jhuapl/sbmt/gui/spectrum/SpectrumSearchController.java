@@ -1130,6 +1130,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     protected void showFootprints(IdPair idPair)
     {
+    	System.out.println("SpectrumSearchController: showFootprints: showing footprints");
         int startId = idPair.id1;
         int endId = idPair.id2;
 
@@ -1213,6 +1214,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         Double blueMinVal = (Double)view.getBlueMinSpinner().getValue();
         Double blueMaxVal = (Double)view.getBlueMaxSpinner().getValue();
+        System.out.println("SpectrumSearchController: updateColoring: red min " + redMinVal);
+        System.out.println("SpectrumSearchController: updateColoring: red max " + redMaxVal);
 
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
         if (view.getGrayscaleCheckBox().isSelected())

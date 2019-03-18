@@ -59,7 +59,7 @@ public class SpectrumKey implements SpectrumKeyInterface, StorableAsMetadata<Spe
     @Override
     public boolean equals(Object obj)
     {
-        return name.equals(((SpectrumKey)obj).name);
+        return name.equals(((SpectrumKeyInterface)obj).getName());
                // && source.equals(((ImageKey)obj).source);
     }
 

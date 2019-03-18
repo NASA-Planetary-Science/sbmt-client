@@ -283,7 +283,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         // since we may be in an inconsistent state.
         if (isCurrentlyEditingUserDefinedFunction())
             return;
-
+        System.out.println("SpectrumSearchModel: updateColoring: indices " + redIndex + " " + greenIndex + " " + blueIndex);
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         if (isGreyScaleSelected())
         {
@@ -933,7 +933,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
 
     public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
     {
-        SpectrumKey key = new SpectrumKey(imagePathName, null, null, instrument, "");
+        SpectrumKeyInterface key = new SpectrumKey(imagePathName, null, null, instrument, "");
         return key;
     }
 

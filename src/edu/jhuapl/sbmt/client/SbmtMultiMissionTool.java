@@ -31,6 +31,8 @@ import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -101,6 +103,8 @@ public class SbmtMultiMissionTool
 		AbstractEllipsePolygonModel.EllipsePolygon.initializeSerializationProxy();
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
+		SpectrumKey.initializeSerializationProxy();
+		CustomSpectrumKey.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

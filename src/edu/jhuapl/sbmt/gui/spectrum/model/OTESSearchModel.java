@@ -12,7 +12,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 
@@ -64,7 +64,7 @@ public class OTESSearchModel extends SpectrumSearchModel
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         for (int i=0; i<results.size(); ++i)
         {
-            OREXSearchSpec spectrumSpec = new OREXSearchSpec();
+            SpectrumSearchSpec spectrumSpec = new SpectrumSearchSpec();
             spectrumSpec.fromFile(line);
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
