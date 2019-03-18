@@ -11,12 +11,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,7 +37,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
@@ -88,7 +91,8 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private JToggleButton dragB;
 
 	private JCheckBox showErrorCB;
-	private JLabel errorL;
+	private JComboBox<ItemGroup> errorModeBox;
+	private JLabel errorModeL, errorValueL;
 
 	private RadialOffsetChanger radialOffsetChanger;
 	private JSpinner pointSizeSpinner;
@@ -172,13 +176,21 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		add(pointSizeSpinner, "growx,wrap");
 
 		// Error section
-		showErrorCB = new JCheckBox("Show Error");
+		showErrorCB = new JCheckBox("Show Error:");
 		showErrorCB.addActionListener(this);
 		showErrorCB.setToolTipText(
 				"<html>\nIf checked, the track error will be calculated and shown to the right of this checkbox.<br>\nWhenever a change is made to the tracks, the track error will be updated. This can be<br>\na slow operation which is why this checkbox is provided to disable it.<br>\n<br>\nThe track error is computed as the mean distance between each lidar point and its<br>\nclosest point on the asteroid.");
-		errorL = new JLabel("");
+		errorValueL = new JLabel("");
 		add(showErrorCB, "span,split");
-		add(errorL, "growx,w 0::");
+		add(errorValueL, "growx,w 0::");
+
+		ItemGroup[] errorModeArr = { ItemGroup.All, ItemGroup.Visible, ItemGroup.Selected };
+		errorModeL = new JLabel("Mode:");
+		errorModeBox = new JComboBox<>(errorModeArr);
+		errorModeBox.setSelectedItem(ItemGroup.Visible);
+		errorModeBox.addActionListener(this);
+		add(errorModeL, "");
+		add(errorModeBox, "");
 
 		updateGui();
 		configureColumnWidths();
@@ -218,7 +230,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		Object source = aEvent.getSource();
 
-		List<Integer> tmpL = refModel.getSelectedTracks();
+		List<Track> tmpL = refModel.getSelectedTracks();
 		if (source == selectAllB)
 			trackTable.selectAll();
 		else if (source == selectNoneB)
@@ -235,10 +247,13 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 			doActionTranslate(tmpL);
 		else if (source == dragB)
 			doActionDrag();
+		else if (source == errorModeBox)
+			updateErrorUI();
 		else if (source == showErrorCB)
-			doActionError();
+			updateErrorUI();
 
 		updateGui();
+		updateErrorUI();
 	}
 
 	@Override
@@ -285,10 +300,13 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	@Override
 	public void valueChanged(ListSelectionEvent aEvent)
 	{
+		// Transform from rows to Tracks
 		int[] idxArr = trackTable.getSelectedRows();
+		List<Track> pickL = new ArrayList<>();
+		for (int aIdx : idxArr)
+			pickL.add(refModel.getTrack(aIdx));
 
 		// Update the model's selection
-		List<Integer> pickL = Ints.asList(idxArr);
 		refModel.setSelectedTracks(pickL);
 
 		updateGui();
@@ -337,29 +355,18 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		refPickManager.setActivePicker(targPicker);
 		if (targPicker == null)
-			refModel.deselectSelectedPoint();
-	}
-
-	/**
-	 * Helper method that handles the show error action.
-	 */
-	private void doActionError()
-	{
-		boolean tmpBool = showErrorCB.isSelected();
-		refModel.setEnableTrackErrorComputation(tmpBool);
-
-		updateErrorUI();
+			refModel.setSelectedPoint(null, null);
 	}
 
 	/**
 	 * Helper method that handles the drag action.
 	 */
-	private void doActionTranslate(List<Integer> aIdxL)
+	private void doActionTranslate(List<Track> aTrackL)
 	{
 		if (translateDialog == null)
 			translateDialog = new LidarTrackTranslateDialog(this, refModel);
 
-		translateDialog.setTracks(aIdxL);
+		translateDialog.setTracks(aTrackL);
 		translateDialog.setVisible(true);
 	}
 
@@ -373,28 +380,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		PickEvent pickEvent = (PickEvent) aEvent.getNewValue();
 		boolean isPass = refModelManager.getModel(pickEvent.getPickedProp()) == refModel;
-		isPass &= refModel.isDataPointsProp(pickEvent.getPickedProp()) == true;
 		if (isPass == false)
 			return;
 
-		int id = pickEvent.getPickedCellId();
-		refModel.selectPoint(id);
-
-		int idx = refModel.getTrackIdFromCellId(id);
-		if (idx < 0)
-			return;
-
-		// Determine the tracks that will be marked as selected
-		List<Integer> tmpL = refModel.getSelectedTracks();
-		tmpL = new ArrayList<>(tmpL);
-
-		if (pickEvent.getMouseEvent().isControlDown() == false)
-			tmpL = ImmutableList.of(idx);
-		else
-			tmpL.add(idx);
-
-		// Update the model's selection
-		refModel.setSelectedTracks(tmpL);
+		// Delegate
+		refModel.handlePickAction(pickEvent);
 	}
 
 	/**
@@ -413,10 +403,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 				int col = trackTable.columnAtPoint(e.getPoint());
 				if (e.getClickCount() == 2 && row >= 0 && col == 1)
 				{
-					Color oldColor = refModel.getTrack(row).getColor();
+					Track tmpTrack = refModel.getTrack(row);
+					Color oldColor = tmpTrack.getColor();
 					Color tmpColor = ColorChooser.showColorChooser(JOptionPane.getFrameForComponent(trackTable), oldColor);
 					if (tmpColor != null)
-						refModel.setTrackColor(row, tmpColor);
+						refModel.setTrackColor(tmpTrack, tmpColor);
 
 					return;
 				}
@@ -461,7 +452,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		}
 
 		// Bail if there is no selection
-		List<Integer> tmpL = refModel.getSelectedTracks();
+		List<Track> tmpL = refModel.getSelectedTracks();
 		if (tmpL.size() == 0)
 			return;
 
@@ -474,21 +465,52 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	 */
 	private void updateErrorUI()
 	{
-		String errorStr = "";
-
 		boolean tmpBool = showErrorCB.isSelected();
-		if (tmpBool == true)
+		errorModeL.setEnabled(tmpBool);
+		errorModeBox.setEnabled(tmpBool);
+
+		// Bail if error computations are disabled
+		String errorStr = "";
+		if (tmpBool == false)
 		{
-			SigFigNumberFormat errFormat = new SigFigNumberFormat(7);
-			DecimalFormat cntFormat = new DecimalFormat("#,###");
-			double errVal = refModel.getTrackError();
-			int numTracks = refModel.getNumberOfVisibleTracks();
-			int numPoints = refModel.getLastNumberOfPointsForTrackError();
-			errorStr = "" + errFormat.format(errVal) + " RMS: ";
-			errorStr += cntFormat.format(numTracks) + " visible tracks / ";
-			errorStr += "(" + cntFormat.format(numPoints) + " points )";
+			errorValueL.setText(errorStr);
+			return;
 		}
-		errorL.setText(errorStr);
+
+		// Calculate the error computations and update the relevant display
+		ItemGroup errorMode = (ItemGroup) errorModeBox.getSelectedItem();
+		Set<Track> selectedS = new HashSet<>(refModel.getSelectedTracks());
+
+		// Calculate the cumulative track error and number of lidar points
+		double errorSum = 0.0;
+		int cntPoints = 0;
+		int cntTracks = 0;
+		for (int aRow = 0; aRow < trackTable.getRowCount(); aRow++)
+		{
+			// Skip over Tracks that we are not interested in
+			Track tmpTrack = refModel.getTrack(aRow);
+			if (errorMode == ItemGroup.Visible && tmpTrack.getIsVisible() == false)
+				continue;
+			if (errorMode == ItemGroup.Selected && selectedS.contains(tmpTrack) == false)
+				continue;
+
+			errorSum += refModel.getTrackError(tmpTrack);
+			cntPoints += tmpTrack.getNumberOfPoints();
+			cntTracks++;
+		}
+
+		// Calculate RMS error
+		double errorRMS = Math.sqrt(errorSum / cntPoints);
+		if (cntTracks == 0 || cntPoints == 0)
+			errorRMS = 0.0;
+
+		// Update the errorValueL
+		SigFigNumberFormat errFormat = new SigFigNumberFormat(7, "---");
+		DecimalFormat cntFormat = new DecimalFormat("#,###");
+		errorStr = errFormat.format(errorRMS) + " RMS: ";
+		errorStr += cntFormat.format(cntTracks) + " tracks ";
+		errorStr += "(" + cntFormat.format(cntPoints) + " points)";
+		errorValueL.setText(errorStr);
 	}
 
 	/**
@@ -506,7 +528,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		for (Track aTrack : refModel.getTracks())
 			cntFullPoints += aTrack.getNumberOfPoints();
 
-		List<Integer> pickL = refModel.getSelectedTracks();
+		List<Track> pickL = refModel.getSelectedTracks();
 		int cntPickTracks = pickL.size();
 		isEnabled = cntPickTracks > 0;
 		selectNoneB.setEnabled(isEnabled);
@@ -523,12 +545,10 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		int cntPickPoints = 0;
 		int cntShowTracks = 0;
-		for (int aId : pickL)
+		for (Track aTrack : pickL)
 		{
-			Track tmpTrack = refModel.getTrack(aId);
-			cntPickPoints += tmpTrack.getNumberOfPoints();
-
-			if (tmpTrack.getIsVisible() == true)
+			cntPickPoints += aTrack.getNumberOfPoints();
+			if (aTrack.getIsVisible() == true)
 				cntShowTracks++;
 		}
 
@@ -558,11 +578,19 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	 */
 	private void updateTableSelection()
 	{
+		// Form a reverse lookup map of Track to index
+		List<Track> fullTrackL = refModel.getTracks();
+		Map<Track, Integer> revLookM = new HashMap<>();
+		for (int aIdx = 0; aIdx < fullTrackL.size(); aIdx++)
+			revLookM.put(fullTrackL.get(aIdx), aIdx);
+
 		int[] idxArr = trackTable.getSelectedRows();
 		List<Integer> oldL = Ints.asList(idxArr);
 		Set<Integer> oldS = new LinkedHashSet<>(oldL);
 
-		List<Integer> newL = refModel.getSelectedTracks();
+		List<Integer> newL = new ArrayList<>();
+		for (Track aTrack : refModel.getSelectedTracks())
+			newL.add(revLookM.get(aTrack));
 		Set<Integer> newS = new LinkedHashSet<>(newL);
 
 		// Bail if nothing has changed
