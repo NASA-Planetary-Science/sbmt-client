@@ -97,6 +97,7 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
     DEMInfo newDemInfo;
     private Runnable completionBlock;
 
+
 	public MapmakerRemoteDEMCreator(Path demOutputBasePath, SmallBodyViewConfig smallBodyConfig)
 	{
 		this.smallBodyConfig = smallBodyConfig;
@@ -208,7 +209,7 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 		        if (mapmakerWorker.isCancelled())
 		            return;
 
-		        DEMInfo newDemInfo = new DEMInfo();
+		        newDemInfo = new DEMInfo();
 		        newDemInfo.name = demName;
 		        newDemInfo.demfilename = new File(getDEMOutputBasePath().toFile() + File.separator + demName + ".fits").getAbsolutePath();
 		        completionBlock.run();

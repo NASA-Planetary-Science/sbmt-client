@@ -37,6 +37,7 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 	PickManager pickManager;
 	private DEMCreator creationTool;
 	private SmallBodyViewConfig config;
+	Task task = null;
 
 	public DtmCreationControlController(SmallBodyViewConfig config, DtmCreationModel model, final PickManager pickManager, DEMCreator creationTool)
 	{
@@ -235,7 +236,25 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
             String demName = JOptionPane.showInputDialog(panel, "Enter a name", "Name the DEM", JOptionPane.PLAIN_MESSAGE);
             if (demName != null && !demName.equals(""))
             {
-            	Task task = null;
+        		creationTool.setCompletionBlock(new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						try
+						{
+							model.saveDEM(creationTool.getDEMKey());
+						}
+						catch (IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				});
+
             	if (panel.getSetSpecifyRegionManuallyCheckbox().isSelected())
             	{
             		task = creationTool.getCreationTask(demName, Double.parseDouble(panel.getLatitudeTextField().getText()),
@@ -246,28 +265,9 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
             	{
             		task = creationTool.getCreationTask(demName, centerPoint, radius, pixHalfSize);
             	}
-            	if (config.hasRemoteMapmaker)
-            	{
-            		creationTool.setCompletionBlock(new Runnable()
-					{
+            	if (task == null) return;
+        		task.run();
 
-						@Override
-						public void run()
-						{
-							try
-							{
-								model.saveDEM(creationTool.getDEMKey());
-							}
-							catch (IOException e)
-							{
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-						}
-					});
-            	}
-            	task.run();
             }
             else
             {

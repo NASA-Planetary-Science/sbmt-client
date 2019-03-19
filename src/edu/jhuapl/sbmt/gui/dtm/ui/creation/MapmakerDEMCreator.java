@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FilenameUtils;
 
+import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.gui.ProgressBarSwingWorker;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -24,15 +28,21 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     Path exePathOnServer;
     Path demOutputBasePath;
     DEMKey demKey;
+    MapmakerNativeWrapper wrapper = null;
+    private Runnable completionBlock;
+    DEMCreationTask task = null;
 
     static protected class DEMCreationTask extends BasicTask
     {
 
         MapmakerNativeWrapper wrapper;
+        Runnable completionBlock;
+        private DEMKey demKey;
 
-        public DEMCreationTask(MapmakerNativeWrapper wrapper)
+        public DEMCreationTask(MapmakerNativeWrapper wrapper, DEMKey key)
         {
             this.wrapper=wrapper;
+            this.demKey = key;
         }
 
         @Override
@@ -46,41 +56,60 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         {
             fire(new TaskStartedEvent(this));
             processAndWait(wrapper);
-            DEMKey key=postProcessAndCreate(wrapper);
-            fire(new DEMCreatedEvent(this, key));
+            demKey = postProcessAndCreate(wrapper);
+            fire(new DEMCreatedEvent(this, demKey));
             fire(new TaskFinishedEvent(this));
+            completionBlock.run();
         }
 
         protected void processAndWait(MapmakerNativeWrapper wrapper)
         {
-            Process mapmakerProcess;
-            try
-            {
-                mapmakerProcess = wrapper.runMapmaker();
-                while (true)
-                {
-                    fire(new TaskProgressEvent(DEMCreationTask.this, -1));
+        	ProgressBarSwingWorker worker = new ProgressBarSwingWorker(null, "Mapmaker")
+			{
 
-                    try
-                    {
-                        mapmakerProcess.exitValue();
-                        break;
-                    }
-                    catch (IllegalThreadStateException e)
-                    {
-                        // e.printStackTrace();
-                        // do nothing. We'll get here if the process is still
-                        // running
-                    }
+				@Override
+				protected Void doInBackground() throws Exception
+				{
+					setIndeterminate(true);
+		            setCancelButtonEnabled(false);
+		            setProgress(1);
+		            setLabelText("Running Mapmaker.....");
 
-                    Thread.sleep(333);
-                }
-            }
-            catch (IOException | InterruptedException e1)
-            {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
+		            Process mapmakerProcess;
+		            try
+		            {
+		                mapmakerProcess = wrapper.runMapmaker();
+		                while (true)
+		                {
+		                    fire(new TaskProgressEvent(DEMCreationTask.this, -1));
+
+		                    try
+		                    {
+		                        mapmakerProcess.exitValue();
+		                        break;
+		                    }
+		                    catch (IllegalThreadStateException e)
+		                    {
+		                        // e.printStackTrace();
+		                        // do nothing. We'll get here if the process is still
+		                        // running
+		                    }
+
+		                    Thread.sleep(333);
+		                }
+		            }
+		            catch (IOException | InterruptedException e1)
+		            {
+		                // TODO Auto-generated catch block
+		                e1.printStackTrace();
+		            }
+		            setProgress(100);
+
+		            return null;
+				}
+			};
+			worker.executeDialog();
+
 
         }
 
@@ -90,6 +119,11 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
             DEMKey demKey = new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
             return demKey;
         }
+
+		public void setCompletionBlock(Runnable completionBlock)
+		{
+			this.completionBlock = completionBlock;
+		}
 
     }
 
@@ -127,14 +161,17 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     public Task getCreationTask(String name, double latDeg, double lonDeg,
             double pixScaleMeters, int pixHalfSize)
     {
-        final MapmakerNativeWrapper wrapper=createWrapperInstance();
+        createWrapperInstance();
+        if (wrapper == null) return null;
         wrapper.setName(name);
         wrapper.setLatitude(latDeg);
         wrapper.setLongitude(lonDeg);
         wrapper.setPixelSize(pixScaleMeters);
         wrapper.setHalfSize(pixHalfSize);
         wrapper.setOutputFolder(getDEMOutputBasePath().toFile());
-        return new DEMCreationTask(wrapper);
+        task = new DEMCreationTask(wrapper, demKey);
+        task.setCompletionBlock(completionBlock);
+        return task;
     }
 
 
@@ -143,7 +180,8 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
             int pixHalfSize)
     {
 
-        MapmakerNativeWrapper wrapper=createWrapperInstance();
+        createWrapperInstance();
+        if (wrapper == null) return null;
         wrapper.setName(name);
         LatLon ll = MathUtil.reclat(center).toDegrees();
         wrapper.setLatitude(ll.lat);
@@ -151,33 +189,63 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         wrapper.setPixelSize(1000.0 * 1.5 * radius / (double) pixHalfSize);
         wrapper.setHalfSize(pixHalfSize);
         wrapper.setOutputFolder(getDEMOutputBasePath().toFile());
-        return new DEMCreationTask(wrapper);
+        task = new DEMCreationTask(wrapper, demKey);
+        task.setCompletionBlock(completionBlock);
+        return task;
     }
 
-    protected MapmakerNativeWrapper createWrapperInstance()
+    protected void createWrapperInstance()
     {
-        File file = FileCache.getFileFromServer(getExecutablePathOnServer().toString());
+    	if (!needToDownloadExecutable())
+    	{
+    		makeWrapper();
+    	}
+    	else
+    	{
+	    	int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(null), "Before " + getExecutableDisplayName() + " can be run for the first time, a very large file needs to be downloaded.\n" + "This may take several minutes. Would you like to continue?", "Confirm Download", JOptionPane.YES_NO_OPTION);
+	        if (result == JOptionPane.NO_OPTION)
+	            return;
+	        else
+	        {
+		    	FileDownloadSwingWorker downloadWorker = new FileDownloadSwingWorker(null, "Download " + getExecutableDisplayName(), getExecutablePathOnServer().toString());
+		        downloadWorker.setCompletionBlock(new Runnable()
+		        {
+		        	@Override
+		      	  	public void run()
+		      	  	{
+		        		makeWrapper();
+		      	  	}
+		        });
+		        downloadWorker.executeDialog();
+	        }
+    	}
+
+    }
+
+    private void makeWrapper()
+    {
+        File file = FileCache.getFileFromServer(getExecutablePathOnServer().getParent().toString());
         String mapmakerRootDir = file.toPath().resolve("mapmaker").toString();
         try
         {
-            return new MapmakerNativeWrapper(mapmakerRootDir);
+            wrapper = new MapmakerNativeWrapper(mapmakerRootDir);
         }
         catch (IOException e)
         {
             e.printStackTrace();
-            return null;
+            wrapper = null;
         }
     }
 
 	@Override
 	public void setCompletionBlock(Runnable completionBlock)
 	{
-		// TODO Auto-generated method stub
+		this.completionBlock = completionBlock;
 	}
 
 	@Override
 	public DEMKey getDEMKey()
 	{
-		return demKey;
+		return task.demKey;
 	}
 }

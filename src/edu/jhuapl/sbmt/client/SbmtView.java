@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -521,7 +522,7 @@ public class SbmtView extends View implements PropertyChangeListener
             }
             else if (getPolyhedralModelConfig().hasMapmaker)	//config builds DEMs locally.
             {
-            	creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+            	creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer + File.separator + "mapmaker.zip"), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
             }
 
         	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
