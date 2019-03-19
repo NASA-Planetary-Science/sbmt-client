@@ -170,7 +170,6 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 		        newDemInfo = new DEMInfo();
 		        newDemInfo.name = demName;
 		        newDemInfo.demfilename = new File(getDEMOutputBasePath().toFile() + File.separator + demName + ".fits").getAbsolutePath();
-		        System.out.println("MapmakerRemoteDEMCreator.getCreationTask(...).new Runnable() {...}: run: new dem info filename " + newDemInfo.demfilename);
 		        completionBlock.run();
 			}
 		});
@@ -220,7 +219,6 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 	@Override
 	public DEMKey getDEMKey()
 	{
-		System.out.println("MapmakerRemoteDEMCreator: getDEMKey: new dem filename " + newDemInfo.demfilename);
 		return new DEMKey(newDemInfo.demfilename, newDemInfo.name);
 	}
 }
