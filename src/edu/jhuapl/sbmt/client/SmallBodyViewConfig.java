@@ -245,12 +245,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
-        c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        c.rootDirOnServer = "/bennu/nolan";
+        c.shapeModelFileExtension = ".obj";
 
         c.hasStateHistory = true;
-        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+        c.timeHistoryFile = "/bennu/nolan/history/timeHistory.bth";
 
         c.setResolution(ImmutableList.of(2692));
+        c.density = 1260;
+        c.useMinimumReferencePotential = true;
+        c.rotationRate = 0.00040613;
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
