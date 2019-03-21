@@ -70,6 +70,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -541,11 +542,11 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                     SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-                    AbstractEllipsePolygonModel.EllipsePolygon region=null;
+                    EllipsePolygon region=null;
                     vtkPolyData interiorPoly=new vtkPolyData();
             		if (selectionModel.getNumberOfStructures() > 0)
             		{
-                        region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                        region=(EllipsePolygon)selectionModel.getStructure(0);
                         selectionRegionCenter = region.center;
                         selectionRegionRadius = region.radius;
 

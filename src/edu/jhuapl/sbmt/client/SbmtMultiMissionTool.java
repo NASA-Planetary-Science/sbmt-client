@@ -23,7 +23,7 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
-import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -104,7 +104,7 @@ public class SbmtMultiMissionTool
 
 		// Structures.
 		LatLon.initializeSerializationProxy();
-		AbstractEllipsePolygonModel.EllipsePolygon.initializeSerializationProxy();
+		EllipsePolygon.initializeSerializationProxy();
 		Polygon.initializeSerializationProxy();
 		Line.initializeSerializationProxy();
 

@@ -13,6 +13,7 @@ import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
@@ -91,11 +92,11 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
-        AbstractEllipsePolygonModel.EllipsePolygon region=null;
+        EllipsePolygon region=null;
         vtkPolyData interiorPoly=new vtkPolyData();
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            region=(EllipsePolygon)selectionModel.getStructure(0);
             selectionRegionCenter = region.center;
             selectionRegionRadius = region.radius;
 
