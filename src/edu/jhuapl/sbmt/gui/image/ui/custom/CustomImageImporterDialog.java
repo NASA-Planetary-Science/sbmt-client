@@ -210,6 +210,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             {
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
                 infofilePathTextField.setText(LEAVE_UNMODIFIED);
+                if (info.getFileType() == FileType.SUM)
+                {
+                	sumfilePathRB.setSelected(true);
+                }
             }
             double rotation = info == null ?  0.0 : ((CustomPerspectiveImageKey)info).getRotation();
             String flip = info == null ?  "None" : ((CustomPerspectiveImageKey)info).getFlip();
