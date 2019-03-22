@@ -999,7 +999,6 @@ public class DEM extends SmallBodyModel implements PropertyChangeListener
 //                    taskOutput.append("Task canceled.\n");
                 } else {
 //                    taskOutput.append("Task completed.\n");
-                	System.out.println("DEM: propertyChange: progress is " + progress);
                 	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
                 }
             }

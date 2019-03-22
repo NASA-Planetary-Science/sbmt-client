@@ -70,6 +70,11 @@ public class DEMResultsTableController
         });
 	}
 
+	public void addKey(DEMKey key)
+	{
+		getTable().appendRow(key);
+	}
+
 	public JPanel getPanel()
 	{
 		JScrollPane scrollPane = new JScrollPane();

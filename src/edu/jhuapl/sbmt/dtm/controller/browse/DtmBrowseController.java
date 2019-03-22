@@ -38,13 +38,13 @@ public class DtmBrowseController
 			@Override
 			public void demKeyListChanged(DEMKey key)
 			{
-				resultsController.getTable().appendRow(key);
+				resultsController.addKey(key);
 			}
 
 			@Override
 			public void demKeysListChanged(List<DEMKey> keys)
 			{
-				keys.forEach(k -> resultsController.getTable().appendRow(k));
+				keys.forEach(k -> resultsController.addKey(k));
 			}
 		});
 
