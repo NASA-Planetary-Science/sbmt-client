@@ -79,7 +79,7 @@ public class LidarSearchController implements ItemListener
         {
             EllipsePolygon region = (EllipsePolygon) selectionModel
                     .getStructure(0);
-            selectionRegionCenter = region.center;
+            selectionRegionCenter = region.getCenter();
             selectionRegionRadius = region.radius;
 
             // Always use the lowest resolution model for getting the
@@ -91,7 +91,7 @@ public class LidarSearchController implements ItemListener
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center,
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(),
                         region.radius, region.numberOfSides, interiorPoly,
                         null);
                 cubeList = smallBodyModel.getIntersectingCubes(

@@ -511,7 +511,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                 cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
             }
             else

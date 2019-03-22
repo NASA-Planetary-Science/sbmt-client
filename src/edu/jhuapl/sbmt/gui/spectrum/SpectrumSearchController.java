@@ -547,7 +547,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
             		if (selectionModel.getNumberOfStructures() > 0)
             		{
                         region=(EllipsePolygon)selectionModel.getStructure(0);
-                        selectionRegionCenter = region.center;
+                        selectionRegionCenter = region.getCenter();
                         selectionRegionRadius = region.radius;
 
 
@@ -555,7 +555,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Therefore, if the selection region was created using a higher resolution model,
                 // we need to recompute the selection region using the low res model.
                         if (smallBodyModel.getModelResolution() > 0)
-                            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                            smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
                         else
                             interiorPoly=region.interiorPolyData;
 

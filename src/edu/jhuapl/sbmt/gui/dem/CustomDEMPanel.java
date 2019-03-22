@@ -981,7 +981,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
             {
                 EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
-                centerPoint = region.center;
+                centerPoint = region.getCenter();
                 radius = region.radius;
             }
             else

@@ -247,7 +247,7 @@ public class DEMCreationPanel extends JPanel implements ActionListener
                 {
                     final EllipsePolygon region = (EllipsePolygon) regionSelectionModel.getStructure(0);
 
-                    demCreationTask = creationTool.getCreationTask(demName, region.center, region.radius, (Integer) halfSizeSpinner.getValue());
+                    demCreationTask = creationTool.getCreationTask(demName, region.getCenter(), region.radius, (Integer) halfSizeSpinner.getValue());
 
                 }
                 else
