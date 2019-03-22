@@ -2144,7 +2144,6 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
                             ImageType.POLYCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.POLYCAM
@@ -2152,10 +2151,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
