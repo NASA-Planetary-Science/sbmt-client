@@ -41,6 +41,7 @@ import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.sbmt.gui.dem.DEMPopupMenu;
 import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.dtm.controllers.ExperimentalDEMController;
 import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
@@ -510,6 +511,11 @@ public class SbmtView extends View implements PropertyChangeListener
 //            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
 //            addTab("Regional DTMs", component);
+
+            DEMCollection dems = (DEMCollection)getModel(ModelNames.DEM);
+            DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY);
+        	DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer());
+            registerPopup(getModel(ModelNames.DEM), demPopupMenu);
 
             if ( getPolyhedralModelConfig().rootDirOnServer != null)
             {
