@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -497,7 +496,7 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 {
                     model.setImageVisibility(getConvertedKey(results.get(row)), false);
                     model.unloadImages(name, getConvertedKey(results.get(row)));
-                    renderer.setLighting(LightingType.LIGHT_KIT);
+//                    renderer.setLighting(LightingType.LIGHT_KIT);	//removed due to request in #1667
                 }
             }
             else if (e.getColumn() == imageResultsTableView.getShowFootprintColumnIndex())
