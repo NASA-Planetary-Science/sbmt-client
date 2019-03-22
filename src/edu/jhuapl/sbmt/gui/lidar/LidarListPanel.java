@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,12 +46,10 @@ import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
-import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
 import edu.jhuapl.sbmt.model.lidar.Track;
 
@@ -70,10 +66,9 @@ import net.miginfocom.swing.MigLayout;
  * </UL>
  */
 public class LidarListPanel extends JPanel implements ActionListener, ChangeListener, ListSelectionListener,
-		PickManagerListener, PropertyChangeListener, TableModelListener
+		PickManagerListener, TableModelListener, TrackEventListener
 {
 	// Ref vars
-	private ModelManager refModelManager;
 	private LidarSearchDataCollection refModel;
 	private PickManager refPickManager;
 
@@ -100,7 +95,6 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	public LidarListPanel(ModelManager aModelManager, LidarSearchDataCollection aModel, PickManager aPickManager,
 			Renderer aRenderer)
 	{
-		refModelManager = aModelManager;
 		refModel = aModel;
 		refPickManager = aPickManager;
 
@@ -198,9 +192,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		// Register for events of interest
 		PickUtil.autoDeactivatePickerWhenComponentHidden(refPickManager, lidarPicker, this);
 		tableModel.addTableModelListener(this);
-		refModel.addPropertyChangeListener(this);
+		refModel.addListener(this);
 		refPickManager.addListener(this);
-		refPickManager.getDefaultPicker().addPropertyChangeListener(this);
+
+		// TODO: This registration should be done by the refModel
+		refModel.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
 	}
 
 	/**
@@ -257,31 +253,20 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	}
 
 	@Override
+	public void handleTrackEvent(Object aSource, ItemEventType aEventType)
+	{
+		if (aEventType == ItemEventType.ItemsSelected)
+			updateTableSelection();
+
+		updateGui();
+		updateErrorUI();
+	}
+
+	@Override
 	public void pickerChanged()
 	{
 		boolean tmpBool = lidarPicker == refPickManager.getActivePicker();
 		dragB.setSelected(tmpBool);
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent aEvent)
-	{
-		Object source = aEvent.getSource();
-		if (source == refModel && Properties.MODEL_CHANGED.equals(aEvent.getPropertyName()) == true)
-		{
-			updateErrorUI();
-			updateGui();
-		}
-		else if (source == refModel && Properties.MODEL_PICKED.equals(aEvent.getPropertyName()) == true)
-		{
-			updateTableSelection();
-		}
-		else if (source != refModel && Properties.MODEL_PICKED.equals(aEvent.getPropertyName()) == true)
-		{
-			handleTrackPicked(aEvent);
-		}
-
-		trackTable.repaint();
 	}
 
 	@Override
@@ -308,8 +293,6 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		// Update the model's selection
 		refModel.setSelectedTracks(pickL);
-
-		updateGui();
 	}
 
 	/**
@@ -366,25 +349,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		if (translateDialog == null)
 			translateDialog = new LidarTrackTranslateDialog(this, refModel);
 
-		translateDialog.setTracks(aTrackL);
 		translateDialog.setVisible(true);
-	}
-
-	/**
-	 * Helper method to process the track pick action.
-	 * <P>
-	 * TODO: In the future the LidarListPanel should not be responsible for
-	 * managing the Track pick actions (sourced from the shape model)!
-	 */
-	private void handleTrackPicked(PropertyChangeEvent aEvent)
-	{
-		PickEvent pickEvent = (PickEvent) aEvent.getNewValue();
-		boolean isPass = refModelManager.getModel(pickEvent.getPickedProp()) == refModel;
-		if (isPass == false)
-			return;
-
-		// Delegate
-		refModel.handlePickAction(pickEvent);
 	}
 
 	/**
@@ -396,12 +361,12 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		trackTable.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e)
+			public void mouseClicked(MouseEvent aEvent)
 			{
 				// Handle the Color customization
-				int row = trackTable.rowAtPoint(e.getPoint());
-				int col = trackTable.columnAtPoint(e.getPoint());
-				if (e.getClickCount() == 2 && row >= 0 && col == 1)
+				int row = trackTable.rowAtPoint(aEvent.getPoint());
+				int col = trackTable.columnAtPoint(aEvent.getPoint());
+				if (aEvent.getClickCount() == 2 && row >= 0 && col == 1)
 				{
 					Track tmpTrack = refModel.getTrack(row);
 					Color oldColor = tmpTrack.getColor();
@@ -412,19 +377,19 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 					return;
 				}
 
-				maybeShowPopup(e);
+				maybeShowPopup(aEvent);
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e)
+			public void mousePressed(MouseEvent aEvent)
 			{
-				maybeShowPopup(e);
+				maybeShowPopup(aEvent);
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e)
+			public void mouseReleased(MouseEvent aEvent)
 			{
-				maybeShowPopup(e);
+				maybeShowPopup(aEvent);
 			}
 		});
 	}
@@ -434,6 +399,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	 */
 	private void maybeShowPopup(MouseEvent aEvent)
 	{
+		// Bail if this is not a valid popup action
 		if (aEvent.isPopupTrigger() == false)
 			return;
 
@@ -441,23 +407,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		// Force the menu to be hidden by default
 		lidarPopupMenu.setVisible(false);
 
-		// Update the selection to include the selected row
-		int index = trackTable.rowAtPoint(aEvent.getPoint());
-		if (index > 0)
-		{
-			if (aEvent.isControlDown() == true)
-				trackTable.addRowSelectionInterval(index, index);
-			else
-				trackTable.setRowSelectionInterval(index, index);
-		}
-
-		// Bail if there is no selection
-		List<Track> tmpL = refModel.getSelectedTracks();
-		if (tmpL.size() == 0)
-			return;
-
-		lidarPopupMenu.setSelectedTracks(tmpL);
-		lidarPopupMenu.show(aEvent.getComponent(), aEvent.getX(), aEvent.getY());
+		lidarPopupMenu.showPopup(aEvent, null, 0, null);
 	}
 
 	/**
@@ -599,6 +549,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		// Update the table's selection
 		GuiUtil.setSelection(trackTable, this, newL);
+		trackTable.repaint();
 		updateGui();
 
 		// Bail if there are no new items selected

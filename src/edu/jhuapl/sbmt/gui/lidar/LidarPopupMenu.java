@@ -132,11 +132,26 @@ public class LidarPopupMenu extends PopupMenu
 		}
 	}
 
-	/**
-	 * Sets in the selected Tracks.
-	 */
-	public void setSelectedTracks(List<Track> aTrackL)
+	@Override
+	public void showPopup(MouseEvent aEvent, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
 	{
+		// Bail if we do not have selected tracks
+		List<Track> tmpL = refModel.getSelectedTracks();
+		if (tmpL.size() == 0)
+			return;
+
+		setSelectedTracks(tmpL);
+		show(aEvent.getComponent(), aEvent.getX(), aEvent.getY());
+	}
+
+	/**
+	 * Helper method which updates various internal GUI components to reflect the
+	 * selected Tracks.
+	 */
+	private void setSelectedTracks(List<Track> aTrackL)
+	{
+		// Bail if there are no tracks selected.
+		// we will not be display if there are no selected tracks
 		trackL = ImmutableList.copyOf(aTrackL);
 		if (trackL.size() == 0)
 			return;
@@ -319,7 +334,7 @@ public class LidarPopupMenu extends PopupMenu
 		{
 			// Determine if all tracks are shown
 			boolean isAllShown = true;
-			for (Track aTrack: trackL)
+			for (Track aTrack : trackL)
 				isAllShown &= aTrack.getIsVisible() == true;
 
 			// Update the tracks visibility based on whether they are all shown
@@ -344,7 +359,6 @@ public class LidarPopupMenu extends PopupMenu
 			if (translateDialog == null)
 				translateDialog = new LidarTrackTranslateDialog(invoker, refModel);
 
-			translateDialog.setTracks(trackL);
 			translateDialog.setVisible(true);
 		}
 	}
@@ -377,18 +391,6 @@ public class LidarPopupMenu extends PopupMenu
 				e1.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
-	{
-		// Bail if we do not have selected tracks
-		List<Track> tmpL = refModel.getSelectedTracks();
-		if (tmpL.size() == 0)
-			return;
-
-		setSelectedTracks(tmpL);
-		show(e.getComponent(), e.getX(), e.getY());
 	}
 
 }
