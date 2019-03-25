@@ -168,6 +168,8 @@ public class SbmtModelFactory
                     return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.SAMCAM_FLIGHT_IMAGE)
                     return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+                else if (key.getInstrument().getType() == ImageType.NAVCAM_FLIGHT_IMAGE)
+                    return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.ONC_TRUTH_IMAGE)
                     return new ONCTruthImage(key, smallBodyModel, loadPointingOnly);
                 else if (key.getInstrument().getType() == ImageType.ONC_IMAGE)
@@ -225,6 +227,8 @@ public class SbmtModelFactory
             else if (key.getImageType() == ImageType.MAPCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.SAMCAM_FLIGHT_IMAGE)
+                return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
+            else if (key.getImageType() == ImageType.NAVCAM_FLIGHT_IMAGE)
                 return OcamsFlightImage.of(key, smallBodyModel, loadPointingOnly);
             else if (key.getImageType() == ImageType.GENERIC_IMAGE)
                 return new CustomPerspectiveImage(key, smallBodyModel, loadPointingOnly);

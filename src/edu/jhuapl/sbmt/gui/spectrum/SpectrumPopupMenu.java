@@ -124,7 +124,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
         showToSunVectorMenuItem = new JCheckBoxMenuItem(new ShowToSunVectorAction());
         showToSunVectorMenuItem.setText("Show Sunward Vector");
-//        this.add(showToSunVectorMenuItem);
+        this.add(showToSunVectorMenuItem);
 
         setIlluminationMenuItem = new JCheckBoxMenuItem(new SetIlluminationAction());
         setIlluminationMenuItem.setText("Set Illumination");

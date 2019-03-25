@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.IdPair;
@@ -660,7 +659,7 @@ public class SpectrumResultsTableController
                 else
                 {
                     spectra.removeSpectrum(key);
-                    renderer.setLighting(LightingType.LIGHT_KIT);
+//                    renderer.setLighting(LightingType.LIGHT_KIT);	////removed due to request in #1667
                 }
             }
             else if (e.getColumn() == panel.getShowFootprintColumnIndex())
