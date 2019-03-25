@@ -235,4 +235,17 @@ public class ImageKey implements ImageKeyInterface, StorableAsMetadata<ImageKey>
 		return name;
 	}
 
+	@Override
+	public String getFlip()
+	{
+		return "None";
+	}
+
+	@Override
+	public double getRotation()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
