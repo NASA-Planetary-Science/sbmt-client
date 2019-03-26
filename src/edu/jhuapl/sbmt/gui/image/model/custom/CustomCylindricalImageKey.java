@@ -302,5 +302,16 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 		return true;
 	}
 
+	@Override
+	public String getFlip()
+	{
+		return "None";
+	}
 
+	@Override
+	public double getRotation()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
