@@ -15,6 +15,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import com.google.common.collect.ImmutableList;
+
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
@@ -24,326 +26,371 @@ import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.ColorUtil;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Track;
 
 public class LidarPopupMenu extends PopupMenu
 {
-    private Component invoker;
-    private JMenu colorMenu;
-    private JMenu saveMenu;
-    private JMenu saveAllMenu;
-    private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
-    private JMenuItem customTrackColorMenuItem;
-    private JMenuItem saveTrackOriginalMenuItem;
-    private JMenuItem saveTrackModifiedMenuItem;
-    private JMenuItem saveAllTracksOriginalToFolderMenuItem;
-    private JMenuItem saveAllTracksModifiedToFolderMenuItem;
-    private JMenuItem saveAllTracksOriginalToSingleFileMenuItem;
-    private JMenuItem saveAllTracksModifiedToSingleFileMenuItem;
-    private JMenuItem hideTrackMenuItem;
-    private JMenuItem hideOtherTracksMenuItem;
-    private JMenuItem translateTrackMenuItem;
-    private JMenuItem plotTrackMenuItem;
-    private LidarSearchDataCollection lidarModel;
-    private int currentTrack;
-    private LidarTrackTranslationDialog translateDialog;
+	// Reference vars
+	private LidarSearchDataCollection refModel;
 
+	// State vars
+	private ImmutableList<Track> trackL;
 
-    public LidarPopupMenu(LidarSearchDataCollection lidarModel,
-            Component invoker)
-    {
-        this.lidarModel = lidarModel;
-        this.invoker = invoker;
+	// Gui vars
+	private List<JCheckBoxMenuItem> colorMenuItems = new ArrayList<JCheckBoxMenuItem>();
+	private LidarTrackTranslateDialog translateDialog;
+	private Component invoker;
+	private JMenu colorMenu;
+	private JMenu saveMenu;
+	private JMenu saveAllMenu;
+	private JMenuItem customTrackColorMI;
+	private JMenuItem saveTrackOriginalMenuItem;
+	private JMenuItem saveTrackModifiedMenuItem;
+	private JMenuItem saveAllTracksOriginalToFolderMenuItem;
+	private JMenuItem saveAllTracksModifiedToFolderMenuItem;
+	private JMenuItem saveAllTracksOriginalToSingleFileMenuItem;
+	private JMenuItem saveAllTracksModifiedToSingleFileMenuItem;
+	private JMenuItem showTrackMI;
+	private JMenuItem hideOtherTracksMI;
+	private JMenuItem translateTrackMI;
+	private JMenuItem plotTrackMI;
 
-        colorMenu = new JMenu("Track Color");
-        this.add(colorMenu);
-        for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
-        {
-            JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new TrackColorAction(color.color()));
-            colorMenuItems.add(colorMenuItem);
-            colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
-            colorMenu.add(colorMenuItem);
-        }
-        colorMenu.addSeparator();
-        customTrackColorMenuItem = new JMenuItem(new CustomTrackColorAction());
-        customTrackColorMenuItem.setText("Custom...");
-        colorMenu.add(customTrackColorMenuItem);
+	/**
+	 * Standard Constructor
+	 *
+	 * @param aModel
+	 * @param aInvoker
+	 */
+	public LidarPopupMenu(LidarSearchDataCollection aModel, Component aInvoker)
+	{
+		trackL = ImmutableList.of();
 
-        saveMenu = new JMenu("Save Track");
-        this.add(saveMenu);
+		refModel = aModel;
+		invoker = aInvoker;
 
-        saveTrackOriginalMenuItem = new JMenuItem(new SaveTrackAction(false));
-        saveTrackOriginalMenuItem.setText("Unmodified...");
-        saveMenu.add(saveTrackOriginalMenuItem);
+		colorMenu = new JMenu("Track Color");
+		this.add(colorMenu);
+		for (ColorUtil.DefaultColor color : ColorUtil.DefaultColor.values())
+		{
+			JCheckBoxMenuItem colorMenuItem = new JCheckBoxMenuItem(new TrackColorAction(color.color()));
+			colorMenuItems.add(colorMenuItem);
+			colorMenuItem.setText(color.toString().toLowerCase().replace('_', ' '));
+			colorMenu.add(colorMenuItem);
+		}
+		colorMenu.addSeparator();
+		customTrackColorMI = new JMenuItem(new CustomTrackColorAction());
+		customTrackColorMI.setText("Custom...");
+		colorMenu.add(customTrackColorMI);
 
-        saveTrackModifiedMenuItem = new JMenuItem(new SaveTrackAction(true));
-        saveTrackModifiedMenuItem.setText("Radial Offset and Translation Applied...");
-        saveMenu.add(saveTrackModifiedMenuItem);
+		saveMenu = new JMenu("Save Track");
+		this.add(saveMenu);
 
-        saveAllMenu = new JMenu("Save All Visible Tracks");
-        this.add(saveAllMenu);
+		saveTrackOriginalMenuItem = new JMenuItem(new SaveTrackAction(false));
+		saveTrackOriginalMenuItem.setText("Unmodified...");
+		saveMenu.add(saveTrackOriginalMenuItem);
 
-        saveAllTracksOriginalToFolderMenuItem = new JMenuItem(new SaveAllTracksToFolderAction(false));
-        saveAllTracksOriginalToFolderMenuItem.setText("To Folder Unmodified...");
-        saveAllMenu.add(saveAllTracksOriginalToFolderMenuItem);
+		saveTrackModifiedMenuItem = new JMenuItem(new SaveTrackAction(true));
+		saveTrackModifiedMenuItem.setText("Radial Offset and Translation Applied...");
+		saveMenu.add(saveTrackModifiedMenuItem);
 
-        saveAllTracksModifiedToFolderMenuItem = new JMenuItem(new SaveAllTracksToFolderAction(true));
-        saveAllTracksModifiedToFolderMenuItem.setText("To Folder Radial Offset and Translation Applied...");
-        saveAllMenu.add(saveAllTracksModifiedToFolderMenuItem);
+		saveAllMenu = new JMenu("Save All Visible Tracks");
+		this.add(saveAllMenu);
 
-        saveAllTracksOriginalToSingleFileMenuItem = new JMenuItem(new SaveAllTracksToSingleFileAction(false));
-        saveAllTracksOriginalToSingleFileMenuItem.setText("To Single File Unmodified...");
-        saveAllMenu.add(saveAllTracksOriginalToSingleFileMenuItem);
+		saveAllTracksOriginalToFolderMenuItem = new JMenuItem(new SaveAllTracksToFolderAction(false));
+		saveAllTracksOriginalToFolderMenuItem.setText("To Folder Unmodified...");
+		saveAllMenu.add(saveAllTracksOriginalToFolderMenuItem);
 
-        saveAllTracksModifiedToSingleFileMenuItem = new JMenuItem(new SaveAllTracksToSingleFileAction(true));
-        saveAllTracksModifiedToSingleFileMenuItem.setText("To Single File Radial Offset and Translation Applied...");
-        saveAllMenu.add(saveAllTracksModifiedToSingleFileMenuItem);
+		saveAllTracksModifiedToFolderMenuItem = new JMenuItem(new SaveAllTracksToFolderAction(true));
+		saveAllTracksModifiedToFolderMenuItem.setText("To Folder Radial Offset and Translation Applied...");
+		saveAllMenu.add(saveAllTracksModifiedToFolderMenuItem);
 
+		saveAllTracksOriginalToSingleFileMenuItem = new JMenuItem(new SaveAllTracksToSingleFileAction(false));
+		saveAllTracksOriginalToSingleFileMenuItem.setText("To Single File Unmodified...");
+		saveAllMenu.add(saveAllTracksOriginalToSingleFileMenuItem);
 
-        hideTrackMenuItem = new JCheckBoxMenuItem(new HideTrackAction());
-        hideTrackMenuItem.setText("Hide Track");
-        this.add(hideTrackMenuItem);
+		saveAllTracksModifiedToSingleFileMenuItem = new JMenuItem(new SaveAllTracksToSingleFileAction(true));
+		saveAllTracksModifiedToSingleFileMenuItem.setText("To Single File Radial Offset and Translation Applied...");
+		saveAllMenu.add(saveAllTracksModifiedToSingleFileMenuItem);
 
-        hideOtherTracksMenuItem = new JMenuItem(new HideOtherTracksAction());
-        hideOtherTracksMenuItem.setText("Hide Other Tracks");
-        this.add(hideOtherTracksMenuItem);
+		showTrackMI = new JMenuItem(new ShowTrackAction());
+		showTrackMI.setText("Show Track");
+		this.add(showTrackMI);
 
-        translateTrackMenuItem = new JMenuItem(new TranslateTrackAction());
-        translateTrackMenuItem.setText("Translate Track");
-        this.add(translateTrackMenuItem);
+		hideOtherTracksMI = new JMenuItem(new HideOtherTracksAction());
+		hideOtherTracksMI.setText("Hide Other Tracks");
+		this.add(hideOtherTracksMI);
 
-        if (Configuration.isAPLVersion())
-        {
-            plotTrackMenuItem = new JMenuItem(new PlotTrackAction());
-            plotTrackMenuItem.setText("Plot Track...");
-            this.add(plotTrackMenuItem);
-        }
-    }
+		translateTrackMI = new JMenuItem(new TranslateTrackAction());
+		translateTrackMI.setText("Translate Track");
+		this.add(translateTrackMI);
 
-    public void setCurrentTrack(int trackId)
-    {
-        currentTrack = trackId;
+		if (Configuration.isAPLVersion())
+		{
+			plotTrackMI = new JMenuItem(new PlotTrackAction());
+			plotTrackMI.setText("Plot Track...");
+			this.add(plotTrackMI);
+		}
+	}
 
-        boolean tmpBool = !lidarModel.getTrack(trackId).getIsVisible();
-        hideTrackMenuItem.setSelected(tmpBool);
+	@Override
+	public void showPopup(MouseEvent aEvent, vtkProp pickedProp, int pickedCellId, double[] pickedPosition)
+	{
+		// Bail if we do not have selected tracks
+		List<Track> tmpL = refModel.getSelectedTracks();
+		if (tmpL.size() == 0)
+			return;
 
-        // If the track color equals one of the predefined colors, then check
-        // the corresponding menu item.
-        Color tmpColor = lidarModel.getTrackColor(trackId);
-        for (JCheckBoxMenuItem aItem : colorMenuItems)
-        {
-            TrackColorAction action = (TrackColorAction)aItem.getAction();
-            boolean isSelected = action.color.equals(tmpColor);
-            aItem.setSelected(isSelected);
-        }
-    }
+		setSelectedTracks(tmpL);
+		show(aEvent.getComponent(), aEvent.getX(), aEvent.getY());
+	}
 
-    private class TrackColorAction extends AbstractAction
-    {
-        private Color color;
+	/**
+	 * Helper method which updates various internal GUI components to reflect the
+	 * selected Tracks.
+	 */
+	private void setSelectedTracks(List<Track> aTrackL)
+	{
+		// Bail if there are no tracks selected.
+		// we will not be display if there are no selected tracks
+		trackL = ImmutableList.copyOf(aTrackL);
+		if (trackL.size() == 0)
+			return;
 
-        public TrackColorAction(Color color)
-        {
-            this.color = color;
-        }
+		// Determine if all tracks are shown
+		boolean isAllShown = true;
+		for (Track aTrack : trackL)
+			isAllShown &= aTrack.getIsVisible() == true;
 
-        public void actionPerformed(ActionEvent e)
-        {
-            lidarModel.setTrackColor(currentTrack, color);
-        }
-    }
+		// Determine the display string
+		String displayStr = "Hide Track";
+		if (isAllShown == false)
+			displayStr = "Show Track";
 
-    private class CustomTrackColorAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            Color tmpColor = lidarModel.getTrackColor(currentTrack);
-            Color newColor = ColorChooser.showColorChooser(invoker, tmpColor);
-            if (newColor != null)
-                lidarModel.setTrackColor(currentTrack, newColor);
-        }
-    }
+		if (trackL.size() > 1)
+			displayStr += "s";
 
-    private class SaveTrackAction extends AbstractAction
-    {
-        private boolean transformTrack;
+		// Update the text of the showTrackMI
+		showTrackMI.setText(displayStr);
 
-        public SaveTrackAction(boolean transformTrack)
-        {
-            this.transformTrack = transformTrack;
-        }
+		// Determine if all selected tracks have the same color
+		Color tmpColor = trackL.get(0).getColor();
+		boolean isSameColor = true;
+		for (Track aTrack : trackL)
+			isSameColor &= tmpColor.equals(aTrack.getColor()) == true;
 
-        public void actionPerformed(ActionEvent e)
-        {
-            Component invoker = getInvoker();
+		// If the track color equals one of the predefined colors, then check
+		// the corresponding menu item.
+		for (JCheckBoxMenuItem aItem : colorMenuItems)
+		{
+			TrackColorAction action = (TrackColorAction) aItem.getAction();
+			boolean isSelected = action.color.equals(tmpColor) && isSameColor == true;
+			aItem.setSelected(isSelected);
+		}
 
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save Lidar Track", "track" + currentTrack + ".tab");
+		// Enable the plot menuitem if the number of selected tracks == 1
+		boolean isEnabled = trackL.size() == 1;
+		plotTrackMI.setEnabled(isEnabled);
 
-            try
-            {
-                if (file != null)
-                    lidarModel.saveTrack(currentTrack, file, transformTrack);
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-        }
-    }
+		// TODO: Allow the entire set of selected tracks to be saved, not just one
+		// TODO: Simplify the menu so that it reads 'Save Selected Tracks...'
+		saveMenu.setEnabled(isEnabled);
+	}
 
-    private class SaveAllTracksToFolderAction extends AbstractAction
-    {
-        private boolean transformTrack;
+	private class TrackColorAction extends AbstractAction
+	{
+		private Color color;
 
-        public SaveAllTracksToFolderAction(boolean transformTrack)
-        {
-            this.transformTrack = transformTrack;
-        }
+		public TrackColorAction(Color aColor)
+		{
+			color = aColor;
+		}
 
-        public void actionPerformed(ActionEvent e)
-        {
-            Component invoker = getInvoker();
+		public void actionPerformed(ActionEvent e)
+		{
+			refModel.setTrackColor(trackL, color);
+		}
+	}
 
-            if (lidarModel.getNumberOfVisibleTracks() == 0)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "There are no visible tracks to save.",
-                        "Error Saving Tracks",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+	private class CustomTrackColorAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			Color tmpColor = trackL.get(0).getColor();
+			Color newColor = ColorChooser.showColorChooser(invoker, tmpColor);
+			if (newColor == null)
+				return;
 
-            File dir = DirectoryChooser.showOpenDialog(invoker);
+			refModel.setTrackColor(trackL, newColor);
+		}
+	}
 
-            try
-            {
-                if (dir != null)
-                    lidarModel.saveAllVisibleTracksToFolder(dir, transformTrack);
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "Unable to save file to " + dir.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-        }
-    }
+	private class SaveTrackAction extends AbstractAction
+	{
+		private boolean transformTrack;
 
-    private class SaveAllTracksToSingleFileAction extends AbstractAction
-    {
-        private boolean transformTrack;
+		public SaveTrackAction(boolean transformTrack)
+		{
+			this.transformTrack = transformTrack;
+		}
 
-        public SaveAllTracksToSingleFileAction(boolean transformTrack)
-        {
-            this.transformTrack = transformTrack;
-        }
+		public void actionPerformed(ActionEvent e)
+		{
+			Component invoker = getInvoker();
 
-        public void actionPerformed(ActionEvent e)
-        {
-            Component invoker = getInvoker();
+			// TODO: The entire set of selected tracks should be saved
+			Track tmpTrack = trackL.get(0);
+			int trackId = refModel.getTracks().indexOf(tmpTrack);
+			File file = CustomFileChooser.showSaveDialog(invoker, "Save Lidar Track", "track" + trackId + ".tab");
 
-            if (lidarModel.getNumberOfVisibleTracks() == 0)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "There are no visible tracks to save.",
-                        "Error Saving Tracks",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+			try
+			{
+				if (file != null)
+					refModel.saveTrack(tmpTrack, file, transformTrack);
+			}
+			catch (IOException e1)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+						"Unable to save file to " + file.getAbsolutePath(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+		}
+	}
 
-            File file = CustomFileChooser.showSaveDialog(invoker, "Save All Visible Tracks to Single File", "tracks.tab");
+	private class SaveAllTracksToFolderAction extends AbstractAction
+	{
+		private boolean transformTrack;
 
-            try
-            {
-                if (file != null)
-                    lidarModel.saveAllVisibleTracksToSingleFile(file, transformTrack);
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-        }
-    }
+		public SaveAllTracksToFolderAction(boolean transformTrack)
+		{
+			this.transformTrack = transformTrack;
+		}
 
-    private class HideTrackAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            boolean tmpBool = !hideTrackMenuItem.isSelected();
-            lidarModel.setTrackVisible(currentTrack, tmpBool);
-        }
-    }
+		public void actionPerformed(ActionEvent e)
+		{
+			Component invoker = getInvoker();
 
-    private class HideOtherTracksAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            lidarModel.hideOtherTracksExcept(currentTrack);
-        }
-    }
+			if (refModel.getNumberOfVisibleTracks() == 0)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+						"There are no visible tracks to save.", "Error Saving Tracks", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
-    private class TranslateTrackAction extends AbstractAction
-    {
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            if (translateDialog == null)
-                translateDialog = new LidarTrackTranslationDialog(JOptionPane.getFrameForComponent(LidarPopupMenu.this), true, lidarModel, currentTrack);
-            else
-                translateDialog.setSelectedIndex(currentTrack);
-            translateDialog.setLocationRelativeTo(LidarPopupMenu.this);
-            translateDialog.setVisible(true);
-        }
-    }
+			File dir = DirectoryChooser.showOpenDialog(invoker);
 
-    private class PlotTrackAction extends AbstractAction
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            try
-            {
-                List<Double> potential = new ArrayList<Double>();
-                List<Double> acceleration = new ArrayList<Double>();
-                List<Double> elevation = new ArrayList<Double>();
-                List<Double> distance = new ArrayList<Double>();
-                List<Double> time = new ArrayList<Double>();
+			try
+			{
+				if (dir != null)
+					refModel.saveAllVisibleTracksToFolder(dir, transformTrack);
+			}
+			catch (IOException e1)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+						"Unable to save file to " + dir.getAbsolutePath(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+		}
+	}
 
-                lidarModel.getGravityDataForTrack(currentTrack, potential, acceleration, elevation, distance, time);
+	private class SaveAllTracksToSingleFileAction extends AbstractAction
+	{
+		private boolean transformTrack;
 
-                LidarPlot lidarPlot = new LidarPlot(lidarModel, potential, distance, time, "Potential", "J/kg");
-                lidarPlot.setVisible(true);
-                lidarPlot = new LidarPlot(lidarModel, acceleration, distance, time, "Acceleration", "m/s^2");
-                lidarPlot.setVisible(true);
-                lidarPlot = new LidarPlot(lidarModel, elevation, distance, time, "Elevation", "m");
-                lidarPlot.setVisible(true);
-            }
-            catch (Exception e1)
-            {
-                e1.printStackTrace();
-            }
-        }
-    }
+		public SaveAllTracksToSingleFileAction(boolean transformTrack)
+		{
+			this.transformTrack = transformTrack;
+		}
 
-    @Override
-    public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
-            double[] pickedPosition)
-    {
-        // Bail if we do not have a current track
-        int trackId = lidarModel.getTrackIdOfCurrentSelection();
-        if (trackId < 0)
-            return;
-        setCurrentTrack(trackId);
+		public void actionPerformed(ActionEvent e)
+		{
+			Component invoker = getInvoker();
 
-        show(e.getComponent(), e.getX(), e.getY());
-    }
+			if (refModel.getNumberOfVisibleTracks() == 0)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+						"There are no visible tracks to save.", "Error Saving Tracks", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			File file = CustomFileChooser.showSaveDialog(invoker, "Save All Visible Tracks to Single File", "tracks.tab");
+
+			try
+			{
+				if (file != null)
+					refModel.saveAllVisibleTracksToSingleFile(file, transformTrack);
+			}
+			catch (IOException e1)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+						"Unable to save file to " + file.getAbsolutePath(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	private class ShowTrackAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			// Determine if all tracks are shown
+			boolean isAllShown = true;
+			for (Track aTrack : trackL)
+				isAllShown &= aTrack.getIsVisible() == true;
+
+			// Update the tracks visibility based on whether they are all shown
+			boolean tmpBool = isAllShown == false;
+			refModel.setTrackVisible(trackL, tmpBool);
+		}
+	}
+
+	private class HideOtherTracksAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			refModel.hideOtherTracksExcept(trackL);
+		}
+	}
+
+	private class TranslateTrackAction extends AbstractAction
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (translateDialog == null)
+				translateDialog = new LidarTrackTranslateDialog(invoker, refModel);
+
+			translateDialog.setVisible(true);
+		}
+	}
+
+	private class PlotTrackAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			Track tmpTrack = trackL.get(0);
+
+			try
+			{
+				List<Double> potential = new ArrayList<>();
+				List<Double> acceleration = new ArrayList<>();
+				List<Double> elevation = new ArrayList<>();
+				List<Double> distance = new ArrayList<>();
+				List<Double> time = new ArrayList<>();
+
+				refModel.getGravityDataForTrack(tmpTrack, potential, acceleration, elevation, distance, time);
+
+				LidarPlot lidarPlot = new LidarPlot(refModel, potential, distance, time, "Potential", "J/kg");
+				lidarPlot.setVisible(true);
+				lidarPlot = new LidarPlot(refModel, acceleration, distance, time, "Acceleration", "m/s^2");
+				lidarPlot.setVisible(true);
+				lidarPlot = new LidarPlot(refModel, elevation, distance, time, "Elevation", "m");
+				lidarPlot.setVisible(true);
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+	}
 
 }
