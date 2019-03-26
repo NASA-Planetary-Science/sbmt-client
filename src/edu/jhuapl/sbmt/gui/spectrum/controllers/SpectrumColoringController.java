@@ -143,7 +143,6 @@ public class SpectrumColoringController
     protected void setupComboBoxes()
     {
         ISpectralInstrument instrument = model.getInstrument();
-        System.out.println("SpectrumColoringController: setupComboBoxes: band centers is " + instrument);
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
@@ -186,18 +185,17 @@ public class SpectrumColoringController
         boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
         panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
         panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
-        System.out.println("SpectrumColoringController: coloringComboBoxActionPerformed: is emission selected " + isEmissionSelected);
         model.setSpectrumColoringStyleName(coloringName);
         model.coloringOptionChanged();
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
-    	model.setBlueIndex(panel.getRedComboBox().getSelectedIndex());
+    	model.setRedIndex(panel.getRedComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
-    	model.setBlueIndex(panel.getGreenComboBox().getSelectedIndex());
+    	model.setGreenIndex(panel.getGreenComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
@@ -252,7 +250,7 @@ public class SpectrumColoringController
         panel.getBlueMaxLabel().setVisible(enableColor);
         panel.getBlueLabel().setVisible(enableColor);
         panel.getBlueMaxSpinner().setVisible(enableColor);
-
+        model.setGreyScaleSelected(panel.getGrayscaleCheckBox().isSelected());
         model.updateColoring();
     }
 
@@ -279,6 +277,21 @@ public class SpectrumColoringController
 
         Double minVal = (Double)minSpinner.getValue();
         Double maxVal = (Double)maxSpinner.getValue();
+        if (channel == 0)
+        {
+            model.setRedMinVal(minVal);
+            model.setRedMaxVal(maxVal);
+        }
+        else if (channel == 1)
+        {
+            model.setGreenMinVal(minVal);
+            model.setGreenMaxVal(maxVal);
+        }
+        else if (channel == 2)
+        {
+            model.setBlueMinVal(minVal);
+            model.setBlueMaxVal(maxVal);
+        }
         if (minVal > maxVal)
         {
             if (minimunStateChange)

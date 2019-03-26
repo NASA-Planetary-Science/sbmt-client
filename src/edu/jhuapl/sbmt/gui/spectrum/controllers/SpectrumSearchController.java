@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.gui.spectrum.controllers;
 
 import javax.swing.JPanel;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -20,7 +22,7 @@ public class SpectrumSearchController
     protected ISpectralInstrument instrument;
     protected ModelManager modelManager;
     protected Renderer renderer;
-    private SpectrumResultsTableController spectrumResultsTableController;
+    protected SpectrumResultsTableController spectrumResultsTableController;
     private SpectrumSearchParametersController searchParametersController;
     private SpectrumColoringController coloringController;
     private SpectrumSearchModel spectrumSearchModel;
@@ -61,6 +63,31 @@ public class SpectrumSearchController
         panel.addSubPanel(searchParametersController.getPanel());
         panel.addSubPanel(spectrumResultsTableController.getPanel());
         panel.addSubPanel(coloringController.getPanel());
+
+        panel.addAncestorListener(new AncestorListener()
+		{
+
+			@Override
+			public void ancestorRemoved(AncestorEvent event)
+			{
+				spectrumResultsTableController.removeResultListener();
+
+			}
+
+			@Override
+			public void ancestorMoved(AncestorEvent event)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void ancestorAdded(AncestorEvent event)
+			{
+				spectrumResultsTableController.addResultListener();
+			}
+		});
+
     }
 
     public JPanel getPanel()

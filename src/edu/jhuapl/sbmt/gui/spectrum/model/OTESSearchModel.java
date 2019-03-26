@@ -29,9 +29,9 @@ public class OTESSearchModel extends SpectrumSearchModel
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
 
-        setRedMaxVal(0.000001);
-        setGreenMaxVal(0.000001);
-        setBlueMaxVal(0.000001);
+        setRedMaxVal(0.000007);
+        setGreenMaxVal(0.000007);
+        setBlueMaxVal(0.000007);
 
         setRedIndex(50);
         setGreenIndex(100);

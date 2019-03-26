@@ -101,9 +101,9 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         }
         else if (instrument.getDisplayName().equals(SpectraType.OTES_SPECTRA.getDisplayName()))
         {
-        	setRedMaxVal(0.000001);
-            setGreenMaxVal(0.000001);
-            setBlueMaxVal(0.000001);
+        	setRedMaxVal(0.000007);
+            setGreenMaxVal(0.000007);
+            setBlueMaxVal(0.000007);
 
             setRedIndex(50);
             setGreenIndex(100);
@@ -129,6 +129,8 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 	        setGreenIndex(25);
 	        setBlueIndex(50);
         }
+
+        updateColoring();
     }
 
     @Override
@@ -185,7 +187,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
     protected void fireResultsChanged()
     {
-    	System.out.println("CustomSpectraSearchModel: fireResultsChanged: number of listeners " + customSpectraListeners.size());
         for (CustomSpectraResultsListener listener : customSpectraListeners)
         {
             listener.resultsChanged(customSpectra);
@@ -232,7 +233,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         // since we may be in an inconsistent state.
         if (isCurrentlyEditingUserDefinedFunction())
             return;
-        System.out.println("CustomSpectrumSearchModel: updateColoring: indices " + redIndex + " " + greenIndex + " " + blueIndex);
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         if (isGreyScaleSelected())
         {

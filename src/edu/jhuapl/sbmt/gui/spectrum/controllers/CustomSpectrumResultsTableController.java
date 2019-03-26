@@ -77,6 +77,36 @@ public class CustomSpectrumResultsTableController
             }
         });
 
+//        panel.addComponentListener(new ComponentListener()
+//		{
+//
+//			@Override
+//			public void componentShown(ComponentEvent e)
+//			{
+//				spectrumResultsTableController.addResultListener();
+//			}
+//
+//			@Override
+//			public void componentResized(ComponentEvent e)
+//			{
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void componentMoved(ComponentEvent e)
+//			{
+//				// TODO Auto-generated method stub
+//
+//			}
+//
+//			@Override
+//			public void componentHidden(ComponentEvent e)
+//			{
+//				spectrumResultsTableController.removeResultListener();
+//			}
+//		});
+
 //        panel.getResultList().addMouseListener(new MouseAdapter()
 //        {
 //            public void mousePressed(MouseEvent e)
@@ -120,9 +150,7 @@ public class CustomSpectrumResultsTableController
     {
         public void tableChanged(TableModelEvent e)
         {
-        	System.out.println("CustomSpectrumResultsTableController.SpectrumResultsTableModeListener: tableChanged: model is " + model.getClass());
             List<List<String>> spectrumRawResults = model.getSpectrumRawResults();
-            System.out.println("CustomSpectrumResultsTableController.SpectrumResultsTableModeListener: tableChanged: raw results size " + spectrumRawResults.size());
             results = model.getcustomSpectra();
             ModelManager modelManager = model.getModelManager();
             SpectraCollection spectra = (SpectraCollection)modelManager.getModel(model.getSpectrumCollectionModelName());
@@ -157,8 +185,6 @@ public class CustomSpectrumResultsTableController
                 {
 //                    try
 //                    {
-                	System.out.println(
-							"CustomSpectrumResultsTableController.CustomSpectrumResultsTableModeListener: tableChanged: key name " + key.getName());
                     	model.loadSpectra(name, key);
 //                        spectra.addSpectrum(key);
 //                    }
@@ -167,6 +193,7 @@ public class CustomSpectrumResultsTableController
 //                        // TODO Auto-generated catch block
 //                        e1.printStackTrace();
 //                    }
+                    	model.updateColoring();
                 }
                 else
                 {

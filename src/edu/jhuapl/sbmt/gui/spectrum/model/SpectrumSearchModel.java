@@ -132,7 +132,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         this.pickManager = pickManager;
         this.renderer = renderer;
         this.instrument = instrument;
-        System.out.println("SpectrumSearchModel: SpectrumSearchModel: instrument " + instrument.getDisplayName());
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
         if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)
@@ -283,7 +282,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         // since we may be in an inconsistent state.
         if (isCurrentlyEditingUserDefinedFunction())
             return;
-        System.out.println("SpectrumSearchModel: updateColoring: indices " + redIndex + " " + greenIndex + " " + blueIndex);
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         if (isGreyScaleSelected())
         {
