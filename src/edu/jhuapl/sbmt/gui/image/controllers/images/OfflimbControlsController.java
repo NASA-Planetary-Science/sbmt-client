@@ -61,8 +61,7 @@ public class OfflimbControlsController
 			@Override
 			public void currentDepthChanged(int depth)
 			{
-				int sliderValue = depthSlider.convertDepthToSliderValue(((PerspectiveImage)controlsModel.getImage()).getOffLimbPlaneDepth());
-				controlsPanel.getFootprintDepthValue().setText("" + sliderValue);
+				controlsPanel.getFootprintDepthValue().setText("" + depthSlider.getValue());
 			}
 
 			@Override
@@ -181,12 +180,6 @@ public class OfflimbControlsController
 			setMaximum(50);
 		}
 
-		public void setDepthBounds(double depthMin, double depthMax)
-		{
-			this.depthMin = depthMin;
-			this.depthMax = depthMax;
-		}
-
 		public void applyDepthToImage(int currentSlice)
 		{
 			depthMin = image.getMinFrustumDepth(currentSlice);
@@ -200,13 +193,6 @@ public class OfflimbControlsController
 			double sliderRange = getMaximum() - getMinimum();
 			double imgRange = depthMax - depthMin;
 			return (int) ((value - getMinimum()) * (imgRange/sliderRange) + depthMin);
-		}
-
-		public int convertDepthToSliderValue(double depth)
-		{
-			double sliderRange = getMaximum() - getMinimum();
-			double imgRange = depthMax - depthMin;
-		    return (int) Math.ceil((sliderRange * (depth - depthMin) / imgRange + getMinimum()));
 		}
 
 	}
