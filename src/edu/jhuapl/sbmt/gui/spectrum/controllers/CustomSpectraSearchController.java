@@ -54,8 +54,6 @@ public class CustomSpectraSearchController
             public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
                 List<List<String>> formattedResults = new ArrayList<List<String>>();
-                System.out.println(
-						"CustomSpectraSearchController.CustomSpectraSearchController(...).new CustomSpectraResultsListener() {...}: resultsChanged: results size " + results.size());
                 for (CustomSpectrumKeyInterface info : results)
                 {
                     List<String> res = new ArrayList<String>();
