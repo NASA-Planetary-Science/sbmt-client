@@ -21,6 +21,7 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     private int contrastLow;
     private int contrastHigh;
     private boolean showBoundary = true; // true by default
+	private boolean syncContrast = false; // false by default
     Vector<OfflimbModelChangedListener> listeners;
 
     final Key<Integer> currentSliceKey = Key.of("currentSlice");
@@ -87,10 +88,10 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     public void setContrastLow(int contrastLow)
     {
         this.contrastLow = contrastLow;
-        for (OfflimbModelChangedListener listener : listeners)
-        {
-            listener.currentContrastLowChanged(contrastLow);
-        }
+//        for (OfflimbModelChangedListener listener : listeners)
+//        {
+//            listener.currentContrastLowChanged(contrastLow);
+//        }
     }
 
     public int getContrastHigh()
@@ -104,13 +105,17 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         return showBoundary;
     }
 
+	public boolean getSyncContrast() {
+		return syncContrast;
+	}
+
     public void setContrastHigh(int contrastHigh)
     {
         this.contrastHigh = contrastHigh;
-        for (OfflimbModelChangedListener listener : listeners)
-        {
-            listener.currentContrastHighChanged(contrastHigh);
-        }
+//        for (OfflimbModelChangedListener listener : listeners)
+//        {
+//            listener.currentContrastHighChanged(contrastHigh);
+//        }
     }
 
     public void setImage(PerspectiveImage image)
@@ -121,6 +126,9 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
     public void setShowBoundary(boolean show)
     {
         this.showBoundary = show;
+    }
+    public void setSyncContrast(boolean sync){
+        this.syncContrast = sync;
     }
 
     public void setCurrentSlice(int currentSlice)
@@ -155,5 +163,7 @@ public class OfflimbControlsModel implements Controller.Model, MetadataManager
         contrastLow = source.get(contrastLowKey);
         contrastHigh = source.get(contrastHighKey);
     }
+
+
 
 }
