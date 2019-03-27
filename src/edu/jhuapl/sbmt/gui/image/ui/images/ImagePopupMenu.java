@@ -392,7 +392,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                     {
                         imageCollection.removeImage(imageKey);
                         //keySet.remove(imageKey);
-                        renderer.setLighting(LightingType.LIGHT_KIT);
+//                        renderer.setLighting(LightingType.LIGHT_KIT); //removed due to request in #1667
                     }
                 }
                 catch (FitsException e1) {

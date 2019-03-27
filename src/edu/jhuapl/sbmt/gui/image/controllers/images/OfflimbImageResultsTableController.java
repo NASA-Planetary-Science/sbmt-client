@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
@@ -47,24 +45,6 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         setupTable();
     }
 
-    @Override
-    protected void setupWidgets()
-    {
-        super.setupWidgets();
-        offlimbTableView.getOfflimbControlsButton().addActionListener(new ActionListener()
-        {
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
-                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
-                OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
-                controller.getControlsFrame().setVisible(true);
-            }
-        });
-    }
 
     @Override
     public void setupTable()
@@ -215,7 +195,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, visible);
-                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
+//                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
 
