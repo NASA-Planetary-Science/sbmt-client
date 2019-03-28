@@ -23,11 +23,14 @@ import com.jgoodies.looks.LookUtils;
 
 import edu.jhuapl.saavtk.gui.Console;
 import edu.jhuapl.saavtk.gui.OSXAdapter;
-import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
+import edu.jhuapl.saavtk.model.structure.Line;
+import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
+import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
@@ -100,7 +103,14 @@ public class SbmtMultiMissionTool
 		}
 
 		// Initialize serialization proxies
-		AbstractEllipsePolygonModel.EllipsePolygon.initializeSerializationProxy();
+
+		// Structures.
+		LatLon.initializeSerializationProxy();
+		EllipsePolygon.initializeSerializationProxy();
+		Polygon.initializeSerializationProxy();
+		Line.initializeSerializationProxy();
+
+		// Images.
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
 		SpectrumKey.initializeSerializationProxy();
