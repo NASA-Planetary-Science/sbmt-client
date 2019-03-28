@@ -41,6 +41,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -476,7 +477,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             SmallBodyModel bodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -484,7 +485,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 if (bodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    bodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = bodyModel.getIntersectingCubes(interiorPoly);
                 }
                 else
@@ -630,13 +631,13 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                         .getModel(ModelNames.CIRCLE_SELECTION);
                 SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager
                         .getModel(ModelNames.SMALL_BODY);
-                AbstractEllipsePolygonModel.EllipsePolygon region = null;
+                EllipsePolygon region = null;
                 vtkPolyData interiorPoly = new vtkPolyData();
                 if (selectionModel.getNumberOfStructures() > 0)
                 {
-                    region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+                    region = (EllipsePolygon) selectionModel
                             .getStructure(0);
-                    selectionRegionCenter = region.center;
+                    selectionRegionCenter = region.getCenter();
                     selectionRegionRadius = region.radius;
 
                     // Always use the lowest resolution model for getting the
@@ -646,7 +647,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     // we need to recompute the selection region using the low
                     // res model.
                     if (smallBodyModel.getModelResolution() > 0)
-                        smallBodyModel.drawRegularPolygonLowRes(region.center,
+                        smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter,
                                 region.radius, region.numberOfSides,
                                 interiorPoly, null); // this sets interiorPoly
                     else
