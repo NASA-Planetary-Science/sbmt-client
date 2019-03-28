@@ -67,6 +67,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -1804,7 +1805,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -1812,7 +1813,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 if (erosModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    erosModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = erosModel.getIntersectingCubes(interiorPoly);
                 }
                 else

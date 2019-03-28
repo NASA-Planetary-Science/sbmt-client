@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection.TrackFileType;
+import edu.jhuapl.sbmt.model.lidar.TrackFileType;
 
 import net.miginfocom.swing.MigLayout;
 
