@@ -350,7 +350,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 for (int selectedIndex : selectedIndices)
                 {
                     CustomImageKeyInterface imageInfo = ((CustomImagesModel)imageSearchModel).getCustomImages().get(selectedIndex);
-                    imageKeys.add(imageInfo);
+                    CustomImageKeyInterface revisedKey = ((CustomImagesModel)imageSearchModel).getRevisedKey(imageInfo);
+                    imageKeys.add(revisedKey);
 //                    String name = ((CustomImagesModel)imageSearchModel).getCustomDataFolder() + File.separator + imageInfo.imagefilename;
 //                    ImageSource source = imageInfo.projectionType == ProjectionType.CYLINDRICAL ? ImageSource.LOCAL_CYLINDRICAL : ImageSource.LOCAL_PERSPECTIVE;
 //                    FileType fileType = imageInfo.sumfilename != null && !imageInfo.sumfilename.equals("null") ? FileType.SUM : FileType.INFO;
