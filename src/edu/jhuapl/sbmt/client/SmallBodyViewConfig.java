@@ -1396,6 +1396,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1549,6 +1550,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1712,6 +1714,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1865,6 +1868,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2024,6 +2028,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2188,6 +2193,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2507,6 +2513,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -4665,6 +4672,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
