@@ -13,6 +13,7 @@ import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
@@ -91,12 +92,12 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
-        AbstractEllipsePolygonModel.EllipsePolygon region=null;
+        EllipsePolygon region=null;
         vtkPolyData interiorPoly=new vtkPolyData();
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-            selectionRegionCenter = region.center;
+            region=(EllipsePolygon)selectionModel.getStructure(0);
+            selectionRegionCenter = region.getCenter();
             selectionRegionRadius = region.radius;
 
 
@@ -104,7 +105,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
             // Therefore, if the selection region was created using a higher resolution model,
             // we need to recompute the selection region using the low res model.
             if (smallBodyModel.getModelResolution() > 0)
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
             else
                 interiorPoly=region.interiorPolyData;
 
