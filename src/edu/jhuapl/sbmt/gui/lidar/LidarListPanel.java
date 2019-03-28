@@ -257,6 +257,8 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		if (aEventType == ItemEventType.ItemsSelected)
 			updateTableSelection();
+		else if (aEventType == ItemEventType.ItemsMutated)
+			trackTable.repaint();
 
 		updateGui();
 		updateErrorUI();
