@@ -32,8 +32,9 @@ public class StringRenderer extends DefaultTableCellRenderer
             boolean isSelected, boolean hasFocus,
             int row, int column)
     {
-        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        String name = imageRawResults.get(row).get(0);
+    	int actualRow = table.getRowSorter().convertRowIndexToView(row);
+        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
+        String name = imageRawResults.get(actualRow).get(0);
 //        ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
 //        String filename = name.substring(0, name.lastIndexOf("."));
         String filename = FilenameUtils.getBaseName(name);

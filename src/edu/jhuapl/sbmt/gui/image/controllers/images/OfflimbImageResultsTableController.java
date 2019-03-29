@@ -17,7 +17,6 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
-import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController.DragDropRowTableUI;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageResultsTableView;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
@@ -40,7 +39,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         offlimbTableView = new OfflimbImageResultsTableView(instrument, imageCollection, imagePopupMenu);
         offlimbTableView.setup();
         this.imageResultsTableView = offlimbTableView;
-        imageResultsTableView.getResultList().setUI(new DragDropRowTableUI());
+//        imageResultsTableView.getResultList().setUI(new DragDropRowTableUI());
         setupWidgets();
         setupTable();
     }
@@ -244,6 +243,8 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         {
             if (columnIndex <= offlimbTableView.getBndrColumnIndex())
                 return Boolean.class;
+            else if (columnIndex == imageResultsTableView.getIdColumnIndex())
+            	return Integer.class;
             else
                 return String.class;
         }

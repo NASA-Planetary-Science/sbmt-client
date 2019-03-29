@@ -77,8 +77,6 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
         this.imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
         propertyChangeListener = new CustomImageResultsPropertyChangeListener();
-//        this.imageResultsTableView.getResultList().setAutoCreateRowSorter(true);
-//        this.imageResultsTableView.getResultList().getRowSorter().toggleSortOrder(4);
 
         this.imageResultsTableView.addComponentListener(new ComponentListener()
 		{

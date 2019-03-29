@@ -32,9 +32,10 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
             boolean isSelected, boolean hasFocus,
             int row, int column)
     {
-        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    	int actualRow = table.getRowSorter().convertRowIndexToView(row);
+        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
         if (spectrumRawResults.size() == 0) return co;
-        String name = spectrumRawResults.get(row).get(0);
+        String name = spectrumRawResults.get(actualRow).get(0);
         SpectrumKeyInterface key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
