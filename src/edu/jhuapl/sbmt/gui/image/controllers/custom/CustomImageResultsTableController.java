@@ -354,7 +354,8 @@ public class CustomImageResultsTableController extends ImageResultsTableControll
                 for (int selectedIndex : selectedIndices)
                 {
                     CustomImageKeyInterface imageInfo = ((CustomImagesModel)imageSearchModel).getCustomImages().get(selectedIndex);
-                    imageKeys.add(imageInfo);
+                    CustomImageKeyInterface revisedKey = ((CustomImagesModel)imageSearchModel).getRevisedKey(imageInfo);
+                    imageKeys.add(revisedKey);
                 }
                 imagePopupMenu.setCurrentImages(imageKeys);
                 imagePopupMenu.show(e.getComponent(), e.getX(), e.getY());

@@ -29,5 +29,4 @@ public class CustomSpectraControlPanel extends JPanel
     {
         return editButton;
     }
-
 }

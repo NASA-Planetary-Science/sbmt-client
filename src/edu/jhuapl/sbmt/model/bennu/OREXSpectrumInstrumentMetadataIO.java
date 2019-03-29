@@ -17,10 +17,10 @@ import com.google.gson.reflect.TypeToken;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 
-public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpecification<OREXSearchSpec>
+public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpecification<SpectrumSearchSpec>
 {
     private static Gson gson = null;
-    List<OREXSpectrumInstrumentMetadata<OREXSearchSpec>> info = null;
+    List<OREXSpectrumInstrumentMetadata<SpectrumSearchSpec>> info = null;
     private File path;
     private String pathString;
 
@@ -34,7 +34,7 @@ public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchS
     }
 
     @Override
-    public SpectraHierarchicalSearchSpecification<OREXSearchSpec> clone()
+    public SpectraHierarchicalSearchSpecification<SpectrumSearchSpec> clone()
     {
     	// TODO Auto-generated method stub
     	try
@@ -73,14 +73,14 @@ public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchS
     public void readMetadata(File file) throws FileNotFoundException
     {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        Type collectionType = new TypeToken<List<OREXSpectrumInstrumentMetadata<OREXSearchSpec>>>(){}.getType();
+        Type collectionType = new TypeToken<List<OREXSpectrumInstrumentMetadata<SpectrumSearchSpec>>>(){}.getType();
         info = gson.fromJson(bufferedReader, collectionType);
     }
 
-    public InstrumentMetadata<OREXSearchSpec> readMetadataFromFileForInstrument(File file, String instrumentName) throws FileNotFoundException
+    public InstrumentMetadata<SpectrumSearchSpec> readMetadataFromFileForInstrument(File file, String instrumentName) throws FileNotFoundException
     {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        Type collectionType = new TypeToken<List<OREXSpectrumInstrumentMetadata<OREXSearchSpec>>>(){}.getType();
+        Type collectionType = new TypeToken<List<OREXSpectrumInstrumentMetadata<SpectrumSearchSpec>>>(){}.getType();
         info = gson.fromJson(bufferedReader, collectionType);
         return getInstrumentMetadata(instrumentName);
     }
@@ -89,9 +89,9 @@ public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchS
      * @see edu.jhuapl.sbmt.model.bennu.InstrumentMetadataIO#getInstrumentMetadata(java.lang.String)
      */
     @Override
-    public InstrumentMetadata<OREXSearchSpec> getInstrumentMetadata(String instrumentName)
+    public InstrumentMetadata<SpectrumSearchSpec> getInstrumentMetadata(String instrumentName)
     {
-        for (OREXSpectrumInstrumentMetadata<OREXSearchSpec> instInfo : info)
+        for (OREXSpectrumInstrumentMetadata<SpectrumSearchSpec> instInfo : info)
         {
             if (instInfo.getInstrumentName().equals(instrumentName))
             {
@@ -107,8 +107,8 @@ public class OREXSpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchS
     @Override
     public void readHierarchyForInstrument(String instrumentName)
     {
-        InstrumentMetadata<OREXSearchSpec> instrumentMetadata = getInstrumentMetadata(instrumentName);
-        for (OREXSearchSpec spec : instrumentMetadata.getSpecs())
+        InstrumentMetadata<SpectrumSearchSpec> instrumentMetadata = getInstrumentMetadata(instrumentName);
+        for (SpectrumSearchSpec spec : instrumentMetadata.getSpecs())
         {
             addHierarchicalSearchPath(new String[] {spec.getDataName()}, instrumentMetadata.getSpecs().indexOf(spec),-1);
         }

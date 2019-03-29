@@ -27,6 +27,7 @@ import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -37,6 +38,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -49,7 +51,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 * imaging data. This class is also used when creating (to know which tabs
 * to create).
 */
-public class SmallBodyViewConfig extends BodyViewConfig
+public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
@@ -1394,6 +1396,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1547,6 +1550,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1710,6 +1714,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -1863,6 +1868,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2022,6 +2028,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2186,6 +2193,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2345,6 +2353,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -2504,6 +2513,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -4662,6 +4672,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                 //TODO: eventually point this to a URL
                 OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
                 specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
@@ -6031,8 +6042,42 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[]
+            {
+                new NIRS3()
+            };
+
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[]
+            {
+                new NIRS3()
+            };
+
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            try
+            {
+                //TODO: eventually point this to a URL
+                Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
+                specIO.setPathString(c.spectrumMetadataFile);
+                specIO.loadMetadata();
+                c.hierarchicalSpectraSearchSpecification = specIO;
+
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -6913,6 +6958,23 @@ public class SmallBodyViewConfig extends BodyViewConfig
         FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
         return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
+
+	@Override
+	public Instrument getLidarInstrument()
+	{
+		// TODO Auto-generated method stub
+		return lidarInstrumentName;
+	}
+
+	public boolean hasHypertreeLidarSearch()
+	{
+		return hasHypertreeBasedLidarSearch;
+	}
+
+	public SpectraHierarchicalSearchSpecification getHierarchicalSpectraSearchSpecification()
+	{
+		return hierarchicalSpectraSearchSpecification;
+	}
 
 
 }

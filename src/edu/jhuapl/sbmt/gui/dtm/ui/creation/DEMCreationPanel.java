@@ -26,6 +26,7 @@ import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.saavtk2.event.Event;
@@ -244,9 +245,9 @@ public class DEMCreationPanel extends JPanel implements ActionListener
             {
                 if (regionSelectionModel.getNumberOfStructures() > 0)
                 {
-                    final AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) regionSelectionModel.getStructure(0);
+                    final EllipsePolygon region = (EllipsePolygon) regionSelectionModel.getStructure(0);
 
-                    demCreationTask = creationTool.getCreationTask(demName, region.center, region.radius, (Integer) halfSizeSpinner.getValue());
+                    demCreationTask = creationTool.getCreationTask(demName, region.getCenter(), region.radius, (Integer) halfSizeSpinner.getValue());
 
                 }
                 else

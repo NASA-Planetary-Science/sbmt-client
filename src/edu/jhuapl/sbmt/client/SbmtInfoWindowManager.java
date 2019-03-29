@@ -29,6 +29,8 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3SpectrumInfoPanel;
 import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatistics;
 
 public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListener
@@ -121,6 +123,10 @@ public class SbmtInfoWindowManager implements WindowManager, PropertyChangeListe
         else if (model instanceof OVIRSSpectrum)
         {
             return new OVIRSSpectrumInfoPanel((OVIRSSpectrum)model, modelManager);
+        }
+        else if (model instanceof NIRS3Spectrum)
+        {
+            return new NIRS3SpectrumInfoPanel((NIRS3Spectrum)model, modelManager);
         }
         else if (model instanceof SpectrumStatistics)
         {

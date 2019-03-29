@@ -64,6 +64,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
@@ -76,6 +77,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
@@ -498,6 +500,16 @@ public class SbmtView extends View implements PropertyChangeListener
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
             }
 
+            ISpectralInstrument specInstrument = null;
+            for (ISpectralInstrument i : getPolyhedralModelConfig().spectralInstruments)
+            {
+            	if (i.getDisplayName().equals("NIS")) continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
+                customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
+                specInstrument = i;
+                break;
+            }
+
+
             // Add the "lidar tracks" tab
             ModelManager tmpModelManager = getModelManager();
             LidarSearchDataCollection tmpLidarModel = (LidarSearchDataCollection)tmpModelManager.getModel(ModelNames.TRACKS);
@@ -507,6 +519,7 @@ public class SbmtView extends View implements PropertyChangeListener
             tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
             tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
             customDataPane.addTab("Tracks", tmpPanel);
+
 
 //            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
@@ -676,7 +689,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(Metadata state)
                 {
-                    initialize();
+                        initialize();
 
                     Version serializedVersion = state.getVersion();
 
@@ -756,26 +769,26 @@ public class SbmtView extends View implements PropertyChangeListener
 
                 private void restoreCurrentTabs(JTabbedPane tabbedPane, List<String> tabTitles) {
                 	if (tabbedPane != null)
-                	{
+                    {
                 		if (!tabTitles.isEmpty())
-                		{
+                        {
                 			String title = tabTitles.get(0);
                 			for (int index = 0; index < tabbedPane.getTabCount(); ++index)
-                			{
+                            {
                 				String tabTitle = tabbedPane.getTitleAt(index);
                 				if (title.equalsIgnoreCase(tabTitle))
-                				{
+                                {
                 					tabbedPane.setSelectedIndex(index);
                 					Component component = tabbedPane.getSelectedComponent();
                 					if (component instanceof JTabbedPane)
-                					{
+                                    {
                 						restoreCurrentTabs((JTabbedPane) component, tabTitles.subList(1, tabTitles.size()));
                 					}
-                					break;
-                				}
-                			}
-                		}
-                	}
+                                        break;
+                                    }
+                                }
+                            }
+                    }
                 }
 
             });
