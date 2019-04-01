@@ -25,6 +25,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -271,6 +273,18 @@ public class ImageResultsTableController
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
         imageResultsTableView.getViewResultsGalleryButton().setVisible(true);
+
+        imageResultsTableView.getResultList().getRowSorter().addRowSorterListener(new RowSorterListener()
+		{
+
+			@Override
+			public void sorterChanged(RowSorterEvent e)
+			{
+				imageResultsTableView.repaint();
+				imageResultsTableView.getResultList().repaint();
+				stringRenderer.updateUI();
+			}
+		});
     }
 
     protected JTable getResultList()
@@ -582,6 +596,7 @@ public class ImageResultsTableController
 
     public void setImageResults(List<List<String>> results)
     {
+        stringRenderer.setImageRawResults(results);
         JTable resultTable = imageResultsTableView.getResultList();
         DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
         tableModel.setRowCount(0);

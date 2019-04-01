@@ -10,6 +10,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
@@ -140,6 +142,18 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
+
+        imageResultsTableView.getResultList().getRowSorter().addRowSorterListener(new RowSorterListener()
+		{
+
+			@Override
+			public void sorterChanged(RowSorterEvent e)
+			{
+				imageResultsTableView.repaint();
+				imageResultsTableView.getResultList().repaint();
+				stringRenderer.updateUI();
+			}
+		});
     }
 
     protected JTable getResultList()
@@ -151,6 +165,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     public void setImageResults(List<List<String>> results)
     {
         super.setImageResults(results);
+        stringRenderer.setImageRawResults(results);
         int i=0;
         imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         for (List<String> str : results)
