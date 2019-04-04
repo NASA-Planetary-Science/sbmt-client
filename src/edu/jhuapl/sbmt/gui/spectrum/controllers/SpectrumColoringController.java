@@ -16,9 +16,9 @@ import edu.jhuapl.sbmt.gui.spectrum.SpectrumMathPanel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumColoringChangedListener;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumColoringPanel;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumColoringController
 {
@@ -142,7 +142,7 @@ public class SpectrumColoringController
 
     protected void setupComboBoxes()
     {
-        SpectralInstrument instrument = model.getInstrument();
+        ISpectralInstrument instrument = model.getInstrument();
         for (int i=1; i<=instrument.getBandCenters().length; ++i)
         {
             String channel = new String("(" + i + ") " + instrument.getBandCenters()[i-1] + " " + instrument.getBandCenterUnit());
@@ -190,14 +190,17 @@ public class SpectrumColoringController
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
+    	model.setRedIndex(panel.getRedComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
+    	model.setGreenIndex(panel.getGreenComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void blueComboBoxActionPerformed(ActionEvent evt) {
+    	model.setBlueIndex(panel.getBlueComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
@@ -247,7 +250,7 @@ public class SpectrumColoringController
         panel.getBlueMaxLabel().setVisible(enableColor);
         panel.getBlueLabel().setVisible(enableColor);
         panel.getBlueMaxSpinner().setVisible(enableColor);
-
+        model.setGreyScaleSelected(panel.getGrayscaleCheckBox().isSelected());
         model.updateColoring();
     }
 
@@ -274,6 +277,21 @@ public class SpectrumColoringController
 
         Double minVal = (Double)minSpinner.getValue();
         Double maxVal = (Double)maxSpinner.getValue();
+        if (channel == 0)
+        {
+            model.setRedMinVal(minVal);
+            model.setRedMaxVal(maxVal);
+        }
+        else if (channel == 1)
+        {
+            model.setGreenMinVal(minVal);
+            model.setGreenMaxVal(maxVal);
+        }
+        else if (channel == 2)
+        {
+            model.setBlueMinVal(minVal);
+            model.setBlueMaxVal(maxVal);
+        }
         if (minVal > maxVal)
         {
             if (minimunStateChange)

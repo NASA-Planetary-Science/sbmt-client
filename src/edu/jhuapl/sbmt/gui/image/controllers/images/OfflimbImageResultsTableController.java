@@ -1,7 +1,7 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -10,6 +10,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,29 +41,11 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         offlimbTableView = new OfflimbImageResultsTableView(instrument, imageCollection, imagePopupMenu);
         offlimbTableView.setup();
         this.imageResultsTableView = offlimbTableView;
+//        imageResultsTableView.getResultList().setUI(new DragDropRowTableUI());
         setupWidgets();
         setupTable();
     }
 
-    @Override
-    protected void setupWidgets()
-    {
-        // TODO Auto-generated method stub
-        super.setupWidgets();
-        offlimbTableView.getOfflimbControlsButton().addActionListener(new ActionListener()
-        {
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String name = imageRawResults.get(offlimbTableView.getResultList().getSelectedRow()).get(0);
-                ImageKeyInterface key = imageSearchModel.createImageKey(name.substring(0, name.length()-4), imageSearchModel.getImageSourceOfLastQuery(), instrument);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(key);
-                OfflimbControlsController controller = new OfflimbControlsController(image, imageSearchModel.getCurrentSlice());
-                controller.getControlsFrame().setVisible(true);
-            }
-        });
-    }
 
     @Override
     public void setupTable()
@@ -85,7 +69,38 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
         tableModelListener = new OfflimbImageResultsTableModeListener();
 
-        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+        this.imageResultsTableView.addComponentListener(new ComponentListener()
+		{
+
+			@Override
+			public void componentShown(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+
+			}
+
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e)
+			{
+		        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+
+			}
+		});
+
 
 
         imageResultsTableView.getResultList().addMouseListener(new MouseAdapter()
@@ -127,6 +142,18 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getFrusColumnIndex()).setResizable(true);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getBndrColumnIndex()).setResizable(true);
+
+        imageResultsTableView.getResultList().getRowSorter().addRowSorterListener(new RowSorterListener()
+		{
+
+			@Override
+			public void sorterChanged(RowSorterEvent e)
+			{
+				imageResultsTableView.repaint();
+				imageResultsTableView.getResultList().repaint();
+				stringRenderer.updateUI();
+			}
+		});
     }
 
     protected JTable getResultList()
@@ -138,7 +165,9 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     public void setImageResults(List<List<String>> results)
     {
         super.setImageResults(results);
+        stringRenderer.setImageRawResults(results);
         int i=0;
+        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
         for (List<String> str : results)
         {
             String name = imageRawResults.get(i).get(0);
@@ -156,6 +185,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
 
             ++i;
         }
+        imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
     }
 
     class OfflimbImageResultsTableModeListener extends ImageResultsTableModeListener
@@ -179,7 +209,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
                 String namePrefix = name.substring(0, name.length()-4);
                 boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, visible);
-                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
+//                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
 
@@ -228,6 +258,8 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         {
             if (columnIndex <= offlimbTableView.getBndrColumnIndex())
                 return Boolean.class;
+            else if (columnIndex == imageResultsTableView.getIdColumnIndex())
+            	return Integer.class;
             else
                 return String.class;
         }

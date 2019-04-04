@@ -31,6 +31,12 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
+
 
 public class CustomImageImporterDialog extends javax.swing.JDialog
 {
@@ -204,6 +210,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             {
                 sumfilePathTextField.setText(LEAVE_UNMODIFIED);
                 infofilePathTextField.setText(LEAVE_UNMODIFIED);
+                if (info.getFileType() == FileType.SUM)
+                {
+                	sumfilePathRB.setSelected(true);
+                }
             }
             double rotation = info == null ?  0.0 : ((CustomPerspectiveImageKey)info).getRotation();
             String flip = info == null ?  "None" : ((CustomPerspectiveImageKey)info).getFlip();
@@ -269,7 +279,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
         else
         {
-//            info.projectionType = ProjectionType.PERSPECTIVE;
         	String pointingFilename = null;
             FileType fileType = null;
             ImageSource source = null;
@@ -279,13 +288,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             	pointingFilename = sumfilePathTextField.getText();
             	source = ImageSource.LOCAL_PERSPECTIVE;
             }
-//            String pointingFilename = null;
             if (infofilePathRB.isSelected() == true)
             {
             	pointingFilename = infofilePathTextField.getText();
             	fileType = FileType.INFO;
             	source = ImageSource.LOCAL_PERSPECTIVE;
-        }
+            }
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
             	pointingFilename = null;
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())

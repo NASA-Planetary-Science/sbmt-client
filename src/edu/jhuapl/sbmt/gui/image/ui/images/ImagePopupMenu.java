@@ -151,7 +151,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         exportENVIImageMenuItem.setText("Export ENVI Image...");
         this.add(exportENVIImageMenuItem);
 
-        exportInfofileMenuItem = new JCheckBoxMenuItem(new ExportInfofileAction());
+        exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
 
@@ -392,7 +392,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                     {
                         imageCollection.removeImage(imageKey);
                         //keySet.remove(imageKey);
-                        renderer.setLighting(LightingType.LIGHT_KIT);
+//                        renderer.setLighting(LightingType.LIGHT_KIT); //removed due to request in #1667
                     }
                 }
                 catch (FitsException e1) {

@@ -25,8 +25,8 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumSearchView extends SpectrumView
 {
@@ -65,7 +65,7 @@ public class SpectrumSearchView extends SpectrumView
     private JRadioButton ifbtn;
     private JRadioButton refbtn;
 
-    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
+    public SpectrumSearchView(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager, PickManager pickManager2, Renderer renderer, ISpectralInstrument instrument, SpectrumSearchModel model)
     {
 
         super(smallBodyConfig, modelManager, pickManager2, renderer, instrument);

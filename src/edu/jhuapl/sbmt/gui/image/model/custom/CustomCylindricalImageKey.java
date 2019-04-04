@@ -233,4 +233,85 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	{
 		return date;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((imageType == null) ? 0 : imageType.hashCode());
+		result = prime * result + ((imagefilename == null) ? 0 : imagefilename.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(lllat);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(lllon);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((originalName == null) ? 0 : originalName.hashCode());
+		result = prime * result + ((projectionType == null) ? 0 : projectionType.hashCode());
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		temp = Double.doubleToLongBits(urlat);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(urlon);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CustomCylindricalImageKey other = (CustomCylindricalImageKey) obj;
+		if (imageType != other.imageType)
+			return false;
+		if (imagefilename == null)
+		{
+			if (other.imagefilename != null)
+				return false;
+		} else if (!imagefilename.equals(other.imagefilename))
+			return false;
+		if (Double.doubleToLongBits(lllat) != Double.doubleToLongBits(other.lllat))
+			return false;
+		if (Double.doubleToLongBits(lllon) != Double.doubleToLongBits(other.lllon))
+			return false;
+		if (name == null)
+		{
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (originalName == null)
+		{
+			if (other.originalName != null)
+				return false;
+		} else if (!originalName.equals(other.originalName))
+			return false;
+		if (projectionType != other.projectionType)
+			return false;
+		if (source != other.source)
+			return false;
+		if (Double.doubleToLongBits(urlat) != Double.doubleToLongBits(other.urlat))
+			return false;
+		if (Double.doubleToLongBits(urlon) != Double.doubleToLongBits(other.urlon))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String getFlip()
+	{
+		return "None";
+	}
+
+	@Override
+	public double getRotation()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

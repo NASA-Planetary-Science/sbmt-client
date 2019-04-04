@@ -24,6 +24,7 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.PointInCylinderChecker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
@@ -76,9 +77,9 @@ public class LidarSearchController implements ItemListener
         double selectionRegionRadius = 0.0;
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+            EllipsePolygon region = (EllipsePolygon) selectionModel
                     .getStructure(0);
-            selectionRegionCenter = region.center;
+            selectionRegionCenter = region.getCenter();
             selectionRegionRadius = region.radius;
 
             // Always use the lowest resolution model for getting the
@@ -90,7 +91,7 @@ public class LidarSearchController implements ItemListener
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center,
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(),
                         region.radius, region.numberOfSides, interiorPoly,
                         null);
                 cubeList = smallBodyModel.getIntersectingCubes(

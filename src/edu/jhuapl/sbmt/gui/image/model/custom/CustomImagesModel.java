@@ -132,9 +132,9 @@ public class CustomImagesModel extends ImageSearchModel
         images.addImage(key);
     }
 
-    public void loadImages(String name, CustomImageKeyInterface info)
+    public CustomImageKeyInterface getRevisedKey(CustomImageKeyInterface info)
     {
-		CustomImageKeyInterface revisedKey = null;
+    	CustomImageKeyInterface revisedKey = null;
 		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
 			revisedKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
@@ -143,6 +143,12 @@ public class CustomImagesModel extends ImageSearchModel
 		{
 			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
 		}
+		return revisedKey;
+    }
+
+    public void loadImages(String name, CustomImageKeyInterface info)
+    {
+		CustomImageKeyInterface revisedKey = getRevisedKey(info);
 		try
         {
             if (!imageCollection.containsImage(revisedKey))
@@ -214,12 +220,14 @@ public class CustomImagesModel extends ImageSearchModel
                 // Copy over the binary file
                 Files.copy(new File(enviBinaryFilename /*+ "." + extension*/),
                         new File(getCustomDataFolder() + File.separator
-                                + FilenameUtils.getBaseName(newImageFilename)));
+                        		+ newImageInfo.getImageFilename()));
+//                                + FilenameUtils.getBaseName(newImageFilename)));
 
                 // Copy over the header file
                 Files.copy(new File(enviHeaderFilename),
                         new File(getCustomDataFolder() + File.separator
-                                + VtkENVIReader.getHeaderFilename(newImageFilename)));
+                        		+ newImageInfo.getImageFilename() + ".hdr"));
+//                                + VtkENVIReader.getHeaderFilename(newImageFilename)));
             }
             else if(newImageFilename.endsWith(".fit") || newImageFilename.endsWith(".fits") ||
             		newImageFilename.endsWith(".FIT") || newImageFilename.endsWith(".FITS"))
@@ -252,7 +260,7 @@ public class CustomImagesModel extends ImageSearchModel
                 imageWriter.SetInputConnection(imageReaderOutput);
                 // We save out the image using a new name that makes use of a UUID
                 newImageInfo.setImagefilename("image-" + uuid + ".png");
-                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageFilename);
+                imageWriter.SetFileName(getCustomDataFolder() + File.separator + newImageInfo.getImageFilename());
                 //imageWriter.SetFileTypeToBinary();
                 imageWriter.Write();
             }
@@ -594,14 +602,6 @@ public class CustomImagesModel extends ImageSearchModel
                         break;
                     }
                 }
-
-//                if (idx >= 0)
-//                {
-//                    imageList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        imageList.scrollRectToVisible(cellBounds);
-//                }
             }
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
@@ -619,7 +619,7 @@ public class CustomImagesModel extends ImageSearchModel
         }
     }
 
-    public void setImageVisibility(ImageKeyInterface key, boolean visible)
+    public void setImageVisibility(CustomImageKeyInterface key, boolean visible)
     {
 //        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
 //        ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());

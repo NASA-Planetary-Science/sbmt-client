@@ -135,10 +135,11 @@ public class LidarTableModel implements TableModel, PropertyChangeListener
 	@Override
 	public void setValueAt(Object aValue, int aRowIndex, int aColIndex)
 	{
+		Track tmpTrack = lidarModel.getTrack(aRowIndex);
 		if (aColIndex == 0)
-			lidarModel.setTrackVisible(aRowIndex, (boolean) aValue);
+			lidarModel.setTrackVisible(tmpTrack, (boolean) aValue);
 		else if (aColIndex == 1)
-			lidarModel.setTrackColor(aRowIndex, (Color) aValue);
+			lidarModel.setTrackColor(tmpTrack, (Color) aValue);
 		else
 			throw new UnsupportedOperationException("Column is not supported. Index: " + aColIndex);
 	}
