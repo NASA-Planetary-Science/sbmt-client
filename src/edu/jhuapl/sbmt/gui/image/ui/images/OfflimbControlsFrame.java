@@ -21,9 +21,9 @@ public class OfflimbControlsFrame extends JFrame
 {
     private OfflimbImageControlPanel panel;
 
-    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton resetBtn) throws HeadlessException
+    public OfflimbControlsFrame(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton bndryColorBtn, JButton resetBtn) throws HeadlessException
     {
-        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, resetBtn);
+        panel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, bndryColorBtn, resetBtn);
         init();
     }
 
