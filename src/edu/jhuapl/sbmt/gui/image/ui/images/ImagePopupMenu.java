@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -67,6 +68,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
     private JMenuItem showFrustumMenuItem;
     private JMenuItem exportENVIImageMenuItem;
     private JMenuItem exportInfofileMenuItem;
+    private JMenuItem exportFitsInfoPairsMenuItem;
     private JMenuItem changeNormalOffsetMenuItem;
     private JCheckBoxMenuItem simulateLightingMenuItem;
     private JMenuItem changeOpacityMenuItem;
@@ -154,6 +156,10 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
+
+        exportFitsInfoPairsMenuItem = new JMenuItem(new ExportFitsInfoPairsAction());
+        exportFitsInfoPairsMenuItem.setText("Export FITS/Info File(s)");
+        this.add(exportFitsInfoPairsMenuItem);
 
         changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
@@ -254,6 +260,8 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
                 enableChangeNormalOffset = containsImage;
                 enableChangeOpacity = containsImage;
             }
+
+            if (imageKeys.size() >= 1) enableSaveToDisk = containsImage;
 
             if (containsImage)
             {
@@ -495,35 +503,69 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
     {
         public void actionPerformed(ActionEvent e)
         {
-            if (imageKeys.size() != 1)
-                return;
-            ImageKeyInterface imageKey = imageKeys.get(0);
+        	JFileChooser outputDirChooser = new JFileChooser();
+        	outputDirChooser.setDialogTitle("Save FITS File(s) to...");
+        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        	outputDirChooser.setAcceptAllFileFilterUsed(false);
 
-            File file = null;
-            try
-            {
-                imageCollection.addImage(imageKey);
-                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
-                String path = image.getFitFileFullPath();
-                String extension = path.substring(path.lastIndexOf("."));
-                String imageFileName = new File(path).getName();
+        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) != JFileChooser.APPROVE_OPTION) return;
+        	File outDir = outputDirChooser.getSelectedFile();
+        	System.out.println("ImagePopupMenu.SaveImageAction: actionPerformed: outdir " + outDir);
+        	for (ImageKeyInterface imageKey : imageKeys)
+        	{
+        		if (!(imageCollection.getImage(imageKey) instanceof PerspectiveImage)) continue;
+	            File file = null;
+	            try
+	            {
+	            	//save fits
+	                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+	                String path = image.getFitFileFullPath();
+	                String extension = path.substring(path.lastIndexOf("."));
 
-                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
-                if (file != null)
-                {
+	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
                     File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
-
                     FileUtil.copyFile(fitFile, file);
-                }
-            }
-            catch(Exception ex)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
-                        "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
+	            }
+	            catch(Exception ex)
+	            {
+	                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+	                        "Unable to save file to " + file.getAbsolutePath(),
+	                        "Error Saving File",
+	                        JOptionPane.ERROR_MESSAGE);
+	                ex.printStackTrace();
+	            }
+
+        	}
+
+//            if (imageKeys.size() != 1)
+//                return;
+//            ImageKeyInterface imageKey = imageKeys.get(0);
+//
+//            File file = null;
+//            try
+//            {
+//                imageCollection.addImage(imageKey);
+//                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+//                String path = image.getFitFileFullPath();
+//                String extension = path.substring(path.lastIndexOf("."));
+//                String imageFileName = new File(path).getName();
+//
+//                file = CustomFileChooser.showSaveDialog(invoker, "Save FITS image", imageFileName, "fit");
+//                if (file != null)
+//                {
+//                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
+//
+//                    FileUtil.copyFile(fitFile, file);
+//                }
+//            }
+//            catch(Exception ex)
+//            {
+//                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+//                        "Unable to save file to " + file.getAbsolutePath(),
+//                        "Error Saving File",
+//                        JOptionPane.ERROR_MESSAGE);
+//                ex.printStackTrace();
+//            }
         }
     }
 
@@ -758,6 +800,60 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
             }
 
             updateMenuItems();
+        }
+    }
+
+    private class ExportFitsInfoPairsAction extends AbstractAction
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+        	JFileChooser outputDirChooser = new JFileChooser();
+        	outputDirChooser.setDialogTitle("Choose Save Directory");
+        	outputDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        	outputDirChooser.setAcceptAllFileFilterUsed(false);
+
+        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) == JFileChooser.CANCEL_OPTION) return;
+//        	if (outputDirChooser.showOpenDialog(ImagePopupMenu.this) == JFileChooser.ERROR_OPTION) return;	//TODO handle errors
+        	File outDir = outputDirChooser.getSelectedFile();
+        	for (ImageKeyInterface imageKey : imageKeys)
+        	{
+        		if (!(imageCollection.getImage(imageKey) instanceof PerspectiveImage)) continue;
+	            File file = null;
+	            try
+	            {
+	            	//save fits
+	                PerspectiveImage image = (PerspectiveImage)imageCollection.getImage(imageKey);
+	                String path = image.getFitFileFullPath();
+	                String extension = path.substring(path.lastIndexOf("."));
+
+	                file = new File(outDir, imageKey.getImageFilename().substring(imageKey.getImageFilename().lastIndexOf("/")) + extension);
+                    File fitFile = FileCache.getFileFromServer(imageKey.getName() + extension);
+                    FileUtil.copyFile(fitFile, file);
+
+	                //save info file
+	                String fullPathName = image.getFitFileFullPath();
+                    if (fullPathName == null)
+                        fullPathName = image.getPngFileFullPath();
+                    String imageFileName = new File(fullPathName).getName();
+
+                    String defaultFileName = null;
+                    if (imageFileName != null)
+                        defaultFileName = imageFileName.substring(0, imageFileName.length() - 3) + "INFO";
+
+                    file = new File(outDir, defaultFileName);
+                    String filename = file.getAbsolutePath();
+                    image.saveImageInfo(filename);
+
+	            }
+	            catch(Exception ex)
+	            {
+	                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(invoker),
+	                        "Unable to save file to " + file.getAbsolutePath(),
+	                        "Error Saving File",
+	                        JOptionPane.ERROR_MESSAGE);
+	                ex.printStackTrace();
+	            }
+        	}
         }
     }
 
