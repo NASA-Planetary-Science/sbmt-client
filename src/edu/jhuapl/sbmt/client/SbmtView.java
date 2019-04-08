@@ -497,6 +497,11 @@ public class SbmtView extends View implements PropertyChangeListener
                     instrument = i;
                     break;
                 }
+
+                ImageCollection images = (ImageCollection)getModel(ModelNames.CUSTOM_IMAGES);
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)getModel(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES);
+                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
+                registerPopup(getModel(ModelNames.CUSTOM_IMAGES), popupMenu);
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
             }
 
