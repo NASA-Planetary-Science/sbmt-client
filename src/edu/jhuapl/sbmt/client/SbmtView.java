@@ -534,6 +534,7 @@ public class SbmtView extends View implements PropertyChangeListener
             DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY);
         	DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer());
             registerPopup(getModel(ModelNames.DEM), demPopupMenu);
+            registerPopup(getModel(ModelNames.DEM_BOUNDARY), demPopupMenu);
 
             if ( getPolyhedralModelConfig().rootDirOnServer != null)
             {
