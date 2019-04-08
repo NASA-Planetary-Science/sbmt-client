@@ -17,6 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -71,6 +73,7 @@ public class SpectrumResultsTableController
         spectrumPopupMenu.setInstrument(instrument);
         panel = new SpectrumResultsTableView(spectrumCollection, spectrumPopupMenu);
         panel.setup();
+//        panel.getResultList().setUI(new SpectrumDragDropRowTableUI());
         boundaries = (SpectrumBoundaryCollection)model.getModelManager().getModel(model.getSpectrumBoundaryCollectionModelName());
 
         spectrumRawResults = model.getSpectrumRawResults();
@@ -274,6 +277,20 @@ public class SpectrumResultsTableController
         panel.getResultList().getColumnModel().getColumn(panel.getShowFootprintColumnIndex()).setResizable(true);
         panel.getResultList().getColumnModel().getColumn(panel.getFrusColumnIndex()).setResizable(true);
         panel.getResultList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
+
+        panel.getResultList().getRowSorter().addRowSorterListener(new RowSorterListener()
+		{
+
+			@Override
+			public void sorterChanged(RowSorterEvent e)
+			{
+				System.out.println(
+						"SpectrumResultsTableController.setupTable().new RowSorterListener() {...}: sorterChanged: sorter changed");
+				panel.repaint();
+				panel.getResultList().repaint();
+				stringRenderer.updateUI();
+			}
+		});
     }
 
     protected JTable getResultList()
@@ -623,6 +640,7 @@ public class SpectrumResultsTableController
     {
         public void tableChanged(TableModelEvent e)
         {
+        	modifiedTableRow = e.getFirstRow();
             List<List<String>> spectrumRawResults = model.getSpectrumRawResults();
             ModelManager modelManager = model.getModelManager();
             SpectraCollection spectra = (SpectraCollection)modelManager.getModel(model.getSpectrumCollectionModelName());
@@ -747,6 +765,90 @@ public class SpectrumResultsTableController
                 return String.class;
         }
     }
+
+//    class SpectrumDragDropRowTableUI extends BasicTableUI {
+//
+//        private boolean draggingRow = false;
+//        private int startDragPoint;
+//        private int dyOffset;
+//
+//       protected MouseInputListener createMouseInputListener() {
+//           return new SpectrumDragDropRowMouseInputHandler();
+//       }
+//
+//       public void paint(Graphics g, JComponent c) {
+//            super.paint(g, c);
+//
+//            if (draggingRow) {
+//                 g.setColor(table.getParent().getBackground());
+//                  Rectangle cellRect = table.getCellRect(table.getSelectedRow(), 0, false);
+//                 g.copyArea(cellRect.x, cellRect.y, table.getWidth(), table.getRowHeight(), cellRect.x, dyOffset);
+//
+//                 if (dyOffset < 0) {
+//                      g.fillRect(cellRect.x, cellRect.y + (table.getRowHeight() + dyOffset), table.getWidth(), (dyOffset * -1));
+//                 } else {
+//                      g.fillRect(cellRect.x, cellRect.y, table.getWidth(), dyOffset);
+//                 }
+//            }
+//       }
+//
+//       class SpectrumDragDropRowMouseInputHandler extends MouseInputHandler {
+//
+//    	   private int toRow;
+//
+//           public void mousePressed(MouseEvent e) {
+//                super.mousePressed(e);
+//                startDragPoint = (int)e.getPoint().getY();
+//                toRow = table.getSelectedRow();
+//           }
+//
+//           public void mouseDragged(MouseEvent e) {
+//                int fromRow = table.getSelectedRow();
+//
+//                if (fromRow >= 0) {
+//                     draggingRow = true;
+//
+//                     int rowHeight = table.getRowHeight();
+//                     int middleOfSelectedRow = (rowHeight * fromRow) + (rowHeight / 2);
+//
+//                     toRow = fromRow;
+//                     int yMousePoint = (int)e.getPoint().getY();
+//
+//                     if (yMousePoint < (middleOfSelectedRow - rowHeight)) {
+//                          // Move row up
+//                          toRow = fromRow - 1;
+//                     } else if (yMousePoint > (middleOfSelectedRow + rowHeight)) {
+//                          // Move row down
+//                          toRow = fromRow + 1;
+//                     }
+//
+//                     DefaultTableModel model = (DefaultTableModel)table.getModel();
+//                     if (toRow >= 0 && toRow < table.getRowCount())
+//                     {
+//                    	 model.moveRow(table.getSelectedRow(), table.getSelectedRow(), toRow);
+//
+//                          List<String> fromList = spectrumRawResults.get(fromRow);
+//                          List<String> toList = spectrumRawResults.get(toRow);
+//
+//                          spectrumRawResults.set(toRow, fromList);
+//                          spectrumRawResults.set(fromRow, toList);
+//
+//                           table.setRowSelectionInterval(toRow, toRow);
+//                           startDragPoint = yMousePoint;
+//                     }
+//
+//                     dyOffset = (startDragPoint - yMousePoint) * -1;
+//                     table.repaint();
+//                }
+//           }
+//
+//           public void mouseReleased(MouseEvent e){
+//                super.mouseReleased(e);
+//                draggingRow = false;
+//                table.repaint();
+//           }
+//       }
+//   }
 }
 
 
