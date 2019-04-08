@@ -1370,6 +1370,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20181217_navcam", "bennu_altwgspcv20181217_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1520,10 +1527,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20181227_navcam", "bennu_altwgspcv20181227_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1684,10 +1697,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1838,10 +1857,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1998,10 +2023,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -2323,10 +2354,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -2483,10 +2520,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
