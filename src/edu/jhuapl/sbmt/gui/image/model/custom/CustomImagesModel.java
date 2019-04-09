@@ -89,11 +89,13 @@ public class CustomImagesModel extends ImageSearchModel
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
     }
 
+    @Override
     public ModelNames getImageCollectionModelName()
     {
         return ModelNames.CUSTOM_IMAGES;
     }
 
+    @Override
     public ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
