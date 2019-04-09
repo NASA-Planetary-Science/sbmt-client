@@ -154,14 +154,6 @@ public class OfflimbControlsController
 					depthSlider.setValue(0);
 					alphaSlider.setValue(50);
 				}
-				else if (e.getSource() == controlsPanel.getBoundaryColorBtn())
-				{
-					System.out.println("button pressed");
-//					 Color color = ColorChooser.showColorChooser(
-//		                        getControlsPanel(),
-//		                        new int[]{0,0,0});
-//					 image.setOfflimbBoundaryColor(color);
-				}
 			}
 		};
 
@@ -171,16 +163,15 @@ public class OfflimbControlsController
 		controlsPanel.getShowBoundaryButton().addChangeListener(changeListener);
 		controlsPanel.getSyncContrastButton().addChangeListener(changeListener);
 		controlsPanel.getResetButton().addChangeListener(changeListener);
-//		controlsPanel.getBoundaryColorBtn().addChangeListener(changeListener);
+
 		controlsPanel.getBoundaryColorBtn().addActionListener(new ActionListener() {
-
-
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				Color currColor = image.getOfflimbBoundaryColor();
 				Color color = ColorChooser.showColorChooser(
-	                    getControlsPanel(),
-	                    new int[]{0,0,0});
+	                    getControlsPanel(), new int[] {0,0});
+//	                    new int[]{currColor.getRed(), currColor.getGreen(), currColor.getBlue()});
 				 image.setOfflimbBoundaryColor(color);
 			}
 
