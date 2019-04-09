@@ -1365,7 +1365,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
         for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
+            if (instrument.equals(((ImageKey)key).getInstrument()) && pointing.equals(key.getSource()))
             {
                 PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
                 String fullName = key.getName();
@@ -1382,14 +1382,17 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            showing.put(name, image.isVisible());
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                frus.put(name, perspectiveImage.isFrustumShowing());
-            }
-            ImageKeyInterface key = image.getKey();
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		showing.put(name, image.isVisible());
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+        			frus.put(name, perspectiveImage.isFrustumShowing());
+        		}
+        	}
         }
         result.put(isShowingKey, showing.build());
         result.put(isFrustrumShowingKey, frus.build());
