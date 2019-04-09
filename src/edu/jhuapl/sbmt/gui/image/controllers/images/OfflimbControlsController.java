@@ -51,7 +51,7 @@ public class OfflimbControlsController
 		syncButton.setSelected(controlsModel.getSyncContrast());
 
 		resetButton = new JButton("Reset Off-limb Settings");
-		boundaryColorBtn = new JButton("Boundary Color");
+		boundaryColorBtn = new JButton("Choose Boundary Color");
 
 		controlsPanel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, boundaryColorBtn, resetButton);
 
