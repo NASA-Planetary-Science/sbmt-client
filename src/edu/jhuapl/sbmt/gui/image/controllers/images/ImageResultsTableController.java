@@ -608,30 +608,32 @@ public class ImageResultsTableController
         removeTableListeners();
         imageCollection.removePropertyChangeListener(propertyChangeListener);
         boundaries.removePropertyChangeListener(propertyChangeListener);
-    	//clear out the old images and boundaries from the image and boundary collection
-    	for (ImageKeyInterface key : imageKeys)
-    	{
-    		imageCollection.removeImage(key);
-    		boundaries.removeBoundary(key);
-    	}
-    	imageKeys.clear();
-        stringRenderer.setImageRawResults(results);
-        JTable resultTable = imageResultsTableView.getResultList();
-        DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
-        tableModel.setRowCount(0);
-        imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
-        imageRawResults = results;
-        stringRenderer.setImageRawResults(imageRawResults);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-//        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
-
-//        removeAllButtonActionPerformed(null);
-//        removeAllImagesButtonActionPerformed(null);
 
         try
         {
+        	//clear out the old images and boundaries from the image and boundary collection
+        	for (ImageKeyInterface key : imageKeys)
+        	{
+        		imageCollection.removeImage(key);
+        		boundaries.removeBoundary(key);
+        	}
+        	imageKeys.clear();
+            stringRenderer.setImageRawResults(results);
+            JTable resultTable = imageResultsTableView.getResultList();
+            DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
+            tableModel.setRowCount(0);
+            imageResultsTableView.getResultsLabel().setText(results.size() + " images matched");
+            imageRawResults = results;
+            stringRenderer.setImageRawResults(imageRawResults);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+//            imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
+
+//            removeAllButtonActionPerformed(null);
+//            removeAllImagesButtonActionPerformed(null);
+
             int mapColumnIndex = imageResultsTableView.getMapColumnIndex();
             int showFootprintColumnIndex = imageResultsTableView.getShowFootprintColumnIndex();
             int frusColumnIndex = imageResultsTableView.getFrusColumnIndex();
