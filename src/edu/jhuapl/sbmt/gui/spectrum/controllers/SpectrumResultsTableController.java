@@ -644,6 +644,7 @@ public class SpectrumResultsTableController
             List<List<String>> spectrumRawResults = model.getSpectrumRawResults();
             ModelManager modelManager = model.getModelManager();
             SpectraCollection spectra = (SpectraCollection)modelManager.getModel(model.getSpectrumCollectionModelName());
+            if (panel.getResultList().getModel().getRowCount() == 0) return;
             int actualRow = panel.getResultList().getRowSorter().convertRowIndexToView(e.getFirstRow());
             int row = (Integer)panel.getResultList().getValueAt(actualRow, panel.getIdColumnIndex())-1;
             String name = spectrumRawResults.get(row).get(0);

@@ -878,6 +878,7 @@ public class ImageResultsTableController
             ImageSource sourceOfLastQuery = imageSearchModel.getImageSourceOfLastQuery();
             List<List<String>> imageRawResults = imageSearchModel.getImageResults();
             ModelManager modelManager = imageSearchModel.getModelManager();
+            if (imageResultsTableView.getResultList().getModel().getRowCount() == 0) return;
             int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(e.getFirstRow());
             int row = (Integer)imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getIdColumnIndex())-1;
 
