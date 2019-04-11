@@ -63,6 +63,7 @@ public class ImageResultsTableController
 
     protected ImageResultsTableView imageResultsTableView;
     protected ImageSearchModel imageSearchModel;
+    protected List<ImageKeyInterface> imageKeys;
     protected List<List<String>> imageRawResults;
     private ModelManager modelManager;
     protected ImagingInstrument instrument;
@@ -89,6 +90,7 @@ public class ImageResultsTableController
     public ImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
         this.modelManager = model.getModelManager();
+        this.imageKeys = new ArrayList<ImageKeyInterface>();
         boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(model.getImageBoundaryCollectionModelName());
         imagePopupMenu = new ImagePopupMenu(modelManager, imageCollection, boundaries, infoPanelManager, spectrumPanelManager, renderer, imageResultsTableView);
         imageResultsTableView = new ImageResultsTableView(instrument, imageCollection, imagePopupMenu);
@@ -528,21 +530,28 @@ public class ImageResultsTableController
     	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
     	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
         PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
-        model.removeAllBoundaries();
+        for (ImageKeyInterface key : imageKeys)
+    	{
+    		boundaries.removeBoundary(key);
+    	}
         imageSearchModel.setResultIntervalCurrentlyShown(null);
     }
 
     private void removeAllImagesButtonActionPerformed(ActionEvent evt)
     {
+    	for (ImageKeyInterface key : imageKeys)
+    	{
+    		imageCollection.removeImage(key);
+    	}
     	IdPair originalInterval = imageSearchModel.getResultIntervalCurrentlyShown();
-    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
-        imageCollection.removeImages(ImageSource.GASKELL);
-        imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
-        imageCollection.removeImages(ImageSource.SPICE);
-        imageCollection.removeImages(ImageSource.CORRECTED_SPICE);
-        imageCollection.removeImages(ImageSource.CORRECTED);
-        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
-        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
+//    	imageSearchModel.setResultIntervalCurrentlyShown(new IdPair(0, imageRawResults.size()));
+//        imageCollection.removeImages(ImageSource.GASKELL);
+//        imageCollection.removeImages(ImageSource.GASKELL_UPDATED);
+//        imageCollection.removeImages(ImageSource.SPICE);
+//        imageCollection.removeImages(ImageSource.CORRECTED_SPICE);
+//        imageCollection.removeImages(ImageSource.CORRECTED);
+//        imageCollection.removeImages(ImageSource.LOCAL_CYLINDRICAL);
+//        imageCollection.removeImages(ImageSource.LOCAL_PERSPECTIVE);
         if (originalInterval != null)
         	showImageBoundaries(originalInterval);
 
@@ -596,6 +605,16 @@ public class ImageResultsTableController
 
     public void setImageResults(List<List<String>> results)
     {
+        removeTableListeners();
+        imageCollection.removePropertyChangeListener(propertyChangeListener);
+        boundaries.removePropertyChangeListener(propertyChangeListener);
+    	//clear out the old images and boundaries from the image and boundary collection
+    	for (ImageKeyInterface key : imageKeys)
+    	{
+    		imageCollection.removeImage(key);
+    		boundaries.removeBoundary(key);
+    	}
+    	imageKeys.clear();
         stringRenderer.setImageRawResults(results);
         JTable resultTable = imageResultsTableView.getResultList();
         DefaultTableModel tableModel = (DefaultTableModel)resultTable.getModel();
@@ -607,11 +626,9 @@ public class ImageResultsTableController
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 //        imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
-        removeTableListeners();
-        imageCollection.removePropertyChangeListener(propertyChangeListener);
-        boundaries.removePropertyChangeListener(propertyChangeListener);
-        removeAllButtonActionPerformed(null);
-        removeAllImagesButtonActionPerformed(null);
+
+//        removeAllButtonActionPerformed(null);
+//        removeAllImagesButtonActionPerformed(null);
 
         try
         {
@@ -634,10 +651,12 @@ public class ImageResultsTableController
 
                 String name = imageRawResults.get(i).get(0);
                 ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), instrument);
+                imageKeys.add(key);
                 if (imageCollection.containsImage(key))
                 {
                     tableModel.setValueAt(true, i, mapColumnIndex);
                     PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
+                    image.setShowFrustum(false);   //on initial load, don't show the frustum
                     tableModel.setValueAt(image.isVisible(), i, showFootprintColumnIndex);
                     tableModel.setValueAt(image.isFrustumShowing(), i, frusColumnIndex);
                 }
@@ -700,7 +719,7 @@ public class ImageResultsTableController
 
 //        PerspectiveImageBoundaryCollection model = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 //        model.removeAllBoundaries();
-        boundaries.removeAllBoundaries();
+//        boundaries.removeAllBoundaries();
 
         for (int i=startId; i<endId; ++i)
         {
