@@ -89,11 +89,13 @@ public class CustomImagesModel extends ImageSearchModel
         this(model.getSmallBodyConfig(), model.getModelManager(), model.getRenderer(), model.getInstrument());
     }
 
+    @Override
     public ModelNames getImageCollectionModelName()
     {
         return ModelNames.CUSTOM_IMAGES;
     }
 
+    @Override
     public ModelNames getImageBoundaryCollectionModelName()
     {
         return ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES;
@@ -132,9 +134,9 @@ public class CustomImagesModel extends ImageSearchModel
         images.addImage(key);
     }
 
-    public void loadImages(String name, CustomImageKeyInterface info)
+    public CustomImageKeyInterface getRevisedKey(CustomImageKeyInterface info)
     {
-		CustomImageKeyInterface revisedKey = null;
+    	CustomImageKeyInterface revisedKey = null;
 		if (info.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
 			revisedKey = new CustomPerspectiveImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getSource(), info.getImageType(), ((CustomPerspectiveImageKey)info).getRotation(), ((CustomPerspectiveImageKey)info).getFlip(), info.getFileType(), info.getPointingFile(), info.getDate(), info.getName());
@@ -143,6 +145,12 @@ public class CustomImagesModel extends ImageSearchModel
 		{
 			revisedKey = new CustomCylindricalImageKey(SafeURLPaths.instance().getUrl(getCustomDataFolder() + File.separator + info.getImageFilename()), info.getImageFilename(), info.getImageType(), info.getSource(), info.getDate(), info.getName());
 		}
+		return revisedKey;
+    }
+
+    public void loadImages(String name, CustomImageKeyInterface info)
+    {
+		CustomImageKeyInterface revisedKey = getRevisedKey(info);
 		try
         {
             if (!imageCollection.containsImage(revisedKey))
@@ -596,14 +604,6 @@ public class CustomImagesModel extends ImageSearchModel
                         break;
                     }
                 }
-
-//                if (idx >= 0)
-//                {
-//                    imageList.setSelectionInterval(idx, idx);
-//                    Rectangle cellBounds = imageList.getCellBounds(idx, idx);
-//                    if (cellBounds != null)
-//                        imageList.scrollRectToVisible(cellBounds);
-//                }
             }
         }
         else if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))

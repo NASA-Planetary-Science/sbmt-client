@@ -35,6 +35,8 @@ import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
+import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -112,6 +114,8 @@ public class SbmtMultiMissionTool
 		// Images.
 		CustomCylindricalImageKey.initializeSerializationProxy();
 		CustomPerspectiveImageKey.initializeSerializationProxy();
+		SpectrumKey.initializeSerializationProxy();
+		CustomSpectrumKey.initializeSerializationProxy();
 		DEMKey.initializeSerializationProxy();
 	}
 

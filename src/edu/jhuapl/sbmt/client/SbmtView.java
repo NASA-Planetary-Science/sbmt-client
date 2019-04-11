@@ -69,6 +69,7 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
@@ -79,6 +80,7 @@ import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
@@ -497,8 +499,23 @@ public class SbmtView extends View implements PropertyChangeListener
                     instrument = i;
                     break;
                 }
+
+                ImageCollection images = (ImageCollection)getModel(ModelNames.CUSTOM_IMAGES);
+                PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)getModel(ModelNames.PERSPECTIVE_CUSTOM_IMAGE_BOUNDARIES);
+                PopupMenu popupMenu = new ImagePopupMenu(getModelManager(), images, boundaries, (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getRenderer(), getRenderer());
+                registerPopup(getModel(ModelNames.CUSTOM_IMAGES), popupMenu);
                 customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), (SbmtSpectrumWindowManager)getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
             }
+
+            ISpectralInstrument specInstrument = null;
+            for (ISpectralInstrument i : getPolyhedralModelConfig().spectralInstruments)
+            {
+            	if (i.getDisplayName().equals("NIS")) continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
+                customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager)getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
+                specInstrument = i;
+                break;
+            }
+
 
             // Add the "lidar tracks" tab
             ModelManager tmpModelManager = getModelManager();
@@ -510,6 +527,7 @@ public class SbmtView extends View implements PropertyChangeListener
             tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
             customDataPane.addTab("Tracks", tmpPanel);
 
+
 //            JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
 //                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
 //            addTab("Regional DTMs", component);
@@ -518,6 +536,7 @@ public class SbmtView extends View implements PropertyChangeListener
             DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY);
         	DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer(), new DEMPopupMenuActionListener(dems, demBoundaries));
             registerPopup(getModel(ModelNames.DEM), demPopupMenu);
+            registerPopup(getModel(ModelNames.DEM_BOUNDARY), demPopupMenu);
 
             DEMCreator creationTool = null;
             if (getPolyhedralModelConfig().hasRemoteMapmaker)	//config builds DEMs from the server
@@ -698,7 +717,7 @@ public class SbmtView extends View implements PropertyChangeListener
                 @Override
                 public void retrieve(Metadata state)
                 {
-                    initialize();
+                        initialize();
 
                     Version serializedVersion = state.getVersion();
 

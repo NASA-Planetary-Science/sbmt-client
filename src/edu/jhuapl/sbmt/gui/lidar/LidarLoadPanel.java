@@ -43,8 +43,20 @@ public class LidarLoadPanel extends JPanel implements ActionListener
 		loadB.setToolTipText("Select lidar files to import.");
 		JLabel tmpL = new JLabel("File Type:");
 		fileTypeBox = new JComboBox<>();
-//		fileTypeBox.setToolTipText(
-//				"<html>\nTrack file can be in either text or binary format.<br><br>\nIf text, file may contain 3 or more space-delimited columns.<br>\nDepending on the number of columns, the file is interpreted the following way:<br>\n - 3 columns: X, Y, and Z target position. Time and spacecraft position set to zero.<br> \n - 4 columns: time, X, Y, and Z target position. Spacecraft position set to zero.<br>\n - 5 columns: time, X, Y, and Z target position. Spacecraft position set to zero. 5th column ignored.<br>\n - 6 columns: X, Y, Z target position, X, Y, Z spacecraft position. Time set to zero.<br>\n - 7 or more columns: time, X, Y, and Z target position, X, Y, Z spacecraft position. Additional columns ignored.<br>\nNote that time is expressed either as a UTC string such as 2000-04-06T13:19:12.153<br>\nor as a floating point ephemeris time such as 9565219.901.<br>\n<br>\nIf binary, each record must consist of 7 double precision values:<br>\n1. ET<br>\n2. X target<br>\n3. Y target<br>\n4. Z target<br>\n5. X spacecraft position<br>\n6. Y spacecraft position<br>\n7. Z spacecraft position<br>\n");
+		fileTypeBox.setToolTipText(
+				"<html>\nTrack file can be in either text or binary format.<br><br>\n"
+				+ "All ascii data are space delimited files (except for the Hayabusa2 lidar data).<br>\n"
+				+ "If you are importing a track exported from SBMT use Time, Lidar, S/C position ascii input.\n"
+				+ "Note that time is expressed either as a UTC string such as 2000-04-06T13:19:12.153<br>\n"
+				+ "or as a floating point ephemeris time such as 9565219.901.<br>\n<br>\n"
+				+ "If binary, each record must consist of 7 double precision values:<br>\n"
+				+ "1. ET<br>\n"
+				+ "2. X target<br>\n"
+				+ "3. Y target<br>\n"
+				+ "4. Z target<br>\n"
+				+ "5. X spacecraft position<br>\n"
+				+ "6. Y spacecraft position<br>\n"
+				+ "7. Z spacecraft position<br>\n");
 		fileTypeBox.setModel(new DefaultComboBoxModel<>(TrackFileType.names()));
 		add(tmpL, "span,split");
 		add(fileTypeBox, "growx");

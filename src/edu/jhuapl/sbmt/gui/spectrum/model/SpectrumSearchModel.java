@@ -62,20 +62,22 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
-public abstract class SpectrumSearchModel implements ISpectrumSearchModel
+import crucible.crust.metadata.api.MetadataManager;
+
+public abstract class SpectrumSearchModel implements ISpectrumSearchModel, MetadataManager
 {
-    protected SpectralInstrument instrument;
+    protected ISpectralInstrument instrument;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
     protected ModelManager modelManager;
     protected PickManager pickManager;
@@ -122,7 +124,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
     public SpectrumSearchModel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
+            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
@@ -239,7 +241,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
     }
 
-    public SpectralInstrument getInstrument()
+    public ISpectralInstrument getInstrument()
     {
         return instrument;
     }
@@ -281,7 +283,6 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         // since we may be in an inconsistent state.
         if (isCurrentlyEditingUserDefinedFunction())
             return;
-
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         if (isGreyScaleSelected())
         {
@@ -532,7 +533,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
             else
             {
-                QueryBase queryType = instrument.getQueryBase();
+                IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
@@ -779,7 +780,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
             else
             {
-                QueryBase queryType = instrument.getQueryBase();
+                IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery) queryType;
@@ -885,17 +886,17 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         fireColoringChanged();
     }
 
-    public SpectrumKey[] getSelectedSpectrumKeys()
+    public SpectrumKeyInterface[] getSelectedSpectrumKeys()
     {
         int[] indices = selectedImageIndices;
-        SpectrumKey[] selectedKeys = new SpectrumKey[indices.length];
+        SpectrumKeyInterface[] selectedKeys = new SpectrumKeyInterface[indices.length];
         if (indices.length > 0)
         {
             int i=0;
             for (int index : indices)
             {
                 String image = results.get(index).get(0);
-                SpectrumKey selectedKey = createSpectrumKey(image, instrument);
+                SpectrumKeyInterface selectedKey = createSpectrumKey(image, instrument);
 //                if (!selectedKey.band.equals("0"))
 //                    name = selectedKey.band + ":" + name;
                 selectedKeys[i++] = selectedKey;
@@ -922,16 +923,16 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         return selectedImageIndices;
     }
 
-    public List<SpectrumKey> createSpectrumKeys(String boundaryName, SpectralInstrument instrument)
+    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, ISpectralInstrument instrument)
     {
-        List<SpectrumKey> result = new ArrayList<SpectrumKey>();
+        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
         result.add(createSpectrumKey(boundaryName, instrument));
         return result;
     }
 
-    public SpectrumKey createSpectrumKey(String imagePathName, SpectralInstrument instrument)
+    public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
     {
-        SpectrumKey key = new SpectrumKey(imagePathName, null, null, instrument);
+        SpectrumKeyInterface key = new SpectrumKey(imagePathName, null, null, instrument, "");
         return key;
     }
 

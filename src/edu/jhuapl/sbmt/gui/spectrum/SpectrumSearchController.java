@@ -93,13 +93,13 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -112,14 +112,14 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     protected SpectrumSearchModel model;
     PickEvent lastPickEvent=null;
     protected CheckBoxTree checkBoxTree;
-    protected final SpectralInstrument instrument;
+    protected final ISpectralInstrument instrument;
     SpectraHierarchicalSearchSpecification spectraSpec;
     private PickManager pickManager;
     private boolean isSearchView;
 
     public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument, boolean search)
+            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument, boolean search)
     {
         this.pickManager = pickManager;
         this.modelManager = modelManager;
@@ -649,7 +649,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 }
                 else
                 {
-                    QueryBase queryType = instrument.getQueryBase();
+                    IQueryBase queryType = instrument.getQueryBase();
                     if (queryType instanceof FixedListQuery)
                 {
                         FixedListQuery query = (FixedListQuery)queryType;
@@ -1130,6 +1130,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     protected void showFootprints(IdPair idPair)
     {
+    	System.out.println("SpectrumSearchController: showFootprints: showing footprints");
         int startId = idPair.id1;
         int endId = idPair.id2;
 
@@ -1213,6 +1214,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         Double blueMinVal = (Double)view.getBlueMinSpinner().getValue();
         Double blueMaxVal = (Double)view.getBlueMaxSpinner().getValue();
+        System.out.println("SpectrumSearchController: updateColoring: red min " + redMinVal);
+        System.out.println("SpectrumSearchController: updateColoring: red max " + redMaxVal);
 
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
         if (view.getGrayscaleCheckBox().isSelected())

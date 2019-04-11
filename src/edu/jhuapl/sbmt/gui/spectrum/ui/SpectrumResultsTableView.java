@@ -14,7 +14,6 @@ import javax.swing.border.TitledBorder;
 
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumResultsTableView extends JPanel
 {
@@ -35,7 +34,7 @@ public class SpectrumResultsTableView extends JPanel
     /**
      * @wbp.parser.constructor
      */
-    public SpectrumResultsTableView(SpectralInstrument instrument, SpectraCollection spectrumCollection, SpectrumPopupMenu spectrumPopupMenu)
+    public SpectrumResultsTableView(SpectraCollection spectrumCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
         init();

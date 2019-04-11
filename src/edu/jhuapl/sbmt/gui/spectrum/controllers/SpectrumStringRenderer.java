@@ -9,8 +9,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 
 public class SpectrumStringRenderer extends DefaultTableCellRenderer
 {
@@ -32,10 +32,11 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
             boolean isSelected, boolean hasFocus,
             int row, int column)
     {
-        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    	int actualRow = table.getRowSorter().convertRowIndexToModel(row);
+        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
         if (spectrumRawResults.size() == 0) return co;
-        String name = spectrumRawResults.get(row).get(0);
-        SpectrumKey key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
+        String name = spectrumRawResults.get(actualRow).get(0);
+        SpectrumKeyInterface key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
             int[] c = model.getBoundary(key).getBoundaryColor();
