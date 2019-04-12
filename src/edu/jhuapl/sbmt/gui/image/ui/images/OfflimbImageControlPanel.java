@@ -30,10 +30,12 @@ public class OfflimbImageControlPanel extends JPanel
     private ContrastSlider imageContrastSlider;
 
     private ShowBoundaryButton showBoundaryButton;
+//    private ColorChooser boundaryColorPicker;
+    private JButton chooseBoundaryColorBtn;
 	private SyncContrastSlidersButton syncContrastButton;
 	private JButton resetButton;
 
-    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton resetButton)
+    public OfflimbImageControlPanel(DepthSlider depthSlider, AlphaSlider alphaSlider, ContrastSlider contrastSlider, ShowBoundaryButton showBoundaryBtn, SyncContrastSlidersButton syncButton, JButton bndryColorBtn, JButton resetButton)
     {
         super();
 
@@ -85,6 +87,9 @@ public class OfflimbImageControlPanel extends JPanel
 
         showBoundaryButton = showBoundaryBtn;
         buttonPanel.add(showBoundaryButton);
+
+        chooseBoundaryColorBtn = bndryColorBtn;
+        buttonPanel.add(chooseBoundaryColorBtn);
 
 
         this.resetButton = resetButton;
@@ -180,6 +185,10 @@ public class OfflimbImageControlPanel extends JPanel
 
 	public JButton getResetButton() {
 		return resetButton;
+	}
+
+	public JButton getBoundaryColorBtn() {
+		return chooseBoundaryColorBtn;
 	}
 
 
