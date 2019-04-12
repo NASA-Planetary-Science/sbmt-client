@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -87,9 +88,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
     final Key<List<String[]>> imageListKey = Key.of("imageList");
     final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
-    final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
-    final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
-    final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
+    final Key<SortedMap<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+    final Key<SortedMap<String, Boolean>> isOffLimbShowingKey = Key.of("offLimbShowing");
+    final Key<SortedMap<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+    final Key<SortedMap<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
@@ -106,7 +108,6 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private Vector<ImageSearchResultsListener> resultsListeners;
     private Vector<ImageSearchModelListener> modelListeners;
     protected int[] selectedImageIndices;
-    private MetadataManager stateManager;
     protected List<Integer> camerasSelected;
     protected List<Integer> filtersSelected;
     private double minDistanceQuery;
@@ -1378,6 +1379,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Save mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+        ImmutableSortedMap.Builder<String, Boolean> offLimb = ImmutableSortedMap.naturalOrder();
         ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
 
         for (Image image : imageCollection.getImages())
@@ -1390,11 +1392,13 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         		if (image instanceof PerspectiveImage)
         		{
         			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+        			offLimb.put(name, perspectiveImage.offLimbFootprintIsVisible());
         			frus.put(name, perspectiveImage.isFrustumShowing());
         		}
         	}
         }
         result.put(isShowingKey, showing.build());
+        result.put(isOffLimbShowingKey, offLimb.build());
         result.put(isFrustrumShowingKey, frus.build());
 
         return result;
@@ -1524,6 +1528,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Restore mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         Map<String, Boolean> showing = source.get(isShowingKey);
+        Map<String, Boolean> offLimb = source.hasKey(isOffLimbShowingKey) ? source.get(isOffLimbShowingKey) : ImmutableMap.of();
         Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
         for (String name : showing.keySet())
         {
@@ -1533,13 +1538,19 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
-            }
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                    perspectiveImage.setOffLimbFootprintVisibility(offLimb.containsKey(name) ? offLimb.get(name) : false);
+        			perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+        		}
+        	}
+
         }
 
         fireModelChanged();

@@ -21,6 +21,7 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.image.controllers.StringRenderer;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageResultsTableView;
+import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -33,6 +34,12 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
     public OfflimbImageResultsTableController(ImagingInstrument instrument, ImageCollection imageCollection, ImageSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager, SbmtSpectrumWindowManager spectrumPanelManager)
     {
         super(instrument, imageCollection, model, renderer, infoPanelManager, spectrumPanelManager);
+        if (this.propertyChangeListener != null)
+        {
+            this.imageCollection.removePropertyChangeListener(this.propertyChangeListener);
+            this.boundaries.removePropertyChangeListener(this.propertyChangeListener);
+            this.propertyChangeListener = new OfflimbImageResultsPropertyChangeListener();
+        }
     }
 
     @Override
@@ -186,6 +193,33 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             ++i;
         }
         imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
+    }
+
+    class OfflimbImageResultsPropertyChangeListener extends ImageResultsPropertyChangeListener
+    {
+        @Override
+        protected void updateTableRow(DefaultTableModel tableModel, int index, ImageKeyInterface key)
+        {
+            super.updateTableRow(tableModel, index, key);
+
+            if (imageCollection.containsImage(key))
+            {
+                Image image = imageCollection.getImage(key);
+
+                if (image instanceof PerspectiveImage)
+                {
+                    PerspectiveImage perspectiveImage = (PerspectiveImage) imageCollection.getImage(key);
+                    tableModel.setValueAt(perspectiveImage.offLimbFootprintIsVisible(), index, offlimbTableView.getOffLimbIndex());
+                }
+            }
+            else
+            {
+                tableModel.setValueAt(false, index, offlimbTableView.getOffLimbIndex());
+            }
+
+            tableModel.setValueAt(boundaries.containsBoundary(key), index, imageResultsTableView.getBndrColumnIndex());
+        }
+
     }
 
     class OfflimbImageResultsTableModeListener extends ImageResultsTableModeListener

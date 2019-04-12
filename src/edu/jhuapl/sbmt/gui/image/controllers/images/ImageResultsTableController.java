@@ -49,6 +49,7 @@ import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImageResultsTableView;
+import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -801,7 +802,7 @@ public class ImageResultsTableController
     class ImageResultsPropertyChangeListener implements PropertyChangeListener
     {
         @Override
-        public void propertyChange(PropertyChangeEvent evt)
+        public final void propertyChange(PropertyChangeEvent evt)
         {
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
@@ -840,23 +841,7 @@ public class ImageResultsTableController
                     {
                         String name = imageRawResults.get(i).get(0);
                         ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
-                        if (imageCollection.containsImage(key))
-                        {
-                            tableModel.setValueAt(true, i, imageResultsTableView.getMapColumnIndex());
-                            PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(key);
-                            tableModel.setValueAt(image.isVisible(), i, imageResultsTableView.getShowFootprintColumnIndex());
-                            tableModel.setValueAt(image.isFrustumShowing(), i, imageResultsTableView.getFrusColumnIndex());
-                        }
-                        else
-                        {
-                            tableModel.setValueAt(false, i, imageResultsTableView.getMapColumnIndex());
-                            tableModel.setValueAt(false, i, imageResultsTableView.getShowFootprintColumnIndex());
-                            tableModel.setValueAt(false, i, imageResultsTableView.getFrusColumnIndex());
-                        }
-                        if (boundaries.containsBoundary(key))
-                            tableModel.setValueAt(true, i, imageResultsTableView.getBndrColumnIndex());
-                        else
-                            tableModel.setValueAt(false, i, imageResultsTableView.getBndrColumnIndex());
+                        updateTableRow(tableModel, i, key);
                     }
                 }
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
@@ -865,6 +850,32 @@ public class ImageResultsTableController
                 modifiedTableRow = -1;
             }
         }
+
+        protected void updateTableRow(DefaultTableModel tableModel, int index, ImageKeyInterface key)
+        {
+            if (imageCollection.containsImage(key))
+            {
+                tableModel.setValueAt(true, index, imageResultsTableView.getMapColumnIndex());
+
+                Image image = imageCollection.getImage(key);
+                tableModel.setValueAt(image.isVisible(), index, imageResultsTableView.getShowFootprintColumnIndex());
+
+                if (image instanceof PerspectiveImage)
+                {
+                    PerspectiveImage perspectiveImage = (PerspectiveImage) imageCollection.getImage(key);
+                    tableModel.setValueAt(perspectiveImage.isFrustumShowing(), index, imageResultsTableView.getFrusColumnIndex());
+                }
+            }
+            else
+            {
+                tableModel.setValueAt(false, index, imageResultsTableView.getMapColumnIndex());
+                tableModel.setValueAt(false, index, imageResultsTableView.getShowFootprintColumnIndex());
+                tableModel.setValueAt(false, index, imageResultsTableView.getFrusColumnIndex());
+            }
+
+            tableModel.setValueAt(boundaries.containsBoundary(key), index, imageResultsTableView.getBndrColumnIndex());
+        }
+
     }
 
     class ImageResultsTableModeListener implements TableModelListener
