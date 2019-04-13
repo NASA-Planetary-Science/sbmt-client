@@ -50,7 +50,7 @@ public class DEMIO
             file = CustomFileChooser.showSaveDialog(invoker, "Save FITS file", imageFileName, "fit");
             if (file != null)
             {
-                File fitFile = FileCache.getFileFromServer("file://" + demKey.demfilename);
+                File fitFile = FileCache.getFileFromServer(demKey.demfilename);
                 FileUtil.copyFile(fitFile, file);
             }
         }

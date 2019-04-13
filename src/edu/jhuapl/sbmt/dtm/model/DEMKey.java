@@ -29,7 +29,7 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
     @Override
     public String toString()
     {
-        return name;
+        return name + " (" + demfilename + ")";
     }
 
     @Override
