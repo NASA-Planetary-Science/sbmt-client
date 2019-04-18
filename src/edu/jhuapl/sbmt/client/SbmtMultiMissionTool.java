@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -293,67 +294,70 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected static void displaySplash(Mission mission)
+	protected static void displaySplash(Mission mission) throws InvocationTargetException, InterruptedException
 	{
-		SbmtSplash splash = null;
-		switch (mission)
-		{
-		case APL_INTERNAL:
-		case PUBLIC_RELEASE:
-		case STAGE_APL_INTERNAL:
-		case STAGE_PUBLIC_RELEASE:
-		case TEST_APL_INTERNAL:
-		case TEST_PUBLIC_RELEASE:
-		case NH_DEPLOY:
-			splash = new SbmtSplash("resources", "splashLogo.png");
-			break;
-		case HAYABUSA2_DEV:
-			splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-			break;
-		case HAYABUSA2_STAGE:
-			splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-			break;
-		case HAYABUSA2_DEPLOY:
-			splash = new SbmtSplash("resources", "splashLogoHb2.png");
-			break;
-		case OSIRIS_REX:
-		case OSIRIS_REX_DEPLOY:
-		case OSIRIS_REX_MIRROR_DEPLOY:
-		case OSIRIS_REX_STAGE:
-			splash = new SbmtSplash("resources", "splashLogoOrex.png");
-			break;
-		default:
-			throw new AssertionError();
-		}
+	    Configuration.runOnEDTASAP(() -> {
 
-		splash.setAlwaysOnTop(true);
-		splash.validate();
-		splash.setVisible(true);
+	        SbmtSplash splash = null;
+	        switch (mission)
+	        {
+	        case APL_INTERNAL:
+	        case PUBLIC_RELEASE:
+	        case STAGE_APL_INTERNAL:
+	        case STAGE_PUBLIC_RELEASE:
+	        case TEST_APL_INTERNAL:
+	        case TEST_PUBLIC_RELEASE:
+	        case NH_DEPLOY:
+	            splash = new SbmtSplash("resources", "splashLogo.png");
+	            break;
+	        case HAYABUSA2_DEV:
+	            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+	            break;
+	        case HAYABUSA2_STAGE:
+	            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+	            break;
+	        case HAYABUSA2_DEPLOY:
+	            splash = new SbmtSplash("resources", "splashLogoHb2.png");
+	            break;
+	        case OSIRIS_REX:
+	        case OSIRIS_REX_DEPLOY:
+	        case OSIRIS_REX_MIRROR_DEPLOY:
+	        case OSIRIS_REX_STAGE:
+	            splash = new SbmtSplash("resources", "splashLogoOrex.png");
+	            break;
+	        default:
+	            throw new AssertionError();
+	        }
 
-		if (Console.isEnabled())
-		{
-			Console.showStandaloneConsole();
-		}
+	        splash.setAlwaysOnTop(true);
+	        splash.validate();
+	        splash.setVisible(true);
 
-		final SbmtSplash finalSplash = splash;
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.execute(() -> {
-			// Kill the splash screen after a suitable pause.
-			try
-			{
-				Thread.sleep(5500);
-			}
-			catch (InterruptedException e)
-			{
-				// Ignore this one.
-			}
-			finally
-			{
-				EventQueue.invokeLater(() -> {
-					finalSplash.setVisible(false);
-				});
-			}
-		});
+	        if (Console.isEnabled())
+	        {
+	            Console.showStandaloneConsole();
+	        }
+
+	        final SbmtSplash finalSplash = splash;
+	        ExecutorService executor = Executors.newSingleThreadExecutor();
+	        executor.execute(() -> {
+	            // Kill the splash screen after a suitable pause.
+	            try
+	            {
+	                Thread.sleep(5500);
+	            }
+	            catch (InterruptedException e)
+	            {
+	                // Ignore this one.
+	            }
+	            finally
+	            {
+	                EventQueue.invokeLater(() -> {
+	                    finalSplash.setVisible(false);
+	                });
+	            }
+	        });
+	    });
 	}
 
 	protected static String getOption(String[] args, String option)
@@ -396,7 +400,7 @@ public class SbmtMultiMissionTool
 		this.initialShapeModelPath = null;
 	}
 
-	public void run(String[] args) throws IOException, InterruptedException
+	public void run(String[] args) throws IOException, InterruptedException, InvocationTargetException
 	{
 		processArguments(args);
 
