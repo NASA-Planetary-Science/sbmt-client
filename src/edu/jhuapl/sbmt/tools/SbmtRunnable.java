@@ -67,9 +67,10 @@ public class SbmtRunnable implements Runnable
 			MainWindow.setMainWindow(frame);
 			FileCache.showDotsForFiles(false);
 
-			frame.pack();
-			frame.setVisible(true);
-
+            Configuration.runOnEDTASAP(() -> {
+                frame.pack();
+                frame.setVisible(true);
+            });
 			System.out.println("\nSBMT Ready");
 
 			Console.hideConsole();
