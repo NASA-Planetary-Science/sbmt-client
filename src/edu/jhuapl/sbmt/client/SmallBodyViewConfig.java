@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.client;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -551,7 +550,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -709,7 +708,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -863,7 +862,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -1015,7 +1014,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -1173,7 +1172,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -1284,7 +1283,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                c.hierarchicalSpectraSearchSpecification = specIO;
 //
 //            }
-//            catch (IOException e)
+//            catch (Exception e)
 //            {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
@@ -1407,7 +1406,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1567,7 +1566,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1737,7 +1736,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1897,7 +1896,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -2063,7 +2062,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -2228,7 +2227,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -2394,7 +2393,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -2560,7 +2559,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -4719,7 +4718,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -6115,7 +6114,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hierarchicalSpectraSearchSpecification = specIO;
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -1,11 +1,16 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.sbmt.gui.image.model.OfflimbModelChangedListener;
 import edu.jhuapl.sbmt.gui.image.model.images.OfflimbControlsModel;
 import edu.jhuapl.sbmt.gui.image.ui.images.OfflimbImageControlPanel;
@@ -25,6 +30,7 @@ public class OfflimbControlsController
 
 	// reference to image slider in case they are synced
 	ContrastSlider imageContrastSlider;
+	private JButton boundaryColorBtn;
 
 	public OfflimbControlsController(PerspectiveImage image, int currentSlice, ContrastSlider imgContrastSlider)
 	{
@@ -45,8 +51,9 @@ public class OfflimbControlsController
 		syncButton.setSelected(controlsModel.getSyncContrast());
 
 		resetButton = new JButton("Reset Off-limb Settings");
+		boundaryColorBtn = new JButton("Choose Boundary Color");
 
-		controlsPanel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, resetButton);
+		controlsPanel = new OfflimbImageControlPanel(depthSlider, alphaSlider, contrastSlider, showBoundaryBtn, syncButton, boundaryColorBtn, resetButton);
 
 		controlsModel.addModelChangedListener(new OfflimbModelChangedListener()
 		{
@@ -156,6 +163,19 @@ public class OfflimbControlsController
 		controlsPanel.getShowBoundaryButton().addChangeListener(changeListener);
 		controlsPanel.getSyncContrastButton().addChangeListener(changeListener);
 		controlsPanel.getResetButton().addChangeListener(changeListener);
+
+		controlsPanel.getBoundaryColorBtn().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color currColor = image.getOfflimbBoundaryColor();
+				Color color = ColorChooser.showColorChooser(
+	                    getControlsPanel(), new int[] {0,0});
+//	                    new int[]{currColor.getRed(), currColor.getGreen(), currColor.getBlue()});
+				 image.setOfflimbBoundaryColor(color);
+			}
+
+		});
 
 
 	}
