@@ -1,8 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -101,16 +99,20 @@ public class ImageDefaultPicker extends DefaultPicker
         // listener on the renderer panel as well to listen explicitly to resize events.
         // Note also that this functionality is in this class since picking is required
         // to compute the value of the scale bar.
-        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
-        renWin.getComponent().addComponentListener(new ComponentAdapter()
-        {
-            @Override
-            public void componentResized(ComponentEvent e)
-            {
-                updateScaleBarValue();
-                updateScaleBarPosition();
-            }
-        });
+//        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
+//        renWin.getComponent().addComponentListener(new ComponentAdapter()
+//        {
+//            @Override
+//            public void componentResized(ComponentEvent e)
+//            {
+//            	System.out.println(
+//						"ImageDefaultPicker.ImageDefaultPicker(...).new ComponentAdapter() {...}: componentResized: component resized");
+//                updateScaleBarValue();
+//                updateScaleBarPosition();
+//            }
+//        });
+
+//        });
     }
 
     public void setSuppressPopups(boolean b)
