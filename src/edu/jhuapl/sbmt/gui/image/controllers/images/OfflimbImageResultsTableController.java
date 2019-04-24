@@ -227,23 +227,23 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         public void tableChanged(TableModelEvent e)
         {
 
+        	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(e.getFirstRow());
+            int row = (Integer) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getIdColumnIndex()) - 1;
+
             if (e.getColumn() == offlimbTableView.getMapColumnIndex())
             {
-                int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = name.substring(0, name.length()-4);
                 super.tableChanged(e);
-                offlimbTableView.getResultList().setValueAt(false, row, offlimbTableView.getOffLimbIndex());
+                offlimbTableView.getResultList().setValueAt(false, actualRow, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, false);   // set visibility to false if we are mapping or unmapping the image
             }
             else if (e.getColumn() == offlimbTableView.getOffLimbIndex())
             {
-                int row = e.getFirstRow();
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = name.substring(0, name.length()-4);
-                boolean visible = (Boolean)getResultList().getValueAt(row, offlimbTableView.getOffLimbIndex());
+                boolean visible = (Boolean)getResultList().getValueAt(actualRow, offlimbTableView.getOffLimbIndex());
                 setOffLimbFootprintVisibility(namePrefix, visible);
-//                ((OfflimbImageResultsTableView) imageResultsTableView).getOfflimbControlsButton().setEnabled(visible);
             }
             super.tableChanged(e);
 

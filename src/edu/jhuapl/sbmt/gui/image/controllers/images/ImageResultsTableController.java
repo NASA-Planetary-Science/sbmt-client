@@ -55,6 +55,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
@@ -625,6 +626,7 @@ public class ImageResultsTableController
 
             // add the results to the list
             tableModel.setRowCount(results.size());
+            resultTable.setAutoCreateRowSorter(true);
             int i = 0;
             for (List<String> str : results)
             {
@@ -809,41 +811,47 @@ public class ImageResultsTableController
                 JTable resultList = imageResultsTableView.getResultList();
                 DefaultTableModel tableModel = (DefaultTableModel) resultList.getModel();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
-                int size = imageRawResults.size();
-
-                //                //check if row in viewport
-                //                JViewport viewport = resultList.getview
-                //                Rectangle rect = resultList.getCellRect( 20, 1, true );
-                //                if( !viewport.contains( rect.getLocation() ) )
-                //                {
-                //                	System.out.println(
-                //							"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: off screen");
-                //                }
-                int startIndex = 0;
-                int endIndex = Math.min(10, size);
-
-                if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
+//                int size = imageRawResults.size();
+                if (evt.getNewValue() != null && evt.getNewValue() instanceof PerspectiveImage)
                 {
-                    startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
-                    endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+	                PerspectiveImage image = ((PerspectiveImage)evt.getNewValue());
+	                String name = image.getImageName();
+	                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+	                int i = imageKeys.indexOf(key);
+	                updateTableRow(tableModel, i, key);
                 }
-
-                if (modifiedTableRow > size)
-                    modifiedTableRow = -1;
-                if (modifiedTableRow != -1)
+                else if (evt.getNewValue() != null && evt.getNewValue() instanceof PerspectiveImageBoundary)
                 {
-                    startIndex = modifiedTableRow;
-                    endIndex = startIndex + 1;
+                	PerspectiveImageBoundary boundary = ((PerspectiveImageBoundary)evt.getNewValue());
+                	ImageKeyInterface key = boundary.getKey();
+                	int i = imageKeys.indexOf(key);
+                	tableModel.setValueAt(boundaries.containsBoundary(key), i, imageResultsTableView.getBndrColumnIndex());
                 }
-                if (size > 0)
-                {
-                    for (int i = startIndex; i < endIndex; ++i)
-                    {
-                        String name = imageRawResults.get(i).get(0);
-                        ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
-                        updateTableRow(tableModel, i, key);
-                    }
-                }
+//                int startIndex = 0;
+//                int endIndex = Math.min(10, size);
+//
+//                if (imageSearchModel.getResultIntervalCurrentlyShown() != null)
+//                {
+//                    startIndex = imageSearchModel.getResultIntervalCurrentlyShown().id1;
+//                    endIndex = Math.min(size, imageSearchModel.getResultIntervalCurrentlyShown().id2);
+//                }
+//
+//                if (modifiedTableRow > size)
+//                    modifiedTableRow = -1;
+//                if (modifiedTableRow != -1)
+//                {
+//                    startIndex = modifiedTableRow;
+//                    endIndex = startIndex + 1;
+//                }
+//                if (size > 0)
+//                {
+//                    for (int i = startIndex; i < endIndex; ++i)
+//                    {
+//                        String name = imageRawResults.get(i).get(0);
+//                        ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+//                        updateTableRow(tableModel, i, key);
+//                    }
+//                }
                 imageResultsTableView.getResultList().getModel().addTableModelListener(tableModelListener);
                 // Repaint the list in case the boundary colors has changed
                 resultList.repaint();
