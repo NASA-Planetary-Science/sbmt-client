@@ -52,7 +52,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasHierarchicalImageSearch;
     public boolean hasHierarchicalSpectraSearch;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
+    public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedSpectraSearch=false;

@@ -1397,20 +1397,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -1557,20 +1547,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -1727,20 +1707,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -1887,20 +1857,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -2053,20 +2013,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -2218,20 +2168,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -2384,20 +2324,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -2550,20 +2480,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -4708,22 +4628,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
           c.spectraSearchDataSourceMap.put("OVIRS_IF","/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
           c.spectraSearchDataSourceMap.put("OVIRS_REF","/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
-            try
-            {
-//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-    //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
             configArray.add(c);
@@ -6105,20 +6014,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
-                specIO.setPathString(c.spectrumMetadataFile);
-                specIO.loadMetadata();
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
 
             c.hasLidarData=true;
@@ -7013,7 +6912,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 		return hasHypertreeBasedLidarSearch;
 	}
 
-	public SpectraHierarchicalSearchSpecification getHierarchicalSpectraSearchSpecification()
+	public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
 	{
 		return hierarchicalSpectraSearchSpecification;
 	}

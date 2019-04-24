@@ -135,12 +135,25 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel, Metad
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
-        if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)
-        	this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification.clone();
-        else
-        	this.spectraSpec = null;
-        spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
 
+        SpectraHierarchicalSearchSpecification<?> searchSpec = null;
+        if (smallBodyConfig.hasHierarchicalSpectraSearch)
+        {
+            searchSpec = smallBodyConfig.hierarchicalSpectraSearchSpecification;
+            try
+            {
+                searchSpec.loadMetadata();
+                searchSpec = searchSpec.clone();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                searchSpec = null;
+            }
+        }
+
+        this.spectraSpec = searchSpec;
+        this.spectrumCollection = (SpectraCollection) getModelManager().getModel(ModelNames.SPECTRA);
     }
 
     public void loadSearchSpecMetadata()
