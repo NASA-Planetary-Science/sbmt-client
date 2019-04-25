@@ -810,6 +810,8 @@ public class ImageResultsTableController
         {
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
+            	System.out.println(
+						"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: evt is " + evt);
                 JTable resultList = imageResultsTableView.getResultList();
                 DefaultTableModel tableModel = (DefaultTableModel) resultList.getModel();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
@@ -820,14 +822,16 @@ public class ImageResultsTableController
 	                String name = image.getImageName();
 	                ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
 	                int i = imageKeys.indexOf(key);
-	                updateTableRow(tableModel, i, key);
+	                if (i >= 0)
+	                	updateTableRow(tableModel, i, key);
                 }
                 else if (evt.getNewValue() != null && evt.getNewValue() instanceof PerspectiveImageBoundary)
                 {
                 	PerspectiveImageBoundary boundary = ((PerspectiveImageBoundary)evt.getNewValue());
                 	ImageKeyInterface key = boundary.getKey();
                 	int i = imageKeys.indexOf(key);
-                	tableModel.setValueAt(boundaries.containsBoundary(key), i, imageResultsTableView.getBndrColumnIndex());
+                	if (i >= 0)
+                		tableModel.setValueAt(boundaries.containsBoundary(key), i, imageResultsTableView.getBndrColumnIndex());
                 }
 //                int startIndex = 0;
 //                int endIndex = Math.min(10, size);
