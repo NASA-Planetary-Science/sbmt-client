@@ -810,8 +810,6 @@ public class ImageResultsTableController
         {
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
-            	System.out.println(
-						"ImageResultsTableController.ImageResultsPropertyChangeListener: propertyChange: evt is " + evt);
                 JTable resultList = imageResultsTableView.getResultList();
                 DefaultTableModel tableModel = (DefaultTableModel) resultList.getModel();
                 imageResultsTableView.getResultList().getModel().removeTableModelListener(tableModelListener);
