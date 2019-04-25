@@ -768,7 +768,9 @@ public class ImageResultsTableController
         if (e.isPopupTrigger())
         {
             JTable resultList = imageResultsTableView.getResultList();
-            int index = resultList.rowAtPoint(e.getPoint());
+            int tableRow = resultList.rowAtPoint(e.getPoint());
+            int row =  imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(tableRow);
+            int index = (Integer) imageResultsTableView.getResultList().getValueAt(row, imageResultsTableView.getIdColumnIndex()) - 1;
 
             if (index >= 0)
             {
@@ -786,7 +788,7 @@ public class ImageResultsTableController
                 List<ImageKeyInterface> imageKeys = new ArrayList<ImageKeyInterface>();
                 for (int selectedIndex : selectedIndices)
                 {
-                    String name = imageRawResults.get(selectedIndex).get(0);
+                    String name = imageRawResults.get(imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(selectedIndex)).get(0);
                     ImageKeyInterface key = imageSearchModel.createImageKey(FileUtil.removeExtension(name), sourceOfLastQuery, imageSearchModel.getInstrument());
                     imageKeys.add(key);
                 }
