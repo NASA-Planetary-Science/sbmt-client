@@ -4,6 +4,24 @@
 
 # Release Notes
 
+## April 25, 2019 (SBMT-0.7.5)
+
+### New
+Added ability to save structures when saving state
+Added the ability to sort lists of images, data, and structures by column headers
+Added a properties button to view FITS headers for plate colorings
+Added the ability to sync contrast stretches between portions of images that are on the body and off the limb
+Added ability to customize the color of offlimb image boundaries 
+Improved lidar GUI and features
+Enabled the ability to right click and view options for custom images
+ 
+### Bug fixes
+Fixed a bug that caused the tool to hang on startup when too many restricted models were encountered
+Fixed bug that was not properly saving images in the save state
+Reinstated ability to save plate data within multiple structures
+Fixed a bug that would not allow flip edits to already loaded custom images
+Fixed a bug that caused custom lighting to be removed when an image was unmapped
+ 
 ## March 8, 2019 (SBMT-0.7.4.1)
 
 ### Bug Fixes
