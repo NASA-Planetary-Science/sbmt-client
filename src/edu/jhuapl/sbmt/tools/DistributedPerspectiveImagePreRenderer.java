@@ -43,6 +43,8 @@ public class DistributedPerspectiveImagePreRenderer
                  jt.setRemoteCommand("/homes/sbmt/workspace2/preRenderImage.sh");
                  List<String> argList = new ArrayList<String>();
                  File[] fileList = new File(inputDir).listFiles();
+                 System.out.println(
+						"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: number of files " + fileList.length);
                  Arrays.sort(fileList);
                  int i=0;
                  for (; i<fileList.length;)
