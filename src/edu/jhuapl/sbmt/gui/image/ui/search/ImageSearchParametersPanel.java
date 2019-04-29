@@ -161,6 +161,7 @@ public class ImageSearchParametersPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
+            	searchByNumberTextField.setText("");
                 parametersPanel.setVisible(true);
                 filenamePanel.setVisible(false);
             }

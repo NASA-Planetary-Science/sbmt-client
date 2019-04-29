@@ -18,7 +18,6 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -70,6 +69,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -91,13 +91,13 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -112,14 +112,14 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     protected SpectrumSearchModel model;
     PickEvent lastPickEvent=null;
     protected CheckBoxTree checkBoxTree;
-    protected final SpectralInstrument instrument;
-    SpectraHierarchicalSearchSpecification spectraSpec;
+    protected final ISpectralInstrument instrument;
+    SpectraHierarchicalSearchSpecification<?> spectraSpec;
     private PickManager pickManager;
     private boolean isSearchView;
 
     public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument, boolean search)
+            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument, boolean search)
     {
         this.pickManager = pickManager;
         this.modelManager = modelManager;
@@ -135,15 +135,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.setSpectrumPopupMenu(popup);
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
-        try
-        {
-            spectraSpec.loadMetadata();
-        }
-        catch (FileNotFoundException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         if (!search)
             initHierarchicalImageSearch(); // only set up hierarchical search on browse pane
@@ -541,12 +532,12 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                     SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
-                    AbstractEllipsePolygonModel.EllipsePolygon region=null;
+                    EllipsePolygon region=null;
                     vtkPolyData interiorPoly=new vtkPolyData();
             		if (selectionModel.getNumberOfStructures() > 0)
             		{
-                        region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-                        selectionRegionCenter = region.center;
+                        region=(EllipsePolygon)selectionModel.getStructure(0);
+                        selectionRegionCenter = region.getCenter();
                         selectionRegionRadius = region.radius;
 
 
@@ -554,7 +545,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Therefore, if the selection region was created using a higher resolution model,
                 // we need to recompute the selection region using the low res model.
                         if (smallBodyModel.getModelResolution() > 0)
-                            smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                            smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
                         else
                             interiorPoly=region.interiorPolyData;
 
@@ -649,7 +640,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 }
                 else
                 {
-                    QueryBase queryType = instrument.getQueryBase();
+                    IQueryBase queryType = instrument.getQueryBase();
                     if (queryType instanceof FixedListQuery)
                 {
                         FixedListQuery query = (FixedListQuery)queryType;
@@ -696,10 +687,10 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
-                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+                InstrumentMetadata<? extends SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
 //                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
                 TreeModel tree = spectraSpec.getTreeModel();
-                List<SearchSpec> specs = instrumentMetadata.getSpecs();
+                List<? extends SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
                     String name = tree.getChild(tree.getRoot(), selected).toString();
@@ -1130,6 +1121,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
     protected void showFootprints(IdPair idPair)
     {
+    	System.out.println("SpectrumSearchController: showFootprints: showing footprints");
         int startId = idPair.id1;
         int endId = idPair.id2;
 
@@ -1213,6 +1205,8 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
 
         Double blueMinVal = (Double)view.getBlueMinSpinner().getValue();
         Double blueMaxVal = (Double)view.getBlueMaxSpinner().getValue();
+        System.out.println("SpectrumSearchController: updateColoring: red min " + redMinVal);
+        System.out.println("SpectrumSearchController: updateColoring: red max " + redMaxVal);
 
         SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
         if (view.getGrayscaleCheckBox().isSelected())

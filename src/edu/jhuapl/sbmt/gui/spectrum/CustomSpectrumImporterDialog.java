@@ -11,14 +11,20 @@
 package edu.jhuapl.sbmt.gui.spectrum;
 
 import java.awt.Dialog;
+import java.awt.Window;
 import java.io.File;
 
 import javax.swing.JOptionPane;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.saavtk.gui.render.Renderer.ProjectionType;
+import edu.jhuapl.saavtk.model.FileType;
 import edu.jhuapl.sbmt.model.image.ImageType;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.model.spectrum.ISpectraType;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 
 public class CustomSpectrumImporterDialog extends javax.swing.JDialog
@@ -26,64 +32,11 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
     private boolean okayPressed = false;
     private boolean isEllipsoid;
     private boolean isEditMode;
-    private SpectralInstrument instrument;
+    private ISpectralInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
 
-    public enum ProjectionType
-    {
-        CYLINDRICAL,
-        PERSPECTIVE
-    }
-
-    public static class SpectrumInfo
-    {
-      public String name = ""; // name to call this image for display purposes
-      public String spectrumfilename = ""; // filename of image on disk
-      public String sumfilename = "null"; // filename of sumfile on disk
-      public String infofilename = "null"; // filename of infofile on disk
-      public SpectraType spectraType = null;
-    }
-
-//    public static class ImageInfo
-//    {
-//        public String name = ""; // name to call this image for display purposes
-//        public String imagefilename = ""; // filename of image on disk
-//        public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
-//        public ImageType imageType = ImageType.GENERIC_IMAGE;
-//        public double rotation = 0.0;
-//        public String flip = "None";
-//        public double lllat = -90.0;
-//        public double lllon = 0.0;
-//        public double urlat = 90.0;
-//        public double urlon = 360.0;
-//        public String sumfilename = "null"; // filename of sumfile on disk
-//        public String infofilename = "null"; // filename of infofile on disk
-//
-//        @Override
-//        public String toString()
-//        {
-//            DecimalFormat df = new DecimalFormat("#.#####");
-//            if (projectionType == ProjectionType.CYLINDRICAL)
-//            {
-//                return name + ", Cylindrical  ["
-//                        + df.format(lllat) + ", "
-//                        + df.format(lllon) + ", "
-//                        + df.format(urlat) + ", "
-//                        + df.format(urlon)
-//                        + "]";
-//            }
-//            else
-//            {
-//                if (imageType == ImageType.GENERIC_IMAGE)
-//                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
-//                else
-//                    return name + ", Perspective" + ", " + imageType;
-//            }
-//        }
-//    }
-
     /** Creates new form ShapeModelImporterDialog */
-    public CustomSpectrumImporterDialog(java.awt.Window parent, boolean isEditMode, SpectralInstrument instrument)
+    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, ISpectralInstrument instrument)
     {
         super(parent, isEditMode ? "Edit Spectrum" : "Import New Spectrum", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
@@ -101,16 +54,23 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         }
     }
 
-    public void setSpectrumInfo(SpectrumInfo info, boolean isEllipsoid)
+    public void setSpectrumInfo(CustomSpectrumKeyInterface info, boolean isEllipsoid)
     {
+    	String keyName = info == null ? "" : info.getName();
+    	String keySpectrumFilename = info == null ? "" : info.getSpectrumFilename();
+    	ProjectionType projection = ProjectionType.PERSPECTIVE;
+    	ISpectraType currentSpectrumType = info == null ? SpectraType.NIS_SPECTRA : info.getSpectrumType();
+
+
+
         this.isEllipsoid = isEllipsoid;
 
         if (isEditMode)
             spectrumPathTextField.setText(LEAVE_UNMODIFIED);
         else
-            spectrumPathTextField.setText(info.spectrumfilename);
+            spectrumPathTextField.setText(keySpectrumFilename);
 
-        spectrumNameTextField.setText(info.name);
+        spectrumNameTextField.setText(keyName);
 
 //        if (info.projectionType == ProjectionType.CYLINDRICAL)
 //        {
@@ -151,48 +111,46 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 
     public ProjectionType getSelectedProjectionType()
     {
-//        if (cylindricalProjectionRadioButton.isSelected())
-//            return ProjectionType.CYLINDRICAL;
-//        else
             return ProjectionType.PERSPECTIVE;
     }
 
-    public SpectrumInfo getSpectrumInfo()
+    public CustomSpectrumKeyInterface getSpectrumInfo()
     {
-        SpectrumInfo info = new SpectrumInfo();
+        String filename = spectrumPathTextField.getText();
+        String name = spectrumNameTextField.getText();
+        if (LEAVE_UNMODIFIED.equals(filename) || filename == null || filename.isEmpty())
+            filename = null;
 
-        info.spectrumfilename = spectrumPathTextField.getText();
-        info.name = spectrumNameTextField.getText();
-        if (LEAVE_UNMODIFIED.equals(info.spectrumfilename) || info.spectrumfilename == null || info.spectrumfilename.isEmpty())
-            info.spectrumfilename = null;
+        if ((name == null || name.isEmpty()) && filename != null)
+            name = new File(filename).getName();
 
-//        if (cylindricalProjectionRadioButton.isSelected())
-//        {
-//            info.projectionType = ProjectionType.CYLINDRICAL;
-//            info.lllat = Double.parseDouble(lllatFormattedTextField.getText());
-//            info.lllon = Double.parseDouble(lllonFormattedTextField.getText());
-//            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
-//            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
-//        }
-//        else if (perspectiveProjectionRadioButton.isSelected())
-//        {
-//            info.projectionType = ProjectionType.PERSPECTIVE;
-            info.sumfilename = sumfilePathTextField.getText();
-            info.infofilename = infofilePathTextField.getText();
-//            if (LEAVE_UNMODIFIED.equals(info.sumfilename) || info.sumfilename == null || info.sumfilename.isEmpty())
-//                info.sumfilename = null;
-//            if (LEAVE_UNMODIFIED.equals(info.infofilename) || info.infofilename == null || info.infofilename.isEmpty())
-//                info.infofilename = null;
-//        }
-//
-//        // If name is not provided, set name to filename
-//        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-//        info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
-//        info.flip = imageFlipComboBox.getSelectedItem().toString();
-//        info.name = imageNameTextField.getText();
-//        if ((info.name == null || info.name.isEmpty()) && info.spectrumfilename != null)
-//            info.name = new File(info.spectrumfilename).getName();
-        info.spectraType = (SpectraType)spectrumTypeComboBox.getSelectedItem();
+        String pointingFilename = null;
+        FileType fileType = null;
+//        ImageSource source = null;
+//        if (sumfilePathRB.isSelected() == true)
+        if (!sumfilePathTextField.getText().equals(""))
+        {
+        	fileType = FileType.SUM;
+        	pointingFilename = sumfilePathTextField.getText();
+//        	source = ImageSource.LOCAL_PERSPECTIVE;
+        }
+        else
+//        if (infofilePathRB.isSelected() == true)
+        {
+        	pointingFilename = infofilePathTextField.getText();
+        	fileType = FileType.INFO;
+//        	source = ImageSource.LOCAL_PERSPECTIVE;
+        }
+        if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
+        	pointingFilename = null;
+        if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
+        	pointingFilename = null;
+
+
+        SpectraType spectrumType = (SpectraType)spectrumTypeComboBox.getSelectedItem();
+
+        CustomSpectrumKey info = new CustomSpectrumKey(name, fileType, instrument, spectrumType, filename, pointingFilename);
+
         return info;
     }
 
@@ -205,21 +163,21 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         if (!isEditMode) // || (!imagePath.isEmpty() && !imagePath.equals(LEAVE_UNMODIFIED)))
         {
             if (spectrumPath.isEmpty())
-                return "Please enter the path to an image.";
+                return "Please enter the path to a spectrum.";
 
             File file = new File(spectrumPath);
             if (!file.exists() || !file.canRead() || !file.isFile())
                 return spectrumPath + " does not exist or is not readable.";
 
             if (spectrumPath.contains(","))
-                return "Image path may not contain commas.";
+                return "Spectrum path may not contain commas.";
         }
 
         String imageName = spectrumNameTextField.getText();
         if (imageName == null)
             imageName = "";
         if (imageName.trim().isEmpty())
-            return "Please enter a name for the image. The name can be any text that describes the image.";
+            return "Please enter a name for the image. The name can be any text that describes the spectrum.";
         if (imageName.contains(","))
             return "Name may not contain commas.";
 
@@ -290,29 +248,33 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
             if (infofilePath == null)
                 infofilePath = "";
 
-            if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
+            System.out.println("CustomSpectrumImporterDialog: validateInput: spectra is " + spectrumTypeComboBox.getSelectedItem());
+            if (!spectrumTypeComboBox.getSelectedItem().toString().equals("NIS_SPECTRA"))
             {
-                if (sumfilePath.isEmpty() && infofilePath.isEmpty())
-                    return "Please enter the path to a sumfile or infofile.";
+	            if (!isEditMode || (!sumfilePath.isEmpty() && !sumfilePath.equals(LEAVE_UNMODIFIED) || (!infofilePath.isEmpty() && !infofilePath.equals(LEAVE_UNMODIFIED))))
+	            {
+	                if (sumfilePath.isEmpty() && infofilePath.isEmpty())
+	                    return "Please enter the path to a sumfile or infofile.";
 
-                if (!sumfilePath.isEmpty())
-                {
-                    File file = new File(sumfilePath);
-                    if (!file.exists() || !file.canRead() || !file.isFile())
-                        return sumfilePath + " does not exist or is not readable.";
+	                if (!sumfilePath.isEmpty())
+	                {
+	                    File file = new File(sumfilePath);
+	                    if (!file.exists() || !file.canRead() || !file.isFile())
+	                        return sumfilePath + " does not exist or is not readable.";
 
-                    if (sumfilePath.contains(","))
-                        return "Path may not contain commas.";
-                }
-                else if (!infofilePath.isEmpty())
-                {
-                    File file = new File(infofilePath);
-                    if (!file.exists() || !file.canRead() || !file.isFile())
-                        return infofilePath + " does not exist or is not readable.";
+	                    if (sumfilePath.contains(","))
+	                        return "Path may not contain commas.";
+	                }
+	                else if (!infofilePath.isEmpty())
+	                {
+	                    File file = new File(infofilePath);
+	                    if (!file.exists() || !file.canRead() || !file.isFile())
+	                        return infofilePath + " does not exist or is not readable.";
 
-                    if (infofilePath.contains(","))
-                        return "Path may not contain commas.";
-                }
+	                    if (infofilePath.contains(","))
+	                        return "Path may not contain commas.";
+	                }
+	            }
             }
         }
 
@@ -392,7 +354,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         setMinimumSize(new java.awt.Dimension(600, 167));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        spectrumPathLabel.setText("Image Path");
+        spectrumPathLabel.setText("Spectrum Path");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -580,7 +542,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         getContentPane().add(browseInfofileButton, gridBagConstraints);
 
         spectrumLabel.setText("Name");
-        spectrumLabel.setToolTipText("A name describing the image that will be displayed in the image list.");
+        spectrumLabel.setToolTipText("A name describing the spectrum that will be displayed in the spectrum list.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -588,7 +550,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(spectrumLabel, gridBagConstraints);
 
-        spectrumNameTextField.setToolTipText("A name describing the image that will be displayed in the image list.");
+        spectrumNameTextField.setToolTipText("A name describing the spectrum that will be displayed in the spectrum list.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -632,7 +594,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
         getContentPane().add(browseSumfileButton, gridBagConstraints);
 
         spectrumTypeLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        spectrumTypeLabel.setText("Image Type");
+        spectrumTypeLabel.setText("Spectrum Type");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -691,7 +653,7 @@ public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 
     private void browseImageButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_browseImageButtonActionPerformed
     {//GEN-HEADEREND:event_browseImageButtonActionPerformed
-        File file = CustomFileChooser.showOpenDialog(this, "Select Image");
+        File file = CustomFileChooser.showOpenDialog(this, "Select Spectrum");
         if (file == null)
         {
             return;

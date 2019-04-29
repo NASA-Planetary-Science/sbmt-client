@@ -19,18 +19,18 @@ import javax.swing.JOptionPane;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 
 
 public class SpectrumMathPanel extends javax.swing.JDialog {
 
     private JComboBox[] comboBoxes;
-    SpectralInstrument instrument;
+    ISpectralInstrument instrument;
 
     /** Creates new form CustomImageLoaderPanel */
     public SpectrumMathPanel(
             java.awt.Frame parent,
-            JComboBox[] comboBoxes, SpectralInstrument instrument)
+            JComboBox[] comboBoxes, ISpectralInstrument instrument)
     {
         super(parent, true);
         this.instrument=instrument;

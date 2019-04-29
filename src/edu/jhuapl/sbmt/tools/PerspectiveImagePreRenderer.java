@@ -24,7 +24,8 @@ import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.OffLimbPlaneCalculator;
@@ -187,10 +188,10 @@ public class PerspectiveImagePreRenderer
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
         PerspectiveImage image;
         PerspectiveImagePreRenderer preRenderer;
-        ImageKey key;
-        for (int i=0; i<smallBodyModel.getNumberResolutionLevels(); i++)
+        ImageKeyInterface key;
+        for (int i=3; i<smallBodyModel.getNumberResolutionLevels(); i++)
         {
-        	if (i < 3) continue;
+//        	if (i < 3) continue;
             System.out.println("PerspectiveImagePreRenderer: main: running model resolution " + (i+1) + " of " + smallBodyModel.getNumberResolutionLevels());
             smallBodyModel.setModelResolution(i);
             if (imagesWithPointing.isEmpty())

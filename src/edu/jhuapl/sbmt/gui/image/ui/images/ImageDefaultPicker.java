@@ -29,6 +29,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.pick.DefaultPicker;
 import edu.jhuapl.saavtk.pick.PickEvent;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.popup.PopupManager;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
@@ -241,7 +242,7 @@ public class ImageDefaultPicker extends DefaultPicker
 
     private void maybeShowPopup(MouseEvent e)
     {
-        if (e.getClickCount() != 1 || !isPopupTrigger(e))
+        if (e.getClickCount() != 1 || !PickUtil.isPopupTrigger(e))
         {
             return;
         }

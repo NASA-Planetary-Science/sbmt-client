@@ -13,9 +13,9 @@ import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -74,10 +74,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(propertyChangeListener);
-
-        view.getSelectRegionButton().setSelected(false);
-        pickManager.setPickMode(PickMode.DEFAULT);
+        pickManager.setActivePicker(null);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
@@ -95,12 +92,12 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
-        AbstractEllipsePolygonModel.EllipsePolygon region=null;
+        EllipsePolygon region=null;
         vtkPolyData interiorPoly=new vtkPolyData();
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-            selectionRegionCenter = region.center;
+            region=(EllipsePolygon)selectionModel.getStructure(0);
+            selectionRegionCenter = region.getCenter();
             selectionRegionRadius = region.radius;
 
 
@@ -108,7 +105,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
             // Therefore, if the selection region was created using a higher resolution model,
             // we need to recompute the selection region using the low res model.
             if (smallBodyModel.getModelResolution() > 0)
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
             else
                 interiorPoly=region.interiorPolyData;
 
@@ -142,10 +139,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
             }*/
 
 //        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(propertyChangeListener);
-        view.getRadialOffsetSlider().setModel(lidarModel);
-        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
-        lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
+        view.injectNewLidarModel(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
         sw.start();
@@ -153,11 +147,10 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
 //        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
-        Picker.setPickingEnabled(false);
+        PickUtil.setPickingEnabled(false);
 
         ((MolaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();
@@ -197,7 +190,7 @@ public class MolaLidarHyperTreeSearchPanel extends LidarSearchController //Lidar
         writer.Write();*/
 
 
-        Picker.setPickingEnabled(true);
+        PickUtil.setPickingEnabled(true);
 
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -29,25 +30,22 @@ import com.google.common.collect.Ranges;
 import vtk.vtkPolyData;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.model.ImageSearchResultsListener;
+import edu.jhuapl.sbmt.model.image.IImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundary;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
@@ -56,6 +54,11 @@ import edu.jhuapl.sbmt.query.database.ImageDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 public class ImageSearchModel implements Controller.Model, MetadataManager
@@ -85,16 +88,17 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     final Key<Metadata> imageTreeFilterKey = Key.of("imageTreeFilters");
     final Key<List<String[]>> imageListKey = Key.of("imageList");
     final Key<Set<String>> selectedImagesKey = Key.of("imagesSelected");
-    final Key<Map<String, Boolean>> isShowingKey = Key.of("imagesShowing");
-    final Key<Map<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
-    final Key<Map<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
+    final Key<SortedMap<String, Boolean>> isShowingKey = Key.of("imagesShowing");
+    final Key<SortedMap<String, Boolean>> isOffLimbShowingKey = Key.of("offLimbShowing");
+    final Key<SortedMap<String, Boolean>> isFrustrumShowingKey = Key.of("frustrumShowing");
+    final Key<SortedMap<String, Boolean>> isBoundaryShowingKey = Key.of("boundaryShowing");
 
     private SmallBodyViewConfig smallBodyConfig;
     protected ModelManager modelManager;
     protected IdPair resultIntervalCurrentlyShown = null;
     protected List<List<String>> imageResults = new ArrayList<List<String>>();
     protected ImageCollection imageCollection;
-    protected ImagingInstrument instrument;
+    protected IImagingInstrument instrument;
     protected ImageSource imageSourceOfLastQuery = ImageSource.SPICE;
     private Date startDate = null;
     private Date endDate = null;
@@ -104,7 +108,6 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     private Vector<ImageSearchResultsListener> resultsListeners;
     private Vector<ImageSearchModelListener> modelListeners;
     protected int[] selectedImageIndices;
-    private MetadataManager stateManager;
     protected List<Integer> camerasSelected;
     protected List<Integer> filtersSelected;
     private double minDistanceQuery;
@@ -135,7 +138,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public ImageSearchModel(SmallBodyViewConfig smallBodyConfig,
             final ModelManager modelManager,
             Renderer renderer,
-            ImagingInstrument instrument)
+            IImagingInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
@@ -167,7 +170,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         return ModelNames.PERSPECTIVE_IMAGE_BOUNDARIES;
     }
 
-    public void loadImage(ImageKey key, ImageCollection images) throws FitsException, IOException
+    public void loadImage(ImageKeyInterface key, ImageCollection images) throws FitsException, IOException
     {
         images.addImage(key);
     }
@@ -175,8 +178,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void loadImages(String name)
     {
 
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        for (ImageKeyInterface key : keys)
         {
             try
             {
@@ -198,7 +201,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         }
    }
 
-    public void unloadImage(ImageKey key, ImageCollection images)
+    public void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
         images.removeImage(key);
     }
@@ -206,8 +209,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     public void unloadImages(String name)
     {
 
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        for (ImageKeyInterface key : keys)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             unloadImage(key, images);
@@ -216,9 +219,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
     public void setImageVisibility(String name, boolean visible)
     {
-        List<ImageKey> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
+        List<ImageKeyInterface> keys = createImageKeys(name, imageSourceOfLastQuery, instrument);
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
             {
@@ -265,12 +268,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public ImagingInstrument getInstrument()
+    public IImagingInstrument getInstrument()
     {
         return instrument;
     }
 
-    public void setInstrument(ImagingInstrument instrument)
+    public void setInstrument(IImagingInstrument instrument)
     {
         this.instrument = instrument;
     }
@@ -340,18 +343,18 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         this.currentBand = currentBand;
     }
 
-    public List<ImageKey> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public List<ImageKeyInterface> createImageKeys(String boundaryName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
     {
-        List<ImageKey> result = new ArrayList<ImageKey>();
+        List<ImageKeyInterface> result = new ArrayList<ImageKeyInterface>();
         result.add(createImageKey(boundaryName, sourceOfLastQuery, instrument));
         return result;
     }
 
-    public ImageKey createImageKey(String imagePathName, ImageSource sourceOfLastQuery, ImagingInstrument instrument)
+    public ImageKeyInterface createImageKey(String imagePathName, ImageSource sourceOfLastQuery, IImagingInstrument instrument)
     {
         int slice = this.getCurrentSlice();
         String band = this.getCurrentBand();
-        ImageKey key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
+        ImageKeyInterface key = new ImageKey(imagePathName, sourceOfLastQuery, null, null, instrument, band, slice, null);
         return key;
     }
 
@@ -434,10 +437,10 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         modelListeners.removeAllElements();
     }
 
-    public ImageKey[] getSelectedImageKeys()
+    public ImageKeyInterface[] getSelectedImageKeys()
     {
         int[] indices = selectedImageIndices;
-        ImageKey[] selectedKeys = new ImageKey[indices.length];
+        ImageKeyInterface[] selectedKeys = new ImageKeyInterface[indices.length];
         if (indices.length > 0)
         {
             int i=0;
@@ -446,9 +449,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                 String image = imageResults.get(index).get(0);
                 String name = new File(image).getName();
                 image = image.substring(0,image.length()-4);
-                ImageKey selectedKey = createImageKey(image, imageSourceOfLastQuery, instrument);
-                if (!selectedKey.band.equals("0"))
-                    name = selectedKey.band + ":" + name;
+                ImageKeyInterface selectedKey = (ImageKeyInterface)createImageKey(image, imageSourceOfLastQuery, instrument);
+                if (!selectedKey.getBand().equals("0"))
+                    name = selectedKey.getBand() + ":" + name;
                 selectedKeys[i++] = selectedKey;
             }
         }
@@ -501,7 +504,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         SmallBodyModel smallBodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+            EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
             // Always use the lowest resolution model for getting the intersection cubes list.
             // Therefore, if the selection region was created using a higher resolution model,
@@ -509,7 +512,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             if (smallBodyModel.getModelResolution() > 0)
             {
                 vtkPolyData interiorPoly = new vtkPolyData();
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                 cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
             }
             else
@@ -570,9 +573,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //            }
         }
         List<List<String>> results = null;
-        if (getInstrument().searchQuery instanceof FixedListQuery)
+        if (getInstrument().getSearchQuery() instanceof FixedListQuery)
         {
-            FixedListQuery query = (FixedListQuery) getInstrument().searchQuery;
+            FixedListQuery query = (FixedListQuery) getInstrument().getSearchQuery();
             results = query.runQuery(FixedListSearchMetadata.of("Imaging Search", "imagelist", "images", query.getRootPath(), imageSource)).getResultlist();
         }
         else
@@ -587,7 +590,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                     sumOfProductsSearch, camerasSelected, filtersSelected,
                     Ranges.closed(minResolutionQuery, maxResolutionQuery),
                     cubeList, imageSource, selectedLimbIndex);
-            results = getInstrument().searchQuery.runQuery(searchMetadata).getResultlist();
+            results = getInstrument().getSearchQuery().runQuery(searchMetadata).getResultlist();
        }
 
         // If SPICE Derived (exclude Gaskell) or Gaskell Derived (exlude SPICE) is selected,
@@ -596,9 +599,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         if (imageSource == ImageSource.SPICE && excludeGaskell)
         {
             List<List<String>> resultsOtherSource = null;
-            if (getInstrument().searchQuery instanceof FixedListQuery)
+            if (getInstrument().getSearchQuery() instanceof FixedListQuery)
             {
-                FixedListQuery query = (FixedListQuery)getInstrument().searchQuery;
+                FixedListQuery query = (FixedListQuery)getInstrument().getSearchQuery();
 //                FileInfo info = FileCache.getFileInfoFromServer(query.getRootPath() + "/" /*+ dataListPrefix + "/"*/ + imageListName);
 //                if (!info.isExistsOnServer().equals(YesOrNo.YES))
 //                {
@@ -620,7 +623,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
                         Ranges.closed(minResolutionQuery, maxResolutionQuery),
                         cubeList, imageSource == ImageSource.SPICE ? ImageSource.GASKELL_UPDATED : ImageSource.SPICE, selectedLimbIndex);
 
-                    resultsOtherSource = getInstrument().searchQuery.runQuery(searchMetadataOther).getResultlist();
+                    resultsOtherSource = getInstrument().getSearchQuery().runQuery(searchMetadataOther).getResultlist();
 
             }
 
@@ -1248,7 +1251,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
             {
                 if (index == 0)
                 {
-                    list.add(instrument.searchQuery.getDataPath() + "/" + inputArray[index]);
+                    list.add(instrument.getSearchQuery().getDataPath() + "/" + inputArray[index]);
                 }
                 else if (index == 1)
                 {
@@ -1343,7 +1346,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 
         // Save region selected.
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-        result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+        result.put(circleSelectionKey, selectionModel.store());
 
         // Save list of images.
         result.put(imageListKey, listToOutputFormat(imageResults));
@@ -1361,12 +1364,12 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Save boundary info.
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-        for (ImageKey key : boundaries.getImageKeys())
+        for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            if (instrument.equals(((ImageKey)key).getInstrument()) && pointing.equals(key.getSource()))
             {
                 PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                String fullName = key.name;
+                String fullName = key.getName();
                 String name = new File(fullName).getName();
                 bndr.put(name, boundary.isVisible());
             }
@@ -1376,20 +1379,26 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Save mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         ImmutableSortedMap.Builder<String, Boolean> showing = ImmutableSortedMap.naturalOrder();
+        ImmutableSortedMap.Builder<String, Boolean> offLimb = ImmutableSortedMap.naturalOrder();
         ImmutableSortedMap.Builder<String, Boolean> frus = ImmutableSortedMap.naturalOrder();
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            showing.put(name, image.isVisible());
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                frus.put(name, perspectiveImage.isFrustumShowing());
-            }
-            ImageKey key = image.getKey();
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		showing.put(name, image.isVisible());
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+        			offLimb.put(name, perspectiveImage.offLimbFootprintIsVisible());
+        			frus.put(name, perspectiveImage.isFrustumShowing());
+        		}
+        	}
         }
         result.put(isShowingKey, showing.build());
+        result.put(isOffLimbShowingKey, offLimb.build());
         result.put(isFrustrumShowingKey, frus.build());
 
         return result;
@@ -1473,7 +1482,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
-        selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+        selectionModel.retrieve(source.get(circleSelectionKey));
 
         // Restore list of images.
         List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
@@ -1493,9 +1502,9 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
 //        }
 
         // Restore boundaries. First clear any associated with this model.
-        for (ImageKey key : boundaries.getImageKeys())
+        for (ImageKeyInterface key : boundaries.getImageKeys())
         {
-            if (instrument.equals(key.instrument) && pointing.equals(key.source))
+            if (instrument.equals(((ImageKey)key).instrument) && pointing.equals(key.getSource()))
             {
                 boundaries.removeBoundary(key);
             }
@@ -1505,8 +1514,8 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         {
             try
             {
-                String fullName = instrument.searchQuery.getDataPath() + "/" + entry.getKey();
-                ImageKey imageKey = createImageKey(fullName, pointing, instrument);
+                String fullName = instrument.getSearchQuery().getDataPath() + "/" + entry.getKey();
+                ImageKeyInterface imageKey = createImageKey(fullName, pointing, instrument);
                 boundaries.addBoundary(imageKey);
                 boundaries.getBoundary(imageKey).setVisible(entry.getValue());
             }
@@ -1519,22 +1528,29 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
         // Restore mapped image information.
         ImageCollection imageCollection = (ImageCollection) modelManager.getModel(getImageCollectionModelName());
         Map<String, Boolean> showing = source.get(isShowingKey);
+        Map<String, Boolean> offLimb = source.hasKey(isOffLimbShowingKey) ? source.get(isOffLimbShowingKey) : ImmutableMap.of();
         Map<String, Boolean> frus = source.get(isFrustrumShowingKey);
         for (String name : showing.keySet())
         {
-            String fullName = instrument.searchQuery.getDataPath() + "/" + name;
+            String fullName = instrument.getSearchQuery().getDataPath() + "/" + name;
             loadImages(fullName);
         }
 
         for (Image image : imageCollection.getImages())
         {
-            String name = image.getImageName();
-            image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
-            if (image instanceof PerspectiveImage)
-            {
-                PerspectiveImage perspectiveImage = (PerspectiveImage) image;
-                perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
-            }
+        	ImageKeyInterface key = image.getKey();
+        	if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
+        	{
+        		String name = image.getImageName();
+        		image.setVisible(showing.containsKey(name) ? showing.get(name) : false);
+        		if (image instanceof PerspectiveImage)
+        		{
+        			PerspectiveImage perspectiveImage = (PerspectiveImage) image;
+                    perspectiveImage.setOffLimbFootprintVisibility(offLimb.containsKey(name) ? offLimb.get(name) : false);
+        			perspectiveImage.setShowFrustum(frus.containsKey(name) ? frus.get(name) : false);
+        		}
+        	}
+
         }
 
         fireModelChanged();
@@ -1542,7 +1558,7 @@ public class ImageSearchModel implements Controller.Model, MetadataManager
     }
 
 
-    public int getNumBoundaries() 
+    public int getNumBoundaries()
     {
         return numBoundaries;
     }

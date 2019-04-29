@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.client;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -27,6 +26,7 @@ import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -37,6 +37,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
@@ -49,7 +50,7 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 * imaging data. This class is also used when creating (to know which tabs
 * to create).
 */
-public class SmallBodyViewConfig extends BodyViewConfig
+public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyViewConfig
 {
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
@@ -245,12 +246,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.NOLAN;
         c.modelLabel = "Nolan et al. (2013)";
-        c.rootDirOnServer = "/NOLAN/BENNU/101955bennu.obj.gz";
+        c.rootDirOnServer = "/bennu/nolan";
+        c.shapeModelFileExtension = ".obj";
 
         c.hasStateHistory = true;
-        c.timeHistoryFile = "/NOLAN/BENNU/history/timeHistory.bth";
+        c.timeHistoryFile = "/bennu/nolan/history/timeHistory.bth";
 
         c.setResolution(ImmutableList.of(2692));
+        c.density = 1260;
+        c.useMinimumReferencePotential = true;
+        c.rotationRate = 0.00040613;
         configArray.add(c);
 
 //        if (Configuration.isAPLVersion())
@@ -364,12 +369,12 @@ public class SmallBodyViewConfig extends BodyViewConfig
 
 //            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/with_range2/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", "/bennu/bennu-simulated-v4/ola/search/hypertree/dataSource.lidar");
+
             c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
             // noisy data
             c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
-
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
@@ -471,843 +476,851 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181109b;
-            c.modelLabel = "ALTWG-SPC-v20181109b";
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181109b";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = false;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
-
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
-
-
-            /*
-             * New hypertrees split into phases
-             */
-            ArrayList<Date> startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
-
-            /*
-             *
-             */
-
-
-
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181109b;
+//            c.modelLabel = "ALTWG-SPC-v20181109b";
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181109b";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
 //            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = false;
 //            }
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181115;
-            c.modelLabel = "ALTWG-SPC-v20181115"; // NOTE: labeled SPC, but this is a Palmer model.
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181115";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = false;
-            }
-
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[] { ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
-
-            /*
-             * New hypertrees split into phases
-             */
-            ArrayList<Date> startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
-
-            /*
-             *
-             */
-
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181116;
-            c.modelLabel = "ALTWG-SPC-v20181116";
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181116";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181116_polycam", "bennu_altwgspcv20181116_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181116_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
 //            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
-
-            /*
-             * New hypertrees split into phases
-             */
-            ArrayList<Date> startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
-
-            /*
-             *
-             */
-
-
-
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
 //            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
 //            }
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181123b;
-            c.modelLabel = "ALTWG-SPC-v20181123b";
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181123b";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181123b_polycam", "bennu_altwgspcv20181123b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181123b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
-
-
-
-            /*
-             * New hypertrees split into phases
-             */
-            ArrayList<Date> startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(c.lidarSearchDefaultStartDate);
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
-
-            startStop = new ArrayList<Date>();
-            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
-            startStop.add(c.lidarSearchDefaultEndDate);
-            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
-            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
-
-            /*
-             *
-             */
-
-
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//            catch (Exception e)
 //            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
 //            }
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181202;
-            c.modelLabel = "ALTWG-SPC-v20181202";
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181202";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181202_polycam", "bennu_altwgspcv20181202_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181202_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//
+//
+//
+//
+//            /*
+//             * New hypertrees split into phases
+//             */
+//            ArrayList<Date> startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+//
+//            /*
+//             *
+//             */
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+////            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+////                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+////            {
+////                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+////            }
+//            configArray.add(c);
+//        }
+//
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181115;
+//            c.modelLabel = "ALTWG-SPC-v20181115"; // NOTE: labeled SPC, but this is a Palmer model.
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181115";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
 //            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = false;
 //            }
-            configArray.add(c);
-        }
-
-        if (Configuration.isAPLVersion())
-        {
-            c = new SmallBodyViewConfig();
-            c.body = ShapeModelBody.RQ36;
-            c.type = BodyType.ASTEROID;
-            c.population = ShapeModelPopulation.NEO;
-            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
-            c.author = ShapeModelType.ALTWG_SPC_v20181206;
-            c.modelLabel = "ALTWG-SPC-v20181206";
-            c.rootDirOnServer = "/bennu/altwg-spc-v20181206";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
-            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
-            c.imageSearchDefaultMaxResolution = 1.0e3;
-            c.density = 1260;
-            c.useMinimumReferencePotential = true;
-            c.rotationRate = 0.00040613;
-            if(Configuration.isMac())
-            {
-                // Right now bigmap only works on Macs
-                c.hasBigmap = true;
-            }
-
-            c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181206_polycam", "bennu_altwgspcv20181206_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181206_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
-            };
-
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
-                    new OTES(),
-                    new OVIRS()
-            };
-
-            c.hasStateHistory = true;
-            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
-
-            c.hasMapmaker = false;
-            c.hasHierarchicalSpectraSearch = true;
-            c.hasHypertreeBasedSpectraSearch = false;
-            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
-            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
-
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
-            c.lidarInstrumentName = Instrument.OLA;
-            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
-            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
-            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
-            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
-            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
-            c.lidarBrowseTimeIndex = 26;
-            c.lidarBrowseNoiseIndex = 62;
-            c.lidarBrowseOutgoingIntensityIndex = 98;
-            c.lidarBrowseReceivedIntensityIndex = 106;
-            c.lidarBrowseIntensityEnabled = true;
-            c.lidarBrowseNumberHeaderLines = 0;
-            c.lidarBrowseIsInMeters = true;
-            c.lidarBrowseIsBinary = true;
-            c.lidarBrowseBinaryRecordSize = 186;
-            c.lidarOffsetScale = 0.0005;
-
-//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
-//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181109b_polycam", "bennu_altwgspcv20181109b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[] { ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181109b_mapcam", "bennu_altwgspcv20181109b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
 //            {
-//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
 //            }
-            configArray.add(c);
-        }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//
+//
+//
+//            /*
+//             * New hypertrees split into phases
+//             */
+//            ArrayList<Date> startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+//
+//            /*
+//             *
+//             */
+//
+//
+//
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+//            configArray.add(c);
+//        }
+//
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181116;
+//            c.modelLabel = "ALTWG-SPC-v20181116";
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181116";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
+//            {
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = true;
+//            }
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181116_polycam", "bennu_altwgspcv20181116_polycam", c.rootDirOnServer + "/polycam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181116_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181116_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+////            c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
+//            {
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
+//            }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//
+//
+//
+//            /*
+//             * New hypertrees split into phases
+//             */
+//            ArrayList<Date> startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+//
+//            /*
+//             *
+//             */
+//
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+////            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+////                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+////            {
+////                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+////            }
+//            configArray.add(c);
+//        }
+//
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181123b;
+//            c.modelLabel = "ALTWG-SPC-v20181123b";
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181123b";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
+//            {
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = true;
+//            }
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181123b_polycam", "bennu_altwgspcv20181123b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181123b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181123b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
+//            {
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
+//            }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//
+//
+//
+//
+//
+//            /*
+//             * New hypertrees split into phases
+//             */
+//            ArrayList<Date> startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(c.lidarSearchDefaultStartDate);
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+//
+//            startStop = new ArrayList<Date>();
+//            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+//            startStop.add(c.lidarSearchDefaultEndDate);
+//            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+//            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+//
+//            /*
+//             *
+//             */
+//
+//
+//
+//
+//
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+////            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+////                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+////            {
+////                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+////            }
+//            configArray.add(c);
+//        }
+//
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181202;
+//            c.modelLabel = "ALTWG-SPC-v20181202";
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181202";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
+//            {
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = true;
+//            }
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181202_polycam", "bennu_altwgspcv20181202_polycam", c.rootDirOnServer + "/polycam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181202_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181202_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
+//            {
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
+//            }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+////            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+////                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+////            {
+////                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+////            }
+//            configArray.add(c);
+//        }
+//
+//        if (Configuration.isAPLVersion())
+//        {
+//            c = new SmallBodyViewConfig();
+//            c.body = ShapeModelBody.RQ36;
+//            c.type = BodyType.ASTEROID;
+//            c.population = ShapeModelPopulation.NEO;
+//            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+//            c.author = ShapeModelType.ALTWG_SPC_v20181206;
+//            c.modelLabel = "ALTWG-SPC-v20181206";
+//            c.rootDirOnServer = "/bennu/altwg-spc-v20181206";
+//            c.shapeModelFileExtension = ".obj";
+//            c.setResolution(ImmutableList.of(
+//                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+//                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+//            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+//            c.imageSearchDefaultMaxResolution = 1.0e3;
+//            c.density = 1260;
+//            c.useMinimumReferencePotential = true;
+//            c.rotationRate = 0.00040613;
+//            if(Configuration.isMac())
+//            {
+//                // Right now bigmap only works on Macs
+//                c.hasBigmap = true;
+//            }
+//
+//            c.imagingInstruments = new ImagingInstrument[] {
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181206_polycam", "bennu_altwgspcv20181206_polycam", c.rootDirOnServer + "/polycam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20181206_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            ImageType.POLYCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
+//                            Instrument.POLYCAM
+//                            ),
+//                    new ImagingInstrument(
+//                            SpectralMode.MONO,
+//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+////                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181206_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+//                            ImageType.MAPCAM_FLIGHT_IMAGE,
+//                            new ImageSource[]{ImageSource.SPICE},
+//                            Instrument.MAPCAM
+//                            )
+//            };
+//
+//            c.hasSpectralData=true;
+//            c.spectralInstruments=new BasicSpectrumInstrument[] {
+//                    new OTES(),
+//                    new OVIRS()
+//            };
+//
+//            c.hasStateHistory = true;
+//            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+//
+//            c.hasMapmaker = false;
+//            c.hasHierarchicalSpectraSearch = true;
+//            c.hasHypertreeBasedSpectraSearch = false;
+//            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+//            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+//            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+//            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+//            try
+//            {
+//                //TODO: eventually point this to a URL
+//                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+//                specIO.setPathString(c.spectrumMetadataFile);
+//                c.hierarchicalSpectraSearchSpecification = specIO;
+//
+//            }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            c.hasLidarData=true;
+//            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+//            c.lidarInstrumentName = Instrument.OLA;
+//            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+//            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+//            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+////            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+//            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+//            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+//
+//            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+//            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+//            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+//            c.lidarBrowseTimeIndex = 26;
+//            c.lidarBrowseNoiseIndex = 62;
+//            c.lidarBrowseOutgoingIntensityIndex = 98;
+//            c.lidarBrowseReceivedIntensityIndex = 106;
+//            c.lidarBrowseIntensityEnabled = true;
+//            c.lidarBrowseNumberHeaderLines = 0;
+//            c.lidarBrowseIsInMeters = true;
+//            c.lidarBrowseIsBinary = true;
+//            c.lidarBrowseBinaryRecordSize = 186;
+//            c.lidarOffsetScale = 0.0005;
+//
+////            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+////                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+////            {
+////                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+////            }
+//            configArray.add(c);
+//        }
 
         if (Configuration.isAPLVersion())
         {
@@ -1356,6 +1369,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20181217_navcam", "bennu_altwgspcv20181217_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1377,22 +1397,13 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=false; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -1401,6 +1412,44 @@ public class SmallBodyViewConfig extends BodyViewConfig
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -1467,10 +1516,16 @@ public class SmallBodyViewConfig extends BodyViewConfig
                     new ImagingInstrument(
                             SpectralMode.MONO,
                             new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20181227_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
                             ImageType.MAPCAM_FLIGHT_IMAGE,
                             new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
                             Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20181227_navcam", "bennu_altwgspcv20181227_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
                             )
             };
 
@@ -1492,19 +1547,320 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
-            try
-            {
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (IOException e)
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+
+
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+
+
+
+
+
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+//            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+//                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+//            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+//            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190105;
+            c.modelLabel = "ALTWG-SPC-v20190105";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190105";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1260;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.00040613;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
             }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190114;
+            c.modelLabel = "ALTWG-SPC-v20190114";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190114";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1260;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 0.00040613;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -1573,6 +1929,319 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190114/dtm/browse/fileList.txt");
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190117;
+            c.modelLabel = "ALTWG-SPC-v20190117";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190117";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186.;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+
+
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190117/dtm/browse/fileList.txt");
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190121;
+            c.modelLabel = "ALTWG-SPC-v20190121";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190121";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+
+
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190121/dtm/browse/fileList.txt");
+
             if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
                     (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
             {
@@ -1581,7 +2250,319 @@ public class SmallBodyViewConfig extends BodyViewConfig
             configArray.add(c);
         }
 
-        c = new SmallBodyViewConfig();
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190207a;
+            c.modelLabel = "ALTWG-SPC-v20190207a";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190207a";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186.0;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+
+
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190207a/dtm/browse/fileList.txt");
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+        if (Configuration.isAPLVersion())
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.RQ36;
+            c.type = BodyType.ASTEROID;
+            c.population = ShapeModelPopulation.NEO;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.ALTWG_SPC_v20190207b;
+            c.modelLabel = "ALTWG-SPC-v20190207b";
+            c.rootDirOnServer = "/bennu/altwg-spc-v20190207b";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
+            c.imageSearchDefaultMaxResolution = 1.0e3;
+            c.density = 1186.0;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = 4.0626E-4;
+
+            c.hasImageMap = true;
+            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
+                            ImageType.POLYCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.POLYCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
+                            ImageType.MAPCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
+                            Instrument.MAPCAM
+                            ),
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"),
+                            ImageType.NAVCAM_FLIGHT_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE},
+                            Instrument.NAVCAM
+                            )
+            };
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
+
+            c.hasStateHistory = true;
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("OTES_L2", c.rootDirOnServer + "/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
+            c.hasLidarData=true;
+            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.lidarInstrumentName = Instrument.OLA;
+            c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
+            c.lidarSearchDataSourceMap = new LinkedHashMap<>();
+            c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
+//            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
+            c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
+
+
+
+
+            /*
+             * New hypertrees split into phases
+             */
+            ArrayList<Date> startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/default/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Default", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(c.lidarSearchDefaultStartDate);
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Preliminary", c.rootDirOnServer + "/ola/search/preliminary/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Preliminary", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 0, 1, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("Detailed", c.rootDirOnServer + "/ola/search/detailed/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Detailed", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 5, 9, 0, 0, 0).getTime());
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            c.lidarSearchDataSourceMap.put("OrbB", c.rootDirOnServer + "/ola/search/orbB/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("OrbB", startStop);
+
+            startStop = new ArrayList<Date>();
+            startStop.add(new GregorianCalendar(2019, 8, 10, 0, 0, 0).getTime());
+            startStop.add(c.lidarSearchDefaultEndDate);
+            c.lidarSearchDataSourceMap.put("Recon", c.rootDirOnServer + "/ola/search/recon/dataSource.lidar");
+            c.lidarSearchDataSourceTimeMap.put("Recon", startStop);
+
+            /*
+             *
+             */
+
+
+
+            c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
+            c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
+            c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
+            c.lidarBrowseTimeIndex = 26;
+            c.lidarBrowseNoiseIndex = 62;
+            c.lidarBrowseOutgoingIntensityIndex = 98;
+            c.lidarBrowseReceivedIntensityIndex = 106;
+            c.lidarBrowseIntensityEnabled = true;
+            c.lidarBrowseNumberHeaderLines = 0;
+            c.lidarBrowseIsInMeters = true;
+            c.lidarBrowseIsBinary = true;
+            c.lidarBrowseBinaryRecordSize = 186;
+            c.lidarOffsetScale = 0.0005;
+
+            c.dtmBrowseDataSourceMap.put("Default", "bennu/altwg-spc-v20190207b/dtm/browse/fileList.txt");
+
+            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
+                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
+            {
+//                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+            configArray.add(c);
+        }
+
+      c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BETULIA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -2046,6 +3027,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2057,7 +3039,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
                         )
         };
 
-       c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
+        c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
         c.imageSearchFilterNames = new String[]{};
         c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
@@ -2075,6 +3057,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "ida/stooke2016";
         c.shapeModelFileExtension = ".obj";
+        c.setResolution(ImmutableList.of(5040));
         // Provided with the delivery in the file aamanifest.txt.
         c.density = 2600.;
         c.rotationRate = 0.0003766655;
@@ -2090,6 +3073,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(14160));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2131,6 +3115,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 1300.;
         c.rotationRate = 0.0000041780;
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2142,6 +3127,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.modelLabel = "Thomas et al. (2000)";
         c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -2175,6 +3161,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.density = 2700.;
         c.rotationRate = 0.0002478;
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2185,13 +3172,14 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham and Jorda (2013)";
         c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        c.setResolution(ImmutableList.of(20480));
         configArray.add(c);
 
         // This model was delivered on 2018-03-08 to replace the existing model of unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         c.modelLabel = "Stooke (2016)";
@@ -2371,6 +3359,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
+        c.setResolution(ImmutableList.of(32040));
 
         c.lidarSearchDataSourceMap=Maps.newHashMap();   // this must be instantiated, but can be empty
 
@@ -2958,7 +3947,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.TEMPEL_1;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
@@ -2971,7 +3960,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TEMPEL_1;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
@@ -2987,7 +3976,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.WILD_2;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.DUXBURY;
         c.modelLabel = "Farnham et al. (2005)";
@@ -3000,7 +3989,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "SHAP5 V0.3";
@@ -3055,7 +4044,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "V2";
@@ -3106,7 +4095,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody._67P;
             c.type = BodyType.COMETS;
-            c.population = null;
+            c.population = ShapeModelPopulation.NA;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.GASKELL;
             c.version = "V3";
@@ -3161,7 +4150,7 @@ public class SmallBodyViewConfig extends BodyViewConfig
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HARTLEY;
         c.type = BodyType.COMETS;
-        c.population = null;
+        c.population = ShapeModelPopulation.NA;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
@@ -3639,21 +4628,11 @@ public class SmallBodyViewConfig extends BodyViewConfig
           c.spectraSearchDataSourceMap.put("OVIRS_IF","/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
           c.spectraSearchDataSourceMap.put("OVIRS_REF","/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
-            try
-            {
-//                c.hierarchicalSpectraSearchSpecification = new OTESSearchSpecification();
-                //TODO: eventually point this to a URL
-                OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
-                specIO.setPathString(c.spectrumMetadataFile);
-                c.hierarchicalSpectraSearchSpecification = specIO;
 
-            }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-    //        c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
+            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
             configArray.add(c);
@@ -5014,8 +5993,32 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.imageSearchDefaultEndDate = new GregorianCalendar(2021, 0, 31, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[]
+            {
+                new NIRS3()
+            };
+
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
+
+            c.hasSpectralData=true;
+            c.spectralInstruments=new BasicSpectrumInstrument[]
+            {
+                new NIRS3()
+            };
+
+            c.hasHierarchicalSpectraSearch = true;
+            c.hasHypertreeBasedSpectraSearch = false;
+            c.spectraSearchDataSourceMap = new LinkedHashMap<>();
+            c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
+            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+
+            Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
+            specIO.setPathString(c.spectrumMetadataFile);
+            c.hierarchicalSpectraSearchSpecification = specIO;
+
 
             c.hasLidarData=true;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -5787,6 +6790,63 @@ public class SmallBodyViewConfig extends BodyViewConfig
             c.hasColoringData = false;
             configArray.add(c);
         }
+
+        {
+            c = new SmallBodyViewConfig();
+            c.body = ShapeModelBody.MU69;
+            c.type = BodyType.KBO;
+            c.population = ShapeModelPopulation.NA;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.MU69_TEST5H_1_FINAL_ORIENTED;
+            c.rootDirOnServer = "/mu69/mu69-test5h-1-final-oriented";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of("Very Low (25708 plates)"), ImmutableList.of(25708));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e4;
+            c.density = Double.NaN;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = Double.NaN;
+
+            c.hasImageMap = false;
+
+            if(Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument(
+                            SpectralMode.MONO,
+                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"),
+                            ImageType.LORRI_IMAGE,
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL},
+                            Instrument.LORRI
+                            ),
+            };
+
+            c.hasSpectralData=false;
+            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            };
+
+            c.hasStateHistory = false;
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = false;
+            c.hasHypertreeBasedSpectraSearch = false;
+
+            c.hasLidarData=false;
+            c.hasHypertreeBasedLidarSearch=false;
+
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+
+            configArray.add(c);
+        }
     }
 
     // Imaging instrument helper methods.
@@ -5839,6 +6899,23 @@ public class SmallBodyViewConfig extends BodyViewConfig
         FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
         return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
     }
+
+	@Override
+	public Instrument getLidarInstrument()
+	{
+		// TODO Auto-generated method stub
+		return lidarInstrumentName;
+	}
+
+	public boolean hasHypertreeLidarSearch()
+	{
+		return hasHypertreeBasedLidarSearch;
+	}
+
+	public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
+	{
+		return hierarchicalSpectraSearchSpecification;
+	}
 
 
 }

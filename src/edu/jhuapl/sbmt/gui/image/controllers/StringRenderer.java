@@ -7,8 +7,10 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.io.FilenameUtils;
+
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
 
 public class StringRenderer extends DefaultTableCellRenderer
@@ -30,11 +32,13 @@ public class StringRenderer extends DefaultTableCellRenderer
             boolean isSelected, boolean hasFocus,
             int row, int column)
     {
-        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        String name = imageRawResults.get(row).get(0);
+    	int actualRow = table.getRowSorter().convertRowIndexToModel(row);
+        Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
+        String name = imageRawResults.get(actualRow).get(0);
 //        ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-        String filename = name.substring(0, name.lastIndexOf("."));
-        ImageKey key = imageSearchModel.createImageKey(filename, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+//        String filename = name.substring(0, name.lastIndexOf("."));
+        String filename = FilenameUtils.getBaseName(name);
+        ImageKeyInterface key = imageSearchModel.createImageKey(filename, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
             int[] c = model.getBoundary(key).getBoundaryColor();

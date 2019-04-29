@@ -33,7 +33,9 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
+import edu.jhuapl.sbmt.lidar.LidarPoint;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.Track;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 
@@ -237,9 +239,11 @@ public class LidarPlot extends JFrame implements ChartMouseListener
             // points in this plot. Without these conditions, then the selected
             // point will be incorrect.
             if (lidarModel.getNumberOfTracks() == 1 &&
-                    lidarModel.getNumberOfPointsPerTrack(0) == data.size())
+                    lidarModel.getTrack(0).getNumberOfPoints() == data.size())
             {
-                lidarModel.selectPoint(id);
+                Track tmpTrack = lidarModel.getTrack(0);
+                LidarPoint tmpPoint = lidarModel.getPoint(id);
+                lidarModel.setSelectedPoint(tmpPoint, tmpTrack);
             }
         }
         else
