@@ -57,17 +57,20 @@ public class SbmtRunnable implements Runnable
 			garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
 			garbageCollector.SetAutoGarbageCollection(true);
 
-			JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-			ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-			ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
+			Configuration.runOnEDTASAP(() -> {
+			    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+			    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+			    ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
+			});
 
 			MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
 			MainWindow.setMainWindow(frame);
 			FileCache.showDotsForFiles(false);
 
-			frame.pack();
-			frame.setVisible(true);
-
+            Configuration.runOnEDTASAP(() -> {
+                frame.pack();
+                frame.setVisible(true);
+            });
 			System.out.println("\nSBMT Ready");
 
 			Console.hideConsole();
