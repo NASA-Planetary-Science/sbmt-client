@@ -428,6 +428,7 @@ public class ImageDefaultPicker extends DefaultPicker
         double sizeOfPixel = computeSizeOfPixel();
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarValue(sizeOfPixel);
+        renderer.repaint();
     }
 
     public void updateScaleBarPosition()
