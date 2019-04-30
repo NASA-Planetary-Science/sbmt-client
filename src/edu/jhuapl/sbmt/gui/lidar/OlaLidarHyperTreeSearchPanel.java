@@ -2,7 +2,11 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.util.Date;
 import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
+import javax.swing.SpinnerDateModel;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.BiMap;
@@ -16,10 +20,11 @@ import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
-import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.saavtk.pick.Picker;
+import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.util.BoundingBox;
+import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.v2.LidarSearchController;
@@ -104,37 +109,37 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
     @Override
     protected void submitButtonActionPerformed(ActionEvent evt)
     {
-        lidarModel.removePropertyChangeListener(propertyChangeListener);
-
-        view.getSelectRegionButton().setSelected(false);
-        pickManager.setPickMode(PickMode.DEFAULT);
+        pickManager.setActivePicker(null);
 
         AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
 
-        //int lidarIndex = smallBodyModel.getLidarDatasourceIndex();
-        //String lidarDatasourceName = smallBodyModel.getLidarDatasourceName(lidarIndex);
-        //String lidarDatasourcePath = smallBodyModel.getLidarDatasourcePath(lidarIndex);
+        // get current lidar source
         int lidarIndex=view.getSourceComboBox().getSelectedIndex();
         String lidarDatasourceName=sourceComboBoxEnumeration.get(lidarIndex);
-        String lidarDatasourcePath=lidarModel.getLidarDataSourceMap().get(lidarDatasourceName);
-//        System.out.println("Current Lidar Datasource Index : " + lidarIndex);
-//        System.out.println("Current Lidar Datasource Name: " + lidarDatasourceName);
-//        System.out.println("Current Lidar Datasource Path: " + lidarDatasourcePath);
+
 
         // read in the skeleton, if it hasn't been read in already
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setCurrentDatasourceSkeleton(lidarDatasourceName);
-        ((OlaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        try {
+            ((OlaLidarHyperTreeSearchDataCollection)lidarModel).readSkeleton();
+        } catch (NonexistentRemoteFile e) {
+            JOptionPane.showMessageDialog(this.view,
+                    "There is no existing tree for this phase",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         double[] selectionRegionCenter = null;
         double selectionRegionRadius = 0.0;
 
-        AbstractEllipsePolygonModel.EllipsePolygon region=null;
+        EllipsePolygon region=null;
         vtkPolyData interiorPoly=new vtkPolyData();
         if (selectionModel.getNumberOfStructures() > 0)
         {
-            region=(AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
-            selectionRegionCenter = region.center;
+            region=(EllipsePolygon)selectionModel.getStructure(0);
+            selectionRegionCenter = region.getCenter();
             selectionRegionRadius = region.radius;
 
 
@@ -142,7 +147,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
             // Therefore, if the selection region was created using a higher resolution model,
             // we need to recompute the selection region using the low res model.
             if (smallBodyModel.getModelResolution() > 0)
-                smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
+                smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);    // this sets interiorPoly
             else
                 interiorPoly=region.interiorPolyData;
 
@@ -176,10 +181,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
             }*/
 
 //        System.out.println("Found matching lidar data path: "+lidarDatasourcePath);
-        lidarModel.addPropertyChangeListener(propertyChangeListener);
-        view.getRadialOffsetSlider().setModel(lidarModel);
-        view.getRadialOffsetSlider().setOffsetScale(lidarModel.getOffsetScale());
-        lidarPopupMenu = new LidarPopupMenu(lidarModel, renderer);
+        view.injectNewLidarModel(lidarModel, renderer);
 
         Stopwatch sw=new Stopwatch();
         sw.start();
@@ -187,11 +189,10 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
 //        System.out.println("Search Time="+sw.elapsedMillis()+" ms");
         sw.stop();
 
-        Picker.setPickingEnabled(false);
+        PickUtil.setPickingEnabled(false);
 
         ((OlaLidarHyperTreeSearchDataCollection)lidarModel).setParentForProgressMonitor(view);
         showData(cubeList, selectionRegionCenter, selectionRegionRadius);
-        view.getRadialOffsetSlider().reset();
 
 /*        vtkPoints points=new vtkPoints();
         vtkCellArray cellArray=new vtkCellArray();
@@ -231,7 +232,7 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         writer.Write();*/
 
 
-        Picker.setPickingEnabled(true);
+        PickUtil.setPickingEnabled(true);
 
     }
 
@@ -243,7 +244,20 @@ public class OlaLidarHyperTreeSearchPanel extends LidarSearchController //LidarS
         if (sourceComboBoxEnumeration!=null)
         {
             String dataSourceName=sourceComboBoxEnumeration.get(lidarIndex);
-            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+//            browsePanel.repopulate(model.getSmallBodyConfig().lidarBrowseDataSourceMap.get(dataSourceName), dataSourceName);
+
+            /*
+             *  change the min/max times for the search based on the datasource
+             */
+            // TODO get start and end times for the datasource from config?
+            Date start = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(0);
+            Date end = model.getSmallBodyConfig().lidarSearchDataSourceTimeMap.get(dataSourceName).get(1);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setValue(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getStartDateSpinner().getModel()).setEnd(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setValue(end);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setStart(start);
+            ((SpinnerDateModel)view.getEndDateSpinner().getModel()).setEnd(start);
         }
     }
 

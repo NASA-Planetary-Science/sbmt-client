@@ -71,15 +71,11 @@ import vtk.vtkPolyData;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.render.Renderer.LightingType;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -91,6 +87,7 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
+import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.gui.image.ui.color.ColorImagePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
@@ -98,11 +95,11 @@ import edu.jhuapl.sbmt.model.image.ColorImage;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.Image;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCube;
 import edu.jhuapl.sbmt.model.image.ImageCube.ImageCubeKey;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
@@ -115,6 +112,11 @@ import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator;
 import edu.jhuapl.sbmt.util.ImageGalleryGenerator.ImageGalleryEntry;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.SettableMetadata;
 import nom.tam.fits.FitsException;
 
 @Deprecated
@@ -616,7 +618,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                 String name = imageRawResults.get(i).get(0);
                 //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, mapColumnIndex);
@@ -818,16 +820,16 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
         ImageCubeCollection model = (ImageCubeCollection)modelManager.getModel(getImageCubeCollectionModelName());
 
-        ImageKey firstKey = null;
+        ImageKeyInterface firstKey = null;
         boolean multipleFrustumVisible = false;
 
-        List<ImageKey> selectedKeys = new ArrayList<ImageKey>();
+        List<ImageKeyInterface> selectedKeys = new ArrayList<ImageKeyInterface>();
         int[] selectedIndices = resultList.getSelectedRows();
         //System.out.println(Arrays.toString(selectedIndices));
         for (int selectedIndex : selectedIndices)
         {
             String name = imageRawResults.get(selectedIndex).get(0);
-            ImageKey selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKeyInterface selectedKey = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             //            System.out.println("Key: " + selectedKey.name);
             selectedKeys.add(selectedKey);
             PerspectiveImage selectedImage = (PerspectiveImage)images.getImage(selectedKey);
@@ -1022,7 +1024,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 String name = imageRawResults.get(i).get(0);
                 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 if (images.containsImage(key))
                 {
                     resultList.setValueAt(true, i, mapColumnIndex);
@@ -2590,7 +2592,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             SmallBodyModel smallBodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -2598,7 +2600,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                 if (smallBodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    smallBodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    smallBodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = smallBodyModel.getIntersectingCubes(interiorPoly);
                 }
                 else
@@ -3092,7 +3094,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         }
     }
 
-    protected void unloadImage(ImageKey key, ImageCollection images)
+    protected void unloadImage(ImageKeyInterface key, ImageCollection images)
     {
         images.removeImage(key);
 
@@ -3102,7 +3104,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
 
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             unloadImage(key, images);
@@ -3118,7 +3120,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
     {
         List<ImageKey> keys = createImageKeys(name, sourceOfLastQuery, instrument);
         ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
-        for (ImageKey key : keys)
+        for (ImageKeyInterface key : keys)
         {
             if (images.containsImage(key))
             {
@@ -3156,7 +3158,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
         {
             int row = e.getFirstRow();
             String name = imageRawResults.get(row).get(0);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
             if (images.containsImage(key))
             {
@@ -3201,7 +3203,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
             String name = imageRawResults.get(row).get(0);
             //            ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-            ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+            ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
             if (model.containsBoundary(key))
             {
                 int[] c = model.getBoundary(key).getBoundaryColor();
@@ -3248,7 +3250,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
             {
                 String name = imageRawResults.get(row).get(0);
                 //                ImageKey key = new ImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
-                ImageKey key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
+                ImageKeyInterface key = createImageKey(name.substring(0, name.length()-4), sourceOfLastQuery, instrument);
                 ImageCollection images = (ImageCollection)modelManager.getModel(getImageCollectionModelName());
                 return images.containsImage(key);
             }
@@ -3414,7 +3416,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
 
                     // Save region selected.
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
-                    result.put(circleSelectionKey, selectionModel.getMetadataManager().store());
+                    result.put(circleSelectionKey, selectionModel.store());
 
                     // Save list of images.
                     result.put(imageListKey, listToOutputFormat(imageRawResults));
@@ -3432,12 +3434,12 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     // Save boundary info.
                     PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
                     ImmutableSortedMap.Builder<String, Boolean> bndr = ImmutableSortedMap.naturalOrder();
-                    for (ImageKey key : boundaries.getImageKeys())
+                    for (ImageKeyInterface key : boundaries.getImageKeys())
                     {
-                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
                         {
                             PerspectiveImageBoundary boundary = boundaries.getBoundary(key);
-                            String fullName = key.name;
+                            String fullName = key.getName();
                             String name = new File(fullName).getName();
                             bndr.put(name, boundary.isVisible());
                         }
@@ -3458,7 +3460,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                             PerspectiveImage perspectiveImage = (PerspectiveImage) image;
                             frus.put(name, perspectiveImage.isFrustumShowing());
                         }
-                        ImageKey key = image.getKey();
+                        ImageKeyInterface key = image.getKey();
                     }
                     result.put(isShowingKey, showing.build());
                     result.put(isFrustrumShowingKey, frus.build());
@@ -3540,7 +3542,7 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
                     PerspectiveImageBoundaryCollection boundaries = (PerspectiveImageBoundaryCollection)modelManager.getModel(getImageBoundaryCollectionModelName());
 
-                    selectionModel.getMetadataManager().retrieve(source.get(circleSelectionKey));
+                    selectionModel.retrieve(source.get(circleSelectionKey));
 
                     // Restore list of images.
                     List<List<String>> imageList = inputFormatToList(source.get(imageListKey));
@@ -3558,9 +3560,9 @@ public class ImagingSearchPanel extends javax.swing.JPanel implements PropertyCh
                     }
 
                     // Restore boundaries. First clear any associated with this model.
-                    for (ImageKey key : boundaries.getImageKeys())
+                    for (ImageKeyInterface key : boundaries.getImageKeys())
                     {
-                        if (instrument.equals(key.instrument) && pointing.equals(key.source))
+                        if (instrument.equals(key.getInstrument()) && pointing.equals(key.getSource()))
                         {
                             boundaries.removeBoundary(key);
                         }

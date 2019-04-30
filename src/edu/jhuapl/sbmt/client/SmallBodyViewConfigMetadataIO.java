@@ -11,13 +11,6 @@ import java.util.Vector;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ViewConfig;
-import edu.jhuapl.saavtk.metadata.FixedMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -26,6 +19,14 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIO implements MetadataManager
 {
@@ -298,48 +299,56 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.hasSpectralData = read(hasSpectralData, configMetadata);
         c.hasLineamentData = read(hasLineamentData, configMetadata);
 
-        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
-        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
-        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
-        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
-        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
-        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
-        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
-        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
-        c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
+        if (c.imagingInstruments.length > 0)
+        {
+	        Long imageSearchDefaultStart = read(imageSearchDefaultStartDate, configMetadata);
+	        Long imageSearchDefaultEnd = read(imageSearchDefaultEndDate, configMetadata);
+	        c.imageSearchDefaultStartDate = new Date(imageSearchDefaultStart);
+	        c.imageSearchDefaultEndDate = new Date(imageSearchDefaultEnd);
+	        c.imageSearchFilterNames = read(imageSearchFilterNames, configMetadata);
+	        c.imageSearchUserDefinedCheckBoxesNames = read(imageSearchUserDefinedCheckBoxesNames, configMetadata);
+	        c.imageSearchDefaultMaxSpacecraftDistance = read(imageSearchDefaultMaxSpacecraftDistance, configMetadata);
+	        c.imageSearchDefaultMaxResolution = read(imageSearchDefaultMaxResolution, configMetadata);
+	        c.hasHierarchicalImageSearch = read(hasHierarchicalImageSearch, configMetadata);
 
-//        c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
+//        	c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
 
-        c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
-        c.hasHypertreeBasedSpectraSearch = read(hasHypertreeBasedSpectraSearch, configMetadata);
-        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
-        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
+	        c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
+	        c.hasHypertreeBasedSpectraSearch = read(hasHypertreeBasedSpectraSearch, configMetadata);
+	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
+	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
-//        c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+//        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+        }
 
-        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
-        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
-        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
-        Long lidarSearchDefaultEnd = read(lidarSearchDefaultEndDate, configMetadata);
-        if (lidarSearchDefaultEnd == null) lidarSearchDefaultEnd = 0L;
-        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
-        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
-        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
+        if (c.hasLidarData)
+        {
+	        Long lidarSearchDefaultStart = read(lidarSearchDefaultStartDate, configMetadata);
+	        if (lidarSearchDefaultStart == null) lidarSearchDefaultStart = 0L;
+	        c.lidarSearchDefaultStartDate = new Date(lidarSearchDefaultStart);
+	        Long lidarSearchDefaultEnd = read(lidarSearchDefaultEndDate, configMetadata);
+	        if (lidarSearchDefaultEnd == null) lidarSearchDefaultEnd = 0L;
+	        c.lidarSearchDefaultEndDate = new Date(lidarSearchDefaultEnd);
+	        c.lidarSearchDataSourceMap = read(lidarSearchDataSourceMap, configMetadata);
+	        c.lidarBrowseDataSourceMap = read(lidarBrowseDataSourceMap, configMetadata);
 
-        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
-        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
-        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
-        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
-        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
-        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
-        c.lidarBrowseReceivedIntensityIndex = read(lidarBrowseReceivedIntensityIndex, configMetadata);
-        c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
-        c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
-        c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
-        c.lidarBrowseIsBinary = read(lidarBrowseIsBinary, configMetadata);
-        c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
-        c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
-        c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
+	        c.lidarBrowseXYZIndices = read(lidarBrowseXYZIndices, configMetadata);
+	        c.lidarBrowseSpacecraftIndices = read(lidarBrowseSpacecraftIndices, configMetadata);
+	        c.lidarBrowseIsSpacecraftInSphericalCoordinates = read(lidarBrowseIsSpacecraftInSphericalCoordinates, configMetadata);
+	        c.lidarBrowseTimeIndex = read(lidarBrowseTimeIndex, configMetadata);
+	        c.lidarBrowseNoiseIndex = read(lidarBrowseNoiseIndex, configMetadata);
+	        c.lidarBrowseOutgoingIntensityIndex = read(lidarBrowseOutgoingIntensityIndex, configMetadata);
+	        c.lidarBrowseReceivedIntensityIndex = read(lidarBrowseReceivedIntensityIndex, configMetadata);
+	        c.lidarBrowseFileListResourcePath = read(lidarBrowseFileListResourcePath, configMetadata);
+	        c.lidarBrowseNumberHeaderLines = read(lidarBrowseNumberHeaderLines, configMetadata);
+	        c.lidarBrowseIsInMeters = read(lidarBrowseIsInMeters, configMetadata);
+	        c.lidarBrowseIsBinary = read(lidarBrowseIsBinary, configMetadata);
+	        c.lidarBrowseBinaryRecordSize = read(lidarBrowseBinaryRecordSize, configMetadata);
+	        c.lidarOffsetScale = read(lidarOffsetScale, configMetadata);
+	        c.lidarInstrumentName = Instrument.valueOf(""+read(lidarInstrumentName, configMetadata));
+
+        }
+
         String[] missionsToAdd = read(missions, configMetadata);
         c.missions = new ArrayList<>();
         if (missionsToAdd != null)

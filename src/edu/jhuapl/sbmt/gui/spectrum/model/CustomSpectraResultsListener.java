@@ -2,11 +2,11 @@ package edu.jhuapl.sbmt.gui.spectrum.model;
 
 import java.util.List;
 
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
 
 public interface CustomSpectraResultsListener
 {
-    public void resultsChanged(List<SpectrumInfo> results);
+    public void resultsChanged(List<CustomSpectrumKeyInterface> results);
 
     public void resultsCountChanged(int count);
 }

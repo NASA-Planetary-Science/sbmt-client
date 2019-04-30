@@ -4,23 +4,23 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Vector;
 
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
 import edu.jhuapl.saavtk.model.Controller;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.gui.image.model.ColorImageResultsListener;
 import edu.jhuapl.sbmt.model.image.ColorImage.ColorImageKey;
 import edu.jhuapl.sbmt.model.image.ColorImage.NoOverlapException;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
-import edu.jhuapl.sbmt.model.image.Image.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
 import nom.tam.fits.FitsException;
 
 public class ColorImageModel implements Controller.Model, MetadataManager
 {
-    protected ImageKey selectedRedKey;
-    protected ImageKey selectedGreenKey;
-    protected ImageKey selectedBlueKey;
+    protected ImageKeyInterface selectedRedKey;
+    protected ImageKeyInterface selectedGreenKey;
+    protected ImageKeyInterface selectedBlueKey;
     protected ColorImageCollection imageCollection;
     protected Vector<ColorImageResultsListener> resultsListeners;
 
@@ -39,32 +39,32 @@ public class ColorImageModel implements Controller.Model, MetadataManager
         return ModelNames.COLOR_IMAGES;
     }
 
-    public ImageKey getSelectedRedKey()
+    public ImageKeyInterface getSelectedRedKey()
     {
         return selectedRedKey;
     }
 
-    public ImageKey getSelectedGreenKey()
+    public ImageKeyInterface getSelectedGreenKey()
     {
         return selectedGreenKey;
     }
 
-    public ImageKey getSelectedBlueKey()
+    public ImageKeyInterface getSelectedBlueKey()
     {
         return selectedBlueKey;
     }
 
-    public void setSelectedRedKey(ImageKey selectedRedKey)
+    public void setSelectedRedKey(ImageKeyInterface selectedRedKey)
     {
         this.selectedRedKey = selectedRedKey;
     }
 
-    public void setSelectedGreenKey(ImageKey selectedGreenKey)
+    public void setSelectedGreenKey(ImageKeyInterface selectedGreenKey)
     {
         this.selectedGreenKey = selectedGreenKey;
     }
 
-    public void setSelectedBlueKey(ImageKey selectedBlueKey)
+    public void setSelectedBlueKey(ImageKeyInterface selectedBlueKey)
     {
         this.selectedBlueKey = selectedBlueKey;
     }
@@ -109,9 +109,9 @@ public class ColorImageModel implements Controller.Model, MetadataManager
 
     public void generateColorImage(ActionEvent e) throws IOException, FitsException, NoOverlapException
     {
-        ImageKey selectedRedKey = getSelectedRedKey();
-        ImageKey selectedGreenKey = getSelectedGreenKey();
-        ImageKey selectedBlueKey = getSelectedBlueKey();
+        ImageKeyInterface selectedRedKey = getSelectedRedKey();
+        ImageKeyInterface selectedGreenKey = getSelectedGreenKey();
+        ImageKeyInterface selectedBlueKey = getSelectedBlueKey();
 
 
         if (selectedRedKey != null && selectedGreenKey != null && selectedBlueKey != null)
@@ -129,6 +129,15 @@ public class ColorImageModel implements Controller.Model, MetadataManager
     public void removeColorImage(ColorImageKey colorKey)
     {
         imageCollection.removeImage(colorKey);
+        fireDeleteListeners(colorKey);
+    }
+
+    protected void fireDeleteListeners(ColorImageKey key)
+    {
+        for (ColorImageResultsListener listener : resultsListeners)
+        {
+          listener.colorImageRemoved(key);
+        }
     }
 
     @Override

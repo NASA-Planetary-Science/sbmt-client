@@ -13,10 +13,12 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.OREXSearchSpec;
+import edu.jhuapl.sbmt.model.bennu.SpectrumSearchSpec;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
+
+import crucible.crust.metadata.api.Metadata;
 
 public class OTESSearchModel extends SpectrumSearchModel
 {
@@ -25,7 +27,7 @@ public class OTESSearchModel extends SpectrumSearchModel
 
     public OTESSearchModel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
-            Renderer renderer, SpectralInstrument instrument)
+            Renderer renderer, ISpectralInstrument instrument)
     {
         super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
 
@@ -47,9 +49,9 @@ public class OTESSearchModel extends SpectrumSearchModel
             }
         }
 
-        setRedMaxVal(0.000001);
-        setGreenMaxVal(0.000001);
-        setBlueMaxVal(0.000001);
+        setRedMaxVal(0.000007);
+        setGreenMaxVal(0.000007);
+        setBlueMaxVal(0.000007);
 
         setRedIndex(50);
         setGreenIndex(100);
@@ -82,11 +84,25 @@ public class OTESSearchModel extends SpectrumSearchModel
         SpectraCollection collection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
         for (int i=0; i<results.size(); ++i)
         {
-            OREXSearchSpec spectrumSpec = new OREXSearchSpec();
+            SpectrumSearchSpec spectrumSpec = new SpectrumSearchSpec();
             spectrumSpec.fromFile(line);
             collection.tagSpectraWithMetadata(createSpectrumName(i), spectrumSpec);
         }
     }
+
+	@Override
+	public Metadata store()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void retrieve(Metadata source)
+	{
+		// TODO Auto-generated method stub
+
+	}
 
 //    public OREXSearchSpec getSpec()
 //    {

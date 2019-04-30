@@ -1,12 +1,9 @@
 package edu.jhuapl.sbmt.gui.image.controllers.custom;
 
-import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JPanel;
-import javax.swing.JTable;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -17,14 +14,13 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.SpectralImageCubeController;
+import edu.jhuapl.sbmt.gui.image.model.CustomImageKeyInterface;
 import edu.jhuapl.sbmt.gui.image.model.CustomImageResultsListener;
-import edu.jhuapl.sbmt.gui.image.model.ImageSearchModelListener;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImageCubeModel;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomImagesModel;
 import edu.jhuapl.sbmt.gui.image.model.images.ImageSearchModel;
 import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
-import edu.jhuapl.sbmt.gui.image.ui.custom.CustomImageImporterDialog.ImageInfo;
 import edu.jhuapl.sbmt.gui.image.ui.search.ImagingSearchPanel;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
@@ -63,10 +59,10 @@ public class CustomImageController
         customImageModel.addResultsChangedListener(new CustomImageResultsListener()
         {
             @Override
-            public void resultsChanged(List<ImageInfo> results)
+            public void resultsChanged(List<CustomImageKeyInterface> results)
             {
                 List<List<String>> resultList = new Vector<List<String>>();
-                for (ImageInfo info : results)
+                for (CustomImageKeyInterface info : results)
                 {
                     resultList.add(info.toList());
                 }

@@ -54,7 +54,7 @@ public abstract class BodyViewConfig extends ViewConfig
     public boolean hasHierarchicalImageSearch = false;
     public boolean hasHierarchicalSpectraSearch = false;
     public HierarchicalSearchSpecification hierarchicalImageSearchSpecification;
-    public SpectraHierarchicalSearchSpecification hierarchicalSpectraSearchSpecification;
+    public SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
     public String spectrumMetadataFile;
 
     public boolean hasHypertreeBasedSpectraSearch=false;
@@ -64,6 +64,7 @@ public abstract class BodyViewConfig extends ViewConfig
     // if hasLidarData is true, the following must be filled in
     public Map<String, String> lidarSearchDataSourceMap=Maps.newHashMap();
     public Map<String, String> lidarBrowseDataSourceMap=Maps.newHashMap();    // overrides lidarBrowseFileListResourcePath for OLA
+    public Map<String, ArrayList<Date>> lidarSearchDataSourceTimeMap = Maps.newHashMap();
 
     // Required if hasLidarData is true:
     public String lidarBrowseOrigPathRegex; // regular expression to match path prefix from database, which may not be current path. May be null to skip regex.
@@ -127,8 +128,8 @@ public abstract class BodyViewConfig extends ViewConfig
     //
 
     public BodyType type; // e.g. asteroid, comet, satellite
-    public ShapeModelPopulation population; // e.g. Mars for satellites or main belt for asteroids
-    public ShapeModelDataUsed dataUsed; // e.g. images, radar, lidar, or enhanced
+    public ShapeModelPopulation population = ShapeModelPopulation.NA; // e.g. Mars for satellites or main belt for asteroids
+    public ShapeModelDataUsed dataUsed = ShapeModelDataUsed.NA; // e.g. images, radar, lidar, or enhanced
 
     public ImagingInstrument[] imagingInstruments = {};
     public Instrument lidarInstrumentName = Instrument.LIDAR;
@@ -315,7 +316,13 @@ public abstract class BodyViewConfig extends ViewConfig
         return modelFiles;
     }
 
-    private static String serverPath(String firstSegment, String... segments)
+    public Map<String, String> getSpectraSearchDataSourceMap()
+	{
+		return spectraSearchDataSourceMap;
+	}
+
+
+	private static String serverPath(String firstSegment, String... segments)
     {
         // Prevent trailing delimiters coming from empty segments at the end.
         int length = segments.length;

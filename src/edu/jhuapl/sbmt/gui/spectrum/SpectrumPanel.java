@@ -12,8 +12,8 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumHypertreeSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.OTESSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.OVIRSSearchModel;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 /**
  * A tabbed panel with browse and search options
@@ -26,7 +26,7 @@ public class SpectrumPanel extends JTabbedPane
             SmallBodyViewConfig smallBodyConfig,
             ModelManager modelManager,
             SbmtInfoWindowManager sbmtInfoWindowManager, PickManager pickManager,
-            Renderer renderer, SpectralInstrument instrument)
+            Renderer renderer, ISpectralInstrument instrument)
     {
         setBorder(BorderFactory.createEmptyBorder());
 

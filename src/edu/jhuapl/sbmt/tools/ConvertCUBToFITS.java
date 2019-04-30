@@ -5,14 +5,14 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import edu.jhuapl.saavtk.util.FileUtil;
+import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.BufferedFile;
-
-import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 public class ConvertCUBToFITS
 {

@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import edu.jhuapl.sbmt.lidar.LidarPoint;
+import edu.jhuapl.sbmt.lidar.hyperoctree.ola.OlaFSHyperPoint;
 
 
 public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
@@ -14,7 +15,7 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
 
     // there are 9 data values but only 5 are used to define the hyperspace: tgx,tgy,tgz,time, range
     protected double[] data=new double[9];    // tgx,tgy,tgz,time,scx,scy,scz, range,intensity
-    int fileNum;
+    protected int fileNum;
 
     public FSHyperPointWithFileTag()
     {
@@ -23,7 +24,8 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
 
     public static FSHyperPointWithFileTag wrap(LidarPoint pt, int filenum)
     {
-        return new FSHyperPointWithFileTag(pt.getTargetPosition().getX(),pt.getTargetPosition().getY(),pt.getTargetPosition().getZ(),pt.getTime(),pt.getSourcePosition().getX(),pt.getSourcePosition().getY(),pt.getSourcePosition().getZ(),pt.getRangeToSC(), pt.getIntensityReceived(),filenum);
+        return new FSHyperPointWithFileTag(pt.getTargetPosition().getX(),pt.getTargetPosition().getY(),pt.getTargetPosition().getZ(),pt.getTime(),
+                pt.getSourcePosition().getX(),pt.getSourcePosition().getY(),pt.getSourcePosition().getZ(),pt.getRangeToSC(), pt.getIntensityReceived(),filenum);
     }
 
     public FSHyperPointWithFileTag(double tgx, double tgy, double tgz, double time, double scx, double scy, double scz, double range, double intensity, int fileNum)
@@ -35,8 +37,8 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
         data[4]=scx;
         data[5]=scy;
         data[6]=scz;
-        data[7]=intensity;
-        data[8]=range;
+        data[7]=range;
+        data[8]=intensity;
         this.fileNum=fileNum;
     }
 
@@ -125,5 +127,27 @@ public class FSHyperPointWithFileTag implements FSHyperPoint, LidarPoint
     {
         return data[8];
     }
+
+
+	@Override
+	public final boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof OlaFSHyperPoint)) {
+			return false;
+		}
+		final OlaFSHyperPoint other = (OlaFSHyperPoint) obj;
+		if (data != other.data) {
+			return false;
+		}
+		if (fileNum != other.fileNum) {
+			return false;
+		}
+		return true;
+	}
 
 }

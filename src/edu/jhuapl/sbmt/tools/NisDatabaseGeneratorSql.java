@@ -13,11 +13,11 @@ import org.joda.time.DateTimeZone;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
+import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.NIS;
@@ -31,7 +31,7 @@ public class NisDatabaseGeneratorSql
     static private SqlManager db = null;
     static private PreparedStatement nisInsert = null;
     static private PreparedStatement nisInsert2 = null;
-    static private SmallBodyModel erosModel;
+    static private ISmallBodyModel erosModel;
     //static private vtkPolyDataReader footprintReader;
     static private vtkPolyData footprintPolyData;
     //static private double[] meanPlateSizes;

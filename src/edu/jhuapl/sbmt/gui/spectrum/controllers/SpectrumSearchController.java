@@ -1,6 +1,8 @@
 package edu.jhuapl.sbmt.gui.spectrum.controllers;
 
 import javax.swing.JPanel;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -10,17 +12,17 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.model.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.SpectrumSearchPanel;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
 
 public class SpectrumSearchController
 {
     private ISpectrumSearchModel model;
     private SpectrumSearchPanel panel;
-    protected SpectralInstrument instrument;
+    protected ISpectralInstrument instrument;
     protected ModelManager modelManager;
     protected Renderer renderer;
-    private SpectrumResultsTableController spectrumResultsTableController;
+    protected SpectrumResultsTableController spectrumResultsTableController;
     private SpectrumSearchParametersController searchParametersController;
     private SpectrumColoringController coloringController;
     private SpectrumSearchModel spectrumSearchModel;
@@ -28,7 +30,7 @@ public class SpectrumSearchController
 
     public SpectrumSearchController(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            PickManager pickManager, Renderer renderer, SpectralInstrument instrument, SpectrumSearchModel model)
+            PickManager pickManager, Renderer renderer, ISpectralInstrument instrument, SpectrumSearchModel model)
     {
         this.modelManager = modelManager;
         this.renderer = renderer;
@@ -61,6 +63,31 @@ public class SpectrumSearchController
         panel.addSubPanel(searchParametersController.getPanel());
         panel.addSubPanel(spectrumResultsTableController.getPanel());
         panel.addSubPanel(coloringController.getPanel());
+
+        panel.addAncestorListener(new AncestorListener()
+		{
+
+			@Override
+			public void ancestorRemoved(AncestorEvent event)
+			{
+				spectrumResultsTableController.removeResultListener();
+
+			}
+
+			@Override
+			public void ancestorMoved(AncestorEvent event)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void ancestorAdded(AncestorEvent event)
+			{
+				spectrumResultsTableController.addResultListener();
+			}
+		});
+
     }
 
     public JPanel getPanel()

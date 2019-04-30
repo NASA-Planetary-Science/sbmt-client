@@ -12,21 +12,23 @@ import java.util.Vector;
 import org.apache.commons.io.FileUtils;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
-import edu.jhuapl.saavtk.metadata.FixedMetadata;
-import edu.jhuapl.saavtk.metadata.Key;
-import edu.jhuapl.saavtk.metadata.Metadata;
-import edu.jhuapl.saavtk.metadata.MetadataManager;
-import edu.jhuapl.saavtk.metadata.SettableMetadata;
-import edu.jhuapl.saavtk.metadata.Version;
-import edu.jhuapl.saavtk.metadata.serialization.Serializers;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.dem.DEM;
 import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
 import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.dem.DEMKey;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.api.MetadataManager;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.FixedMetadata;
+import crucible.crust.metadata.impl.SettableMetadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 public class DtmCreationModel implements MetadataManager
 {
@@ -185,6 +187,7 @@ public class DtmCreationModel implements MetadataManager
 
         for (DEMInfo info : infoList)
         {
+        	info.demfilename = SafeURLPaths.instance().getUrl(info.demfilename);
         	fireInfoChangedListeners(info);
         }
 
@@ -232,6 +235,12 @@ public class DtmCreationModel implements MetadataManager
 
 	        // Remove the DEM from the renderer
 	        DEMKey demKey = dems.getDEMKeyFromInfo(demInfo);
+	        if (demKey == null)
+	        {
+	        	 infoList.remove(demInfo);
+	        	 boundaries.removeBoundary(demKey);
+	        	 continue;
+	        }
 	        dems.removeDEM(demKey);
 
 	        // Remove from the list
@@ -252,7 +261,7 @@ public class DtmCreationModel implements MetadataManager
         String newFilepath = getCustomDataFolder() + File.separator + newFilename;
         FileUtil.copyFile(demInfo.demfilename,  newFilepath);
         // Change demInfo.demfilename to the new location of the file
-        demInfo.demfilename = newFilepath;
+        demInfo.demfilename = SafeURLPaths.instance().getUrl(newFilepath);
 
         infoList.add(demInfo);
         fireInfoChangedListeners(demInfo);

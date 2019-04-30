@@ -41,6 +41,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -61,20 +62,22 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum.SpectrumKey;
+import edu.jhuapl.sbmt.model.spectrum.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.model.spectrum.coloring.SpectrumColoringStyle;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 
-public abstract class SpectrumSearchModel implements ISpectrumSearchModel
+import crucible.crust.metadata.api.MetadataManager;
+
+public abstract class SpectrumSearchModel implements ISpectrumSearchModel, MetadataManager
 {
-    protected SpectralInstrument instrument;
+    protected ISpectralInstrument instrument;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
     protected ModelManager modelManager;
     protected PickManager pickManager;
@@ -121,7 +124,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
 
     public SpectrumSearchModel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
+            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
@@ -132,14 +135,25 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.colorChangedListeners = new Vector<SpectrumColoringChangedListener>();
-        if (getSmallBodyConfig().hierarchicalSpectraSearchSpecification != null)
-        	this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification.clone();
-        else
-        	this.spectraSpec = null;
 
-//        this.spectraSpec = getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
-        spectrumCollection = (SpectraCollection)getModelManager().getModel(ModelNames.SPECTRA);
+        SpectraHierarchicalSearchSpecification<?> searchSpec = null;
+        if (smallBodyConfig.hasHierarchicalSpectraSearch)
+        {
+            searchSpec = smallBodyConfig.hierarchicalSpectraSearchSpecification;
+            try
+            {
+                searchSpec.loadMetadata();
+                searchSpec = searchSpec.clone();
+    }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                searchSpec = null;
+            }
+        }
 
+        this.spectraSpec = searchSpec;
+        this.spectrumCollection = (SpectraCollection) getModelManager().getModel(ModelNames.SPECTRA);
     }
 
     public void loadSearchSpecMetadata()
@@ -242,7 +256,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
     }
 
-    public SpectralInstrument getInstrument()
+    public ISpectralInstrument getInstrument()
     {
         return instrument;
     }
@@ -481,7 +495,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             SmallBodyModel bodyModel = (SmallBodyModel)getModelManager().getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -489,7 +503,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                 if (bodyModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    bodyModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = bodyModel.getIntersectingCubes(interiorPoly);
                 }
                 else
@@ -536,7 +550,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
             else
             {
-                QueryBase queryType = instrument.getQueryBase();
+                IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
@@ -635,13 +649,13 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                         .getModel(ModelNames.CIRCLE_SELECTION);
                 SmallBodyModel smallBodyModel = (SmallBodyModel) modelManager
                         .getModel(ModelNames.SMALL_BODY);
-                AbstractEllipsePolygonModel.EllipsePolygon region = null;
+                EllipsePolygon region = null;
                 vtkPolyData interiorPoly = new vtkPolyData();
                 if (selectionModel.getNumberOfStructures() > 0)
                 {
-                    region = (AbstractEllipsePolygonModel.EllipsePolygon) selectionModel
+                    region = (EllipsePolygon) selectionModel
                             .getStructure(0);
-                    selectionRegionCenter = region.center;
+                    selectionRegionCenter = region.getCenter();
                     selectionRegionRadius = region.radius;
 
                     // Always use the lowest resolution model for getting the
@@ -651,7 +665,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
                     // we need to recompute the selection region using the low
                     // res model.
                     if (smallBodyModel.getModelResolution() > 0)
-                        smallBodyModel.drawRegularPolygonLowRes(region.center,
+                        smallBodyModel.drawRegularPolygonLowRes(selectionRegionCenter,
                                 region.radius, region.numberOfSides,
                                 interiorPoly, null); // this sets interiorPoly
                     else
@@ -783,7 +797,7 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
             }
             else
             {
-                QueryBase queryType = instrument.getQueryBase();
+                IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery) queryType;
@@ -889,17 +903,17 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         fireColoringChanged();
     }
 
-    public SpectrumKey[] getSelectedSpectrumKeys()
+    public SpectrumKeyInterface[] getSelectedSpectrumKeys()
     {
         int[] indices = selectedImageIndices;
-        SpectrumKey[] selectedKeys = new SpectrumKey[indices.length];
+        SpectrumKeyInterface[] selectedKeys = new SpectrumKeyInterface[indices.length];
         if (indices.length > 0)
         {
             int i=0;
             for (int index : indices)
             {
                 String image = results.get(index).get(0);
-                SpectrumKey selectedKey = createSpectrumKey(image, instrument);
+                SpectrumKeyInterface selectedKey = createSpectrumKey(image, instrument);
 //                if (!selectedKey.band.equals("0"))
 //                    name = selectedKey.band + ":" + name;
                 selectedKeys[i++] = selectedKey;
@@ -926,16 +940,16 @@ public abstract class SpectrumSearchModel implements ISpectrumSearchModel
         return selectedImageIndices;
     }
 
-    public List<SpectrumKey> createSpectrumKeys(String boundaryName, SpectralInstrument instrument)
+    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, ISpectralInstrument instrument)
     {
-        List<SpectrumKey> result = new ArrayList<SpectrumKey>();
+        List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
         result.add(createSpectrumKey(boundaryName, instrument));
         return result;
     }
 
-    public SpectrumKey createSpectrumKey(String imagePathName, SpectralInstrument instrument)
+    public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
     {
-        SpectrumKey key = new SpectrumKey(imagePathName, null, null, instrument);
+        SpectrumKeyInterface key = new SpectrumKey(imagePathName, null, null, instrument, "");
         return key;
     }
 

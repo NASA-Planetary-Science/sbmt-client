@@ -6,17 +6,16 @@ import java.io.IOException;
 import java.util.List;
 
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
-import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog.SpectrumInfo;
 import edu.jhuapl.sbmt.gui.spectrum.model.CustomSpectraSearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.ui.CustomSpectraControlPanel;
+import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKeyInterface;
 
 
 public class CustomSpectraControlController
 {
-
     CustomSpectraControlPanel panel;
     CustomSpectraSearchModel model;
-    List<SpectrumInfo> customSpectra;
+    List<CustomSpectrumKeyInterface> customSpectra;
 
     public CustomSpectraControlController(CustomSpectraSearchModel model)
     {
@@ -56,10 +55,9 @@ public class CustomSpectraControlController
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
-        SpectrumInfo imageInfo = new SpectrumInfo();
         CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(
                 null, false, model.getInstrument());
-        dialog.setSpectrumInfo(imageInfo,
+        dialog.setSpectrumInfo(null,
                 model.getModelManager().getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
@@ -67,10 +65,10 @@ public class CustomSpectraControlController
         // If user clicks okay add to list
         if (dialog.getOkayPressed())
         {
-            imageInfo = dialog.getSpectrumInfo();
+            CustomSpectrumKeyInterface spectrumKey = dialog.getSpectrumInfo();
             try
             {
-                saveSpectrum(model.getSpectrumRawResults().size(), null, imageInfo);
+                saveSpectrum(model.getSpectrumRawResults().size(), null, spectrumKey);
             }
             catch (IOException e)
             {
@@ -84,11 +82,9 @@ public class CustomSpectraControlController
         model.editButtonActionPerformed();
     }
 
-    private void saveSpectrum(int index, SpectrumInfo oldImageInfo,
-            SpectrumInfo newImageInfo) throws IOException
+    private void saveSpectrum(int index, CustomSpectrumKeyInterface oldImageInfo,
+            CustomSpectrumKeyInterface newImageInfo) throws IOException
     {
         model.saveSpectrum(index, oldImageInfo, newImageInfo);
     }
-
-
 }

@@ -67,6 +67,7 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
@@ -77,10 +78,10 @@ import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.image.ImageSource;
+import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
 import edu.jhuapl.sbmt.model.spectrum.Spectrum;
-import edu.jhuapl.sbmt.model.spectrum.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.database.DatabaseQueryBase;
 import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
@@ -109,7 +110,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
     JButton saveSelectedImageListButton = new JButton();
     JButton loadImageListButton = new JButton("Load Spectrum List");
 
-    protected final SpectralInstrument instrument;
+    protected final ISpectralInstrument instrument;
     protected JScrollPane hierarchicalSearchScrollPane = new JScrollPane();
 
 
@@ -117,7 +118,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
     /** Creates new form NISSearchPanel */
     public SpectrumSearchPanel(SmallBodyViewConfig smallBodyConfig, final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, SpectralInstrument instrument)
+            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument)
     {
         this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
@@ -1805,7 +1806,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             SmallBodyModel erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
             if (selectionModel.getNumberOfStructures() > 0)
             {
-                AbstractEllipsePolygonModel.EllipsePolygon region = (AbstractEllipsePolygonModel.EllipsePolygon)selectionModel.getStructure(0);
+                EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
 
                 // Always use the lowest resolution model for getting the intersection cubes list.
                 // Therefore, if the selection region was created using a higher resolution model,
@@ -1813,7 +1814,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
                 if (erosModel.getModelResolution() > 0)
                 {
                     vtkPolyData interiorPoly = new vtkPolyData();
-                    erosModel.drawRegularPolygonLowRes(region.center, region.radius, region.numberOfSides, interiorPoly, null);
+                    erosModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
                     cubeList = erosModel.getIntersectingCubes(interiorPoly);
                 }
                 else
@@ -1847,7 +1848,7 @@ public abstract class SpectrumSearchPanel extends JPanel implements MouseListene
             }
             else
             {
-                QueryBase queryType = instrument.getQueryBase();
+                IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
                     FixedListQuery query = (FixedListQuery)queryType;
