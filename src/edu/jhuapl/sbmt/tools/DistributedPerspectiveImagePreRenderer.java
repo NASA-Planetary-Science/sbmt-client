@@ -1,8 +1,11 @@
 package edu.jhuapl.sbmt.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,19 +45,42 @@ public class DistributedPerspectiveImagePreRenderer
                  //imageFileName GASKELL RQ36 ALTWG-SPC-v20181109b 0 $baseDir/support $reprocess
                  jt.setRemoteCommand("/homes/sbmt/workspace2/preRenderImage.sh");
                  List<String> argList = new ArrayList<String>();
-                 File[] fileList = new File(inputDir).listFiles();
-                 System.out.println(
-						"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: number of files " + fileList.length);
-                 Arrays.sort(fileList);
-                 int i=0;
-                 for (; i<fileList.length;)
+
+                 //File[] fileList = new File(inputDir).listFiles();
+//                 System.out.println(
+//						"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: number of files " + fileList.length);
+
+                 //instead of grabbing all of the images (the old way above), grab the ones for the appropriate pointing file list
+                 File inputParent = new File(inputDir).getParentFile();
+                 File files = null;
+                 if (pointingSource == ImageSource.SPICE)
                  {
-                	 int nextBatchLength = Math.min(100, fileList.length - i);
+                	 files = new File(inputParent, "imagelist-fullpath-info.txt");
+                 }
+                 else
+                 {
+                	 files = new File(inputParent, "imagelist-fullpath-sum.txt");
+
+                 }
+                 BufferedReader reader = new BufferedReader(new FileReader(files));
+                 List<File> fileList = new ArrayList<File>();
+                 String line;
+                 while((line = reader.readLine()) != null) {
+                     fileList.add(new File(line));
+                 }
+                 reader.close();
+
+
+//                 Arrays.sort(fileList);
+                 int i=0;
+                 for (; i<fileList.size();)
+                 {
+                	 int nextBatchLength = Math.min(100, fileList.size() - i);
 	                 for (int j=0; j<nextBatchLength; j++)
 	                 {
               		 	argList.clear();
 
-	                     argList.add(fileList[i+j].getAbsolutePath());
+	                     argList.add(fileList.get(i+j).getAbsolutePath());
 //	                     argList.add(fileList[i].getAbsolutePath());
 	                     argList.add(pointingSource.name());
 	                     argList.add(body.name());
@@ -64,14 +90,14 @@ public class DistributedPerspectiveImagePreRenderer
 	                     argList.add(""+reprocess);
 	                     jt.setArgs(argList);
 	                     String id = session.runJob(jt);
-	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList[i+j].getAbsolutePath() + " to ouput dir " + outputPath);
+	                     System.out.println("Your job has been submitted with id " + id + " for image pre-rendering for image " + fileList.get(i+j).getAbsolutePath() + " to ouput dir " + outputPath);
 	                 }
 //	                 //wait for this batch of 100 to finish
 	                 session.synchronize(Collections.singletonList(Session.JOB_IDS_SESSION_ALL), Session.TIMEOUT_WAIT_FOREVER, false);
 	                 i += nextBatchLength;
 //	                 i++;
 	                 System.out.println(
-							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.length);
+							"DistributedPerspectiveImagePreRenderer: DistributedPerspectiveImagePreRenderer: processed through " + i + " of " + fileList.size());
                  }
                  System.out.println ("Number of jobs completed = " + i);
 
@@ -83,7 +109,15 @@ public class DistributedPerspectiveImagePreRenderer
              {
                  System.out.println("Error: "  + e.getMessage());
 //                 session.exit();
-             }
+             } catch (FileNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
          }
          java.awt.Toolkit.getDefaultToolkit().beep();
          System.out.println("Done");
