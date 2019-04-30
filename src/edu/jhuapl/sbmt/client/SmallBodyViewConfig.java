@@ -96,6 +96,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     }
 
+
+
     private static ViewConfig fetchRemoteConfig(String name, String url)
     {
         List<ViewConfig> ioConfigs = new Vector<ViewConfig>();
@@ -7367,13 +7369,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             configArray.add(c);
         }
 
-//        configArray.addAll(addRemoteEntries());
 
         addConfigsBeingRemoved(configArray);
 
         addNewHorizonsModels(configArray);
 
         addMarsModels(configArray);
+
+//      configArray.addAll(addRemoteEntries());
+
 
     }
 

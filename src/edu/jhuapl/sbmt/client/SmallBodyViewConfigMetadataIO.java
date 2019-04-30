@@ -45,16 +45,18 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
             System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
             SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
             String version = config.version == null ? "" : config.version;
-            File file = new File("/Users/steelrj1/Desktop/configs2/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+//            File file = new File("/Users/steelrj1/Desktop/configs3/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+//            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
 
-            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
+            File file = new File("/Users/steelrj1/Desktop/configs3/" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
 
             System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();
             io.write(config.getUniqueName(), file, io.store());
         }
 
-        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs2/allBodies.json"));
+        Serializers.serialize("AllBodies", allBodiesMetadata, new File("/Users/steelrj1/Desktop/configs3/allBodies.json"));
 
 
     }
