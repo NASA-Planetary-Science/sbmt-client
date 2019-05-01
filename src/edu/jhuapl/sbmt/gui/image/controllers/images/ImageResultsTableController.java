@@ -410,8 +410,10 @@ public class ImageResultsTableController
                 int size = imageRawResults.size();
                 for (int i = 0; i < size; ++i)
                 {
-                    String image = new File(imageRawResults.get(i).get(0)).getName();
-                    String dtStr = imageRawResults.get(i).get(1);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(i);
+
+                    String image = new File(imageRawResults.get(actualRow).get(0)).getName();
+                    String dtStr = imageRawResults.get(actualRow).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
                     out.write(image + " " + sdf.format(dt) + " " + imageSearchModel.getImageSourceOfLastQuery().toString().replaceAll(" ", "_") + nl);
@@ -488,8 +490,9 @@ public class ImageResultsTableController
                 int[] selectedIndices = imageResultsTableView.getResultList().getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
-                    String image = new File(imageRawResults.get(selectedIndex).get(0)).getName();
-                    String dtStr = imageRawResults.get(selectedIndex).get(1);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(selectedIndex);
+                    String image = new File(imageRawResults.get(actualRow).get(0)).getName();
+                    String dtStr = imageRawResults.get(actualRow).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
                     out.write(image + " " + sdf.format(dt) + " " + imageSearchModel.getImageSourceOfLastQuery().toString().replaceAll(" ", "_") + nl);
