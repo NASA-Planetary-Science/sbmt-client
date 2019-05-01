@@ -5570,7 +5570,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public static void initialize()
     {
 
-
         List<ViewConfig> configArray = getBuiltInConfigs();
 
         // Gaskell Eros
@@ -6933,7 +6932,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                         new NIRS3()
                     };
 
-            configArray.add(c);
 
             c.hasLidarData=false;
             c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
@@ -6959,6 +6957,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+//            configArray.add(c);
+
         }
 
 
@@ -7045,7 +7046,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarOffsetScale = 0.0005;
 
 
-            configArray.add(c);
+//            configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
@@ -7120,7 +7121,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
-            configArray.add(c);
+//            configArray.add(c);
         }
 
 
