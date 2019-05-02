@@ -15,8 +15,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo.YesOrNo;
+import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -6896,8 +6895,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public boolean isAccessible()
     {
         String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
-        FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
-        return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
+        try
+        {
+            return FileCache.isFileGettable(modelFileOrDirectory);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return false;
+        }
     }
 
 	@Override
