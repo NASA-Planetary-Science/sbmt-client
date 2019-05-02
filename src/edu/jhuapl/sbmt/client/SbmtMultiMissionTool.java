@@ -476,7 +476,7 @@ public class SbmtMultiMissionTool
 			try
 			{
 				// Just try to hit the server itself first.
-				FileCache.getFileInfoFromServer(dataRootUrl.toString());
+				FileCache.refreshUrlInfo(dataRootUrl.toString());
 
 				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
 				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
