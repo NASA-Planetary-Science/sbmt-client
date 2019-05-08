@@ -1023,8 +1023,22 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_polycam"),
         BENNU_ALTWG_SPICE_V20190207B_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190207b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190207b/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190207b_navcam"),
-;
 
+        // 0414 SUMFILES
+        BENNU_ALTWG_SPC_V20190414_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_mapcam"),
+        BENNU_ALTWG_SPC_V20190414_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20190414_polycam"),
+
+        // 0414 INFOFILES
+        BENNU_ALTWG_SPICE_V20190414_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/mapcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_mapcam"),
+        BENNU_ALTWG_SPICE_V20190414_POLYCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_polycam"),
+        BENNU_ALTWG_SPICE_V20190414_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414),
+                "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20190414/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20190414_navcam"),
+
+        ;
 
         public final SmallBodyViewConfig config;
         public final String pathToFileList;
