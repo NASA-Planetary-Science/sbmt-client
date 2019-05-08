@@ -452,10 +452,10 @@ public class ImageResultsTableController
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
                     results.add(result);
+                    imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueFor(words[2].replace("_", " ")));
                 }
 
                 //TODO needed?
-                //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
                 imageSearchModel.setImageResults(new ArrayList<List<String>>());
                 setImageResults(imageSearchModel.processResults(results));
             }
