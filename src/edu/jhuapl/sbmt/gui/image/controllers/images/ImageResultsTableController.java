@@ -411,7 +411,7 @@ public class ImageResultsTableController
                 int size = imageRawResults.size();
                 for (int i = 0; i < size; ++i)
                 {
-                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(i);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(i);
 
                     String image = new File(imageRawResults.get(actualRow).get(0)).getName();
                     String dtStr = imageRawResults.get(actualRow).get(1);
@@ -491,7 +491,7 @@ public class ImageResultsTableController
                 int[] selectedIndices = imageResultsTableView.getResultList().getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
-                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(selectedIndex);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(selectedIndex);
                     String image = new File(imageRawResults.get(actualRow).get(0)).getName();
                     String dtStr = imageRawResults.get(actualRow).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
