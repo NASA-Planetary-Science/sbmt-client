@@ -4,6 +4,19 @@
 
 # Release Notes
 
+## May 9, 2019 (SBMT-0.7.5.1)
+ 
+### Bug fixes
+Custom Plate colorings and Custom images no longer write to the same configuration file (removes an exception seen by some users)
+Save plate data/view statistics in polygons now works properly
+Loading plate colorings then a structures file no longer crashes the tool
+The scalebar on the 3D screen should now update properly as the user zooms in/out
+Various updates to the behavior of the image table (NOTE: There is a known issue where sorting by Date requires 2 clicks of the column; we are investigating)
+ 
+### OREx only
+20190207b sumfile update
+Delivery of 20190414 model
+
 ## April 25, 2019 (SBMT-0.7.5)
 
 ### New
