@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
@@ -410,8 +411,10 @@ public class ImageResultsTableController
                 int size = imageRawResults.size();
                 for (int i = 0; i < size; ++i)
                 {
-                    String image = new File(imageRawResults.get(i).get(0)).getName();
-                    String dtStr = imageRawResults.get(i).get(1);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(i);
+
+                    String image = new File(imageRawResults.get(actualRow).get(0)).getName();
+                    String dtStr = imageRawResults.get(actualRow).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
                     out.write(image + " " + sdf.format(dt) + " " + imageSearchModel.getImageSourceOfLastQuery().toString().replaceAll(" ", "_") + nl);
@@ -452,10 +455,10 @@ public class ImageResultsTableController
                     Date dt = sdf.parse(words[1]);
                     result.add(String.valueOf(dt.getTime()));
                     results.add(result);
+                    imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueFor(words[2].replace("_", " ")));
                 }
 
                 //TODO needed?
-                //                imageSearchModel.setImageSourceOfLastQuery(ImageSource.valueOf(((Enum)sourceComboBox.getSelectedItem()).name()));
                 imageSearchModel.setImageResults(new ArrayList<List<String>>());
                 setImageResults(imageSearchModel.processResults(results));
             }
@@ -488,8 +491,9 @@ public class ImageResultsTableController
                 int[] selectedIndices = imageResultsTableView.getResultList().getSelectedRows();
                 for (int selectedIndex : selectedIndices)
                 {
-                    String image = new File(imageRawResults.get(selectedIndex).get(0)).getName();
-                    String dtStr = imageRawResults.get(selectedIndex).get(1);
+                	int actualRow = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToModel(selectedIndex);
+                    String image = new File(imageRawResults.get(actualRow).get(0)).getName();
+                    String dtStr = imageRawResults.get(actualRow).get(1);
                     Date dt = new Date(Long.parseLong(dtStr));
 
                     out.write(image + " " + sdf.format(dt) + " " + imageSearchModel.getImageSourceOfLastQuery().toString().replaceAll(" ", "_") + nl);
@@ -751,12 +755,37 @@ public class ImageResultsTableController
             }
         }
 
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+//        	if (column == imageResultsTableView.getDateColumnIndex())
+//        	{
+//        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+//
+//        		try
+//				{
+//        			System.out.println("ImageResultsTableController.ImagesTableModel: getValueAt: date " + sdf.parse((String)getValueAt(row, column)));
+//					return sdf.parse((String)getValueAt(row, column));
+//				}
+//        		catch (ParseException e)
+//				{
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//					return null;
+//				}
+//        	}
+//        	else
+        		return super.getValueAt(row, column);
+        }
+
         public Class<?> getColumnClass(int columnIndex)
         {
             if (columnIndex <= imageResultsTableView.getBndrColumnIndex())
                 return Boolean.class;
             else if (columnIndex == imageResultsTableView.getIdColumnIndex())
                 return Integer.class;
+            else if (columnIndex == imageResultsTableView.getDateColumnIndex())
+            	return Date.class;
             else
                 return String.class;
         }
@@ -774,17 +803,25 @@ public class ImageResultsTableController
 
             if (index >= 0)
             {
+            	int[] selectedIndices = resultList.getSelectedRows();
                 List<List<String>> imageRawResults = imageSearchModel.getImageResults();
                 ImageSource sourceOfLastQuery = imageSearchModel.getImageSourceOfLastQuery();
                 // If the item right-clicked on is not selected, then deselect all the
                 // other items and select the item right-clicked on.
                 if (!resultList.isRowSelected(index))
                 {
+                	ListSelectionModel selectionModel = resultList.getSelectionModel();
+                	selectionModel.clearSelection();
                     resultList.clearSelection();
-                    resultList.setRowSelectionInterval(index, index);
+
+                	for (int selectedIndex : selectedIndices)
+                    {
+	                    int idx = imageResultsTableView.getResultList().getRowSorter().convertRowIndexToView(selectedIndex);
+	                    resultList.addRowSelectionInterval(selectedIndex, selectedIndex);
+                    }
                 }
 
-                int[] selectedIndices = resultList.getSelectedRows();
+
                 List<ImageKeyInterface> imageKeys = new ArrayList<ImageKeyInterface>();
                 for (int selectedIndex : selectedIndices)
                 {

@@ -1,11 +1,17 @@
 package edu.jhuapl.sbmt.gui.image.controllers.images;
 
+import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -13,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
@@ -140,6 +147,7 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         });
 
         stringRenderer = new StringRenderer(imageSearchModel, imageRawResults);
+        imageResultsTableView.getResultList().setDefaultRenderer(Date.class, new DateCellRenderer());
         imageResultsTableView.getResultList().setDefaultRenderer(String.class, stringRenderer);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getMapColumnIndex()).setPreferredWidth(31);
         imageResultsTableView.getResultList().getColumnModel().getColumn(imageResultsTableView.getShowFootprintColumnIndex()).setPreferredWidth(35);
@@ -264,6 +272,22 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
         }
     }
 
+    class DateCellRenderer extends DefaultTableCellRenderer
+    {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object v, boolean selected, boolean focus, int r, int c)
+        {
+        	int actualRow = table.getRowSorter().convertRowIndexToModel(r);
+            JLabel rendComp = (JLabel) super.getTableCellRendererComponent(table, v, selected, focus, actualRow, c);
+            Object sortedValue = table.getValueAt(actualRow, c);
+            SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            rendComp.setText(formatter.format(sortedValue));
+//            System.out.println(formatter.format(sortedValue));
+            return rendComp;
+        }
+    }
+
 
     public class OfflimbImagesTableModel extends DefaultTableModel
     {
@@ -288,12 +312,28 @@ public class OfflimbImageResultsTableController extends ImageResultsTableControl
             }
         }
 
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+        	if (column == offlimbTableView.getDateColumnIndex())
+        	{
+    			int actualRow = offlimbTableView.getResultList().getRowSorter().convertRowIndexToModel(row);
+                String dtStr = imageRawResults.get(actualRow).get(1);
+                Date dt = new Date(Long.parseLong(dtStr));
+				return dt;
+        	}
+        	else
+        		return super.getValueAt(row, column);
+        }
+
         public Class<?> getColumnClass(int columnIndex)
         {
             if (columnIndex <= offlimbTableView.getBndrColumnIndex())
                 return Boolean.class;
-            else if (columnIndex == imageResultsTableView.getIdColumnIndex())
+            else if (columnIndex == offlimbTableView.getIdColumnIndex())
             	return Integer.class;
+            else if (columnIndex == offlimbTableView.getDateColumnIndex())
+            	return Date.class;
             else
                 return String.class;
         }
