@@ -306,7 +306,14 @@ public class ImageDefaultPicker extends DefaultPicker
         distanceStr += " km";
 
         int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
-
+        String pixelResolutionString = "";
+        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() > 0)
+        {
+	        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() < 1.0)
+	        	pixelResolutionString = String.format("%.2f m", 1000.0 * modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+			else
+				pixelResolutionString = String.format("%.2f km", modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+        }
         if (pickSucceeded == 1)
         {
             double[] pos = smallBodyCellPicker.GetPickPosition();
@@ -351,11 +358,17 @@ public class ImageDefaultPicker extends DefaultPicker
                 radStr = " " + radStr;
             radStr += " km";
 
-            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
+            if (pixelResolutionString.equals(""))
+            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
+            else
+            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " " + " " + "Resolution: " + pixelResolutionString);
         }
         else
         {
-            statusBar.setRightText("Range: " + distanceStr + " ");
+        	if (pixelResolutionString.equals(""))
+        		statusBar.setRightText("Range: " + distanceStr + " ");
+        	else
+        		statusBar.setRightText("Range: " + distanceStr + " " + "Resolution: " + pixelResolutionString);
         }
     }
 
@@ -428,7 +441,6 @@ public class ImageDefaultPicker extends DefaultPicker
         double sizeOfPixel = computeSizeOfPixel();
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarValue(sizeOfPixel);
-        renderer.repaint();
     }
 
     public void updateScaleBarPosition()
