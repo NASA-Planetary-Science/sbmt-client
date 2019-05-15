@@ -436,6 +436,12 @@ public class ImageDefaultPicker extends DefaultPicker
         return sizeOfPixel;
     }
 
+    private void updateScaleBar()
+    {
+    	updateScaleBarValue();
+        updateScaleBarPosition();
+    }
+
     private void updateScaleBarValue()
     {
         double sizeOfPixel = computeSizeOfPixel();
