@@ -26,6 +26,7 @@ import vtk.vtkPNGWriter;
 
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -566,6 +567,13 @@ public class CustomImagesModel extends ImageSearchModel
         if (!updated)
         {
             if (!(new File(getConfigFilename()).exists())) return;
+            //check to make sure the old plate coloring config file isn't here
+            MapUtil configMap = new MapUtil(getConfigFilename());
+			if (configMap.containsKey(GenericPolyhedralModel.CELL_DATA_FILENAMES))
+			{
+				FileUtils.moveFile(new File(getConfigFilename()), new File(getModelManager().getPolyhedralModel().getPlateConfigFilename()));
+				return;
+			}
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomImages");
             retrieve(metadata);
         }

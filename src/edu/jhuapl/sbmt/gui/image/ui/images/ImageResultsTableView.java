@@ -64,7 +64,7 @@ public class ImageResultsTableView extends JPanel
 
     public void setup()
     {
-    	resultList.setAutoCreateRowSorter(true);
+        resultList.setAutoCreateRowSorter(true);
 //    	resultList.setDragEnabled(true);
 
         JPanel panel_4 = new JPanel();
