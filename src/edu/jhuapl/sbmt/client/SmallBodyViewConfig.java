@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
@@ -14,8 +15,8 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -7050,15 +7051,18 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     @Override
     public boolean isAccessible()
     {
-        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
-        try
-        {
-            return FileCache.isFileGettable(modelFileOrDirectory);
-        }
-        catch (UnauthorizedAccessException e)
-        {
-            return false;
-        }
+        String modelFile = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
+
+        return FileCache.instance().isAccessible(modelFile);
+    }
+
+    @Override
+    public void addModelAccessibilityListener(StateListener listener)
+    {
+        Preconditions.checkNotNull(listener);
+
+        String modelFile = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
+        FileCache.instance().addStateListener(modelFile, listener);
     }
 
 	@Override
@@ -7077,6 +7081,5 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 	{
 		return hierarchicalSpectraSearchSpecification;
 	}
-
 
 }
