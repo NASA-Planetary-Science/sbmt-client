@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 
 import vtk.vtkActor;
 
+import edu.jhuapl.saavtk.gui.FileDownloadProgressMonitor;
+import edu.jhuapl.saavtk.gui.ProgressMonitor;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
@@ -22,6 +24,7 @@ import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.saavtk2.task.Task;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
@@ -276,11 +279,31 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
         // Download the entire map maker suite to the users computer
         // if it has never been downloaded before.
         // Ask the user beforehand if it's okay to continue.
+        String mapmakerPath = config.rootDirOnServer + "/mapmaker.zip";
         final MapmakerSwingWorker mapmakerWorker =
-                new MapmakerSwingWorker(panel, "Running Mapmaker", config.rootDirOnServer + "/mapmaker.zip");
+                new MapmakerSwingWorker(panel, "Running Mapmaker", mapmakerPath) {
+            protected void done()
+            {
+                if (!isCancelled())
+                {
+                    DEMInfo newDemInfo = new DEMInfo();
+                    newDemInfo.name = demName;
+                    newDemInfo.demfilename = getMapletFile().getAbsolutePath();
+                    try
+                    {
+                        model.saveDEM(newDemInfo);
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        };
 
         // If we need to download, prompt the user that it will take a long time
-        if (mapmakerWorker.getIfNeedToDownload())
+        if (FileCache.isDownloadNeeded(mapmakerPath))
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(panel),
                     "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
@@ -315,22 +338,9 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
         mapmakerWorker.setHalfSize((Integer)panel.getHalfSizeSpinner().getValue());
         mapmakerWorker.setOutputFolder(outputFolder);
 
-        mapmakerWorker.executeDialog();
-
-        if (mapmakerWorker.isCancelled())
-            return;
-
-        DEMInfo newDemInfo = new DEMInfo();
-        newDemInfo.name = demName;
-        newDemInfo.demfilename = mapmakerWorker.getMapletFile().getAbsolutePath();
-        try
-        {
-            model.saveDEM(newDemInfo);
-        }
-        catch (IOException e1)
-        {
-            e1.printStackTrace();
-        }
+        String fileName = config.rootDirOnServer + "/mapmaker.zip";
+        FileDownloadProgressMonitor.of(panel, "Downloading/Unzipping Mapmaker file", FileCache.getDownloader(fileName)).execute();
+        ProgressMonitor.of(panel, "Running Mapmaker to create DTM", mapmakerWorker, true).execute();
     }
 
 	// Starts and manages a MapmakerSwingWorker
