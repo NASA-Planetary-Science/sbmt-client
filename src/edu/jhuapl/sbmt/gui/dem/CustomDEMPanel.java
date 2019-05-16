@@ -58,6 +58,7 @@ import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickEvent;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
@@ -1052,7 +1053,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
                 new MapmakerSwingWorker(this, "Running Mapmaker", mapmakerPath);
 
         // If we need to download, prompt the user that it will take a long time
-        if (mapmakerWorker.getIfNeedToDownload())
+        if (FileCache.isDownloadNeeded(mapmakerPath))
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
                     "Before Mapmaker can be run for the first time, a very large file needs to be downloaded.\n" +
@@ -1115,7 +1116,7 @@ public class CustomDEMPanel extends javax.swing.JPanel implements PropertyChange
                 new BigmapSwingWorker(this, "Running Bigmap", bigmapPath);
 
         // If we need to download, promt the user that it will take a long time
-        if (bigmapWorker.getIfNeedToDownload())
+        if (FileCache.isDownloadNeeded(bigmapPath))
         {
             int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(this),
                     "Before Bigmap can be run for the first time, a very large file needs to be downloaded.\n" +
