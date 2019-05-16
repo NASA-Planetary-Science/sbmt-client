@@ -80,7 +80,23 @@ public class SbmtViewMenu extends ViewMenu
             parentMenu = childMenu;
         }
         parentMenu.add(mi);
-        mi.setEnabled(config.isAccessible());
+
+        config.addModelAccessibilityListener(state -> {
+            try
+            {
+                Configuration.runOnEDTASAP(() -> {
+                    mi.setEnabled(state.isAccessible());
+                    setSubMenuEnabledState(SbmtViewMenu.this);
+                    // This very top menu should always be enabled.
+                    SbmtViewMenu.this.setEnabled(true);
+                });
+            }
+            catch (Exception e)
+            {
+
+            }
+
+       });
     }
 
     @Override
