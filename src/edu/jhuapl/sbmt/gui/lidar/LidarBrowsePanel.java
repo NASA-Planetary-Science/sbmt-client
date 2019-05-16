@@ -34,8 +34,8 @@ import edu.jhuapl.saavtk.gui.RadialOffsetChanger;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
 import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
@@ -84,9 +84,9 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
         }
     }
 
-    protected void isDataGettable()
+    protected DownloadableFileState getDataState()
     {
-        FileCache.isFileGettable(lidarModel.getBrowseFileResourcePath());
+        return FileCache.instance().query(lidarModel.getBrowseFileResourcePath(), false).getState();
     }
 
     public LidarBrowsePanel(
@@ -234,9 +234,9 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
         });
         showSpacecraftPanel.add(showSpacecraftCheckBox);
 
-        try
+        DownloadableFileState dataState = getDataState();
+        if (dataState.isAccessible())
         {
-            isDataGettable();
             List<LidarDataFileSpec> lidarPaths;
             try
             {
@@ -246,14 +246,13 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
                     lidarResultListModel.addElement(spec);
                 }
             }
-            catch (FileNotFoundException e2)
+            catch (FileNotFoundException e)
             {
                 // TODO Auto-generated catch block
-                e2.printStackTrace();
+                e.printStackTrace();
             }
-
         }
-        catch (UnauthorizedAccessException e)
+        else if (dataState.isUrlUnauthorized())
         {
             resultsLabel.setText("No Results Available: Access Not Authorized");
         }

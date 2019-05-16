@@ -22,13 +22,14 @@ import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.gui.FileDownloadProgressMonitor;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
 import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk2.event.Event;
 import edu.jhuapl.saavtk2.event.EventListener;
 import edu.jhuapl.saavtk2.task.Task;
@@ -228,7 +229,7 @@ public class DEMCreationPanel extends JPanel implements ActionListener
                 if (result == JOptionPane.NO_OPTION)
                     return;
                 else
-                    new FileDownloadSwingWorker(DEMCreationPanel.this, "Download " + creationTool.getExecutableDisplayName(), creationTool.getExecutablePathOnServer().toString()).executeDialog();
+                    FileDownloadProgressMonitor.of(DEMCreationPanel.this, creationTool.getExecutableDisplayName(), FileCache.getDownloader(creationTool.getExecutablePathOnServer().toString())).execute();
             }
 
             // SET DEM NAME
