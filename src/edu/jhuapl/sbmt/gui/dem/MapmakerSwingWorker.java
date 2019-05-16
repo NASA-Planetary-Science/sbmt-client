@@ -4,16 +4,17 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 
-import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.gui.ProgressBarSwingWorker;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.util.MapmakerNativeWrapper;
 
 @Deprecated // use MapmakerDEMCreator instead
-public class MapmakerSwingWorker extends FileDownloadSwingWorker
+public class MapmakerSwingWorker extends ProgressBarSwingWorker
 {
     boolean regionSpecifiedWithLatLonScale = false;
+    private final String fileName;
     private String name;
     private double[] centerPoint;
     private double radius;
@@ -26,7 +27,8 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
+        super(c, title);
+        this.fileName = filename;
     }
 
 
@@ -92,13 +94,6 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
     @Override
     protected Void doInBackground()
     {
-        super.doInBackground();
-
-        if (isCancelled())
-        {
-            return null;
-        }
-
         setLabelText("<html>Running Mapmaker<br> </html>");
         setIndeterminate(true);
         setCancelButtonEnabled(false);
@@ -108,7 +103,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
         try
         {
-            File file = FileCache.getFileFromServer(this.getFileDownloaded());
+            File file = FileCache.getDownloadFile(fileName);
             String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
             MapmakerNativeWrapper mapmaker = new MapmakerNativeWrapper(mapmakerRootDir);

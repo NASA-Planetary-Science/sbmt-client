@@ -6,16 +6,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
+import edu.jhuapl.saavtk.gui.ProgressBarSwingWorker;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.util.Bigmap;
 
-public class BigmapSwingWorker extends FileDownloadSwingWorker
+public class BigmapSwingWorker extends ProgressBarSwingWorker
 {
     boolean regionSpecifiedWithLatLonScale = false;
+    private final String fileName;
     private String name;
     private double[] centerPoint;
     private double radius;
@@ -31,7 +32,8 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
     public BigmapSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
+        super(c, title);
+        this.fileName = filename;
     }
 
 
@@ -113,13 +115,6 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
     @Override
     protected Void doInBackground()
     {
-        super.doInBackground();
-
-        if (isCancelled())
-        {
-            return null;
-        }
-
         setLabelText("<html>Running Bigmap<br> </html>");
         setIndeterminate(true);
         setCancelButtonEnabled(true);
@@ -131,7 +126,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
         try
         {
-            File file = FileCache.getFileFromServer(this.getFileDownloaded());
+            File file = FileCache.getDownloadFile(fileName);
             String bigmapRootDir = file.getParent() + File.separator + "bigmap";
 
             Bigmap bigmap = new Bigmap(bigmapRootDir, grotesque);
