@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
@@ -29,7 +28,6 @@ import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
-import edu.jhuapl.sbmt.model.image.OffLimbPlaneCalculator;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
 import nom.tam.fits.FitsException;
@@ -105,12 +103,9 @@ public class PerspectiveImagePreRenderer
         footprint.GetCellData().SetScalars(null);
         footprint.GetPointData().SetScalars(null);
 
-//        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: footprint is " + footprint);
-
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(footprint);
         System.out.println("PerspectiveImage: loadFootprint: fit file full path " + image.getFitFileFullPath());
-//        String intersectionFileName = new File(image.getFitFileFullPath()).getParent() + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
 
         System.out.println("PerspectiveImage: loadFootprint: saving footprint to " + intersectionFileName);
         if (!(new File(intersectionFileName).exists()))new File(intersectionFileName).getParentFile().mkdir();
@@ -122,15 +117,14 @@ public class PerspectiveImagePreRenderer
 
     private void calculateOffLimb()
     {
-//      String filename = new File(image.getFitFileFullPath()).getParent() +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
         String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
         File file = new File(filename);
         if (file.exists() && (reprocess == false)) return;
 
-//        OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator(image);
-//        calculator.generateOffLimbPlane(image);
-        OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator();
-        calculator.loadOffLimbPlane(image, new Vector3D(image.getSpacecraftPosition()).getNorm());
+        ServerOffLimbPlaneCalculator calculator = new ServerOffLimbPlaneCalculator(image);
+        calculator.generateOffLimbPlane(image);
+//        OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator();
+//        calculator.loadOffLimbPlane(image, new Vector3D(image.getSpacecraftPosition()).getNorm());
         if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
         calculator.saveToDisk(filename);
         compressFile(filename);
