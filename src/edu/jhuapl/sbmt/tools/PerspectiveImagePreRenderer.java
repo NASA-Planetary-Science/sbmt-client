@@ -70,8 +70,8 @@ public class PerspectiveImagePreRenderer
             gos.finish();
             gos.close();
             //delete the original file
-//            File file = new File(filePath);
-//            file.delete();
+            File file = new File(filePath);
+            file.delete();
         }
         catch (IOException e)
         {
