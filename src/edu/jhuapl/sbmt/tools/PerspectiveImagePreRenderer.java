@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import vtk.vtkPolyData;
 import vtk.vtkPolyDataWriter;
@@ -122,9 +123,7 @@ public class PerspectiveImagePreRenderer
         if (file.exists() && (reprocess == false)) return;
 
         ServerOffLimbPlaneCalculator calculator = new ServerOffLimbPlaneCalculator(image);
-        calculator.generateOffLimbPlane(image);
-//        OffLimbPlaneCalculator calculator = new OffLimbPlaneCalculator();
-//        calculator.loadOffLimbPlane(image, new Vector3D(image.getSpacecraftPosition()).getNorm());
+        calculator.generateOffLimbPlane(image, new Vector3D(image.getSpacecraftPosition()).getNorm());
         if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
         calculator.saveToDisk(filename);
         compressFile(filename);
