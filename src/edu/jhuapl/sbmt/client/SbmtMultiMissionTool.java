@@ -346,7 +346,7 @@ public class SbmtMultiMissionTool
                     // Kill the splash screen after a suitable pause.
                     try
                     {
-                        Thread.sleep(4000);
+                        Thread.sleep(3500);
                     }
                     catch (InterruptedException e)
                     {
