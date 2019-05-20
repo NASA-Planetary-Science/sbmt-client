@@ -687,7 +687,15 @@ public class SbmtView extends View implements PropertyChangeListener
 				@Override
 				public void retrieve(Metadata state)
 				{
-					initialize();
+					try
+                    {
+                        initialize();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        return;
+                    }
 
 					Version serializedVersion = state.getVersion();
 
