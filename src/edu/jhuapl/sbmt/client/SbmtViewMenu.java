@@ -84,7 +84,7 @@ public class SbmtViewMenu extends ViewMenu
         config.addModelAccessibilityListener(state -> {
             try
             {
-                Configuration.runOnEDTASAP(() -> {
+                Configuration.runAndWaitOnEDT(() -> {
                     mi.setEnabled(state.isAccessible());
                     setSubMenuEnabledState(SbmtViewMenu.this);
                     // This very top menu should always be enabled.
@@ -93,9 +93,8 @@ public class SbmtViewMenu extends ViewMenu
             }
             catch (Exception e)
             {
-
+                // Don't clutter up the log with this exception.
             }
-
        });
     }
 
