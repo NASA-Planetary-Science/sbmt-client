@@ -294,70 +294,77 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected static void displaySplash(Mission mission) throws InvocationTargetException, InterruptedException
+	protected static void displaySplash(Mission mission)
 	{
-	    Configuration.runOnEDTASAP(() -> {
+	    try
+        {
+            Configuration.runAndWaitOnEDT(() -> {
 
-	        SbmtSplash splash = null;
-	        switch (mission)
-	        {
-	        case APL_INTERNAL:
-	        case PUBLIC_RELEASE:
-	        case STAGE_APL_INTERNAL:
-	        case STAGE_PUBLIC_RELEASE:
-	        case TEST_APL_INTERNAL:
-	        case TEST_PUBLIC_RELEASE:
-	        case NH_DEPLOY:
-	            splash = new SbmtSplash("resources", "splashLogo.png");
-	            break;
-	        case HAYABUSA2_DEV:
-	            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-	            break;
-	        case HAYABUSA2_STAGE:
-	            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-	            break;
-	        case HAYABUSA2_DEPLOY:
-	            splash = new SbmtSplash("resources", "splashLogoHb2.png");
-	            break;
-	        case OSIRIS_REX:
-	        case OSIRIS_REX_DEPLOY:
-	        case OSIRIS_REX_MIRROR_DEPLOY:
-	        case OSIRIS_REX_STAGE:
-	            splash = new SbmtSplash("resources", "splashLogoOrex.png");
-	            break;
-	        default:
-	            throw new AssertionError();
-	        }
+                SbmtSplash splash = null;
+                switch (mission)
+                {
+                case APL_INTERNAL:
+                case PUBLIC_RELEASE:
+                case STAGE_APL_INTERNAL:
+                case STAGE_PUBLIC_RELEASE:
+                case TEST_APL_INTERNAL:
+                case TEST_PUBLIC_RELEASE:
+                case NH_DEPLOY:
+                    splash = new SbmtSplash("resources", "splashLogo.png");
+                    break;
+                case HAYABUSA2_DEV:
+                    splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+                    break;
+                case HAYABUSA2_STAGE:
+                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+                    break;
+                case HAYABUSA2_DEPLOY:
+                    splash = new SbmtSplash("resources", "splashLogoHb2.png");
+                    break;
+                case OSIRIS_REX:
+                case OSIRIS_REX_DEPLOY:
+                case OSIRIS_REX_MIRROR_DEPLOY:
+                case OSIRIS_REX_STAGE:
+                    splash = new SbmtSplash("resources", "splashLogoOrex.png");
+                    break;
+                default:
+                    throw new AssertionError();
+                }
 
-	        splash.setAlwaysOnTop(true);
-	        splash.validate();
-	        splash.setVisible(true);
+                splash.setAlwaysOnTop(true);
+                splash.validate();
+                splash.setVisible(true);
 
-	        if (Console.isEnabled())
-	        {
-	            Console.showStandaloneConsole();
-	        }
+                if (Console.isEnabled())
+                {
+                    Console.showStandaloneConsole();
+                }
 
-	        final SbmtSplash finalSplash = splash;
-	        ExecutorService executor = Executors.newSingleThreadExecutor();
-	        executor.execute(() -> {
-	            // Kill the splash screen after a suitable pause.
-	            try
-	            {
-	                Thread.sleep(5500);
-	            }
-	            catch (InterruptedException e)
-	            {
-	                // Ignore this one.
-	            }
-	            finally
-	            {
-	                EventQueue.invokeLater(() -> {
-	                    finalSplash.setVisible(false);
-	                });
-	            }
-	        });
-	    });
+                final SbmtSplash finalSplash = splash;
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // Kill the splash screen after a suitable pause.
+                    try
+                    {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        // Ignore this one.
+                    }
+                    finally
+                    {
+                        EventQueue.invokeLater(() -> {
+                            finalSplash.setVisible(false);
+                        });
+                    }
+                });
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 	}
 
 	protected static String getOption(String[] args, String option)
@@ -443,7 +450,7 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected void setUpStreams() throws IOException
+	protected void setUpStreams() throws IOException, InvocationTargetException, InterruptedException
 	{
 		if (outputStream != null)
 		{
@@ -475,9 +482,6 @@ public class SbmtMultiMissionTool
 			URL dataRootUrl = Configuration.getDataRootURL();
 			try
 			{
-				// Just try to hit the server itself first.
-				FileCache.refreshUrlInfo(dataRootUrl.toString());
-
 				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
 				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				String parent = new File(jarLocation).getParentFile().getParent();
@@ -487,9 +491,11 @@ public class SbmtMultiMissionTool
 			}
 			catch (NoInternetAccessException e)
 			{
-				e.printStackTrace();
-				FileCache.setOfflineMode(true, Configuration.getCacheDir());
-				JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
+			    e.printStackTrace();
+			    FileCache.setOfflineMode(true, Configuration.getCacheDir());
+			    Configuration.runOnEDT(() -> {
+			        JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
+			    });
 			}
 		}
 	}
