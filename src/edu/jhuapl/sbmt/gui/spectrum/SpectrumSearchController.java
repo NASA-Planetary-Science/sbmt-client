@@ -18,7 +18,6 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -113,7 +112,7 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
     PickEvent lastPickEvent=null;
     protected CheckBoxTree checkBoxTree;
     protected final ISpectralInstrument instrument;
-    SpectraHierarchicalSearchSpecification spectraSpec;
+    SpectraHierarchicalSearchSpecification<?> spectraSpec;
     private PickManager pickManager;
     private boolean isSearchView;
 
@@ -135,15 +134,6 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
         view.setSpectrumPopupMenu(popup);
         view.getSpectrumPopupMenu().addPropertyChangeListener(this);
         spectraSpec = model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification;
-        try
-        {
-            spectraSpec.loadMetadata();
-        }
-        catch (FileNotFoundException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         if (!search)
             initHierarchicalImageSearch(); // only set up hierarchical search on browse pane
@@ -696,10 +686,10 @@ public abstract class SpectrumSearchController implements PropertyChangeListener
                 // Get the selected (camera,filter) pairs
 
                 productsSelected = spectraSpec.getSelectedDatasets();
-                InstrumentMetadata<SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
+                InstrumentMetadata<? extends SearchSpec> instrumentMetadata = spectraSpec.getInstrumentMetadata(instrument.getDisplayName());
 //                ArrayList<ArrayList<String>> specs = spectraSpec.getSpecs();
                 TreeModel tree = spectraSpec.getTreeModel();
-                List<SearchSpec> specs = instrumentMetadata.getSpecs();
+                List<? extends SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
                     String name = tree.getChild(tree.getRoot(), selected).toString();
