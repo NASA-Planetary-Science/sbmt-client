@@ -52,6 +52,7 @@ public class ImageDefaultPicker extends DefaultPicker
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
+    private String distanceStr;
 
     public ImageDefaultPicker(
             Renderer renderer,
@@ -298,7 +299,7 @@ public class ImageDefaultPicker extends DefaultPicker
                 cameraPos[0]*cameraPos[0] +
                 cameraPos[1]*cameraPos[1] +
                 cameraPos[2]*cameraPos[2]);
-        String distanceStr = decimalFormatter.format(distance);
+        distanceStr = decimalFormatter.format(distance);
         if (distanceStr.length() == 5)
             distanceStr = "  " + distanceStr;
         else if (distanceStr.length() == 6)
@@ -306,7 +307,33 @@ public class ImageDefaultPicker extends DefaultPicker
         distanceStr += " km";
 
         int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
-        String pixelResolutionString = "";
+        updateStatusBar(pickSucceeded, modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+    }
+
+    private void updateStatusBar(double scaleBarWidthInKm)
+    {
+    	updateStatusBar(1, scaleBarWidthInKm);
+    }
+
+    private void updateStatusBar(int pickSucceeded, double scaleBarWidthInKm)
+    {
+    	if (distanceStr == null)
+    	{
+    		vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
+            double[] cameraPos = activeCamera.GetPosition();
+            double distance = Math.sqrt(
+                    cameraPos[0]*cameraPos[0] +
+                    cameraPos[1]*cameraPos[1] +
+                    cameraPos[2]*cameraPos[2]);
+            distanceStr = decimalFormatter.format(distance);
+            if (distanceStr.length() == 5)
+                distanceStr = "  " + distanceStr;
+            else if (distanceStr.length() == 6)
+                distanceStr = " " + distanceStr;
+            distanceStr += " km";
+    	}
+
+    	String pixelResolutionString = "";
         if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() > 0)
         {
 	        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() < 1.0)
@@ -446,7 +473,15 @@ public class ImageDefaultPicker extends DefaultPicker
     {
         double sizeOfPixel = computeSizeOfPixel();
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
-        smallBodyModel.updateScaleBarValue(sizeOfPixel);
+        smallBodyModel.updateScaleBarValue(sizeOfPixel, new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				updateStatusBar(modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+			}
+		});
     }
 
     public void updateScaleBarPosition()
