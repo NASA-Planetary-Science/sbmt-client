@@ -91,9 +91,12 @@ public class SbmtRunnable implements Runnable
                         if (!isCancelled())
                         {
                             FileCache.showDotsForFiles(false);
+                            FileCache.instance().startAccessMonitor();
+
                             frame.pack();
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
+
                             Console.hideConsole();
                             Console.setDefaultLocation(frame);
                         }
