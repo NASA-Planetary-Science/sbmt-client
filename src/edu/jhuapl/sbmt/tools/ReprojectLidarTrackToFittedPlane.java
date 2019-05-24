@@ -7,7 +7,7 @@ import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 /**
  * This program takes a lidar track, fits a plane through it and reorients the track into
@@ -41,7 +41,7 @@ public class ReprojectLidarTrackToFittedPlane
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) SbmtModelFactory.
+        LidarTrackManager trackManager = (LidarTrackManager) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
 
 //        try
