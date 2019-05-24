@@ -359,6 +359,7 @@ public class SbmtMultiMissionTool
                         });
                     }
                 });
+                executor.shutdown();
             });
         }
         catch (Exception e)
