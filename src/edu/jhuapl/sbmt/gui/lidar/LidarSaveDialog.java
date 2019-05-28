@@ -41,7 +41,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 	private final Color failColor = Color.RED.darker();
 
 	// Reference vars
-	private LidarTrackManager refModel;
+	private final LidarTrackManager refModel;
 
 	// GUI vars
 	private JLabel infoL, warnL;
@@ -145,6 +145,7 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 			}
 		}
 
+		setVisible(false);
 	}
 
 	/**
@@ -274,9 +275,9 @@ public class LidarSaveDialog extends JDialog implements ActionListener, ItemEven
 		else if (modeBox.getSelectedItem() == ModeType.Single && unifiedFile.exists() == false)
 			regMsg = "Tracks will be saved to: " + unifiedFile;
 		else if (modeBox.getSelectedItem() == ModeType.Multiple && cntFilesOverwrite > 0)
-			regMsg = "" + cntFilesOverwrite + " files will be overwritten.";
+			regMsg = "" + cntFilesOverwrite + " files will be overwritten in path: " + folder;
 		else if (modeBox.getSelectedItem() == ModeType.Multiple && cntFilesOverwrite == 0)
-			regMsg = "" + trackL.size() + " files will be created.";
+			regMsg = "" + trackL.size() + " files will be saved to path: " + folder;
 
 		warnL.setText(regMsg);
 		if (errMsg != null)
