@@ -29,10 +29,13 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
@@ -489,6 +492,16 @@ public class SbmtMultiMissionTool
 				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
 
 				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+				FileCache.addServerUrlPropertyChangeListener(e -> {
+				    if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
+				    {
+				        DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+				        if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+				        {
+				            Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+				        }
+				    }
+				});
 			}
 			catch (NoInternetAccessException e)
 			{
