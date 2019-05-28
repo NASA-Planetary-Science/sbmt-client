@@ -86,7 +86,7 @@ public class LidarBrowsePanel extends JPanel implements ListSelectionListener
 
     protected DownloadableFileState getDataState()
     {
-        return FileCache.instance().query(lidarModel.getBrowseFileResourcePath()).getState();
+        return FileCache.instance().query(lidarModel.getBrowseFileResourcePath(), false);
     }
 
     public LidarBrowsePanel(

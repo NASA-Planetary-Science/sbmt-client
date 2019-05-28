@@ -53,7 +53,7 @@ public class DtmBrowseModel
 		String dtmId = smallBodyViewConfig.dtmBrowseDataSourceMap.get("Default");
         if (dtmId == null) return;
 
-        DownloadableFileState fileState = FileCache.instance().query(dtmId).getState();
+        DownloadableFileState fileState = FileCache.instance().query(dtmId, false);
         if (fileState.isAccessible())
         {
             is = new FileInputStream(FileCache.getFileFromServer(smallBodyViewConfig.dtmBrowseDataSourceMap.get(sourceName)));
