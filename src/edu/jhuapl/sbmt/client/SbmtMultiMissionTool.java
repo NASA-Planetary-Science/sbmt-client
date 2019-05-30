@@ -499,6 +499,7 @@ public class SbmtMultiMissionTool
 				        if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
 				        {
 				            Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+				            FileCache.instance().queryAllInBackground(true);
 				        }
 				    }
 				});
