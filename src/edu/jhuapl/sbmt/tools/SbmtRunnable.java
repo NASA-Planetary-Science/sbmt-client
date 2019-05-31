@@ -112,7 +112,7 @@ public class SbmtRunnable implements Runnable
 			throwable.printStackTrace();
 			System.err.println("\nThe SBMT had a serious error during launch. Please review messages above for more information.");
 			System.err.println("\nTry restarting the tool. Please report persistent launch problems to sbmt@jhuapl.edu.");
-			System.err.println("\nNote that the SBMT requires an internet connection in order to download built-in model data.");
+			System.err.println("\nNote that the SBMT requires an internet connection to download standard model data from the server.");
 			try
             {
                 Configuration.runAndWaitOnEDT(() -> {
