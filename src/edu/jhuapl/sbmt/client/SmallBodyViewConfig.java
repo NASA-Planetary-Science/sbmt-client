@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
@@ -15,7 +14,6 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
-import edu.jhuapl.saavtk.util.DownloadableFileManager.StateListener;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
@@ -7020,16 +7018,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public boolean isAccessible()
     {
         return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
-    }
-
-    @Override
-    public void addModelAccessibilityListener(StateListener listener)
-    {
-        Preconditions.checkNotNull(listener);
-
-//        String modelFile = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
-//        FileCache.instance().addStateListener(modelFile, listener);
-        FileCache.instance().addStateListener(getShapeModelFileNames()[0], listener);
     }
 
     @Override
