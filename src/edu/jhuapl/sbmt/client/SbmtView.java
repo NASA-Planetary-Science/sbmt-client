@@ -65,7 +65,7 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
+import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
@@ -81,7 +81,7 @@ import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
@@ -264,7 +264,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
 		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
-		allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
+		allModels.put(ModelNames.TRACKS, new LidarTrackManager(smallBodyModel));
 		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM, demCollection);
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
@@ -348,9 +348,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasLidarData)
 		{
-			LidarSearchDataCollection lidarSearch = (LidarSearchDataCollection) getModel(ModelNames.LIDAR_SEARCH);
-			PopupMenu popupMenu = new LidarPopupMenu(lidarSearch, getRenderer());
-			registerPopup(lidarSearch, popupMenu);
+			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
+			PopupMenu popupMenu = new LidarPopupMenu(tmpTrackManager, getRenderer());
+			registerPopup(tmpTrackManager, popupMenu);
 		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
@@ -511,9 +511,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			// Add the "lidar tracks" tab
 			ModelManager tmpModelManager = getModelManager();
-			LidarSearchDataCollection tmpLidarModel = (LidarSearchDataCollection) tmpModelManager.getModel(ModelNames.TRACKS);
-			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpLidarModel);
-			LidarListPanel tmpLidarListPanel = new LidarListPanel(tmpModelManager, tmpLidarModel, getPickManager(), getRenderer());
+			LidarTrackManager tmpTrackManager = (LidarTrackManager)tmpModelManager.getModel(ModelNames.TRACKS);
+			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpTrackManager);
+			LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpModelManager, tmpTrackManager, getPickManager(), getRenderer());
 			JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
 			tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
 			tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");

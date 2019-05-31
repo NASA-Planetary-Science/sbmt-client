@@ -19,8 +19,8 @@ import edu.jhuapl.saavtk.pick.EditMode;
 import edu.jhuapl.saavtk.pick.PickUtilEx;
 import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Track;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 
 /**
  * Class which provides the functionality that enables a user to translate a
@@ -35,7 +35,7 @@ public class LidarShiftPicker extends Picker
 	// Reference vars
 	private ModelManager refModelManager;
 	private PolyhedralModel refSmallBodyModel;
-	private LidarSearchDataCollection refLidarModel;
+	private LidarTrackManager refTrackManager;
 	private vtkJoglPanelComponent refRenWin;
 
 	// VTK vars
@@ -46,15 +46,15 @@ public class LidarShiftPicker extends Picker
 	private EditMode currEditMode;
 	private Vector3D origPt;
 
-	public LidarShiftPicker(Renderer renderer, ModelManager modelManager, LidarSearchDataCollection lidarModel)
+	public LidarShiftPicker(Renderer aRenderer, ModelManager aModelManager, LidarTrackManager aTrackManager)
 	{
-		refModelManager = modelManager;
-		refSmallBodyModel = (PolyhedralModel) modelManager.getPolyhedralModel();
-		refLidarModel = lidarModel;
-		refRenWin = renderer.getRenderWindowPanel();
+		refModelManager = aModelManager;
+		refSmallBodyModel = (PolyhedralModel) aModelManager.getPolyhedralModel();
+		refTrackManager = aTrackManager;
+		refRenWin = aRenderer.getRenderWindowPanel();
 
 		smallBodyPicker = PickUtilEx.formSmallBodyPicker(refSmallBodyModel);
-		pointPicker = PickUtilEx.formStructurePicker(lidarModel.getProps());
+		pointPicker = PickUtilEx.formStructurePicker(aTrackManager.getProps());
 
 		currEditMode = EditMode.CLICKABLE;
 		origPt = null;
@@ -105,7 +105,7 @@ public class LidarShiftPicker extends Picker
 		// Retrieve the position of the selected LidarPoint
 		vtkActor tmpActor = pointPicker.GetActor();
 		int tmpCellId = pointPicker.GetCellId();
-		LidarPoint tmpLP = refLidarModel.getLidarPointFromVtkPick(tmpActor, tmpCellId);
+		LidarPoint tmpLP = refTrackManager.getLidarPointFromVtkPick(tmpActor, tmpCellId);
 		if (tmpLP == null)
 			return;
 
@@ -142,9 +142,9 @@ public class LidarShiftPicker extends Picker
 
 		// Perform the translation
 		double[] currPt = smallBodyPicker.GetPickPosition();
-		List<Track> tmpL = refLidarModel.getSelectedTracks();
+		List<LidarTrack> tmpL = refTrackManager.getSelectedItems();
 		Vector3D tmpVect = new Vector3D(currPt[0] - origPt.getX(), currPt[1] - origPt.getY(), currPt[2] - origPt.getZ());
-		refLidarModel.setTranslation(tmpL, tmpVect);
+		refTrackManager.setTranslation(tmpL, tmpVect);
 	}
 
 	@Override

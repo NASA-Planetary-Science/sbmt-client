@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.tools;
 import java.io.File;
 import java.util.TreeSet;
 
+import edu.jhuapl.saavtk.model.LidarDataSource;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -16,7 +17,10 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.service.PointInDEMChecker;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarFileUtil;
+import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
+import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 public class SearchLidarDataInsideMaplet
@@ -104,7 +108,7 @@ public class SearchLidarDataInsideMaplet
 
         SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.EROS, ShapeModelType.GASKELL);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(config);
-        LidarSearchDataCollection lidarModel = (LidarSearchDataCollection) SbmtModelFactory.
+        LidarTrackManager trackManager = (LidarTrackManager) SbmtModelFactory.
                 createLidarModels(smallBodyModel).get(ModelNames.LIDAR_SEARCH);
         AbstractEllipsePolygonModel selectionModel = new CircleSelectionModel(smallBodyModel);
 
@@ -114,19 +118,17 @@ public class SearchLidarDataInsideMaplet
 
         TreeSet<Integer> cubeList = smallBodyModel.getIntersectingCubes(new BoundingBox(region.interiorPolyData.GetBounds()));
 
-        String source = (String)config.lidarSearchDataSourceMap.keySet().toArray()[0];
+        String name = (String)config.lidarSearchDataSourceMap.keySet().toArray()[0];
+        String path = (String)config.lidarSearchDataSourceMap.values().toArray()[0];
         try
         {
-            lidarModel.setLidarData(
-                    source,
-                    startDate,
-                    endDate,
-                    cubeList,
-                    new PointInDEMChecker(dem, minDistanceFromBoundary),
-                    timeSeparationBetweenTracks,
-                    minTrackLength);
+            LidarDataSource tmpDataSource = new LidarDataSource(name, path);
+            LidarSearchParms tmpSearchParms = new LidarSearchParms(tmpDataSource, startDate, endDate, Double.NaN, Double.NaN,
+				    timeSeparationBetweenTracks, minTrackLength, cubeList);
+            LidarQueryUtil.executeQueryClassic(trackManager, tmpSearchParms,
+                new PointInDEMChecker(dem, minDistanceFromBoundary));
 
-            lidarModel.saveAllVisibleTracksToFolder(outputFolder, false);
+            LidarFileUtil.saveTracksToFolder(trackManager, outputFolder, trackManager.getAllItems(), "track", false);
         }
         catch (Exception e)
         {
