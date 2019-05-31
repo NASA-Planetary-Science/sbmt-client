@@ -272,17 +272,14 @@ public class SbmtModelFactory
             {
                 result = new Itokawa(config);
             }
-            else if (ShapeModelBody.TEMPEL_1 == name)
-            {
-                String[] names = {
-                        name + " low"
-                };
-                String[] paths = {
-                        config.rootDirOnServer + "/ver64q.vtk.gz",
-                };
-
-                result = new SimpleSmallBody(config, names, paths);
-            }
+//            else if (ShapeModelBody.TEMPEL_1 == name)
+//            {
+//                String[] names = {
+//                        name + " low"
+//                };
+//
+//                result = new SimpleSmallBody(config, names);
+//            }
             else if (ShapeModelBody.RQ36 == name)
             {
                 if (config.version.equals("V4"))
@@ -315,7 +312,7 @@ public class SbmtModelFactory
                             config.rootDirOnServer + "/ver512q.vtk.gz"
                     };
 
-                    result = new SimpleSmallBody(config, names, paths);
+                    result = new SimpleSmallBody(config, names);
                 }
             }
         }
