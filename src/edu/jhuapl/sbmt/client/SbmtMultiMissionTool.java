@@ -32,7 +32,6 @@ import edu.jhuapl.saavtk.util.Debug;
 import edu.jhuapl.saavtk.util.DownloadableFileInfo;
 import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
@@ -481,38 +480,34 @@ public class SbmtMultiMissionTool
 
 	protected void setUpAuthentication()
 	{
-		if (enableAuthentication)
-		{
-			URL dataRootUrl = Configuration.getDataRootURL();
-			try
-			{
-				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
-				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String parent = new File(jarLocation).getParentFile().getParent();
-				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
+	    if (enableAuthentication)
+	    {
+	        URL dataRootUrl = Configuration.getDataRootURL();
+	        // Set up two locations to check for passwords: in the installed location or in the user's home directory.
+	        String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	        String parent = new File(jarLocation).getParentFile().getParent();
+	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
 
-				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
-				FileCache.addServerUrlPropertyChangeListener(e -> {
-				    if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
-				    {
-				        DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
-				        if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
-				        {
-				            Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
-				            FileCache.instance().queryAllInBackground(true);
-				        }
-				    }
-				});
-			}
-			catch (NoInternetAccessException e)
-			{
-			    e.printStackTrace();
-			    FileCache.setOfflineMode(true, Configuration.getCacheDir());
-			    Configuration.runOnEDT(() -> {
-			        JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
-			    });
-			}
-		}
+	        Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+	        FileCache.addServerUrlPropertyChangeListener(e -> {
+	            if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
+	            {
+	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+	                {
+	                    Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+	                    FileCache.instance().queryAllInBackground(true);
+	                }
+	            }
+	        });
+	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
+	        {
+	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
+	            Configuration.runOnEDT(() -> {
+	                JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
+	            });
+	        }
+	    }
 	}
 
 	public static void main(String[] args)
