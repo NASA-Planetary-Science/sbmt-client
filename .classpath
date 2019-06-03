@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/drmaa.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
