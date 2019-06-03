@@ -11,15 +11,15 @@
 package edu.jhuapl.sbmt.gui.lidar;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
-import edu.jhuapl.saavtk.model.LidarDatasourceInfo;
+import edu.jhuapl.saavtk.model.LidarDataSource;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
@@ -48,8 +48,8 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void initializeList()
     {
         ((DefaultListModel)lidarDatasourceList.getModel()).clear();
-        List<LidarDatasourceInfo> list = modelManager.getPolyhedralModel().getLidarDasourceInfoList();
-        for (LidarDatasourceInfo info : list)
+        List<LidarDataSource> list = modelManager.getPolyhedralModel().getLidarDataSourceList();
+        for (LidarDataSource info : list)
             ((DefaultListModel)lidarDatasourceList.getModel()).addElement(info);
     }
 
@@ -74,10 +74,10 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
         for (int i=0; i<cellDataListModel.size(); ++i)
         {
-            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)cellDataListModel.get(i);
+            LidarDataSource lidarDatasourceInfo = (LidarDataSource)cellDataListModel.get(i);
 
-            lidarDatasourcePath += lidarDatasourceInfo.path;
-            lidarDatasourceName += lidarDatasourceInfo.name;
+            lidarDatasourcePath += lidarDatasourceInfo.getPath();
+            lidarDatasourceName += lidarDatasourceInfo.getName();
 
             if (i < cellDataListModel.size()-1)
             {
@@ -94,13 +94,13 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         configMap.put(newMap);
     }
 
-    private void saveLidarDatasourceData(int index, LidarDatasourceInfo oldLidarDatasourceInfo, LidarDatasourceInfo newLidarDatasourceInfo)
+    private void saveLidarDatasourceData(int index, LidarDataSource oldLidarDatasourceInfo, LidarDataSource newLidarDatasourceInfo)
     {
         String uuid = UUID.randomUUID().toString();
 
         // If File is the same as the old File,
         // that means we are in edit mode and and the user did not change to a new file.
-        if (oldLidarDatasourceInfo == null || !newLidarDatasourceInfo.path.equals(oldLidarDatasourceInfo.path))
+        if (oldLidarDatasourceInfo == null || !newLidarDatasourceInfo.getPath().equals(oldLidarDatasourceInfo.getPath()))
         {
         }
 
@@ -124,7 +124,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
 //            LidarDatasourceInfo lidarDatasourceInfo = (LidarDatasourceInfo)((DefaultListModel)lidarDatasourceList.getModel()).get(index);
 //            String filename = getCustomDataFolder() + File.separator + lidarDatasourceInfo.path;
 //            new File(filename).delete();
-            modelManager.getPolyhedralModel().removeCustomLidarDatasource(index);
+            modelManager.getPolyhedralModel().removeCustomLidarDataSource(index);
             ((DefaultListModel)lidarDatasourceList.getModel()).remove(index);
             updateConfigFile();
         }
@@ -243,9 +243,9 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         try
         {
-            LidarDatasourceInfo lidarDatasourceInfo = new LidarDatasourceInfo();
+            LidarDataSource lidarDatasourceInfo = new LidarDataSource("", "");
             CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), false);
-            dialog.setLidarDatasourceInfo(lidarDatasourceInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
+            dialog.setLidarDatasourceInfo(lidarDatasourceInfo);
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
@@ -254,7 +254,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
             {
                 lidarDatasourceInfo = dialog.getLidarDatasourceInfo();
                 saveLidarDatasourceData(((DefaultListModel)lidarDatasourceList.getModel()).getSize(), null, lidarDatasourceInfo);
-                modelManager.getPolyhedralModel().addCustomLidarDatasource(lidarDatasourceInfo);
+                modelManager.getPolyhedralModel().addCustomLidarDataSource(lidarDatasourceInfo);
             }
         }
         catch (IOException e)
@@ -278,19 +278,19 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
             if (selectedItem >= 0)
             {
                 DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
-                LidarDatasourceInfo oldLidarDatasourceInfo = (LidarDatasourceInfo)cellDataListModel.get(selectedItem);
+                LidarDataSource oldLidarDatasourceInfo = (LidarDataSource)cellDataListModel.get(selectedItem);
 
                 CustomLidarDataImporterDialog dialog = new CustomLidarDataImporterDialog(JOptionPane.getFrameForComponent(this), true);
-                dialog.setLidarDatasourceInfo(oldLidarDatasourceInfo, modelManager.getPolyhedralModel().getSmallBodyPolyData().GetNumberOfCells());
+                dialog.setLidarDatasourceInfo(oldLidarDatasourceInfo);
                 dialog.setLocationRelativeTo(this);
                 dialog.setVisible(true);
 
                 // If user clicks okay replace item in list
                 if (dialog.getOkayPressed())
                 {
-                    LidarDatasourceInfo cellDataInfo = dialog.getLidarDatasourceInfo();
+                    LidarDataSource cellDataInfo = dialog.getLidarDatasourceInfo();
                     saveLidarDatasourceData(selectedItem, oldLidarDatasourceInfo, cellDataInfo);
-                    modelManager.getPolyhedralModel().setCustomLidarDatasource(selectedItem, cellDataInfo);
+                    modelManager.getPolyhedralModel().setCustomLidarDataSource(selectedItem, cellDataInfo);
                 }
             }
         }
@@ -309,7 +309,7 @@ public class CustomLidarDataDialog extends javax.swing.JDialog {
         if (selectedItem >= 0)
         {
             DefaultListModel cellDataListModel = (DefaultListModel)lidarDatasourceList.getModel();
-            LidarDatasourceInfo cellDataInfo = (LidarDatasourceInfo)cellDataListModel.get(selectedItem);
+            LidarDataSource cellDataInfo = (LidarDataSource)cellDataListModel.get(selectedItem);
             editButton.setEnabled(true);
             deleteButton.setEnabled(true);
         }

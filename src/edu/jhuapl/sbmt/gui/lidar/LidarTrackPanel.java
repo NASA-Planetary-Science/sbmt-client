@@ -2,18 +2,13 @@ package edu.jhuapl.sbmt.gui.lidar;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -26,17 +21,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-
-import com.google.common.collect.Sets;
-import com.google.common.primitives.Ints;
 
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.ColorCellRenderer;
@@ -50,13 +38,27 @@ import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManagerListener;
 import edu.jhuapl.saavtk.pick.PickUtil;
 import edu.jhuapl.saavtk.pick.Picker;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Track;
+import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
+import edu.jhuapl.sbmt.model.lidar.LidarGeoUtil;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 
+import glum.gui.misc.BooleanCellEditor;
+import glum.gui.misc.BooleanCellRenderer;
+import glum.gui.panel.itemList.ItemHandler;
+import glum.gui.panel.itemList.ItemListPanel;
+import glum.gui.panel.itemList.ItemProcessor;
+import glum.gui.panel.itemList.query.QueryComposer;
+import glum.gui.table.NumberRenderer;
+import glum.gui.table.PrePendRenderer;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
+import glum.item.ItemGroup;
+import glum.item.ItemManagerUtil;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * Panel used to display a list of lidar tracks.
+ * Panel used to display a list of lidar Tracks.
  * <P>
  * The following functionality is supported:
  * <UL>
@@ -64,24 +66,28 @@ import net.miginfocom.swing.MigLayout;
  * <LI>Allow user to show, hide, or remove tracks
  * <LI>Allow user to drag or manually translate tracks
  * </UL>
+ *
+ * @author lopeznr1
  */
-public class LidarListPanel extends JPanel implements ActionListener, ChangeListener, ListSelectionListener,
-		PickManagerListener, TableModelListener, TrackEventListener
+public class LidarTrackPanel extends JPanel
+		implements ActionListener, ChangeListener, PickManagerListener, ItemEventListener
 {
 	// Ref vars
-	private LidarSearchDataCollection refModel;
-	private PickManager refPickManager;
+	private final LidarTrackManager refTrackManager;
+	private final PickManager refPickManager;
 
 	// State vars
 	private LidarShiftPicker lidarPicker;
 
 	// GUI vars
 	private LidarTrackTranslateDialog translateDialog;
+	private LidarSaveDialog saveDialog;
 	private LidarPopupMenu lidarPopupMenu;
-	private JTable trackTable;
+	private ItemListPanel<LidarTrack> lidarILP;
 	private JLabel titleL;
 	private JButton selectAllB, selectInvertB, selectNoneB;
-	private JButton hideB, showB, removeB;
+	private JButton hideB, showB;
+	private JButton removeB, saveB;
 	private JButton translateB;
 	private JToggleButton dragB;
 
@@ -92,19 +98,19 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private RadialOffsetChanger radialOffsetChanger;
 	private JSpinner pointSizeSpinner;
 
-	public LidarListPanel(ModelManager aModelManager, LidarSearchDataCollection aModel, PickManager aPickManager,
+	public LidarTrackPanel(ModelManager aModelManager, LidarTrackManager aTrackManager, PickManager aPickManager,
 			Renderer aRenderer)
 	{
-		refModel = aModel;
+		refTrackManager = aTrackManager;
 		refPickManager = aPickManager;
 
-		lidarPicker = new LidarShiftPicker(aRenderer, aModelManager, refModel);
+		lidarPicker = new LidarShiftPicker(aRenderer, aModelManager, refTrackManager);
 
-		lidarPopupMenu = new LidarPopupMenu(refModel, aRenderer);
+		lidarPopupMenu = new LidarPopupMenu(refTrackManager, aRenderer);
 
 		setLayout(new MigLayout());
 
-		// Table area
+		// Table header
 		selectInvertB = new JButton(IconUtil.loadIcon("resources/icons/itemSelectInvert.png"));
 		selectInvertB.addActionListener(this);
 		selectInvertB.setToolTipText("Invert Selection");
@@ -118,54 +124,80 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		selectAllB.setToolTipText("Select All");
 
 		titleL = new JLabel("Tracks: ---");
-		TableModel tableModel = new LidarTableModel(aModel);
-		trackTable = new JTable();
-		trackTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		trackTable.setDefaultRenderer(Color.class, new ColorCellRenderer(false));
-		trackTable.getSelectionModel().addListSelectionListener(this);
-		trackTable.setModel(tableModel);
-		installTrackTableMouseListener();
 		add(titleL, "growx,span,split");
 		add(selectInvertB, "w 24!,h 24!");
 		add(selectNoneB, "w 24!,h 24!");
 		add(selectAllB, "w 24!,h 24!,wrap 2");
-		JScrollPane tableScrollPane = new JScrollPane(trackTable);
-		add(tableScrollPane, "growx,growy,pushx,pushy,span,wrap");
 
-		// Action buttons
-		hideB = new JButton("Hide");
-		hideB.addActionListener(this);
+		// Table Content
+		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
+		tmpComposer.addAttribute(LookUp.IsVisible, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(LookUp.Color, Color.class, "Color", null);
+		tmpComposer.addAttribute(LookUp.Name, String.class, "Track", null);
+		tmpComposer.addAttribute(LookUp.NumPoints, Integer.class, "# pts", null);
+		tmpComposer.addAttribute(LookUp.BegTime, Double.class, "Start Time", null);
+		tmpComposer.addAttribute(LookUp.EndTime, Double.class, "End Time", null);
+		tmpComposer.addAttribute(LookUp.Source, Double.class, "Source", null);
+
+		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
+		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
+		tmpComposer.setRenderer(LookUp.Color, new ColorCellRenderer(false));
+		tmpComposer.setRenderer(LookUp.Name, new PrePendRenderer("Trk "));
+		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
+		tmpComposer.setRenderer(LookUp.BegTime, tmpTimeRenderer);
+		tmpComposer.setRenderer(LookUp.EndTime, tmpTimeRenderer);
+
+		ItemHandler<LidarTrack> tmpIH = new TrackItemHandler(refTrackManager, tmpComposer);
+		ItemProcessor<LidarTrack> tmpIP = refTrackManager;
+		lidarILP = new ItemListPanel<>(tmpIH, tmpIP, true);
+		lidarILP.setSortingEnabled(true);
+
+		JTable lidarTable = lidarILP.getTable();
+		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
+		installTrackTableMouseListener(lidarTable);
+
+		// Action buttons: hide / show
+		hideB = GuiUtil.formButton(this, "Hide");
 		hideB.setToolTipText("Hide Tracks");
-		showB = new JButton("Show");
-		showB.addActionListener(this);
+		showB = GuiUtil.formButton(this, "Show");
 		showB.setToolTipText("Show Tracks");
-		removeB = new JButton("Remove All");
-		removeB.addActionListener(this);
-		removeB.setToolTipText("Remove Tracks");
-		add(hideB, "span,split,sg g1");
-		add(showB, "sg g1");
-		add(removeB, "sg g1,wrap");
 
-		// Translation section
-		translateB = new JButton("Translate Tracks");
-		translateB.addActionListener(this);
+		// Action buttons: drag / translate
 		dragB = new JToggleButton("Drag Tracks");
 		dragB.addActionListener(this);
-		add(dragB, "span,split,sg g2");
-		add(translateB, "sg g2,wrap");
+		translateB = new JButton("Translate Tracks");
+		translateB.addActionListener(this);
+
+		// Action buttons: remove / save
+		removeB = new JButton("Remove Tracks");
+		removeB.addActionListener(this);
+		saveB = new JButton("Save Tracks");
+		saveB.addActionListener(this);
+
+		// Row 1: hideB, dragB, removeB
+		add(hideB, "sg g1,span,split");
+		add(dragB, "gapleft 20,sg g2");
+		add(removeB, "gapleft 20,sg g3,wrap");
+
+		// Row 2: showB, translateB, saveB
+		add(showB, "sg g1,span,split");
+		add(translateB, "gapleft 20,sg g2");
+		add(saveB, "gapleft 20,sg g3,wrap");
 
 		// Radial offset section
 		radialOffsetChanger = new RadialOffsetChanger();
-		radialOffsetChanger.setModel(refModel);
-		radialOffsetChanger.setOffsetScale(refModel.getOffsetScale());
+		radialOffsetChanger.setModel(refTrackManager);
+		radialOffsetChanger.setOffsetScale(LidarGeoUtil.getOffsetScale(refTrackManager));
 
-		add(radialOffsetChanger, "growx,wrap");
+		add(radialOffsetChanger, "growx,span,wrap");
 
 		// Point size section
 		JLabel tmpL = new JLabel("Point Size:");
 		pointSizeSpinner = new JSpinner();
 		pointSizeSpinner.addChangeListener(this);
-		pointSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(2, 1, 100, 1));
+		pointSizeSpinner.setModel(new SpinnerNumberModel(2, 1, 100, 1));
 		add(tmpL, "span,split");
 		add(pointSizeSpinner, "growx,wrap");
 
@@ -191,34 +223,11 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		// Register for events of interest
 		PickUtil.autoDeactivatePickerWhenComponentHidden(refPickManager, lidarPicker, this);
-		tableModel.addTableModelListener(this);
-		refModel.addListener(this);
+		refTrackManager.addListener(this);
 		refPickManager.addListener(this);
 
 		// TODO: This registration should be done by the refModel
-		refModel.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
-	}
-
-	/**
-	 * Sets in the new LidarModel.
-	 * <P>
-	 * Not sure of the functionality in this method. This keeps the same
-	 * functional design as the original defective design in case there are
-	 * undocumented side effects.
-	 * <P>
-	 * TODO: In the future expand on the reasoning or get rid of this very bad
-	 * design.
-	 */
-	@Deprecated
-	public void injectNewLidarModel(LidarSearchDataCollection aLidarModel, Renderer aRenderer)
-	{
-		radialOffsetChanger.setModel(aLidarModel);
-		radialOffsetChanger.setOffsetScale(aLidarModel.getOffsetScale());
-
-		// Reset radialOffsetChanger silently (because all the points are "new")
-		radialOffsetChanger.reset();
-
-		lidarPopupMenu = new LidarPopupMenu(aLidarModel, aRenderer);
+		refTrackManager.handleDefaultPickerManagement(refPickManager.getDefaultPicker(), aModelManager);
 	}
 
 	@Override
@@ -226,23 +235,25 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		Object source = aEvent.getSource();
 
-		List<Track> tmpL = refModel.getSelectedTracks();
+		List<LidarTrack> tmpL = refTrackManager.getSelectedItems();
 		if (source == selectAllB)
-			trackTable.selectAll();
+			ItemManagerUtil.selectAll(refTrackManager);
 		else if (source == selectNoneB)
-			trackTable.clearSelection();
+			ItemManagerUtil.selectNone(refTrackManager);
 		else if (source == selectInvertB)
-			GuiUtil.invertSelection(trackTable, this);
+			ItemManagerUtil.selectInvert(refTrackManager);
 		else if (source == hideB)
-			refModel.setTrackVisible(tmpL, false);
+			refTrackManager.setIsVisible(tmpL, false);
 		else if (source == showB)
-			refModel.setTrackVisible(tmpL, true);
+			refTrackManager.setIsVisible(tmpL, true);
 		else if (source == removeB)
-			refModel.removeAllLidarData();
+			refTrackManager.removeItems(tmpL);
 		else if (source == translateB)
 			doActionTranslate(tmpL);
 		else if (source == dragB)
 			doActionDrag();
+		else if (source == saveB)
+			doActionSave();
 		else if (source == errorModeBox)
 			updateErrorUI();
 		else if (source == showErrorCB)
@@ -253,12 +264,23 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	}
 
 	@Override
-	public void handleTrackEvent(Object aSource, ItemEventType aEventType)
+	public void handleItemEvent(Object aSource, ItemEventType aEventType)
 	{
-		if (aEventType == ItemEventType.ItemsSelected)
-			updateTableSelection();
-		else if (aEventType == ItemEventType.ItemsMutated)
-			trackTable.repaint();
+		if (aEventType == ItemEventType.ItemsChanged)
+		{
+			radialOffsetChanger.setOffset(refTrackManager.getOffset());
+			configureColumnWidths();
+		}
+		else if (aEventType == ItemEventType.ItemsSelected)
+		{
+			List<LidarTrack> pickL = refTrackManager.getSelectedItems();
+
+			LidarTrack tmpTrack = null;
+			if (pickL.size() > 0)
+				tmpTrack = pickL.get(pickL.size() - 1);
+
+			lidarILP.scrollToItem(tmpTrack);
+		}
 
 		updateGui();
 		updateErrorUI();
@@ -275,26 +297,7 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	public void stateChanged(ChangeEvent aEvent)
 	{
 		Number val = (Number) pointSizeSpinner.getValue();
-		refModel.setPointSize(val.intValue());
-	}
-
-	@Override
-	public void tableChanged(TableModelEvent aEvent)
-	{
-		configureColumnWidths();
-	}
-
-	@Override
-	public void valueChanged(ListSelectionEvent aEvent)
-	{
-		// Transform from rows to Tracks
-		int[] idxArr = trackTable.getSelectedRows();
-		List<Track> pickL = new ArrayList<>();
-		for (int aIdx : idxArr)
-			pickL.add(refModel.getTrack(aIdx));
-
-		// Update the model's selection
-		refModel.setSelectedTracks(pickL);
+		refTrackManager.setPointSize(val.intValue());
 	}
 
 	/**
@@ -304,16 +307,16 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	{
 		int maxPts = 99;
 		String sourceStr = "Data Source";
-		for (int aRow = 0; aRow < trackTable.getRowCount(); aRow++)
+		for (LidarTrack aTrack : refTrackManager.getAllItems())
 		{
-			Track tmpTrack = refModel.getTrack(aRow);
-			maxPts = Math.max(maxPts, tmpTrack.getNumberOfPoints());
-			String tmpStr = LidarTableModel.getSourceFileString(tmpTrack);
+			maxPts = Math.max(maxPts, aTrack.getNumberOfPoints());
+			String tmpStr = TrackItemHandler.getSourceFileString(aTrack);
 			if (tmpStr.length() > sourceStr.length())
 				sourceStr = tmpStr;
 		}
 
-		String trackStr = "Trk " + trackTable.getRowCount();
+		JTable tmpTable = lidarILP.getTable();
+		String trackStr = "" + tmpTable.getRowCount();
 		String pointStr = "" + maxPts;
 		String begTimeStr = "9999-88-88T00:00:00.000000";
 		String endTimeStr = "9999-88-88T00:00:00.000000";
@@ -322,10 +325,10 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 		Object[] nomArr = { true, Color.BLACK, trackStr, pointStr, begTimeStr, endTimeStr, sourceStr };
 		for (int aCol = 0; aCol < nomArr.length; aCol++)
 		{
-			TableCellRenderer tmpRenderer = trackTable.getCellRenderer(0, aCol);
-			Component tmpComp = tmpRenderer.getTableCellRendererComponent(trackTable, nomArr[aCol], false, false, 0, aCol);
+			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
+			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0, aCol);
 			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
-			trackTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
+			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
 		}
 	}
 
@@ -340,16 +343,27 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		refPickManager.setActivePicker(targPicker);
 		if (targPicker == null)
-			refModel.setSelectedPoint(null, null);
+			refTrackManager.setSelectedPoint(null, null);
+	}
+
+	/**
+	 * Helper method that handles the save action
+	 */
+	private void doActionSave()
+	{
+		if (saveDialog == null)
+			saveDialog = new LidarSaveDialog(this, refTrackManager);
+
+		saveDialog.setVisible(true);
 	}
 
 	/**
 	 * Helper method that handles the drag action.
 	 */
-	private void doActionTranslate(List<Track> aTrackL)
+	private void doActionTranslate(List<LidarTrack> aTrackL)
 	{
 		if (translateDialog == null)
-			translateDialog = new LidarTrackTranslateDialog(this, refModel);
+			translateDialog = new LidarTrackTranslateDialog(this, refTrackManager);
 
 		translateDialog.setVisible(true);
 	}
@@ -359,22 +373,22 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	 * will allow the user to change the Color associated with the lidar track
 	 * and provide a popup menu.
 	 */
-	private void installTrackTableMouseListener()
+	private void installTrackTableMouseListener(JTable aTable)
 	{
-		trackTable.addMouseListener(new MouseAdapter() {
+		aTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent aEvent)
 			{
 				// Handle the Color customization
-				int row = trackTable.rowAtPoint(aEvent.getPoint());
-				int col = trackTable.columnAtPoint(aEvent.getPoint());
+				int row = aTable.rowAtPoint(aEvent.getPoint());
+				int col = aTable.columnAtPoint(aEvent.getPoint());
 				if (aEvent.getClickCount() == 2 && row >= 0 && col == 1)
 				{
-					Track tmpTrack = refModel.getTrack(row);
-					Color oldColor = tmpTrack.getColor();
-					Color tmpColor = ColorChooser.showColorChooser(JOptionPane.getFrameForComponent(trackTable), oldColor);
+					LidarTrack tmpTrack = refTrackManager.getTrack(row);
+					Color oldColor = refTrackManager.getColor(tmpTrack);
+					Color tmpColor = ColorChooser.showColorChooser(JOptionPane.getFrameForComponent(aTable), oldColor);
 					if (tmpColor != null)
-						refModel.setTrackColor(tmpTrack, tmpColor);
+						refTrackManager.setColor(tmpTrack, tmpColor);
 
 					return;
 				}
@@ -431,23 +445,22 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 
 		// Calculate the error computations and update the relevant display
 		ItemGroup errorMode = (ItemGroup) errorModeBox.getSelectedItem();
-		Set<Track> selectedS = new HashSet<>(refModel.getSelectedTracks());
+		Set<LidarTrack> selectedS = new HashSet<>(refTrackManager.getSelectedItems());
 
 		// Calculate the cumulative track error and number of lidar points
 		double errorSum = 0.0;
 		int cntPoints = 0;
 		int cntTracks = 0;
-		for (int aRow = 0; aRow < trackTable.getRowCount(); aRow++)
+		for (LidarTrack aTrack : refTrackManager.getAllItems())
 		{
 			// Skip over Tracks that we are not interested in
-			Track tmpTrack = refModel.getTrack(aRow);
-			if (errorMode == ItemGroup.Visible && tmpTrack.getIsVisible() == false)
+			if (errorMode == ItemGroup.Visible && refTrackManager.getIsVisible(aTrack) == false)
 				continue;
-			if (errorMode == ItemGroup.Selected && selectedS.contains(tmpTrack) == false)
+			if (errorMode == ItemGroup.Selected && selectedS.contains(aTrack) == false)
 				continue;
 
-			errorSum += refModel.getTrackError(tmpTrack);
-			cntPoints += tmpTrack.getNumberOfPoints();
+			errorSum += refTrackManager.getTrackError(aTrack);
+			cntPoints += aTrack.getNumberOfPoints();
 			cntTracks++;
 		}
 
@@ -471,99 +484,54 @@ public class LidarListPanel extends JPanel implements ActionListener, ChangeList
 	private void updateGui()
 	{
 		// Update various buttons
-		int cntFullTracks = refModel.getNumberOfTracks();
-		boolean isEnabled = cntFullTracks > 0;
+		int cntFullItems = refTrackManager.getAllItems().size();
+		boolean isEnabled = cntFullItems > 0;
 		dragB.setEnabled(isEnabled);
 		selectInvertB.setEnabled(isEnabled);
 
 		int cntFullPoints = 0;
-		for (Track aTrack : refModel.getTracks())
+		for (LidarTrack aTrack : refTrackManager.getAllItems())
 			cntFullPoints += aTrack.getNumberOfPoints();
 
-		List<Track> pickL = refModel.getSelectedTracks();
-		int cntPickTracks = pickL.size();
-		isEnabled = cntPickTracks > 0;
+		List<LidarTrack> pickL = refTrackManager.getSelectedItems();
+		int cntPickItems = pickL.size();
+		isEnabled = cntPickItems > 0;
 		selectNoneB.setEnabled(isEnabled);
 
-		isEnabled = cntFullTracks > 0 && cntPickTracks < cntFullTracks;
+		isEnabled = cntFullItems > 0 && cntPickItems < cntFullItems;
 		selectAllB.setEnabled(isEnabled);
 
-		isEnabled = cntPickTracks > 0;
-//		removeB.setEnabled(isEnabled);
-		translateB.setEnabled(isEnabled);
-		// TODO: Enable state of removeB should be based on cntPickTracks
-		isEnabled = cntFullTracks > 0;
+		isEnabled = cntPickItems > 0;
 		removeB.setEnabled(isEnabled);
+		translateB.setEnabled(isEnabled);
+		saveB.setEnabled(isEnabled);
 
 		int cntPickPoints = 0;
-		int cntShowTracks = 0;
-		for (Track aTrack : pickL)
+		int cntShowItems = 0;
+		for (LidarTrack aTrack : pickL)
 		{
 			cntPickPoints += aTrack.getNumberOfPoints();
-			if (aTrack.getIsVisible() == true)
-				cntShowTracks++;
+			if (refTrackManager.getIsVisible(aTrack) == true)
+				cntShowItems++;
 		}
 
-		isEnabled = cntPickTracks > 0 && cntShowTracks < cntPickTracks;
+		isEnabled = cntPickItems > 0 && cntShowItems < cntPickItems;
 		showB.setEnabled(isEnabled);
 
-		isEnabled = cntPickTracks > 0 && cntShowTracks > 0;
+		isEnabled = cntPickItems > 0 && cntShowItems > 0;
 		hideB.setEnabled(isEnabled);
 
 		// Table title
 		DecimalFormat cntFormat = new DecimalFormat("#,###");
-		String infoStr = "Tracks: " + cntFormat.format(cntFullTracks);
+		String infoStr = "Tracks: " + cntFormat.format(cntFullItems);
 		String helpStr = "Points: " + cntFormat.format(cntFullPoints);
-		if (cntPickTracks > 0)
+		if (cntPickItems > 0)
 		{
-			infoStr += "  (Selected: " + cntFormat.format(cntPickTracks) + ")";
+			infoStr += "  (Selected: " + cntFormat.format(cntPickItems) + ")";
 			helpStr += "  (Selected: " + cntFormat.format(cntPickPoints) + ")";
 		}
 		titleL.setText(infoStr);
 		titleL.setToolTipText(helpStr);
-	}
-
-	/**
-	 * Helper method that will synchronize the table selection to match the
-	 * selected items in the refModel. If new items were selected then the table
-	 * will be scrolled (to the first newly selected row).
-	 */
-	private void updateTableSelection()
-	{
-		// Form a reverse lookup map of Track to index
-		List<Track> fullTrackL = refModel.getTracks();
-		Map<Track, Integer> revLookM = new HashMap<>();
-		for (int aIdx = 0; aIdx < fullTrackL.size(); aIdx++)
-			revLookM.put(fullTrackL.get(aIdx), aIdx);
-
-		int[] idxArr = trackTable.getSelectedRows();
-		List<Integer> oldL = Ints.asList(idxArr);
-		Set<Integer> oldS = new LinkedHashSet<>(oldL);
-
-		List<Integer> newL = new ArrayList<>();
-		for (Track aTrack : refModel.getSelectedTracks())
-			newL.add(revLookM.get(aTrack));
-		Set<Integer> newS = new LinkedHashSet<>(newL);
-
-		// Bail if nothing has changed
-		if (newS.equals(oldS) == true)
-			return;
-
-		// Update the table's selection
-		GuiUtil.setSelection(trackTable, this, newL);
-		trackTable.repaint();
-		updateGui();
-
-		// Bail if there are no new items selected
-		Set<Integer> addS = Sets.difference(newS, oldS);
-		if (addS.size() == 0)
-			return;
-
-		// Ensure the table shows the (newly) selected items
-		int idx = addS.iterator().next();
-		Rectangle cellBounds = trackTable.getCellRect(idx, 0, true);
-		if (cellBounds != null)
-			trackTable.scrollRectToVisible(cellBounds);
 	}
 
 }

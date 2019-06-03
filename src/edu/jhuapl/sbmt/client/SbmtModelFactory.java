@@ -39,16 +39,11 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarHyperTreeSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.OlaLidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.lorri.LorriImage;
 import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
@@ -400,27 +395,20 @@ public class SbmtModelFactory
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
-        if (smallBodyModel.getSmallBodyConfig().getLidarInstrument()==Instrument.LASER)
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new Hayabusa2LidarBrowseDataCollection(smallBodyModel));
-        }
-        else
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
-        }
-        models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
+        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
+        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
         {
             switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
             {
             case MOLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
             case OLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
             case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new Hayabusa2LidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
                 default:
                 	throw new AssertionError();

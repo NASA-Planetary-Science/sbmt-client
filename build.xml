@@ -25,23 +25,23 @@
  	<copy todir="${rootSAAVTKdir}/build/classes/edu/jhuapl/saavtk/data">
  	      <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/data"/>
  	</copy>
- 	
+
  	<copy todir="${rootSAAVTKdir}/build/classes/edu/jhuapl/saavtk/gui/render/toolbar">
  	 	  <fileset dir="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/gui/render/toolbar/">
  			<include name="**/*.png"/>
  	 	  </fileset>
  	</copy>
- 	
+
  	<copy todir="${rootSAAVTKdir}/build/classes/resources/icons">
  	 	  <fileset dir="${rootSAAVTKdir}/src/resources/icons/">
  			<include name="**/*.png"/>
  	 	  </fileset>
  	</copy>
- 	
+
  	<echo>Copying ColorMaps.xml explicitly into release code base - this is a HACK!!!! </echo>
  	<copy file="${rootSAAVTKdir}/src/edu/jhuapl/saavtk/colormap/ColorMaps.xml" tofile="${rootdir}/build/classes/edu/jhuapl/saavtk/colormap/ColorMaps.xml"/>
 
- 	
+
     <javac srcdir="${rootSAAVTKdir}/src"
            destdir="${rootSAAVTKdir}/build/classes"
            debug="off" >
@@ -53,6 +53,7 @@
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/glum-1.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -63,7 +64,7 @@
         <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
         <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
         <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
-        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
 		<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
@@ -132,8 +133,8 @@
       </classpath>
     </javac>
   </target>
-	
-	
+
+
   <target name="compile">
     <echo>$${rootdir}=${rootdir}</echo>
     <echo>RELEASE=${RELEASE}</echo>
@@ -171,6 +172,7 @@
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/glum-1.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
@@ -181,7 +183,7 @@
         <pathelement location="${libDir}/quaqua-7.3.4-filechooser-only.jar"/>
         <pathelement location="${libDir}/quaqua-7.3.4.jar"/>
         <pathelement location="${libDir}/RelativeLayout-v1.0.jar"/>
-        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>  
+        <pathelement location="${libDir}/vtk${vtkVersion}/vtk-${vtkVersion}.jar"/>
         <pathelement location="${libDir}/jogl/gluegen-rt.jar"/>
         <pathelement location="${libDir}/jogl/jogl-all.jar"/>
 		<pathelement location="${libDir}/jogl/gluegen-rt-natives-linux-amd64.jar"/>
@@ -197,7 +199,7 @@
   <target name="jarapl" depends="jarSAAVTK, compile">
     <mkdir dir="${rootdir}/build/jar"/>
     <jar destfile="${rootdir}/build/jar/near-apl.jar" basedir="${rootdir}/build/classes">
-    
+
       <fileset dir="${rootdir}/build/classes">
         <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
@@ -215,16 +217,17 @@
             gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
             guava-13.0.1.jar
+            glum-1.1.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
             jgoodies-common-1.1.1.jar
             jgoodies-looks-2.4.0.jar
-            joda-time-1.6.jar                                            
+            joda-time-1.6.jar
             miglayout-3.7.1-swing.jar
             quaqua-7.3.4-filechooser-only.jar
             quaqua-7.3.4.jar
-            RelativeLayout-v1.0.jar                                            
+            RelativeLayout-v1.0.jar
             vtk-${vtkVersion}.jar
             jogl-all.jar
             gluegen-rt.jar
@@ -299,16 +302,16 @@
             "/>
 
         <attribute name="Main-Class" value="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL"/>
-        
+
       </manifest>
     </jar>
   </target>
 
   <target name="jar" depends="jarSAAVTK, compile">
     <mkdir dir="${rootdir}/build/jar"/>
-    
+
     <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
-    
+
       <fileset dir="${rootdir}/build/classes">
         <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
@@ -317,7 +320,7 @@
         <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL.class"/>
         <include name="edu/jhuapl/sbmt/client/SmallBodyMappingToolAPL$*.class"/>
       </fileset>
-    
+
       <manifest>
         <attribute name="Class-Path" value="commons-io-2.0.jar
         	crucible-settings-3.0.jar
@@ -326,16 +329,17 @@
         	gson-2.8.0.jar
             nom-tam-fits-1.13.1m0.jar
             guava-13.0.1.jar
+            glum-1.1.jar
             Jama-1.0.2.jar
             jcommon-1.0.16.jar
             jfreechart-1.0.13.jar
             jgoodies-common-1.1.1.jar
             jgoodies-looks-2.4.0.jar
-            joda-time-1.6.jar                                            
+            joda-time-1.6.jar
             miglayout-3.7.1-swing.jar
             quaqua-7.3.4-filechooser-only.jar
             quaqua-7.3.4.jar
-            RelativeLayout-v1.0.jar                                            
+            RelativeLayout-v1.0.jar
             vtk-${vtkVersion}.jar
             jogl-all.jar
             gluegen-rt.jar
@@ -425,16 +429,17 @@
                                             gson-2.8.0.jar
                                             nom-tam-fits-1.13.1m0.jar
                                             guava-13.0.1.jar
+                                            glum-1.1.jar
                                             Jama-1.0.2.jar
                                             jcommon-1.0.16.jar
                                             jfreechart-1.0.13.jar
                                             jgoodies-common-1.1.1.jar
                                             jgoodies-looks-2.4.0.jar
-                                            joda-time-1.6.jar                                            
+                                            joda-time-1.6.jar
                                             miglayout-3.7.1-swing.jar
                                             quaqua-7.3.4-filechooser-only.jar
                                             quaqua-7.3.4.jar
-                                            RelativeLayout-v1.0.jar                                            
+                                            RelativeLayout-v1.0.jar
                                             vtk-${vtkVersion}.jar
                                             jogl-all.jar
                                             gluegen-rt.jar
@@ -506,12 +511,12 @@
       </manifest>
     </jar>
   </target>
-	
 
 
 
 
-<!-- Not using this target anymore. Using makefiles instead. 
+
+<!-- Not using this target anymore. Using makefiles instead.
   <target name="generatezip" depends="jar,jarapl">
     <mkdir dir="${rootdir}/build/dist"/>
     <mkdir dir="${rootdir}/build/dist/internal"/>
@@ -556,6 +561,7 @@
     <delete file="${rootlibDir}/gson-2.8.0.jar"/>
     <delete file="${rootlibDir}/nom-tam-fits-1.13.1m0.jar"/>
     <delete file="${rootlibDir}/guava-13.0.1.jar"/>
+    <delete file="${rootlibDir}/glum-1.1.jar"/>
     <delete file="${rootlibDir}/Jama-1.0.2.jar"/>
     <delete file="${rootlibDir}/jcommon-1.0.16.jar"/>
     <delete file="${rootlibDir}/jfreechart-1.0.13.jar"/>
@@ -566,7 +572,7 @@
     <delete file="${rootlibDir}/quaqua-7.3.4-filechooser-only.jar"/>
     <delete file="${rootlibDir}/quaqua-7.3.4.jar"/>
     <delete file="${rootlibDir}/RelativeLayout-v1.0.jar"/>
-    <delete file="${rootlibDir}/vtk-${vtkVersion}.jar"/>  
+    <delete file="${rootlibDir}/vtk-${vtkVersion}.jar"/>
     <delete file="${rootlibDir}/saavtk.jar"/>
     <delete file="${rootlibDir}/near.jar"/>
     <delete>
@@ -578,8 +584,8 @@
     <delete dir="${rootlibDir}/mac64"/>
     <delete dir="${rootlibDir}/linux64"/>
   </target>
-	
-	
+
+
   <target name="runjar" depends="jar">
     <java classname="edu.jhuapl.sbmt.client.SmallBodyMappingToolAPL" fork="true" maxmemory="1024m">
       <!--
@@ -620,6 +626,7 @@
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
         <pathelement location="${libDir}/guava-13.0.1.jar"/>
+        <pathelement location="${libDir}/glum-1.1.jar"/>
         <pathelement location="${libDir}/Jama-1.0.2.jar"/>
         <pathelement location="${libDir}/jcommon-1.0.16.jar"/>
         <pathelement location="${libDir}/jfreechart-1.0.13.jar"/>
