@@ -34,11 +34,8 @@ import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-<<<<<<< HEAD
 import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
-=======
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
->>>>>>> refs/heads/sbmt1dev
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
 import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
