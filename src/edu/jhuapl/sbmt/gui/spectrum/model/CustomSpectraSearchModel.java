@@ -626,7 +626,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         if (!updated)
         {
             if (!(new File(getConfigFilename()).exists())) return;
-            System.out.println("CustomSpectraModel: initializeSpecList: config is " + getConfigFilename());
             FixedMetadata metadata = Serializers.deserialize(new File(getConfigFilename()), "CustomSpectra");
             retrieve(metadata);
         }
@@ -642,7 +641,6 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
         setSpectrumRawResults(tempResults);
 
         fireResultsChanged();
-        System.out.println("CustomSpectraSearchModel: initializeSpecList: num of custom " + customSpectra.size());
         fireResultsCountChanged(customSpectra.size());
     }
 
