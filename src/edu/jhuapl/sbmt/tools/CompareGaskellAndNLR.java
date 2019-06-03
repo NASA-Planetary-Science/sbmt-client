@@ -18,7 +18,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import vtk.vtkObject;
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -27,14 +26,15 @@ import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.PolyDataUtil;
+import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
 import edu.jhuapl.sbmt.model.eros.MSIImage;
 import edu.jhuapl.sbmt.model.image.ImageSource;
-import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection.LidarDataFileSpec;
+import edu.jhuapl.sbmt.model.lidar.LidarBrowseUtil;
+import edu.jhuapl.sbmt.model.lidar.LidarFileSpec;
 import edu.jhuapl.sbmt.util.TimeUtil;
 
 import nom.tam.fits.FitsException;
@@ -557,14 +557,12 @@ public class CompareGaskellAndNLR
         smallBodyModel.setModelResolution(3);
 
         // Load lidar data
-        LidarBrowseDataCollection lidarModel = (LidarBrowseDataCollection) SbmtModelFactory.
-                createLidarModels(smallBodyModel).get(ModelNames.LIDAR_BROWSE);
-
-        List<LidarDataFileSpec> lidarPaths = lidarModel.getAllLidarPaths();
+        BodyViewConfig tmpBodyViewConfig = (BodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        List<LidarFileSpec> lidarPaths = LidarBrowseUtil.loadLidarFileSpecListFor(tmpBodyViewConfig);
         int count = 1;
-        for (LidarDataFileSpec spec : lidarPaths)
+        for (LidarFileSpec spec : lidarPaths)
         {
-            loadPoints(spec.path, config);
+            loadPoints(spec.getPath(), config);
 
             System.out.println("Loaded " + spec + " " + count + "/" + lidarPaths.size());
             ++count;

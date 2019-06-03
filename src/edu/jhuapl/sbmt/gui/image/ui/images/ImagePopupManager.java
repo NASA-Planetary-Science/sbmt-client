@@ -22,7 +22,7 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumWindowManager;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 /**
  * This class is responsible for the creation of popups and for the routing
@@ -64,9 +64,9 @@ public class ImagePopupManager extends PopupManager
         popupMenu = new ImagePopupMenu(modelManager, imageCollection, imageBoundaries, infoPanelManager, spectrumPanelManager, renderer, renderer);
         registerPopup(modelManager.getModel(ModelNames.IMAGES), popupMenu);
 
-        LidarSearchDataCollection tracks = (LidarSearchDataCollection)modelManager.getModel(ModelNames.TRACKS);
-        popupMenu = new LidarPopupMenu(tracks, renderer);
-        registerPopup(tracks, popupMenu);
+        LidarTrackManager trackManager = (LidarTrackManager)modelManager.getModel(ModelNames.TRACKS);
+        popupMenu = new LidarPopupMenu(trackManager, renderer);
+        registerPopup(trackManager, popupMenu);
     }
 
     public PopupMenu getPopup(Model model)

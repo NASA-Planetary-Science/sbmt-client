@@ -22,7 +22,7 @@ mkdir -p $INSTALL_LIB_DIR
 # Generate Run Scripts
 CLASSPATH='$SBMTROOT/lib/near.jar'
 #Need src path for class resources.
-CLASSPATH="$CLASSPATH:\$SBMTROOT/src:\$SBMTROOT/lib/*.jar"
+CLASSPATH="$CLASSPATH:\$SBMTROOT/src:\$SBMTROOT/lib/*"
 
 for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     JAVA_TOOL=`basename $JAVA_TOOL .java`
@@ -48,7 +48,7 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/mac64:$LD_LIBRARY_PATH"'    >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    MEMSIZE=`sysctl hw.memsize | awk '\''{print int($2/1024)}'\''`'                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'elif [ "$(/bin/uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo '    export LD_LIBRARY_PATH="$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"'  >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    export LD_LIBRARY_PATH="/project/nearsdc/software/java/x86_64/latest/jre/lib/amd64:$SBMTROOT/lib:$SBMTROOT/lib/linux64:$LD_LIBRARY_PATH"'  >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 #    echo '    MEMSIZE=`grep MemTotal /proc/meminfo | awk '\''{print $2}'\''`'                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    MEMSIZE="$(/bin/grep MemTotal /proc/meminfo | awk '\''{print $2}'\'')"'              >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'else'                                                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
@@ -61,7 +61,7 @@ for JAVA_TOOL in "$SBMTROOT"/src/edu/jhuapl/sbmt/tools/*.java ; do
     echo 'if [ "$(/bin/uname)" == "Darwin" ]; then'                                                >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/mac64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'elif [ "$(/bin/uname)" == "Linux" ]; then'                                               >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
-    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=$DIR/../lib/linux64" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
+    echo '    /project/nearsdc/software/java/x86_64/latest/bin/java -Xmx${MEMSIZE}K $HEADLESS "-Djava.library.path=/project/nearsdc/software/java/x86_64/latest/jre/lib/amd64:$DIR/../lib/linux64:/opt/ge-GE2011.11-11p1/lib/linux-x64/" -cp "'$CLASSPATH"\" edu.jhuapl.sbmt.tools.$JAVA_TOOL \"\$@\"" >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
     echo 'fi'                                                                                 >> $INSTALL_BIN_DIR/$JAVA_TOOL.sh
 
 

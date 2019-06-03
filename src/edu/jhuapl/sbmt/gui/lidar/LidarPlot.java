@@ -34,271 +34,253 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.sbmt.lidar.LidarPoint;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Track;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrack;
 import edu.jhuapl.sbmt.util.TimeUtil;
-
 
 public class LidarPlot extends JFrame implements ChartMouseListener
 {
-    private LidarSearchDataCollection lidarModel;
-    private XYDataset distanceDataset;
-    private XYDataset timeDataset;
-    private XYSeries distanceDataSeries;
-    private XYSeries timeDataSeries;
-    private XYSeries distanceSelectionSeries;
-    private XYSeries timeSelectionSeries;
-    private List<Double> data;
-    private List<Double> distance;
-    private List<Double> time;
-    private String name;
+	// Ref vars
+	private final LidarTrackManager refModel;
+	private final LidarTrack refTrack;
 
-    public LidarPlot(LidarSearchDataCollection lidarModel,
-            List<Double> data,
-            List<Double> distance,
-            List<Double> time,
-            String name,
-            String units)
-    {
-        this.lidarModel = lidarModel;
-        this.data = data;
-        this.distance = distance;
-        this.time = time;
-        this.name = name;
+	// Plot vars
+	private final List<Double> dataL;
+	private final List<Double> distanceL;
+	private final List<Double> timeL;
+	private final String name;
 
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+	private XYDataset distanceDataset;
+	private XYDataset timeDataset;
+	private XYSeries distanceDataSeries;
+	private XYSeries timeDataSeries;
+	private XYSeries distanceSelectionSeries;
+	private XYSeries timeSelectionSeries;
 
-        JPanel panel = new JPanel(new BorderLayout());
+	public LidarPlot(LidarTrackManager aModel, LidarTrack aTrack, List<Double> aDataL, List<Double> aDistanceL,
+			List<Double> aTimeL, String aName, String aUnits)
+	{
+		refModel = aModel;
+		refTrack = aTrack;
 
-        {
-            distanceSelectionSeries = new XYSeries("Lidar Selection");
-            distanceDataSeries = new XYSeries("Lidar Data");
+		dataL = aDataL;
+		distanceL = aDistanceL;
+		timeL = aTimeL;
+		name = aName;
 
-            distanceDataset = new XYSeriesCollection();
-            ((XYSeriesCollection)distanceDataset).addSeries(distanceSelectionSeries);
-            ((XYSeriesCollection)distanceDataset).addSeries(distanceDataSeries);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-            final JFreeChart chart1 = ChartFactory.createXYLineChart
-            (name + " vs. Distance", "Distance (km)", name + " (" + units + ")",
-                    distanceDataset, PlotOrientation.VERTICAL, false, true, false);
+		JPanel panel = new JPanel(new BorderLayout());
 
-            // add the jfreechart graph
-            ChartPanel chartPanel = new ChartPanel(chart1){
-                @Override
-                public void restoreAutoRangeBounds()
-                {
-                    super.restoreAutoRangeBounds();
-                    // This makes sure when the user auto-range's the plot, it will bracket the
-                    // well with a small margin
-                    ((XYPlot)chart1.getPlot()).getRangeAxis().setRangeWithMargins(
-                            distanceDataSeries.getMinY(), distanceDataSeries.getMaxY());
-                }
-            };
-            chartPanel.setMouseWheelEnabled(true);
-            chartPanel.addChartMouseListener(this);
+		{
+			distanceSelectionSeries = new XYSeries("Lidar Selection");
+			distanceDataSeries = new XYSeries("Lidar Data");
 
-            XYPlot plot = (XYPlot) chart1.getPlot();
-            plot.setDomainPannable(true);
-            plot.setRangePannable(true);
+			distanceDataset = new XYSeriesCollection();
+			((XYSeriesCollection) distanceDataset).addSeries(distanceSelectionSeries);
+			((XYSeriesCollection) distanceDataset).addSeries(distanceDataSeries);
 
-            XYItemRenderer r = plot.getRenderer();
-            if (r instanceof XYLineAndShapeRenderer) {
-                XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-                renderer.setBaseShapesVisible(true);
-                renderer.setBaseShapesFilled(true);
-                renderer.setDrawSeriesLineAsPath(true);
-                renderer.setSeriesPaint(0, Color.BLACK);
-                renderer.setSeriesPaint(1, Color.RED);
-            }
+			final JFreeChart chart1 = ChartFactory.createXYLineChart(name + " vs. Distance", "Distance (km)",
+					name + " (" + aUnits + ")", distanceDataset, PlotOrientation.VERTICAL, false, true, false);
 
-            panel.add(chartPanel, BorderLayout.CENTER);
+			// add the jfreechart graph
+			ChartPanel chartPanel = new ChartPanel(chart1) {
+				@Override
+				public void restoreAutoRangeBounds()
+				{
+					super.restoreAutoRangeBounds();
+					// This makes sure when the user auto-range's the plot, it will
+					// bracket the
+					// well with a small margin
+					((XYPlot) chart1.getPlot()).getRangeAxis().setRangeWithMargins(distanceDataSeries.getMinY(),
+							distanceDataSeries.getMaxY());
+				}
+			};
+			chartPanel.setMouseWheelEnabled(true);
+			chartPanel.addChartMouseListener(this);
 
-            distanceDataSeries.clear();
-            if (data.size() > 0 && distance.size() > 0)
-            {
-                for (int i=0; i<data.size(); ++i)
-                    distanceDataSeries.add(distance.get(i), data.get(i), false);
-            }
-            distanceDataSeries.fireSeriesChanged();
+			XYPlot plot = (XYPlot) chart1.getPlot();
+			plot.setDomainPannable(true);
+			plot.setRangePannable(true);
 
-            plot.getRangeAxis().setRangeWithMargins(distanceDataSeries.getMinY(), distanceDataSeries.getMaxY());
-        }
+			XYItemRenderer r = plot.getRenderer();
+			if (r instanceof XYLineAndShapeRenderer)
+			{
+				XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+				renderer.setBaseShapesVisible(true);
+				renderer.setBaseShapesFilled(true);
+				renderer.setDrawSeriesLineAsPath(true);
+				renderer.setSeriesPaint(0, Color.BLACK);
+				renderer.setSeriesPaint(1, Color.RED);
+			}
 
-        {
-            timeSelectionSeries = new XYSeries("Lidar Selection");
-            timeDataSeries = new XYSeries("Lidar Data");
+			panel.add(chartPanel, BorderLayout.CENTER);
 
-            timeDataset = new XYSeriesCollection();
-            ((XYSeriesCollection)timeDataset).addSeries(timeSelectionSeries);
-            ((XYSeriesCollection)timeDataset).addSeries(timeDataSeries);
+			distanceDataSeries.clear();
+			if (aDataL.size() > 0 && aDistanceL.size() > 0)
+			{
+				for (int i = 0; i < aDataL.size(); ++i)
+					distanceDataSeries.add(aDistanceL.get(i), aDataL.get(i), false);
+			}
+			distanceDataSeries.fireSeriesChanged();
 
-            final JFreeChart chart2 = ChartFactory.createXYLineChart
-                    (name + " vs. Time", "Time (sec)", name + " (" + units + ")",
-                            timeDataset, PlotOrientation.VERTICAL, false, true, false);
+			plot.getRangeAxis().setRangeWithMargins(distanceDataSeries.getMinY(), distanceDataSeries.getMaxY());
+		}
 
-            // add the jfreechart graph
-            ChartPanel chartPanel = new ChartPanel(chart2){
-                @Override
-                public void restoreAutoRangeBounds()
-                {
-                    super.restoreAutoRangeBounds();
-                    // This makes sure when the user auto-range's the plot, it will bracket the
-                    // well with a small margin
-                    ((XYPlot)chart2.getPlot()).getRangeAxis().setRangeWithMargins(
-                            timeDataSeries.getMinY(), timeDataSeries.getMaxY());
-                }
-            };
-            chartPanel.setMouseWheelEnabled(true);
-            chartPanel.addChartMouseListener(this);
+		{
+			timeSelectionSeries = new XYSeries("Lidar Selection");
+			timeDataSeries = new XYSeries("Lidar Data");
 
-            XYPlot plot = (XYPlot) chart2.getPlot();
-            plot.setDomainPannable(true);
-            plot.setRangePannable(true);
+			timeDataset = new XYSeriesCollection();
+			((XYSeriesCollection) timeDataset).addSeries(timeSelectionSeries);
+			((XYSeriesCollection) timeDataset).addSeries(timeDataSeries);
 
-            XYItemRenderer r = plot.getRenderer();
-            if (r instanceof XYLineAndShapeRenderer) {
-                XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-                renderer.setBaseShapesVisible(true);
-                renderer.setBaseShapesFilled(true);
-                renderer.setDrawSeriesLineAsPath(true);
-                renderer.setSeriesPaint(0, Color.BLACK);
-                renderer.setSeriesPaint(1, Color.RED);
-            }
+			final JFreeChart chart2 = ChartFactory.createXYLineChart(name + " vs. Time", "Time (sec)",
+					name + " (" + aUnits + ")", timeDataset, PlotOrientation.VERTICAL, false, true, false);
 
-            panel.add(chartPanel, BorderLayout.SOUTH);
+			// add the jfreechart graph
+			ChartPanel chartPanel = new ChartPanel(chart2) {
+				@Override
+				public void restoreAutoRangeBounds()
+				{
+					super.restoreAutoRangeBounds();
+					// This makes sure when the user auto-range's the plot, it will
+					// bracket the
+					// well with a small margin
+					((XYPlot) chart2.getPlot()).getRangeAxis().setRangeWithMargins(timeDataSeries.getMinY(),
+							timeDataSeries.getMaxY());
+				}
+			};
+			chartPanel.setMouseWheelEnabled(true);
+			chartPanel.addChartMouseListener(this);
 
-            timeDataSeries.clear();
-            if (data.size() > 0 && time.size() > 0)
-            {
-                double t0 = time.get(0);
-                for (int i=0; i<data.size(); ++i)
-                    timeDataSeries.add(time.get(i)-t0, data.get(i), false);
-            }
-            timeDataSeries.fireSeriesChanged();
+			XYPlot plot = (XYPlot) chart2.getPlot();
+			plot.setDomainPannable(true);
+			plot.setRangePannable(true);
 
-            plot.getRangeAxis().setRangeWithMargins(timeDataSeries.getMinY(), timeDataSeries.getMaxY());
-        }
+			XYItemRenderer r = plot.getRenderer();
+			if (r instanceof XYLineAndShapeRenderer)
+			{
+				XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+				renderer.setBaseShapesVisible(true);
+				renderer.setBaseShapesFilled(true);
+				renderer.setDrawSeriesLineAsPath(true);
+				renderer.setSeriesPaint(0, Color.BLACK);
+				renderer.setSeriesPaint(1, Color.RED);
+			}
 
-        add(panel, BorderLayout.CENTER);
+			panel.add(chartPanel, BorderLayout.SOUTH);
 
-        createMenus();
+			timeDataSeries.clear();
+			if (aDataL.size() > 0 && aTimeL.size() > 0)
+			{
+				double t0 = aTimeL.get(0);
+				for (int i = 0; i < aDataL.size(); ++i)
+					timeDataSeries.add(aTimeL.get(i) - t0, aDataL.get(i), false);
+			}
+			timeDataSeries.fireSeriesChanged();
 
-        setTitle(name);
-        pack();
-        setVisible(true);
-    }
+			plot.getRangeAxis().setRangeWithMargins(timeDataSeries.getMinY(), timeDataSeries.getMaxY());
+		}
 
-    private void createMenus()
-    {
-        JMenuBar menuBar = new JMenuBar();
+		add(panel, BorderLayout.CENTER);
 
-        JMenu fileMenu = new JMenu("File");
+		createMenus();
 
-        JMenuItem mi = new JMenuItem(new ExportDataAction());
-        fileMenu.add(mi);
+		String title = "Trk " + aTrack.getId() + ": " + name;
+		setTitle(title);
+		pack();
+		setVisible(true);
+	}
 
-        fileMenu.setMnemonic('F');
-        menuBar.add(fileMenu);
+	private void createMenus()
+	{
+		JMenuBar menuBar = new JMenuBar();
 
-        setJMenuBar(menuBar);
-    }
+		JMenu fileMenu = new JMenu("File");
 
+		JMenuItem mi = new JMenuItem(new ExportDataAction());
+		fileMenu.add(mi);
 
-    public void selectPoint(int ptId)
-    {
-        distanceSelectionSeries.clear();
-        if (ptId >= 0)
-        {
-            distanceSelectionSeries.add(
-                    distanceDataSeries.getX(ptId),
-                    distanceDataSeries.getY(ptId), true);
-        }
+		fileMenu.setMnemonic('F');
+		menuBar.add(fileMenu);
 
+		setJMenuBar(menuBar);
+	}
 
+	public void selectPoint(int ptId)
+	{
+		distanceSelectionSeries.clear();
+		if (ptId >= 0)
+		{
+			distanceSelectionSeries.add(distanceDataSeries.getX(ptId), distanceDataSeries.getY(ptId), true);
+		}
 
-        timeSelectionSeries.clear();
-        if (ptId >= 0)
-        {
-            timeSelectionSeries.add(
-                    timeDataSeries.getX(ptId),
-                    timeDataSeries.getY(ptId), true);
-        }
-    }
+		timeSelectionSeries.clear();
+		if (ptId >= 0)
+		{
+			timeSelectionSeries.add(timeDataSeries.getX(ptId), timeDataSeries.getY(ptId), true);
+		}
+	}
 
-    public void chartMouseClicked(ChartMouseEvent arg0)
-    {
-        ChartEntity entity = arg0.getEntity();
+	@Override
+	public void chartMouseClicked(ChartMouseEvent arg0)
+	{
+		ChartEntity entity = arg0.getEntity();
 
-        if (entity instanceof XYItemEntity)
-        {
-            int id = ((XYItemEntity)entity).getItem();
-            selectPoint(id);
+		if (entity instanceof XYItemEntity)
+		{
+			int id = ((XYItemEntity) entity).getItem();
+			selectPoint(id);
 
-            // Only select the point in the renderer if there is only one track
-            // shown and the number of points in the track is the same as the number
-            // points in this plot. Without these conditions, then the selected
-            // point will be incorrect.
-            if (lidarModel.getNumberOfTracks() == 1 &&
-                    lidarModel.getTrack(0).getNumberOfPoints() == data.size())
-            {
-                Track tmpTrack = lidarModel.getTrack(0);
-                LidarPoint tmpPoint = lidarModel.getPoint(id);
-                lidarModel.setSelectedPoint(tmpPoint, tmpTrack);
-            }
-        }
-        else
-        {
-            distanceSelectionSeries.clear();
-            timeSelectionSeries.clear();
-        }
-    }
+			LidarPoint tmpPoint = refTrack.getPointList().get(id);
+			refModel.setSelectedPoint(tmpPoint, refTrack);
+		}
+		else
+		{
+			distanceSelectionSeries.clear();
+			timeSelectionSeries.clear();
+		}
+	}
 
-    public void chartMouseMoved(ChartMouseEvent arg0)
-    {
-    }
+	@Override
+	public void chartMouseMoved(ChartMouseEvent arg0)
+	{
+	}
 
-    private class ExportDataAction extends AbstractAction
-    {
-        public ExportDataAction()
-        {
-            super("Export Data...");
-        }
+	private class ExportDataAction extends AbstractAction
+	{
+		public ExportDataAction()
+		{
+			super("Export Data...");
+		}
 
-        public void actionPerformed(ActionEvent actionEvent)
-        {
-            File file = CustomFileChooser.showSaveDialog(LidarPlot.this, "Export Data", name + ".txt");
+		public void actionPerformed(ActionEvent actionEvent)
+		{
+			File file = CustomFileChooser.showSaveDialog(LidarPlot.this, "Export Data", name + ".txt");
+			if (file == null)
+				return;
 
-            try
-            {
-                if (file != null)
-                {
-                    FileWriter fstream = new FileWriter(file);
-                    BufferedWriter out = new BufferedWriter(fstream);
+			String newline = System.getProperty("line.separator");
+			try (BufferedWriter out = new BufferedWriter(new FileWriter(file));)
+			{
+				out.write(name + " Distance Time" + newline);
 
-                    String newline = System.getProperty("line.separator");
+				int size = dataL.size();
+				for (int i = 0; i < size; ++i)
+				{
+					out.write(dataL.get(i) + " " + distanceL.get(i) + " " + TimeUtil.et2str(timeL.get(i)) + newline);
+				}
+				out.close();
+			}
+			catch (IOException e1)
+			{
+				JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(LidarPlot.this),
+						"Unable to save file to " + file.getAbsolutePath(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
 
-                    out.write(name + " Distance Time" + newline);
-
-                    int size = data.size();
-                    for (int i=0; i<size; ++i)
-                    {
-                        out.write(data.get(i) + " " +
-                                distance.get(i) + " " +
-                                TimeUtil.et2str(time.get(i)) + newline);
-                    }
-                    out.close();
-                }
-            }
-            catch (IOException e1)
-            {
-                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(LidarPlot.this),
-                        "Unable to save file to " + file.getAbsolutePath(),
-                        "Error Saving File",
-                        JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            }
-
-        }
-    }
+		}
+	}
 
 }
