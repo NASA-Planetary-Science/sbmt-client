@@ -488,14 +488,14 @@ public class SbmtMultiMissionTool
 	        String parent = new File(jarLocation).getParentFile().getParent();
 	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
 
-	        Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
 	        FileCache.addServerUrlPropertyChangeListener(e -> {
 	            if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
 	            {
 	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
 	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
 	                {
-	                    Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
+	                    Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
 	                    FileCache.instance().queryAllInBackground(true);
 	                }
 	            }
