@@ -185,7 +185,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             mapmaker.setMapoutdir(mapoutdir);
             mapmaker.setCacheDir(cacheDir);
             mapmaker.setLowResModelPath(lowResModelPath);
-            mapmaker.runMapmaker();
+            mapmaker.runMapmaker(this);
             mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
