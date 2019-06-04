@@ -48,6 +48,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
         super(c, title, filename);
+        setCancelButtonEnabled(true);
     }
 
 
@@ -148,7 +149,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
         setLabelText("<html>Running Mapmaker<br> </html>");
         setIndeterminate(true);
-        setCancelButtonEnabled(false);
+        setCancelButtonEnabled(true);
         setProgress(1);
 
         Process mapmakerProcess = null;
