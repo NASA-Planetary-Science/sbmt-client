@@ -123,8 +123,8 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 		        String path = lowResPath.getAbsolutePath() + "." + FilenameUtils.getExtension(smallBodyConfig.getShapeModelFileNames()[0]);
 		        mapmakerWorker.setLowResModelPath(new File(path).getAbsolutePath());
 
-		        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
-		        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
+		        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer +  "/DATA");
+		        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + "/MAPFILES");
 		        mapmakerWorker.executeDialog();
 
 		        if (mapmakerWorker.isCancelled())
@@ -164,8 +164,8 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 		        String path = lowResPath.getAbsolutePath() + "." + FilenameUtils.getExtension(smallBodyConfig.getShapeModelFileNames()[0]);
 		        mapmakerWorker.setLowResModelPath(new File(path).getAbsolutePath());
 
-		        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer + File.separator + "DATA");
-		        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + File.separator + "MAPFILES");
+		        mapmakerWorker.setDatadir(smallBodyConfig.rootDirOnServer +  "/DATA");
+		        mapmakerWorker.setMapoutdir(smallBodyConfig.rootDirOnServer + "/MAPFILES");
 		        mapmakerWorker.executeDialog();
 
 		        if (mapmakerWorker.isCancelled())
