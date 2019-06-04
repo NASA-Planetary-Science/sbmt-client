@@ -4,42 +4,57 @@
 
 # Release Notes
 
+### New 
+- Major improvements to the layout of the LIDAR pane, for both browse and search
+- Support for multiple basemaps on the main Body page, with server side support, has been added
+- The startup process of the tool has been streamlined, and it should start much quicker, pushing some tasks to work in the background
+- As part of the above streamlining, SBMT can now detect whether you go on or offline, and update menu items accordingly
+ 
+### Bug fixes
+- A fix in 0.7.5.1 caused the CPU to run high - this has been resolved
+- A difference in reported pixel location and value when certain pointing types were used has been resolved - they should now be consistent across pointing types (e.g. SPICE vs SPC)
+
+### OREx only
+- Server side processing for OLA has been updated - search should be more reliable
+- 2018 models have been removed from SBMT since there are newer, more accurate models to use
+- For the 2 higher resolution models, certain data used to render the image and offlimb footprints (where applicable) have been pre-generated, which should greatly reduce the amount of time it takes to map images on those resolutions.  
+
 ## May 9, 2019 (SBMT-0.7.5.1)
  
 ### Bug fixes
-Custom Plate colorings and Custom images no longer write to the same configuration file (removes an exception seen by some users)
-Save plate data/view statistics in polygons now works properly
-Loading plate colorings then a structures file no longer crashes the tool
-The scalebar on the 3D screen should now update properly as the user zooms in/out
-Various updates to the behavior of the image table (NOTE: There is a known issue where sorting by Date requires 2 clicks of the column; we are investigating)
+- Custom Plate colorings and Custom images no longer write to the same configuration file (removes an exception seen by some users)
+- Save plate data/view statistics in polygons now works properly
+- Loading plate colorings then a structures file no longer crashes the tool
+- The scalebar on the 3D screen should now update properly as the user zooms in/out
+- Various updates to the behavior of the image table (NOTE: There is a known issue where sorting by Date requires 2 clicks of the column; we are investigating)
  
 ### OREx only
-20190207b sumfile update
-Delivery of 20190414 model
+- 20190207b sumfile update
+- Delivery of 20190414 model
 
 ## April 25, 2019 (SBMT-0.7.5)
 
 ### New
-Added ability to save structures when saving state
-Added the ability to sort lists of images, data, and structures by column headers
-Added a properties button to view FITS headers for plate colorings
-Added the ability to sync contrast stretches between portions of images that are on the body and off the limb
-Added ability to customize the color of offlimb image boundaries 
-Improved lidar GUI and features
-Enabled the ability to right click and view options for custom images
+- Added ability to save structures when saving state
+- Added the ability to sort lists of images, data, and structures by column headers
+- Added a properties button to view FITS headers for plate colorings
+- Added the ability to sync contrast stretches between portions of images that are on the body and off the limb
+- Added ability to customize the color of offlimb image boundaries 
+- Improved lidar GUI and features
+- Enabled the ability to right click and view options for custom images
  
 ### Bug fixes
-Fixed a bug that caused the tool to hang on startup when too many restricted models were encountered
-Fixed bug that was not properly saving images in the save state
-Reinstated ability to save plate data within multiple structures
-Fixed a bug that would not allow flip edits to already loaded custom images
-Fixed a bug that caused custom lighting to be removed when an image was unmapped
+- Fixed a bug that caused the tool to hang on startup when too many restricted models were encountered
+- Fixed bug that was not properly saving images in the save state
+- Reinstated ability to save plate data within multiple structures
+- Fixed a bug that would not allow flip edits to already loaded custom images
+- Fixed a bug that caused custom lighting to be removed when an image was unmapped
  
 ### OREx only
-Added a NAVCAM tab
-Fixed a bug that caused an error when performing an OCAMS search
-Fixed a bug that prevented sunward arrow from appearing for OTES and OVIRS spectra
-Added new shape models
+- Added a NAVCAM tab
+- Fixed a bug that caused an error when performing an OCAMS search
+- Fixed a bug that prevented sunward arrow from appearing for OTES and OVIRS spectra
+- Added new shape models
 
 ## March 8, 2019 (SBMT-0.7.4.1)
 

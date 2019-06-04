@@ -10,15 +10,15 @@ START=$2
 STOP=$3
 
 # make directory to store tree and empty if it already exists
-ROOTDIR=/homes/sbmt/workspace/olatest
-#ROOTDIR=/project/sbmt2/prod/bennu/shared/ola/search
+#ROOTDIR=/homes/sbmt/workspace/olatest
+ROOTDIR=/project/sbmt2/prod/bennu/shared/ola/search
 TREEDIR=$ROOTDIR/$NAME.tmp
 mkdir $TREEDIR
 rm -rf $TREEDIR/*
 
 # generate the hypertree
-#/homes/sbmt/workspace/sbmt/misc/scripts/run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator /project/sbmt2/prod/bennu/shared/ola/dataDirList.txt $TREEDIR/ OLA $START $STOP
-/homes/sbmt/workspace/sbmt/misc/scripts/run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator ./dataDirList.txt $TREEDIR/ OLA $START $STOP
+/homes/sbmt/workspace/sbmt/misc/scripts/run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator /project/sbmt2/prod/bennu/shared/ola/dataDirList.txt $TREEDIR/ OLA $START $STOP
+#/homes/sbmt/workspace/sbmt/misc/scripts/run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeGenerator ./dataDirList.txt $TREEDIR/ OLA $START $STOP
 
 #condense the hypertree into a bounds file .spectra
 /homes/sbmt/workspace/sbmt/misc/scripts/run-on-linux.sh edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeCondenser $TREEDIR/
