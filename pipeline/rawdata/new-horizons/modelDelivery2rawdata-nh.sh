@@ -7,24 +7,24 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-deliveredBodyName="2014_MU69"
-bodyName="mu69"
 
 pipelineTop="/project/sbmtpipeline"
 deliveriesTop="/project/sbmtpipeline/deliveries-$missionShortName"
 
 # Usage
-if [ "$#" -lt 4 ]
+if [ "$#" -lt 6 ]
 then
-  echo "Model data usage:  modelDelivered2rawdata-$missionShortName.sh <delivered-model-name> <delivered-version> <processed-model-name> <processing-version>"
+  echo "Model data usage:  modelDelivered2rawdata-$missionShortName.sh <delivered-body-name> <delivered-model-name> <delivered-version> <processed-body-name> <processed-model-name> <processing-version>"
   exit 1
 fi
 
 # Command line parameters
-deliveredModelName=$1
-deliveredVersion=$2
-processingModelName=$3
-processingVersion=$4
+deliveredBodyName=$1
+deliveredModelName=$2
+deliveredVersion=$3
+processingBodyName=$4
+processingModelName=$5
+processingVersion=$6
 
 echo "Delivered version: " $deliveredVersion
 echo "Delivered model name: " $deliveredModelName
@@ -39,7 +39,7 @@ importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
 srcTop="$deliveriesTop/$deliveredBodyName/$deliveredVersion"
-destTop="$rawTop/$bodyName/$processingVersion"
+destTop="$rawTop/$processingBodyName/$processingVersion"
 
 releaseDir="$destTop"
 

@@ -7,19 +7,19 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-bodyName="mu69"
 
 # Usage
-if [ "$#" -lt 3 ]
+if [ "$#" -lt 4 ]
 then
-  echo "Model data usage:  rawdata2processed-$missionShortName.sh <model-name> <processing-version> <processing-model-label>"
+  echo "Model data usage:  rawdata2processed-$missionShortName.sh <body-name> <model-name> <processing-version> <processing-model-label>"
   exit 1
 fi
 
 # Command line parameters
-rawdataModelName=$1
-processingVersion=$2
-processingModelLabel=$3
+bodyName=$1
+rawdataModelName=$2
+processingVersion=$3
+processingModelLabel=$4
 processingModelName=$rawdataModelName
 
 if [ $processingModelName = "shared" ]

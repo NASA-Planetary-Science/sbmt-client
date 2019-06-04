@@ -7,18 +7,18 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-bodyName="mu69"
 
 # Usage
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 3 ]
 then
-  echo "Model data usage:  modelProcessed2deployed-$missionShortName.sh <model-name> <processing-version>"
+  echo "Model data usage:  modelProcessed2deployed-$missionShortName.sh <body-name> <model-name> <processing-version>"
   exit 1
 fi
 
 # Command line parameters
-processingModelName=$1
-processingVersion=$2
+processingBodyName=$1
+processingModelName=$2
+processingVersion=$3
 
 echo "Processing Model Name: " $processingModelName
 echo "Processing Version: " $processingVersion
@@ -29,16 +29,16 @@ rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
 deployedTop="/project/sbmt2/sbmt/data/bodies"
-testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$bodyName"
+testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$processingBodyName"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
-srcTop="$processedTop/$bodyName"
-destTop="$deployedTop/$bodyName"
+srcTop="$processedTop/$processingBodyName"
+destTop="$deployedTop/$processingBodyName"
 
-logDir="$rawdataTop/$bodyName/$processingVersion/logs"
+logDir="$rawdataTop/$processingBodyName/$processingVersion/logs"
 log="$logDir/processed2deployed.log"
 
 #-------------------------------------------------------------------------------
