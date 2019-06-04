@@ -105,9 +105,9 @@ createDirIfNecessary $destTop/$processingModelName/shape
 doRsync $srcTop/$deliveredModelName/aamanifest.txt $destTop/$processingModelName/aamanifest.txt
 
 # Define a series of directories to copy
-declare -a dirsToCopy=("coloring" "lorri/sumfiles")
+declare -a dirsToCopy=("coloring" "lorri/sumfiles" "lorri/infofiles" "leisa/sumfiles" "leisa/infofiles" "mvic/sumfiles" "mvic/infofiles")
 # Define a series of specific files to copy
-declare -a filesToCopy=("lorri/make_sumfiles.in")
+declare -a filesToCopy=("lorri/make_sumfiles.in" "lorri/imagelist-info.txt" "leisa/make_sumfiles.in" "leisa/imagelist-info.txt" "mvic/make_sumfiles.in" "mvic/imagelist-info.txt")
 
 # copy the shape model
 doRsyncDir $srcTop/$deliveredModelName/shape $destTop/$processingModelName/shape
