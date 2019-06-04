@@ -158,7 +158,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         {
 //            File file = FileCache.getFileFromServer(this.getFileDownloaded());
 //            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
-
+        	System.out.println("MapmakerRemoteSwingWorker: doInBackground: setting up mapmaker remote");
             MapMakerRemote mapmaker = new MapMakerRemote();
             mapmaker.setRotationRate(rotationRate);
             mapmaker.setReferencePotential(referencePotential);
@@ -185,7 +185,9 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             mapmaker.setMapoutdir(mapoutdir);
             mapmaker.setCacheDir(cacheDir);
             mapmaker.setLowResModelPath(lowResModelPath);
+            System.out.println("MapmakerRemoteSwingWorker: doInBackground: running mapmaker");
             mapmaker.runMapmaker(this);
+            System.out.println("MapmakerRemoteSwingWorker: doInBackground: ran mapmaker");
             mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
