@@ -141,4 +141,4 @@ echo removing unused files
 echo "End `date`" >> $log 2>&1
 echo "--------------------------------------------------------------------------------" >> $log 2>&1
 echo "" >> $log 2>&1
-echo "Finished modelDdelivery2rawdata-$missionShortName.sh script"
+echo "Finished modeldelivery2rawdata-$missionShortName.sh script"
