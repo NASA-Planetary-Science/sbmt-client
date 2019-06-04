@@ -168,20 +168,21 @@ echo "Begin `date`" >> $log 2>&1
    doGzipDirIfNecessary $destTop/$processingModelName/shape
 
    # Process delivered sumfiles
-   imager=lorri
-   if [ -d "$srcTop/$rawdataModelName/$imager" ]
-   then
-     echo Beginning sumfile processing
-     createDirIfNecessary $destTop/$processingModelName/$imager
+   for imager in lorri leisa mvic; do
+     if [ -d "$srcTop/$rawdataModelName/$imager" ]
+     then
+       echo Beginning sumfile processing
+       createDirIfNecessary $destTop/$processingModelName/$imager
 
-     # generates imagelist-sum.txt and imagelist-fullpath.txt
-     processMakeSumfiles $srcTop/$rawdataModelName/$imager
+       # generates imagelist-sum.txt and imagelist-fullpath.txt
+       processMakeSumfiles $srcTop/$rawdataModelName/$imager
 
-     # copies over imager directory
-     doRsync $srcTop/$rawdataModelName/$imager $destTop/$processingModelName/$imager
+       # copies over imager directory
+       doRsync $srcTop/$rawdataModelName/$imager $destTop/$processingModelName/$imager
 
-     echo Finished sumfile processing
+       echo Finished $imager processing
    fi
+   done
 
    # process coloring data and generates the metadata needed to read the coloring data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ]
