@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/altwg-20190401.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
-	<classpathentry kind="lib" path="lib/altwg-java-tools.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jide-oss-3.6.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/saavtk"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="/saavtk/lib/gson-2.8.0-sources.jar"/>
 	<classpathentry kind="lib" path="/saavtk/lib/gson-2.8.0.jar" sourcepath="/saavtk/lib/gson-2.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/netcdfAll-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/drmaa.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

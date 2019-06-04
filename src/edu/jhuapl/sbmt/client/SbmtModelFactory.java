@@ -11,6 +11,8 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.dtm.model.DEM;
+import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
@@ -25,8 +27,6 @@ import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.deimos.DeimosImage;
-import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEMKey;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
@@ -425,7 +425,7 @@ public class SbmtModelFactory
 
     static public DEM createDEM(
             DEMKey key,
-            SmallBodyModel smallBodyModel) throws IOException, FitsException
+            SmallBodyModel smallBodyModel) //throws IOException, FitsException
     {
         return new DEM(key);
     }
