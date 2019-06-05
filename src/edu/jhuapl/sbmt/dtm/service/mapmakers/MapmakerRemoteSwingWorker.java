@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.dtm.service.mapmakers;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.util.LatLon;
@@ -210,13 +209,13 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     protected void done()
     {
     	// TODO Auto-generated method stub
-    	try {
-            get();
-        } catch (final InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (final ExecutionException ex) {
-            throw new RuntimeException(ex.getCause());
-        }
+//    	try {
+//            get();
+//        } catch (final InterruptedException ex) {
+//            throw new RuntimeException(ex);
+//        } catch (final ExecutionException ex) {
+//            throw new RuntimeException(ex.getCause());
+//        }
     	super.done();
     	System.out.println("MapmakerRemoteSwingWorker: done: done called");
     }
