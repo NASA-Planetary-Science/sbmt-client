@@ -4376,7 +4376,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
             c.author = ShapeModelType.NIMMO;
             c.modelLabel = "Nimmo et al. (2017)";
-            c.rootDirOnServer = "/charon/nimmo2017/shape_res0.obj.gz";
+            c.rootDirOnServer = "/charon/nimmo2017";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
