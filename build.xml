@@ -49,6 +49,7 @@
       	<pathelement location="${libDir}/crucible-metadata-4.1.jar"/>
       	<pathelement location="${libDir}/crucible-settings-3.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
+        <pathelement location="${libDir}/commons-lang3-3.3.2.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -168,7 +169,7 @@
       	<pathelement location="${libDir}/crucible-metadata-4.1.jar"/>
       	<pathelement location="${libDir}/crucible-settings-3.0.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
-        <pathelement location="${rootlibDir}/commons-lang3-3.3.2.jar"/>
+        <pathelement location="${libDir}/commons-lang3-3.3.2.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
@@ -627,7 +628,7 @@
       	<pathelement location="${libDir}/crucible-settings-3.0.jar"/>
       	<pathelement location="${libDir}/crucible-metadata-4.1.jar"/>
         <pathelement location="${libDir}/commons-io-2.0.jar"/>
-        <pathelement location="${rootlibDir}/commons-lang3-3.3.2.jar"/>
+        <pathelement location="${libDir}/commons-lang3-3.3.2.jar"/>
         <pathelement location="${libDir}/commons-math3-3.2.jar"/>
         <pathelement location="${libDir}/gson-2.8.0.jar"/>
         <pathelement location="${libDir}/nom-tam-fits-1.13.1m0.jar"/>
