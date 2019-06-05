@@ -67,7 +67,6 @@ doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingM
 echo Correcting permissions >> $log 2>&1
 $scriptDir/sbmt2-data-permissions.pl $destTop/$processingModelName-$processingVersion
 
-# THIS NEXT BLOCK NOT REALLY TESTED YET.
 # Create additional symbolic links for each imager.
 imager=lorri
 if test -d "$destTop/shared/$imager"; then
@@ -76,7 +75,7 @@ if test -d "$destTop/shared/$imager"; then
     # Delivery came with some imager files, so just link files that did not come with the delivery.
     cd "$destTop/$processingModelName-$processingVersion/$imager"
     for sharedItem in ../../shared/$imager/*; do
-      item=`echo $sharedItem | s:.*/::`
+      item=`echo $sharedItem | sed 's:.*/::'`
       if test ! -e $item; then
         createSymbolicLink $sharedItem $item
       fi
