@@ -158,7 +158,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         {
 //            File file = FileCache.getFileFromServer(this.getFileDownloaded());
 //            String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
-        	System.out.println("MapmakerRemoteSwingWorker: doInBackground: setting up mapmaker remote");
+
             MapMakerRemote mapmaker = new MapMakerRemote();
             mapmaker.setRotationRate(rotationRate);
             mapmaker.setReferencePotential(referencePotential);
@@ -185,9 +185,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             mapmaker.setMapoutdir(mapoutdir);
             mapmaker.setCacheDir(cacheDir);
             mapmaker.setLowResModelPath(lowResModelPath);
-            System.out.println("MapmakerRemoteSwingWorker: doInBackground: running mapmaker");
             mapmaker.runMapmaker(this);
-            System.out.println("MapmakerRemoteSwingWorker: doInBackground: ran mapmaker");
             mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
@@ -201,23 +199,8 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         }
 
         setProgress(100);
-        System.out.println("MapmakerRemoteSwingWorker: doInBackground: returning null");
-        return null;
-    }
 
-    @Override
-    protected void done()
-    {
-    	// TODO Auto-generated method stub
-//    	try {
-//            get();
-//        } catch (final InterruptedException ex) {
-//            throw new RuntimeException(ex);
-//        } catch (final ExecutionException ex) {
-//            throw new RuntimeException(ex.getCause());
-//        }
-    	super.done();
-    	System.out.println("MapmakerRemoteSwingWorker: done: done called");
+        return null;
     }
 
 
