@@ -496,6 +496,10 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/nearsdc/data/bennu/bennu-simulated-v4/polycam/imagelist-fullpath.txt", "RQ36V4_POLY"),
         PLUTO(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.PLUTO, null),
                 "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt"),
+        CHARON_NIMMO2017_LORRI_SPC(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CHARON, ShapeModelType.NIMMO),
+                "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-sum.txt", "charon_nimmo2017_lorri"),
+        CHARON_NIMMO2017_LORRI_SPICE(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.CHARON, ShapeModelType.NIMMO),
+                "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
 
         //
         // Ryugu
