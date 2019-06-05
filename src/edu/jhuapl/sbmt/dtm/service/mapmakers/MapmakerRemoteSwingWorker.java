@@ -205,6 +205,16 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         return null;
     }
 
+    @Override
+    protected void done()
+    {
+    	// TODO Auto-generated method stub
+    	super.done();
+    	System.out.println("MapmakerRemoteSwingWorker: done: done called");
+    }
+
+
+
 
     public void setDensity(double density)
     {
