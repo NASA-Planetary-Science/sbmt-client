@@ -850,6 +850,8 @@ public class DatabaseGeneratorSql
         /*
          * Osiris REx flight models below here.
          */
+        /**
+         * Per redmine $1805, commenting out models dated prior to 2019-01-01.
         // 1109B SUMFILES
         BENNU_ALTWG_SPC_V20181109B_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181109b),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181109b/mapcam/imagelist-fullpath-sum.txt", "bennu_altwgspcv20181109b_mapcam"),
@@ -943,6 +945,7 @@ public class DatabaseGeneratorSql
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/polycam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_polycam"),
         BENNU_ALTWG_SPICE_V20181227_NAVCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20181227),
                 "/project/sbmt2/sbmt/data/bodies/bennu/altwg-spc-v20181227/navcam/imagelist-fullpath-info.txt", "bennu_altwgspcv20181227_navcam"),
+         */
 
         // 20190105 SUMFILES
         BENNU_ALTWG_SPC_V20190105_MAPCAM_APL(SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190105),
