@@ -73,7 +73,7 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
 				protected Void doInBackground() throws Exception
 				{
 					setIndeterminate(true);
-		            setCancelButtonEnabled(false);
+		            setCancelButtonEnabled(true);
 		            setProgress(1);
 		            setLabelText("Running Mapmaker.....");
 
@@ -210,7 +210,8 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
 	        else
 	        {
 		    	FileDownloadSwingWorker downloadWorker = new FileDownloadSwingWorker(null, "Download " + getExecutableDisplayName(), getExecutablePathOnServer().toString());
-		        downloadWorker.setCompletionBlock(new Runnable()
+		        downloadWorker.setCancelButtonEnabled(true);
+		    	downloadWorker.setCompletionBlock(new Runnable()
 		        {
 		        	@Override
 		      	  	public void run()

@@ -48,6 +48,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
         super(c, title, filename);
+        setCancelButtonEnabled(true);
     }
 
 
@@ -148,7 +149,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
         setLabelText("<html>Running Mapmaker<br> </html>");
         setIndeterminate(true);
-        setCancelButtonEnabled(false);
+        setCancelButtonEnabled(true);
         setProgress(1);
 
         Process mapmakerProcess = null;
@@ -184,7 +185,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
             mapmaker.setMapoutdir(mapoutdir);
             mapmaker.setCacheDir(cacheDir);
             mapmaker.setLowResModelPath(lowResModelPath);
-            mapmaker.runMapmaker();
+            mapmaker.runMapmaker(this);
             mapletFile = mapmaker.getMapletFile();
         }
         catch (IOException e)
@@ -201,6 +202,8 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
         return null;
     }
+
+
 
 
     public void setDensity(double density)
