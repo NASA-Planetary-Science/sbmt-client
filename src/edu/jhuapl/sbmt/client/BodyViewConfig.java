@@ -38,6 +38,14 @@ public abstract class BodyViewConfig extends ViewConfig
     public String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
+    public boolean hasRemoteMapmaker = false;
+    public double bodyDensity = 0.0;
+    public double bodyRotationRate = 0.0;
+    public double bodyReferencePotential = 0.0;
+    public String bodyLowestResModelName = "";
+
+
+
     public boolean hasBigmap = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
@@ -304,6 +312,7 @@ public abstract class BodyViewConfig extends ViewConfig
         String[] modelFiles = new String[numberResolutions];
         for (int index = 0; index < numberResolutions; ++index) {
             modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
+//            System.out.println("BodyViewConfig: getShapeModelFileNames: model file name " + modelFiles[index]);
         }
 
         return modelFiles;
