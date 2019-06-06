@@ -388,14 +388,14 @@ public class ImageDefaultPicker extends DefaultPicker
             if (pixelResolutionString.equals(""))
             	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
             else
-            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " " + " " + "Resolution: " + pixelResolutionString);
+            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " " + " " + "Scalebar " + pixelResolutionString);
         }
         else
         {
         	if (pixelResolutionString.equals(""))
         		statusBar.setRightText("Range: " + distanceStr + " ");
         	else
-        		statusBar.setRightText("Range: " + distanceStr + " " + "Resolution: " + pixelResolutionString);
+        		statusBar.setRightText("Range: " + distanceStr + " " + "Scalebar: " + pixelResolutionString);
         }
     }
 
