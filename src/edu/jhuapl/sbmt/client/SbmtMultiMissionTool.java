@@ -103,7 +103,10 @@ public class SbmtMultiMissionTool
 		{
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			ImageIcon erosIcon = new ImageIcon(SbmtMultiMissionTool.class.getResource("/edu/jhuapl/sbmt/data/erosMacDock.png"));
-			OSXAdapter.setDockIconImage(erosIcon.getImage());
+			if (!Configuration.isHeadless())
+			{
+			    OSXAdapter.setDockIconImage(erosIcon.getImage());
+			}
 		}
 
 		// Initialize serialization proxies
@@ -300,6 +303,11 @@ public class SbmtMultiMissionTool
 
 	protected static void displaySplash(Mission mission)
 	{
+	    if (Configuration.isHeadless())
+	    {
+	        return;
+	    }
+
 	    try
         {
             Configuration.runAndWaitOnEDT(() -> {
@@ -505,9 +513,17 @@ public class SbmtMultiMissionTool
 	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
 	        {
 	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
-	            Configuration.runOnEDT(() -> {
-	                JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
-	            });
+	            String message = "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.";
+	            if (Configuration.isHeadless())
+	            {
+	                System.err.println(message);
+	            }
+	            else
+	            {
+	                Configuration.runOnEDT(() -> {
+	                    JOptionPane.showMessageDialog(null, message, "No internet access", JOptionPane.INFORMATION_MESSAGE);
+	                });
+	            }
 	        }
 	    }
 	}
