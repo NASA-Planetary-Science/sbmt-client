@@ -60,16 +60,31 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
         if (!smallBodyModel.getImageMapKeys().isEmpty())
         {
             imageMapCheckBox = configureImageMapCheckBox(smallBodyModel);
-
             imageMapComboBox = configureImageMapComboBox(smallBodyModel);
-
             opacityLabel = new JLabel("Image opacity");
             imageMapOpacitySpinner = createOpacitySpinner();
+        }
+        else
+        {
+            imageMapCheckBox = null;
+            imageMapComboBox = null;
+            imageMapOpacitySpinner = null;
+            opacityLabel = null;
+        }
+
+        initialize();
+    }
+
+    protected void addCustomControls(JPanel panel)
+    {
+        SmallBodyModel smallBodyModel = (SmallBodyModel) getModelManager().getPolyhedralModel();
+
+        if (!smallBodyModel.getImageMapKeys().isEmpty())
+        {
             imageMapOpacitySpinner.addChangeListener(this);
             opacityLabel.setEnabled(false);
             imageMapOpacitySpinner.setEnabled(false);
 
-            JPanel panel = (JPanel) getScrollPane().getViewport().getView();
             if (imageMapComboBox != null)
             {
                 panel.add(new JLabel(IMAGE_MAP_TEXT), "wrap");
@@ -81,13 +96,6 @@ public class SmallBodyControlPanel extends PolyhedralModelControlPanel
             }
             panel.add(opacityLabel, "gapleft 25, split 2");
             panel.add(imageMapOpacitySpinner, "wrap");
-        }
-        else
-        {
-            imageMapCheckBox = null;
-            imageMapComboBox = null;
-            imageMapOpacitySpinner = null;
-            opacityLabel = null;
         }
     }
 
