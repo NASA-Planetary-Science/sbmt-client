@@ -29,10 +29,12 @@ import edu.jhuapl.saavtk.model.structure.Line;
 import edu.jhuapl.saavtk.model.structure.Polygon;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
+import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
@@ -296,70 +298,78 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected static void displaySplash(Mission mission) throws InvocationTargetException, InterruptedException
+	protected static void displaySplash(Mission mission)
 	{
-	    Configuration.runOnEDTASAP(() -> {
+	    try
+        {
+            Configuration.runAndWaitOnEDT(() -> {
 
-	        SbmtSplash splash = null;
-	        switch (mission)
-	        {
-	        case APL_INTERNAL:
-	        case PUBLIC_RELEASE:
-	        case STAGE_APL_INTERNAL:
-	        case STAGE_PUBLIC_RELEASE:
-	        case TEST_APL_INTERNAL:
-	        case TEST_PUBLIC_RELEASE:
-	        case NH_DEPLOY:
-	            splash = new SbmtSplash("resources", "splashLogo.png");
-	            break;
-	        case HAYABUSA2_DEV:
-	            splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
-	            break;
-	        case HAYABUSA2_STAGE:
-	            splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
-	            break;
-	        case HAYABUSA2_DEPLOY:
-	            splash = new SbmtSplash("resources", "splashLogoHb2.png");
-	            break;
-	        case OSIRIS_REX:
-	        case OSIRIS_REX_DEPLOY:
-	        case OSIRIS_REX_MIRROR_DEPLOY:
-	        case OSIRIS_REX_STAGE:
-	            splash = new SbmtSplash("resources", "splashLogoOrex.png");
-	            break;
-	        default:
-	            throw new AssertionError();
-	        }
+                SbmtSplash splash = null;
+                switch (mission)
+                {
+                case APL_INTERNAL:
+                case PUBLIC_RELEASE:
+                case STAGE_APL_INTERNAL:
+                case STAGE_PUBLIC_RELEASE:
+                case TEST_APL_INTERNAL:
+                case TEST_PUBLIC_RELEASE:
+                case NH_DEPLOY:
+                    splash = new SbmtSplash("resources", "splashLogo.png");
+                    break;
+                case HAYABUSA2_DEV:
+                    splash = new SbmtSplash("resources", "splashLogoHb2Dev.png");
+                    break;
+                case HAYABUSA2_STAGE:
+                    splash = new SbmtSplash("resources", "splashLogoHb2Stage.png");
+                    break;
+                case HAYABUSA2_DEPLOY:
+                    splash = new SbmtSplash("resources", "splashLogoHb2.png");
+                    break;
+                case OSIRIS_REX:
+                case OSIRIS_REX_DEPLOY:
+                case OSIRIS_REX_MIRROR_DEPLOY:
+                case OSIRIS_REX_STAGE:
+                    splash = new SbmtSplash("resources", "splashLogoOrex.png");
+                    break;
+                default:
+                    throw new AssertionError();
+                }
 
-	        splash.setAlwaysOnTop(true);
-	        splash.validate();
-	        splash.setVisible(true);
+                splash.setAlwaysOnTop(true);
+                splash.validate();
+                splash.setVisible(true);
 
-	        if (Console.isEnabled())
-	        {
-	            Console.showStandaloneConsole();
-	        }
+                if (Console.isEnabled())
+                {
+                    Console.showStandaloneConsole();
+                }
 
-	        final SbmtSplash finalSplash = splash;
-	        ExecutorService executor = Executors.newSingleThreadExecutor();
-	        executor.execute(() -> {
-	            // Kill the splash screen after a suitable pause.
-	            try
-	            {
-	                Thread.sleep(5500);
-	            }
-	            catch (InterruptedException e)
-	            {
-	                // Ignore this one.
-	            }
-	            finally
-	            {
-	                EventQueue.invokeLater(() -> {
-	                    finalSplash.setVisible(false);
-	                });
-	            }
-	        });
-	    });
+                final SbmtSplash finalSplash = splash;
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    // Kill the splash screen after a suitable pause.
+                    try
+                    {
+                        Thread.sleep(3500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        // Ignore this one.
+                    }
+                    finally
+                    {
+                        EventQueue.invokeLater(() -> {
+                            finalSplash.setVisible(false);
+                        });
+                    }
+                });
+                executor.shutdown();
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 	}
 
 	protected static String getOption(String[] args, String option)
@@ -445,7 +455,7 @@ public class SbmtMultiMissionTool
 		}
 	}
 
-	protected void setUpStreams() throws IOException
+	protected void setUpStreams() throws IOException, InvocationTargetException, InterruptedException
 	{
 		if (outputStream != null)
 		{
@@ -472,28 +482,34 @@ public class SbmtMultiMissionTool
 
 	protected void setUpAuthentication()
 	{
-		if (enableAuthentication)
-		{
-			URL dataRootUrl = Configuration.getDataRootURL();
-			try
-			{
-				// Just try to hit the server itself first.
-				FileCache.getFileInfoFromServer(dataRootUrl.toString());
+	    if (enableAuthentication)
+	    {
+	        URL dataRootUrl = Configuration.getDataRootURL();
+	        // Set up two locations to check for passwords: in the installed location or in the user's home directory.
+	        String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	        String parent = new File(jarLocation).getParentFile().getParent();
+	        ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
 
-				// Set up two locations to check for passwords: in the installed location or in the user's home directory.
-				String jarLocation = SbmtMultiMissionTool.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String parent = new File(jarLocation).getParentFile().getParent();
-				ImmutableList<Path> passwordFilesToTry = ImmutableList.of(SAFE_URL_PATHS.get(Configuration.getApplicationDataDir(), "password.txt"), SAFE_URL_PATHS.get(parent, "password.txt"));
-
-				Configuration.setupPasswordAuthentication(dataRootUrl, "DO_NOT_DELETE.TXT", passwordFilesToTry);
-			}
-			catch (NoInternetAccessException e)
-			{
-				e.printStackTrace();
-				FileCache.setOfflineMode(true, Configuration.getCacheDir());
-				JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
+	        Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
+	        FileCache.addServerUrlPropertyChangeListener(e -> {
+	            if (e.getPropertyName().equals(DownloadableFileInfo.STATE_PROPERTY))
+	            {
+	                DownloadableFileState rootState = (DownloadableFileState) e.getNewValue();
+	                if (rootState.getUrlState().getStatus() == UrlStatus.NOT_AUTHORIZED)
+	                {
+	                    Configuration.setupPasswordAuthentication(dataRootUrl, passwordFilesToTry);
+	                    FileCache.instance().queryAllInBackground(true);
+	                }
+	            }
+	        });
+	        if (!FileCache.instance().getRootInfo().getState().isAccessible())
+	        {
+	            FileCache.setOfflineMode(true, Configuration.getCacheDir());
+	            Configuration.runOnEDT(() -> {
+	                JOptionPane.showMessageDialog(null, "Unable to find server " + dataRootUrl + ". Starting in offline mode. See console log for more information.", "No internet access", JOptionPane.INFORMATION_MESSAGE);
+	            });
+	        }
+	    }
 	}
 
 	public static void main(String[] args)

@@ -15,6 +15,7 @@ import edu.jhuapl.saavtk.gui.ViewManager;
 import edu.jhuapl.saavtk.gui.ViewMenu;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.Properties;
 
 public class SbmtViewMenu extends ViewMenu
@@ -80,7 +81,23 @@ public class SbmtViewMenu extends ViewMenu
             parentMenu = childMenu;
         }
         parentMenu.add(mi);
-        mi.setEnabled(config.isAccessible());
+
+        String urlString = config.getShapeModelFileNames()[0];
+        FileCache.instance().addStateListener(urlString, state -> {
+            try
+            {
+                Configuration.runAndWaitOnEDT(() -> {
+                    mi.setEnabled(state.isAccessible());
+                    setSubMenuEnabledState(SbmtViewMenu.this);
+                    // This very top menu should always be enabled.
+                    SbmtViewMenu.this.setEnabled(true);
+                });
+            }
+            catch (Exception e)
+            {
+                // Don't clutter up the log with this exception.
+            }
+       });
     }
 
     @Override

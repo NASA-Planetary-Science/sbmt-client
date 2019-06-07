@@ -15,8 +15,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo.YesOrNo;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -28,7 +27,6 @@ import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.model.bennu.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
-import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageSource;
@@ -54,12 +52,27 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 {
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author)
     {
-        return (SmallBodyViewConfig)getConfig(name, author, null);
+        return (SmallBodyViewConfig) getConfig(name, author, null);
     }
 
     static public SmallBodyViewConfig getSmallBodyConfig(ShapeModelBody name, ShapeModelType author, String version)
     {
-        return (SmallBodyViewConfig)getConfig(name, author, version);
+        return (SmallBodyViewConfig) getConfig(name, author, version);
+    }
+
+    public static SmallBodyViewConfig ofCustom(String name, boolean temporary)
+    {
+        SmallBodyViewConfig config = new SmallBodyViewConfig(ImmutableList.<String>of(name), ImmutableList.<Integer>of(1));
+        config.modelLabel = name;
+        config.customTemporary = temporary;
+        config.author = ShapeModelType.CUSTOM;
+
+        SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
+        String fileName = temporary ? safeUrlPaths.getUrl(config.modelLabel) : safeUrlPaths.getUrl(safeUrlPaths.getString(Configuration.getImportedShapeModelsDir(), config.modelLabel, "model.vtk"));
+
+        config.shapeModelFileNames = new String[] { fileName };
+
+        return config;
     }
 
     public static void initialize()
@@ -78,6 +91,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
         c.hasImageMap = true;
         c.hasStateHistory = true;
+        c.shapeModelFileNames = prepend("/EROS", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
 
         c.imagingInstruments = new ImagingInstrument[] {
                 new ImagingInstrument(
@@ -98,14 +112,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.bodyLowestResModelName = "EROS/shape/shape0.obj";
 
         c.hasSpectralData = true;
-        c.spectralInstruments=new BasicSpectrumInstrument[]{
+        c.spectralInstruments = new BasicSpectrumInstrument[] {
                 new NIS()
         };
 
         c.hasLineamentData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2001, 1, 13, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
+        c.imageSearchFilterNames = new String[] {
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
                 "Filter 3 (760 nm)",
@@ -114,7 +128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 "Filter 6 (1000 nm)",
                 "Filter 7 (1050 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"iofdbl", "cifdbl"};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "iofdbl", "cifdbl" };
         c.imageSearchDefaultMaxSpacecraftDistance = 1000.0;
         c.imageSearchDefaultMaxResolution = 50.0;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 1, 28, 0, 0, 0).getTime();
@@ -122,8 +136,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/NLR/cubes");
-        c.lidarBrowseXYZIndices = new int[]{14, 15, 16};
-        c.lidarBrowseSpacecraftIndices = new int[]{8, 9, 10};
+        c.lidarBrowseXYZIndices = new int[] { 14, 15, 16 };
+        c.lidarBrowseSpacecraftIndices = new int[] { 8, 9, 10 };
         c.lidarBrowseIsSpacecraftInSphericalCoordinates = true;
         c.lidarBrowseTimeIndex = 4;
         c.lidarBrowseNoiseIndex = 7;
@@ -139,6 +153,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas et al. (2001)";
         c.rootDirOnServer = "/THOMAS/EROS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "eros001708.obj.gz", "eros007790.obj.gz", "eros010152.obj.gz", "eros022540.obj.gz", "eros089398.obj.gz", "eros200700.obj.gz");
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
         c.setResolution(ImmutableList.of(
@@ -182,6 +197,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.GASKELL;
         c.modelLabel = "Gaskell et al. (2008)";
         c.rootDirOnServer = "/GASKELL/ITOKAWA";
+        c.shapeModelFileNames = prepend("/ITOKAWA", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
+
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
@@ -198,7 +215,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasLidarData = true;
         c.imageSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2005, 10, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
+        c.imageSearchFilterNames = new String[] {
                 "Filter ul (381 nm)",
                 "Filter b (429 nm)",
                 "Filter v (553 nm)",
@@ -207,7 +224,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 "Filter p (960 nm)",
                 "Filter zs (1008 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 26.0;
         c.imageSearchDefaultMaxResolution = 3.0;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(2005, 8, 1, 0, 0, 0).getTime();
@@ -215,8 +232,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Optimized", "/ITOKAWA/LIDAR/cdr/cubes-optimized");
         c.lidarSearchDataSourceMap.put("Unfiltered", "/ITOKAWA/LIDAR/cdr/cubes-unfiltered");
-        c.lidarBrowseXYZIndices = new int[]{6, 7, 8};
-        c.lidarBrowseSpacecraftIndices = new int[]{3, 4, 5};
+        c.lidarBrowseXYZIndices = new int[] { 6, 7, 8 };
+        c.lidarBrowseSpacecraftIndices = new int[] { 3, 4, 5 };
         c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
         c.lidarBrowseTimeIndex = 1;
         c.lidarBrowseNoiseIndex = -1;
@@ -228,12 +245,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
 
-        c.spectralInstruments=new BasicSpectrumInstrument[]{};
+        c.spectralInstruments = new BasicSpectrumInstrument[] {};
 
         configArray.add(c);
 
         // Ostro Itokawa
-       c = new SmallBodyViewConfig();
+        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.ITOKAWA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -296,7 +313,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            configArray.add(c);
 //        }
 
-        //PolyCam, MapCam
+        // PolyCam, MapCam
         if (Configuration.isAPLVersion())
         {
             c = new SmallBodyViewConfig();
@@ -308,12 +325,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "OREX Simulated";
             c.version = "V3";
             c.rootDirOnServer = "/GASKELL/RQ36_V3";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
             c.hasMapmaker = true;
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -349,7 +367,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasLidarData = true;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
-            //c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
+            // c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/cubes");
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
@@ -367,7 +385,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarInstrumentName = Instrument.OLA;
             configArray.add(c);
 
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
             // default ideal data
@@ -375,11 +393,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/with_range2/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", "/bennu/bennu-simulated-v4/ola/search/hypertree/dataSource.lidar");
 
-            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Default","/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/trees/default/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Default", "/GASKELL/RQ36_V3/OLA/browse/default/fileList.txt");
             // noisy data
-            c.lidarSearchDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Noise","/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Noise", "/GASKELL/RQ36_V3/OLA/trees/noise/tree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Noise", "/GASKELL/RQ36_V3/OLA/browse/noise/fileList.txt");
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/GASKELL/RQ36_V3/history/timeHistory.bth";
@@ -396,14 +414,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "OREX Simulated";
             c.version = "V4";
             c.rootDirOnServer = "/bennu/bennu-simulated-v4";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.shapeModelFileNames = prepend(c.rootDirOnServer + "/shape", "shape0.obj.gz", "shape1.vtk.gz", "shape2.vtk.gz", "shape3.vtk.gz", "shape4.vtk.gz");
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
             c.imageSearchDefaultMaxResolution = 1.0e3;
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = false;
@@ -436,16 +453,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.useMinimumReferencePotential = true;
             c.rotationRate = 0.0004061303295118512;
 
-
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Default","/GASKELL/RQ36_V4/OLA/trees/default/tree/dataSource.lidar");
+            c.lidarSearchDataSourceMap.put("Default", "/GASKELL/RQ36_V4/OLA/trees/default/tree/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/search/hypertree/dataSource.lidar");
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/Phase07_OB/fileList.txt");
@@ -467,11 +482,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarOffsetScale = 0.0005;
 
             c.hasStateHistory = true;
-            c.timeHistoryFile =  c.rootDirOnServer + "/history/timeHistory.bth";
+            c.timeHistoryFile = c.rootDirOnServer + "/history/timeHistory.bth";
 
             c.dtmBrowseDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/browse/fileList.txt");
 //            c.dtmSearchDataSourceMap.put("Default", "bennu/bennu-simulated-v4/dtm/search/hypertree/dataSource.lidar");
-
 
 //            if ((SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_DEPLOY) ||
 //                    (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_STAGE) || (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.OSIRIS_REX_MIRROR_DEPLOY))
@@ -1327,6 +1341,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            configArray.add(c);
 //        }
 
+
 //        if (Configuration.isAPLVersion())
 //        {
 //            c = new SmallBodyViewConfig();
@@ -1357,6 +1372,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                // Right now bigmap only works on Macs
 //                c.hasBigmap = true;
 //            }
+
 //
 //            c.imagingInstruments = new ImagingInstrument[] {
 //                    new ImagingInstrument(
@@ -1649,9 +1665,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190105";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190105";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -1663,7 +1677,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -1694,8 +1708,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -1711,14 +1725,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -1764,7 +1778,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -1813,7 +1826,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -1844,8 +1857,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -1861,14 +1874,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -1877,9 +1890,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -1917,8 +1927,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -1969,7 +1977,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -2000,8 +2008,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -2017,14 +2025,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -2033,9 +2041,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -2073,8 +2078,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2125,7 +2128,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -2155,8 +2158,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -2172,14 +2175,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -2188,9 +2191,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -2228,8 +2228,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2280,7 +2278,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -2311,8 +2309,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -2328,14 +2326,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -2344,9 +2342,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -2384,8 +2379,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2436,7 +2429,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -2467,8 +2460,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -2484,14 +2477,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -2500,9 +2493,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -2540,8 +2530,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             /*
              *
              */
-
-
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
@@ -2592,7 +2580,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
             c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -2623,8 +2611,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
                     new OTES(),
                     new OVIRS()
             };
@@ -2640,14 +2628,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OTES_L3", c.rootDirOnServer + "/otes/l3/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_IF", c.rootDirOnServer + "/ovirs/l3/if/hypertree/dataSource.spectra");
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.OLA;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
@@ -2656,9 +2644,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.lidarSearchDataSourceMap.put("Default", c.rootDirOnServer + "/ola/Phase07_OB/tree/dataSource.lidar");
             c.lidarBrowseDataSourceMap.put("Default", c.rootDirOnServer + "/ola/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = c.rootDirOnServer + "/ola/browse/fileList.txt";
-
-
-
 
             /*
              * New hypertrees split into phases
@@ -2697,8 +2682,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
              *
              */
 
-
-
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
             c.lidarBrowseSpacecraftIndices = OlaCubesGenerator.scIndices;
             c.lidarBrowseIsSpacecraftInSphericalCoordinates = false;
@@ -2723,7 +2706,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             configArray.add(c);
         }
 
-      c = new SmallBodyViewConfig();
+        c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BETULIA;
         c.type = BodyType.ASTEROID;
         c.population = ShapeModelPopulation.NEO;
@@ -2733,7 +2716,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GEOGRAPHOS;
@@ -2745,7 +2728,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.BACCHUS;
@@ -2757,7 +2740,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.RASHALOM;
@@ -2769,7 +2752,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.TOUTATIS;
@@ -2780,10 +2763,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.modelLabel = "Hudson et al. (2004)";
         c.rootDirOnServer = "/toutatis/hudson/";
         c.shapeModelFileExtension = ".obj";
-        c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"),
-                ImmutableList.of(12796, 39996));
+        c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"), ImmutableList.of(12796, 39996));
         configArray.add(c);
-
 
 //       c = new SmallBodyViewConfig();
 //       c.body = ShapeModelBody.TOUTATIS;
@@ -2807,7 +2788,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.NEREUS;
@@ -2819,7 +2800,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CASTALIA;
@@ -2831,7 +2812,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GOLEVKA;
@@ -2843,7 +2824,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HW1;
@@ -2855,7 +2836,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.SK;
@@ -2867,7 +2848,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._1950DAPROGRADE;
@@ -2879,7 +2860,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._1950DARETROGRADE;
@@ -2891,7 +2872,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.WT24;
@@ -2903,7 +2884,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody._52760_1998_ML14;
@@ -2914,7 +2895,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.YORP;
@@ -2926,7 +2907,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KW4A;
@@ -2938,7 +2919,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KW4B;
@@ -2950,7 +2931,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CCALPHA;
@@ -2962,7 +2943,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.CE26;
@@ -2974,7 +2955,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.EV5;
@@ -2986,7 +2967,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasColoringData = false;
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KY26;
@@ -2997,7 +2978,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         if (Configuration.isAPLVersion())
         {
@@ -3023,7 +3004,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, GregorianCalendar.JULY, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     "Filter 1 (735 nm)",
                     "Filter 2 (548 nm)",
                     "Filter 3 (749 nm)",
@@ -3033,7 +3014,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "Filter 7 (650 nm)",
                     "Filter 8 (428 nm)"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
@@ -3048,7 +3029,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.VESTA;
@@ -3072,7 +3053,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2012, 7, 27, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
+        c.imageSearchFilterNames = new String[] {
                 "Filter 1 (735 nm)",
                 "Filter 2 (548 nm)",
                 "Filter 3 (749 nm)",
@@ -3082,7 +3063,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 "Filter 7 (650 nm)",
                 "Filter 8 (428 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"FC1", "FC2"};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
@@ -3095,6 +3076,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/VESTA_OLD";
+        c.shapeModelFileNames = new String[] { "/VESTA_OLD/VESTA.vtk.gz" };
+        c.setResolution(ImmutableList.of(49152));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -3120,8 +3103,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2010, 6, 11, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
@@ -3143,6 +3126,20 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 2962, 5824, 11954, 24526, 47784, 98280, 189724,
                 244128, 382620, 784510, 1586194, 3145728
             ));
+        c.shapeModelFileNames = prepend(c.rootDirOnServer,
+                "shape_res0.vtk.gz", //
+                "shape_res1.vtk.gz", //
+                "shape_res2.vtk.gz", //
+                "shape_res3.vtk.gz", //
+                "shape_res4.vtk.gz", //
+                "shape_res5.vtk.gz", //
+                "shape_res6.vtk.gz", //
+                "shape_res7.vtk.gz", //
+                "shape_res8.vtk.gz", //
+                "shape_res9.vtk.gz", //
+                "shape_res10.vtk.gz", //
+                "shape_res11.vtk.gz" //
+            );
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -3154,7 +3151,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HERMIONE;
@@ -3165,7 +3162,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.KLEOPATRA;
@@ -3177,7 +3174,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
@@ -3202,8 +3199,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1993, 7, 29, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
@@ -3248,7 +3245,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1997, 5, 28, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
+        c.imageSearchFilterNames = new String[] {
                 "Filter 1 (550 nm)",
                 "Filter 2 (450 nm)",
                 "Filter 3 (760 nm)",
@@ -3257,7 +3254,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 "Filter 6 (1000 nm)",
                 "Filter 7 (1050 nm)"
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
@@ -3302,8 +3299,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(1991, 9, 30, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
@@ -3364,6 +3361,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
         c.hasImageMap = true;
+        c.setResolution(ImmutableList.of(49152));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -3389,7 +3387,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     "VIS, Blue",
                     "VIS, Minus Blue",
                     "VIS, Violet",
@@ -3398,7 +3396,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "VIS, Red",
             };
 
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
 //            configArray.add(c);
@@ -3473,7 +3471,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{
+        c.imageSearchFilterNames = new String[] {
                 "VSK, Channel 1",
                 "VSK, Channel 2",
                 "VSK, Channel 3",
@@ -3484,15 +3482,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 "VIS, Green",
                 "VIS, Red",
         };
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] { "Phobos 2", "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC" };
         c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
         c.imageSearchDefaultMaxResolution = 300.0;
         c.hasLidarData = true;
         c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
         c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
-        c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+        c.lidarBrowseXYZIndices = new int[] { 0, 1, 2 };
         c.lidarBrowseIsLidarInSphericalCoordinates = true;
-        c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+        c.lidarBrowseSpacecraftIndices = new int[] { -1, -1, -1 };
         c.lidarBrowseIsTimeInET = true;
         c.lidarBrowseTimeIndex = 5;
         c.lidarBrowseNoiseIndex = -1;
@@ -3505,7 +3503,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.lidarInstrumentName = Instrument.MOLA;
 
         // MOLA search is disabled for now. See LidarPanel class.
-        c.hasHypertreeBasedLidarSearch=true;
+        c.hasHypertreeBasedLidarSearch = true;
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
@@ -3522,7 +3520,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
         c.setResolution(ImmutableList.of(32040));
 
-        c.lidarSearchDataSourceMap=Maps.newHashMap();   // this must be instantiated, but can be empty
+        c.lidarSearchDataSourceMap = Maps.newHashMap(); // this must be instantiated, but can be empty
 
         configArray.add(c);
 
@@ -3551,7 +3549,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasMapmaker = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 6, 7, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     "VSK, Channel 1",
                     "VSK, Channel 2",
                     "VSK, Channel 3",
@@ -3562,7 +3560,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "VIS, Green",
                     "VIS, Red",
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {
                     "Phobos 2",
                     "Viking Orbiter 1-A",
                     "Viking Orbiter 1-B",
@@ -3577,9 +3575,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxSpacecraftDistance = 12000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.lidarSearchDataSourceMap=Maps.newHashMap();
+            c.lidarSearchDataSourceMap = Maps.newHashMap();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
-
 
 //            configArray.add(c);
         }
@@ -3642,9 +3639,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasLidarData = true;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(1998, 8, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(1998, 8, 30, 0, 0, 0).getTime();
-            c.lidarBrowseXYZIndices = new int[]{0, 1, 2};
+            c.lidarBrowseXYZIndices = new int[] { 0, 1, 2 };
             c.lidarBrowseIsLidarInSphericalCoordinates = true;
-            c.lidarBrowseSpacecraftIndices = new int[]{-1, -1, -1};
+            c.lidarBrowseSpacecraftIndices = new int[] { -1, -1, -1 };
             c.lidarBrowseIsTimeInET = true;
             c.lidarBrowseTimeIndex = 5;
             c.lidarBrowseNoiseIndex = -1;
@@ -3657,7 +3654,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarInstrumentName = Instrument.MOLA;
 
             // MOLA search is disabled for now. See LidarPanel class.
-            c.hasHypertreeBasedLidarSearch=true;
+            c.hasHypertreeBasedLidarSearch = true;
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
@@ -3678,13 +3675,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument(SpectralMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
 
                     new ImagingInstrument(
                             SpectralMode.MULTI,
@@ -3705,13 +3696,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
             SmallBodyViewConfig callisto = new SmallBodyViewConfig();
             callisto = c.clone();
 
@@ -3726,7 +3717,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
 
             c = callisto.clone();
             c.body = ShapeModelBody.CALLISTO;
@@ -3750,7 +3741,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
 
             c = c.clone();
             c.body = ShapeModelBody.EUROPA;
@@ -3783,13 +3774,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
 
             c = c.clone();
             c.body = ShapeModelBody.GANYMEDE;
@@ -3821,13 +3812,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
                     };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
 
             c = c.clone();
             c.body = ShapeModelBody.IO;
@@ -3859,13 +3850,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
                     };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
         }
 
         c = new SmallBodyViewConfig();
@@ -3889,8 +3880,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
@@ -3905,6 +3896,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
@@ -3918,6 +3910,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/epimetheus/stooke2016";
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -3943,6 +3936,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -3954,6 +3948,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.modelLabel = "Thomas (2000)";
         c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
@@ -3967,6 +3962,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/janus/stooke2016";
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -3990,8 +3986,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
@@ -4008,6 +4004,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/pandora/stooke2016";
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -4032,8 +4029,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
@@ -4050,7 +4047,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.PROTEUS;
@@ -4063,7 +4060,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
         // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
         // this block so that Eclipse updates will continue to keep this code intact.
-        //  configArray.add(c);
+        // configArray.add(c);
 
         // Model stooke2016 delivered 2018-03-06.
         c = new SmallBodyViewConfig();
@@ -4076,6 +4073,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/prometheus/stooke2016";
         c.shapeModelFileExtension = ".obj";
         c.hasColoringData = false;
+        c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -4113,6 +4111,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.GASKELL;
             c.modelLabel = "Gaskell et al. (in progress)";
             c.rootDirOnServer = "/GASKELL/TEMPEL1";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "ver64q.vtk.gz");
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             configArray.add(c);
         }
@@ -4167,7 +4166,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 1,2",
                     "*Filter 1,6",
@@ -4182,7 +4181,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "*Filter 5,4",
                     "*Filter 6,1"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
@@ -4190,6 +4189,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c = c.clone();
             c.author = ShapeModelType.DLR;
             c.rootDirOnServer = "/DLR/67P";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer,
+                    "cg-dlr_spg-shap4s-v0.9_64m.ply.gz", "cg-dlr_spg-shap4s-v0.9_32m.ply.gz", "cg-dlr_spg-shap4s-v0.9_16m.ply.gz", "cg-dlr_spg-shap4s-v0.9_8m.ply.gz", "cg-dlr_spg-shap4s-v0.9_4m.ply.gz", "cg-dlr_spg-shap4s-v0.9.ply.gz");
+
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
             c.setResolution(ImmutableList.of(
@@ -4223,7 +4225,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 1,2",
                     "*Filter 1,6",
@@ -4247,7 +4249,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "*Filter 8,7",
                     "*Filter 8,8"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
@@ -4277,7 +4279,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{
+            c.imageSearchFilterNames = new String[] {
                     // If a name, begins with a star, it is not selected by default
                     "*Filter 1,2",
                     "*Filter 1,6",
@@ -4302,7 +4304,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     "*Filter 8,8",
                     "*Filter 2,1"
             };
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"NAC", "*WAC"};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
             configArray.add(c);
@@ -4318,7 +4320,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
         c.setResolution(ImmutableList.of(32040));
         configArray.add(c);
-
 
         if (Configuration.isAPLVersion())
         {
@@ -4362,12 +4363,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 1, 1, 0, 0, 0).getTime();
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
-
 
             c = c.clone();
             c.body = ShapeModelBody.CHARON;
@@ -4407,6 +4408,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
 
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
 
             SmallBodyViewConfig hydra = new SmallBodyViewConfig();
@@ -4447,8 +4449,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             )
             };
             hydra = c.clone();
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
-
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.KERBEROS;
@@ -4459,6 +4461,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
 
             c = hydra;
@@ -4496,6 +4499,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             Instrument.LEISA
                             )
             };
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
 
             c = new SmallBodyViewConfig();
@@ -4507,6 +4511,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "Weaver et al. (2016)";
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
+            c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
         }
 
@@ -4531,8 +4536,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
         c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 0, 31, 0, 0, 0).getTime();
-        c.imageSearchFilterNames = new String[]{};
-        c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+        c.imageSearchFilterNames = new String[] {};
+        c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
         c.hasColoringData = false;
@@ -4588,7 +4593,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
                 polyCam = BasicImagingInstrument.of(builder.build());
             }
-             BasicImagingInstrument samCam;
+            BasicImagingInstrument samCam;
             {
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
@@ -4616,34 +4621,32 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/earth/osirisrex";
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
-            c.hasImageMap=true;
+            c.hasImageMap = true;
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
-                c.imagingInstruments = new ImagingInstrument[] {
-                       // new Vis(ShapeModelBody.PHOBOS)
-                        mapCam,
-                        polyCam,
-                        samCam,
+            c.imagingInstruments = new ImagingInstrument[] {
+                    // new Vis(ShapeModelBody.PHOBOS)
+                    mapCam,
+                    polyCam,
+                    samCam,
 // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
 //                        samCam
-/*                    new ImagingInstrument(
-                                SpectralMode.MONO,
-                                new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
-                                ImageType.PHOBOS_IMAGE,
-                                new ImageSource[]{ImageSource.GASKELL},
-                                Instrument.IMAGING_DATA
-                                )*/
-                };
+                    /*
+                     * new ImagingInstrument( SpectralMode.MONO, new
+                     * GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP",
+                     * "/GASKELL/PHOBOS/IMAGING/images/gallery"), ImageType.PHOBOS_IMAGE, new
+                     * ImageSource[]{ImageSource.GASKELL}, Instrument.IMAGING_DATA )
+                     */
+            };
 
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
 
-                c.hasSpectralData=true;
-                c.spectralInstruments=new BasicSpectrumInstrument[] {
-
-                        new OTES(),
-                        new OVIRS()
-                };
+                    new OTES(),
+                    new OVIRS()
+            };
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
@@ -4661,7 +4664,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxResolution = 300.0;
             // 2017-12-21: exclude this body/model for now, but do not comment out anything else in
             // this block so that Eclipse updates will continue to keep this code intact.
-            //  configArray.add(c);
+            // configArray.add(c);
         }
 
         if (Configuration.isAPLVersion())
@@ -4676,8 +4679,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     BodyType.PLANETS_AND_SATELLITES.name(),
                     ShapeModelPopulation.EARTH.name()).build();
 
-
-            // Set up shape model -- one will suffice. Note the "orex" here must be kept exactly as it is; that is what the directory is named in the data area.
+            // Set up shape model -- one will suffice. Note the "orex" here must be kept
+            // exactly as it is; that is what the directory is named in the data area.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("orex", ShapeModelDataUsed.WGS84).build();
             BasicImagingInstrument mapCam;
             {
@@ -4744,51 +4747,51 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.shapeModelFileExtension = ".obj";
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
             c.hasColoringData = false;
-            c.hasImageMap=true;
+            c.hasImageMap = true;
 
-                c.imagingInstruments = new ImagingInstrument[] {
-                       // new Vis(ShapeModelBody.PHOBOS)
-                        mapCam,
-                        polyCam,
-                        samCam,
-    //TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
-    //                    samCam
-    /*                    new ImagingInstrument(
-                                SpectralMode.MONO,
-                                new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
-                                ImageType.PHOBOS_IMAGE,
-                                new ImageSource[]{ImageSource.GASKELL},
-                                Instrument.IMAGING_DATA
-                                )*/
-                };
+            c.imagingInstruments = new ImagingInstrument[] {
+                    // new Vis(ShapeModelBody.PHOBOS)
+                    mapCam,
+                    polyCam,
+                    samCam,
+                    // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line
+                    // to add it to the panel.
+                    // samCam
+                    /*
+                     * new ImagingInstrument( SpectralMode.MONO, new
+                     * GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP",
+                     * "/GASKELL/PHOBOS/IMAGING/images/gallery"), ImageType.PHOBOS_IMAGE, new
+                     * ImageSource[]{ImageSource.GASKELL}, Instrument.IMAGING_DATA )
+                     */
+            };
 
-                c.hasSpectralData=true;
-                c.spectralInstruments=new BasicSpectrumInstrument[] {
-                        new OTES(),
-                        new OVIRS()
-                };
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new OTES(),
+                    new OVIRS()
+            };
 
-                c.hasStateHistory = true;
-                c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
+            c.hasStateHistory = true;
+            c.timeHistoryFile = "/earth/osirisrex/history/timeHistory.bth";
 
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2017, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2017, 12, 31, 0, 0, 0).getTime();
-    //TODO make hierarchical search work sbmt1dev-style.
-    //        c.imageSearchFilterNames = new String[]{
-    //                EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
-    //        };
-    //        c.imageSearchUserDefinedCheckBoxesNames = new String[]{
-    //                EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
-    //        };
+            // TODO make hierarchical search work sbmt1dev-style.
+            // c.imageSearchFilterNames = new String[]{
+            // EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
+            // };
+            // c.imageSearchUserDefinedCheckBoxesNames = new String[]{
+            // EarthHierarchicalSearchSpecification.CameraCheckbox.OSIRIS_REX.getName()
+            // };
 //            c.hasHierarchicalImageSearch = true;
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = true;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
-          c.spectraSearchDataSourceMap.put("OTES_L2","/earth/osirisrex/otes/l2/hypertree/dataSource.spectra");
-          c.spectraSearchDataSourceMap.put("OTES_L3","/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
-          c.spectraSearchDataSourceMap.put("OVIRS_IF","/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
-          c.spectraSearchDataSourceMap.put("OVIRS_REF","/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L2", "/earth/osirisrex/otes/l2/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OTES_L3", "/earth/osirisrex/otes/l3/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_IF", "/earth/osirisrex/ovirs/l3/if/hypertree/dataSource.spectra");
+            c.spectraSearchDataSourceMap.put("OVIRS_REF", "/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
 
             OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
@@ -4804,7 +4807,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         {
             //
             // Earth, Hayabusa2 WGS84 version
-            //:
+            // :
 
             // Set up body -- one will suffice.
             SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
@@ -4884,11 +4887,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                       fileLocator,
                       ImageType.TIR_IMAGE);
 
-              // Put it all together in a session.
-              Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-              builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-              tir = BasicImagingInstrument.of(builder.build());
-          }
+                // Put it all together in a session.
+                Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
+                tir = BasicImagingInstrument.of(builder.build());
+            }
 
             c = new SmallBodyViewConfig();
             c.body = ShapeModelBody.EARTH;
@@ -4900,29 +4903,29 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/earth/hayabusa2";
 //            c.shapeModelFileExtension = ".obj";
             c.setResolution(ImmutableList.of(DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0]), ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
-            c.hasImageMap=true;
+            c.hasImageMap = true;
             c.hasColoringData = false;
 
-                c.imagingInstruments = new ImagingInstrument[] {
-//                       // new Vis(ShapeModelBody.PHOBOS)
-//                        mapCam,
-//                        polyCam,
-    //TODO when samCam is handled for sbmt1dev (see above), uncomment the next line to add it to the panel.
-    //                    samCam
-    /*                    new ImagingInstrument(
-                                SpectralMode.MONO,
-                                new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
-                                ImageType.PHOBOS_IMAGE,
-                                new ImageSource[]{ImageSource.GASKELL},
-                                Instrument.IMAGING_DATA
-                                )*/
-                        tir
-                };
+            c.imagingInstruments = new ImagingInstrument[] {
+                    //                       // new Vis(ShapeModelBody.PHOBOS)
+                    //                        mapCam,
+                    //                        polyCam,
+                    // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line
+                    // to add it to the panel.
+                    // samCam
+                    /*
+                     * new ImagingInstrument( SpectralMode.MONO, new
+                     * GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP",
+                     * "/GASKELL/PHOBOS/IMAGING/images/gallery"), ImageType.PHOBOS_IMAGE, new
+                     * ImageSource[]{ImageSource.GASKELL}, Instrument.IMAGING_DATA )
+                     */
+                    tir
+            };
 
-                c.imageSearchFilterNames = new String[]{};
-                c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
-                c.imageSearchDefaultMaxSpacecraftDistance = 0;
-                c.imageSearchDefaultMaxResolution = 0;
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
+            c.imageSearchDefaultMaxSpacecraftDistance = 0;
+            c.imageSearchDefaultMaxResolution = 0;
 
 //                c.hasSpectralData=true;
 //                c.spectralInstruments=new SpectralInstrument[] {
@@ -4932,7 +4935,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasMapmaker = false;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 11, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
-    //TODO make hierarchical search work sbmt1dev-style.
+            // TODO make hierarchical search work sbmt1dev-style.
 //            c.imageSearchFilterNames = new String[]{
 //                    EarthHierarchicalSearchSpecification.FilterCheckbox.MAPCAM_CHANNEL_1.getName()
 //            };
@@ -4944,23 +4947,22 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[]
-                    {
-                        new NIRS3()
-                    };
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new NIRS3()
+            };
 
             configArray.add(c);
 
-            c.hasLidarData=false;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = false;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
 //          c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/tree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/earth/hayabusa2/laser/browse/fileList.txt");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/earth/hayabusa2/laser/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/earth/hayabusa2/laser/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -4977,8 +4979,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
         }
-
-
 
         if (Configuration.isAPLVersion())
         {
@@ -5001,12 +5001,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/ryugu/truth";
             c.shapeModelFileExtension = ".obj";
 
-            c.setResolution(ImmutableList.of("Low (54504 plates)", "High (5450420 plates)" ), ImmutableList.of(54504, 5450420));
+            c.setResolution(ImmutableList.of("Low (54504 plates)", "High (5450420 plates)"), ImmutableList.of(54504, 5450420));
 
             c.hasStateHistory = true;
             c.timeHistoryFile = "/ryugu/truth/history/timeHistory.bth";
 
-            // This version would enable image search but this seems to hang, possibly because of the very high resolution of the model.
+            // This version would enable image search but this seems to hang, possibly
+            // because of the very high resolution of the model.
             // Re-enable this if/when that issue is addressed.
 //            QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
 //            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
@@ -5014,7 +5015,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            QueryBase queryBaseTir = new FixedListQuery(fileLocatorTir.get(SBMTFileLocator.TOP_PATH).getLocation("") + "/simulated", fileLocatorTir.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
             QueryBase queryBaseTir = new GenericPhpQuery("/ryugu/truth/tir", "ryugu_nasa002_tir", "/ryugu/truth/tir/gallery");
             ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, queryBaseTir, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
-
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/onc", "ryugu_sim", "/ryugu/truth/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
@@ -5024,8 +5024,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                    tir
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5035,16 +5035,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5060,7 +5059,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
-
 
             configArray.add(c);
         }
@@ -5102,8 +5100,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                    tir
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5113,15 +5111,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5152,7 +5150,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180627", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/onc", "jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180627/onc/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180627/tir", "", "ryugu_nasa002_tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery");
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -5175,8 +5173,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5188,15 +5186,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5213,13 +5211,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
 //                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            default:
+                break;
             }
 
             configArray.add(c);
@@ -5237,7 +5236,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180714", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180627", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180714/onc/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180627/tir", "/ryugu/jaxa-sfm-v20180627/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180714/tir", "", "ryugu_nasa002_tir", "/ryugu/jaxa-sfm-v20180714/tir/gallery");
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -5262,8 +5261,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5275,15 +5274,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5300,13 +5299,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
             }
 
             configArray.add(c);
@@ -5315,16 +5315,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(ShapeModelBody.RYUGU.name(), BodyType.ASTEROID.name(), ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180725_2", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180725-2/onc/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] {ImageSource.SPICE }, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180725-2/tir", "/ryugu/jaxa-sfm-v20180725-2/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180725-2/tir", "", "ryugu_nasa002_tir", "/ryugu/jaxa-sfm-v20180725-2/tir/gallery");
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
@@ -5349,8 +5346,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5362,15 +5359,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5387,13 +5384,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
             }
 
             configArray.add(c);
@@ -5402,16 +5400,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(ShapeModelBody.RYUGU.name(), BodyType.ASTEROID.name(), ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180804", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804", "ryugu_nasa002", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/onc", "/ryugu/jaxa-sfm-v20180804/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/onc",
+            // "/ryugu/jaxa-sfm-v20180804/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-sfm-v20180804/tir", "/ryugu/jaxa-sfm-v20180804/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/jaxa-sfm-v20180804/tir", "", "ryugu_nasa002_tir", "/ryugu/jaxa-sfm-v20180804/tir/gallery");
@@ -5437,8 +5433,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5450,15 +5446,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5475,25 +5471,23 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
 //                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            default:
+                break;
             }
 
             configArray.add(c);
         }
 
-      if (Configuration.isAPLVersion())
+        if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(ShapeModelBody.RYUGU.name(), BodyType.ASTEROID.name(), ShapeModelPopulation.NEO.name()).build();
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180705", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5521,8 +5515,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5537,15 +5531,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5562,11 +5556,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
             }
@@ -5609,8 +5604,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5625,15 +5620,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5650,11 +5645,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
             }
@@ -5688,17 +5684,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180719_2;
             c.modelLabel = "JAXA-SPC-v20180719_2";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180719-2";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5713,15 +5707,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5738,11 +5732,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
             }
@@ -5762,7 +5757,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180731", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/onc", "/ryugu/jaxa-spc-v20180731/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/onc",
+            // "/ryugu/jaxa-spc-v20180731/onc/gallery");
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731", "ryugu_nasa002", "/ryugu/jaxa-spc-v20180731/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180731/tir", "/ryugu/jaxa-spc-v20180731/tir/gallery", false);
@@ -5777,17 +5773,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180731;
             c.modelLabel = "JAXA-SPC-v20180731";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180731";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5802,15 +5796,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5827,11 +5821,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    //ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                // ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
             }
@@ -5851,7 +5846,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180810", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180810/onc", "/ryugu/jaxa-spc-v20180810/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180810/onc",
+            // "/ryugu/jaxa-spc-v20180810/onc/gallery");
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180810/onc", "ryugu_jaxaspcv20180810", "ryugu_nasa005", "/ryugu/jaxa-spc-v20180810/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180810/tir", "/ryugu/jaxa-spc-v20180810/tir/gallery", false);
@@ -5866,17 +5862,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180810;
             c.modelLabel = "JAXA-SPC-v20180810";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180810";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5891,15 +5885,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -5916,10 +5910,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
 //                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
@@ -5940,7 +5935,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180816", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180816/onc", "/ryugu/jaxa-spc-v20180816/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180816/onc",
+            // "/ryugu/jaxa-spc-v20180816/onc/gallery");
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180816/onc", "ryugu_jaxaspcv20180816", "ryugu_nasa005", "/ryugu/jaxa-spc-v20180816/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180816/tir", "/ryugu/jaxa-spc-v20180816/tir/gallery", false);
@@ -5955,17 +5951,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180816;
             c.modelLabel = "JAXA-SPC-v20180816";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180816";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of("Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -5980,15 +5974,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6005,10 +5999,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
 //                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
             default:
                 break;
@@ -6029,7 +6024,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180829", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180829/onc", "/ryugu/jaxa-spc-v20180829/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180829/onc",
+            // "/ryugu/jaxa-spc-v20180829/onc/gallery");
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829", "ryugu_nasa005", "/ryugu/jaxa-spc-v20180829/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20180829/tir", "/ryugu/jaxa-spc-v20180829/tir/gallery", false);
@@ -6053,8 +6049,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6069,15 +6065,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6094,13 +6090,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
 //                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            default:
+                break;
             }
 
             configArray.add(c);
@@ -6118,7 +6115,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20181014", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            //QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20181014/onc", "/ryugu/jaxa-spc-v20181014/onc/gallery");
+            // QueryBase queryBase = new FixedListQuery("/ryugu/jaxa-spc-v20181014/onc",
+            // "/ryugu/jaxa-spc-v20181014/onc/gallery");
             QueryBase queryBase = new GenericPhpQuery("/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014", "ryugu_nasa005", "/ryugu/jaxa-spc-v20181014/onc/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, queryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/jaxa-spc-v20181014/tir", "/ryugu/jaxa-spc-v20181014/tir/gallery", false);
@@ -6142,8 +6140,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6156,41 +6154,38 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[]
-            {
-                new NIRS3()
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new NIRS3()
             };
 
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasSpectralData=true;
-            c.spectralInstruments=new BasicSpectrumInstrument[]
-            {
-                new NIRS3()
+            c.hasSpectralData = true;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+                    new NIRS3()
             };
 
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = false;
             c.spectraSearchDataSourceMap = new LinkedHashMap<>();
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
-            c.spectrumMetadataFile =  c.rootDirOnServer + "/spectraMetadata.json";
+            c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
             Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6207,13 +6202,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-            switch (SbmtMultiMissionTool.getMission()) {
-                case HAYABUSA2_DEV:
-                case HAYABUSA2_DEPLOY:
-                case HAYABUSA2_STAGE:
-                    ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
-                default:
-                    break;
+            switch (SbmtMultiMissionTool.getMission())
+            {
+            case HAYABUSA2_DEV:
+            case HAYABUSA2_DEPLOY:
+            case HAYABUSA2_STAGE:
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            default:
+                break;
             }
 
             configArray.add(c);
@@ -6250,15 +6246,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
             c.shapeModelFileExtension = ".obj";
 
-            //            c.hasStateHistory = true;
+            // c.hasStateHistory = true;
 //            c.timeHistoryFile = "/ryugu/nasa-001/history/timeHistory.bth"; // TODO move this to shared/timeHistory.bth
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    oncCam //, tirCam
+                    oncCam // , tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6270,15 +6266,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/laser/search/test_hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6312,7 +6308,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-002/onc", "ryugu_nasa002", "ryugu_nasa002", "/ryugu/nasa-002/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-002/tir", "/ryugu/nasa-002/tir/gallery", false);            QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-001/tir", "", "ryugu_nasa003_tir", "/ryugu/nasa-001/tir/gallery");
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-002/tir", "", "ryugu_nasa002_tir", "/ryugu/nasa-002/tir/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6332,8 +6328,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6348,15 +6344,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6389,10 +6385,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // NOTE THE FOLLOWING LINE IS NOT A TYPO: THIRD ARGUMENT SHOULD BE ryugu_nasa002, not ryugu_nasa003.
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
-            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc", "/ryugu/nasa-003/onc/gallery");
+            // QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc",
+            // "/ryugu/nasa-003/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-003/tir", "/ryugu/nasa-003/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-003/tir", "", "ryugu_nasa002_tir", "/ryugu/nasa-003/tir/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6412,9 +6409,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6429,16 +6425,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1500.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6454,8 +6449,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
-
-
 
             configArray.add(c);
         }
@@ -6475,7 +6468,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-004/onc", "/ryugu/nasa-004/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-004/tir", "/ryugu/nasa-004/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-004/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-004/tir/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6495,9 +6488,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6512,16 +6504,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6537,8 +6528,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
-
-
 
             configArray.add(c);
         }
@@ -6558,7 +6547,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-005/onc", "/ryugu/nasa-005/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-005/tir", "/ryugu/nasa-005/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-005/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-005/tir/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6578,9 +6567,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6595,16 +6583,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6620,8 +6607,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
-
-
 
             configArray.add(c);
         }
@@ -6641,7 +6626,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-006/onc", "/ryugu/nasa-006/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-006/tir", "/ryugu/nasa-006/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-006/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-006/tir/gallery");
-            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE}, ImageType.ONC_IMAGE);
+            ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
             ImagingInstrument tirCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQueryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.TIR_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6661,9 +6646,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                     oncCam, tirCam
             };
 
-
-            c.imageSearchFilterNames = new String[]{};
-            c.imageSearchUserDefinedCheckBoxesNames = new String[]{};
+            c.imageSearchFilterNames = new String[] {};
+            c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 0;
             c.imageSearchDefaultMaxResolution = 0;
 
@@ -6678,16 +6662,15 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022867; // (rad/sec)
 
-
-            c.hasLidarData=true;
-            c.hasHypertreeBasedLidarSearch=true; // enable tree-based lidar searching
+            c.hasLidarData = true;
+            c.hasHypertreeBasedLidarSearch = true; // enable tree-based lidar searching
             c.lidarInstrumentName = Instrument.LASER;
             c.lidarSearchDefaultStartDate = new GregorianCalendar(2018, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDefaultEndDate = new GregorianCalendar(2020, 0, 1, 0, 0, 0).getTime();
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarBrowseDataSourceMap = new LinkedHashMap<>();
-            c.lidarSearchDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
-            c.lidarBrowseDataSourceMap.put("Hayabusa2","/ryugu/shared/lidar/browse/fileList.txt");
+            c.lidarSearchDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/search/hypertree/dataSource.lidar");
+            c.lidarBrowseDataSourceMap.put("Hayabusa2", "/ryugu/shared/lidar/browse/fileList.txt");
             c.lidarBrowseFileListResourcePath = "/ryugu/shared/lidar/browse/fileList.txt";
 
             c.lidarBrowseXYZIndices = OlaCubesGenerator.xyzIndices;
@@ -6704,12 +6687,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
-
-
             configArray.add(c);
         }
 
-       // Standard Gaskell shape model may be described once.
+        // Standard Gaskell shape model may be described once.
         final ShapeModelConfiguration gaskellModelConfig = ShapeModelConfiguration.builder(ShapeModelType.GASKELL.name(), ShapeModelDataUsed.IMAGE_BASED).build();
 
         // Gaskell images only.
@@ -6973,7 +6954,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             c.hasImageMap = false;
 
-            if(Configuration.isMac())
+            if (Configuration.isMac())
             {
                 // Right now bigmap only works on Macs
                 c.hasBigmap = true;
@@ -6989,8 +6970,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ),
             };
 
-            c.hasSpectralData=false;
-            c.spectralInstruments=new BasicSpectrumInstrument[] {
+            c.hasSpectralData = false;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
             };
 
             c.hasStateHistory = false;
@@ -6999,8 +6980,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasHierarchicalSpectraSearch = false;
             c.hasHypertreeBasedSpectraSearch = false;
 
-            c.hasLidarData=false;
-            c.hasHypertreeBasedLidarSearch=false;
+            c.hasLidarData = false;
+            c.hasHypertreeBasedLidarSearch = false;
 
             if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
             {
@@ -7012,25 +6993,22 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     }
 
     // Imaging instrument helper methods.
-    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType) {
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
+    {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
         QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
         return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
     }
 
-    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
+    private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
+    {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
         return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType);
     }
 
-    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType) {
-        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                instrument,
-                SpectralMode.MONO,
-                queryBase,
-                imageSources,
-                fileLocator,
-                imageType);
+    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, QueryBase queryBase, ImageSource[] imageSources, ImageType imageType)
+    {
+        Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralMode.MONO, queryBase, imageSources, fileLocator, imageType);
 
         // Put it all together in a session.
         Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -7038,18 +7016,20 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return BasicImagingInstrument.of(builder.build());
     }
 
-    public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements) {
-    	super(resolutionLabels, resolutionNumberElements);
+    public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
+    {
+        super(resolutionLabels, resolutionNumberElements);
     }
 
-    private SmallBodyViewConfig() {
-    	super(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
+    private SmallBodyViewConfig()
+    {
+        super(ImmutableList.<String>copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer>copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION));
     }
 
     @Override
     public SmallBodyViewConfig clone() // throws CloneNotSupportedException
     {
-        SmallBodyViewConfig c = (SmallBodyViewConfig)super.clone();
+        SmallBodyViewConfig c = (SmallBodyViewConfig) super.clone();
 
         return c;
     }
@@ -7057,27 +7037,24 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     @Override
     public boolean isAccessible()
     {
-        String modelFileOrDirectory = ShapeModelType.CUSTOM.equals(author) ? CustomShapeModel.getModelFilename(this) : serverPath("");
-        FileInfo info = FileCache.getFileInfoFromServer(modelFileOrDirectory);
-        return info.isExistsLocally() || (info.isURLAccessAuthorized() == YesOrNo.YES && info.isExistsOnServer() == YesOrNo.YES);
+        return FileCache.instance().isAccessible(getShapeModelFileNames()[0]);
     }
 
-	@Override
-	public Instrument getLidarInstrument()
-	{
-		// TODO Auto-generated method stub
-		return lidarInstrumentName;
-	}
+    @Override
+    public Instrument getLidarInstrument()
+    {
+        // TODO Auto-generated method stub
+        return lidarInstrumentName;
+    }
 
-	public boolean hasHypertreeLidarSearch()
-	{
-		return hasHypertreeBasedLidarSearch;
-	}
+    public boolean hasHypertreeLidarSearch()
+    {
+        return hasHypertreeBasedLidarSearch;
+    }
 
-	public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
-	{
-		return hierarchicalSpectraSearchSpecification;
-	}
-
+    public SpectraHierarchicalSearchSpecification<?> getHierarchicalSpectraSearchSpecification()
+    {
+        return hierarchicalSpectraSearchSpecification;
+    }
 
 }

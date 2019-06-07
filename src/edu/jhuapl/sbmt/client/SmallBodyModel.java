@@ -53,12 +53,26 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
         super(config);
     }
 
+    protected SmallBodyModel(
+            BodyViewConfig config,
+            String[] modelNames,
+            String[] coloringFiles,
+            String[] coloringNames,
+            String[] coloringUnits,
+            boolean[] coloringHasNulls,
+            String[] imageMapNames,
+            ColoringValueType coloringValueType,
+            boolean lowestResolutionModelStoredInResource)
+    {
+        this(config, modelNames, config.getShapeModelFileNames(), coloringFiles, coloringNames, coloringUnits, coloringHasNulls, imageMapNames, coloringValueType, lowestResolutionModelStoredInResource);
+    }
+
     /**
      * Note that name is used to name this small body model as a whole including all
      * resolution levels whereas modelNames is an array of names that is specific
      * for each resolution level.
      */
-    public SmallBodyModel(
+    private SmallBodyModel(
             BodyViewConfig config,
             String[] modelNames,
             String[] modelFiles,
