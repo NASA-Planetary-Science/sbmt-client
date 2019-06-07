@@ -1682,7 +1682,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 0.00040613;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -1831,7 +1830,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 0.00040613;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -1982,7 +1980,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -2133,7 +2130,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -2283,7 +2279,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -2434,7 +2429,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -2585,7 +2579,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rotationRate = 4.0626E-4;
 
             c.hasImageMap = true;
-            c.imageMaps = new String[] { "basemap/bennu_arrival_obl_1201_cnorm_CCv0001.png" };
 
             if (Configuration.isMac())
             {
@@ -7073,45 +7066,32 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             if (imageMapKeys == null)
             {
                 List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
-                if (imageMaps != null && imageMaps.length > 0)
+
+                // Newest/best way to specify maps is with metadata, if this model has it.
+                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
+                File metadataFile;
+                try
                 {
-                    // Newest/best way to specify maps is with metadata, if this model has it.
-                    String metadataFileName = SafeURLPaths.instance().getString(new File(serverPath(imageMaps[0])).getParentFile().getPath(), "config.txt");
-                    File metadataFile;
+                    metadataFile = FileCache.getFileFromServer(metadataFileName);
+                }
+                catch (Exception ignored)
+                {
+                    // This file is optional.
+                    metadataFile = null;
+                }
+
+                if (metadataFile != null && metadataFile.isFile())
+                {
+                    // Proceed using metadata.
                     try
                     {
-                        metadataFile = FileCache.getFileFromServer(metadataFileName);
+                        Metadata metadata = Serializers.deserialize(metadataFile, "CustomImages");
+                        imageMapKeys = metadata.get(Key.of("customImages"));
                     }
-                    catch (Exception ignored)
+                    catch (Exception e)
                     {
-                        // This file is optional.
-                        metadataFile = null;
-                    }
-
-                    if (metadataFile != null && metadataFile.isFile())
-                    {
-                        // Proceed using metadata.
-                        try
-                        {
-                            Metadata metadata = Serializers.deserialize(metadataFile, "CustomImages");
-                            imageMapKeys = metadata.get(Key.of("customImages"));
-                        }
-                        catch (Exception e)
-                        {
-                            // This ought to have worked so report this exception.
-                            e.printStackTrace();
-                        }
-                    }
-                    else
-                    {
-                        // No metadata file, so create keys based on names of images.
-                        ImmutableList.Builder<CustomCylindricalImageKey> mapBuilder = ImmutableList.builder();
-                        for (String imageFileName : imageMaps)
-                        {
-                            String name = new File(imageFileName).getName().replaceFirst("\\.[^\\.]*$", "");
-                            mapBuilder.add(new CustomCylindricalImageKey(name, imageFileName, ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), name));
-                        }
-                        imageMapKeys = mapBuilder.build();
+                        // This ought to have worked so report this exception.
+                        e.printStackTrace();
                     }
                 }
                 else

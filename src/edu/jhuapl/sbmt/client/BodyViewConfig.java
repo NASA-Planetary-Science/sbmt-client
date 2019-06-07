@@ -38,7 +38,6 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    protected String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
