@@ -496,10 +496,10 @@ public class CustomImagesModel extends ImageSearchModel
                     {
                     	CustomCylindricalImageKey imageInfo = new CustomCylindricalImageKey(name, imageFilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date(), name);
 
-                        imageInfo.lllat = lllats[i];
-                        imageInfo.lllon = lllons[i];
-                        imageInfo.urlat = urlats[i];
-                        imageInfo.urlon = urlons[i];
+                        imageInfo.setLllat(lllats[i]);
+                        imageInfo.setLllon(lllons[i]);
+                        imageInfo.setUrlat(urlats[i]);
+                        imageInfo.setUrlon(urlons[i]);
 
                         customImages.add(imageInfo);
 

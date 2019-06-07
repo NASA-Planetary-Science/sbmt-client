@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -12,6 +13,7 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -36,7 +38,7 @@ public abstract class BodyViewConfig extends ViewConfig
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    public String[] imageMaps = null;
+    protected String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
     public boolean hasRemoteMapmaker = false;
@@ -347,6 +349,11 @@ public abstract class BodyViewConfig extends ViewConfig
 	{
 		return spectraSearchDataSourceMap;
 	}
+
+    protected List<ImageKeyInterface> getImageMapKeys()
+    {
+        throw new UnsupportedOperationException();
+    }
 
     protected static String[] prepend(String prefix, String... strings)
     {

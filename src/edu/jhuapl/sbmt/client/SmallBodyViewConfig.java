@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -21,6 +22,7 @@ import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
 import edu.jhuapl.sbmt.config.SessionConfiguration;
 import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
 import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
@@ -29,6 +31,7 @@ import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
@@ -40,6 +43,10 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Metadata;
+import crucible.crust.metadata.impl.gson.Serializers;
 
 /**
 * A SmallBodyConfig is a class for storing all which models should be instantiated
@@ -7015,6 +7022,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return BasicImagingInstrument.of(builder.build());
     }
 
+    private List<ImageKeyInterface> imageMapKeys = null;
+
     public SmallBodyViewConfig(Iterable<String> resolutionLabels, Iterable<Integer> resolutionNumberElements)
     {
         super(resolutionLabels, resolutionNumberElements);
@@ -7056,4 +7065,104 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         return hierarchicalSpectraSearchSpecification;
     }
 
+    @Override
+    protected List<ImageKeyInterface> getImageMapKeys()
+    {
+        if (hasImageMap)
+        {
+            if (imageMapKeys == null)
+            {
+                List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
+                if (imageMaps != null && imageMaps.length > 0)
+                {
+                    // Newest/best way to specify maps is with metadata, if this model has it.
+                    String metadataFileName = SafeURLPaths.instance().getString(new File(serverPath(imageMaps[0])).getParentFile().getPath(), "config.txt");
+                    File metadataFile;
+                    try
+                    {
+                        metadataFile = FileCache.getFileFromServer(metadataFileName);
+                    }
+                    catch (Exception ignored)
+                    {
+                        // This file is optional.
+                        metadataFile = null;
+                    }
+
+                    if (metadataFile != null && metadataFile.isFile())
+                    {
+                        // Proceed using metadata.
+                        try
+                        {
+                            Metadata metadata = Serializers.deserialize(metadataFile, "CustomImages");
+                            imageMapKeys = metadata.get(Key.of("customImages"));
+                        }
+                        catch (Exception e)
+                        {
+                            // This ought to have worked so report this exception.
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        // No metadata file, so create keys based on names of images.
+                        ImmutableList.Builder<CustomCylindricalImageKey> mapBuilder = ImmutableList.builder();
+                        for (String imageFileName : imageMaps)
+                        {
+                            String name = new File(imageFileName).getName().replaceFirst("\\.[^\\.]*$", "");
+                            mapBuilder.add(new CustomCylindricalImageKey(name, imageFileName, ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), name));
+                        }
+                        imageMapKeys = mapBuilder.build();
+                    }
+                }
+                else
+                {
+                    // Final option (legacy behavior). The key is hardwired. The file could be in either of two places.
+                    if (FileCache.isFileGettable(serverPath("image_map.png")))
+                    {
+                        imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
+                    }
+                    else if (FileCache.isFileGettable(serverPath("basemap/image_map.png")))
+                    {
+                        imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "basemap/image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
+                    }
+                }
+
+                this.imageMapKeys = correctMapKeys(imageMapKeys);
+            }
+        }
+
+        return imageMapKeys;
+    }
+
+    /**
+     * This converts keys with short names, file names, and original names to full-fledged keys that image creators can handle.
+     * The short form is more convenient and idiomatic for storage and for configuration purposes, but the longer form can
+     * actually be used to create a cylindrical image object.
+     *
+     * If/when image key classes are revamped, the shorter form would actually be preferable. The name is actually supposed to be
+     * the display name, and the original name is most likely intended to hold the "original file name" in cases where a file
+     * is imported into the custom area.
+     *
+     * @param keys the input (shorter) keys
+     * @return the output (full-fledged) keys
+     */
+    private List<ImageKeyInterface> correctMapKeys(List<CustomCylindricalImageKey> keys)
+    {
+        ImmutableList.Builder<ImageKeyInterface> builder = ImmutableList.builder();
+        for (CustomCylindricalImageKey key : keys)
+        {
+            String fileName = serverPath(key.getImageFilename());
+
+            CustomCylindricalImageKey correctedKey = new CustomCylindricalImageKey(fileName, fileName, ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), key.getOriginalName());
+
+            correctedKey.setLllat(key.getLllat());
+            correctedKey.setLllon(key.getLllon());
+            correctedKey.setUrlat(key.getUrlat());
+            correctedKey.setUrlon(key.getUrlon());
+
+            builder.add(correctedKey);
+        }
+
+        return builder.build();
+    }
 }

@@ -1,9 +1,13 @@
 package edu.jhuapl.sbmt.client;
 
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
 import vtk.vtkPolyData;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.GenericPolyhedralModel;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.Instrument;
 
 public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBodyModel
@@ -15,6 +19,8 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
             SlopeUnitsStr, ElevUnitsStr, GravAccUnitsStr, GravPotUnitsStr
     };
     private static final ColoringValueType DEFAULT_COLORING_VALUE_TYPE = ColoringValueType.CELLDATA;
+
+    private final List<ImageKeyInterface> imageMapKeys;
 
 	public ISmallBodyViewConfig getSmallBodyConfig()
     {
@@ -37,6 +43,7 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     public SmallBodyModel(String uniqueModelId)
     {
         super(uniqueModelId);
+        this.imageMapKeys = ImmutableList.of();
     }
 
     /**
@@ -46,11 +53,13 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
     public SmallBodyModel(String uniqueModelId, vtkPolyData polyData)
     {
         super(uniqueModelId, polyData);
+        this.imageMapKeys = ImmutableList.of();
     }
 
-    public SmallBodyModel(ViewConfig config)
+    public SmallBodyModel(BodyViewConfig config)
     {
         super(config);
+        this.imageMapKeys = config.getImageMapKeys();
     }
 
     protected SmallBodyModel(
@@ -64,7 +73,12 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        this(config, modelNames, config.getShapeModelFileNames(), coloringFiles, coloringNames, coloringUnits, coloringHasNulls, imageMapNames, coloringValueType, lowestResolutionModelStoredInResource);
+        this(config, modelNames, config.getShapeModelFileNames(), coloringFiles, coloringNames, coloringUnits, coloringHasNulls, coloringValueType, lowestResolutionModelStoredInResource);
+    }
+
+    public List<ImageKeyInterface> getImageMapKeys()
+    {
+        return imageMapKeys;
     }
 
     /**
@@ -80,21 +94,12 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
             String[] coloringNames,
             String[] coloringUnits,
             boolean[] coloringHasNulls,
-            String[] imageMapNames,
             ColoringValueType coloringValueType,
             boolean lowestResolutionModelStoredInResource)
     {
-        super(config, modelNames, modelFiles, coloringFiles, coloringNames, coloringUnits, coloringHasNulls, imageMapNames, coloringValueType, lowestResolutionModelStoredInResource);
+        super(config, modelNames, modelFiles, coloringFiles, coloringNames, coloringUnits, coloringHasNulls, coloringValueType, lowestResolutionModelStoredInResource);
 
-//        if (lowestResolutionModelStoredInResource)
-//            defaultModelFile = ConvertResourceToFile.convertResourceToRealFile(
-//                    this,
-//                    modelFiles[0],
-//                    Configuration.getApplicationDataDir());
-//        else
-//            defaultModelFile = FileCache.getFileFromServer(modelFiles[0]);
-//
-//        initialize(defaultModelFile);
+        this.imageMapKeys = config.getImageMapKeys();
     }
 
     protected void initializeConfigParameters(
@@ -129,7 +134,6 @@ public class SmallBodyModel extends GenericPolyhedralModel implements ISmallBody
                 config.hasColoringData ? DEFAULT_COLORING_NAMES : null,
                 config.hasColoringData ? DEFAULT_COLORING_UNITS : null,
                 coloringHasNulls,
-                imageMapNames,
                 config.hasColoringData ? DEFAULT_COLORING_VALUE_TYPE : null,
                 lowestResolutionModelStoredInResource);
     }
