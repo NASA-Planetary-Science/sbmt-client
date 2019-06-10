@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
-import edu.jhuapl.saavtk.util.FileCache.FileInfo;
 import edu.jhuapl.saavtk.util.FileCache.NoInternetAccessException;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
@@ -66,12 +66,12 @@ public class DEMBrowseIO
         try
         {
         	String[] parts;
-        	FileInfo fileInfoFromServer;
+        	DownloadableFileState fileInfoFromServer;
             while ((line = in.readLine()) != null)
             {
             	parts = line.split(",");
-            	fileInfoFromServer = FileCache.getFileInfoFromServer(rootDir + File.separator + "dtm/browse" + File.separator + parts[0]);
-            	DEMKey key = new DEMKey(fileInfoFromServer.getURL().toString(), parts[1]);
+            	fileInfoFromServer = FileCache.getState(rootDir + File.separator + "dtm/browse" + File.separator + parts[0]);
+            	DEMKey key = new DEMKey(fileInfoFromServer.getUrlState().getUrl().toString(), parts[1]);
             	keys.add(key);
             }
             completionBlock.run();

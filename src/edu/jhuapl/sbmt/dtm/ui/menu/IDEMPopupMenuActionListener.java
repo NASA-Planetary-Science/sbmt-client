@@ -18,5 +18,5 @@ public interface IDEMPopupMenuActionListener
 	public void saveDEMToFITS(List<DEMKey> keys, Component invoker);
 	public void changeDEMOpacity(List<DEMKey> keys, Renderer renderer);
 	public void setDEMBoundaryColor(List<DEMKey> keys, Color color);
-	public void exportDEMToCustomModel(List<DEMKey> demKeys, PolyhedralModel smallBodyModel);
+	public String exportDEMToCustomModel(List<DEMKey> demKeys, PolyhedralModel smallBodyModel);
 }
