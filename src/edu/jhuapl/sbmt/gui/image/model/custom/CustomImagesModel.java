@@ -587,6 +587,16 @@ public class CustomImagesModel extends ImageSearchModel
         fireResultsChanged();
     }
 
+    public List<String> getCustomImageNames()
+    {
+    	ArrayList<String> list = new ArrayList<String>();
+    	for (CustomImageKeyInterface info : customImages)
+        {
+    		list.add(info.getName());
+        }
+    	return list;
+    }
+
     public void propertyChange(PropertyChangeEvent evt)
     {
         if (Properties.MODEL_PICKED.equals(evt.getPropertyName()))

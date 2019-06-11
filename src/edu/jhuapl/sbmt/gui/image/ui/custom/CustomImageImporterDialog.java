@@ -11,12 +11,33 @@
 package edu.jhuapl.sbmt.gui.image.ui.custom;
 
 import java.awt.Dialog;
+import java.awt.GridBagConstraints;
+import java.awt.Window;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 import vtk.vtkImageReader2;
 import vtk.vtkImageReader2Factory;
@@ -39,6 +60,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private boolean isEditMode;
     private IImagingInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
+    private List<String> currentNames;
 
     public enum ProjectionType
     {
@@ -46,107 +68,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         PERSPECTIVE
     }
 
-//    public static class ImageInfo implements MetadataManager
-//    {
-//        public String name = ""; // name to call this image for display purposes
-//        public String imagefilename = ""; // filename of image on disk
-//        public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
-//        public ImageType imageType = ImageType.GENERIC_IMAGE;
-//        public double rotation = 0.0;
-//        public String flip = "None";
-//        public double lllat = -90.0;
-//        public double lllon = 0.0;
-//        public double urlat = 90.0;
-//        public double urlon = 360.0;
-//        public String sumfilename = "null"; // filename of sumfile on disk
-//        public String infofilename = "null"; // filename of infofile on disk
-//
-//        final Key<String> nameKey = Key.of("name");
-//        final Key<String> imageFileNameKey = Key.of("imagefilename");
-//        final Key<String> projectionKey = Key.of("projectionType");
-//        final Key<String> imageTypeKey = Key.of("imageType");
-//        final Key<Double> rotationKey = Key.of("rotation");
-//        final Key<String> flipKey = Key.of("flip");
-//        final Key<Double> lllatKey = Key.of("lllat");
-//        final Key<Double> lllonKey = Key.of("lllon");
-//        final Key<Double> urlatKey = Key.of("urlat");
-//        final Key<Double> urlonKey = Key.of("urlon");
-//        final Key<String> sumfilenameKey = Key.of("sumfilename");
-//        final Key<String> infofileKey = Key.of("infofilename");
-//
-//
-//        @Override
-//        public String toString()
-//        {
-//            DecimalFormat df = new DecimalFormat("#.#####");
-//            if (projectionType == ProjectionType.CYLINDRICAL)
-//            {
-//                return name + ", Cylindrical  ["
-//                        + df.format(lllat) + ", "
-//                        + df.format(lllon) + ", "
-//                        + df.format(urlat) + ", "
-//                        + df.format(urlon)
-//                        + "]";
-//            }
-//            else
-//            {
-//                if (imageType == ImageType.GENERIC_IMAGE)
-//                    return name + ", Perspective" + ", " + imageType + ", Rotate " + rotation + ", Flip " + flip;
-//                else
-//                    return name + ", Perspective" + ", " + imageType;
-//            }
-//        }
-//
-//        public List<String> toList()
-//        {
-//            List<String> string = new Vector<String>();
-//            string.add(name);
-////            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-////            string.add(formatter.format(new Date()));
-//            string.add("" + new Date().getTime());
-//            return string;
-//
-//        }
-//
-//        @Override
-//        public Metadata store()
-//        {
-//            SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-//            result.put(nameKey, name);
-//            result.put(imageFileNameKey, imagefilename);
-//            result.put(projectionKey, projectionType.toString());
-//            result.put(imageTypeKey, imageType.toString());
-//            result.put(rotationKey, rotation);
-//            result.put(flipKey, flip);
-//            result.put(lllatKey, lllat);
-//            result.put(lllonKey, lllon);
-//            result.put(urlatKey, urlat);
-//            result.put(urlonKey, urlon);
-//            result.put(sumfilenameKey, sumfilename);
-//            result.put(infofileKey, infofilename);
-//            return result;
-//        }
-//
-//        @Override
-//        public void retrieve(Metadata source)
-//        {
-//            name = source.get(nameKey);
-//            imagefilename = source.get(imageFileNameKey);
-//            projectionType = ProjectionType.valueOf(source.get(projectionKey));
-//            imageType = ImageType.valueOf(source.get(imageTypeKey));
-//            rotation = source.get(rotationKey);
-//            flip = source.get(flipKey);
-//            lllat = source.get(lllatKey);
-//            lllon = source.get(lllonKey);
-//            urlat = source.get(urlatKey);
-//            urlon = source.get(urlonKey);
-//            sumfilename = source.get(sumfilenameKey);
-//            infofilename = source.get(infofileKey);
-//        }
-//    }
-
     /** Creates new form ShapeModelImporterDialog */
-    public CustomImageImporterDialog(java.awt.Window parent, boolean isEditMode, IImagingInstrument instrument)
+    public CustomImageImporterDialog(Window parent, boolean isEditMode, IImagingInstrument instrument)
     {
         super(parent, isEditMode ? "Edit Image" : "Import New Image", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();
@@ -170,9 +93,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     	String keyImageFilename = info == null ? "" : info.getImageFilename();
     	ProjectionType projection = info == null ? ProjectionType.CYLINDRICAL : info.getProjectionType();
     	ImageType currentImageType = info == null ? ImageType.GENERIC_IMAGE : info.getImageType();
-
-
-
 
         this.isEllipsoid = isEllipsoid;
 
@@ -215,7 +135,6 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             imageRotateComboBox.setSelectedItem(Integer.toString((int)rotation));
         }
 
-//        ImageType currentImageType = info.getImageType();
         if (keyImageFilename.toUpperCase().endsWith(".FITS") || keyImageFilename.toUpperCase().endsWith(".FIT"))
         {
             imageTypeComboBox.setModel(new DefaultComboBoxModel(ImageType.values()));
@@ -231,7 +150,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         updateEnabledItems();
     }
 
-    public ProjectionType getSelectedProjectionType()
+    private ProjectionType getSelectedProjectionType()
     {
         if (cylindricalProjectionRadioButton.isSelected())
             return ProjectionType.CYLINDRICAL;
@@ -241,29 +160,18 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
 
     public CustomImageKeyInterface getImageInfo()
     {
-//        ImageInfo info = new ImageInfo();
-
-//        info.imagefilename = imagePathTextField.getText();
     	String imagefilename = imagePathTextField.getText();
         if (LEAVE_UNMODIFIED.equals(imagefilename) || imagefilename == null || imagefilename.isEmpty())
             imagefilename = null;
 
         // If name is not provided, set name to filename
-//        info.imageType = (ImageType)imageTypeComboBox.getSelectedItem();
         ImageType imageType = (ImageType)imageTypeComboBox.getSelectedItem();
-//        info.name = imageNameTextField.getText();
         String name = imageNameTextField.getText();
         if ((name == null || name.isEmpty()) && imagefilename != null)
             name = new File(imagefilename).getName();
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
-//            info.projectionType = ProjectionType.CYLINDRICAL;
-//            info.lllat = Double.parseDouble(lllatFormattedTextField.getText());
-//            info.lllon = Double.parseDouble(lllonFormattedTextField.getText());
-//            info.urlat = Double.parseDouble(urlatFormattedTextField.getText());
-//            info.urlon = Double.parseDouble(urlonFormattedTextField.getText());
-
             CustomCylindricalImageKey key = new CustomCylindricalImageKey(name, imagefilename, imageType, ImageSource.LOCAL_CYLINDRICAL, new Date(), name);
             key.setLllat(Double.parseDouble(lllatFormattedTextField.getText()));
             key.setLllon(Double.parseDouble(lllonFormattedTextField.getText()));
@@ -293,16 +201,12 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             if (LEAVE_UNMODIFIED.equals(pointingFilename) || pointingFilename == null || pointingFilename.isEmpty())
             	pointingFilename = null;
 
-//            info.rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
-//            info.flip = imageFlipComboBox.getSelectedItem().toString();
             double rotation = imageRotateComboBox.getSelectedIndex() * 90.0;
             String flip = imageFlipComboBox.getSelectedItem().toString();
 
             CustomPerspectiveImageKey key = new CustomPerspectiveImageKey(name, imagefilename, source, imageType, rotation, flip, fileType, pointingFilename, new Date(), name);
             return key;
         }
-
-//        return info;
     }
 
     private String validateInput()
@@ -331,6 +235,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
             return "Please enter a name for the image. The name can be any text that describes the image.";
         if (imageName.contains(","))
             return "Name may not contain commas.";
+        if (currentNames.contains(imageName))
+        {
+        	return "Name for custom image already exists.";
+        }
 
         if (cylindricalProjectionRadioButton.isSelected())
         {
@@ -436,6 +344,19 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         return okayPressed;
     }
 
+    public void setCurrentImageNames(List<String> currentNames)
+    {
+    	this.currentNames = currentNames;
+    }
+
+    private void checkCurrentNames()
+    {
+    	String inputName = imageNameTextField.getText();
+    	boolean exists = currentNames.contains(inputName.trim());
+    	nameExistsLabel.setVisible(exists);
+		okButton.setVisible(!exists);
+    }
+
     private void updateEnabledItems()
     {
         boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
@@ -448,13 +369,67 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         urlonLabel.setEnabled(cylindrical);
         urlonFormattedTextField.setEnabled(cylindrical);
         infofilePathRB.setEnabled(!cylindrical);
+        browseInfofileButton.setEnabled(!cylindrical && infofilePathRB.isSelected());
         infofilePathTextField.setEnabled(!cylindrical && !isEditMode && infofilePathRB.isSelected());
         sumfilePathRB.setEnabled(!cylindrical);
+        browseSumfileButton.setEnabled(!cylindrical && sumfilePathRB.isSelected());
         sumfilePathTextField.setEnabled(!cylindrical && !isEditMode && sumfilePathRB.isSelected());
 
         boolean generic = imageTypeComboBox.getSelectedItem() == ImageType.GENERIC_IMAGE;
         imageFlipComboBox.setEnabled(generic && !cylindrical);
         imageRotateComboBox.setEnabled(generic && !cylindrical);
+    }
+
+    /**
+     * Installs a listener to receive notification when the text of any
+     * {@code JTextComponent} is changed. Internally, it installs a
+     * {@link DocumentListener} on the text component's {@link Document},
+     * and a {@link PropertyChangeListener} on the text component to detect
+     * if the {@code Document} itself is replaced.
+     *
+     * @param text any text component, such as a {@link JTextField}
+     *        or {@link JTextArea}
+     * @param changeListener a listener to receieve {@link ChangeEvent}s
+     *        when the text is changed; the source object for the events
+     *        will be the text component
+     * @throws NullPointerException if either parameter is null
+     */
+    public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+        Objects.requireNonNull(text);
+        Objects.requireNonNull(changeListener);
+        DocumentListener dl = new DocumentListener() {
+            private int lastChange = 0, lastNotifiedChange = 0;
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                lastChange++;
+                SwingUtilities.invokeLater(() -> {
+                    if (lastNotifiedChange != lastChange) {
+                        lastNotifiedChange = lastChange;
+                        changeListener.stateChanged(new ChangeEvent(text));
+                    }
+                });
+            }
+        };
+        text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+            Document d1 = (Document)e.getOldValue();
+            Document d2 = (Document)e.getNewValue();
+            if (d1 != null) d1.removeDocumentListener(dl);
+            if (d2 != null) d2.addDocumentListener(dl);
+            dl.changedUpdate(null);
+        });
+        Document d = text.getDocument();
+        if (d != null) d.addDocumentListener(dl);
     }
 
     /** This method is called from within the constructor to
@@ -467,40 +442,43 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        projectionButtonGroup = new javax.swing.ButtonGroup();
-        imagePathLabel = new javax.swing.JLabel();
-        imagePathTextField = new javax.swing.JTextField();
-        browseImageButton = new javax.swing.JButton();
-        lllatLabel = new javax.swing.JLabel();
-        lllonLabel = new javax.swing.JLabel();
-        urlatLabel = new javax.swing.JLabel();
-        urlonLabel = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        cancelButton = new javax.swing.JButton();
-        okButton = new javax.swing.JButton();
-        lllatFormattedTextField = new javax.swing.JFormattedTextField();
-        lllonFormattedTextField = new javax.swing.JFormattedTextField();
-        urlatFormattedTextField = new javax.swing.JFormattedTextField();
-        urlonFormattedTextField = new javax.swing.JFormattedTextField();
-        cylindricalProjectionRadioButton = new javax.swing.JRadioButton();
-        perspectiveProjectionRadioButton = new javax.swing.JRadioButton();
-        infofilePathRB = new javax.swing.JRadioButton("Infofile Path", true);
-        browseInfofileButton = new javax.swing.JButton();
-        imageLabel = new javax.swing.JLabel();
-        imageNameTextField = new javax.swing.JTextField();
-        sumfilePathRB = new javax.swing.JRadioButton();
-        infofilePathTextField = new javax.swing.JTextField();
-        sumfilePathTextField = new javax.swing.JTextField();
-        browseSumfileButton = new javax.swing.JButton();
-        imageTypeLabel = new javax.swing.JLabel();
-        imageTypeComboBox = new javax.swing.JComboBox();
-        imageRotateLabel = new javax.swing.JLabel();
-        imageFlipLabel = new javax.swing.JLabel();
-        imageRotateComboBox = new javax.swing.JComboBox();
-        imageFlipComboBox = new javax.swing.JComboBox();
+        projectionButtonGroup = new ButtonGroup();
+        imagePathLabel = new JLabel();
+        imagePathTextField = new JTextField();
+        browseImageButton = new JButton();
+        lllatLabel = new JLabel();
+        lllonLabel = new JLabel();
+        urlatLabel = new JLabel();
+        urlonLabel = new JLabel();
+        jPanel1 = new JPanel();
+        cancelButton = new JButton();
+        okButton = new JButton();
+        lllatFormattedTextField = new JFormattedTextField();
+        lllonFormattedTextField = new JFormattedTextField();
+        urlatFormattedTextField = new JFormattedTextField();
+        urlonFormattedTextField = new JFormattedTextField();
+        cylindricalProjectionRadioButton = new JRadioButton();
+        perspectiveProjectionRadioButton = new JRadioButton();
+        infofilePathRB = new JRadioButton("Infofile Path", true);
+        browseInfofileButton = new JButton();
+        imageLabel = new JLabel();
+        imageNameTextField = new JTextField();
+        nameExistsLabel = new JLabel();
+        sumfilePathRB = new JRadioButton();
+        infofilePathTextField = new JTextField();
+        sumfilePathTextField = new JTextField();
+        browseSumfileButton = new JButton();
+        imageTypeLabel = new JLabel();
+        imageTypeComboBox = new JComboBox();
+        imageRotateLabel = new JLabel();
+        imageFlipLabel = new JLabel();
+        imageRotateComboBox = new JComboBox();
+        imageFlipComboBox = new JComboBox();
         ButtonGroup tmpBG = new ButtonGroup();
         tmpBG.add(infofilePathRB);
         tmpBG.add(sumfilePathRB);
+
+        addChangeListener(imageNameTextField, e -> { checkCurrentNames(); });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(600, 167));
@@ -717,6 +695,15 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(6, 5, 4, 0);
         getContentPane().add(imageNameTextField, gridBagConstraints);
 
+        nameExistsLabel.setText("Already Exists");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+        getContentPane().add(nameExistsLabel, gridBagConstraints);
+
+
         sumfilePathRB.setText("Sumfile Path");
         sumfilePathRB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -748,65 +735,65 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
                 browseSumfileButtonActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 4, 5);
         getContentPane().add(browseSumfileButton, gridBagConstraints);
 
         imageTypeLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         imageTypeLabel.setText("Image Type");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.ipadx = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeLabel, gridBagConstraints);
 
-        imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+        imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
         imageTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 imageTypeComboBoxActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageTypeComboBox, gridBagConstraints);
 
         imageRotateLabel.setText("Image Rotate");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageRotateLabel, gridBagConstraints);
 
         imageFlipLabel.setText("Image Flip");
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageFlipLabel, gridBagConstraints);
 
-        imageRotateComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        imageRotateComboBox.setModel(new DefaultComboBoxModel(new String[] { "0", "90", "180", "270" }));
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageRotateComboBox, gridBagConstraints);
 
-        imageFlipComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        imageFlipComboBox.setModel(new DefaultComboBoxModel(new String[] { "None", "X", "Y" }));
+        gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 6, 0, 0);
         getContentPane().add(imageFlipComboBox, gridBagConstraints);
 
@@ -829,7 +816,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         {
             ImageType[] allImageTypes = ImageType.values();
             ImageType currentImageType = instrument != null ? instrument.getType() : ImageType.GENERIC_IMAGE;
-            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(allImageTypes));
+            imageTypeComboBox.setModel(new DefaultComboBoxModel(allImageTypes));
             imageTypeComboBox.setSelectedItem(currentImageType);
 
             boolean cylindrical = cylindricalProjectionRadioButton.isSelected();
@@ -839,7 +826,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         }
         else
         {
-            imageTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
+            imageTypeComboBox.setModel(new DefaultComboBoxModel(new ImageType[] { ImageType.GENERIC_IMAGE }));
         }
 
         imageNameTextField.setText(imageFileName);
@@ -914,36 +901,37 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     }//GEN-LAST:event_imageTypeComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton browseImageButton;
-    private javax.swing.JButton browseInfofileButton;
-    private javax.swing.JButton browseSumfileButton;
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JRadioButton cylindricalProjectionRadioButton;
-    private javax.swing.JComboBox imageFlipComboBox;
-    private javax.swing.JLabel imageFlipLabel;
-    private javax.swing.JLabel imageLabel;
-    private javax.swing.JTextField imageNameTextField;
-    private javax.swing.JLabel imagePathLabel;
-    private javax.swing.JTextField imagePathTextField;
-    private javax.swing.JComboBox imageRotateComboBox;
-    private javax.swing.JLabel imageRotateLabel;
-    private javax.swing.JComboBox imageTypeComboBox;
-    private javax.swing.JLabel imageTypeLabel;
-    private javax.swing.JRadioButton infofilePathRB;
-    private javax.swing.JTextField infofilePathTextField;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JFormattedTextField lllatFormattedTextField;
-    private javax.swing.JLabel lllatLabel;
-    private javax.swing.JFormattedTextField lllonFormattedTextField;
-    private javax.swing.JLabel lllonLabel;
-    private javax.swing.JButton okButton;
-    private javax.swing.JRadioButton perspectiveProjectionRadioButton;
-    private javax.swing.ButtonGroup projectionButtonGroup;
-    private javax.swing.JRadioButton sumfilePathRB;
-    private javax.swing.JTextField sumfilePathTextField;
-    private javax.swing.JFormattedTextField urlatFormattedTextField;
-    private javax.swing.JLabel urlatLabel;
-    private javax.swing.JFormattedTextField urlonFormattedTextField;
-    private javax.swing.JLabel urlonLabel;
+    private JButton browseImageButton;
+    private JButton browseInfofileButton;
+    private JButton browseSumfileButton;
+    private JButton cancelButton;
+    private JRadioButton cylindricalProjectionRadioButton;
+    private JComboBox imageFlipComboBox;
+    private JLabel imageFlipLabel;
+    private JLabel imageLabel;
+    private JTextField imageNameTextField;
+    private JLabel imagePathLabel;
+    private JTextField imagePathTextField;
+    private JComboBox imageRotateComboBox;
+    private JLabel imageRotateLabel;
+    private JComboBox imageTypeComboBox;
+    private JLabel imageTypeLabel;
+    private JRadioButton infofilePathRB;
+    private JTextField infofilePathTextField;
+    private JPanel jPanel1;
+    private JFormattedTextField lllatFormattedTextField;
+    private JLabel lllatLabel;
+    private JFormattedTextField lllonFormattedTextField;
+    private JLabel lllonLabel;
+    private JButton okButton;
+    private JRadioButton perspectiveProjectionRadioButton;
+    private ButtonGroup projectionButtonGroup;
+    private JRadioButton sumfilePathRB;
+    private JTextField sumfilePathTextField;
+    private JFormattedTextField urlatFormattedTextField;
+    private JLabel urlatLabel;
+    private JFormattedTextField urlonFormattedTextField;
+    private JLabel urlonLabel;
+    private JLabel nameExistsLabel;
     // End of variables declaration//GEN-END:variables
 }

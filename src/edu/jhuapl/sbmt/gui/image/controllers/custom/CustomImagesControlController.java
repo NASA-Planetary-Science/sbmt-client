@@ -65,6 +65,7 @@ public class CustomImagesControlController
     private void newButtonActionPerformed(ActionEvent evt)
     {
         CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, false, model.getInstrument());
+        dialog.setCurrentImageNames(model.getCustomImageNames());
         dialog.setImageInfo(null, model.getModelManager().getPolyhedralModel().isEllipsoid());
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
