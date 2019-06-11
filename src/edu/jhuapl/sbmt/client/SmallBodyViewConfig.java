@@ -101,13 +101,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.shapeModelFileNames = prepend("/EROS", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"),
-                        ImageType.MSI_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE},
-                        Instrument.MSI
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new GenericPhpQuery("/GASKELL/EROS/MSI", "EROS", "/GASKELL/EROS/MSI/gallery"), //
+                        ImageType.MSI_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL_UPDATED, ImageSource.SPICE}, //
+                        Instrument.MSI //
+                        ) //
         };
 
         c.hasLidarData = true;
@@ -163,11 +163,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.shapeModelFileNames = prepend(c.rootDirOnServer, "eros001708.obj.gz", "eros007790.obj.gz", "eros010152.obj.gz", "eros022540.obj.gz", "eros089398.obj.gz", "eros200700.obj.gz");
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
-        c.setResolution(ImmutableList.of(
-                "1708 plates", "7790 plates", "10152 plates",
-                "22540 plates", "89398 plates", "200700 plates"
-        ), ImmutableList.of(
-                1708, 7790, 10152, 22540, 89398, 200700
+        c.setResolution(ImmutableList.of( //
+                "1708 plates", "7790 plates", "10152 plates", //
+                "22540 plates", "89398 plates", "200700 plates" //
+        ), ImmutableList.of( //
+                1708, 7790, 10152, 22540, 89398, 200700 //
         ));
         c.hasMapmaker = false;
         configArray.add(c);
@@ -210,13 +210,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.timeHistoryFile = "/GASKELL/ITOKAWA/history/TimeHistory.bth";
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"),
-                        ImageType.AMICA_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED},
-                        Instrument.AMICA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new GenericPhpQuery("/GASKELL/ITOKAWA/AMICA", "AMICA", "/GASKELL/ITOKAWA/AMICA/gallery"), //
+                        ImageType.AMICA_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED}, //
+                        Instrument.AMICA //
+                        ) //
         };
 
         c.hasLidarData = true;
@@ -247,8 +247,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.lidarBrowseFileListResourcePath = "/edu/jhuapl/sbmt/data/HayLidarFiles.txt";
         c.lidarBrowseNumberHeaderLines = 0;
         c.lidarBrowseIsInMeters = false;
-        // The following value is the Itokawa diagonal length divided by 1546.4224133453388.
-        // The value 1546.4224133453388 was chosen so that for Eros the offset scale is 0.025 km.
+        // The following value is the Itokawa diagonal length divided by
+        // 1546.4224133453388.
+        // The value 1546.4224133453388 was chosen so that for Eros the offset scale is
+        // 0.025 km.
         c.lidarOffsetScale = 0.00044228259621279913;
         c.lidarInstrumentName = Instrument.LIDAR;
 
@@ -344,22 +346,22 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 c.hasBigmap = true;
             }
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"),
-                            //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true),
-                            ImageType.POLYCAM_V3_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"),
-                            //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"),
-                            ImageType.MAPCAM_V3_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/POLYCAM", "RQ36_POLY"), //
+                            //new FixedListQuery("/GASKELL/RQ36_V3/POLYCAM", true), //
+                            ImageType.POLYCAM_V3_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/RQ36_V3/MAPCAM", "RQ36_MAP"), //
+                            //new FixedListQuery("/GASKELL/RQ36_V3/MAPCAM"), //
+                            ImageType.MAPCAM_V3_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ) //
             };
 
 //            c.hasSpectralData = true;
@@ -435,20 +437,20 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasMapmaker = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_V4_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_V4_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.MAPCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "RQ36V4_POLY", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_V4_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "RQ36V4_MAP", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_V4_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.MAPCAM //
+                            ) //
             };
 
 //            c.hasSpectralData = true;
@@ -1348,7 +1350,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            configArray.add(c);
 //        }
 
-
 //        if (Configuration.isAPLVersion())
 //        {
 //            c = new SmallBodyViewConfig();
@@ -1690,28 +1691,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190105_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190105_mapcam", "bennu_altwgspcv20190105_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190105_navcam", "bennu_altwgspcv20190105_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -1818,9 +1819,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190114";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190114";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -1838,28 +1839,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190114_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190114_mapcam", "bennu_altwgspcv20190114_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190114_navcam", "bennu_altwgspcv20190114_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -1968,9 +1969,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190117";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190117";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -1988,28 +1989,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190117_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190117_mapcam", "bennu_altwgspcv20190117_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190117_navcam", "bennu_altwgspcv20190117_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -2118,9 +2119,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190121";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190121";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -2138,27 +2139,27 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190121_polycam", "bennu_altwgspcv20190121_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190121_mapcam", "bennu_altwgspcv20190121_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190121_navcam", "bennu_altwgspcv20190121_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -2267,9 +2268,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190207a";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190207a";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -2287,28 +2288,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207a_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207a_mapcam", "bennu_altwgspcv20190207a_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207a_navcam", "bennu_altwgspcv20190207a_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -2417,9 +2418,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190207b";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190207b";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -2437,28 +2438,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190207b_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190207b_mapcam", "bennu_altwgspcv20190207b_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190207b_navcam", "bennu_altwgspcv20190207b_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -2567,9 +2568,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.modelLabel = "ALTWG-SPC-v20190414";
             c.rootDirOnServer = "/bennu/altwg-spc-v20190414";
             c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2050, 0, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e3;
@@ -2587,28 +2588,28 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
-//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"),
-                            ImageType.POLYCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.POLYCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", c.rootDirOnServer + "/mapcam/gallery"),
-                            ImageType.MAPCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE},
-                            Instrument.MAPCAM
-                            ),
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam", c.rootDirOnServer + "/navcam/gallery"),
-                            ImageType.NAVCAM_FLIGHT_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.NAVCAM
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/polycam", "bennu_altwgspcv20190414_polycam", c.rootDirOnServer + "/polycam/gallery"), //
+                            ImageType.POLYCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.POLYCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/mapcam", "bennu_altwgspcv20190414_mapcam", "bennu_altwgspcv20190414_mapcam", c.rootDirOnServer + "/mapcam/gallery"), //
+                            ImageType.MAPCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL,ImageSource.SPICE}, //
+                            Instrument.MAPCAM //
+                            ), //
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery(c.rootDirOnServer + "/navcam", "bennu_altwgspcv20190414_navcam", "bennu_altwgspcv20190414_navcam", c.rootDirOnServer + "/navcam/gallery"), //
+                            ImageType.NAVCAM_FLIGHT_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.NAVCAM //
+                            ) //
             };
 
             c.hasSpectralData = true;
@@ -2714,8 +2715,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/BETULIA/betulia.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2726,8 +2728,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GEOGRAPHOS/1620geographos.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2738,8 +2741,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/BACCHUS/2063bacchus.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2750,8 +2754,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/RASHALOM/rashalom.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2786,8 +2791,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/MITHRA/Mithra.v1.PA.prograde.mod.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2798,8 +2804,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/NEREUS/Nereus_alt1.mod.wf.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2810,8 +2817,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/CASTALIA/4769castalia.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2822,8 +2830,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/GOLEVKA/6489golevka.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2834,8 +2843,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/HW1/1996hw1.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2846,8 +2856,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/SK/sk.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2858,8 +2869,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/1950DAPROGRADE/1950DA_ProgradeModel.wf.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2870,8 +2882,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/1950DARETROGRADE/1950DA_RetrogradeModel.wf.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2882,8 +2895,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/WT24/wt24.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2893,8 +2907,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/52760/52760.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2905,8 +2920,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/YORP/yorp.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2917,8 +2933,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KW4A/kw4a.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2929,8 +2946,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KW4B/kw4b.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2941,8 +2959,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/CCALPHA/1994CC_nominal.mod.wf.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2953,8 +2972,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/CE26/ce26.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2965,8 +2985,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/EV5/2008ev5.obj.gz";
         c.hasColoringData = false;
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -2976,8 +2997,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.rootDirOnServer = "/HUDSON/KY26/1998ky26.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in this block so that Eclipse updates will continue to keep this code
+        // intact.
         // configArray.add(c);
 
         if (Configuration.isAPLVersion())
@@ -2993,13 +3015,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasMapmaker = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"),
-                            ImageType.FCCERES_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                            Instrument.FC
-                    )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/CERES/FC", "Ceres", "/GASKELL/CERES/FC/gallery"), //
+                            ImageType.FCCERES_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
+                            Instrument.FC //
+                    ) //
             };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, GregorianCalendar.APRIL, 1, 0, 0, 0).getTime();
@@ -3027,8 +3049,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/PALLAS/pallas.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-        // this block so that Eclipse updates will continue to keep this code intact.
+        // 2017-12-12: exclude this body/model for now, but do not comment out
+        // anything else in this block so that Eclipse updates will continue
+        // to keep this code intact.
         // configArray.add(c);
 
         c = new SmallBodyViewConfig();
@@ -3042,13 +3065,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.hasMapmaker = true;
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"),
-                        ImageType.FC_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                        Instrument.FC
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new GenericPhpQuery("/GASKELL/VESTA/FC", "FC", "/GASKELL/VESTA/FC/gallery"), //
+                        ImageType.FC_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
+                        Instrument.FC //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(2011, 4, 3, 0, 0, 0).getTime();
@@ -3092,13 +3115,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/GASKELL/LUTETIA";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"),
-                            ImageType.OSIRIS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.OSIRIS
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new FixedListQuery("/GASKELL/LUTETIA/IMAGING", "/GASKELL/LUTETIA/IMAGING/gallery"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS //
+                            ) //
             };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2010, 6, 10, 0, 0, 0).getTime();
@@ -3118,14 +3141,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham et al. (2013)";
         c.rootDirOnServer = "/JORDA/LUTETIA";
-        c.setResolution(ImmutableList.of(
-                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ",
-                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ",
-                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates"
-            ), ImmutableList.of(
-                2962, 5824, 11954, 24526, 47784, 98280, 189724,
-                244128, 382620, 784510, 1586194, 3145728
-            ));
+        c.setResolution(ImmutableList.of( //
+                "2962 plates ", "5824 plates ", "11954 plates ", "24526 plates ", //
+                "47784 plates ", "98280 plates ", "189724 plates ", "244128 plates ", //
+                "382620 plates ", "784510 plates ", "1586194 plates ", "3145728 plates" //
+            ), ImmutableList.of( //
+                2962, 5824, 11954, 24526, 47784, 98280, 189724, //
+                244128, 382620, 784510, 1586194, 3145728 //
+            )); //
         c.shapeModelFileNames = prepend(c.rootDirOnServer,
                 "shape_res0.vtk.gz", //
                 "shape_res1.vtk.gz", //
@@ -3149,7 +3172,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/DAPHNE/daphne.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in
         // this block so that Eclipse updates will continue to keep this code intact.
         // configArray.add(c);
 
@@ -3160,7 +3184,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.CARRY;
         c.rootDirOnServer = "/CARRY/HERMIONE/hermione.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in
         // this block so that Eclipse updates will continue to keep this code intact.
         // configArray.add(c);
 
@@ -3172,7 +3197,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Neese (2004)";
         c.rootDirOnServer = "/HUDSON/KLEOPATRA/216kleopatra.obj.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in
         // this block so that Eclipse updates will continue to keep this code intact.
         // configArray.add(c);
 
@@ -3188,13 +3214,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"),
-                        ImageType.SSI_IDA_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.SSI
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/THOMAS/IDA/SSI", "/THOMAS/IDA/SSI/images/gallery"), //
+                        ImageType.SSI_IDA_IMAGE, //
+                        new ImageSource[]{ImageSource.CORRECTED}, //
+                        Instrument.SSI //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1993, 7, 28, 0, 0, 0).getTime();
@@ -3205,7 +3231,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
-        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
+        // This model was delivered on 2018-03-08 to replace the previous model of
+        // unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.IDA;
         c.type = BodyType.ASTEROID;
@@ -3234,13 +3261,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.setResolution(ImmutableList.of(14160));
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"),
-                        ImageType.MSI_MATHILDE_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.MSI
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/THOMAS/MATHILDE/MSI", "/THOMAS/MATHILDE/MSI/images/gallery"), //
+                        ImageType.MSI_MATHILDE_IMAGE, //
+                        new ImageSource[]{ImageSource.CORRECTED}, //
+                        Instrument.MSI //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1997, 5, 27, 0, 0, 0).getTime();
@@ -3288,13 +3315,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.setResolution(ImmutableList.of(32040));
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"),
-                        ImageType.SSI_GASPRA_IMAGE,
-                        new ImageSource[]{ImageSource.CORRECTED},
-                        Instrument.SSI
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/THOMAS/GASPRA/SSI", "/THOMAS/GASPRA/SSI/images/gallery"), //
+                        ImageType.SSI_GASPRA_IMAGE, //
+                        new ImageSource[]{ImageSource.CORRECTED}, //
+                        Instrument.SSI //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1991, 9, 29, 0, 0, 0).getTime();
@@ -3305,7 +3332,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.imageSearchDefaultMaxResolution = 4000.0;
         configArray.add(c);
 
-        // This model was delivered on 2018-03-08 to replace the previous model of unknown specific origin.
+        // This model was delivered on 2018-03-08 to replace the previous model of
+        // unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.GASPRA;
         c.type = BodyType.ASTEROID;
@@ -3333,7 +3361,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.setResolution(ImmutableList.of(20480));
         configArray.add(c);
 
-        // This model was delivered on 2018-03-08 to replace the existing model of unknown specific origin.
+        // This model was delivered on 2018-03-08 to replace the existing model of
+        // unknown specific origin.
         c = new SmallBodyViewConfig();
         c.body = ShapeModelBody.HALLEY;
         c.type = BodyType.COMETS;
@@ -3377,13 +3406,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"),
-                            ImageType.DEIMOS_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED},
-                            Instrument.IMAGING_DATA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/THOMAS/DEIMOSEXPERIMENTAL/IMAGING", "DEIMOS", "/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/viking/gallery"), //
+                            ImageType.DEIMOS_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED}, //
+                            Instrument.IMAGING_DATA //
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
@@ -3418,16 +3447,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-//                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"),
-                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"),
-                            ImageType.DEIMOS_IMAGE,
-                            new ImageSource[]{ ImageSource.GASKELL },
-                            Instrument.IMAGING_DATA,
-                            0.,
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+//                            new GenericPhpQuery("/deimos/ernst2018/imaging", "DEIMOS_ERNST_2018", "/deimos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery("/deimos/ernst2018/imaging", "/deimos/ernst2018/imaging/gallery"), //
+                            ImageType.DEIMOS_IMAGE, //
+                            new ImageSource[]{ ImageSource.GASKELL }, //
+                            Instrument.IMAGING_DATA, //
+                            0., //
                             "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            )
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 7, 16, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2011, 7, 10, 0, 0, 0).getTime();
@@ -3460,13 +3489,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/GASKELL/PHOBOS";
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
-                        ImageType.PHOBOS_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE},
-                        Instrument.IMAGING_DATA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new GenericPhpQuery("/GASKELL/PHOBOS/IMAGING", "PHOBOS", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
+                        ImageType.PHOBOS_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1976, 6, 24, 0, 0, 0).getTime();
@@ -3537,13 +3566,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/GASKELL/PHOBOSEXPERIMENTAL";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"),
-                            ImageType.PHOBOS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.IMAGING_DATA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/PHOBOSEXPERIMENTAL/IMAGING", "PHOBOSEXP", "/GASKELL/PHOBOS/IMAGING/images/gallery"), //
+                            ImageType.PHOBOS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.IMAGING_DATA //
+                            ) //
             };
 
             c.hasMapmaker = true;
@@ -3595,16 +3624,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"),
-                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"),
-                            ImageType.PHOBOS_IMAGE,
-                            new ImageSource[]{ ImageSource.GASKELL },
-                            Instrument.IMAGING_DATA,
-                            0.,
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+//                            new GenericPhpQuery("/phobos/ernst2018/imaging", "PHOBOS_ERNST_2018", "/phobos/ernst2018/imaging/gallery"), //
+                            new FixedListQuery("/phobos/ernst2018/imaging", "/phobos/ernst2018/imaging/gallery"), //
+                            ImageType.PHOBOS_IMAGE, //
+                            new ImageSource[]{ ImageSource.GASKELL }, //
+                            Instrument.IMAGING_DATA, //
+                            0., //
                             "Y" // Note: this means "flip along Y axis". Don't know why, but this flip is needed as of this delivery.
-                            )
+                            ) //
             };
 
             c.hasMapmaker = true;
@@ -3677,22 +3706,22 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument(SpectralMode.MONO, new GenericPhpQuery("/NEWHORIZONS/JUPITER/IMAGING", "JUPITER", "/NEWHORIZONS/JUPITER/IMAGING/images/gallery"), ImageType.LORRI_IMAGE, new ImageSource[] { ImageSource.SPICE }, Instrument.LORRI),
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/JUPITER/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.HYPER,
-                            new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"),
-                            ImageType.LEISA_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LEISA
-                            )
-                    };
+                    new ImagingInstrument( //
+                            SpectralMode.HYPER, //
+                            new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"), //
+                            ImageType.LEISA_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LEISA //
+                            ) //
+                    }; //
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
@@ -3700,8 +3729,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-12: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
             SmallBodyViewConfig callisto = new SmallBodyViewConfig();
             callisto = c.clone();
@@ -3712,11 +3742,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.STOOKE;
-            // 2017-12-20: this name will be correct when "the new model" has been brought in.
+            // 2017-12-20: this name will be correct when "the new model" has been brought
+            // in.
             // c.modelLabel = "Stooke (2016)";
             c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-12: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
 
             c = callisto.clone();
@@ -3730,17 +3762,18 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LORRI
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/NEWHORIZONS/CALLISTO/IMAGING", "CALLISTO", "/NEWHORIZONS/CALLISTO/IMAGING/images/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LORRI //
+                            ) //
             };
 
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-12: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
 
             c = c.clone();
@@ -3755,21 +3788,21 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/NEWHORIZONS/EUROPA/IMAGING", "EUROPA", "/NEWHORIZONS/EUROPA/IMAGING/images/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/EUROPA/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ) //
                     };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
@@ -3778,8 +3811,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-12: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
 
             c = c.clone();
@@ -3795,29 +3829,30 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/NEWHORIZONS/GANYMEDE/IMAGING", "GANYMEDE", "/NEWHORIZONS/GANYMEDE/IMAGING/images/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            )
-                    };
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/GANYMEDE/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ) //
+                    }; //
 
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-12: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
 
             c = c.clone();
@@ -3833,28 +3868,29 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
             // imaging instruments
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/NEWHORIZONS/IO/IMAGING", "IO", "/NEWHORIZONS/IO/IMAGING/images/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/IO/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/IO/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ) //
                     };
 
             c.imageSearchFilterNames = new String[] {};
             c.imageSearchUserDefinedCheckBoxesNames = new String[] {};
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
-            // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+            // 2017-12-12: exclude this body/model for now, but do not comment out anything
+            // else in
             // this block so that Eclipse updates will continue to keep this code intact.
             // configArray.add(c);
         }
@@ -3869,13 +3905,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/GASKELL/DIONE";
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"),
-                        ImageType.SATURN_MOON_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL},
-                        Instrument.IMAGING_DATA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/GASKELL/DIONE/IMAGING", "/GASKELL/DIONE/IMAGING/gallery"), //
+                        ImageType.SATURN_MOON_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
@@ -3975,13 +4011,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/GASKELL/MIMAS";
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"),
-                        ImageType.SATURN_MOON_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL},
-                        Instrument.IMAGING_DATA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/GASKELL/MIMAS/IMAGING", "/GASKELL/MIMAS/IMAGING/gallery"), //
+                        ImageType.SATURN_MOON_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
@@ -4016,15 +4052,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.modelLabel = "Gaskell (2013c)";
         c.rootDirOnServer = "/GASKELL/PHOEBE";
 
-
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"),
-                        ImageType.SATURN_MOON_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL},
-                        Instrument.IMAGING_DATA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/GASKELL/PHOEBE/IMAGING", "/GASKELL/PHOEBE/IMAGING/gallery"), //
+                        ImageType.SATURN_MOON_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
@@ -4042,10 +4077,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // 2017-12-20: this name will be correct when "the new model" has been brought
+        // in.
         // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/LARISSA/n7larissa.llr.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in
         // this block so that Eclipse updates will continue to keep this code intact.
         // configArray.add(c);
 
@@ -4055,10 +4092,12 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.population = ShapeModelPopulation.NEPTUNE;
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
-        // 2017-12-20: this name will be correct when "the new model" has been brought in.
+        // 2017-12-20: this name will be correct when "the new model" has been brought
+        // in.
         // c.modelLabel = "Stooke (2016)";
         c.rootDirOnServer = "/STOOKE/PROTEUS/n8proteus.llr.gz";
-        // 2017-12-12: exclude this body/model for now, but do not comment out anything else in
+        // 2017-12-12: exclude this body/model for now, but do not comment out anything
+        // else in
         // this block so that Eclipse updates will continue to keep this code intact.
         // configArray.add(c);
 
@@ -4156,13 +4195,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/GASKELL/67P";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"),
-                            ImageType.OSIRIS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.OSIRIS
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P/IMAGING", "67P", "/GASKELL/67P/IMAGING/images/gallery"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS //
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 7, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2014, 11, 31, 0, 0, 0).getTime();
@@ -4189,17 +4228,17 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c = c.clone();
             c.author = ShapeModelType.DLR;
             c.rootDirOnServer = "/DLR/67P";
-            c.shapeModelFileNames = prepend(c.rootDirOnServer,
-                    "cg-dlr_spg-shap4s-v0.9_64m.ply.gz", "cg-dlr_spg-shap4s-v0.9_32m.ply.gz", "cg-dlr_spg-shap4s-v0.9_16m.ply.gz", "cg-dlr_spg-shap4s-v0.9_8m.ply.gz", "cg-dlr_spg-shap4s-v0.9_4m.ply.gz", "cg-dlr_spg-shap4s-v0.9.ply.gz");
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, //
+                    "cg-dlr_spg-shap4s-v0.9_64m.ply.gz", "cg-dlr_spg-shap4s-v0.9_32m.ply.gz", "cg-dlr_spg-shap4s-v0.9_16m.ply.gz", "cg-dlr_spg-shap4s-v0.9_8m.ply.gz", "cg-dlr_spg-shap4s-v0.9_4m.ply.gz", "cg-dlr_spg-shap4s-v0.9.ply.gz"); //
 
             c.version = "SHAP4S";
             c.imagingInstruments[0].searchQuery = new GenericPhpQuery("/DLR/67P/IMAGING", "67P_DLR", "/DLR/67P/IMAGING/images/gallery");
-            c.setResolution(ImmutableList.of(
-                    "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ",
-                    "4895631 plates ", "16745283 plates "
-                ), ImmutableList.of(
-                    17442, 72770, 298442, 1214922, 4895631, 16745283
-                ));
+            c.setResolution(ImmutableList.of( //
+                    "17442 plates ", "72770 plates ", "298442 plates ", "1214922 plates ", //
+                    "4895631 plates ", "16745283 plates " //
+                ), ImmutableList.of( //
+                    17442, 72770, 298442, 1214922, 4895631, 16745283 //
+                )); //
             c.hasColoringData = false;
             configArray.add(c);
 
@@ -4214,14 +4253,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/GASKELL/67P_V2";
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2 has no gallery but images are in V3 gallery
-                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"),
-                            ImageType.OSIRIS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.OSIRIS
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P_V2/IMAGING", "67P_V2", "/GASKELL/67P_V3/IMAGING/gallery"), // V2 has no gallery but images are in V3 gallery //
+                            //new FixedListQuery("/GASKELL/67P_V2/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS //
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2015, 11, 31, 0, 0, 0).getTime();
@@ -4268,14 +4307,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.customBodyCubeSize = 0.10; // km
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"),
-                            //new FixedListQuery("/GASKELL/67P_V3/IMAGING"),
-                            ImageType.OSIRIS_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL},
-                            Instrument.OSIRIS
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new GenericPhpQuery("/GASKELL/67P_V3/IMAGING", "67P_V3", "/GASKELL/67P_V3/IMAGING/gallery"), //
+                            //new FixedListQuery("/GASKELL/67P_V3/IMAGING"), //
+                            ImageType.OSIRIS_IMAGE, //
+                            new ImageSource[]{ImageSource.GASKELL}, //
+                            Instrument.OSIRIS //
+                            ) //
             };
             c.imageSearchDefaultStartDate = new GregorianCalendar(2014, 6, 1, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2016, 0, 31, 0, 0, 0).getTime();
@@ -4335,30 +4374,30 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-//                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"),
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED, ImageSource.CORRECTED_SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+//                            new GenericPhpQuery("/NEWHORIZONS/PLUTO/IMAGING", "PLUTO"), //
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/IMAGING", true), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED, ImageSource.CORRECTED_SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.HYPER,
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"),
-                            ImageType.LEISA_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LEISA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.HYPER, //
+                            new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"), //
+                            ImageType.LEISA_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LEISA //
+                            ) //
             };
 
             c.imageSearchDefaultStartDate = new GregorianCalendar(2015, 0, 1, 0, 0, 0).getTime();
@@ -4383,29 +4422,27 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new GenericPhpQuery(c.rootDirOnServer + "/lorri", "charon_nimmo2017_lorri"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+//                            new GenericPhpQuery(c.rootDirOnServer + "/lorri", "charon_nimmo2017_lorri"), //
+                            new FixedListQuery(c.rootDirOnServer + "/lorri"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED_SPICE }, //
+                            Instrument.LORRI), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery(c.rootDirOnServer + "/mvic"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery(c.rootDirOnServer + "/mvic"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[] { ImageSource.SPICE }, //
+                            Instrument.MVIC), //
 
-                    new ImagingInstrument(
-                            SpectralMode.HYPER,
-                            new FixedListQuery(c.rootDirOnServer + "/leisa"),
-                            ImageType.LEISA_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LEISA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.HYPER, //
+                            new FixedListQuery(c.rootDirOnServer + "/leisa"), //
+                            ImageType.LEISA_JUPITER_IMAGE, //
+                            new ImageSource[] { ImageSource.SPICE }, //
+                            Instrument.LEISA) //
             };
 
             c.setResolution(ImmutableList.of(128880));
@@ -4424,29 +4461,29 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/IMAGING", true), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.HYPER,
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"),
-                            ImageType.LEISA_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LEISA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.HYPER, //
+                            new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"), //
+                            ImageType.LEISA_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LEISA //
+                            ) //
             };
             hydra = c.clone();
             c.setResolution(ImmutableList.of(128880));
@@ -4475,29 +4512,29 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new FixedListQuery("/NEWHORIZONS/NIX/IMAGING", true), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
+                            Instrument.LORRI //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.MULTI,
-                            new FixedListQuery("/NEWHORIZONS/NIX/MVIC"),
-                            ImageType.MVIC_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.MVIC
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MULTI, //
+                            new FixedListQuery("/NEWHORIZONS/NIX/MVIC"), //
+                            ImageType.MVIC_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.MVIC //
+                            ), //
 
-                    new ImagingInstrument(
-                            SpectralMode.HYPER,
-                            new FixedListQuery("/NEWHORIZONS/NIX/LEISA"),
-                            ImageType.LEISA_JUPITER_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE},
-                            Instrument.LEISA
-                            )
+                    new ImagingInstrument( //
+                            SpectralMode.HYPER, //
+                            new FixedListQuery("/NEWHORIZONS/NIX/LEISA"), //
+                            ImageType.LEISA_JUPITER_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE}, //
+                            Instrument.LEISA //
+                            ) //
             };
             c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
@@ -4525,13 +4562,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         c.rootDirOnServer = "/GASKELL/TELESTO";
 
         c.imagingInstruments = new ImagingInstrument[] {
-                new ImagingInstrument(
-                        SpectralMode.MONO,
-                        new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"),
-                        ImageType.SATURN_MOON_IMAGE,
-                        new ImageSource[]{ImageSource.GASKELL},
-                        Instrument.IMAGING_DATA
-                        )
+                new ImagingInstrument( //
+                        SpectralMode.MONO, //
+                        new FixedListQuery("/GASKELL/TELESTO/IMAGING", "/GASKELL/TELESTO/IMAGING/gallery"), //
+                        ImageType.SATURN_MOON_IMAGE, //
+                        new ImageSource[]{ImageSource.GASKELL}, //
+                        Instrument.IMAGING_DATA //
+                        ) //
         };
 
         c.imageSearchDefaultStartDate = new GregorianCalendar(1980, 10, 10, 0, 0, 0).getTime();
@@ -4550,10 +4587,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             //
 
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.EARTH.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.EARTH.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.EARTH.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.EARTH.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("osirisrex", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -4562,13 +4599,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.MAPCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.MAPCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.MAPCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4580,13 +4617,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.POLYCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.POLYCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.POLYCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4598,13 +4635,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.SAMCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.SAMCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.SAMCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4662,8 +4699,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //            c.hierarchicalImageSearchSpecification = new EarthHierarchicalSearchSpecification();
             c.imageSearchDefaultMaxSpacecraftDistance = 120000.0;
             c.imageSearchDefaultMaxResolution = 300.0;
-            // 2017-12-21: exclude this body/model for now, but do not comment out anything else in
-            // this block so that Eclipse updates will continue to keep this code intact.
+            // 2017-12-21: exclude this body/model for now, but do not comment out
+            // anything else in this block so that Eclipse updates will continue
+            // to keep this code intact.
             // configArray.add(c);
         }
 
@@ -4674,10 +4712,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             //
 
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.EARTH.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.EARTH.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.EARTH.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.EARTH.name()).build(); //
 
             // Set up shape model -- one will suffice. Note the "orex" here must be kept
             // exactly as it is; that is what the directory is named in the data area.
@@ -4687,13 +4725,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.MAPCAM, ".fit", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.MAPCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.MAPCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.MAPCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.MAPCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4705,13 +4743,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.POLYCAM, ".fit", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.POLYCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.POLYCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.POLYCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.POLYCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4723,13 +4761,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 // Set up images.
                 SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
                 QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                        Instrument.SAMCAM,
-                        SpectralMode.MONO,
-                        queryBase,
-                        new ImageSource[] { ImageSource.SPICE },
-                        fileLocator,
-                        ImageType.SAMCAM_EARTH_IMAGE);
+                Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                        Instrument.SAMCAM, //
+                        SpectralMode.MONO, //
+                        queryBase, //
+                        new ImageSource[] { ImageSource.SPICE }, //
+                        fileLocator, //
+                        ImageType.SAMCAM_EARTH_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4810,10 +4848,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             // :
 
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.EARTH.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.EARTH.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.EARTH.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.EARTH.name()).build(); //
 
 
             // Set up shape model -- one will suffice.
@@ -4854,38 +4892,45 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //                builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
 //                polyCam = BasicImagingInstrument.of(builder.build());
 //            }
-    //TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then uncomment this block and the line below.
-    //        BasicImagingInstrument samCam;
-    //        {
-    //            // Set up images.
-    //            SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
-    //            QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-    //            Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-    //                    Instrument.SAMCAM,
-    //                    SpectralMode.MONO,
-    //                    queryBase,
-    //                    new ImageSource[] { ImageSource.SPICE },
-    //                    fileLocator,
-    //                    ImageType.SAMCAM_IMAGE);
-    //
-    //            // Put it all together in a session.
-    //            Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
-    //            builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG, imagingInstBuilder.build());
-    //            samCam = BasicImagingInstrument.of(builder.build());
-    //        }
+            // TODO handle SAMCAM sbmt1dev-style. Add and handle the ImageType for it, then
+            // uncomment this block and the line below.
+            // BasicImagingInstrument samCam;
+            // {
+            // // Set up images.
+            // SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig,
+            // Instrument.SAMCAM, ".fits", ".INFO", null, ".jpeg");
+            // QueryBase queryBase = new
+            // FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""),
+            // fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
+            // Builder<ImagingInstrumentConfiguration> imagingInstBuilder =
+            // ImagingInstrumentConfiguration.builder(
+            // Instrument.SAMCAM,
+            // SpectralMode.MONO,
+            // queryBase,
+            // new ImageSource[] { ImageSource.SPICE },
+            // fileLocator,
+            // ImageType.SAMCAM_IMAGE);
+            //
+            // // Put it all together in a session.
+            // Builder<SessionConfiguration> builder =
+            // SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
+            // builder.put(SessionConfiguration.IMAGING_INSTRUMENT_CONFIG,
+            // imagingInstBuilder.build());
+            // samCam = BasicImagingInstrument.of(builder.build());
+            // }
 
           BasicImagingInstrument tir;
-          {
+          { //
               // Set up images.
-              SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
-              QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
-              Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(
-                      Instrument.TIR,
-                      SpectralMode.MONO,
-                      queryBase,
-                      new ImageSource[] { ImageSource.SPICE },
-                      fileLocator,
-                      ImageType.TIR_IMAGE);
+              SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg"); //
+              QueryBase queryBase = new FixedListQuery(fileLocator.get(SBMTFileLocator.TOP_PATH).getLocation(""), fileLocator.get(SBMTFileLocator.GALLERY_FILE).getLocation("")); //
+              Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder( //
+                      Instrument.TIR, //
+                      SpectralMode.MONO, //
+                      queryBase, //
+                      new ImageSource[] { ImageSource.SPICE }, //
+                      fileLocator, //
+                      ImageType.TIR_IMAGE); //
 
                 // Put it all together in a session.
                 Builder<SessionConfiguration> builder = SessionConfiguration.builder(bodyConfig, modelConfig, fileLocator);
@@ -4907,9 +4952,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    //                       // new Vis(ShapeModelBody.PHOBOS)
-                    //                        mapCam,
-                    //                        polyCam,
+                    // // new Vis(ShapeModelBody.PHOBOS)
+                    // mapCam,
+                    // polyCam,
                     // TODO when samCam is handled for sbmt1dev (see above), uncomment the next line
                     // to add it to the panel.
                     // samCam
@@ -4983,10 +5028,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Truth", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5066,10 +5111,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("Gaskell", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5141,10 +5186,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180627", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5227,10 +5272,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SFM-v20180714", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5249,9 +5294,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SFM_v20180714;
             c.modelLabel = "JAXA-SFM-v20180714";
             c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180714";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.hasStateHistory = true;
@@ -5334,9 +5379,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SFM_v20180725_2;
             c.modelLabel = "JAXA-SFM-v20180725_2";
             c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180725-2";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.hasStateHistory = true;
@@ -5421,9 +5466,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SFM_v20180804;
             c.modelLabel = "JAXA-SFM-v20180804";
             c.rootDirOnServer = "/ryugu/jaxa-sfm-v20180804";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.hasStateHistory = true;
@@ -5506,9 +5551,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180705;
             c.modelLabel = "JAXA-SPC-v20180705";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180705";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -5573,10 +5618,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180717", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5595,9 +5640,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180717;
             c.modelLabel = "JAXA-SPC-v20180717";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180717";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -5662,10 +5707,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180719_2", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5749,10 +5794,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180731", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5838,10 +5883,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180810", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -5927,10 +5972,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180816", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -6016,10 +6061,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20180829", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -6040,9 +6085,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20180829;
             c.modelLabel = "JAXA-SPC-v20180829";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20180829";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6107,10 +6152,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("JAXA-SPC-v20181014", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -6131,9 +6176,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.JAXA_SPC_v20181014;
             c.modelLabel = "JAXA-SPC-v20181014";
             c.rootDirOnServer = "/ryugu/jaxa-spc-v20181014";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6219,10 +6264,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-001", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -6241,9 +6286,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_001;
             c.modelLabel = "NASA-001";
             c.rootDirOnServer = "/ryugu/nasa-001";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             // c.hasStateHistory = true;
@@ -6297,10 +6342,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-002", ShapeModelDataUsed.IMAGE_BASED).build();
@@ -6319,9 +6364,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_002;
             c.modelLabel = "NASA-002";
             c.rootDirOnServer = "/ryugu/nasa-002";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6375,15 +6420,16 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-003", ShapeModelDataUsed.IMAGE_BASED).build();
 
-            // NOTE THE FOLLOWING LINE IS NOT A TYPO: THIRD ARGUMENT SHOULD BE ryugu_nasa002, not ryugu_nasa003.
+            // NOTE THE FOLLOWING LINE IS NOT A TYPO: THIRD ARGUMENT SHOULD BE
+            // ryugu_nasa002, not ryugu_nasa003.
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu_nasa002", "/ryugu/nasa-003/onc/gallery");
             // QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-003/onc",
             // "/ryugu/nasa-003/onc/gallery");
@@ -6400,9 +6446,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_003;
             c.modelLabel = "NASA-003";
             c.rootDirOnServer = "/ryugu/nasa-003";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6456,16 +6502,17 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-004", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-004/onc", "ryugu_nasa004", "ryugu_nasa005", "/ryugu/nasa-004/onc/gallery");
-            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-004/onc", "/ryugu/nasa-004/onc/gallery");
+            // QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-004/onc",
+            // "/ryugu/nasa-004/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-004/tir", "/ryugu/nasa-004/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-004/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-004/tir/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
@@ -6479,9 +6526,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_004;
             c.modelLabel = "NASA-004";
             c.rootDirOnServer = "/ryugu/nasa-004";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6535,16 +6582,17 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-005", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-005/onc", "ryugu_nasa005", "ryugu_nasa005", "/ryugu/nasa-005/onc/gallery");
-            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-005/onc", "/ryugu/nasa-005/onc/gallery");
+            // QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-005/onc",
+            // "/ryugu/nasa-005/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-005/tir", "/ryugu/nasa-005/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-005/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-005/tir/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
@@ -6558,9 +6606,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_005;
             c.modelLabel = "NASA-005";
             c.rootDirOnServer = "/ryugu/nasa-005";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6614,16 +6662,17 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         if (Configuration.isAPLVersion())
         {
             // Set up body -- one will suffice.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.RYUGU.name(),
-                    BodyType.ASTEROID.name(),
-                    ShapeModelPopulation.NEO.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.RYUGU.name(), //
+                    BodyType.ASTEROID.name(), //
+                    ShapeModelPopulation.NEO.name()).build(); //
 
             // Set up shape model -- one will suffice.
             ShapeModelConfiguration modelConfig = ShapeModelConfiguration.builder("NASA-006", ShapeModelDataUsed.IMAGE_BASED).build();
 
             QueryBase oncQueryBase = new GenericPhpQuery("/ryugu/nasa-006/onc", "ryugu_nasa006", "ryugu_nasa005", "/ryugu/nasa-006/onc/gallery");
-            //QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-006/onc", "/ryugu/nasa-006/onc/gallery");
+            // QueryBase oncQueryBase = new FixedListQuery("/ryugu/nasa-006/onc",
+            // "/ryugu/nasa-006/onc/gallery");
 //            QueryBase tirQueryBase = new FixedListQuery("/ryugu/nasa-006/tir", "/ryugu/nasa-006/tir/gallery", false);
             QueryBase tirQueryBase = new GenericPhpQuery("/ryugu/nasa-006/tir", "", "ryugu_nasa005_tir", "/ryugu/nasa-006/tir/gallery");
             ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.ONC, oncQueryBase, new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE }, ImageType.ONC_IMAGE);
@@ -6637,9 +6686,9 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.author = ShapeModelType.NASA_006;
             c.modelLabel = "NASA-006";
             c.rootDirOnServer = "/ryugu/nasa-006";
-            c.setResolution(ImmutableList.of(
-                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]),
-                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3]));
+            c.setResolution(ImmutableList.of( //
+                    "Very Low (12288 plates)", DEFAULT_GASKELL_LABELS_PER_RESOLUTION[0], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[1], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[2], DEFAULT_GASKELL_LABELS_PER_RESOLUTION[3]), //
+                    ImmutableList.of(12288, DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[1], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[2], DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[3])); //
             c.shapeModelFileExtension = ".obj";
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -6698,10 +6747,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.ATLAS.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.ATLAS.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             QueryBase queryBase = new GenericPhpQuery("/atlas/gaskell/imaging", "atlas", "/atlas/gaskell/imaging/images/gallery");
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, queryBase, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
@@ -6728,10 +6777,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.CALYPSO.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.CALYPSO.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6767,10 +6816,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.EPIMETHEUS.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.EPIMETHEUS.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6793,10 +6842,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.HELENE.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.HELENE.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6832,10 +6881,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.JANUS.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.JANUS.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6858,10 +6907,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.PAN.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.PAN.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6884,10 +6933,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.PANDORA.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.PANDORA.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6910,10 +6959,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         {
             // Set up body.
-            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder(
-                    ShapeModelBody.PROMETHEUS.name(),
-                    BodyType.PLANETS_AND_SATELLITES.name(),
-                    ShapeModelPopulation.SATURN.name()).build();
+            SBMTBodyConfiguration bodyConfig = SBMTBodyConfiguration.builder( //
+                    ShapeModelBody.PROMETHEUS.name(), //
+                    BodyType.PLANETS_AND_SATELLITES.name(), //
+                    ShapeModelPopulation.SATURN.name()).build(); //
             ImagingInstrument imagingInstrument = setupImagingInstrument(bodyConfig, gaskellModelConfig, Instrument.IMAGING_DATA, gaskellImagingSource, ImageType.SATURN_MOON_IMAGE);
 
             c = new SmallBodyViewConfig();
@@ -6961,13 +7010,13 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             }
 
             c.imagingInstruments = new ImagingInstrument[] {
-                    new ImagingInstrument(
-                            SpectralMode.MONO,
-                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"),
-                            ImageType.LORRI_IMAGE,
-                            new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL},
-                            Instrument.LORRI
-                            ),
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL}, //
+                            Instrument.LORRI //
+                            ), //
             };
 
             c.hasSpectralData = false;
@@ -7062,67 +7111,72 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     @Override
     protected List<ImageKeyInterface> getImageMapKeys()
     {
-        if (hasImageMap)
+        if (!hasImageMap)
         {
-            if (imageMapKeys == null)
-            {
-                List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
+            return ImmutableList.of();
+        }
 
-                // Newest/best way to specify maps is with metadata, if this model has it.
-                String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
-                File metadataFile;
+        if (imageMapKeys == null)
+        {
+            List<CustomCylindricalImageKey> imageMapKeys = ImmutableList.of();
+
+            // Newest/best way to specify maps is with metadata, if this model has it.
+            String metadataFileName = SafeURLPaths.instance().getString(serverPath("basemap"), "config.txt");
+            File metadataFile;
+            try
+            {
+                metadataFile = FileCache.getFileFromServer(metadataFileName);
+            }
+            catch (Exception ignored)
+            {
+                // This file is optional.
+                metadataFile = null;
+            }
+
+            if (metadataFile != null && metadataFile.isFile())
+            {
+                // Proceed using metadata.
                 try
                 {
-                    metadataFile = FileCache.getFileFromServer(metadataFileName);
+                    Metadata metadata = Serializers.deserialize(metadataFile, "CustomImages");
+                    imageMapKeys = metadata.get(Key.of("customImages"));
                 }
-                catch (Exception ignored)
+                catch (Exception e)
                 {
-                    // This file is optional.
-                    metadataFile = null;
+                    // This ought to have worked so report this exception.
+                    e.printStackTrace();
                 }
-
-                if (metadataFile != null && metadataFile.isFile())
-                {
-                    // Proceed using metadata.
-                    try
-                    {
-                        Metadata metadata = Serializers.deserialize(metadataFile, "CustomImages");
-                        imageMapKeys = metadata.get(Key.of("customImages"));
-                    }
-                    catch (Exception e)
-                    {
-                        // This ought to have worked so report this exception.
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    // Final option (legacy behavior). The key is hardwired. The file could be in either of two places.
-                    if (FileCache.isFileGettable(serverPath("image_map.png")))
-                    {
-                        imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
-                    }
-                    else if (FileCache.isFileGettable(serverPath("basemap/image_map.png")))
-                    {
-                        imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "basemap/image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
-                    }
-                }
-
-                this.imageMapKeys = correctMapKeys(imageMapKeys);
             }
+            else
+            {
+                // Final option (legacy behavior). The key is hardwired. The file could be in
+                // either of two places.
+                if (FileCache.isFileGettable(serverPath("image_map.png")))
+                {
+                    imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
+                }
+                else if (FileCache.isFileGettable(serverPath("basemap/image_map.png")))
+                {
+                    imageMapKeys = ImmutableList.of(new CustomCylindricalImageKey("image_map", "basemap/image_map.png", ImageType.GENERIC_IMAGE, ImageSource.IMAGE_MAP, new Date(), "image_map"));
+                }
+            }
+
+            this.imageMapKeys = correctMapKeys(imageMapKeys);
         }
 
         return imageMapKeys;
     }
 
     /**
-     * This converts keys with short names, file names, and original names to full-fledged keys that image creators can handle.
-     * The short form is more convenient and idiomatic for storage and for configuration purposes, but the longer form can
-     * actually be used to create a cylindrical image object.
+     * This converts keys with short names, file names, and original names to
+     * full-fledged keys that image creators can handle. The short form is more
+     * convenient and idiomatic for storage and for configuration purposes, but the
+     * longer form can actually be used to create a cylindrical image object.
      *
-     * If/when image key classes are revamped, the shorter form would actually be preferable. The name is actually supposed to be
-     * the display name, and the original name is most likely intended to hold the "original file name" in cases where a file
-     * is imported into the custom area.
+     * If/when image key classes are revamped, the shorter form would actually be
+     * preferable. The name is actually supposed to be the display name, and the
+     * original name is most likely intended to hold the "original file name" in
+     * cases where a file is imported into the custom area.
      *
      * @param keys the input (shorter) keys
      * @return the output (full-fledged) keys
