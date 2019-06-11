@@ -3712,14 +3712,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
                             Instrument.MVIC //
-                            ), //
-
-                    new ImagingInstrument( //
-                            SpectralMode.HYPER, //
-                            new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"), //
-                            ImageType.LEISA_JUPITER_IMAGE, //
-                            new ImageSource[]{ImageSource.SPICE}, //
-                            Instrument.LEISA //
+//                            ), //
+//
+//                    new ImagingInstrument( //
+//                            SpectralMode.HYPER, //
+//                            new FixedListQuery("/NEWHORIZONS/JUPITER/LEISA"), //
+//                            ImageType.LEISA_JUPITER_IMAGE, //
+//                            new ImageSource[]{ImageSource.SPICE}, //
+//                            Instrument.LEISA //
                             ) //
                     }; //
 
@@ -4389,14 +4389,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
                             Instrument.MVIC //
-                            ), //
-
-                    new ImagingInstrument( //
-                            SpectralMode.HYPER, //
-                            new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"), //
-                            ImageType.LEISA_JUPITER_IMAGE, //
-                            new ImageSource[]{ImageSource.SPICE}, //
-                            Instrument.LEISA //
+//                            ), //
+//
+//                    new ImagingInstrument( //
+//                            SpectralMode.HYPER, //
+//                            new FixedListQuery("/NEWHORIZONS/PLUTO/LEISA"), //
+//                            ImageType.LEISA_JUPITER_IMAGE, //
+//                            new ImageSource[]{ImageSource.SPICE}, //
+//                            Instrument.LEISA //
                             ) //
             };
 
@@ -4428,21 +4428,24 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             new FixedListQuery(c.rootDirOnServer + "/lorri"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED_SPICE }, //
-                            Instrument.LORRI), //
+                            Instrument.LORRI //
+                            ), //
 
                     new ImagingInstrument( //
                             SpectralMode.MULTI, //
                             new FixedListQuery(c.rootDirOnServer + "/mvic"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[] { ImageSource.SPICE }, //
-                            Instrument.MVIC), //
-
-                    new ImagingInstrument( //
-                            SpectralMode.HYPER, //
-                            new FixedListQuery(c.rootDirOnServer + "/leisa"), //
-                            ImageType.LEISA_JUPITER_IMAGE, //
-                            new ImageSource[] { ImageSource.SPICE }, //
-                            Instrument.LEISA) //
+                            Instrument.MVIC //
+//                            ), //
+//
+//                    new ImagingInstrument( //
+//                            SpectralMode.HYPER, //
+//                            new FixedListQuery(c.rootDirOnServer + "/leisa"), //
+//                            ImageType.LEISA_JUPITER_IMAGE, //
+//                            new ImageSource[] { ImageSource.SPICE }, //
+//                            Instrument.LEISA //
+                            ) //
             };
 
             c.setResolution(ImmutableList.of(128880));
@@ -4475,14 +4478,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
                             Instrument.MVIC //
-                            ), //
-
-                    new ImagingInstrument( //
-                            SpectralMode.HYPER, //
-                            new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"), //
-                            ImageType.LEISA_JUPITER_IMAGE, //
-                            new ImageSource[]{ImageSource.SPICE}, //
-                            Instrument.LEISA //
+//                            ), //
+//
+//                    new ImagingInstrument( //
+//                            SpectralMode.HYPER, //
+//                            new FixedListQuery("/NEWHORIZONS/HYDRA/LEISA"), //
+//                            ImageType.LEISA_JUPITER_IMAGE, //
+//                            new ImageSource[]{ImageSource.SPICE}, //
+//                            Instrument.LEISA //
                             ) //
             };
             hydra = c.clone();
@@ -4526,14 +4529,14 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                             ImageType.MVIC_JUPITER_IMAGE, //
                             new ImageSource[]{ImageSource.SPICE}, //
                             Instrument.MVIC //
-                            ), //
-
-                    new ImagingInstrument( //
-                            SpectralMode.HYPER, //
-                            new FixedListQuery("/NEWHORIZONS/NIX/LEISA"), //
-                            ImageType.LEISA_JUPITER_IMAGE, //
-                            new ImageSource[]{ImageSource.SPICE}, //
-                            Instrument.LEISA //
+//                            ), //
+//
+//                    new ImagingInstrument( //
+//                            SpectralMode.HYPER, //
+//                            new FixedListQuery("/NEWHORIZONS/NIX/LEISA"), //
+//                            ImageType.LEISA_JUPITER_IMAGE, //
+//                            new ImageSource[]{ImageSource.SPICE}, //
+//                            Instrument.LEISA //
                             ) //
             };
             c.setResolution(ImmutableList.of(128880));
