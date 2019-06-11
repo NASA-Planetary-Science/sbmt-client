@@ -328,6 +328,7 @@ public class CustomImagesModel extends ImageSearchModel
     	  CustomImageKeyInterface oldImageInfo = customImages.get(selectedItem);
 
           CustomImageImporterDialog dialog = new CustomImageImporterDialog(null, true, getInstrument());
+          dialog.setCurrentImageNames(getCustomImageNames());
           dialog.setImageInfo(oldImageInfo, getModelManager().getPolyhedralModel().isEllipsoid());
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);

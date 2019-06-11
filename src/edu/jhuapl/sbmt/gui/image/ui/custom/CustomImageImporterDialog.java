@@ -10,6 +10,7 @@
  */
 package edu.jhuapl.sbmt.gui.image.ui.custom;
 
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.Window;
@@ -354,7 +355,7 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
     	String inputName = imageNameTextField.getText();
     	boolean exists = currentNames.contains(inputName.trim());
     	nameExistsLabel.setVisible(exists);
-		okButton.setVisible(!exists);
+		okButton.setEnabled(!exists);
     }
 
     private void updateEnabledItems()
@@ -696,6 +697,8 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         getContentPane().add(imageNameTextField, gridBagConstraints);
 
         nameExistsLabel.setText("Already Exists");
+        nameExistsLabel.setForeground(Color.red);
+        nameExistsLabel.setVisible(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
