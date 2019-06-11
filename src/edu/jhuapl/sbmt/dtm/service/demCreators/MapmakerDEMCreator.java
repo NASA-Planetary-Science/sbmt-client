@@ -156,7 +156,7 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     @Override
     public boolean needToDownloadExecutable()
     {
-        return FileCache.getFileInfoFromServer(getExecutablePathOnServer().toString()).isNeedToDownload();
+    	return FileCache.getState(getExecutablePathOnServer().toString()).isDownloadNecessary();
     }
 
     @Override

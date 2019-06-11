@@ -13,6 +13,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.sbmt.dtm.model.DEM;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
@@ -240,10 +241,12 @@ public class SbmtModelFactory
             else
                 return null;
         }
-        else
+        else if (key instanceof CustomCylindricalImageKey)
         {
-            return new CylindricalImage(key, smallBodyModel);
+            return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
+
+        return null;
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)

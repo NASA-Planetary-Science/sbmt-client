@@ -175,10 +175,10 @@ public class DEMPopupMenuActionListener implements IDEMPopupMenuActionListener
 	}
 
 	@Override
-	public void exportDEMToCustomModel(List<DEMKey> demKeys, PolyhedralModel smallBodyModel)
+	public String exportDEMToCustomModel(List<DEMKey> demKeys, PolyhedralModel smallBodyModel)
 	{
-        DEMIO.exportDEMToCustomModel(demKeys, demCollection, smallBodyModel);
-//        this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", dialog.getNameOfImportedShapeModel());
+        String modelName = DEMIO.exportDEMToCustomModel(demKeys, demCollection, smallBodyModel);
+        return modelName;
 	}
 
 

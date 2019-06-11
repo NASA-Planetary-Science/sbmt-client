@@ -18,9 +18,9 @@ import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.dialog.ShapeModelImporterDialog;
 import edu.jhuapl.saavtk.model.PolyhedralModel;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileUtil;
-import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.dtm.model.DEM;
@@ -64,12 +64,12 @@ public class DEMIO
         }
 	}
 
-	public static void exportDEMToCustomModel(List<DEMKey> demKeys, DEMCollection demCollection, PolyhedralModel smallBodyModel)
+	public static String exportDEMToCustomModel(List<DEMKey> demKeys, DEMCollection demCollection, PolyhedralModel smallBodyModel)
 	{
 		DEMKey demKey = demKeys.get(0);
 
         DEM dem = demCollection.getDEM(demKey);
-        if (dem == null) return;
+        if (dem == null) return null;
 
         vtkPolyData demPolydata = dem.getDem();
         String demFilename = dem.getKey().demfilename;
@@ -88,7 +88,9 @@ public class DEMIO
         ShapeModelImporterDialog dialog = new ShapeModelImporterDialog(null);
 
         String extension = FilenameUtils.getExtension(demFilename);
-        dialog.populateCustomDEMImport(demFilename.substring(0, demFilename.length()-extensionLength) + extension, extension);
+        DownloadableFileState state = FileCache.getState(demFilename);
+        File vtkFile = new File(FileUtil.removeExtension(state.getFileState().getFile().toString()) + "." + extension);
+        dialog.populateCustomDEMImport(vtkFile.toString(), extension);
         dialog.beforeOKRunner = new Runnable()
         {
             final String filename = demFilename;
@@ -102,7 +104,8 @@ public class DEMIO
                     config2.customTemporary = false;
                     config2.author = ShapeModelType.CUSTOM;
                     SmallBodyViewConfigMetadataIO metadataIO = new SmallBodyViewConfigMetadataIO(new Vector<ViewConfig>(config));
-                    File file = SafeURLPaths.instance().get(demFilename.substring(6, demFilename.length()-extensionLength)+ "json").toFile();
+                    DownloadableFileState state = FileCache.getState(demFilename);
+                    File file = new File(FileUtil.removeExtension(state.getFileState().getFile().toString()) + ".json");
                     metadataIO.write(file, dialog.getNameOfImportedShapeModel());
                     SmallBodyViewConfig config = (SmallBodyViewConfig)metadataIO.getConfigs().get(0);
                     dialog.setDisplayName(dialog.getNameOfImportedShapeModel());
@@ -116,6 +119,7 @@ public class DEMIO
         };
 
         dialog.setVisible(true);
+        return dialog.getNameOfImportedShapeModel();
 	}
 
 }

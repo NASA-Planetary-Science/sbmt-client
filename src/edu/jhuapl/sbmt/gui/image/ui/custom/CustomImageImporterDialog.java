@@ -31,12 +31,6 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.SettableMetadata;
-
 
 public class CustomImageImporterDialog extends javax.swing.JDialog
 {
@@ -193,10 +187,10 @@ public class CustomImageImporterDialog extends javax.swing.JDialog
         {
             cylindricalProjectionRadioButton.setSelected(true);
 
-            double lllat = info == null ?  -90.0 : ((CustomCylindricalImageKey)info).lllat;
-            double lllon = info == null ?  0.0 : ((CustomCylindricalImageKey)info).lllon;
-            double urlat = info == null ?  90.0 : ((CustomCylindricalImageKey)info).urlat;
-            double urlon = info == null ?  360.0 : ((CustomCylindricalImageKey)info).urlon;
+            double lllat = info == null ?  -90.0 : ((CustomCylindricalImageKey)info).getLllat();
+            double lllon = info == null ?  0.0 : ((CustomCylindricalImageKey)info).getLllon();
+            double urlat = info == null ?  90.0 : ((CustomCylindricalImageKey)info).getUrlat();
+            double urlon = info == null ?  360.0 : ((CustomCylindricalImageKey)info).getUrlon();
             lllatFormattedTextField.setText(String.valueOf(lllat));
             lllonFormattedTextField.setText(String.valueOf(lllon));
             urlatFormattedTextField.setText(String.valueOf(urlat));

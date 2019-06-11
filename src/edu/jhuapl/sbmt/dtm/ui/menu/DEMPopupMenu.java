@@ -360,8 +360,8 @@ public class DEMPopupMenu extends PopupMenu
         @Override
         public void actionPerformed(ActionEvent e)
         {
-        	listener.exportDEMToCustomModel(demKeys, smallBodyModel);
-            this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", dialog.getNameOfImportedShapeModel());
+        	String modelName = listener.exportDEMToCustomModel(demKeys, smallBodyModel);
+            this.firePropertyChange(Properties.CUSTOM_MODEL_ADDED, "", modelName);
         }
     }
 
