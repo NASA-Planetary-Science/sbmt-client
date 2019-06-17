@@ -222,7 +222,7 @@ public class ServerOffLimbPlaneCalculator
     	ImageKeyInterface key = new ImageKey("http://sbmt.jhuapl.edu/sbmt/prod/data/bennu/altwg-spc-v20190121/polycam/images/ocams20181108t041447s141_pol_iofl2pan_53001.fits", ImageSource.GASKELL);
     	OcamsFlightImage image = OcamsFlightImage.of(key, smallBodyModel, false);
     	String outputDir = ".";
-    	String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + 4 + "_offLimbImageData_new.vtk";
+    	String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + 4 + "_offLimbImageData_new.vtk";
     	File file = new File(filename);
     	if (file.exists() && (reprocess == false)) return;
 
