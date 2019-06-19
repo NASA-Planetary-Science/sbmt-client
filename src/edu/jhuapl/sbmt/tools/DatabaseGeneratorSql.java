@@ -398,6 +398,7 @@ public class DatabaseGeneratorSql
         if (diffFileList != null)
         {
         	diffFiles = FileUtil.getFileLinesAsStringList(diffFileList);
+        	System.out.println("DatabaseGeneratorSql: run: diff files count " + diffFiles.size());
         }
 
 
@@ -430,6 +431,7 @@ public class DatabaseGeneratorSql
         		}
         	}
         	lines = truncatedLines;
+        	System.out.println("DatabaseGeneratorSql: run: truncated lines count is now " + lines.size());
         }
 
         String dburl = null;
