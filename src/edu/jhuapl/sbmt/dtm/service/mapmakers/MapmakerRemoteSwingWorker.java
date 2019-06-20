@@ -23,7 +23,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         remote.setDatadir("DATA");
         remote.setMapoutdir("MAPFILES");
         remote.setCacheDir("/Users/steelrj1/Desktop/");
-        remote.doInBackground();
+        remote.run();
     }
 
     boolean regionSpecifiedWithLatLonScale = true;
@@ -47,8 +47,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
-        setCancelButtonEnabled(true);
+        super(filename, c, title, "<html>Running Mapmaker<br> </html>", true);
     }
 
 
@@ -140,19 +139,11 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     }
 
     @Override
-    protected Void doInBackground()
+    protected Void doInBackground() throws InterruptedException
     {
-        if (isCancelled())
-        {
-            return null;
-        }
+        checkNotCanceled("About to run mapmaker");
 
-        setLabelText("<html>Running Mapmaker<br> </html>");
-        setIndeterminate(true);
-        setCancelButtonEnabled(true);
         setProgress(1);
-
-        Process mapmakerProcess = null;
 
         try
         {

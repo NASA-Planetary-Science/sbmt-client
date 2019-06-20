@@ -21,6 +21,7 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
+import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
@@ -94,7 +95,7 @@ public class SbmtRunnable implements Runnable
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
 
-                            FileCache.showDotsForFiles(false);
+                            DownloadableFileManager.setShowDotsForFiles(false);
                             FileCache.instance().startAccessMonitor();
 
                             Console.hideConsole();
@@ -150,14 +151,14 @@ public class SbmtRunnable implements Runnable
 			{}
 		}
 
-		FileCache.showDotsForFiles(true);
+		DownloadableFileManager.setShowDotsForFiles(true);
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
 		if (Debug.isEnabled())
 		{
 			System.out.println("Tool started in debug mode; diagnostic output is enabled.");
 		}
-		if (FileCache.getOfflineMode())
+		if (!FileCache.instance().isServerAccessEnabled())
 		{
 			System.out.println("\nTool started in offline mode; skipping password authentication.");
 			System.out.println("Only cached models and data will be available.");
