@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk2.event.Event;
 import edu.jhuapl.saavtk2.event.EventListener;
@@ -90,11 +89,8 @@ public class DEMTable extends MapAndShowTable {
 	public void signalDemMapped(int row)
 	{
 		DEMKey key = availableKeys.get(row);
-		DownloadableFileState state = FileCache.getState(key.demfilename);
-		if (state.isDownloadNecessary())
-		{
-			FileCache.getFileFromServer(key.demfilename);
-		}
+
+		FileCache.getFileFromServer(key.demfilename);
 
 	    fire(new CreateDEMEvent(this, availableKeys.get(row)));
 	}

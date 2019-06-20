@@ -66,53 +66,40 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
 
         protected void processAndWait(MapmakerNativeWrapper wrapper)
         {
-        	ProgressBarSwingWorker worker = new ProgressBarSwingWorker(null, "Mapmaker")
+        	ProgressBarSwingWorker worker = new ProgressBarSwingWorker(null, "Mapmaker", "Running Mapmaker.....", true)
 			{
 
 				@Override
 				protected Void doInBackground() throws Exception
 				{
-					setIndeterminate(true);
-		            setCancelButtonEnabled(true);
 		            setProgress(1);
-		            setLabelText("Running Mapmaker.....");
 
-		            Process mapmakerProcess;
-		            try
-		            {
-		                mapmakerProcess = wrapper.runMapmaker();
-		                while (true)
-		                {
-		                    fire(new TaskProgressEvent(DEMCreationTask.this, -1));
+		            Process mapmakerProcess = wrapper.runMapmaker();
+	                while (true)
+	                {
+	                    fire(new TaskProgressEvent(DEMCreationTask.this, -1));
 
-		                    try
-		                    {
-		                        mapmakerProcess.exitValue();
-		                        break;
-		                    }
-		                    catch (IllegalThreadStateException e)
-		                    {
-		                        // e.printStackTrace();
-		                        // do nothing. We'll get here if the process is still
-		                        // running
-		                    }
+	                    try
+	                    {
+	                        mapmakerProcess.exitValue();
+	                        break;
+	                    }
+	                    catch (IllegalThreadStateException e)
+	                    {
+	                        // e.printStackTrace();
+	                        // do nothing. We'll get here if the process is still
+	                        // running
+	                    }
 
-		                    Thread.sleep(333);
-		                }
-		            }
-		            catch (IOException | InterruptedException e1)
-		            {
-		                // TODO Auto-generated catch block
-		                e1.printStackTrace();
-		            }
-		            setProgress(100);
+	                    Thread.sleep(333);
+	                }
+
+	                setProgress(100);
 
 		            return null;
 				}
 			};
 			worker.executeDialog();
-
-
         }
 
         protected DEMKey postProcessAndCreate(MapmakerNativeWrapper wrapper)
@@ -156,7 +143,10 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     @Override
     public boolean needToDownloadExecutable()
     {
-    	return FileCache.getState(getExecutablePathOnServer().toString()).isDownloadNecessary();
+        String unzippedDirectoryName = exePathOnServer.toString().replaceFirst("\\.[^\\.]*$", "");
+        File unzippedDir = FileCache.instance().getFile(unzippedDirectoryName);
+
+    	return !unzippedDir.isDirectory();
     }
 
     @Override
@@ -204,30 +194,25 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
     	}
     	else
     	{
-	    	int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(null), "Before " + getExecutableDisplayName() + " can be run for the first time, a very large file needs to be downloaded.\n" + "This may take several minutes. Would you like to continue?", "Confirm Download", JOptionPane.YES_NO_OPTION);
-	        if (result == JOptionPane.NO_OPTION)
-	            return;
-	        else
+	    	int result = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(null), //
+	    	        "Before " + getExecutableDisplayName() + //
+	    	        " can be run for the first time, a very large file needs to be downloaded.\n" + //
+	    	        "This may take several minutes. Would you like to continue?", //
+	    	        "Confirm Download", JOptionPane.YES_NO_OPTION);
+	        if (result != JOptionPane.NO_OPTION)
 	        {
-		    	FileDownloadSwingWorker downloadWorker = new FileDownloadSwingWorker(null, "Download " + getExecutableDisplayName(), getExecutablePathOnServer().toString());
-		        downloadWorker.setCancelButtonEnabled(true);
-		    	downloadWorker.setCompletionBlock(new Runnable()
-		        {
-		        	@Override
-		      	  	public void run()
-		      	  	{
-		        		makeWrapper();
-		      	  	}
-		        });
-		        downloadWorker.executeDialog();
+		    	FileDownloadSwingWorker downloadWorker = FileDownloadSwingWorker.of(getExecutablePathOnServer().toString(), null, "Download " + getExecutableDisplayName(), false, () -> {
+		    	    makeWrapper();
+		    	});
+
+		    	downloadWorker.executeDialog();
 	        }
     	}
-
     }
 
     private void makeWrapper()
     {
-        File file = FileCache.getFileFromServer(getExecutablePathOnServer().getParent().toString());
+        File file = FileCache.instance().getFile(getExecutablePathOnServer().getParent().toString());
         String mapmakerRootDir = file.toPath().resolve("mapmaker").toString();
         try
         {
