@@ -47,7 +47,7 @@ public class PerspectiveImagePreRenderer
         this.resolutionIndex = image.getSmallBodyModel().getModelResolution();
         this.outputDir = outputDir;
         this.reprocess = reprocess;
-        System.out.println("PerspectiveImagePreRenderer: PerspectiveImagePreRenderer: processing " + image.getFitFileFullPath() + " to output dir " + outputDir);
+//        System.out.println("PerspectiveImagePreRenderer: PerspectiveImagePreRenderer: processing " + image.getImageFileFullPath() + " to output dir " + outputDir);
         calculateFootprint();
         calculateOffLimb();
     }
@@ -82,8 +82,8 @@ public class PerspectiveImagePreRenderer
 
     private void calculateFootprint()
     {
-        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
-        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: trying to calculate footprint " + intersectionFileName);
+        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
+//        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: trying to calculate footprint " + intersectionFileName);
         File intersectionFile = new File(intersectionFileName);
         if (intersectionFile.exists() && (reprocess == false))
         {
@@ -106,7 +106,7 @@ public class PerspectiveImagePreRenderer
 
         vtkPolyDataWriter writer = new vtkPolyDataWriter();
         writer.SetInputData(footprint);
-        System.out.println("PerspectiveImage: loadFootprint: fit file full path " + image.getFitFileFullPath());
+        System.out.println("PerspectiveImage: loadFootprint: fit file full path " + image.getImageFileFullPath());
 
         System.out.println("PerspectiveImage: loadFootprint: saving footprint to " + intersectionFileName);
         if (!(new File(intersectionFileName).exists()))new File(intersectionFileName).getParentFile().mkdir();
@@ -118,7 +118,7 @@ public class PerspectiveImagePreRenderer
 
     private void calculateOffLimb()
     {
-        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getFitFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
+        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
         File file = new File(filename);
         if (file.exists() && (reprocess == false)) return;
 
