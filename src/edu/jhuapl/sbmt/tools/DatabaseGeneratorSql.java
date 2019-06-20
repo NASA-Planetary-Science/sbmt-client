@@ -330,9 +330,9 @@ public class DatabaseGeneratorSql
 
     boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
     {
-        File fitfile = new File(image.getFitFileFullPath());
-        System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
-        if (!fitfile.exists())
+        File imageFile = new File(image.getImageFileFullPath());
+        System.out.println("Image file full path: " + imageFile.getAbsolutePath());
+        if (!imageFile.exists())
             return false;
 
         // Check for the sumfile if source is Gaskell
