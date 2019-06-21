@@ -7110,6 +7110,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
                 this.imageMapKeys = correctMapKeys(imageMapKeys);
             }
         }
+        else
+        {
+            this.imageMapKeys = ImmutableList.of();
+        }
 
         return imageMapKeys;
     }
