@@ -545,6 +545,8 @@ public class ImageResultsTableController
     protected void prevButtonActionPerformed(ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
+        IdPair originalInterval = resultIntervalCurrentlyShown;
+        removeImageBoundaries(originalInterval);
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the prev block if there's something left to show.
@@ -560,6 +562,8 @@ public class ImageResultsTableController
     protected void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
         IdPair resultIntervalCurrentlyShown = imageSearchModel.getResultIntervalCurrentlyShown();
+        IdPair originalInterval = resultIntervalCurrentlyShown;
+        removeImageBoundaries(originalInterval);
         if (resultIntervalCurrentlyShown != null)
         {
             // Only get the next block if there's something left to show.
@@ -696,6 +700,34 @@ public class ImageResultsTableController
         // Enable or disable the image gallery button
         imageResultsTableView.getViewResultsGalleryButton().setEnabled(imageResultsTableView.isEnableGallery() && !results.isEmpty());
         modifiedTableRow = -1;
+    }
+
+    protected void removeImageBoundaries(IdPair idPair)
+    {
+    	int startId = idPair.id1;
+        int endId = idPair.id2;
+        for (int i = startId; i < endId; ++i)
+        {
+            if (i < 0)
+                continue;
+            else if (i >= imageRawResults.size())
+                break;
+
+            try
+            {
+                String currentImage = imageRawResults.get(i).get(0);
+                String boundaryName = FileUtil.removeExtension(currentImage);
+                ImageKeyInterface key = imageSearchModel.createImageKey(boundaryName, imageSearchModel.getImageSourceOfLastQuery(), imageSearchModel.getInstrument());
+                boundaries.removeBoundary(key);
+            }
+            catch (Exception e1)
+            {
+                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(imageResultsTableView), "There was an error mapping the boundary.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                e1.printStackTrace();
+                break;
+            }
+        }
     }
 
     protected void showImageBoundaries(IdPair idPair)
