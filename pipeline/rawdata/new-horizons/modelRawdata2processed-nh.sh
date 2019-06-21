@@ -79,7 +79,7 @@ processMakeSumfiles() {
   imageDir=$2
   instrument=`basename $imageDir`
 
-  if test ! -e "$imageDir/imagelist-sum.txt"; then
+  if test ! -e "$imageDir/make_sumfiles.in"; then
     return
   fi
 
