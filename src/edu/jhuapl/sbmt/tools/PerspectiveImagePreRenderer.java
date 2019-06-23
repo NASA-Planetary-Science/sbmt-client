@@ -82,7 +82,7 @@ public class PerspectiveImagePreRenderer
 
     private void calculateFootprint()
     {
-        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
+        String intersectionFileName = image.getPrerenderingFileNameBase() + "_frustumIntersection.vtk";
 //        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: trying to calculate footprint " + intersectionFileName);
         File intersectionFile = new File(intersectionFileName);
         if (intersectionFile.exists() && (reprocess == false))
@@ -118,7 +118,7 @@ public class PerspectiveImagePreRenderer
 
     private void calculateOffLimb()
     {
-        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
+        String filename = image.getPrerenderingFileNameBase() + "_offLimbImageData.vtk";
         File file = new File(filename);
         if (file.exists() && (reprocess == false)) return;
 
