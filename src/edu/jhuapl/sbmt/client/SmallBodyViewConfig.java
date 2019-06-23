@@ -4424,8 +4424,8 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralMode.MONO, //
-//                            new GenericPhpQuery(c.rootDirOnServer + "/lorri", "charon_nimmo2017_lorri"), //
-                            new FixedListQuery(c.rootDirOnServer + "/lorri"), //
+                            new GenericPhpQuery(c.rootDirOnServer + "/lorri", "charon_nimmo2017_lorri"), //
+//                            new FixedListQuery(c.rootDirOnServer + "/lorri"), //
                             ImageType.LORRI_IMAGE, //
                             new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED_SPICE }, //
                             Instrument.LORRI //
