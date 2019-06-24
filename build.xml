@@ -212,7 +212,8 @@
       </fileset>
 
       <manifest>
-        <attribute name="Class-Path" value="commons-io-2.0.jar
+        <attribute name="Class-Path" value="netcdfAll-4.3.jar
+        	commons-io-2.0.jar
         	crucible-metadata-4.1.jar
         	crucible-settings-3.0.jar
             commons-math3-3.2.jar
@@ -325,7 +326,8 @@
       </fileset>
 
       <manifest>
-        <attribute name="Class-Path" value="commons-io-2.0.jar
+        <attribute name="Class-Path" value="netcdfAll-4.3.jar
+        	commons-io-2.0.jar
         	crucible-settings-3.0.jar
         	crucible-metadata-4.1.jar
             commons-math3-3.2.jar
