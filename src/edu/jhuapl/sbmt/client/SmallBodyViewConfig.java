@@ -4414,36 +4414,34 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = ShapeModelType.NIMMO;
+            c.author = null;
             c.modelLabel = "Nimmo et al. (2017)";
-            c.rootDirOnServer = "/charon/nimmo2017";
-            c.shapeModelFileExtension = ".obj";
-            c.setResolution(ImmutableList.of(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION[0]));
+//           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
                             SpectralMode.MONO, //
-//                            new GenericPhpQuery(c.rootDirOnServer + "/lorri", "charon_nimmo2017_lorri"), //
-                            new FixedListQuery(c.rootDirOnServer + "/lorri"), //
+                            new FixedListQuery("/NEWHORIZONS/CHARON/IMAGING", true), //
                             ImageType.LORRI_IMAGE, //
-                            new ImageSource[] { ImageSource.GASKELL, ImageSource.SPICE, ImageSource.CORRECTED_SPICE }, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.CORRECTED_SPICE}, //
                             Instrument.LORRI //
                             ), //
 
                     new ImagingInstrument( //
                             SpectralMode.MULTI, //
-                            new FixedListQuery(c.rootDirOnServer + "/mvic"), //
+                            new FixedListQuery("/NEWHORIZONS/CHARON/MVIC"), //
                             ImageType.MVIC_JUPITER_IMAGE, //
-                            new ImageSource[] { ImageSource.SPICE }, //
+                            new ImageSource[]{ImageSource.SPICE}, //
                             Instrument.MVIC //
 //                            ), //
 //
 //                    new ImagingInstrument( //
 //                            SpectralMode.HYPER, //
-//                            new FixedListQuery(c.rootDirOnServer + "/leisa"), //
+//                            new FixedListQuery("/NEWHORIZONS/CHARON/LEISA"), //
 //                            ImageType.LEISA_JUPITER_IMAGE, //
-//                            new ImageSource[] { ImageSource.SPICE }, //
+//                            new ImageSource[]{ImageSource.SPICE}, //
 //                            Instrument.LEISA //
                             ) //
             };
