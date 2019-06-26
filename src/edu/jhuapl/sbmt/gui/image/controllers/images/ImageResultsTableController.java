@@ -884,7 +884,7 @@ public class ImageResultsTableController
         return imageResultsTableView;
     }
 
-    class ImageResultsPropertyChangeListener implements PropertyChangeListener
+    public class ImageResultsPropertyChangeListener implements PropertyChangeListener
     {
         @Override
         public final void propertyChange(PropertyChangeEvent evt)
@@ -971,7 +971,7 @@ public class ImageResultsTableController
 
     }
 
-    class ImageResultsTableModeListener implements TableModelListener
+    public class ImageResultsTableModeListener implements TableModelListener
     {
         public void tableChanged(TableModelEvent e)
         {
@@ -990,10 +990,10 @@ public class ImageResultsTableController
                 String name = imageRawResults.get(row).get(0);
                 String namePrefix = FileUtil.removeExtension(name);
                 if ((Boolean) imageResultsTableView.getResultList().getValueAt(actualRow, imageResultsTableView.getMapColumnIndex()))
-                    imageSearchModel.loadImages(namePrefix);
+                    imageSearchModel.loadImage(namePrefix);
                 else
                 {
-                    imageSearchModel.unloadImages(namePrefix);
+                    imageSearchModel.unloadImage(namePrefix);
                     //                    renderer.setLighting(LightingType.LIGHT_KIT);	//removed due to request in #1667
                 }
             }
