@@ -21,7 +21,6 @@ import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Debug;
-import edu.jhuapl.saavtk.util.DownloadableFileManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.SbmtMainWindow;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
@@ -95,7 +94,7 @@ public class SbmtRunnable implements Runnable
                             frame.setVisible(true);
                             System.out.println("\nSBMT Ready");
 
-                            DownloadableFileManager.setShowDotsForFiles(false);
+                            FileCache.showDotsForFiles(false);
                             FileCache.instance().startAccessMonitor();
 
                             Console.hideConsole();
@@ -151,7 +150,7 @@ public class SbmtRunnable implements Runnable
 			{}
 		}
 
-		DownloadableFileManager.setShowDotsForFiles(true);
+		FileCache.showDotsForFiles(true);
 		System.out.println("Welcome to the Small Body Mapping Tool (SBMT)");
 		System.out.println(mission + " edition" + (compileDate != null ? " built " + DATE_FORMAT.format(compileDate) : ""));
 		if (Debug.isEnabled())
