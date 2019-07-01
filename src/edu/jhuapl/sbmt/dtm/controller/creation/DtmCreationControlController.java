@@ -61,7 +61,8 @@ public class DtmCreationControlController implements ActionListener, PropertyCha
 			{
 				File[] files = CustomFileChooser.showOpenDialog(panel, "Load DEM(s)", new ArrayList<String>(Arrays.asList("fit","fits")), true);
 		        if (files == null) return;
-		        model.loadFiles(files, new Runnable()
+		        int viewBadData = JOptionPane.showConfirmDialog(panel, "Do you want to view invalid or missing data?", "View Invalid/Missing data", JOptionPane.YES_NO_OPTION);
+		        model.loadFiles(files, (viewBadData == 0 ? true : false), new Runnable()
 				{
 					@Override
 					public void run()

@@ -7,19 +7,19 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-bodyName="mu69"
 
 # Usage
-if [ "$#" -lt 3 ]
+if [ "$#" -lt 4 ]
 then
-  echo "Model data usage:  rawdata2processed-$missionShortName.sh <model-name> <processing-version> <processing-model-label>"
+  echo "Model data usage:  rawdata2processed-$missionShortName.sh <body-name> <model-name> <processing-version> <processing-model-label>"
   exit 1
 fi
 
 # Command line parameters
-rawdataModelName=$1
-processingVersion=$2
-processingModelLabel=$3
+bodyName=$1
+rawdataModelName=$2
+processingVersion=$3
+processingModelLabel=$4
 processingModelName=$rawdataModelName
 
 if [ $processingModelName = "shared" ]
@@ -75,26 +75,32 @@ log="$logDir/rawdata2processed.log"
 
 # generates the imagelist-fullpath-sum.txt and imagelist-sum.txt files if SUM files are delivered.
 processMakeSumfiles() {
-  imageDir=$1
+  imager=$1
+  imageDir=$2
   instrument=`basename $imageDir`
+
+  if test ! -e "$imageDir/make_sumfiles.in"; then
+    return
+  fi
 
   # write imagelist-fullpath-sum.txt
   if test -e $imageDir/imagelist-fullpath-sum.txt; then
      rm $imageDir/imagelist-fullpath-sum.txt
   fi
   fullpath=/$bodyName/$processingModelName/$instrument/images/
-  awk '{print $8}' $imageDir/make_sumfiles.in | sed "s:^:$fullpath:" > $imageDir/imagelist-fullpath-sum.txt
+  awk '{print $NF}' $imageDir/make_sumfiles.in | sed "s:^:$fullpath:" | sed 's:$:.fit:' > $imageDir/imagelist-fullpath-sum.txt
 
 
   # write imagelist-sum.txt
   if test -e $imageDir/imagelist-sum.txt; then
      rm $imageDir/imagelist-sum.txt
   fi
-  fileNames=`awk '{print $8" "}' $imageDir/make_sumfiles.in`
+  fileNames=`awk '{print $NF}' $imageDir/make_sumfiles.in | sed 's:$:.fit:'`
   for line in $fileNames
   do
-     # extracts the time from the file name
-     fileTime=`echo $line | sed 's/[^0-9]*\([0-9]\{4\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)T\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\)-\?\([0-9]\{2\}\).*/\1-\2-\3T\4:\5:\6/i'`
+     # read the time from the file using HEASOFT tools.
+     serverFile="/project/sbmt2/sbmt/data/bodies/$bodyName/shared/$imager/images/$line"
+     fileTime=`/project/sbmtpipeline/software/heasoft/bin/ftlist "$serverFile+0" k include=DATE | sed "s:.*= *'*::" | sed "s:'* .*::"`
      echo "$line $fileTime" >> $imageDir/imagelist-sum.txt
   done
 }
@@ -168,20 +174,21 @@ echo "Begin `date`" >> $log 2>&1
    doGzipDirIfNecessary $destTop/$processingModelName/shape
 
    # Process delivered sumfiles
-   imager=lorri
-   if [ -d "$srcTop/$rawdataModelName/$imager" ]
-   then
-     echo Beginning sumfile processing
-     createDirIfNecessary $destTop/$processingModelName/$imager
+   for imager in lorri leisa mvic; do
+     if [ -d "$srcTop/$rawdataModelName/$imager" ]
+     then
+       echo Beginning sumfile processing
+       createDirIfNecessary $destTop/$processingModelName/$imager
 
-     # generates imagelist-sum.txt and imagelist-fullpath.txt
-     processMakeSumfiles $srcTop/$rawdataModelName/$imager
+       # generates imagelist-sum.txt and imagelist-fullpath.txt
+       processMakeSumfiles $imager $srcTop/$rawdataModelName/$imager
 
-     # copies over imager directory
-     doRsync $srcTop/$rawdataModelName/$imager $destTop/$processingModelName/$imager
+       # copies over imager directory
+       doRsync $srcTop/$rawdataModelName/$imager $destTop/$processingModelName/$imager
 
-     echo Finished sumfile processing
+       echo Finished $imager processing
    fi
+   done
 
    # process coloring data and generates the metadata needed to read the coloring data.
    if [ -d "$srcTop/$rawdataModelName/coloring" ]

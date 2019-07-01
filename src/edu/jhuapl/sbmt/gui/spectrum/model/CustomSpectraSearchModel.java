@@ -28,6 +28,7 @@ import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.saavtk.util.Properties;
+import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.spectrum.CustomSpectrumImporterDialog;
@@ -728,7 +729,7 @@ public class CustomSpectraSearchModel extends SpectrumSearchModel
 
             try
             {
-                collection.addSpectrum(createSpectrumName(i), instrument, style,true);
+                collection.addSpectrum(SafeURLPaths.instance().getUrl(createSpectrumName(i)), instrument, style,true);
 
             }
             catch (IOException e1) {
