@@ -100,7 +100,7 @@ public class DEMConfigFile implements EventListener
             int numDems = demNames != null ? demNames.length : 0;
             for (int i = 0; i < numDems; ++i)
             {
-                DEMKey key = new DEMKey(demFilenames[i], demNames[i]);
+                DEMKey key = new DEMKey(demFilenames[i], demNames[i], false);
                 table.appendRow(key);
             }
 

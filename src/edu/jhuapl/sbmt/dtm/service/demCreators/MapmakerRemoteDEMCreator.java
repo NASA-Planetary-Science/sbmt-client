@@ -182,6 +182,6 @@ public class MapmakerRemoteDEMCreator implements DEMCreator
 	@Override
 	public DEMKey getDEMKey()
 	{
-		return new DEMKey(newDemInfo.demfilename, newDemInfo.name);
+		return new DEMKey(newDemInfo.demfilename, newDemInfo.name, false);
 	}
 }

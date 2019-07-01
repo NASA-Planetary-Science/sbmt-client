@@ -12,11 +12,13 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
 {
     public String name = ""; // name to call this image for display purposes
     public String demfilename = ""; // filename of image on disk
+    public boolean viewBadData = false;
 
-    public DEMKey(String fileName, String displayName)
+    public DEMKey(String fileName, String displayName, boolean viewBadData)
     {
         this.demfilename = fileName;
         this.name = displayName;
+        this.viewBadData = viewBadData;
     }
 
     // Copy constructor
@@ -24,6 +26,7 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
     {
         demfilename = copyKey.demfilename;
         this.name = copyKey.name;
+        this.viewBadData = viewBadData;
     }
 
     @Override
@@ -45,7 +48,8 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
     }
 
     private static final Key<String> nameKey = Key.of("name");
-    private static final  Key<String> demfilenameKey = Key.of("demfilename");
+    private static final Key<String> demfilenameKey = Key.of("demfilename");
+    private static final Key<Boolean> viewBadDataKey = Key.of("viewBadData");
     private static final Key<DEMKey> DEM_KEY = Key.of("demKey");
 
 	@Override
@@ -54,6 +58,7 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
 		SettableMetadata configMetadata = SettableMetadata.of(Version.of(1, 0));
 		write(nameKey, name, configMetadata);
 		write(demfilenameKey, demfilename, configMetadata);
+		write(viewBadDataKey, viewBadData, configMetadata);
 		return configMetadata;
 	}
 
@@ -63,7 +68,10 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
 
 	        String name = metadata.get(nameKey);
 	        String demfilename = metadata.get(demfilenameKey);
-			return new DEMKey(demfilename, name);
+	        Boolean viewBadData = false;
+	        if (metadata.hasKey(viewBadDataKey))
+	        	viewBadData = metadata.get(viewBadDataKey);
+			return new DEMKey(demfilename, name, viewBadData);
 		});
 	}
 
@@ -71,7 +79,7 @@ public class DEMKey implements StorableAsMetadata<DEMKey>
 	{
 		 Key<String> nameKey = Key.of("name");
 		 Key<String> demFileNameKey = Key.of("demfilename");
-		 DEMKey key = new DEMKey(metadata.get(demFileNameKey), metadata.get(nameKey));
+		 DEMKey key = new DEMKey(metadata.get(demFileNameKey), metadata.get(nameKey), false);
 		 return key;
 	}
 

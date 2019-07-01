@@ -118,7 +118,7 @@ public class MapmakerDEMCreator extends BasicEventSource implements DEMCreator
         protected DEMKey postProcessAndCreate(MapmakerNativeWrapper wrapper)
         {
             wrapper.convertCubeToFitsAndSaveInOutputFolder(false);
-            DEMKey demKey = new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()));
+            DEMKey demKey = new DEMKey(wrapper.getMapletFile().getAbsolutePath(),FilenameUtils.getBaseName(wrapper.getMapletFile().toString()), false);
             return demKey;
         }
 
