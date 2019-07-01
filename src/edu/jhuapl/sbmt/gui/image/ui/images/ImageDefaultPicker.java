@@ -1,8 +1,6 @@
 package edu.jhuapl.sbmt.gui.image.ui.images;
 
 import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -54,6 +52,7 @@ public class ImageDefaultPicker extends DefaultPicker
     private DecimalFormat decimalFormatter = new DecimalFormat("##0.000");
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
+    private String distanceStr;
 
     public ImageDefaultPicker(
             Renderer renderer,
@@ -101,16 +100,20 @@ public class ImageDefaultPicker extends DefaultPicker
         // listener on the renderer panel as well to listen explicitly to resize events.
         // Note also that this functionality is in this class since picking is required
         // to compute the value of the scale bar.
-        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
-        renWin.getComponent().addComponentListener(new ComponentAdapter()
-        {
-            @Override
-            public void componentResized(ComponentEvent e)
-            {
-                updateScaleBarValue();
-                updateScaleBarPosition();
-            }
-        });
+//        renWin.getRenderWindow().AddObserver("EndEvent", this, "updateScaleBarValue");
+//        renWin.getComponent().addComponentListener(new ComponentAdapter()
+//        {
+//            @Override
+//            public void componentResized(ComponentEvent e)
+//            {
+//            	System.out.println(
+//						"ImageDefaultPicker.ImageDefaultPicker(...).new ComponentAdapter() {...}: componentResized: component resized");
+//                updateScaleBarValue();
+//                updateScaleBarPosition();
+//            }
+//        });
+
+//        });
     }
 
     public void setSuppressPopups(boolean b)
@@ -296,7 +299,7 @@ public class ImageDefaultPicker extends DefaultPicker
                 cameraPos[0]*cameraPos[0] +
                 cameraPos[1]*cameraPos[1] +
                 cameraPos[2]*cameraPos[2]);
-        String distanceStr = decimalFormatter.format(distance);
+        distanceStr = decimalFormatter.format(distance);
         if (distanceStr.length() == 5)
             distanceStr = "  " + distanceStr;
         else if (distanceStr.length() == 6)
@@ -304,7 +307,40 @@ public class ImageDefaultPicker extends DefaultPicker
         distanceStr += " km";
 
         int pickSucceeded = doPick(e, smallBodyCellPicker, renWin);
+        updateStatusBar(pickSucceeded, modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+    }
 
+    private void updateStatusBar(double scaleBarWidthInKm)
+    {
+    	updateStatusBar(1, scaleBarWidthInKm);
+    }
+
+    private void updateStatusBar(int pickSucceeded, double scaleBarWidthInKm)
+    {
+    	if (distanceStr == null)
+    	{
+    		vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
+            double[] cameraPos = activeCamera.GetPosition();
+            double distance = Math.sqrt(
+                    cameraPos[0]*cameraPos[0] +
+                    cameraPos[1]*cameraPos[1] +
+                    cameraPos[2]*cameraPos[2]);
+            distanceStr = decimalFormatter.format(distance);
+            if (distanceStr.length() == 5)
+                distanceStr = "  " + distanceStr;
+            else if (distanceStr.length() == 6)
+                distanceStr = " " + distanceStr;
+            distanceStr += " km";
+    	}
+
+    	String pixelResolutionString = "";
+        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() > 0)
+        {
+	        if (modelManager.getPolyhedralModel().getScaleBarWidthInKm() < 1.0)
+	        	pixelResolutionString = String.format("%.2f m", 1000.0 * modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+			else
+				pixelResolutionString = String.format("%.2f km", modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+        }
         if (pickSucceeded == 1)
         {
             double[] pos = smallBodyCellPicker.GetPickPosition();
@@ -349,11 +385,17 @@ public class ImageDefaultPicker extends DefaultPicker
                 radStr = " " + radStr;
             radStr += " km";
 
-            statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
+            if (pixelResolutionString.equals(""))
+            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " ");
+            else
+            	statusBar.setRightText("Lat: " + latStr + "  Lon: " + lonStr + "  Radius: " + radStr + "  Range: " + distanceStr + " " + " " + "Scalebar " + pixelResolutionString);
         }
         else
         {
-            statusBar.setRightText("Range: " + distanceStr + " ");
+        	if (pixelResolutionString.equals(""))
+        		statusBar.setRightText("Range: " + distanceStr + " ");
+        	else
+        		statusBar.setRightText("Range: " + distanceStr + " " + "Scalebar: " + pixelResolutionString);
         }
     }
 
@@ -421,11 +463,25 @@ public class ImageDefaultPicker extends DefaultPicker
         return sizeOfPixel;
     }
 
+    private void updateScaleBar()
+    {
+    	updateScaleBarValue();
+        updateScaleBarPosition();
+    }
+
     private void updateScaleBarValue()
     {
         double sizeOfPixel = computeSizeOfPixel();
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
-        smallBodyModel.updateScaleBarValue(sizeOfPixel);
+        smallBodyModel.updateScaleBarValue(sizeOfPixel, new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				updateStatusBar(modelManager.getPolyhedralModel().getScaleBarWidthInKm());
+			}
+		});
     }
 
     public void updateScaleBarPosition()

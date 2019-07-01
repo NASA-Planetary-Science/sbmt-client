@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
 import vtk.vtkJavaGarbageCollector;
@@ -57,24 +58,53 @@ public class SbmtRunnable implements Runnable
 			garbageCollector.SetScheduleTime(5, TimeUnit.SECONDS);
 			garbageCollector.SetAutoGarbageCollection(true);
 
-			Configuration.runOnEDTASAP(() -> {
+			Configuration.runAndWaitOnEDT(() -> {
 			    JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 			    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 			    ToolTipManager.sharedInstance().setDismissDelay(600000); // 10 minutes
+
+			    MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
+			    MainWindow.setMainWindow(frame);
+
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception
+                    {
+                        while (!frame.isReady())
+                        {
+                            try
+                            {
+                                Thread.sleep(100);
+                            }
+                            catch (InterruptedException ignored)
+                            {
+                                break;
+                            }
+                        }
+
+                        return null;
+                    }
+
+                    protected void done()
+                    {
+                        if (!isCancelled())
+                        {
+                            frame.pack();
+                            frame.setVisible(true);
+                            System.out.println("\nSBMT Ready");
+
+                            FileCache.showDotsForFiles(false);
+                            FileCache.instance().startAccessMonitor();
+
+                            Console.hideConsole();
+                            Console.setDefaultLocation(frame);
+                        }
+                    }
+                };
+
+			    swingWorker.execute();
 			});
-
-			MainWindow frame = new SbmtMainWindow(initialShapeModelPath);
-			MainWindow.setMainWindow(frame);
-			FileCache.showDotsForFiles(false);
-
-            Configuration.runOnEDTASAP(() -> {
-                frame.pack();
-                frame.setVisible(true);
-            });
-			System.out.println("\nSBMT Ready");
-
-			Console.hideConsole();
-			Console.setDefaultLocation(frame);
 		}
 		catch (Throwable throwable)
 		{
@@ -82,11 +112,19 @@ public class SbmtRunnable implements Runnable
 			throwable.printStackTrace();
 			System.err.println("\nThe SBMT had a serious error during launch. Please review messages above for more information.");
 			System.err.println("\nTry restarting the tool. Please report persistent launch problems to sbmt@jhuapl.edu.");
-			System.err.println("\nNote that the SBMT requires an internet connection in order to download built-in model data.");
-	        JOptionPane.showMessageDialog(null,
-	                "A problem occurred during start-up. Please review messages in the console window.",
-	                "Warning",
-	                JOptionPane.WARNING_MESSAGE);
+			System.err.println("\nNote that the SBMT requires an internet connection to download standard model data from the server.");
+			try
+            {
+                Configuration.runAndWaitOnEDT(() -> {
+                JOptionPane.showMessageDialog(null,
+                        "A problem occurred during start-up. Please review messages in the console window.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+                });
+            }
+            catch (Exception ignored)
+            {
+            }
 		}
 	}
 

@@ -11,6 +11,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.controllers.color.ColorImageController;
 import edu.jhuapl.sbmt.gui.image.controllers.cubes.ImageCubeController;
 import edu.jhuapl.sbmt.gui.image.controllers.images.ImageResultsTableController;
+import edu.jhuapl.sbmt.gui.image.controllers.images.OfflimbImageResultsTableController;
 import edu.jhuapl.sbmt.gui.image.controllers.search.ImageSearchParametersController;
 import edu.jhuapl.sbmt.gui.image.model.color.ColorImageModel;
 import edu.jhuapl.sbmt.gui.image.model.cubes.ImageCubeModel;
@@ -58,7 +59,7 @@ public class QuadSpectralImagingSearchController
         ImageCollection imageCollection = (ImageCollection)modelManager.getModel(imageSearchModel.getImageCollectionModelName());
         PerspectiveImageBoundaryCollection imageBoundaryCollection = (PerspectiveImageBoundaryCollection)modelManager.getModel(imageSearchModel.getImageBoundaryCollectionModelName());
 
-        this.imageResultsTableController = new ImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
+        this.imageResultsTableController = new OfflimbImageResultsTableController(instrument, imageCollection, imageSearchModel, renderer, infoPanelManager, spectrumPanelManager);
         this.imageResultsTableController.setImageResultsPanel();
 
         this.searchParametersController = new ImageSearchParametersController(imageSearchModel, pickManager);

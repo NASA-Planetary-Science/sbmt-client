@@ -180,17 +180,15 @@ public class SbmtViewManager extends ViewManager
     @Override
     protected View createCustomView(StatusBar statusBar, String name, boolean temporary)
     {
-        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
-        customConfig.modelLabel = name;
-        customConfig.customTemporary = temporary;
-        customConfig.author = ShapeModelType.CUSTOM;
+        SmallBodyViewConfig customConfig = SmallBodyViewConfig.ofCustom(name, temporary);
+
         return new SbmtView(statusBar, customConfig);
     }
 
     @Override
     public View createCustomView(String name, boolean temporary, File metadata)
     {
-        SmallBodyViewConfig customConfig = new SmallBodyViewConfig(ImmutableList.<String> of(name), ImmutableList.<Integer> of(1));
+        SmallBodyViewConfig customConfig = SmallBodyViewConfig.ofCustom(name, temporary);
         SmallBodyViewConfigMetadataIO customConfigImporter = new SmallBodyViewConfigMetadataIO();
         try
         {
@@ -207,9 +205,6 @@ public class SbmtViewManager extends ViewManager
             e.printStackTrace();
         }
 
-        customConfig.modelLabel = name;
-        customConfig.customTemporary = temporary;
-        customConfig.author = ShapeModelType.CUSTOM;
         //write this back out with the new metadata data changes to denote the customization
         try
         {

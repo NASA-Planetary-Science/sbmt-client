@@ -13,6 +13,7 @@ import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
@@ -31,15 +32,23 @@ public abstract class BodyViewConfig extends ViewConfig
     public String rootDirOnServer;
     protected String shapeModelFileBaseName = "shape/shape";
     protected String shapeModelFileExtension = ".vtk";
+    protected String[] shapeModelFileNames = null;
     public String timeHistoryFile;
     public double density = 0.0; // in units g/cm^3
     public double rotationRate = 0.0; // in units radians/sec
 
     public boolean hasColoringData = true;
     public boolean hasImageMap = false;
-    public String[] imageMaps = null;
 
     public boolean hasMapmaker = false;
+    public boolean hasRemoteMapmaker = false;
+    public double bodyDensity = 0.0;
+    public double bodyRotationRate = 0.0;
+    public double bodyReferencePotential = 0.0;
+    public String bodyLowestResModelName = "";
+
+
+
     public boolean hasBigmap = false;
     public boolean hasSpectralData = false;
     public boolean hasLineamentData = false;
@@ -302,6 +311,30 @@ public abstract class BodyViewConfig extends ViewConfig
     }
 
     public String[] getShapeModelFileNames() {
+        if (shapeModelFileNames != null) {
+            return shapeModelFileNames;
+        }
+
+        // TODO this is an awful hack. Should not cue on the directory case
+        // sensitivity pattern to decide where to find the shape model file!
+        // There are subtle problems with all the "better" ways to do it.
+        if (!rootDirOnServer.toLowerCase().equals(rootDirOnServer))
+        {
+            int numberResolutions = getResolutionLabels().size();
+            // Another awful hack. Assume that if there are 4 resolutions,
+            // but no specific names, it must be a legacy SPC model.
+            if (numberResolutions == 4)
+            {
+                return prepend(rootDirOnServer, "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
+            }
+            else if (numberResolutions != 1)
+            {
+                throw new AssertionError("Unable to determine shape file name(s) for " + rootDirOnServer);
+            }
+
+            return new String[] { rootDirOnServer };
+        }
+
         if (shapeModelFileBaseName == null || shapeModelFileExtension == null) {
             throw new NullPointerException();
         }
@@ -311,6 +344,7 @@ public abstract class BodyViewConfig extends ViewConfig
         String[] modelFiles = new String[numberResolutions];
         for (int index = 0; index < numberResolutions; ++index) {
             modelFiles[index] = serverPath(shapeModelFileBaseName + index + shapeModelFileExtension + ".gz");
+//            System.out.println("BodyViewConfig: getShapeModelFileNames: model file name " + modelFiles[index]);
         }
 
         return modelFiles;
@@ -321,6 +355,22 @@ public abstract class BodyViewConfig extends ViewConfig
 		return spectraSearchDataSourceMap;
 	}
 
+    protected List<ImageKeyInterface> getImageMapKeys()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    protected static String[] prepend(String prefix, String... strings)
+    {
+        String[] result = new String[strings.length];
+        int index = 0;
+        for (String string : strings)
+        {
+            result[index++] = SafeURLPaths.instance().getString(prefix, string);
+        }
+
+        return result;
+    }
 
 	private static String serverPath(String firstSegment, String... segments)
     {

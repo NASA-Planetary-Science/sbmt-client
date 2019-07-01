@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -42,11 +43,15 @@ import edu.jhuapl.saavtk.model.structure.PolygonModel;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.Properties;
-import edu.jhuapl.sbmt.gui.dem.DEMPopupMenu;
-import edu.jhuapl.sbmt.gui.dem.MapletBoundaryPopupMenu;
-import edu.jhuapl.sbmt.gui.dtm.controllers.ExperimentalDEMController;
-import edu.jhuapl.sbmt.gui.dtm.ui.creation.DEMCreator;
-import edu.jhuapl.sbmt.gui.dtm.ui.creation.MapmakerDEMCreator;
+import edu.jhuapl.sbmt.dtm.controller.DEMPopupMenuActionListener;
+import edu.jhuapl.sbmt.dtm.controller.ExperimentalDEMController;
+import edu.jhuapl.sbmt.dtm.model.DEMBoundaryCollection;
+import edu.jhuapl.sbmt.dtm.model.DEMCollection;
+import edu.jhuapl.sbmt.dtm.model.creation.DEMCreator;
+import edu.jhuapl.sbmt.dtm.service.demCreators.MapmakerDEMCreator;
+import edu.jhuapl.sbmt.dtm.service.demCreators.MapmakerRemoteDEMCreator;
+import edu.jhuapl.sbmt.dtm.ui.menu.DEMPopupMenu;
+import edu.jhuapl.sbmt.dtm.ui.menu.MapletBoundaryPopupMenu;
 import edu.jhuapl.sbmt.gui.eros.LineamentControlPanel;
 import edu.jhuapl.sbmt.gui.eros.LineamentPopupMenu;
 import edu.jhuapl.sbmt.gui.image.HyperspectralImagingSearchPanel;
@@ -60,7 +65,7 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarListPanel;
+import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
@@ -71,14 +76,12 @@ import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
 import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
 import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
-import edu.jhuapl.sbmt.model.dem.DEMBoundaryCollection;
-import edu.jhuapl.sbmt.model.dem.DEMCollection;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectraType;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
@@ -261,7 +264,7 @@ public class SbmtView extends View implements PropertyChangeListener
 		allModels.put(ModelNames.ELLIPSE_STRUCTURES, new EllipseModel(smallBodyModel));
 		allModels.put(ModelNames.POINT_STRUCTURES, new PointModel(smallBodyModel));
 		allModels.put(ModelNames.CIRCLE_SELECTION, new CircleSelectionModel(smallBodyModel));
-		allModels.put(ModelNames.TRACKS, new LidarSearchDataCollection(smallBodyModel));
+		allModels.put(ModelNames.TRACKS, new LidarTrackManager(smallBodyModel));
 		DEMCollection demCollection = new DEMCollection(smallBodyModel, getModelManager());
 		allModels.put(ModelNames.DEM, demCollection);
 		DEMBoundaryCollection demBoundaryCollection = new DEMBoundaryCollection(smallBodyModel, getModelManager());
@@ -345,9 +348,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasLidarData)
 		{
-			LidarSearchDataCollection lidarSearch = (LidarSearchDataCollection) getModel(ModelNames.LIDAR_SEARCH);
-			PopupMenu popupMenu = new LidarPopupMenu(lidarSearch, getRenderer());
-			registerPopup(lidarSearch, popupMenu);
+			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
+			PopupMenu popupMenu = new LidarPopupMenu(tmpTrackManager, getRenderer());
+			registerPopup(tmpTrackManager, popupMenu);
 		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
@@ -508,9 +511,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
 			// Add the "lidar tracks" tab
 			ModelManager tmpModelManager = getModelManager();
-			LidarSearchDataCollection tmpLidarModel = (LidarSearchDataCollection) tmpModelManager.getModel(ModelNames.TRACKS);
-			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpLidarModel);
-			LidarListPanel tmpLidarListPanel = new LidarListPanel(tmpModelManager, tmpLidarModel, getPickManager(), getRenderer());
+			LidarTrackManager tmpTrackManager = (LidarTrackManager)tmpModelManager.getModel(ModelNames.TRACKS);
+			LidarLoadPanel tmpLidarLoadPanel = new LidarLoadPanel(tmpTrackManager);
+			LidarTrackPanel tmpLidarListPanel = new LidarTrackPanel(tmpModelManager, tmpTrackManager, getPickManager(), getRenderer());
 			JPanel tmpPanel = new JPanel(new MigLayout("", "", "0[]0"));
 			tmpPanel.add(tmpLidarLoadPanel, "growx,wrap");
 			tmpPanel.add(tmpLidarListPanel, "growx,growy,pushx,pushy");
@@ -520,31 +523,51 @@ public class SbmtView extends View implements PropertyChangeListener
 			//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer);
 			//            addTab("Regional DTMs", component);
 
-			DEMCollection dems = (DEMCollection) getModel(ModelNames.DEM);
-			DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection) getModel(ModelNames.DEM_BOUNDARY);
-			DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer());
-			registerPopup(getModel(ModelNames.DEM), demPopupMenu);
-			registerPopup(getModel(ModelNames.DEM_BOUNDARY), demPopupMenu);
+            DEMCollection dems = (DEMCollection)getModel(ModelNames.DEM);
+            DEMBoundaryCollection demBoundaries = (DEMBoundaryCollection)getModel(ModelNames.DEM_BOUNDARY);
+        	DEMPopupMenu demPopupMenu = new DEMPopupMenu(getModelManager().getPolyhedralModel(), dems, demBoundaries, renderer, getRenderer(), new DEMPopupMenuActionListener(dems, demBoundaries));
+            registerPopup(getModel(ModelNames.DEM), demPopupMenu);
+            registerPopup(getModel(ModelNames.DEM_BOUNDARY), demPopupMenu);
 
-			if (getPolyhedralModelConfig().rootDirOnServer != null)
-			{
-				DEMCreator creationTool = new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
-				addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
-			}
-			else
-			{
-				getPolyhedralModelConfig().hasMapmaker = false;
-				getPolyhedralModelConfig().hasBigmap = false;
-				addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), null, getPolyhedralModelConfig(), getRenderer()).getPanel());
-			}
-			if (getConfig().hasStateHistory)
-			{
-				StateHistoryController controller = null;
-				if (getConfig().body == ShapeModelBody.EARTH)
-					controller = new StateHistoryController(getModelManager(), getRenderer(), false);
-				else
-					controller = new StateHistoryController(getModelManager(), getRenderer(), true);
-				addTab("Observing Conditions", controller.getView());
+            DEMCreator creationTool = null;
+            if (getPolyhedralModelConfig().hasRemoteMapmaker)	//config builds DEMs from the server
+            {
+            	creationTool = new MapmakerRemoteDEMCreator(Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()), getPolyhedralModelConfig());
+//            	JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                        getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer, getPolyhedralModelConfig());
+//                addTab("Regional DTMs", component);
+            }
+            else if (getPolyhedralModelConfig().hasMapmaker)	//config builds DEMs locally.
+            {
+            	creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer + File.separator + "mapmaker.zip"), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+            }
+
+        	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
+
+
+//            if ( getPolyhedralModelConfig().rootDirOnServer != null)
+//            {
+//            	DEMCreator creationTool=new MapmakerDEMCreator(Paths.get(getPolyhedralModelConfig().rootDirOnServer), Paths.get(getModelManager().getPolyhedralModel().getCustomDataFolder()));
+//            	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), creationTool, getPolyhedralModelConfig(), getRenderer()).getPanel());
+//            }
+//            else
+//            {
+////               	getPolyhedralModelConfig().hasMapmaker = false;
+////            	getPolyhedralModelConfig().hasBigmap = false;
+////            	addTab("Regional DTMs", new ExperimentalDEMController(getModelManager(), getPickManager(), null, getPolyhedralModelConfig(), getRenderer()).getPanel());
+//
+//            	JComponent component = new CustomDEMPanel(getModelManager(), getPickManager(), getPolyhedralModelConfig().rootDirOnServer,
+//                    getPolyhedralModelConfig().hasMapmaker, getPolyhedralModelConfig().hasBigmap, renderer, getPolyhedralModelConfig());
+//            	addTab("Regional DTMs", component);
+////			}
+            if (getConfig().hasStateHistory)
+            {
+                StateHistoryController controller = null;
+                if (getConfig().body == ShapeModelBody.EARTH)
+                    controller = new StateHistoryController(getModelManager(), getRenderer(), false);
+                else
+                    controller = new StateHistoryController(getModelManager(), getRenderer(), true);
+                addTab("Observing Conditions", controller.getView());
 
 			}
 		}
@@ -687,32 +710,40 @@ public class SbmtView extends View implements PropertyChangeListener
 				@Override
 				public void retrieve(Metadata state)
 				{
-					initialize();
+					try
+                    {
+                        initialize();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        return;
+                    }
 
 					Version serializedVersion = state.getVersion();
 
-					if (state.hasKey(RESOLUTION_LEVEL_KEY))
-					{
-						try
-						{
-							getModelManager().getPolyhedralModel().setModelResolution(state.get(RESOLUTION_LEVEL_KEY));
-						}
-						catch (IOException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					Renderer localRenderer = SbmtView.this.getRenderer();
-					if (localRenderer != null)
-					{
-						RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
-						vtkCamera camera = panel.getActiveCamera();
-						camera.SetPosition(state.get(POSITION_KEY));
-						camera.SetViewUp(state.get(UP_KEY));
-						panel.resetCameraClippingRange();
-						panel.Render();
-					}
+                    if (state.hasKey(RESOLUTION_LEVEL_KEY))
+                    {
+                        try
+                        {
+                            getModelManager().getPolyhedralModel().setModelResolution(state.get(RESOLUTION_LEVEL_KEY));
+                        }
+                        catch (IOException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    Renderer localRenderer = SbmtView.this.getRenderer();
+                    if (localRenderer != null)
+                    {
+                        RenderPanel panel = (RenderPanel) localRenderer.getRenderWindowPanel();
+                        vtkCamera camera = panel.getActiveCamera();
+                            camera.SetPosition(state.get(POSITION_KEY));
+                            camera.SetViewUp(state.get(UP_KEY));
+                        panel.resetCameraClippingRange();
+                        panel.Render();
+                    }
 
 					// Redmine #1320/1439: this is what used to be here to retrieve the state of imaging search panels.
 					//                    if (!searchPanelMap.isEmpty())

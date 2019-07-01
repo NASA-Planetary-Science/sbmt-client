@@ -19,17 +19,17 @@ import crucible.crust.metadata.impl.SettableMetadata;
 
 public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylindricalImageKey>, CustomImageKeyInterface
 {
-	public String name = ""; // name to call this image for display purposes
-    public String imagefilename = ""; // filename of image on disk
-    public ProjectionType projectionType = ProjectionType.CYLINDRICAL;
-    public double lllat = -90.0;
-    public double lllon = 0.0;
-    public double urlat = 90.0;
-    public double urlon = 360.0;
-    public ImageType imageType;
-    public final ImageSource source;
+	private final String name; // name to call this image for display purposes
+    private String imagefilename; // filename of image on disk
+    private final ProjectionType projectionType = ProjectionType.CYLINDRICAL;
+    private double lllat = -90.0;
+    private double lllon = 0.0;
+    private double urlat = 90.0;
+    private double urlon = 360.0;
+    private final ImageType imageType;
+    private final ImageSource source;
     private final Date date;
-    private String originalName;
+    private final String originalName;
 
     private static final  Key<String> nameKey = Key.of("name");
     private static final  Key<String> imageFileNameKey = Key.of("imagefilename");
@@ -40,6 +40,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
     private static final  Key<Double> urlatKey = Key.of("urlat");
     private static final  Key<Double> urlonKey = Key.of("urlon");
     private static final  Key<Date> dateKey = Key.of("date");
+    private static final  Key<String> originalNameKey = Key.of("originalName");
     private static final Key<CustomCylindricalImageKey> CUSTOM_CYLINDRICAL_IMAGE_KEY = Key.of("customCylindricalImage");
 
 
@@ -145,6 +146,7 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
         result.put(urlatKey, urlat);
         result.put(urlonKey, urlon);
         result.put(dateKey, date);
+        result.put(originalNameKey, originalName);
         return result;
     }
 
@@ -161,13 +163,17 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	        double urlat = metadata.get(urlatKey);
 	        double urlon = metadata.get(urlonKey);
 	        Date date = metadata.get(dateKey);
-	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, name);
+	        String originalName = metadata.hasKey(originalNameKey) ? metadata.get(originalNameKey) : name;
+
+	        CustomCylindricalImageKey result = new CustomCylindricalImageKey(name, imagefilename, imageType, source, date, originalName);
 	        result.setLllat(lllat);
 	        result.setLllon(lllon);
 	        result.setUrlat(urlat);
 	        result.setUrlon(urlon);
 
 			return result;
+		}, CustomCylindricalImageKey.class, key -> {
+		    return key.store();
 		});
 	}
 
@@ -221,11 +227,6 @@ public class CustomCylindricalImageKey implements StorableAsMetadata<CustomCylin
 	public String getOriginalName()
 	{
 		return originalName;
-	}
-
-	public void setOriginalName(String originalName)
-	{
-		this.originalName = originalName;
 	}
 
 	@Override

@@ -11,6 +11,9 @@ import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
+import edu.jhuapl.sbmt.dtm.model.DEM;
+import edu.jhuapl.sbmt.dtm.model.DEMKey;
+import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.model.bennu.Bennu;
 import edu.jhuapl.sbmt.model.bennu.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.MapCamEarthImage;
@@ -25,8 +28,6 @@ import edu.jhuapl.sbmt.model.ceres.FcCeresImage;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.custom.CustomShapeModel;
 import edu.jhuapl.sbmt.model.deimos.DeimosImage;
-import edu.jhuapl.sbmt.model.dem.DEM;
-import edu.jhuapl.sbmt.model.dem.DEMKey;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.ErosThomas;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
@@ -39,16 +40,11 @@ import edu.jhuapl.sbmt.model.image.Image;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
-import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.itokawa.AmicaImage;
 import edu.jhuapl.sbmt.model.itokawa.Itokawa;
 import edu.jhuapl.sbmt.model.leisa.LEISAJupiterImage;
-import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.Hayabusa2LidarHyperTreeSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarBrowseDataCollection;
-import edu.jhuapl.sbmt.model.lidar.LidarSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.MolaLidarHyperTreeSearchDataCollection;
-import edu.jhuapl.sbmt.model.lidar.OlaLidarHyperTreeSearchDataCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
+import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.lorri.LorriImage;
 import edu.jhuapl.sbmt.model.mathilde.MSIMathildeImage;
 import edu.jhuapl.sbmt.model.mvic.MVICQuadJupiterImage;
@@ -245,10 +241,12 @@ public class SbmtModelFactory
             else
                 return null;
         }
-        else
+        else if (key instanceof CustomCylindricalImageKey)
         {
-            return new CylindricalImage(key, smallBodyModel);
+            return new CylindricalImage((CustomCylindricalImageKey) key, smallBodyModel);
         }
+
+        return null;
     }
 
     static public SmallBodyModel createSmallBodyModel(SmallBodyViewConfig config)
@@ -272,17 +270,14 @@ public class SbmtModelFactory
             {
                 result = new Itokawa(config);
             }
-            else if (ShapeModelBody.TEMPEL_1 == name)
-            {
-                String[] names = {
-                        name + " low"
-                };
-                String[] paths = {
-                        config.rootDirOnServer + "/ver64q.vtk.gz",
-                };
-
-                result = new SimpleSmallBody(config, names, paths);
-            }
+//            else if (ShapeModelBody.TEMPEL_1 == name)
+//            {
+//                String[] names = {
+//                        name + " low"
+//                };
+//
+//                result = new SimpleSmallBody(config, names);
+//            }
             else if (ShapeModelBody.RQ36 == name)
             {
                 if (config.version.equals("V4"))
@@ -315,7 +310,7 @@ public class SbmtModelFactory
                             config.rootDirOnServer + "/ver512q.vtk.gz"
                     };
 
-                    result = new SimpleSmallBody(config, names, paths);
+                    result = new SimpleSmallBody(config, names);
                 }
             }
         }
@@ -403,27 +398,20 @@ public class SbmtModelFactory
     {
         HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
-        if (smallBodyModel.getSmallBodyConfig().getLidarInstrument()==Instrument.LASER)
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new Hayabusa2LidarBrowseDataCollection(smallBodyModel));
-        }
-        else
-        {
-            models.put(ModelNames.LIDAR_BROWSE, new LidarBrowseDataCollection(smallBodyModel));
-        }
-        models.put(ModelNames.LIDAR_SEARCH, new LidarSearchDataCollection(smallBodyModel));
+        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
+        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
         if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
         {
             switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
             {
             case MOLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new MolaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
             case OLA:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new OlaLidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
             case LASER:
-                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new Hayabusa2LidarHyperTreeSearchDataCollection(smallBodyModel));
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
                 break;
                 default:
                 	throw new AssertionError();
@@ -437,7 +425,7 @@ public class SbmtModelFactory
 
     static public DEM createDEM(
             DEMKey key,
-            SmallBodyModel smallBodyModel) throws IOException, FitsException
+            SmallBodyModel smallBodyModel) //throws IOException, FitsException
     {
         return new DEM(key);
     }
