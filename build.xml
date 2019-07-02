@@ -206,7 +206,7 @@
     <jar destfile="${rootdir}/build/jar/near-apl.jar" basedir="${rootdir}/build/classes">
 
    	  <fileset dir="${rootdir}/build">
-    	<include name="misc"/>
+    	<include name="misc/**"/>
       </fileset>
       <fileset dir="${rootdir}/build/classes">
         <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
