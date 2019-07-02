@@ -71,7 +71,7 @@ public class DEMBrowseIO
             {
             	parts = line.split(",");
             	fileInfoFromServer = FileCache.getState(rootDir + File.separator + "dtm/browse" + File.separator + parts[0]);
-            	DEMKey key = new DEMKey(fileInfoFromServer.getUrlState().getUrl().toString(), parts[1]);
+            	DEMKey key = new DEMKey(fileInfoFromServer.getUrlState().getUrl().toString(), parts[1], false);
             	keys.add(key);
             }
             completionBlock.run();

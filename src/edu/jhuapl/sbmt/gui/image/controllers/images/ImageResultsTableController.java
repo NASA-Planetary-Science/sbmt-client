@@ -666,6 +666,7 @@ public class ImageResultsTableController
                 tableModel.setValueAt(i + 1, i, idColumnIndex);
                 tableModel.setValueAt(str.get(0).substring(str.get(0).lastIndexOf("/") + 1), i, filenameColumnIndex);
                 tableModel.setValueAt(sdf.format(dt), i, dateColumnIndex);
+//                System.out.println("ImageResultsTableController: setImageResults: str is " + sdf.format(dt));
                 for (int j : columnsNeedingARenderer)
                 {
                     TableCellRenderer renderer = resultTable.getCellRenderer(i, j);
@@ -820,16 +821,19 @@ public class ImageResultsTableController
 
         public Class<?> getColumnClass(int columnIndex)
         {
+//        	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: column index " + columnIndex + " and date col " + imageResultsTableView.getDateColumnIndex());
             if (columnIndex <= imageResultsTableView.getBndrColumnIndex())
                 return Boolean.class;
             else if (columnIndex == imageResultsTableView.getIdColumnIndex())
                 return Integer.class;
             else if (columnIndex == imageResultsTableView.getDateColumnIndex())
             {
+//            	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: returning date");
             	return Date.class;
             }
             else
             {
+//            	System.out.println("ImageResultsTableController.ImagesTableModel: getColumnClass: returning string");
                 return String.class;
             }
         }

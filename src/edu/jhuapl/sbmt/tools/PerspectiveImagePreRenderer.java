@@ -18,6 +18,7 @@ import vtk.vtkPolyDataWriter;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
+import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.NonexistentRemoteFile;
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
@@ -82,9 +83,9 @@ public class PerspectiveImagePreRenderer
 
     private void calculateFootprint()
     {
-        String intersectionFileName = outputDir + File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_frustumIntersection.vtk";
+        String intersectionFileName = image.getPrerenderingFileNameBase() + "_frustumIntersection.vtk";
 //        System.out.println("PerspectiveImagePreRenderer: calculateFootprint: trying to calculate footprint " + intersectionFileName);
-        File intersectionFile = new File(intersectionFileName);
+        File intersectionFile = FileCache.instance().getFile(intersectionFileName);
         if (intersectionFile.exists() && (reprocess == false))
         {
             System.out.println(
@@ -118,15 +119,15 @@ public class PerspectiveImagePreRenderer
 
     private void calculateOffLimb()
     {
-        String filename = outputDir +  File.separator  + FilenameUtils.getBaseName(image.getImageFileFullPath()) + "_" + resolutionIndex + "_offLimbImageData.vtk";
+        String filename = image.getPrerenderingFileNameBase() + "_offLimbImageData.vtk";
         File file = new File(filename);
         if (file.exists() && (reprocess == false)) return;
 
         ServerOffLimbPlaneCalculator calculator = new ServerOffLimbPlaneCalculator(image);
         calculator.generateOffLimbPlane(image, new Vector3D(image.getSpacecraftPosition()).getNorm());
-        if (!(new File(filename).exists())) new File(filename).getParentFile().mkdirs();
-        calculator.saveToDisk(filename);
-        compressFile(filename);
+        if (!(file.exists())) file.getParentFile().mkdirs();
+        calculator.saveToDisk(file.getPath());
+        compressFile(file.getPath());
     }
 
     public static void main(String[] args) throws FitsException, IOException

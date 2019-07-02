@@ -7,18 +7,18 @@
 #-------------------------------------------------------------------------------
 
 missionShortName="nh"
-bodyName="mu69"
 
 # Usage
-if [ "$#" -lt 2 ]
+if [ "$#" -lt 3 ]
 then
-  echo "Model data usage:  modelProcessed2deployed-$missionShortName.sh <model-name> <processing-version>"
+  echo "Model data usage:  modelProcessed2deployed-$missionShortName.sh <body-name> <model-name> <processing-version>"
   exit 1
 fi
 
 # Command line parameters
-processingModelName=$1
-processingVersion=$2
+processingBodyName=$1
+processingModelName=$2
+processingVersion=$3
 
 echo "Processing Model Name: " $processingModelName
 echo "Processing Version: " $processingVersion
@@ -29,16 +29,16 @@ rawdataTop="$pipelineTop/rawdata"
 processedTop="$pipelineTop/processed"
 
 deployedTop="/project/sbmt2/sbmt/data/bodies"
-testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$bodyName"
+testServerTop="/project/sbmt2/sbmt/data/servers/multi-mission/test/$processingBodyName"
 
 scriptDir="/project/sbmt2/sbmt/scripts"
 importCmd="$scriptDir/import.sh"
 rsyncCmd='rsync -rlptgDH --copy-links'
 
-srcTop="$processedTop/$bodyName"
-destTop="$deployedTop/$bodyName"
+srcTop="$processedTop/$processingBodyName"
+destTop="$deployedTop/$processingBodyName"
 
-logDir="$rawdataTop/$bodyName/$processingVersion/logs"
+logDir="$rawdataTop/$processingBodyName/$processingVersion/logs"
 log="$logDir/processed2deployed.log"
 
 #-------------------------------------------------------------------------------
@@ -67,27 +67,27 @@ doRsyncDir $srcTop/$processingVersion/$processingModelName $destTop/$processingM
 echo Correcting permissions >> $log 2>&1
 $scriptDir/sbmt2-data-permissions.pl $destTop/$processingModelName-$processingVersion
 
-# THIS NEXT BLOCK NOT REALLY TESTED YET.
 # Create additional symbolic links for each imager.
-imager=lorri
-if test -d "$destTop/shared/$imager"; then
-  if test -d "$destTop/$processingModelName-$processingVersion/$imager"; then
+for imager in lorri mvic leisa; do
+  if test -d "$destTop/shared/$imager"; then
+    if test -d "$destTop/$processingModelName-$processingVersion/$imager"; then
   
-    # Delivery came with some imager files, so just link files that did not come with the delivery.
-    cd "$destTop/$processingModelName-$processingVersion/$imager"
-    for sharedItem in ../../shared/$imager/*; do
-      item=`echo $sharedItem | s:.*/::`
-      if test ! -e $item; then
-        createSymbolicLink $sharedItem $item
-      fi
-    done
+      # Delivery came with some imager files, so just link files that did not come with the delivery.
+      cd "$destTop/$processingModelName-$processingVersion/$imager"
+      for sharedItem in ../../shared/$imager/*; do
+        item=`echo $sharedItem | sed 's:.*/::'`
+        if test ! -e $item; then
+          createSymbolicLink $sharedItem $item
+        fi
+      done
     
-  else
+    else
   
-    # Delivery did not include imager. Link to shared imager data at the top level.
-    createSymbolicLink ../shared/$imager $destTop/$processingModelName-$processingVersion/$imager
+      # Delivery did not include imager. Link to shared imager data at the top level.
+      createSymbolicLink ../shared/$imager $destTop/$processingModelName-$processingVersion/$imager
+    fi
   fi
-fi
+done
 
 # Update symbolic link to current model in the test area; this is used by the database generator.
 if test -h $testServerTop/$processingModelName; then
