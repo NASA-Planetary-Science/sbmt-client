@@ -95,7 +95,8 @@ all_java_files := ${SBMTROOT}/src/edu/jhuapl/sbmt/*/*.java
 
 ${most_supported_targets} :
 
-all : ${NEARJAR} ${NEARAPLJAR}
+#all : ${NEARJAR} ${NEARAPLJAR}
+all : ${NEARJAR}
 
 install : ${NEARAPLJAR} tools
 		@echo $@: "Installing near-apl.jar to ${LIBROOT} as near.jar" 
