@@ -246,6 +246,7 @@
 	    gluegen-rt-natives-macosx-universal.jar
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
+        	altwg.jar
             altwg-java-tools.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
@@ -361,6 +362,7 @@
 	    gluegen-rt-natives-macosx-universal.jar
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
+        	altwg.jar
             altwg-java-tools.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
