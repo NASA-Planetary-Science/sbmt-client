@@ -3,11 +3,13 @@ package edu.jhuapl.sbmt.dtm.service.mapmakers;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.util.MapMakerRemote;
+import edu.jhuapl.sbmt.util.SBMTDistributedGravity;
 
 public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 {
@@ -48,6 +50,15 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
         super(filename, c, title, "<html>Running Mapmaker<br> </html>", true);
+		try
+		{
+			System.out.println("MapMakerRemoteSwingWorker: runMapmaker: jar URI " + SBMTDistributedGravity.getJarURI());
+		} catch (URISyntaxException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
 
 
