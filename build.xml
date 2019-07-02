@@ -159,6 +159,9 @@
     <copy todir="${rootdir}/build/classes/edu/jhuapl/sbmt/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/sbmt/data"/>
     </copy>
+  	<copy todir="${rootdir}/build/misc/programs/gravity">
+      <fileset dir="${rootdir}/misc/programs/gravity"/>
+    </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
 		   debug="on" >
