@@ -130,11 +130,13 @@ public class DEMResultsTableController
         {
             if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
             {
+            	DEMKey key = (DEMKey)evt.getNewValue();
                 JTable resultList = getJTable();
                 resultList.getModel().removeTableModelListener(tableModelListener);
                 for (int i=0; i<table.getNumberOfRows(); ++i)
                 {
-                	DEMKey key = table.getKey(i);
+//                	DEMKey key = table.getKey(i);
+                	if (key != table.getKey(i)) continue;
                 	boolean keyExists = true;
                 	if (dems.getDEM(key) == null) keyExists = false;
                 	resultList.setValueAt(keyExists, i, 0);
