@@ -53,6 +53,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 		try
 		{
 			System.out.println("MapMakerRemoteSwingWorker: runMapmaker: jar URI " + SBMTDistributedGravity.getJarURI());
+			System.out.println("MapmakerRemoteSwingWorker: MapmakerRemoteSwingWorker: " + (new File(SBMTDistributedGravity.getJarURI().getPath()).getParent() + File.separator + "near.jar"));
 		} catch (URISyntaxException e)
 		{
 			// TODO Auto-generated catch block
