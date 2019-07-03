@@ -248,6 +248,7 @@
             saavtk.jar
         	altwg.jar
             altwg-java-tools.jar
+        	jcommander-1.72.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
@@ -364,6 +365,7 @@
             saavtk.jar
         	altwg.jar
             altwg-java-tools.jar
+        	jcommander-1.72.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
