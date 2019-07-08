@@ -53,7 +53,6 @@ public class ImageDefaultPicker extends DefaultPicker
     private DecimalFormat decimalFormatter2 = new DecimalFormat("#0.000");
     private boolean suppressPopups = false;
     private String distanceStr;
-    private MouseEvent e;
 
     public ImageDefaultPicker(
             Renderer renderer,
@@ -127,7 +126,6 @@ public class ImageDefaultPicker extends DefaultPicker
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
 
-        this.e = e;
         // need to shut off LODs to make sure pick is done on correct geometry
         boolean wasShowingLODs=renderer.showingLODs;
         renderer.hideLODs();
@@ -205,7 +203,6 @@ public class ImageDefaultPicker extends DefaultPicker
 
     public void mouseClicked(MouseEvent e)
     {
-    	this.e = e;
         // Note that in general when a popup should appear is system dependent. On some systems
         // popups are triggered on mouse press and on others on mouse release.
         // However, in the renderer, we always want the popup to appear on mouse RELEASE
@@ -230,13 +227,11 @@ public class ImageDefaultPicker extends DefaultPicker
 
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-    	this.e = e;
         showPositionInfoInStatusBar(e);
     }
 
     public void mouseDragged(MouseEvent e)
     {
-    	this.e = e;
         showPositionInfoInStatusBar(e);
     }
 
@@ -244,13 +239,12 @@ public class ImageDefaultPicker extends DefaultPicker
     {
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
-        this.e = e;
+
         showPositionInfoInStatusBar(e);
     }
 
     private void maybeShowPopup(MouseEvent e)
     {
-    	this.e = e;
         if (e.getClickCount() != 1 || !PickUtil.isPopupTrigger(e))
         {
             return;
@@ -298,7 +292,7 @@ public class ImageDefaultPicker extends DefaultPicker
     {
         if (renWin.getRenderWindow().GetNeverRendered() > 0)
             return;
-        this.e = e;
+
         vtkCamera activeCamera = renWin.getRenderer().GetActiveCamera();
         double[] cameraPos = activeCamera.GetPosition();
         double distance = Math.sqrt(
@@ -444,14 +438,12 @@ public class ImageDefaultPicker extends DefaultPicker
         {
             int pickSucceeded = doPick(currentTime, corners[i][0], corners[i][1], smallBodyCellPicker, renWin);
 
-        	if (pickSucceeded == 1)
+            if (pickSucceeded == 1)
             {
                 points[i] = smallBodyCellPicker.GetPickPosition();
             }
             else
             {
-            	if (e != null)
-            		doPick(currentTime, e.getX(), e.getY(), smallBodyCellPicker, renWin);
                 return -1.0;
             }
         }
@@ -480,6 +472,9 @@ public class ImageDefaultPicker extends DefaultPicker
     private void updateScaleBarValue()
     {
         double sizeOfPixel = computeSizeOfPixel();
+
+        if (sizeOfPixel == -1) return;	//if the body doesn't intercept all corners of the renderer, just go ahead and return, leaving the scale bar value untouched
+
         PolyhedralModel smallBodyModel = modelManager.getPolyhedralModel();
         smallBodyModel.updateScaleBarValue(sizeOfPixel, new Runnable()
 		{
