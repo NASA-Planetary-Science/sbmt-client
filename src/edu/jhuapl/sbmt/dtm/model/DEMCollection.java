@@ -143,7 +143,7 @@ public class DEMCollection extends AbstractModel implements PropertyChangeListen
 
         demColorMap.put(key, 0);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, key);
     }
 
     public void removeDEM(DEMKey key)
@@ -171,7 +171,7 @@ public class DEMCollection extends AbstractModel implements PropertyChangeListen
 
         demColorMap.remove(key);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, key);
         this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, dem);
     }
 

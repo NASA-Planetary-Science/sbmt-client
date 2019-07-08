@@ -242,7 +242,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, dem);
     }
 
     public void addBoundary(DEMKey key) //throws IOException, FitsException
@@ -264,7 +264,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, key);
     }
 
     public void removeBoundary(DEM dem)
@@ -281,7 +281,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
 
         boundaryToActorsMap.remove(boundary);
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, dem);
     }
 
     public void removeBoundary(DEMKey key)
@@ -303,7 +303,7 @@ public class DEMBoundaryCollection extends AbstractModel implements PropertyChan
 
             boundaryToActorsMap.remove(boundary);
 
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, key);
         }
     }
 
