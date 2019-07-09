@@ -112,7 +112,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         c.hasLidarData = true;
         c.hasMapmaker = true;
-        c.hasRemoteMapmaker = true;
+        c.hasRemoteMapmaker = false;
         c.bodyDensity = 2.67;
         c.bodyRotationRate = 0.000331165761670640;
         c.bodyReferencePotential = -53.765039959572114;
