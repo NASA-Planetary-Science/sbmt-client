@@ -4,15 +4,20 @@
 
 # Release Notes
 
+## July 10, 2019 (SBMT-0.7.6)
+
 ### New 
 - Major improvements to the layout of the LIDAR pane, for both browse and search
 - Support for multiple basemaps on the main Body page, with server side support, has been added
 - The startup process of the tool has been streamlined, and it should start much quicker, pushing some tasks to work in the background
 - As part of the above streamlining, SBMT can now detect whether you go on or offline, and update menu items accordingly
+- Some models now have image footprints and offlimb images pre-rendered on the server; we will be adding more of these over time
  
 ### Bug fixes
 - A fix in 0.7.5.1 caused the CPU to run high - this has been resolved
 - A difference in reported pixel location and value when certain pointing types were used has been resolved - they should now be consistent across pointing types (e.g. SPICE vs SPC)
+- Several fixes related to reporting the proper pixel, value and lat/lon have been made
+- Improvements to the structures rendering have been made, especially with large numbers of structures
 
 ## May 9, 2019 (SBMT-0.7.5.1)
  
