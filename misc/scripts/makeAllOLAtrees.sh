@@ -8,8 +8,12 @@
 
 DIR=`dirname "$0"`
 
-$DIR/generate_ola_hypertree.sh preliminary 2018-12-01T00:00:00.000 2019-01-01T00:00:00.000
-$DIR/generate_ola_hypertree.sh detailed 2019-01-01T00:00:00.000 2019-06-10T00:00:00.000
+# Only regenerates older trees if argument given to script
+if [ "$#" -eq 1 ]
+	$DIR/generate_ola_hypertree.sh preliminary 2018-12-01T00:00:00.000 2019-01-01T00:00:00.000
+	$DIR/generate_ola_hypertree.sh detailed 2019-01-01T00:00:00.000 2019-06-10T00:00:00.000
+fi
+
 $DIR/generate_ola_hypertree.sh orbB 2019-06-10T00:00:00.000 2019-09-11T00:00:00.000
 $DIR/generate_ola_hypertree.sh recon 2019-09-11T00:00:00.000 2021-01-01T00:00:00.000
 $DIR/generate_ola_hypertree.sh default 2018-12-01T00:00:00.000 2021-01-01T00:00:00.000
