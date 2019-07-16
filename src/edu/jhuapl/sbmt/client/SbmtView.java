@@ -65,10 +65,10 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
+import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
 import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
@@ -461,6 +461,10 @@ public class SbmtView extends View implements PropertyChangeListener
 				NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
 				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
+			}
+			else if (displayName.equals("MEGANE"))
+			{
+				addTab(instrument.getDisplayName(), new JPanel());
 			}
 
 		}

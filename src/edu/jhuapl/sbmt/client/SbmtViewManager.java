@@ -838,6 +838,7 @@ public class SbmtViewManager extends ViewManager
                 "Mars",
                 "Deimos",
                 "Phobos",
+                "Phobos (with MEGANE)",
                 // Jupiter
                 "Jupiter",
                 "Amalthea",
