@@ -399,7 +399,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
 
         // Remove the DEM from the renderer
         DEMCollection demCollection = (DEMCollection)modelManager.getModel(ModelNames.DEM);
-        DEMKey demKey = new DEMKey(name, demInfo.name);
+        DEMKey demKey = new DEMKey(name, demInfo.name, false);
         demCollection.removeDEM(demKey);
 
         // Remove from the list
@@ -507,7 +507,7 @@ public class CustomDEMPanel extends JPanel implements PropertyChangeListener, Ac
                 {
                     DEMInfo demInfo = (DEMInfo)((DefaultListModel)imageList.getModel()).get(selectedIndex);
                     String name = getCustomDataFolder() + File.separator + demInfo.demfilename;
-                    DEMKey demKey = new DEMKey(name, demInfo.name);
+                    DEMKey demKey = new DEMKey(name, demInfo.name, false);
                     demKeys.add(demKey);
                 }
                 demPopupMenu.setCurrentDEMs(demKeys);

@@ -229,7 +229,7 @@ public class DEMCreationPanel extends JPanel implements ActionListener
                 if (result == JOptionPane.NO_OPTION)
                     return;
                 else
-                    new FileDownloadSwingWorker(DEMCreationPanel.this, "Download " + creationTool.getExecutableDisplayName(), creationTool.getExecutablePathOnServer().toString()).executeDialog();
+                    FileDownloadSwingWorker.of(creationTool.getExecutablePathOnServer().toString(), DEMCreationPanel.this, "Download " + creationTool.getExecutableDisplayName(), false).executeDialog();
             }
 
             // SET DEM NAME

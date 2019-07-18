@@ -26,7 +26,7 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
+        super(filename, c, title, "<html>Running Mapmaker<br> </html>", true);
     }
 
     public void setName(String name)
@@ -88,25 +88,19 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
 
 
     @Override
-    protected Void doInBackground()
+    protected Void doInBackground() throws IOException, InterruptedException
     {
         super.doInBackground();
 
-        if (isCancelled())
-        {
-            return null;
-        }
+        checkNotCanceled("After download");
 
-        setLabelText("<html>Running Mapmaker<br> </html>");
-        setIndeterminate(true);
-        setCancelButtonEnabled(false);
         setProgress(1);
 
         Process mapmakerProcess = null;
 
         try
         {
-            File file = FileCache.getFileFromServer(this.getFileDownloaded());
+            File file = FileCache.getFileFromServer(getFileDownloaded());
             String mapmakerRootDir = file.getParent() + File.separator + "mapmaker";
 
             MapmakerNativeWrapper mapmaker = new MapmakerNativeWrapper(mapmakerRootDir);
@@ -151,13 +145,9 @@ public class MapmakerSwingWorker extends FileDownloadSwingWorker
             mapmaker.convertCubeToFitsAndSaveInOutputFolder(false);
             mapletFile = mapmaker.getMapletFile();
         }
-        catch (IOException e)
+        catch (IOException | InterruptedException e)
         {
             e.printStackTrace();
-        }
-        catch (InterruptedException e)
-        {
-            //e.printStackTrace();
         }
 
         if (mapmakerProcess != null && isCancelled())

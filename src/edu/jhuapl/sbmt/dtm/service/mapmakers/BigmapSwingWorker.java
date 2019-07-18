@@ -24,7 +24,7 @@ public class BigmapSwingWorker extends FileDownloadSwingWorker
 
     public BigmapSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
+        super("<html>Running Bigmap<br> </html>", c, title, filename, true);
     }
 
 

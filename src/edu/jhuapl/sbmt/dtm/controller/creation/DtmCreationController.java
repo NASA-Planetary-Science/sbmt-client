@@ -40,7 +40,7 @@ public class DtmCreationController
 			@Override
 			public void demKeyListChanged(DEMKey info)
 			{
-				resultsController.getTable().appendRow(new DEMKey(info.demfilename, info.name));
+				resultsController.getTable().appendRow(new DEMKey(info.demfilename, info.name, info.viewBadData));
 			}
 
 			@Override

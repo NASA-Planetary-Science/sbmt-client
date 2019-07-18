@@ -104,7 +104,7 @@ public class DtmCreationModel implements MetadataManager
             int numDems = demNames != null ? demNames.length : 0;
             for (int i=0; i<numDems; ++i)
             {
-                DEMKey demInfo = new DEMKey(new File(getDEMConfigFilename()).getParent() + File.separator + demFilenames[i], demNames[i]);
+                DEMKey demInfo = new DEMKey(new File(getDEMConfigFilename()).getParent() + File.separator + demFilenames[i], demNames[i], false);
                 infoList.add(demInfo);
             }
 
@@ -206,7 +206,7 @@ public class DtmCreationModel implements MetadataManager
         updateConfigFile();
     }
 
-    public void loadFiles(File[] files, Runnable invalidNameResponse)
+    public void loadFiles(File[] files, boolean viewBadData, Runnable invalidNameResponse)
     {
     	for (File file : files)
         {
@@ -214,7 +214,7 @@ public class DtmCreationModel implements MetadataManager
             if (file == null || !file.exists()) continue;	// Not valid, do nothing
 
             // Valid, load it in
-            DEMKey demKey = new DEMKey(file.getAbsolutePath(), file.getName());
+            DEMKey demKey = new DEMKey(file.getAbsolutePath(), file.getName(), viewBadData);
             demKey.demfilename = file.getAbsolutePath();
             demKey.name = file.getName();
 
