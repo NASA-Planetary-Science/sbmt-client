@@ -16,23 +16,24 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.IdPair;
+import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumSearchPanel;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
-import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.ui.AbstractSpectrumSearchPanel;
 
-public class NISSearchPanel extends SpectrumSearchPanel
+public class NISSearchPanel extends AbstractSpectrumSearchPanel
 {
 
     Map<String,String> nisFileToObservationTimeMap=Maps.newHashMap();
     static Map<String,Vector3D> nisFileToSunPositionMap=Maps.newHashMap();
 
-    public NISSearchPanel(SmallBodyViewConfig smallBodyConfig, ModelManager modelManager,
+    public NISSearchPanel(BodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
             Renderer renderer, ISpectralInstrument instrument)
     {
-        super(smallBodyConfig, modelManager, infoPanelManager, pickManager, renderer, instrument);
+        super(smallBodyConfig.hasHierarchicalSpectraSearch, smallBodyConfig.hierarchicalSpectraSearchSpecification,
+        		modelManager, infoPanelManager, pickManager, renderer, instrument);
         // TODO Auto-generated constructor stub
 
         try

@@ -17,7 +17,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 
 
 /**
@@ -388,10 +388,32 @@ public abstract class BodyViewConfig extends ViewConfig
         return SafeURLPaths.instance().getString(firstSegment, segments);
     }
 
+    public boolean hasColoringData()
+	{
+		return hasColoringData;
+	}
+
     public static void main(String[] args)
     {
         System.out.println("serverPath(\"\", \"\") is \"" + serverPath("", "") + "\"");
         System.out.println("serverPath(\"http://sbmt.jhuapl.edu/sbmt\", \"\", \"\") is \"" + serverPath("http://sbmt.jhuapl.edu/sbmt", "", "") + "\"");
         System.out.println("serverPath(\"file://sbmt.jhuapl.edu/sbmt\", \"\", \"filename.txt\") is \"" + serverPath("file://sbmt.jhuapl.edu/sbmt", "", "filename.txt") + "\"");
     }
+
+    public String[] getImageSearchFilterNames()
+	{
+		return imageSearchFilterNames;
+	}
+
+
+	public String[] getImageSearchUserDefinedCheckBoxesNames()
+	{
+		return imageSearchUserDefinedCheckBoxesNames;
+	}
+
+
+	public boolean hasHierarchicalImageSearch()
+	{
+		return hasHierarchicalImageSearch;
+	}
 }

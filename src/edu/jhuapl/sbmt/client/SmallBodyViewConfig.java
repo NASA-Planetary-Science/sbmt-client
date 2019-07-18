@@ -36,13 +36,14 @@ import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -7201,4 +7202,76 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
         return builder.build();
     }
+
+	@Override
+	public boolean hasHypertreeBasedSpectraSearch()
+	{
+		return hasHypertreeBasedSpectraSearch;
+	}
+
+	@Override
+	public boolean hasHierarchicalSpectraSearch()
+	{
+		return hasHierarchicalSpectraSearch;
+	}
+
+	@Override
+	public Date getDefaultImageSearchStartDate()
+	{
+		return imageSearchDefaultStartDate;
+	}
+
+	@Override
+	public Date getDefaultImageSearchEndDate()
+	{
+		return imageSearchDefaultEndDate;
+	}
+
+	@Override
+	public String[] getImageSearchFilterNames()
+	{
+		return imageSearchFilterNames;
+	}
+
+	@Override
+	public String[] getImageSearchUserDefinedCheckBoxesNames()
+	{
+		return imageSearchUserDefinedCheckBoxesNames;
+	}
+
+	@Override
+	public boolean hasHierarchicalImageSearch()
+	{
+		return hasHierarchicalImageSearch;
+	}
+
+	@Override
+	public HierarchicalSearchSpecification getHierarchicalImageSearchSpecification()
+	{
+		return hierarchicalImageSearchSpecification;
+	}
+
+	@Override
+	public String getTimeHistoryFile()
+	{
+		return timeHistoryFile;
+	}
+
+	@Override
+	public ShapeModelType getAuthor()
+	{
+		return author;
+	}
+
+	@Override
+	public String getRootDirOnServer()
+	{
+		return rootDirOnServer;
+	}
+
+	@Override
+	public boolean isCustomTemporary()
+	{
+		return customTemporary;
+	}
 }

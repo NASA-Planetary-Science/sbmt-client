@@ -51,7 +51,7 @@ import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
-import edu.jhuapl.sbmt.model.spectrum.Spectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.Spectrum;
 import edu.jhuapl.sbmt.util.VtkENVIReader;
 
 import crucible.crust.metadata.api.Key;

@@ -34,8 +34,8 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
@@ -54,10 +54,10 @@ public class NISSpectrumInfoPanel extends ModelInfoWindow implements PropertyCha
 
         // add the jfreechart graph
         XYSeries series = new XYSeries("NIS Spectrum");
-        double[] wavelengths = this.nisSpectrum.getBandCenters();
+        Double[] wavelengths = this.nisSpectrum.getBandCenters();
         double[] spectrum = this.nisSpectrum.getSpectrum();
         for (int i=0; i<wavelengths.length; ++i)
-            series.add(wavelengths[i], spectrum[i]);
+            series.add((double)wavelengths[i], spectrum[i]);
         XYDataset xyDataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYLineChart
                 ("NIS Calibrated Spectrum", "Wavelength (nm)", "Reflectance",

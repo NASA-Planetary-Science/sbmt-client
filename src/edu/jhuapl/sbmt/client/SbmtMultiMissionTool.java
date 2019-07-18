@@ -38,8 +38,8 @@ import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.gui.spectrum.model.SpectrumKey;
-import edu.jhuapl.sbmt.model.spectrum.CustomSpectrumKey;
+import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
+import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
 
 /**
@@ -108,6 +108,8 @@ public class SbmtMultiMissionTool
 			    OSXAdapter.setDockIconImage(erosIcon.getImage());
 			}
 		}
+
+		SBMTModelBootstrap.initialize();
 
 		// Initialize serialization proxies
 

@@ -58,12 +58,12 @@ import edu.jhuapl.sbmt.model.ryugu.TIRImage;
 import edu.jhuapl.sbmt.model.saturnmoon.SaturnMoonImage;
 import edu.jhuapl.sbmt.model.simple.Sbmt2SimpleSmallBody;
 import edu.jhuapl.sbmt.model.simple.SimpleSmallBody;
-import edu.jhuapl.sbmt.model.spectrum.SpectraCollection;
-import edu.jhuapl.sbmt.model.spectrum.SpectraSearchDataCollection;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryModel.StateHistoryKey;
 import edu.jhuapl.sbmt.model.vesta.FcImage;
 import edu.jhuapl.sbmt.model.vesta_old.VestaOld;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
 
 import nom.tam.fits.FitsException;
 

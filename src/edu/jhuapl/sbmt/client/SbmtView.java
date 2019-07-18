@@ -65,29 +65,32 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarLoadPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumPanel;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
-import edu.jhuapl.sbmt.gui.spectrum.controllers.CustomSpectraSearchController;
-import edu.jhuapl.sbmt.gui.spectrum.controllers.SpectrumSearchController;
-import edu.jhuapl.sbmt.gui.spectrum.model.NIRS3SearchModel;
-import edu.jhuapl.sbmt.gui.spectrum.model.NISSearchModel;
+import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
+import edu.jhuapl.sbmt.model.bennu.OREXSpectrumPanel;
+import edu.jhuapl.sbmt.model.custom.CustomGraticule;
+import edu.jhuapl.sbmt.model.eros.LineamentModel;
+import edu.jhuapl.sbmt.model.eros.NISSearchModel;
 import edu.jhuapl.sbmt.model.image.ColorImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCollection;
 import edu.jhuapl.sbmt.model.image.ImageCubeCollection;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.PerspectiveImageBoundaryCollection;
+import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
-import edu.jhuapl.sbmt.model.spectrum.ISpectralInstrument;
-import edu.jhuapl.sbmt.model.spectrum.SpectraType;
-import edu.jhuapl.sbmt.model.spectrum.SpectrumBoundaryCollection;
-import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
-import edu.jhuapl.sbmt.model.spectrum.statistics.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
+import edu.jhuapl.sbmt.spectrum.controllers.CustomSpectraSearchController;
+import edu.jhuapl.sbmt.spectrum.controllers.SpectrumSearchController;
+import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
+import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -188,7 +191,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	{
 		SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
 
-		Graticule graticule = SbmtModelFactory.createGraticule(smallBodyModel);
+		Graticule graticule = createGraticule(smallBodyModel);
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
@@ -232,19 +235,19 @@ public class SbmtView extends View implements PropertyChangeListener
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
 			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel));
-			allModels.putAll(SbmtModelFactory.createSpectralModels(smallBodyModel));
+			allModels.putAll(createSpectralModels(smallBodyModel));
 			//if (getPolyhedralModelConfig().body == ShapeModelBody.EROS)
 			allModels.put(ModelNames.STATISTICS, new SpectrumStatisticsCollection());
 		}
 
 		if (getPolyhedralModelConfig().hasLidarData)
 		{
-			allModels.putAll(SbmtModelFactory.createLidarModels(smallBodyModel));
+			allModels.putAll(createLidarModels(smallBodyModel));
 		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
-			allModels.put(ModelNames.LINEAMENT, SbmtModelFactory.createLineament());
+			allModels.put(ModelNames.LINEAMENT, createLineament());
 		}
 
 		if (getPolyhedralModelConfig().hasFlybyData)
@@ -279,6 +282,8 @@ public class SbmtView extends View implements PropertyChangeListener
 		demBoundaryCollection.setModelManager(getModelManager());
 
 		getModelManager().addPropertyChangeListener(this);
+
+		SBMTInfoWindowManagerFactory.initializeModels(getModelManager(), getStatusBar());
 	}
 
 	@Override
@@ -437,29 +442,32 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+		for (ISpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
 			String displayName = instrument.getDisplayName();
-			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
+//			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
+			if (displayName.equals("NIS"))
 			{
 				NISSearchModel model = new NISSearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 			}
-			else if (displayName.equals(SpectraType.OTES_SPECTRA.getDisplayName()))
+			else if (displayName.equals("OTES"))
 			{
-				JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+				JComponent component = new OREXSpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
 				addTab(instrument.getDisplayName(), component);
 			}
-			else if (displayName.equals(SpectraType.OVIRS_SPECTRA.getDisplayName()))
+			else if (displayName.equals("OVIRS"))
 			{
-				JComponent component = new SpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+				JComponent component = new OREXSpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
 				addTab(instrument.getDisplayName(), component);
 			}
-			else if (displayName.equals(SpectraType.NIRS3_SPECTRA.getDisplayName()))
+			else if (displayName.equals("NIRS3"))
 			{
 				NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 			}
 
@@ -505,7 +513,9 @@ public class SbmtView extends View implements PropertyChangeListener
 			{
 				if (i.getDisplayName().equals("NIS"))
 					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.
-				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
+				customDataPane.addTab(i.getDisplayName() + " Spectra", new CustomSpectraSearchController(getPolyhedralModelConfig().hasHierarchicalSpectraSearch,
+			    		getPolyhedralModelConfig().hasHypertreeBasedSpectraSearch,
+			    		getPolyhedralModelConfig().getHierarchicalSpectraSearchSpecification(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), i).getPanel());
 				break;
 			}
 
@@ -588,7 +598,9 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupSpectrumPanelManager()
 	{
-		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager()));
+		PopupMenu spectralImagesPopupMenu =
+    	        new SpectrumPopupMenu(getModelManager(), null, null);
+		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager(), spectralImagesPopupMenu));
 	}
 
 	@Override
@@ -826,5 +838,77 @@ public class SbmtView extends View implements PropertyChangeListener
 			});
 		}
 	}
+
+	static public LineamentModel createLineament()
+    {
+        return new LineamentModel();
+    }
+
+    static public HashMap<ModelNames, Model> createSpectralModels(SmallBodyModel smallBodyModel)
+    {
+        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+
+        ShapeModelBody body=((SmallBodyViewConfig)smallBodyModel.getConfig()).body;
+        ShapeModelType author=((SmallBodyViewConfig)smallBodyModel.getConfig()).author;
+        String version=((SmallBodyViewConfig)smallBodyModel.getConfig()).version;
+
+        models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
+
+        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+        return models;
+    }
+
+    static public HashMap<ModelNames, Model> createLidarModels(SmallBodyModel smallBodyModel)
+    {
+        HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
+
+        models.put(ModelNames.LIDAR_BROWSE, new LidarFileSpecManager(smallBodyModel));
+        models.put(ModelNames.LIDAR_SEARCH, new LidarTrackManager(smallBodyModel));
+        if (smallBodyModel.getSmallBodyConfig().hasHypertreeLidarSearch())
+        {
+            switch (smallBodyModel.getSmallBodyConfig().getLidarInstrument())
+            {
+            case MOLA:
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
+                break;
+            case OLA:
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
+                break;
+            case LASER:
+                models.put(ModelNames.LIDAR_HYPERTREE_SEARCH, new LidarTrackManager(smallBodyModel));
+                break;
+                default:
+                	throw new AssertionError();
+            }
+
+
+        }
+
+        return models;
+    }
+
+    static public Graticule createGraticule(SmallBodyModel smallBodyModel)
+    {
+        SmallBodyViewConfig config = (SmallBodyViewConfig)smallBodyModel.getSmallBodyConfig();
+        ShapeModelType author = config.author;
+
+        if (ShapeModelType.GASKELL == author && smallBodyModel.getNumberResolutionLevels() == 4)
+        {
+            String[] graticulePaths = new String[]{
+                    config.rootDirOnServer + "/coordinate_grid_res0.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res1.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res2.vtk.gz",
+                    config.rootDirOnServer + "/coordinate_grid_res3.vtk.gz"
+            };
+
+            return new Graticule(smallBodyModel, graticulePaths);
+        }
+        else if (ShapeModelType.CUSTOM == author && !config.customTemporary)
+        {
+            return new CustomGraticule(smallBodyModel);
+        }
+
+        return new Graticule(smallBodyModel);
+    }
 
 }

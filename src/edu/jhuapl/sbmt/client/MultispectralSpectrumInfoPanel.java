@@ -33,8 +33,9 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.gui.spectrum.SpectrumPopupMenu;
+import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
+import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
@@ -42,13 +43,15 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
     private PerspectiveImage perspectiveImage;
     private XYSeriesCollection xyDataset;
     private int nsegments;
+    private PopupMenu spectralImagesPopupMenu;
 
-    public MultispectralSpectrumInfoPanel(PerspectiveImage perspectiveImage, ModelManager modelManager)
+    public MultispectralSpectrumInfoPanel(PerspectiveImage perspectiveImage, ModelManager modelManager, PopupMenu spectralImagesPopupMenu)
     {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         this.modelManager = modelManager;
         this.perspectiveImage = perspectiveImage;
+        this.spectralImagesPopupMenu = spectralImagesPopupMenu;
 
         JPanel panel = new JPanel(new BorderLayout());
 
