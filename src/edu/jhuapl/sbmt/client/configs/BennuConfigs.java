@@ -15,11 +15,10 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
@@ -42,7 +41,7 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
-public class BennuConfigs extends BodyViewConfig implements ISmallBodyViewConfig
+public class BennuConfigs extends SmallBodyViewConfig
 {
 
 	public BennuConfigs()
@@ -51,9 +50,8 @@ public class BennuConfigs extends BodyViewConfig implements ISmallBodyViewConfig
 	}
 
 
-	public static void initialize()
+	public static void initialize(List<ViewConfig> configArray)
     {
-        List<ViewConfig> configArray = new ArrayList<ViewConfig>();
         BennuConfigs c = new BennuConfigs();
 
         if (Configuration.isAPLVersion())

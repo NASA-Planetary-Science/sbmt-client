@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.client.configs;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,11 +13,10 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
@@ -40,7 +38,7 @@ import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
-public class RyuguConfigs extends BodyViewConfig implements ISmallBodyViewConfig
+public class RyuguConfigs extends SmallBodyViewConfig
 {
 
 	public RyuguConfigs()
@@ -49,9 +47,8 @@ public class RyuguConfigs extends BodyViewConfig implements ISmallBodyViewConfig
 	}
 
 
-	public static void initialize()
+	public static void initialize(List<ViewConfig> configArray)
     {
-        List<ViewConfig> configArray = new ArrayList<ViewConfig>();
         RyuguConfigs c = new RyuguConfigs();
         c = new RyuguConfigs();
 

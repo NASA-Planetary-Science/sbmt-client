@@ -1,6 +1,5 @@
 package edu.jhuapl.sbmt.client.configs;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -12,20 +11,21 @@ import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.sbmt.client.BodyType;
-import edu.jhuapl.sbmt.client.BodyViewConfig;
-import edu.jhuapl.sbmt.client.ISmallBodyViewConfig;
+import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.client.ShapeModelPopulation;
+import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
+import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 
-public class NewHorizonsConfigs extends BodyViewConfig implements ISmallBodyViewConfig
+public class NewHorizonsConfigs extends SmallBodyViewConfig
 {
 
 	public NewHorizonsConfigs()
@@ -34,9 +34,8 @@ public class NewHorizonsConfigs extends BodyViewConfig implements ISmallBodyView
 	}
 
 
-	public static void initialize()
+	public static void initialize(List<ViewConfig> configArray)
     {
-        List<ViewConfig> configArray = new ArrayList<ViewConfig>();
         NewHorizonsConfigs c = new NewHorizonsConfigs();
 
         if (Configuration.isAPLVersion())
@@ -434,6 +433,64 @@ public class NewHorizonsConfigs extends BodyViewConfig implements ISmallBodyView
             c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(128880));
+            configArray.add(c);
+        }
+
+
+        {
+            c = new NewHorizonsConfigs();
+            c.body = ShapeModelBody.MU69;
+            c.type = BodyType.KBO;
+            c.population = ShapeModelPopulation.NA;
+            c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
+            c.author = ShapeModelType.MU69_TEST5H_1_FINAL_ORIENTED;
+            c.rootDirOnServer = "/mu69/mu69-test5h-1-final-oriented";
+            c.shapeModelFileExtension = ".obj";
+            c.setResolution(ImmutableList.of("Very Low (25708 plates)"), ImmutableList.of(25708));
+            c.imageSearchDefaultStartDate = new GregorianCalendar(2018, 11, 31, 0, 0, 0).getTime();
+            c.imageSearchDefaultEndDate = new GregorianCalendar(2019, 0, 2, 0, 0, 0).getTime();
+            c.imageSearchDefaultMaxSpacecraftDistance = 1.0e6;
+            c.imageSearchDefaultMaxResolution = 1.0e4;
+            c.density = Double.NaN;
+            c.useMinimumReferencePotential = true;
+            c.rotationRate = Double.NaN;
+
+            c.hasImageMap = false;
+
+            if (Configuration.isMac())
+            {
+                // Right now bigmap only works on Macs
+                c.hasBigmap = true;
+            }
+
+            c.imagingInstruments = new ImagingInstrument[] {
+                    new ImagingInstrument( //
+                            SpectralMode.MONO, //
+                            new FixedListQuery(c.rootDirOnServer + "/lorri", c.rootDirOnServer + "/lorri/gallery"), //
+                            ImageType.LORRI_IMAGE, //
+                            new ImageSource[]{ImageSource.SPICE, ImageSource.GASKELL}, //
+                            Instrument.LORRI //
+                            ), //
+            };
+
+            c.hasSpectralData = false;
+            c.spectralInstruments = new BasicSpectrumInstrument[] {
+            };
+
+            c.hasStateHistory = false;
+
+            c.hasMapmaker = false;
+            c.hasHierarchicalSpectraSearch = false;
+            c.hasHypertreeBasedSpectraSearch = false;
+
+            c.hasLidarData = false;
+            c.hasHypertreeBasedLidarSearch = false;
+
+            if (SbmtMultiMissionTool.getMission() == SbmtMultiMissionTool.Mission.NH_DEPLOY)
+            {
+                ViewConfig.setFirstTimeDefaultModelName(c.getUniqueName());
+            }
+
             configArray.add(c);
         }
 

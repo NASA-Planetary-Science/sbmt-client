@@ -27,6 +27,7 @@ import edu.jhuapl.sbmt.client.SbmtMultiMissionTool.Mission;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.image.model.ImageKey;
+import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 
@@ -202,7 +203,8 @@ public class DatabaseGeneratorSql
             keyName = keyName.replace(".fits", "");
             keyName = keyName.replace(".FIT", "");
             keyName = keyName.replace(".fit", "");
-            ImageKey key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
+
+            ImageKeyInterface key = new ImageKey(keyName, imageSource, config.imagingInstruments[cameraIndex]);
             PerspectiveImage image = null;
 
             try
@@ -330,9 +332,9 @@ public class DatabaseGeneratorSql
 
     boolean checkIfAllFilesExist(PerspectiveImage image, ImageSource source)
     {
-        File imageFile = new File(image.getImageFileFullPath());
-        System.out.println("Image file full path: " + imageFile.getAbsolutePath());
-        if (!imageFile.exists())
+        File fitfile = new File(image.getFitFileFullPath());
+        System.out.println("Fit file full path: " + fitfile.getAbsolutePath());
+        if (!fitfile.exists())
             return false;
 
         // Check for the sumfile if source is Gaskell
@@ -1116,14 +1118,15 @@ public class DatabaseGeneratorSql
     {
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         // default configuration parameters
-//        String appName = "neartool";
-//        String cacheVersion = "2";
         boolean aplVersion = true;
         String rootURL = safeUrlPaths.getUrl("/disks/d0180/htdocs-sbmt/internal/sbmt");
 
         boolean appendTables = false;
         boolean modifyMain = false;
         boolean remote = false;
+        String bodyName="";
+        String authorName="";
+        String versionString = null;
 
         int cameraIndex = 0;
 
@@ -1155,6 +1158,18 @@ public class DatabaseGeneratorSql
             {
                 cameraIndex = Integer.parseInt(args[++i]);
             }
+            else if (args[i].equals("--body"))
+            {
+            	bodyName = args[++i];
+            }
+            else if (args[i].equals("--author"))
+            {
+            	authorName = args[++i];
+            }
+            else if (args[i].equals("--version"))
+            {
+            	versionString = args[++i];
+            }
             else {
                 // We've encountered something that is not an option, must be at the args
                 break;
@@ -1168,8 +1183,6 @@ public class DatabaseGeneratorSql
             usage();
 
         // basic default configuration, most of these will be overwritten by the configureMission() method
-//        Configuration.setAppName(appName);
-//        Configuration.setCacheVersion(cacheVersion);
         Configuration.setAPLVersion(aplVersion);
         Configuration.setRootURL(rootURL);
 
@@ -1188,18 +1201,17 @@ public class DatabaseGeneratorSql
         ImageSource mode = ImageSource.valueOf(args[i++].toUpperCase());
         String body = args[i++];
 
-        RunInfo[] runInfos = null;
-        if (body.toUpperCase().equals("ALL"))
-            runInfos = RunInfo.values();
-        else
-            runInfos = new RunInfo[]{RunInfo.valueOf(body.toUpperCase())};
+        SmallBodyViewConfig config = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.valueOf(bodyName), ShapeModelType.valueOf(authorName), versionString);
+
+        DBRunInfo[] runInfos = config.databaseRunInfos;
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
 
-        for (RunInfo ri : runInfos)
+        for (DBRunInfo ri : runInfos)
         {
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(ri.config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
+        	if (!ri.name.equals(body)) continue;
+            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
 
             String pathToFileList = ri.pathToFileList;
             if (remote)
