@@ -159,6 +159,9 @@
     <copy todir="${rootdir}/build/classes/edu/jhuapl/sbmt/data">
       <fileset dir="${rootdir}/src/edu/jhuapl/sbmt/data"/>
     </copy>
+  	<copy todir="${rootdir}/build/misc/programs/gravity">
+      <fileset dir="${rootdir}/misc/programs/gravity"/>
+    </copy>
     <javac srcdir="${rootdir}/src"
 		   destdir="${rootdir}/build/classes"
 		   debug="on" >
@@ -202,6 +205,9 @@
     <mkdir dir="${rootdir}/build/jar"/>
     <jar destfile="${rootdir}/build/jar/near-apl.jar" basedir="${rootdir}/build/classes">
 
+   	  <fileset dir="${rootdir}/build">
+    	<include name="misc/**"/>
+      </fileset>
       <fileset dir="${rootdir}/build/classes">
         <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
@@ -240,7 +246,9 @@
 	    gluegen-rt-natives-macosx-universal.jar
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
+        	altwg.jar
             altwg-java-tools.jar
+        	jcommander-1.72.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
@@ -316,6 +324,7 @@
 
     <jar destfile="${rootdir}/build/jar/near.jar" basedir="${rootdir}/build/classes">
 
+      <fileset dir="${rootdir}/build/misc"/>
       <fileset dir="${rootdir}/build/classes">
         <exclude name="edu/jhuapl/sbmt/data/LinearFeatures.txt"/>
         <exclude name="edu/jhuapl/sbmt/tools/**"/>
@@ -354,7 +363,9 @@
 	    gluegen-rt-natives-macosx-universal.jar
 	    jogl-all-natives-macosx-universal.jar
             saavtk.jar
+        	altwg.jar
             altwg-java-tools.jar
+        	jcommander-1.72.jar
             jide-oss-3.6.9.jar
             mysql-connector-java-5.1.10-bin.jar
             spice-N0065.jar
