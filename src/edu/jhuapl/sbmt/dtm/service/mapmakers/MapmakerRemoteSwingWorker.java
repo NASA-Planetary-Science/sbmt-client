@@ -3,11 +3,13 @@ package edu.jhuapl.sbmt.dtm.service.mapmakers;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import edu.jhuapl.saavtk.gui.FileDownloadSwingWorker;
 import edu.jhuapl.saavtk.util.LatLon;
 import edu.jhuapl.saavtk.util.MathUtil;
 import edu.jhuapl.sbmt.util.MapMakerRemote;
+import edu.jhuapl.sbmt.util.SBMTDistributedGravity;
 
 public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 {
@@ -23,7 +25,7 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
         remote.setDatadir("DATA");
         remote.setMapoutdir("MAPFILES");
         remote.setCacheDir("/Users/steelrj1/Desktop/");
-        remote.doInBackground();
+        remote.run();
     }
 
     boolean regionSpecifiedWithLatLonScale = true;
@@ -47,8 +49,17 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
 
     public MapmakerRemoteSwingWorker(Component c, String title, String filename)
     {
-        super(c, title, filename);
-        setCancelButtonEnabled(true);
+        super(filename, c, title, "<html>Running Mapmaker<br> </html>", true);
+		try
+		{
+			System.out.println("MapMakerRemoteSwingWorker: runMapmaker: jar URI " + SBMTDistributedGravity.getJarURI());
+			System.out.println("MapmakerRemoteSwingWorker: MapmakerRemoteSwingWorker: " + (new File(SBMTDistributedGravity.getJarURI().getPath()).getParent() + File.separator + "near.jar"));
+		} catch (URISyntaxException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
 
 
@@ -140,19 +151,11 @@ public class MapmakerRemoteSwingWorker extends FileDownloadSwingWorker
     }
 
     @Override
-    protected Void doInBackground()
+    protected Void doInBackground() throws InterruptedException
     {
-        if (isCancelled())
-        {
-            return null;
-        }
+        checkNotCanceled("About to run mapmaker");
 
-        setLabelText("<html>Running Mapmaker<br> </html>");
-        setIndeterminate(true);
-        setCancelButtonEnabled(true);
         setProgress(1);
-
-        Process mapmakerProcess = null;
 
         try
         {
