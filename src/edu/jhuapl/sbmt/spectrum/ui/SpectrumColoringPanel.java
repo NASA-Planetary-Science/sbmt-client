@@ -18,7 +18,7 @@ import javax.swing.border.TitledBorder;
 
 import com.google.common.collect.Lists;
 
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
 public class SpectrumColoringPanel extends JPanel
 {
@@ -47,10 +47,10 @@ public class SpectrumColoringPanel extends JPanel
 
     public SpectrumColoringPanel()
     {
-        init();
+        initialize();
     }
 
-    private void init()
+    private void initialize()
     {
         setBorder(new TitledBorder(null, "Coloring", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

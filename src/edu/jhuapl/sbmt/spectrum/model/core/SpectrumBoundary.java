@@ -8,53 +8,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vtk.vtkActor;
-import vtk.vtkPolyData;
-import vtk.vtkPolyDataMapper;
 import vtk.vtkProp;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
 public class SpectrumBoundary extends AbstractModel implements PropertyChangeListener
 {
     private vtkActor actor;
-    private vtkPolyData boundary;
-    private vtkPolyDataMapper boundaryMapper;
-    private double[] spacecraftPosition = new double[3];
-    private double[] frustum1 = new double[3];
-    private double[] frustum2 = new double[3];
-    private double[] frustum3 = new double[3];
-    private double[] boresightDirection = new double[3];
-    private double[] upVector = new double[3];
-    private Spectrum spectrum;
-    private SmallBodyModel smallBodyModel;
-    private static vtkPolyData emptyPolyData;
-    private double offset =0.003;
+    private IBasicSpectrumRenderer spectrum;
 
-    public SpectrumBoundary(Spectrum spectrum, SmallBodyModel smallBodyModel) throws IOException
+    public SpectrumBoundary(IBasicSpectrumRenderer spectrum, SmallBodyModel smallBodyModel) throws IOException
     {
         this.spectrum = spectrum;
-        this.smallBodyModel = smallBodyModel;
-        this.actor = spectrum.outlineActor;
+        this.actor = spectrum.getOutlineActor();
     }
 
     public void firePropertyChange()
     {
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-    }
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-//      The following code seems broken and causes performance problems and issues with the colors
-//      of the image list
-//        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
-//        {
-////            System.out.println("Boundary MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
-//            initialize();
-//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-//        }
     }
 
     @Override
@@ -67,12 +43,12 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
 
     public SpectrumKeyInterface getKey()
     {
-        return spectrum.getKey();
+        return spectrum.getSpectrum().getKey();
     }
 
     public Spectrum getSpectrum()
     {
-        return spectrum;
+        return spectrum.getSpectrum();
     }
 
     public void setVisibility(boolean visible)
@@ -97,4 +73,15 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
         return new int[] {(int) (c[0]*255.0), (int) (c[1]*255.0), (int) (c[2]*255.0)};
     }
 
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+//      The following code seems broken and causes performance problems and issues with the colors
+//      of the image list
+//        if (Properties.MODEL_CHANGED.equals(evt.getPropertyName()))
+//        {
+////            System.out.println("Boundary MODEL_CHANGED event: " + evt.getSource().getClass().getSimpleName());
+//            initialize();
+//            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+//        }
+    }
 }

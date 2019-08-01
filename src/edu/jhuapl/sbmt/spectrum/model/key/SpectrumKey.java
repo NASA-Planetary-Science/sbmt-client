@@ -1,19 +1,20 @@
 package edu.jhuapl.sbmt.spectrum.model.key;
 
 import edu.jhuapl.saavtk.model.FileType;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectraType;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.StorableAsMetadata;
 import crucible.crust.metadata.api.Version;
 import crucible.crust.metadata.impl.InstanceGetter;
 import crucible.crust.metadata.impl.SettableMetadata;
 
-public class SpectrumKey implements SpectrumKeyInterface, StorableAsMetadata<SpectrumKey>
+public class SpectrumKey implements SpectrumKeyInterface
 {
 
 	// The path of the image as passed into the constructor. This is not the
@@ -21,9 +22,7 @@ public class SpectrumKey implements SpectrumKeyInterface, StorableAsMetadata<Spe
     // the file from the server (excluding the hostname and extension).
     public String name;
 
-//    public ImageSource source;
-
-    public String pointingFilename;
+    private String pointingFilename;
 
     public FileType fileType;
 
@@ -52,14 +51,13 @@ public class SpectrumKey implements SpectrumKeyInterface, StorableAsMetadata<Spe
         this.fileType = fileType;
         this.spectrumType = spectrumType;
         this.instrument = instrument;
-        this.pointingFilename = pointingFilename;
+        this.setPointingFilename(pointingFilename);
     }
 
     @Override
     public boolean equals(Object obj)
     {
         return name.equals(((SpectrumKeyInterface)obj).getName());
-               // && source.equals(((ImageKey)obj).source);
     }
 
     @Override
@@ -111,40 +109,46 @@ public class SpectrumKey implements SpectrumKeyInterface, StorableAsMetadata<Spe
 
     private static final Key<SpectrumKey> SPECTRUM_KEY = Key.of("spectrum");
 
-    @Override
-    public Metadata store()
-    {
-        SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
-        result.put(Key.of("customimagetype"), SPECTRUM_KEY.toString());
-        result.put(nameKey, name);
-        result.put(fileTypeKey, fileType.toString());
-        result.put(spectrumTypeKey, spectrumType.toString());
-        result.put(instrumentKey, instrument.store());
-        result.put(pointingFilenameKey, pointingFilename);
-        return result;
-    }
-
 	public static void initializeSerializationProxy()
 	{
-		InstanceGetter.defaultInstanceGetter().register(SPECTRUM_KEY, (metadata) -> {
+		InstanceGetter.defaultInstanceGetter().register(SPECTRUM_KEY,
+			(metadata) -> {
 
-	        String name = metadata.get(nameKey);
-	        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectrumTypeKey));
-	        ISpectralInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
+		        String name = metadata.get(nameKey);
+		        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectrumTypeKey));
+		        ISpectralInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
 
-	        FileType fileType = FileType.valueOf(metadata.get(fileTypeKey));
-	        String pointingFilename = metadata.get(pointingFilenameKey);
+		        FileType fileType = FileType.valueOf(metadata.get(fileTypeKey));
+		        String pointingFilename = metadata.get(pointingFilenameKey);
 
-	        SpectrumKey result = new SpectrumKey(name, fileType, spectrumType, instrument, pointingFilename);
+		        SpectrumKey result = new SpectrumKey(name, fileType, spectrumType, instrument, pointingFilename);
 
-			return result;
-		});
+				return result;
+			},
+			SpectrumKey.class,
+			(key) -> {
+				 SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+			        result.put(Key.of("customimagetype"), SPECTRUM_KEY.toString());
+			        result.put(nameKey, key.getName());
+			        result.put(fileTypeKey, key.getFileType().toString());
+			        result.put(spectrumTypeKey, key.getSpectrumType().toString());
+
+			        result.put(instrumentKey, InstanceGetter.defaultInstanceGetter().providesMetadataFromGenericObject(BasicSpectrumInstrument.class).provide((BasicSpectrumInstrument)key.getInstrument()));
+			        result.put(pointingFilenameKey, key.getPointingFilename());
+			        return result;
+			});
+
 	}
 
-	@Override
-	public Key<SpectrumKey> getKey()
+
+	public String getPointingFilename()
 	{
-		return SPECTRUM_KEY;
+		return pointingFilename;
+	}
+
+	public void setPointingFilename(String pointingFilename)
+	{
+		this.pointingFilename = pointingFilename;
 	}
 
 }

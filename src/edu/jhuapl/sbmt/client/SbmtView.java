@@ -70,7 +70,8 @@ import edu.jhuapl.sbmt.gui.lidar.LidarPanel;
 import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.gui.lidar.LidarTrackPanel;
 import edu.jhuapl.sbmt.gui.time.version2.StateHistoryController;
-import edu.jhuapl.sbmt.model.bennu.OREXSpectrumPanel;
+import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
+import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
 import edu.jhuapl.sbmt.model.custom.CustomGraticule;
 import edu.jhuapl.sbmt.model.eros.LineamentModel;
 import edu.jhuapl.sbmt.model.eros.NISSearchModel;
@@ -84,11 +85,11 @@ import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
 import edu.jhuapl.sbmt.spectrum.controllers.CustomSpectraSearchController;
-import edu.jhuapl.sbmt.spectrum.controllers.SpectrumSearchController;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
@@ -190,6 +191,7 @@ public class SbmtView extends View implements PropertyChangeListener
 	protected void setupModelManager()
 	{
 		SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(getPolyhedralModelConfig());
+		SBMTModelBootstrap.initialize(smallBodyModel);
 
 		Graticule graticule = createGraticule(smallBodyModel);
 
@@ -345,7 +347,8 @@ public class SbmtView extends View implements PropertyChangeListener
 			//This needs to be updated to handle the multiple Spectral Instruments that can exist on screen at the same time....
 			//            for (SpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 			{
-				PopupMenu popupMenu = new SpectrumPopupMenu(getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
+				SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+				PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 				((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments[0]);
 				registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
 			}
@@ -444,30 +447,34 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		for (ISpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
+	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+
 			String displayName = instrument.getDisplayName();
 //			if (displayName.equals(SpectraType.NIS_SPECTRA.getDisplayName()))
 			if (displayName.equals("NIS"))
 			{
-				NISSearchModel model = new NISSearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+				NISSearchModel model = new NISSearchModel(getModelManager(), instrument);
+				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 			}
 			else if (displayName.equals("OTES"))
 			{
-				JComponent component = new OREXSpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 				addTab(instrument.getDisplayName(), component);
 			}
 			else if (displayName.equals("OVIRS"))
 			{
-				JComponent component = new OREXSpectrumPanel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
+				JComponent component = new OREXSpectrumTabbedPane(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, spectrumCollection);
 				addTab(instrument.getDisplayName(), component);
 			}
 			else if (displayName.equals("NIRS3"))
 			{
-				NIRS3SearchModel model = new NIRS3SearchModel(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument);
-				JComponent component = new SpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
-						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
+				NIRS3SearchModel model = new NIRS3SearchModel(getModelManager(), instrument);
+				JComponent component = new OREXSpectrumSearchController(getPolyhedralModelConfig().imageSearchDefaultStartDate, getPolyhedralModelConfig().imageSearchDefaultEndDate,
+						getPolyhedralModelConfig().hasHierarchicalSpectraSearch, getPolyhedralModelConfig().imageSearchDefaultMaxSpacecraftDistance, getPolyhedralModelConfig().hierarchicalSpectraSearchSpecification,
+						getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getPickManager(), getRenderer(), instrument, model).getPanel();
 				addTab(instrument.getDisplayName(), component);
 			}
 
@@ -598,8 +605,9 @@ public class SbmtView extends View implements PropertyChangeListener
 	@Override
 	protected void setupSpectrumPanelManager()
 	{
+		SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
 		PopupMenu spectralImagesPopupMenu =
-    	        new SpectrumPopupMenu(getModelManager(), null, null);
+    	        new SpectrumPopupMenu(spectrumCollection, getModelManager(), null, null);
 		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager(), spectralImagesPopupMenu));
 	}
 
@@ -854,7 +862,9 @@ public class SbmtView extends View implements PropertyChangeListener
 
         models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-        models.put(ModelNames.SPECTRA, new SpectraCollection(smallBodyModel));
+        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+
+        models.put(ModelNames.SPECTRA, collection);
         return models;
     }
 

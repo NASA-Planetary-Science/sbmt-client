@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="edu/jhuapl/sbmt/gui/time/StateHistoryPopupMenu.java" kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="lib/altwg-20190401.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/spice-N0065.jar"/>
@@ -13,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/jcommander-1.72.jar"/>
 	<classpathentry kind="lib" path="lib/netcdfAll-4.3.jar"/>
 	<classpathentry kind="lib" path="lib/drmaa.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

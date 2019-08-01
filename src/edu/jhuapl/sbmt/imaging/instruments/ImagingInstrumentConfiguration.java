@@ -4,12 +4,12 @@ import edu.jhuapl.saavtk.config.Configurable;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup;
 import edu.jhuapl.saavtk.config.FixedTypedLookup;
 import edu.jhuapl.saavtk.config.Key;
-import edu.jhuapl.sbmt.client.SpectralMode;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 
 public class ImagingInstrumentConfiguration extends ExtensibleTypedLookup implements Configurable
 {

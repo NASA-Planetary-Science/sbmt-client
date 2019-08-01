@@ -1,5 +1,7 @@
 package edu.jhuapl.sbmt.spectrum.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,19 +11,22 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.spectrum.model.core.CustomSpectraResultsListener;
-import edu.jhuapl.sbmt.spectrum.model.core.CustomSpectraSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectrumSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
+import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
+import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
+import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.instruments.SpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumSearchPanel;
 
 public class CustomSpectraSearchController
 {
-    private ISpectrumSearchModel model;
     private SpectrumSearchPanel panel;
     protected SpectralInstrument instrument;
     protected ModelManager modelManager;
@@ -41,13 +46,14 @@ public class CustomSpectraSearchController
         this.modelManager = modelManager;
         this.renderer = renderer;
 
-        this.spectrumSearchModel =  new CustomSpectraSearchModel(hasHierarchicalSpectraSearch, hasHypertreeBasedSpectraSearch, hierarchicalSpectraSearchSpecification, modelManager, pickManager, renderer, instrument);
-
-        this.spectrumSearchModel.loadSearchSpecMetadata();
+        this.spectrumSearchModel =  new CustomSpectraSearchModel(hasHierarchicalSpectraSearch, hasHypertreeBasedSpectraSearch, hierarchicalSpectraSearchSpecification, modelManager, instrument);
+        this.spectrumSearchModel.setCustomDataFolder(modelManager.getPolyhedralModel().getCustomDataFolder());
+//        this.spectrumSearchModel.loadSearchSpecMetadata();
 
         SpectraCollection spectrumCollection = (SpectraCollection)modelManager.getModel(spectrumSearchModel.getSpectrumCollectionModelName());
+        SpectrumBoundaryCollection boundaries = (SpectrumBoundaryCollection)modelManager.getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
 
-        this.spectrumResultsTableController = new CustomSpectrumResultsTableController(instrument, spectrumCollection, spectrumSearchModel, renderer, infoPanelManager);
+        this.spectrumResultsTableController = new CustomSpectrumResultsTableController(instrument, spectrumCollection, modelManager, boundaries, spectrumSearchModel, renderer, infoPanelManager);
         this.spectrumSearchModel.removeAllResultsChangedListeners();
         this.spectrumSearchModel.addResultsChangedListener(new CustomSpectraResultsListener()
         {
@@ -55,14 +61,21 @@ public class CustomSpectraSearchController
             @Override
             public void resultsChanged(List<CustomSpectrumKeyInterface> results)
             {
-                List<List<String>> formattedResults = new ArrayList<List<String>>();
+                List<BasicSpectrum> formattedResults = new ArrayList<BasicSpectrum>();
                 for (CustomSpectrumKeyInterface info : results)
                 {
-                    List<String> res = new ArrayList<String>();
-                    res.add(info.getSpectrumFilename());
-                    res.add(""+0); //TODO need time here
-                    res.add(info.getName());
-                    formattedResults.add(res);
+                	IBasicSpectrumRenderer renderer = null;
+        			try
+        			{
+        				renderer = SbmtSpectrumModelFactory.createSpectrumRenderer(modelManager.getPolyhedralModel().getCustomDataFolder() + File.separator + info.getSpectrumFilename(), SpectrumInstrumentFactory.getInstrumentForName(instrument.getDisplayName()));
+        			}
+        			catch (IOException e)
+        			{
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			}
+
+                    formattedResults.add(renderer.getSpectrum());
                 }
 
                 spectrumResultsTableController.setSpectrumResults(formattedResults);
@@ -77,17 +90,9 @@ public class CustomSpectraSearchController
         });
         this.spectrumResultsTableController.setSpectrumResultsPanel();
 
-
         this.searchParametersController = new CustomSpectraControlController(spectrumSearchModel);
-//        this.searchParametersController.setupSearchParametersPanel();
 
-        this.coloringController = new SpectrumColoringController(spectrumSearchModel);
-
-//        if (spectraSpec.getInstrumentMetadata(instrument.getDisplayName()).getQueryType().equals("file"))
-//        {
-//            searchParametersController.getPanel().setVisible(false);
-//        }
-
+        this.coloringController = new SpectrumColoringController(spectrumSearchModel, spectrumCollection);
         init();
     }
 

@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 import java.util.HashMap;
 
 import edu.jhuapl.sbmt.query.QueryBase;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 public class SpectraTypeFactory
 {

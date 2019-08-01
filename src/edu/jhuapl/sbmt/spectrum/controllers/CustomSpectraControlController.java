@@ -5,12 +5,10 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
-import edu.jhuapl.sbmt.spectrum.model.core.CustomSpectraSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKeyInterface;
-import edu.jhuapl.sbmt.spectrum.ui.CustomSpectraControlPanel;
-import edu.jhuapl.sbmt.spectrum.ui.CustomSpectrumImporterDialog;
-
-import nom.tam.fits.FitsException;
+import edu.jhuapl.sbmt.spectrum.model.core.search.CustomSpectraSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectraControlPanel;
+import edu.jhuapl.sbmt.spectrum.ui.custom.CustomSpectrumImporterDialog;
 
 
 public class CustomSpectraControlController
@@ -23,7 +21,7 @@ public class CustomSpectraControlController
     {
         panel = new CustomSpectraControlPanel();
         this.model = model;
-        this.customSpectra = model.getcustomSpectra();
+        this.customSpectra = model.getCustomSpectra();
         init();
     }
 
@@ -59,8 +57,7 @@ public class CustomSpectraControlController
     {
         CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(
                 null, false, model.getInstrument());
-        dialog.setSpectrumInfo(null,
-                model.getModelManager().getPolyhedralModel().isEllipsoid());
+        dialog.setSpectrumInfo(null);
         dialog.setLocationRelativeTo(getPanel());
         dialog.setVisible(true);
 
@@ -81,14 +78,13 @@ public class CustomSpectraControlController
 
     private void editButtonActionPerformed(ActionEvent evt)
     {
-//        model.editButtonActionPerformed();
     	int selectedItem = model.getSelectedImageIndex()[0];
         if (selectedItem >= 0)
         {
             CustomSpectrumKeyInterface oldSpectrumInfo = customSpectra.get(selectedItem);
 
             CustomSpectrumImporterDialog dialog = new CustomSpectrumImporterDialog(null, true, model.getInstrument());
-            dialog.setSpectrumInfo(oldSpectrumInfo, model.getModelManager().getPolyhedralModel().isEllipsoid());
+            dialog.setSpectrumInfo(oldSpectrumInfo);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
 
@@ -99,16 +95,17 @@ public class CustomSpectraControlController
                 try
                 {
                     saveSpectrum(selectedItem, oldSpectrumInfo, newSpectrumInfo);
-                    model.remapSpectrumToRenderer(selectedItem);
+                    //TODO is this needed?
+//                    model.remapSpectrumToRenderer(selectedItem);
                 }
                 catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-                catch (FitsException e)
-                {
-                    e.printStackTrace();
-                }
+//                catch (FitsException e)
+//                {
+//                    e.printStackTrace();
+//                }
             }
         }
     }

@@ -11,24 +11,25 @@ import javax.swing.event.ChangeListener;
 
 import vtk.vtkFunctionParser;
 
-import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.spectrum.model.core.AbstractSpectrumSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumColoringChangedListener;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumColoringStyle;
+import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringChangedListener;
+import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumColoringPanel;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumMathPanel;
 
 public class SpectrumColoringController
 {
     SpectrumColoringPanel panel;
-    AbstractSpectrumSearchModel model;
+    BaseSpectrumSearchModel model;
+    SpectraCollection collection;
 
-    public SpectrumColoringController(AbstractSpectrumSearchModel model)
+    public SpectrumColoringController(BaseSpectrumSearchModel model, SpectraCollection collection)
     {
         this.panel = new SpectrumColoringPanel();
         this.model = model;
+        this.collection = collection;
         init();
 
     }
@@ -110,13 +111,14 @@ public class SpectrumColoringController
             }
         });
 
-        model.addColoringChangedListener(new SpectrumColoringChangedListener()
+        model.getColoringModel().addColoringChangedListener(new SpectrumColoringChangedListener()
         {
 
             @Override
             public void coloringChanged()
             {
-                panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getSpectrumColoringStyleName()));
+                panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
+                collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
             }
         });
 
@@ -150,9 +152,9 @@ public class SpectrumColoringController
             panel.getGreenComboBox().addItem(channel);
             panel.getBlueComboBox().addItem(channel);
         }
-        panel.getRedComboBox().setSelectedIndex(model.getRedIndex());
-        panel.getGreenComboBox().setSelectedIndex(model.getGreenIndex());
-        panel.getBlueComboBox().setSelectedIndex(model.getBlueIndex());
+        panel.getRedComboBox().setSelectedIndex(model.getColoringModel().getRedIndex());
+        panel.getGreenComboBox().setSelectedIndex(model.getColoringModel().getGreenIndex());
+        panel.getBlueComboBox().setSelectedIndex(model.getColoringModel().getBlueIndex());
 
         String[] derivedParameters = instrument.getSpectrumMath().getDerivedParameters();
         for (int i=0; i<derivedParameters.length; ++i)
@@ -169,9 +171,9 @@ public class SpectrumColoringController
             panel.getBlueComboBox().addItem(fp.GetFunction());
         }
 
-        panel.getRedMaxSpinner().setValue(model.getRedMaxVal());
-        panel.getGreenMaxSpinner().setValue(model.getGreenMaxVal());
-        panel.getBlueMaxSpinner().setValue(model.getBlueMaxVal());
+        panel.getRedMaxSpinner().setValue(model.getColoringModel().getRedMaxVal());
+        panel.getGreenMaxSpinner().setValue(model.getColoringModel().getGreenMaxVal());
+        panel.getBlueMaxSpinner().setValue(model.getColoringModel().getBlueMaxVal());
     }
 
     private void coloringComboBoxActionPerformed(ActionEvent evt)
@@ -179,28 +181,27 @@ public class SpectrumColoringController
         JComboBox<SpectrumColoringStyle> box = (JComboBox<SpectrumColoringStyle>)evt.getSource();
         String coloringName = box.getSelectedItem().toString();
         SpectrumColoringStyle style = SpectrumColoringStyle.getStyleForName(coloringName);
-        SpectraCollection collection = (SpectraCollection)model.getModelManager().getModel(ModelNames.SPECTRA);
         collection.setColoringStyleForInstrument(style, model.getInstrument());
 
         boolean isEmissionSelected = (style == SpectrumColoringStyle.EMISSION_ANGLE);
         panel.getRgbColoringPanel().setVisible(!isEmissionSelected);
         panel.getEmissionAngleColoringPanel().setVisible(isEmissionSelected);
-        model.setSpectrumColoringStyleName(coloringName);
+        model.getColoringModel().setSpectrumColoringStyleName(coloringName);
         model.coloringOptionChanged();
     }
 
     private void redComboBoxActionPerformed(ActionEvent evt) {
-    	model.setRedIndex(panel.getRedComboBox().getSelectedIndex());
+    	model.getColoringModel().setRedIndex(panel.getRedComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void greenComboBoxActionPerformed(ActionEvent evt) {
-    	model.setGreenIndex(panel.getGreenComboBox().getSelectedIndex());
+    	model.getColoringModel().setGreenIndex(panel.getGreenComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
     private void blueComboBoxActionPerformed(ActionEvent evt) {
-    	model.setBlueIndex(panel.getBlueComboBox().getSelectedIndex());
+    	model.getColoringModel().setBlueIndex(panel.getBlueComboBox().getSelectedIndex());
         model.updateColoring();
     }
 
@@ -250,7 +251,7 @@ public class SpectrumColoringController
         panel.getBlueMaxLabel().setVisible(enableColor);
         panel.getBlueLabel().setVisible(enableColor);
         panel.getBlueMaxSpinner().setVisible(enableColor);
-        model.setGreyScaleSelected(panel.getGrayscaleCheckBox().isSelected());
+        model.getColoringModel().setGreyScaleSelected(panel.getGrayscaleCheckBox().isSelected());
         model.updateColoring();
     }
 
@@ -279,18 +280,18 @@ public class SpectrumColoringController
         Double maxVal = (Double)maxSpinner.getValue();
         if (channel == 0)
         {
-            model.setRedMinVal(minVal);
-            model.setRedMaxVal(maxVal);
+            model.getColoringModel().setRedMinVal(minVal);
+            model.getColoringModel().setRedMaxVal(maxVal);
         }
         else if (channel == 1)
         {
-            model.setGreenMinVal(minVal);
-            model.setGreenMaxVal(maxVal);
+            model.getColoringModel().setGreenMinVal(minVal);
+            model.getColoringModel().setGreenMaxVal(maxVal);
         }
         else if (channel == 2)
         {
-            model.setBlueMinVal(minVal);
-            model.setBlueMaxVal(maxVal);
+            model.getColoringModel().setBlueMinVal(minVal);
+            model.getColoringModel().setBlueMaxVal(maxVal);
         }
         if (minVal > maxVal)
         {

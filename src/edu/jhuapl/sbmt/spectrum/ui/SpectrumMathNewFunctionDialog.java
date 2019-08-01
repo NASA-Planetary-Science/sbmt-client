@@ -10,7 +10,7 @@
  */
 package edu.jhuapl.sbmt.spectrum.ui;
 
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumMath;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.math.SpectrumMath;
 
 public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
 
@@ -71,6 +71,8 @@ public class SpectrumMathNewFunctionDialog extends javax.swing.JDialog {
         okayButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okayButtonActionPerformed(evt);
+                System.out.println(
+						"SpectrumMathNewFunctionDialog.initComponents().new ActionListener() {...}: actionPerformed: pressed ok");
             }
         });
 

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 
 public class SpectrumInstrumentFactory
 {

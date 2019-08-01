@@ -22,6 +22,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.rendering.BasicSpectrumRenderer;
 
 public class NisDatabaseGeneratorSql
 {
@@ -201,12 +202,12 @@ public class NisDatabaseGeneratorSql
 //            yearStr = f.getName();
 
             NISSpectrum nisSpectrum = new NISSpectrum(origFile.getAbsolutePath(), erosModel, nis);
-
-            nisSpectrum.generateFootprint();
+            BasicSpectrumRenderer nisSpectrumRenderer = new BasicSpectrumRenderer(nisSpectrum, erosModel, true);
+            nisSpectrumRenderer.generateFootprint();
 
             if (footprintPolyData == null)
                 footprintPolyData = new vtkPolyData();
-            footprintPolyData.DeepCopy(nisSpectrum.getUnshiftedFootprint());
+            footprintPolyData.DeepCopy(nisSpectrumRenderer.getUnshiftedFootprint());
             footprintPolyData.ComputeBounds();
 
 
@@ -233,7 +234,7 @@ public class NisDatabaseGeneratorSql
                 ++count;
             }
 
-            nisSpectrum.Delete();
+            nisSpectrumRenderer.Delete();
             //System.gc();
             System.out.println("deleted " + vtkObject.JAVA_OBJECT_MANAGER.gc(true));
             System.out.println(" ");

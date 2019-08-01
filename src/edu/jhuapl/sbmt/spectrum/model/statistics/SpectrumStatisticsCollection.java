@@ -25,8 +25,6 @@ public class SpectrumStatisticsCollection extends AbstractModel implements Prope
         TH_MEAN,TH_VARIANCE,TH_SKEWNESS,TH_KURTOSIS;
     }
 
-
-
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {

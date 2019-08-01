@@ -17,7 +17,9 @@ import vtk.vtkProp;
 import vtk.vtkTriangle;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
-import edu.jhuapl.sbmt.spectrum.model.core.Spectrum;
+import edu.jhuapl.sbmt.spectrum.model.rendering.BasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 
 public class SpectrumStatistics extends AbstractModel
 {
@@ -27,9 +29,9 @@ public class SpectrumStatistics extends AbstractModel
     List<Sample> phaseAngle;
     List<Sample> irradiance;
 
-    List<Spectrum> spectra=Lists.newArrayList();
+    List<IBasicSpectrumRenderer> spectra=Lists.newArrayList();
 
-    public SpectrumStatistics(List<Sample> emergenceAngle, List<Sample> incidenceAngle, List<Sample> phaseAngle, List<Sample> irradiance, List<Spectrum> spectra)
+    public SpectrumStatistics(List<Sample> emergenceAngle, List<Sample> incidenceAngle, List<Sample> phaseAngle, List<Sample> irradiance, List<IBasicSpectrumRenderer> spectra)
     {
         this.emergenceAngle=emergenceAngle;
         this.incidenceAngle=incidenceAngle;
@@ -50,7 +52,7 @@ public class SpectrumStatistics extends AbstractModel
         return nFaces;
     }
 
-    public List<Spectrum> getOriginalSpectra()
+    public List<IBasicSpectrumRenderer> getOriginalSpectra()
     {
         return spectra;
     }
@@ -75,12 +77,12 @@ public class SpectrumStatistics extends AbstractModel
         return phaseAngle;
     }
 
-    public Map<Spectrum, Integer> orderSpectraByMeanEmergenceAngle()
+    public Map<IBasicSpectrumRenderer, Integer> orderSpectraByMeanEmergenceAngle()
     {
         final List<Double> means=Lists.newArrayList();
         for (int i=0; i<spectra.size(); i++)
         {
-            Spectrum spectrum=spectra.get(i);
+            Spectrum spectrum=spectra.get(i).getSpectrum();
             List<Sample> subSample=Lists.newArrayList();
             for (Sample sample : emergenceAngle)
                 if (sample.parentSpectrum.equals(spectrum))
@@ -100,7 +102,7 @@ public class SpectrumStatistics extends AbstractModel
             }
         });
 
-        Map<Spectrum, Integer> stackingMap=Maps.newHashMap();
+        Map<IBasicSpectrumRenderer, Integer> stackingMap=Maps.newHashMap();
         for (int i=0; i<indices.size(); i++)
             stackingMap.put(spectra.get(i), indices.get(i));
         return stackingMap;
@@ -205,11 +207,11 @@ public class SpectrumStatistics extends AbstractModel
         return val/wtot/Math.pow(getWeightedVariance(samples),2);
     }
 
-    public static List<Sample> sampleEmergenceAngle(Spectrum spectrum, Vector3D scPos)
+    public static List<Sample> sampleEmergenceAngle(IBasicSpectrumRenderer spectrum, Vector3D scPos)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
-        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(Spectrum.faceAreaFractionArrayName);
+        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(BasicSpectrumRenderer.faceAreaFractionArrayName);
         for (int c=0; c<footprint.GetNumberOfCells(); c++)
         {
             vtkTriangle tri=(vtkTriangle)footprint.GetCell(c);
@@ -224,18 +226,18 @@ public class SpectrumStatistics extends AbstractModel
             Sample sample=new Sample();
             sample.value=Math.toDegrees(Math.acos(nmlVec.dotProduct(toScVec.normalize())));
             sample.weight=overlapFraction.GetValue(c);
-            sample.parentSpectrum=spectrum;
+            sample.parentSpectrum=spectrum.getSpectrum();
             samples.add(sample);
         }
         return samples;
     }
 
     // TODO: incorporate occlusion in a meaningful way
-    public static List<Sample> sampleIncidenceAngle(Spectrum spectrum, Vector3D toSunVector)//, double[] illuminationFactors)
+    public static List<Sample> sampleIncidenceAngle(IBasicSpectrumRenderer spectrum, Vector3D toSunVector)//, double[] illuminationFactors)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
-        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(Spectrum.faceAreaFractionArrayName);
+        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(BasicSpectrumRenderer.faceAreaFractionArrayName);
         for (int c=0; c<footprint.GetNumberOfCells(); c++)
         {
             vtkTriangle tri=(vtkTriangle)footprint.GetCell(c);
@@ -251,7 +253,7 @@ public class SpectrumStatistics extends AbstractModel
                 sample.value=Math.toDegrees(Math.acos(nmlVec.dotProduct(toSunVector.normalize())));
                 sample.weight=overlapFraction.GetValue(c);
 //            }
-            sample.parentSpectrum=spectrum;
+            sample.parentSpectrum=spectrum.getSpectrum();
             samples.add(sample);
         }
         return samples;
@@ -273,18 +275,18 @@ public class SpectrumStatistics extends AbstractModel
         return samples;
     }
 
-    public static List<Sample> sampleIrradiance(Spectrum spectrum, double[] illuminationFactors)
+    public static List<Sample> sampleIrradiance(IBasicSpectrumRenderer spectrum, double[] illuminationFactors)
     {
         vtkPolyData footprint=spectrum.getUnshiftedFootprint();
         List<Sample> samples=Lists.newArrayList();
-        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(Spectrum.faceAreaFractionArrayName);
+        vtkDoubleArray overlapFraction=(vtkDoubleArray)footprint.GetCellData().GetArray(BasicSpectrumRenderer.faceAreaFractionArrayName);
         for (int c=0; c<footprint.GetNumberOfCells(); c++)
         {
             vtkTriangle tri=(vtkTriangle)footprint.GetCell(c);
                 Sample sample=new Sample();
                 sample.value=illuminationFactors[c];
                 sample.weight=overlapFraction.GetValue(c);
-                sample.parentSpectrum=spectrum;
+                sample.parentSpectrum=spectrum.getSpectrum();
                 samples.add(sample);
         }
         return samples;

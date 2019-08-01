@@ -23,6 +23,8 @@ import javax.swing.border.TitledBorder;
 
 import com.jidesoft.swing.CheckBoxTree;
 
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+
 public class SpectrumSearchParametersPanel  extends JPanel
 {
     protected CheckBoxTree checkBoxTree;
@@ -139,8 +141,6 @@ public class SpectrumSearchParametersPanel  extends JPanel
         searchByNumberTextField.setColumns(30);
         searchByNumberTextField.setPreferredSize(
                 new Dimension(200, 20));
-//        searchByNumberTextField.setMaximumSize(
-//                new Dimension(searchByNumberTextField.getWidth(), 20));
 
         Component horizontalGlue = Box.createHorizontalGlue();
         filenamePanel.add(horizontalGlue);
@@ -377,7 +377,7 @@ public class SpectrumSearchParametersPanel  extends JPanel
 
     }
 
-    protected List<List<String>> processResults(List<List<String>> input)
+    protected List<BasicSpectrum> processResults(List<BasicSpectrum> input)
     {
         return input;
     }

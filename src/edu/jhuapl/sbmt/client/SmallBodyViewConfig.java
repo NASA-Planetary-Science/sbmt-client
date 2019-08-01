@@ -25,10 +25,8 @@ import edu.jhuapl.sbmt.config.ShapeModelConfiguration;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.imaging.instruments.ImagingInstrumentConfiguration;
 import edu.jhuapl.sbmt.lidar.old.OlaCubesGenerator;
-import edu.jhuapl.sbmt.model.bennu.OREXSpectrumInstrumentMetadataIO;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.image.BasicImagingInstrument;
 import edu.jhuapl.sbmt.model.image.ImageKeyInterface;
@@ -39,11 +37,13 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.HierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
-import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.Hayabusa2SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -1735,7 +1735,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -1883,7 +1883,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2033,7 +2033,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2182,7 +2182,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2332,7 +2332,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2482,7 +2482,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -2632,7 +2632,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", c.rootDirOnServer + "ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -4834,7 +4834,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("OVIRS_REF", "/earth/osirisrex/ovirs/l3/reff/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = "/earth/osirisrex/spectraMetadata.json";
 
-            OREXSpectrumInstrumentMetadataIO specIO = new OREXSpectrumInstrumentMetadataIO("OREX");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("OREX");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 
@@ -6220,7 +6220,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
             c.spectraSearchDataSourceMap.put("NIRS3", c.rootDirOnServer + "/nirs3/l2c/hypertree/dataSource.spectra");
             c.spectrumMetadataFile = c.rootDirOnServer + "/spectraMetadata.json";
 
-            Hayabusa2SpectrumInstrumentMetadataIO specIO = new Hayabusa2SpectrumInstrumentMetadataIO("HAYABUSA2");
+            SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO("HAYABUSA2");
             specIO.setPathString(c.spectrumMetadataFile);
             c.hierarchicalSpectraSearchSpecification = specIO;
 

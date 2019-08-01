@@ -18,7 +18,7 @@ import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
 public abstract class SpectrumView extends JPanel {
 
@@ -52,7 +52,6 @@ public abstract class SpectrumView extends JPanel {
     private JButton saveSpectraListButton;
     private JButton loadSpectraListButton;
     private PickManager pickManager;
-//    private SmallBodyViewConfig smallBodyConfig;
     private ModelManager modelManager;
     private Renderer renderer;
     private ISpectralInstrument instrument;
@@ -63,15 +62,12 @@ public abstract class SpectrumView extends JPanel {
     private JButton submitButton;
 
 
-    public SpectrumView(/*SmallBodyViewConfig smallBodyConfig,*/ ModelManager modelManager, PickManager pickManager2, Renderer renderer, ISpectralInstrument instrument)
+    public SpectrumView(ModelManager modelManager, PickManager pickManager2, Renderer renderer, ISpectralInstrument instrument)
     {
-
-//        this.smallBodyConfig = smallBodyConfig;
         this.modelManager = modelManager;
         this.pickManager = pickManager2;
         this.renderer = renderer;
         this.instrument = instrument;
-
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         resultList = new JList();
@@ -267,19 +263,6 @@ public abstract class SpectrumView extends JPanel {
     {
         this.pickManager = pickManager;
     }
-
-
-//    public SmallBodyViewConfig getSmallBodyConfig()
-//    {
-//        return smallBodyConfig;
-//    }
-//
-//
-//    public void setSmallBodyConfig(SmallBodyViewConfig smallBodyConfig)
-//    {
-//        this.smallBodyConfig = smallBodyConfig;
-//    }
-
 
     public ModelManager getModelManager()
     {

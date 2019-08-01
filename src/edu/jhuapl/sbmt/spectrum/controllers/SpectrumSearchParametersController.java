@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.spectrum.controllers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.TreeSet;
 
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
@@ -13,38 +14,46 @@ import javax.swing.event.DocumentListener;
 
 import com.jidesoft.swing.CheckBoxTree;
 
+import vtk.vtkPolyData;
+
+import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.model.structure.AbstractEllipsePolygonModel;
+import edu.jhuapl.saavtk.model.structure.EllipsePolygon;
 import edu.jhuapl.saavtk.pick.PickManager;
 import edu.jhuapl.saavtk.pick.PickManager.PickMode;
-import edu.jhuapl.sbmt.model.bennu.otes.SpectraHierarchicalSearchSpecification;
-import edu.jhuapl.sbmt.spectrum.model.core.AbstractSpectrumSearchModel;
+import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
+import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumSearchParametersPanel;
 
 public class SpectrumSearchParametersController
 {
     protected SpectrumSearchParametersPanel panel;
-    protected AbstractSpectrumSearchModel model;
+    protected BaseSpectrumSearchModel model;
     private JPanel auxPanel;
     protected PickManager pickManager;
-//    protected SmallBodyViewConfig smallBodyConfig;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
     private boolean hasHierarchicalSpectraSearch;
     private double imageSearchDefaultMaxSpacecraftDistance;
     private Date imageSearchDefaultStartDate;
     private Date imageSearchDefaultEndDate;
+    private ModelManager modelManager;
+    private SpectrumSearchParametersModel searchParameters;
 
-    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, AbstractSpectrumSearchModel model, PickManager pickManager)
+    public SpectrumSearchParametersController(Date imageSearchDefaultStartDate, Date imageSearchDefaultEndDate, boolean hasHierarchicalSpectraSearch, double imageSearchDefaultMaxSpacecraftDistance, SpectraHierarchicalSearchSpecification spectraSpec, BaseSpectrumSearchModel model, PickManager pickManager, ModelManager modelManager)
     {
         this.model = model;
-        this.spectraSpec = model.getSpectraSpec();
+        searchParameters = new SpectrumSearchParametersModel();
+        this.modelManager = modelManager;
+        this.spectraSpec = spectraSpec;
         this.panel = new SpectrumSearchParametersPanel(hasHierarchicalSpectraSearch);
         this.pickManager = pickManager;
         this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
         this.imageSearchDefaultMaxSpacecraftDistance = imageSearchDefaultMaxSpacecraftDistance;
         this.imageSearchDefaultEndDate = imageSearchDefaultEndDate;
         this.imageSearchDefaultStartDate = imageSearchDefaultStartDate;
-//        this.smallBodyConfig = model.getSmallBodyConfig();
     }
 
     public void setupSearchParametersPanel()
@@ -53,9 +62,7 @@ public class SpectrumSearchParametersController
 
         if(hasHierarchicalSpectraSearch)
         {
-//            model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.processTreeSelections(
-//                    panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
-            model.getSpectraSpec().processTreeSelections(
+            spectraSpec.processTreeSelections(
                     panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
             panel.getSelectRegionButton().setVisible(false);
             panel.getClearRegionButton().setVisible(false);
@@ -72,7 +79,7 @@ public class SpectrumSearchParametersController
             });
 
             JSpinner startSpinner = panel.getStartSpinner();
-            startSpinner.setModel(new javax.swing.SpinnerDateModel(model.getStartDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
+            startSpinner.setModel(new javax.swing.SpinnerDateModel(searchParameters.getStartDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
             startSpinner.setEditor(new javax.swing.JSpinner.DateEditor(startSpinner, "yyyy-MMM-dd HH:mm:ss"));
             startSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
             startSpinner.setPreferredSize(new java.awt.Dimension(180, 22));
@@ -85,7 +92,7 @@ public class SpectrumSearchParametersController
 
             panel.getEndDateLabel().setText("End Date:");
             JSpinner endSpinner = panel.getEndSpinner();
-            endSpinner.setModel(new javax.swing.SpinnerDateModel(model.getEndDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
+            endSpinner.setModel(new javax.swing.SpinnerDateModel(searchParameters.getEndDate(), null, null, java.util.Calendar.DAY_OF_MONTH));
             endSpinner.setEditor(new javax.swing.JSpinner.DateEditor(endSpinner, "yyyy-MMM-dd HH:mm:ss"));
             endSpinner.setMinimumSize(new java.awt.Dimension(36, 22));
             endSpinner.setPreferredSize(new java.awt.Dimension(180, 22));
@@ -142,17 +149,17 @@ public class SpectrumSearchParametersController
             fromDistanceTextField.setPreferredSize(new java.awt.Dimension(0, 22));
 
 
-            model.setStartDate(imageSearchDefaultStartDate);
-            ((SpinnerDateModel)startSpinner.getModel()).setValue(model.getStartDate());
-            model.setEndDate(imageSearchDefaultEndDate);
-            ((SpinnerDateModel)endSpinner.getModel()).setValue(model.getEndDate());
+            searchParameters.setStartDate(imageSearchDefaultStartDate);
+            ((SpinnerDateModel)startSpinner.getModel()).setValue(searchParameters.getStartDate());
+            searchParameters.setEndDate(imageSearchDefaultEndDate);
+            ((SpinnerDateModel)endSpinner.getModel()).setValue(searchParameters.getEndDate());
 
             panel.getFullCheckBox().addActionListener(new ActionListener()
             {
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.addToPolygonsSelected(0);
+                    searchParameters.addToPolygonsSelected(0);
                 }
             });
 
@@ -161,7 +168,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.addToPolygonsSelected(0);
+                    searchParameters.addToPolygonsSelected(0);
                 }
             });
 
@@ -170,7 +177,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.addToPolygonsSelected(0);
+                    searchParameters.addToPolygonsSelected(0);
                 }
             });
 
@@ -181,21 +188,21 @@ public class SpectrumSearchParametersController
                 public void removeUpdate(DocumentEvent e)
                 {
                     if (!panel.getFromDistanceTextField().getText().equals(""))
-                        model.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
+                        searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
                 }
 
                 @Override
                 public void insertUpdate(DocumentEvent e)
                 {
                     if (!panel.getFromDistanceTextField().getText().equals(""))
-                        model.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
+                        searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
                 }
 
                 @Override
                 public void changedUpdate(DocumentEvent e)
                 {
                     if (!panel.getFromDistanceTextField().getText().equals(""))
-                        model.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
+                        searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
 
                 }
             });
@@ -207,19 +214,21 @@ public class SpectrumSearchParametersController
                 public void removeUpdate(DocumentEvent e)
                 {
                     if (!panel.getToDistanceTextField().getText().equals(""))
-                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));            }
+                        searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+                }
 
                 @Override
                 public void insertUpdate(DocumentEvent e)
                 {
                     if (!panel.getToDistanceTextField().getText().equals(""))
-                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));            }
+                        searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+                }
 
                 @Override
                 public void changedUpdate(DocumentEvent e)
                 {
                     if (!panel.getToDistanceTextField().getText().equals(""))
-                        model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+                        searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
                 }
             });
 
@@ -229,7 +238,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+                    searchParameters.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
                 }
             });
 
@@ -239,7 +248,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+                    searchParameters.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
                 }
             });
 
@@ -249,7 +258,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+                    searchParameters.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
                 }
             });
 
@@ -259,7 +268,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+                    searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
                 }
             });
 
@@ -269,7 +278,7 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+                    searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
                 }
             });
 
@@ -279,22 +288,22 @@ public class SpectrumSearchParametersController
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+                    searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
                 }
             });
 
             toDistanceTextField.setValue(imageSearchDefaultMaxSpacecraftDistance);
 
-            model.setStartDate((Date)panel.getStartSpinner().getValue());
-            model.setEndDate((Date)panel.getEndSpinner().getValue());
-            model.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
-            model.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
-            model.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
-            model.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
-            model.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
-            model.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
-            model.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
-            model.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
+            searchParameters.setStartDate((Date)panel.getStartSpinner().getValue());
+            searchParameters.setEndDate((Date)panel.getEndSpinner().getValue());
+            searchParameters.setMinDistanceQuery(Integer.parseInt(panel.getFromDistanceTextField().getText()));
+            searchParameters.setMaxDistanceQuery(Integer.parseInt(panel.getToDistanceTextField().getText()));
+            searchParameters.setMinIncidenceQuery(Integer.parseInt(panel.getFromIncidenceTextField().getText()));
+            searchParameters.setMaxIncidenceQuery(Integer.parseInt(panel.getToIncidenceTextField().getText()));
+            searchParameters.setMinEmissionQuery(Integer.parseInt(panel.getFromEmissionTextField().getText()));
+            searchParameters.setMaxEmissionQuery(Integer.parseInt(panel.getToEmissionTextField().getText()));
+            searchParameters.setMinPhaseQuery(Integer.parseInt(panel.getFromPhaseTextField().getText()));
+            searchParameters.setMaxPhaseQuery(Integer.parseInt(panel.getToPhaseTextField().getText()));
 
         }
 
@@ -313,7 +322,30 @@ public class SpectrumSearchParametersController
                     model.setSelectedPath(panel.getCheckBoxTree().getCheckBoxTreeSelectionModel().getSelectionPaths());
                 panel.getSelectRegionButton().setSelected(false);
                 model.clearSpectraFromDisplay();
-                model.performSearch();
+                pickManager.setPickMode(PickMode.DEFAULT);
+                TreeSet<Integer> cubeList = null;
+
+                AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
+                SmallBodyModel bodyModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
+                if (selectionModel.getNumberOfStructures() > 0)
+                {
+                    EllipsePolygon region = (EllipsePolygon)selectionModel.getStructure(0);
+
+                    // Always use the lowest resolution model for getting the intersection cubes list.
+                    // Therefore, if the selection region was created using a higher resolution model,
+                    // we need to recompute the selection region using the low res model.
+                    if (bodyModel.getModelResolution() > 0)
+                    {
+                        vtkPolyData interiorPoly = new vtkPolyData();
+                        bodyModel.drawRegularPolygonLowRes(region.getCenter(), region.radius, region.numberOfSides, interiorPoly, null);
+                        cubeList = bodyModel.getIntersectingCubes(interiorPoly);
+                    }
+                    else
+                    {
+                        cubeList = bodyModel.getIntersectingCubes(region.interiorPolyData);
+                    }
+                }
+                model.performSearch(searchParameters, cubeList, hasHierarchicalSpectraSearch, spectraSpec, model.getSelectedPath());
             }
         });
 
@@ -324,10 +356,6 @@ public class SpectrumSearchParametersController
                 selectRegionButtonActionPerformed(evt);
             }
         });
-
-
-
-
     }
 
     // Sets up everything related to hierarchical image searches
@@ -337,24 +365,15 @@ public class SpectrumSearchParametersController
         if(hasHierarchicalSpectraSearch)
         {
             // Has hierarchical search capabilities, these replace the camera and filter checkboxes so hide them
-//            panel.getFilterCheckBoxPanel().setVisible(false);
-//            panel.getUserDefinedCheckBoxPanel().setVisible(false);
-//            panel.getAuxPanel().setVisible(false);
 
             // Create the tree
             spectraSpec.clearTreeLeaves();
             spectraSpec.readHierarchyForInstrument(model.getInstrument().getDisplayName());
-//            panel.setCheckBoxTree(new CheckBoxTree(model.getSmallBodyConfig().hierarchicalSpectraSearchSpecification.getTreeModel()));
-            panel.setCheckBoxTree(new CheckBoxTree(model.getSpectraSpec().getTreeModel()));
+            panel.setCheckBoxTree(new CheckBoxTree(spectraSpec.getTreeModel()));
 
             // Place the tree in the panel
-                panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
+            panel.getHierarchicalSearchScrollPane().setViewportView(panel.getCheckBoxTree());
         }
-//        else
-//        {
-//            // No hierarchical search capabilities, hide the scroll pane
-//            panel.getHierarchicalSearchScrollPane().setVisible(false);
-//        }
     }
 
     public void formComponentHidden(java.awt.event.ComponentEvent evt)
@@ -368,7 +387,7 @@ public class SpectrumSearchParametersController
         Date date =
                 ((SpinnerDateModel)panel.getStartSpinner().getModel()).getDate();
         if (date != null)
-            model.setStartDate(date);
+            searchParameters.setStartDate(date);
     }
 
     public void endSpinnerStateChanged(javax.swing.event.ChangeEvent evt)
@@ -376,7 +395,7 @@ public class SpectrumSearchParametersController
         Date date =
                 ((SpinnerDateModel)panel.getEndSpinner().getModel()).getDate();
         if (date != null)
-            model.setEndDate(date);
+            searchParameters.setEndDate(date);
 
     }
 
@@ -390,7 +409,7 @@ public class SpectrumSearchParametersController
 
     public void clearRegionButtonActionPerformed(ActionEvent evt)
     {
-        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)model.getModelManager().getModel(ModelNames.CIRCLE_SELECTION);
+        AbstractEllipsePolygonModel selectionModel = (AbstractEllipsePolygonModel)modelManager.getModel(ModelNames.CIRCLE_SELECTION);
         selectionModel.removeAllStructures();
     }
 

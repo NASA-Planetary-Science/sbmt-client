@@ -41,8 +41,8 @@ import edu.jhuapl.saavtk.gui.ModelInfoWindow;
 import edu.jhuapl.saavtk.model.Model;
 import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.core.Spectrum;
+import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 
@@ -63,7 +63,6 @@ public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements Prop
         this.modelManager=modelManager;
         this.stats=stats;
 
-        //List<Sample> goodIncidenceSamples=NISStatistics.removeNans(stats.getIncidenceAngleSamples());
         tabbedPane.add("Incidence Angle (deg)",setupHistogramPanel(stats.getIncidenceAngleSamples(), "Angle (deg)", "# faces"));
         tabbedPane.add("Emergence Angle (deg)",setupHistogramPanel(stats.getEmergenceAngleSamples(), "Angle (deg)", "# faces"));
 
@@ -158,10 +157,10 @@ public class SpectrumStatisticsInfoPanel extends ModelInfoWindow implements Prop
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Map<Spectrum,Integer> stackingOrder=stats.orderSpectraByMeanEmergenceAngle();
+                Map<IBasicSpectrumRenderer,Integer> stackingOrder = stats.orderSpectraByMeanEmergenceAngle();
                 SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
                 model.clearOrdinals();
-                for (Spectrum spectrum: stackingOrder.keySet())  // only stack the ones that stats knows about
+                for (IBasicSpectrumRenderer spectrum: stackingOrder.keySet())  // only stack the ones that stats knows about
                 {
                     model.setOrdinal(spectrum, stackingOrder.get(spectrum));
 //                    System.out.println(stackingOrder.get(spectrum));

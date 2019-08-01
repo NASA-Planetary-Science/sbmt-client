@@ -7,24 +7,23 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.jhuapl.sbmt.spectrum.model.core.AbstractSpectrumSearchModel;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundaryCollection;
-import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.search.BaseSpectrumSearchModel;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectrumBoundaryCollection;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
 public class SpectrumStringRenderer extends DefaultTableCellRenderer
 {
     public SpectrumBoundaryCollection model;
-    private AbstractSpectrumSearchModel spectrumSearchModel;
-    private List<List<String>> spectrumRawResults;
-    private SpectraCollection collection;
+    private BaseSpectrumSearchModel spectrumSearchModel;
+    private List<BasicSpectrum> spectrumRawResults;
 
-    public SpectrumStringRenderer(AbstractSpectrumSearchModel spectrumSearchModel, List<List<String>> spectrumRawResults, SpectraCollection collection)
+    public SpectrumStringRenderer(BaseSpectrumSearchModel spectrumSearchModel, List<BasicSpectrum> spectrumRawResults, SpectrumBoundaryCollection boundaries)
     {
         this.spectrumSearchModel = spectrumSearchModel;
         this.spectrumRawResults = spectrumRawResults;
-        this.collection = collection;
-        model = (SpectrumBoundaryCollection)spectrumSearchModel.getModelManager().getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
+        this.model = boundaries;
+//        model = (SpectrumBoundaryCollection)spectrumSearchModel.getModelManager().getModel(spectrumSearchModel.getSpectrumBoundaryCollectionModelName());
     }
 
     public Component getTableCellRendererComponent(
@@ -35,7 +34,7 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
     	int actualRow = table.getRowSorter().convertRowIndexToModel(row);
         Component co = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, actualRow, column);
         if (spectrumRawResults.size() == 0) return co;
-        String name = spectrumRawResults.get(actualRow).get(0);
+        String name = spectrumRawResults.get(actualRow).getSpectrumName();
         SpectrumKeyInterface key = spectrumSearchModel.createSpectrumKey(name, spectrumSearchModel.getInstrument());
         if (model.containsBoundary(key))
         {
@@ -67,7 +66,7 @@ public class SpectrumStringRenderer extends DefaultTableCellRenderer
         return co;
     }
 
-    public void setSpectrumRawResults(List<List<String>> spectrumRawResults)
+    public void setSpectrumRawResults(List<BasicSpectrum> spectrumRawResults)
     {
         this.spectrumRawResults = spectrumRawResults;
     }

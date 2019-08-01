@@ -12,7 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 
-import edu.jhuapl.sbmt.spectrum.model.core.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
 
 public class SpectrumResultsTableView extends JPanel
 {

@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.client;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -12,9 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -35,7 +32,6 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
-import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
 {
@@ -176,25 +172,26 @@ public class MultispectralSpectrumInfoPanel extends ModelInfoWindow implements P
      */
     private void createMenus()
     {
-        SpectrumPopupMenu msiImagesPopupMenu =
-        new SpectrumPopupMenu(modelManager, null, null);
+    	//TODO: FIX THIS.  This is centered around spectral iamges, not spectra, so it really needs it's own popup menu
+//        SpectrumPopupMenu msiImagesPopupMenu =
+//        new SpectrumPopupMenu(modelManager, null, null);
 
 //        msiImagesPopupMenu.setCurrentSpectrum(perspectiveImage.getServerPath());
 //        msiImagesPopupMenu.setCurrentSpectrum("<file path>");
 
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu menu = new JMenu("Options");
-        menu.setMnemonic('O');
-
-        Component[] components = msiImagesPopupMenu.getComponents();
-        for (Component item : components)
-        {
-            if (item instanceof JMenuItem)
-                menu.add(item);
-        }
-
-        menuBar.add(menu);
+//        JMenu menu = new JMenu("Options");
+//        menu.setMnemonic('O');
+//
+//        Component[] components = msiImagesPopupMenu.getComponents();
+//        for (Component item : components)
+//        {
+//            if (item instanceof JMenuItem)
+//                menu.add(item);
+//        }
+//
+//        menuBar.add(menu);
 
         setJMenuBar(menuBar);
     }

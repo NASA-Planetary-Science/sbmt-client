@@ -25,17 +25,19 @@ import edu.jhuapl.sbmt.client.SbmtModelFactory;
 import edu.jhuapl.sbmt.client.SbmtMultiMissionTool;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
-import edu.jhuapl.sbmt.model.bennu.otes.OTES;
-import edu.jhuapl.sbmt.model.bennu.otes.OTESSpectrum;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRS;
-import edu.jhuapl.sbmt.model.bennu.ovirs.OVIRSSpectrum;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRS;
+import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
 import edu.jhuapl.sbmt.model.image.ImageSource;
 import edu.jhuapl.sbmt.model.image.InfoFileReader;
 import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.rendering.AdvancedSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
 import edu.jhuapl.sbmt.tools.Authenticator;
@@ -105,7 +107,7 @@ public class SpectrumBoundsCalculator
             BufferedWriter bw = new BufferedWriter(fw);
 
             IQueryBase queryType = instrument.getQueryBase();
-            List<List<String>> spectrafiles = new ArrayList<List<String>>();
+            List<BasicSpectrum> spectrafiles = new ArrayList<BasicSpectrum>();
             if (queryType instanceof FixedListQuery)
             {
                 FixedListQuery query = (FixedListQuery)queryType;
@@ -113,17 +115,19 @@ public class SpectrumBoundsCalculator
             }
 
             int iFile = 0;
-            for (List<String> spectraFile : spectrafiles) {
+            for (BasicSpectrum spectraFile : spectrafiles) {
                 // get filename
-                String thisFileName = spectraFile.get(0);
+                String thisFileName = spectraFile.getFullPath();
 
                 // create spectrum
-                BasicSpectrum spectrum;
+                IBasicSpectrumRenderer spectrumRenderer;
                 if (instrument instanceof OTES) {
-                    spectrum = new OTESSpectrum(thisFileName, body, instrument, true, false);
+                    OTESSpectrum spectrum = new OTESSpectrum(thisFileName, body, instrument, true, false);
+                    spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
                 else  { // only 2 options right now, but may change in the future
-                    spectrum = new OVIRSSpectrum(thisFileName, body, instrument, true, false);
+                    OVIRSSpectrum spectrum = new OVIRSSpectrum(thisFileName, body, instrument, true, false);
+                    spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
 
 
@@ -159,12 +163,12 @@ public class SpectrumBoundsCalculator
                 double[] frustum4 = frustum.ll;
                 double[] spacecraftPosition = reader.getSpacecraftPosition();
 
-                spectrum.generateFootprint();
+                spectrumRenderer.generateFootprint();
 
                 try {
-                    List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(spectrum, new Vector3D(spacecraftPosition));
+                    List<Sample> sampleEmergenceAngle = SpectrumStatistics.sampleEmergenceAngle(spectrumRenderer, new Vector3D(spacecraftPosition));
                     double em = SpectrumStatistics.getWeightedMean(sampleEmergenceAngle);
-                    List<Sample> sampleIncidenceAngle = SpectrumStatistics.sampleIncidenceAngle(spectrum, toSun);
+                    List<Sample> sampleIncidenceAngle = SpectrumStatistics.sampleIncidenceAngle(spectrumRenderer, toSun);
                     double inc = SpectrumStatistics.getWeightedMean(sampleIncidenceAngle);
                     List<Sample> samplePhaseAngle = SpectrumStatistics.samplePhaseAngle( sampleIncidenceAngle, sampleEmergenceAngle);
                     double ph = SpectrumStatistics.getWeightedMean(samplePhaseAngle);

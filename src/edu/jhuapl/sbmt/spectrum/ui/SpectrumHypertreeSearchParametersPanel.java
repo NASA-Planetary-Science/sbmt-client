@@ -21,6 +21,8 @@ import javax.swing.border.TitledBorder;
 
 import org.joda.time.DateTime;
 
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+
 public class SpectrumHypertreeSearchParametersPanel  extends JPanel
 {
     private JToggleButton selectRegionButton;
@@ -595,7 +597,7 @@ public class SpectrumHypertreeSearchParametersPanel  extends JPanel
 //
 //    }
 
-    protected List<List<String>> processResults(List<List<String>> input)
+    protected List<BasicSpectrum> processResults(List<BasicSpectrum> input)
     {
         return input;
     }
