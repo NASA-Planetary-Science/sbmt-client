@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
@@ -19,8 +20,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.beust.jcommander.internal.Maps;
+
 import vtk.vtkActor;
+import vtk.vtkOBJExporter;
 import vtk.vtkProp;
+import vtk.rendering.jogl.vtkJoglPanelComponent;
 
 import edu.jhuapl.saavtk.gui.dialog.ColorChooser;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
@@ -78,6 +85,9 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
     private SbmtSpectrumWindowManager spectrumPanelManager;
     private Renderer renderer;
     private ModelManager modelManager;
+
+    private JMenuItem saveGeometryMenuItem;
+
 
     /**
      *
@@ -154,6 +164,10 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         exportInfofileMenuItem = new JMenuItem(new ExportInfofileAction());
         exportInfofileMenuItem.setText("Export INFO File...");
         this.add(exportInfofileMenuItem);
+
+        saveGeometryMenuItem = new JMenuItem(new SaveGeometryAction());
+        saveGeometryMenuItem.setText("Save Geometry...");
+        this.add(saveGeometryMenuItem);
 
         changeNormalOffsetMenuItem = new JMenuItem(new ChangeNormalOffsetAction());
         changeNormalOffsetMenuItem.setText("Change Normal Offset...");
@@ -717,6 +731,61 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
         }
     }
 
+    private class SaveGeometryAction extends AbstractAction
+    {
+    	public SaveGeometryAction() {
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				if (imageKeys.size() != 1)
+					return; // currently only one image is supported
+
+				ImageKeyInterface imageKey = imageKeys.get(0);
+				File file = CustomFileChooser.showSaveDialog(null, "Export to OBJ", FilenameUtils.getBaseName(FilenameUtils.removeExtension(imageKey.getName()))+".obj");
+
+				if (file != null) {
+
+					String fileprefix = FilenameUtils.removeExtension(file.getAbsolutePath());
+
+					imageCollection.addImage(imageKey);
+					imageBoundaryCollection.addBoundary(imageKey);
+					PerspectiveImage image = (PerspectiveImage) imageCollection.getImage(imageKey);
+					PerspectiveImageBoundary boundary = imageBoundaryCollection.getBoundary(imageKey);
+
+					vtkJoglPanelComponent renderPanel = new vtkJoglPanelComponent();
+					renderPanel.getRenderWindow().OffScreenRenderingOn();
+					vtkOBJExporter exporter = new vtkOBJExporter();
+					exporter.SetRenderWindow(renderPanel.getRenderWindow());
+
+					Map<vtkActor, String> actorsToSave=Maps.newHashMap();
+					actorsToSave.put(image.getFootprintActor(), "footprint");
+					actorsToSave.put(image.getOffLimbActor(), "offlimb");
+					actorsToSave.put(image.getOffLimbBoundaryActor(), "offlimb_boundary");
+					actorsToSave.put(image.getFrustumActor(), "frustum");
+					actorsToSave.put(boundary.getActor(), "boundary");
+
+					for (vtkActor actor : actorsToSave.keySet())
+					{
+
+						if (actor.GetVisibility() == 1) {
+							renderPanel.getRenderer().AddActor(actor);
+							renderPanel.Render();
+							exporter.SetFilePrefix(fileprefix + "_" + actorsToSave.get(actor));
+							exporter.Update();
+							renderPanel.getRenderer().RemoveActor(actor);
+						}
+					}
+					renderPanel.Delete();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+    }
+
     private class ExportInfofileAction extends AbstractAction
     {
         public void actionPerformed(ActionEvent e)
@@ -914,6 +983,7 @@ public class ImagePopupMenu<K extends ImageKeyInterface> extends PopupMenu
             }
         }
     }
+
 
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)
