@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.jgoodies.looks.LookUtils;
 
@@ -33,6 +34,7 @@ import edu.jhuapl.saavtk.util.DownloadableFileInfo;
 import edu.jhuapl.saavtk.util.DownloadableFileInfo.DownloadableFileState;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.LatLon;
+import edu.jhuapl.saavtk.util.Preferences;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
@@ -338,6 +340,7 @@ public class SbmtMultiMissionTool
                 case OSIRIS_REX_MIRROR_DEPLOY:
                 case OSIRIS_REX_STAGE:
                     splash = new SbmtSplash("resources", "splashLogoOrex.png");
+                    setDefaultColorMapName("Spectral_lowBlue");
                     break;
                 default:
                     throw new AssertionError();
@@ -407,6 +410,28 @@ public class SbmtMultiMissionTool
 			outputStream.close();
 			outputStream = null;
 		}
+	}
+
+	/**
+	 * Set the default color map name unless the user has already set one using preferences.
+	 */
+	protected static void setDefaultColorMapName(String colorMapName)
+	{
+	    Preconditions.checkNotNull(colorMapName);
+
+	    Preferences preferences = Preferences.getInstance();
+	    String defaultColorMapName = preferences.get(Preferences.DEFAULT_COLOR_MAP_NAME);
+	    if (defaultColorMapName == null)
+	    {
+	        try
+	        {
+	            preferences.put(Preferences.DEFAULT_COLOR_MAP_NAME, colorMapName);
+	        }
+	        catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 
 	private boolean clearCache;
