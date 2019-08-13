@@ -18,16 +18,16 @@ import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.config.Strings;
 import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.CustomSpectraResultsListener;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Metadata;
@@ -46,12 +46,11 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
 
     public CustomSpectraSearchModel(boolean hasHierarchicalSpectraSearch, boolean hasHypertreeBasedSpectraSearch,
     		SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification, ModelManager modelManager,
-            ISpectralInstrument instrument)
+    		BasicSpectrumInstrument instrument)
     {
         super(modelManager, instrument);
         this.customSpectra = new Vector<CustomSpectrumKeyInterface>();
         this.customSpectraListeners = new Vector<CustomSpectraResultsListener>();
-//        spectrumCollection = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 
         getColoringModel().setRedMaxVal(instrument.getRGBMaxVals()[0]);
         getColoringModel().setGreenMaxVal(instrument.getRGBMaxVals()[1]);
@@ -126,14 +125,14 @@ public class CustomSpectraSearchModel extends BaseSpectrumSearchModel
 //    	unloadSpectrum(key, spectrumCollection);
 //   }
 
-    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, ISpectralInstrument instrument)
+    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
     {
         List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
         result.add(createSpectrumKey(boundaryName, instrument));
         return result;
     }
 
-    public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
+    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
     {
         SpectrumKeyInterface key = new SpectrumKey(customDataFolder + File.separator + imagePathName, null, null, instrument, "");
         return key;

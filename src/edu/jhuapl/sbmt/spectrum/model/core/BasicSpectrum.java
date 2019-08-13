@@ -23,7 +23,7 @@ public abstract class BasicSpectrum extends Spectrum
 {
 
 //    protected ISmallBodyModel smallBodyModel;
-    protected ISpectralInstrument instrument;
+    protected BasicSpectrumInstrument instrument;
 
     protected String fullpath; // The actual path of the spectrum stored on the
                                // local disk (after downloading from the server)
@@ -71,20 +71,20 @@ public abstract class BasicSpectrum extends Spectrum
     protected SpectrumColoringStyle coloringStyle = SpectrumColoringStyle.RGB;
 
     public BasicSpectrum(String filename,
-            ISpectralInstrument instrument) throws IOException
+            BasicSpectrumInstrument instrument) throws IOException
     {
         this(filename, instrument, false);
     }
 
     public BasicSpectrum(String filename,
-            ISpectralInstrument instrument, boolean isCustom) throws IOException
+            BasicSpectrumInstrument instrument, boolean isCustom) throws IOException
     {
-        File file = FileCache.getFileFromServer(filename);
+
         this.serverpath = filename; // path on server relative to data
                                     // repository root (e.g. relative to
                                     // /project/nearsdc/data/)
         this.instrument = instrument; //
-        this.fullpath = file.getAbsolutePath();
+
         spectrum=new double[getNumberOfBands()];
         this.isCustomSpectra = isCustom;
         key = new SpectrumKey(filename, instrument);
@@ -142,6 +142,8 @@ public abstract class BasicSpectrum extends Spectrum
     @Override
     public String getFullPath()
     {
+    	File file = FileCache.getFileFromServer(serverpath);
+    	this.fullpath = file.getAbsolutePath();
         return fullpath;
     }
 

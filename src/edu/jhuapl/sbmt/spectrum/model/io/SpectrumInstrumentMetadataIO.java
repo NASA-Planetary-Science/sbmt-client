@@ -20,6 +20,11 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 
+import crucible.crust.metadata.api.Key;
+import crucible.crust.metadata.api.Version;
+import crucible.crust.metadata.impl.InstanceGetter;
+import crucible.crust.metadata.impl.SettableMetadata;
+
 public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpecification<SpectrumSearchSpec>
 {
     private static Gson gson = null;
@@ -106,6 +111,33 @@ public class SpectrumInstrumentMetadataIO extends SpectraHierarchicalSearchSpeci
             addHierarchicalSearchPath(new String[] {spec.getDataName()}, instrumentMetadata.getSpecs().indexOf(spec),-1);
         }
     }
+
+    private static final Key<SpectrumInstrumentMetadataIO> SPECTRUMINSTRUMENTMETADATAIO_KEY = Key.of("SpectrumInstrumentMetadataIO");
+	private static final Key<String> INSTRUMENTNAME_KEY = Key.of("instrumentName");
+	private static final Key<List<Integer>> SELECTEDDATASETS_KEY = Key.of("selectedDatasets");
+	private static final Key<String> PATHSTRING_KEY = Key.of("pathString");
+
+    public static void initializeSerializationProxy()
+	{
+    	InstanceGetter.defaultInstanceGetter().register(SPECTRUMINSTRUMENTMETADATAIO_KEY, (source) -> {
+    		String instrumentName = source.get(INSTRUMENTNAME_KEY);
+    		List<Integer> selectedDatasets = source.get(SELECTEDDATASETS_KEY);
+    		String pathString = source.get(PATHSTRING_KEY);
+
+    		SpectrumInstrumentMetadataIO specIO = new SpectrumInstrumentMetadataIO(instrumentName);
+    		specIO.setPathString(pathString);
+    		return specIO;
+
+    	}, SpectrumInstrumentMetadataIO.class, spec -> {
+
+    		SettableMetadata result = SettableMetadata.of(Version.of(1, 0));
+    		result.put(INSTRUMENTNAME_KEY, spec.rootName);
+    		result.put(PATHSTRING_KEY, spec.pathString);
+    		result.put(SELECTEDDATASETS_KEY, spec.selectedDatasets);
+    		return result;
+    	});
+
+	}
 
     public static void main(String[] args) throws FileNotFoundException
     {

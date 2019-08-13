@@ -1,11 +1,11 @@
 package edu.jhuapl.sbmt.spectrum.model.key;
 
 import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
 import crucible.crust.metadata.api.Key;
 import crucible.crust.metadata.api.Version;
@@ -18,7 +18,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 
     public final FileType fileType;
 
-    public final ISpectralInstrument instrument;
+    public final BasicSpectrumInstrument instrument;
 
     public ISpectraType spectrumType;
 
@@ -36,7 +36,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
     private static final Key<CustomSpectrumKey> CUSTOM_SPECTRUM_KEY = Key.of("customSpectrum");
 
 
-	public CustomSpectrumKey(String name, FileType fileType, ISpectralInstrument instrument, ISpectraType spectrumType, String spectrumFilename, String pointingFilename)
+	public CustomSpectrumKey(String name, FileType fileType, BasicSpectrumInstrument instrument, ISpectraType spectrumType, String spectrumFilename, String pointingFilename)
 	{
 		this.name = name;
 		this.fileType = fileType;
@@ -59,7 +59,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 	}
 
 	@Override
-	public ISpectralInstrument getInstrument()
+	public BasicSpectrumInstrument getInstrument()
 	{
 		return instrument;
 	}
@@ -79,7 +79,7 @@ public class CustomSpectrumKey implements CustomSpectrumKeyInterface
 		        String spectrumFilename = metadata.get(spectrumFileNameKey);
 		        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectraTypeKey));
 		        FileType fileType = FileType.valueOf(metadata.get(pointingFileTypeKey));
-		        ISpectralInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
+		        BasicSpectrumInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
 		        String pointingFilename = metadata.get(pointingFilenameKey);
 		        CustomSpectrumKey result = new CustomSpectrumKey(name, fileType, instrument, spectrumType, spectrumFilename, pointingFilename);
 				return result;

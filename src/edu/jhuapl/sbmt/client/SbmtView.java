@@ -84,13 +84,13 @@ import edu.jhuapl.sbmt.model.lidar.LidarFileSpecManager;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.time.StateHistoryCollection;
-import edu.jhuapl.sbmt.spectrum.controllers.CustomSpectraSearchController;
+import edu.jhuapl.sbmt.spectrum.controllers.custom.CustomSpectraSearchController;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectrumBoundaryCollection;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectralMode;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 import crucible.crust.metadata.api.Key;
@@ -445,7 +445,7 @@ public class SbmtView extends View implements PropertyChangeListener
 
 		}
 
-		for (ISpectralInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
+		for (BasicSpectrumInstrument instrument : getPolyhedralModelConfig().spectralInstruments)
 		{
 	        SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
 
@@ -516,7 +516,7 @@ public class SbmtView extends View implements PropertyChangeListener
 				customDataPane.addTab("Images", new CustomImageController(getPolyhedralModelConfig(), getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), (SbmtSpectrumWindowManager) getSpectrumPanelManager(), getPickManager(), getRenderer(), instrument).getPanel());
 			}
 
-			for (ISpectralInstrument i : getPolyhedralModelConfig().spectralInstruments)
+			for (BasicSpectrumInstrument i : getPolyhedralModelConfig().spectralInstruments)
 			{
 				if (i.getDisplayName().equals("NIS"))
 					continue; //we can't properly handle NIS custom data for now without info files, which we don't have.

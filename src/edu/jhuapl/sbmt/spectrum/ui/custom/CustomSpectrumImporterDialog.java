@@ -19,23 +19,23 @@ import javax.swing.JOptionPane;
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer.ProjectionType;
 import edu.jhuapl.saavtk.model.FileType;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraType;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.CustomSpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
 
 public class CustomSpectrumImporterDialog extends javax.swing.JDialog
 {
     private boolean okayPressed = false;
     private boolean isEditMode;
-    private ISpectralInstrument instrument;
+    private BasicSpectrumInstrument instrument;
     private static final String LEAVE_UNMODIFIED = "<cannot be changed>";
 
     /** Creates new form ShapeModelImporterDialog */
-    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, ISpectralInstrument instrument)
+    public CustomSpectrumImporterDialog(Window parent, boolean isEditMode, BasicSpectrumInstrument instrument)
     {
         super(parent, isEditMode ? "Edit Spectrum" : "Import New Spectrum", Dialog.ModalityType.APPLICATION_MODAL);
         initComponents();

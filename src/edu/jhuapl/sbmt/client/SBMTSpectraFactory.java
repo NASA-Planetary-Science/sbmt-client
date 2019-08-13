@@ -18,12 +18,14 @@ import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumBuilder;
-import edu.jhuapl.sbmt.spectrum.model.rendering.AdvancedSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.BasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
+import edu.jhuapl.sbmt.spectrum.rendering.AdvancedSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 public class SBMTSpectraFactory
 {
@@ -35,48 +37,82 @@ public class SBMTSpectraFactory
 		SpectraTypeFactory.registerSpectraType("NIS", NisQuery.getInstance(), NISSpectrumMath.getSpectrumMath(), "cm^-1", new NIS().getBandCenters());
 		SpectraTypeFactory.registerSpectraType("NIRS3", NIRS3Query.getInstance(), NIRS3SpectrumMath.getInstance(), "cm^-1", new NIRS3().getBandCenters());
 
-		SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument> nisSpectra = new SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>()
+		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> nisSpectra = new SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument>()
 		{
 
 			@Override
-			public IBasicSpectrumRenderer buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException
+			public BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel,
+					BasicSpectrumInstrument instrument) throws IOException
+			{
+				NISSpectrum spectrum = new NISSpectrum(path, smallBodyModel, instrument);
+				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
 			{
 				NISSpectrum spectrum = new NISSpectrum(path, smallBodyModel, instrument);
 				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
+
+
 		};
 //		nisSpectra.setSmallBodyModel(smallBodyModel);
 		SbmtSpectrumModelFactory.registerModel("NIS", nisSpectra, smallBodyModel);
 
-		SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument> otesSpectra = new SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>()
+		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> otesSpectra = new SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument>()
 		{
 
 			@Override
-			public IBasicSpectrumRenderer buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException
+			public BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel,
+					BasicSpectrumInstrument instrument) throws IOException
 			{
-				OTESSpectrum spectrum = new OTESSpectrum(path, smallBodyModel, instrument);
+				OTESSpectrum spectrum = new OTESSpectrum(path, (SpectrumInstrumentMetadataIO)smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
+				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
+			{
+				OTESSpectrum spectrum = new OTESSpectrum(path, (SpectrumInstrumentMetadataIO)smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
 				return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
 		};
 		SbmtSpectrumModelFactory.registerModel("OTES", otesSpectra, smallBodyModel);
 
-		SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument> ovirsSpectra = new SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>()
+		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> ovirsSpectra = new SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument>()
 		{
 
 			@Override
-			public IBasicSpectrumRenderer buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException
+			public BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel,
+					BasicSpectrumInstrument instrument) throws IOException
 			{
-				OVIRSSpectrum spectrum = new OVIRSSpectrum(path, smallBodyModel, instrument);
+				OVIRSSpectrum spectrum = new OVIRSSpectrum(path, smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
+				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
+			{
+				OVIRSSpectrum spectrum = new OVIRSSpectrum(path, smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
 				return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
 		};
 		SbmtSpectrumModelFactory.registerModel("OVIRS", ovirsSpectra, smallBodyModel);
 
-		SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument> nirs3Spectra = new SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>()
+		SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument> nirs3Spectra = new SpectrumBuilder<String, ISmallBodyModel, BasicSpectrumInstrument>()
 		{
 
 			@Override
-			public IBasicSpectrumRenderer buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException
+			public BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel,
+					BasicSpectrumInstrument instrument) throws IOException
+			{
+				NIRS3Spectrum spectrum = new NIRS3Spectrum(path, smallBodyModel, instrument);
+				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
 			{
 				NIRS3Spectrum spectrum = new NIRS3Spectrum(path, smallBodyModel, instrument);
 				return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);

@@ -20,8 +20,8 @@ import edu.jhuapl.sbmt.model.rosetta.OsirisImage;
 import edu.jhuapl.sbmt.model.rosetta.OsirisImageInfoPanel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
-import edu.jhuapl.sbmt.spectrum.ui.SpectrumInfoPanel;
-import edu.jhuapl.sbmt.spectrum.ui.SpectrumStatisticsInfoPanel;
+import edu.jhuapl.sbmt.spectrum.ui.info.SpectrumInfoPanel;
+import edu.jhuapl.sbmt.spectrum.ui.info.SpectrumStatisticsInfoPanel;
 
 public class SBMTInfoWindowManagerFactory
 {

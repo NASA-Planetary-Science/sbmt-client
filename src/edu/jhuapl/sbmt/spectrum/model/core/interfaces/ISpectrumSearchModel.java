@@ -11,6 +11,6 @@ public interface ISpectrumSearchModel
 
 //    public String createSpectrumName(int index);
 
-    public void populateSpectrumMetadata(String line);
+//    public void populateSpectrumMetadata(String line);
 
 }

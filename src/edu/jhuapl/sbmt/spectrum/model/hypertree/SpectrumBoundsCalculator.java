@@ -35,11 +35,12 @@ import edu.jhuapl.sbmt.query.IQueryBase;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.rendering.AdvancedSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.spectrum.rendering.AdvancedSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.tools.Authenticator;
 
 /**
@@ -82,7 +83,7 @@ public class SpectrumBoundsCalculator
         }
         SmallBodyModel body = SbmtModelFactory.createSmallBodyModel(config);
 
-        ISpectralInstrument instrument;
+        BasicSpectrumInstrument instrument;
         String instName = args[0];
         if (instName.equalsIgnoreCase("OTES")) {
             instrument = new OTES();
@@ -122,11 +123,11 @@ public class SpectrumBoundsCalculator
                 // create spectrum
                 IBasicSpectrumRenderer spectrumRenderer;
                 if (instrument instanceof OTES) {
-                    OTESSpectrum spectrum = new OTESSpectrum(thisFileName, body, instrument, true, false);
+                    OTESSpectrum spectrum = new OTESSpectrum(thisFileName, (SpectrumInstrumentMetadataIO)body.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), body.getBoundingBoxDiagonalLength(), instrument, true, false);
                     spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
                 else  { // only 2 options right now, but may change in the future
-                    OVIRSSpectrum spectrum = new OVIRSSpectrum(thisFileName, body, instrument, true, false);
+                    OVIRSSpectrum spectrum = new OVIRSSpectrum(thisFileName, body.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), body.getBoundingBoxDiagonalLength(), instrument, true, false);
                     spectrumRenderer = new AdvancedSpectrumRenderer(spectrum, body, false);
                 }
 

@@ -10,9 +10,9 @@ import java.util.TimeZone;
 import edu.jhuapl.saavtk.util.FileUtil;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 public class SpectrumListIO
 {
@@ -56,7 +56,7 @@ public class SpectrumListIO
     	saveSelectedSpectrumListButtonActionPerformed(customDir, file, results, selectedIndices);
     }
 
-    public static void loadSpectrumListButtonActionPerformed(File file, List<BasicSpectrum> results, ISpectralInstrument instrument, Runnable completionBlock) throws Exception
+    public static void loadSpectrumListButtonActionPerformed(File file, List<BasicSpectrum> results, BasicSpectrumInstrument instrument, Runnable completionBlock) throws Exception
     {
     	if (file != null)
         {

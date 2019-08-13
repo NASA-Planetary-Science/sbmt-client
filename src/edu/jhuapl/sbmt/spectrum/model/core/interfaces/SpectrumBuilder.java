@@ -2,10 +2,13 @@ package edu.jhuapl.sbmt.spectrum.model.core.interfaces;
 
 import java.io.IOException;
 
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
-@FunctionalInterface
+//@FunctionalInterface
 public interface SpectrumBuilder<String, ISmallBodyModel, ISpectralInstrument>
 {
-	IBasicSpectrumRenderer buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException;
+	BasicSpectrum buildSpectrum(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException;
+
+	IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, ISpectralInstrument instrument) throws IOException;
 }

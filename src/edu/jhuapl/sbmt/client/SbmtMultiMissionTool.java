@@ -38,7 +38,9 @@ import edu.jhuapl.saavtk.util.UrlInfo.UrlStatus;
 import edu.jhuapl.sbmt.dtm.model.DEMKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomCylindricalImageKey;
 import edu.jhuapl.sbmt.gui.image.model.custom.CustomPerspectiveImageKey;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
+import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.spectrum.model.key.CustomSpectrumKey;
 import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
 import edu.jhuapl.sbmt.tools.SbmtRunnable;
@@ -125,7 +127,10 @@ public class SbmtMultiMissionTool
 		SpectrumKey.initializeSerializationProxy();
 		CustomSpectrumKey.initializeSerializationProxy();
 		DEMKey.initializeSerializationProxy();
-		BasicSpectrumInstrument.initializeSerializationProxy();
+//		BasicSpectrumInstrument.initializeSerializationProxy();
+		OTESSpectrum.initializeSerializationProxy();
+		SpectrumInstrumentMetadataIO.initializeSerializationProxy();
+		OTES.initializeSerializationProxy();
 	}
 
 	public static void setEnableAuthentication(boolean enableAuthentication)

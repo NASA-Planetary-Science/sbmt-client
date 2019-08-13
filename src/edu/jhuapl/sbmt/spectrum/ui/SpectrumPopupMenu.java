@@ -38,12 +38,12 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 
 
@@ -187,7 +187,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
     }
 
-    ISpectralInstrument instrument;
+    BasicSpectrumInstrument instrument;
 
     public void setCurrentSpectrum(SpectrumKeyInterface key)
     {
@@ -205,7 +205,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         updateMenuItems();
     }
 
-    public void setInstrument(ISpectralInstrument instrument)
+    public void setInstrument(BasicSpectrumInstrument instrument)
     {
         this.instrument=instrument;
     }

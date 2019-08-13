@@ -3,7 +3,7 @@ package edu.jhuapl.sbmt.model.bennu.spectra.otes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,17 +41,22 @@ import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.search.HierarchicalSearchLeafNode;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectraSearchDataCollection;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.tools.Authenticator;
+
+import crucible.crust.metadata.api.Metadata;
 
 class OTESSearchModelTest
 {
 	static SpectrumSearchParametersModel searchParameters;
 	static OTESSearchModel otesSearchModel;
 	static SmallBodyViewConfig smallBodyConfig;
+	static TreeModel treeModel;
+	static CheckBoxTree checkBoxTree;
+	static DefaultMutableTreeNode orexNode;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception
@@ -59,9 +64,15 @@ class OTESSearchModelTest
 		System.setProperty("java.awt.headless", "true");
         NativeLibraryLoader.loadVtkLibraries();
         searchParameters = new SpectrumSearchParametersModel();
+        Calendar.getInstance().set(2018, 12, 1);
+        searchParameters.setStartDate(Calendar.getInstance().getTime());
+        Calendar.getInstance().set(2018, 12, 31);
+        searchParameters.setEndDate(Calendar.getInstance().getTime());
         boolean aplVersion = true;
         final SafeURLPaths safeUrlPaths = SafeURLPaths.instance();
         Configuration.setAPLVersion(aplVersion);
+
+
 
         SbmtMultiMissionTool.configureMission();
         Authenticator.authenticate();
@@ -70,6 +81,10 @@ class OTESSearchModelTest
         smallBodyConfig = SmallBodyViewConfig.getSmallBodyConfig(ShapeModelBody.RQ36, ShapeModelType.ALTWG_SPC_v20190414);
         SmallBodyModel smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
         SBMTModelBootstrap.initialize(smallBodyModel);
+
+        treeModel = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();
+		checkBoxTree = new CheckBoxTree(treeModel);
+		orexNode = new DefaultMutableTreeNode("OREX");
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
@@ -143,19 +158,30 @@ class OTESSearchModelTest
 	@Test
 	void testPerformSearch()
 	{
-		TreeModel treeModel = smallBodyConfig.hierarchicalSpectraSearchSpecification.getTreeModel();
-		CheckBoxTree checkBoxTree = new CheckBoxTree(treeModel);
-		DefaultMutableTreeNode orexNode = new DefaultMutableTreeNode("OREX");
 		HierarchicalSearchLeafNode otesL2Node = new HierarchicalSearchLeafNode("OTES L2 Calibrated Radiance", 0, -1);
 		TreePath[] treePath = new TreePath[] {new TreePath(new DefaultMutableTreeNode[] {orexNode, new DefaultMutableTreeNode(otesL2Node)})};
-		List<Integer> selectedDatasets = new ArrayList<Integer>();
 		otesSearchModel.performSearch(searchParameters, null, true, smallBodyConfig.hierarchicalSpectraSearchSpecification, treePath);
 		List<BasicSpectrum> results = otesSearchModel.getSpectrumRawResults();
+		Metadata metadata = otesSearchModel.store();
+//		try
+//		{
+//			Serializers.serialize("SpectrumTest", metadata, new File("/Users/steelrj1/Desktop", "test.json"));
+//		} catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		System.out.println("OTESSearchModelTest: testPerformSearch: results size " + results.size());
 	}
 
 	@Test
 	void testPerformHypertreeSearch()
+	{
+//		fail("Not yet implemented");
+	}
+
+	@Test
+	void testRetrieve()
 	{
 		fail("Not yet implemented");
 	}
@@ -166,16 +192,12 @@ class OTESSearchModelTest
 		fail("Not yet implemented");
 	}
 
-	@Test
-	void testRetrieve()
-	{
-		fail("Not yet implemented");
-	}
 
-	@Test
-	void testPopulateSpectrumMetadata()
-	{
-		fail("Not yet implemented");
-	}
+
+//	@Test
+//	void testPopulateSpectrumMetadata()
+//	{
+//		fail("Not yet implemented");
+//	}
 
 }

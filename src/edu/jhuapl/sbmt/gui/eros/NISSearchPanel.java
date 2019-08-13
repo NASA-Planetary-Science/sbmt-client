@@ -18,7 +18,7 @@ import edu.jhuapl.saavtk.util.IdPair;
 import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.ui.oldWay.AbstractSpectrumSearchPanel;
 
 public class NISSearchPanel extends AbstractSpectrumSearchPanel
@@ -29,7 +29,7 @@ public class NISSearchPanel extends AbstractSpectrumSearchPanel
 
     public NISSearchPanel(BodyViewConfig smallBodyConfig, ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, PickManager pickManager,
-            Renderer renderer, ISpectralInstrument instrument)
+            Renderer renderer, BasicSpectrumInstrument instrument)
     {
         super(smallBodyConfig.hasHierarchicalSpectraSearch, smallBodyConfig.hierarchicalSpectraSearchSpecification,
         		modelManager, infoPanelManager, pickManager, renderer, instrument);

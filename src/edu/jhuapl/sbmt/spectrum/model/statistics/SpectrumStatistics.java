@@ -17,9 +17,9 @@ import vtk.vtkProp;
 import vtk.vtkTriangle;
 
 import edu.jhuapl.saavtk.model.AbstractModel;
-import edu.jhuapl.sbmt.spectrum.model.rendering.BasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
+import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 public class SpectrumStatistics extends AbstractModel
 {

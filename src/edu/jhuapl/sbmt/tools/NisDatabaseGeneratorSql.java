@@ -22,7 +22,7 @@ import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.model.eros.Eros;
 import edu.jhuapl.sbmt.model.eros.NIS;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.rendering.BasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.BasicSpectrumRenderer;
 
 public class NisDatabaseGeneratorSql
 {

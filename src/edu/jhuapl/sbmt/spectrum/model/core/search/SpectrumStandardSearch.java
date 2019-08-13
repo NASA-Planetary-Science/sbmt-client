@@ -22,32 +22,27 @@ import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 
 public class SpectrumStandardSearch
 {
 	SpectrumSearchParametersModel searchParameters;
     private boolean hasHierarchicalSpectraSearch;
-    private TreePath[] selectedPaths;
     protected SpectraHierarchicalSearchSpecification spectraSpec;
-//    private SpectraCollection collection;
 
 	public SpectrumStandardSearch(SpectrumSearchParametersModel searchParameters, boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> searchSpec)
 	{
 		this.searchParameters = searchParameters;
 		this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
-//		this.collection = collection;
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<BasicSpectrum> search(ISpectralInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths)
+	public List<BasicSpectrum> search(BasicSpectrumInstrument instrument, TreeSet<Integer> cubeList, TreePath[] selectedPaths)
 	{
 		List<BasicSpectrum> tempResults = new ArrayList<BasicSpectrum>();
         try
         {
-
             GregorianCalendar startDateGreg = new GregorianCalendar();
             GregorianCalendar endDateGreg = new GregorianCalendar();
             startDateGreg.setTime(searchParameters.getStartDate());
@@ -90,7 +85,6 @@ public class SpectrumStandardSearch
                 List<SearchSpec> specs = instrumentMetadata.getSpecs();
                 for (Integer selected : productsSelected)
                 {
-                    String name = tree.getChild(tree.getRoot(), selected).toString();
                     SearchSpec spec = specs.get(selected);
                     FixedListSearchMetadata searchMetadata = FixedListSearchMetadata.of(spec.getDataName(),
                                                                                         spec.getDataListFilename(),
@@ -99,23 +93,18 @@ public class SpectrumStandardSearch
                                                                                         spec.getSource());
 
                     List<List<String>> thisResult = instrument.getQueryBase().runQuery(searchMetadata).getResultlist();
-                    IBasicSpectrumRenderer spectrumRenderer = null;
-
                     for (List<String> str : thisResult)
                     {
                     	 try
                          {
-                         	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(str.get(0), instrument);
-                         	spectrumRenderer.getSpectrum().setMetadata(spec);
-                         	tempResults.add(spectrumRenderer.getSpectrum());
+                         	BasicSpectrum spectrum = SbmtSpectrumModelFactory.createSpectrum(str.get(0), instrument);
+                         	spectrum.setMetadata(spec);
+                         	tempResults.add(spectrum);
                          }
                          catch (Exception e) {
                         	 System.out.println("SpectrumStandardSearch: search: " + e.getLocalizedMessage());
-//                             e.printStackTrace();
                          }
                     }
-//                    collection.tagSpectraWithMetadata(thisResult, spec);
-//                    tempResults.addAll(thisResult);
                 }
             }
             else

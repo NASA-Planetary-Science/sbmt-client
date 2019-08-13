@@ -5,7 +5,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectraTypeFactory;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectraType;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
 import crucible.crust.metadata.api.Key;
@@ -26,7 +25,7 @@ public class SpectrumKey implements SpectrumKeyInterface
 
     public FileType fileType;
 
-    public ISpectralInstrument instrument;
+    public BasicSpectrumInstrument instrument;
 
     public ISpectraType spectrumType;
 
@@ -40,12 +39,12 @@ public class SpectrumKey implements SpectrumKeyInterface
         this(name, null, null, null, "");
     }
 
-    public SpectrumKey(String name, ISpectralInstrument instrument)
+    public SpectrumKey(String name, BasicSpectrumInstrument instrument)
     {
         this(name, null, null, instrument, "");
     }
 
-    public SpectrumKey(String name, FileType fileType, ISpectraType spectrumType, ISpectralInstrument instrument, String pointingFilename)
+    public SpectrumKey(String name, FileType fileType, ISpectraType spectrumType, BasicSpectrumInstrument instrument, String pointingFilename)
     {
         this.name = name;
         this.fileType = fileType;
@@ -87,7 +86,7 @@ public class SpectrumKey implements SpectrumKeyInterface
 		return spectrumType;
 	}
 
-	public ISpectralInstrument getInstrument()
+	public BasicSpectrumInstrument getInstrument()
 	{
 		return instrument;
 	}
@@ -116,7 +115,7 @@ public class SpectrumKey implements SpectrumKeyInterface
 
 		        String name = metadata.get(nameKey);
 		        ISpectraType spectrumType = SpectraTypeFactory.findSpectraTypeForDisplayName(metadata.get(spectrumTypeKey));
-		        ISpectralInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
+		        BasicSpectrumInstrument instrument = SpectrumInstrumentFactory.getInstrumentForName(name);
 
 		        FileType fileType = FileType.valueOf(metadata.get(fileTypeKey));
 		        String pointingFilename = metadata.get(pointingFilenameKey);

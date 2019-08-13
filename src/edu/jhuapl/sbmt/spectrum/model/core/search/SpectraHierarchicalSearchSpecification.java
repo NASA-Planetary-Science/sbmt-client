@@ -15,7 +15,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 public abstract class SpectraHierarchicalSearchSpecification<S extends SearchSpec> implements InstrumentMetadataIO<S>
 {
     private TreeModel treeModel;
-    private List<Integer> selectedDatasets;
+    protected List<Integer> selectedDatasets;
     protected String rootName;
 
     public SpectraHierarchicalSearchSpecification(String rootName)

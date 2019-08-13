@@ -28,11 +28,11 @@ import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeNod
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.HyperBoundedObject;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchParametersModel;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 
 public class SpectrumHypertreeSearch
 {
@@ -53,7 +53,7 @@ public class SpectrumHypertreeSearch
 		this.spectraSpec = searchSpec;
 	}
 
-	public List<BasicSpectrum> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, ISpectralInstrument instrument)
+	public List<BasicSpectrum> search(TreeSet<Integer> cubeList, BoundedObjectHyperTreeSkeleton skeleton, HyperBox hbb, BasicSpectrumInstrument instrument)
 	{
 		List<Integer> productsSelected;
         List<BasicSpectrum> results = new ArrayList<BasicSpectrum>();

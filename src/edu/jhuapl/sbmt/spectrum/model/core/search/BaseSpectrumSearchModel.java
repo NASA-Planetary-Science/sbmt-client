@@ -17,6 +17,7 @@ import edu.jhuapl.sbmt.lidar.hyperoctree.HyperBox;
 import edu.jhuapl.sbmt.lidar.hyperoctree.HyperException.HyperDimensionMismatchException;
 import edu.jhuapl.sbmt.model.boundedobject.hyperoctree.BoundedObjectHyperTreeSkeleton;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.color.SpectrumColoringModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.ISpectrumSearchModel;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumAppearanceListener;
@@ -24,7 +25,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SpectrumSearchResultsListe
 import edu.jhuapl.sbmt.spectrum.model.hypertree.SpectrumHypertreeSearch;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
@@ -37,8 +37,7 @@ import crucible.crust.metadata.impl.SettableMetadata;
 public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataManager
 {
 	protected SpectrumColoringModel coloringModel;
-    protected ISpectralInstrument instrument;
-//    protected SpectraCollection spectrumCollection;
+    protected BasicSpectrumInstrument instrument;
     protected List<BasicSpectrum> results = new ArrayList<BasicSpectrum>();
     protected IdPair resultIntervalCurrentlyShown = null;
     private Vector<SpectrumSearchResultsListener> resultsListeners;
@@ -54,13 +53,12 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 
     public BaseSpectrumSearchModel(
     		ModelManager modelManager,
-            ISpectralInstrument instrument)
+    		BasicSpectrumInstrument instrument)
     {
         this.instrument = instrument;
         this.resultsListeners = new Vector<SpectrumSearchResultsListener>();
         this.appearanceListeners = new Vector<SpectrumAppearanceListener>();
         coloringModel = new SpectrumColoringModel();
-//        this.spectrumCollection = (SpectraCollection) modelManager.getModel(ModelNames.SPECTRA);
     }
 
     public List<BasicSpectrum> getSpectrumRawResults()
@@ -107,7 +105,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
         this.currentlyEditingUserDefinedFunction = currentlyEditingUserDefinedFunction;
     }
 
-    public ISpectralInstrument getInstrument()
+    public BasicSpectrumInstrument getInstrument()
     {
         return instrument;
     }
@@ -142,13 +140,6 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
             else if(i >= getSpectrumRawResults().size())
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
-//            try
-//            {
-//                spectrumCollection.addSpectrum(results.get(i), style);
-//            }
-//            catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
         }
         updateColoring();
     }
@@ -339,14 +330,14 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
         return selectedImageIndices;
     }
 
-    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, ISpectralInstrument instrument)
+    public List<SpectrumKeyInterface> createSpectrumKeys(String boundaryName, BasicSpectrumInstrument instrument)
     {
         List<SpectrumKeyInterface> result = new ArrayList<SpectrumKeyInterface>();
         result.add(createSpectrumKey(boundaryName, instrument));
         return result;
     }
 
-    public SpectrumKeyInterface createSpectrumKey(String imagePathName, ISpectralInstrument instrument)
+    public SpectrumKeyInterface createSpectrumKey(String imagePathName, BasicSpectrumInstrument instrument)
     {
         SpectrumKeyInterface key = new SpectrumKey(imagePathName, null, null, instrument, "");
         return key;
@@ -372,35 +363,10 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
         this.numberOfBoundariesToShow = numberOfBoundariesToShow;
     }
 
-//    public String getSpectraHypertreeSourceName()
-//    {
-//        return spectraHypertreeSourceName;
-//    }
-//
-//    public void setSpectraHypertreeSourceName(String spectraHypertreeSourceName)
-//    {
-//        this.spectraHypertreeSourceName = spectraHypertreeSourceName;
-//    }
-//
-//    public void setSpectraHypertreeDataSpecName(String spectraHypertreeSourceName)
-//    {
-//        this.spectraHypertreeDataSpecName = spectraHypertreeSourceName;
-//    }
-
 	public SpectrumColoringModel getColoringModel()
 	{
 		return coloringModel;
 	}
-//
-//	public String getSpectraHypertreeDataSpecName()
-//	{
-//		return spectraHypertreeDataSpecName;
-//	}
-//
-//	public SpectraCollection getSpectrumCollection()
-//	{
-//		return spectrumCollection;
-//	}
 
 	@Override
 	public Metadata store()
@@ -415,15 +381,4 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 	{
 		results = source.get(spectraKey);
 	}
-
-    public void populateSpectrumMetadata(String line)
-    {
-    	for (int i=0; i<results.size(); ++i)
-        {
-            SpectrumSearchSpec spectrumSpec = new SpectrumSearchSpec();
-            spectrumSpec.fromFile(line);
-            results.get(i).setMetadata(spectrumSpec);
-        }
-    }
-
 }

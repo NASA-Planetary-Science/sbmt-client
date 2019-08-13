@@ -83,13 +83,13 @@ import edu.jhuapl.sbmt.query.database.SpectraDatabaseSearchMetadata;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListSearchMetadata;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpecification;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
-import edu.jhuapl.sbmt.spectrum.model.rendering.IBasicSpectrumRenderer;
-import edu.jhuapl.sbmt.spectrum.model.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.ui.SpectrumMathPanel;
+import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
 
 public abstract class AbstractSpectrumSearchPanel extends JPanel implements MouseListener, PropertyChangeListener, KeyListener
@@ -111,7 +111,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
     JButton saveSelectedImageListButton = new JButton();
     JButton loadImageListButton = new JButton("Load Spectrum List");
 
-    protected final ISpectralInstrument instrument;
+    protected final BasicSpectrumInstrument instrument;
     protected JScrollPane hierarchicalSearchScrollPane = new JScrollPane();
     private boolean hasHierarchicalSpectraSearch;
     private SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification;
@@ -120,7 +120,7 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
     public AbstractSpectrumSearchPanel(boolean hasHierarchicalSpectraSearch, SpectraHierarchicalSearchSpecification<?> hierarchicalSpectraSearchSpecification,
     		final ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager,
-            final PickManager pickManager, final Renderer renderer, ISpectralInstrument instrument)
+            final PickManager pickManager, final Renderer renderer, BasicSpectrumInstrument instrument)
     {
         this.modelManager = modelManager;
         this.pickManager = pickManager;
