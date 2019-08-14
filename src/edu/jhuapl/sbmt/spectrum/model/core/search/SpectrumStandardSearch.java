@@ -112,11 +112,13 @@ public class SpectrumStandardSearch
                 IQueryBase queryType = instrument.getQueryBase();
                 if (queryType instanceof FixedListQuery)
                 {
+                	System.out.println("SpectrumStandardSearch: search: fixed list");
                     FixedListQuery query = (FixedListQuery)queryType;
                     tempResults = instrument.getQueryBase().runQuery(FixedListSearchMetadata.of("Spectrum Search", "spectrumlist", "spectra", query.getRootPath(), ImageSource.CORRECTED_SPICE)).getResultlist();
                 }
                 else
                 {
+                	System.out.println("SpectrumStandardSearch: search: database");
                     SpectraDatabaseSearchMetadata searchMetadata = SpectraDatabaseSearchMetadata.of("", startDateJoda, endDateJoda,
                             Ranges.closed(searchParameters.getMinDistanceQuery(), searchParameters.getMaxDistanceQuery()),
                             "", searchParameters.getPolygonTypesChecked(),

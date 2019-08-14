@@ -117,7 +117,8 @@ public class SpectrumColoringController
             @Override
             public void coloringChanged()
             {
-                panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
+            	if (!model.getColoringModel().getSpectrumColoringStyleName().equals(panel.getColoringComboBox().getSelectedItem().toString()))
+            		panel.getColoringComboBox().setSelectedItem(SpectrumColoringStyle.getStyleForName(model.getColoringModel().getSpectrumColoringStyleName()));
                 collection.setChannelColoring(model.getColoringModel().getChannels(), model.getColoringModel().getMins(), model.getColoringModel().getMaxs(), model.getInstrument());
             }
         });

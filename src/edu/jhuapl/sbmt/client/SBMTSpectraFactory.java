@@ -1,6 +1,13 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.joda.time.DateTime;
 
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTES;
 import edu.jhuapl.sbmt.model.bennu.spectra.otes.OTESQuery;
@@ -11,6 +18,7 @@ import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSQuery;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrum;
 import edu.jhuapl.sbmt.model.bennu.spectra.ovirs.OVIRSSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.NIS;
+import edu.jhuapl.sbmt.model.eros.NISSearchModel;
 import edu.jhuapl.sbmt.model.eros.NISSpectrum;
 import edu.jhuapl.sbmt.model.eros.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.NisQuery;
@@ -45,13 +53,31 @@ public class SBMTSpectraFactory
 					BasicSpectrumInstrument instrument) throws IOException
 			{
 				NISSpectrum spectrum = new NISSpectrum(path, smallBodyModel, instrument);
+
+				String str = path;
+                String strippedFileName=str.replace("/NIS/2000/", "");
+                String detailedTime = NISSearchModel.nisFileToObservationTimeMap.get(strippedFileName);
+                List<String> result = new ArrayList<String>();
+                result.add(str);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                try
+				{
+					spectrum.setDateTime(new DateTime(sdf.parse(detailedTime).getTime()));
+				}
+                catch (ParseException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				return spectrum;
 			}
 
 			@Override
 			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
 			{
-				NISSpectrum spectrum = new NISSpectrum(path, smallBodyModel, instrument);
+				BasicSpectrum spectrum = buildSpectrum(path, smallBodyModel, instrument);
 				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
 

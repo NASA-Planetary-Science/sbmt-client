@@ -92,7 +92,7 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
     }
 
     public void removeBoundary(SpectrumKeyInterface key)
@@ -114,7 +114,7 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
             boundary.removePropertyChangeListener(this);
             smallBodyModel.removePropertyChangeListener(boundary);
 
-            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
         }
     }
 
@@ -170,6 +170,7 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
     {
         return containsKey(key);
     }
+
 
     public void propertyChange(PropertyChangeEvent evt)
     {

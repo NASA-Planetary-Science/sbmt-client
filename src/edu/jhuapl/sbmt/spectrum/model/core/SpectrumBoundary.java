@@ -20,11 +20,11 @@ import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 public class SpectrumBoundary extends AbstractModel implements PropertyChangeListener
 {
     private vtkActor actor;
-    private IBasicSpectrumRenderer spectrum;
+    private IBasicSpectrumRenderer spectrumRenderer;
 
     public SpectrumBoundary(IBasicSpectrumRenderer spectrum, SmallBodyModel smallBodyModel) throws IOException
     {
-        this.spectrum = spectrum;
+        this.spectrumRenderer = spectrum;
         this.actor = spectrum.getOutlineActor();
     }
 
@@ -43,12 +43,12 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
 
     public SpectrumKeyInterface getKey()
     {
-        return spectrum.getSpectrum().getKey();
+        return spectrumRenderer.getSpectrum().getKey();
     }
 
     public Spectrum getSpectrum()
     {
-        return spectrum.getSpectrum();
+        return spectrumRenderer.getSpectrum();
     }
 
     public void setVisibility(boolean visible)

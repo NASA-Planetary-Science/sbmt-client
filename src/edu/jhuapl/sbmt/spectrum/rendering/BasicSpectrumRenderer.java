@@ -90,6 +90,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
 	@Override
 	public void generateFootprint()
     {
+		System.out.println("BasicSpectrumRenderer: generateFootprint: generating footprint");
         if (!spectrum.getLatLons().isEmpty())
         {
             vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(
@@ -147,8 +148,10 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
 	@Override
 	public List<vtkProp> getProps()
     {
+		System.out.println("BasicSpectrumRenderer: getProps:");
         if (footprintActor == null && !spectrum.getLatLons().isEmpty())
         {
+        	System.out.println("BasicSpectrumRenderer: getProps: getting props");
             generateFootprint();
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
@@ -256,7 +259,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
         footprintActors.add(selectionActor);
         footprintActors.add(toSunVectorActor);
         footprintActors.add(outlineActor);
-
+        System.out.println("BasicSpectrumRenderer: getProps: returning props " + footprintActors.size());
         return footprintActors;
     }
 
@@ -459,8 +462,7 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
             frustumActor.VisibilityOff();
         }
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
 
     @Override
@@ -475,22 +477,24 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
         {
             footprintActor.VisibilityOff();
         }
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
 
     @Override
     public boolean isVisible()
     {
+    	if (footprintActor == null) return false;
         return footprintActor.GetVisibility() == 0 ? false : true;
     }
 
     @Override
 	public void updateChannelColoring()
     {
+    	if (footprintActor == null) return;
         vtkProperty footprintProperty = footprintActor.GetProperty();
         double[] color = spectrum.getChannelColor();
         footprintProperty.SetColor(color[0], color[1], color[2]);
-
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, this);
     }
 
     @Override

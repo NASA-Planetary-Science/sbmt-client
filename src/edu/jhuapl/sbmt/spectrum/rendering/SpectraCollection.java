@@ -30,9 +30,7 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 public class SpectraCollection extends AbstractModel implements PropertyChangeListener
 {
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
-
     private HashMap<BasicSpectrum, IBasicSpectrumRenderer> fileToSpectrumMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer>();
-//    private HashMap<BasicSpectrum, SearchSpec> fileToSpecMap = new HashMap<BasicSpectrum, SearchSpec>();
     private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
     private HashMap<vtkProp, IBasicSpectrumRenderer> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer>();
@@ -172,6 +170,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         try
         {
         	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(path, instrument);
+        	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -182,8 +181,6 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
         fileToSpectrumMap.put(spectrumRenderer.getSpectrum(), spectrumRenderer);
         spectraActors.put(spectrumRenderer, new ArrayList<vtkProp>());
-
-//        spectrumRenderer.getSpectrum().setMetadata(fileToSpecMap.get(path));
 
         List<vtkProp> props = spectrumRenderer.getProps();
 
@@ -199,8 +196,8 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
         for (vtkProp act : props)
             actorToFileMap.put(act, path);
-        select(spectrumRenderer);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        //select(spectrumRenderer);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
         return spectrumRenderer;
     }
 
@@ -214,31 +211,31 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void removeSpectrum(String path)
     {
-    	IBasicSpectrumRenderer spectrum = fileToSpectrumMap.get(path);
-        spectrum.setUnselected();
+    	IBasicSpectrumRenderer spectrumRenderer = fileToSpectrumMap.get(path);
+        spectrumRenderer.setUnselected();
 
-        List<vtkProp> actors = spectraActors.get(spectrum);
+        List<vtkProp> actors = spectraActors.get(spectrumRenderer);
 
         for (vtkProp act : actors)
             actorToFileMap.remove(act);
 
-        spectraActors.remove(spectrum);
+        spectraActors.remove(spectrumRenderer);
 
-        spectrumToActorsMap.remove(spectrum);
+        spectrumToActorsMap.remove(spectrumRenderer);
 
         fileToSpectrumMap.remove(path);
 
-        spectrum.removePropertyChangeListener(this);
-        shapeModel.removePropertyChangeListener(spectrum);
-        spectrum.setShowFrustum(false);
+        spectrumRenderer.removePropertyChangeListener(this);
+        shapeModel.removePropertyChangeListener(spectrumRenderer);
+        spectrumRenderer.setShowFrustum(false);
 
-        ordinals.remove(spectrum);
+        ordinals.remove(spectrumRenderer);
 
         for (vtkProp act : actors)
             actorToSpectrumMap.remove(act);
 
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
-        this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrum);
+        this.pcs.firePropertyChange(Properties.MODEL_REMOVED, null, spectrumRenderer);
     }
 
     public void removeAllSpectra()
@@ -258,39 +255,39 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         }
     }
 
-    public void setVisibility(IBasicSpectrumRenderer spectrum, boolean visibility)
+    public void setVisibility(IBasicSpectrumRenderer spectrumRenderer, boolean visibility)
     {
-        spectrum.setVisible(visibility);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        spectrumRenderer.setVisible(visibility);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
     }
 
-    public void setFrustumVisibility(IBasicSpectrumRenderer spectrum, boolean visibility)
+    public void setFrustumVisibility(IBasicSpectrumRenderer spectrumRenderer, boolean visibility)
     {
-        spectrum.setShowFrustum(visibility);
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        spectrumRenderer.setShowFrustum(visibility);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
     }
 
-    public void toggleSelect(IBasicSpectrumRenderer spectrum)
+    public void toggleSelect(IBasicSpectrumRenderer spectrumRenderer)
     {
-        if (spectrum.isSelected())
-            spectrum.setUnselected();
+        if (spectrumRenderer.isSelected())
+            spectrumRenderer.setUnselected();
         else
-            spectrum.setSelected();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+            spectrumRenderer.setSelected();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
         selectAll=false;
     }
 
-    public void select(IBasicSpectrumRenderer spectrum)
+    public void select(IBasicSpectrumRenderer spectrumRenderer)
     {
-        spectrum.setSelected();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        spectrumRenderer.setSelected();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
         selectAll=false;
     }
 
-    public void deselect(IBasicSpectrumRenderer spectrum)
+    public void deselect(IBasicSpectrumRenderer spectrumRenderer)
     {
-        spectrum.setUnselected();
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+        spectrumRenderer.setUnselected();
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
         selectAll=false;
     }
 
@@ -298,25 +295,34 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     {
         if (!selectAll) // we're not in "select all" mode so go ahead and select all actors
         {
-            for (IBasicSpectrumRenderer spectrum : fileToSpectrumMap.values())
-                spectrum.setSelected();
+            for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+            {
+                spectrumRenderer.setSelected();
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
+            }
             selectAll=true;
         }
         else
         {
-            for (IBasicSpectrumRenderer spectrum : fileToSpectrumMap.values())
-                spectrum.setUnselected();
+            for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+            {
+                spectrumRenderer.setUnselected();
+                this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
+            }
             selectAll=false;
         }
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+
     }
 
     public void deselectAll()
     {
-        for (IBasicSpectrumRenderer spectrum : fileToSpectrumMap.values())
-            spectrum.setUnselected();
+        for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+        {
+            spectrumRenderer.setUnselected();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
+        }
         selectAll=false;
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,null);
+
     }
 
     public List<IBasicSpectrumRenderer> getSelectedSpectra()
@@ -330,7 +336,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void propertyChange(PropertyChangeEvent evt)
     {
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, evt.getNewValue());
     }
 
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
@@ -352,11 +358,6 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         return fileToSpectrumMap.get(file);
     }
 
-//    public SearchSpec getSearchSpec(String file)
-//    {
-//        return fileToSpecMap.get(file);
-//    }
-
     public boolean containsSpectrum(String file)
     {
         return fileToSpectrumMap.containsKey(file);
@@ -364,8 +365,6 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void tagSpectraWithMetadata(BasicSpectrum spectrum, SearchSpec spec)
     {
-//        fileToSpecMap.put(spectrum, spec);
-        IBasicSpectrumRenderer spectrumRenderer = fileToSpectrumMap.get(spectrum);
         if (spectrum != null) spectrum.setMetadata(spec);
     }
 
@@ -384,42 +383,45 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     {
         for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrum=this.fileToSpectrumMap.get(file);
-            spectrum.getSpectrum().setColoringStyle(style);
-            spectrum.updateChannelColoring();
+        	IBasicSpectrumRenderer spectrumRenderer=this.fileToSpectrumMap.get(file);
+            spectrumRenderer.getSpectrum().setColoringStyle(style);
+            spectrumRenderer.updateChannelColoring();
+            this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
         }
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
     }
 
     public void setColoringStyleForInstrument(SpectrumColoringStyle style, ISpectralInstrument instrument)
     {
         for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrum=this.fileToSpectrumMap.get(file);
-            if (spectrum.getSpectrum().getInstrument() == instrument)
+        	IBasicSpectrumRenderer spectrumRenderer = this.fileToSpectrumMap.get(file);
+            if (spectrumRenderer.getSpectrum().getInstrument() == instrument)
             {
-                spectrum.getSpectrum().setColoringStyle(style);
-                spectrum.updateChannelColoring();
+                spectrumRenderer.getSpectrum().setColoringStyle(style);
+                spectrumRenderer.updateChannelColoring();
+//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
     }
 
     public void setChannelColoring(int[] channels, double[] mins, double[] maxs, ISpectralInstrument instrument)
     {
         for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrum=this.fileToSpectrumMap.get(file);
-            if (spectrum.getSpectrum().getInstrument() == instrument)
+        	IBasicSpectrumRenderer spectrumRenderer = this.fileToSpectrumMap.get(file);
+            if (spectrumRenderer.getSpectrum().getInstrument() == instrument)
             {
-                spectrum.getSpectrum().setChannelColoring(channels, mins, maxs);
-                spectrum.updateChannelColoring();
+                spectrumRenderer.getSpectrum().setChannelColoring(channels, mins, maxs);
+                spectrumRenderer.updateChannelColoring();
+//                this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
             }
         }
 
-        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, null);
+
     }
 
     public IBasicSpectrumRenderer getSpectrum(vtkActor actor)

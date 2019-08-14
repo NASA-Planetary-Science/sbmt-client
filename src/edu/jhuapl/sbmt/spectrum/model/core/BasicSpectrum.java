@@ -395,4 +395,9 @@ public abstract class BasicSpectrum extends Spectrum
 	{
 		return spec;
 	}
+
+	public void setDateTime(DateTime dateTime)
+	{
+		this.dateTime = dateTime;
+	}
 }

@@ -67,11 +67,14 @@ public class SpectrumResultsTableController
             "Date"
     };
     int modifiedTableRow = -1;
+    protected List<SpectrumKeyInterface> spectrumKeys;
+
 
     public SpectrumResultsTableController(BasicSpectrumInstrument instrument, SpectraCollection spectrumCollection, ModelManager modelManager, SpectrumBoundaryCollection boundaries, BaseSpectrumSearchModel model, Renderer renderer, SbmtInfoWindowManager infoPanelManager)
     {
         spectrumPopupMenu = new SpectrumPopupMenu(spectrumCollection, modelManager,infoPanelManager, renderer);
         spectrumPopupMenu.setInstrument(instrument);
+        this.spectrumKeys = new ArrayList<SpectrumKeyInterface>();
         panel = new SpectrumResultsTableView(spectrumCollection, spectrumPopupMenu);
         panel.setup();
         this.boundaries = boundaries;
@@ -331,13 +334,13 @@ public class SpectrumResultsTableController
             {
                 resultIntervalCurrentlyShown.prevBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
-                showImageBoundaries(resultIntervalCurrentlyShown);
+                showSpectrumBoundaries(resultIntervalCurrentlyShown);
             }
             else
             {
                 resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
                 model.showFootprints(resultIntervalCurrentlyShown);
-                showImageBoundaries(resultIntervalCurrentlyShown);
+                showSpectrumBoundaries(resultIntervalCurrentlyShown);
                 model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
         }
@@ -345,7 +348,7 @@ public class SpectrumResultsTableController
         {
             resultIntervalCurrentlyShown = new IdPair(panel.getResultList().getModel().getRowCount() - model.getNumberOfBoundariesToShow(), panel.getResultList().getModel().getRowCount());
             model.showFootprints(resultIntervalCurrentlyShown);
-            showImageBoundaries(resultIntervalCurrentlyShown);
+            showSpectrumBoundaries(resultIntervalCurrentlyShown);
             model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
     }
@@ -361,14 +364,14 @@ public class SpectrumResultsTableController
             {
                 resultIntervalCurrentlyShown.nextBlock(model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
-                showImageBoundaries(resultIntervalCurrentlyShown);
+                showSpectrumBoundaries(resultIntervalCurrentlyShown);
                 model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
             else
             {
                 resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
                 model.showFootprints(resultIntervalCurrentlyShown);
-                showImageBoundaries(resultIntervalCurrentlyShown);
+                showSpectrumBoundaries(resultIntervalCurrentlyShown);
                 model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
             }
         }
@@ -376,7 +379,7 @@ public class SpectrumResultsTableController
         {
             resultIntervalCurrentlyShown = new IdPair(0, model.getNumberOfBoundariesToShow());
             model.showFootprints(resultIntervalCurrentlyShown);
-            showImageBoundaries(resultIntervalCurrentlyShown);
+            showSpectrumBoundaries(resultIntervalCurrentlyShown);
             model.setResultIntervalCurrentlyShown(resultIntervalCurrentlyShown);
         }
     }
@@ -390,12 +393,20 @@ public class SpectrumResultsTableController
     protected void removeAllFootprintsForAllInstrumentsButtonActionPerformed(ActionEvent evt)
     {
         spectrumCollection.removeAllSpectra();
+        for (SpectrumKeyInterface key : spectrumKeys)
+        {
+            boundaries.removeBoundary(key);
+        }
         model.setResultIntervalCurrentlyShown(null);
     }
 
     private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
     {
         boundaries.removeAllBoundaries();
+        for (SpectrumKeyInterface key : spectrumKeys)
+        {
+            boundaries.removeBoundary(key);
+        }
         model.setResultIntervalCurrentlyShown(null);
     }
 
@@ -409,7 +420,7 @@ public class SpectrumResultsTableController
         {
             shown.id2 = newMaxId;
             model.showFootprints(shown);
-            showImageBoundaries(shown);
+            showSpectrumBoundaries(shown);
         }
     }
 
@@ -443,7 +454,7 @@ public class SpectrumResultsTableController
         }
     }
 
-    protected void showImageBoundaries(IdPair idPair)
+    protected void showSpectrumBoundaries(IdPair idPair)
     {
         int startId = idPair.id1;
         int endId = idPair.id2;
@@ -458,9 +469,9 @@ public class SpectrumResultsTableController
 
             try
             {
-                String currentImage = spectrumRawResults.get(i).getDataName();
-                String boundaryName = currentImage.substring(0,currentImage.length()-4);
-                SpectrumKeyInterface key = model.createSpectrumKey(currentImage, model.getInstrument());
+                String currentSpectrum = spectrumRawResults.get(i).getDataName();
+//                String boundaryName = currentSpectrum.substring(0,currentSpectrum.length()-4);
+                SpectrumKeyInterface key = model.createSpectrumKey(currentSpectrum, model.getInstrument());
                 boundaries.addBoundary(key, spectrumCollection);
             }
             catch (Exception e1) {
@@ -479,6 +490,13 @@ public class SpectrumResultsTableController
     {
         JTable resultTable = panel.getResultList();
         panel.getResultsLabel().setText(results.size() + " spectra found");
+        //clear out the old spectrum and boundaries from the spectrum and boundary collection
+        for (SpectrumKeyInterface key : spectrumKeys)
+        {
+            spectrumCollection.removeSpectrum(key);
+            boundaries.removeBoundary(key);
+        }
+        spectrumKeys.clear();
         spectrumRawResults = results;
         stringRenderer.setSpectrumRawResults(spectrumRawResults);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
@@ -506,6 +524,7 @@ public class SpectrumResultsTableController
             {
                 String name = spectrumRawResults.get(i).getDataName();
                 SpectrumKeyInterface key = model.createSpectrumKey(name,  instrument);
+                spectrumKeys.add(key);
                 IBasicSpectrumRenderer spectrum = spectrumCollection.getSpectrumFromKey(key);
                 if (spectrum != null)
                 {
@@ -527,7 +546,8 @@ public class SpectrumResultsTableController
                     resultTable.setValueAt(false, i, bndrColumnIndex);
 
                 resultTable.setValueAt(i+1, i, idColumnIndex);
-	            resultTable.setValueAt(str.getFullPath().substring(str.getFullPath().lastIndexOf("/") + 1), i, filenameColumnIndex);
+//	            resultTable.setValueAt(str.getFullPath().substring(str.getFullPath().lastIndexOf("/") + 1), i, filenameColumnIndex);
+	            resultTable.setValueAt(str.getServerpath().substring(str.getServerpath().lastIndexOf("/") + 1), i, filenameColumnIndex);
 	            resultTable.setValueAt(sdf.format(str.getDateTime().getMillis()), i, dateColumnIndex);
 
                 for (int j : columnsNeedingARenderer)
@@ -554,7 +574,7 @@ public class SpectrumResultsTableController
             boundaries.addPropertyChangeListener(propertyChangeListener);
         }
         model.setResultIntervalCurrentlyShown(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
-        showImageBoundaries(model.getResultIntervalCurrentlyShown());
+        showSpectrumBoundaries(model.getResultIntervalCurrentlyShown());
     }
 
     class SpectrumResultsTableModeListener implements TableModelListener
@@ -678,6 +698,11 @@ public class SpectrumResultsTableController
                 return String.class;
         }
     }
+
+	public List<SpectrumKeyInterface> getSpectrumKeys()
+	{
+		return spectrumKeys;
+	}
 
 //    class SpectrumDragDropRowTableUI extends BasicTableUI {
 //

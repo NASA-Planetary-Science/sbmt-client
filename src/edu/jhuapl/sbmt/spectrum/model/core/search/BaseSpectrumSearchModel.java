@@ -73,6 +73,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
     public void setSpectrumRawResults(List<BasicSpectrum> spectrumRawResults)
     {
         this.results = spectrumRawResults;
+        System.out.println("BaseSpectrumSearchModel: setSpectrumRawResults: number of results " + results.size());
         this.resultIntervalCurrentlyShown = new IdPair(0, numberOfBoundariesToShow);
         showFootprints(resultIntervalCurrentlyShown);
         fireResultsChanged();
@@ -141,6 +142,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
                 break;
             fireFootprintVisibilityChanged(results.get(i), true);
         }
+        System.out.println("BaseSpectrumSearchModel: showFootprints: updating coloring");
         updateColoring();
     }
 
@@ -293,6 +295,7 @@ public class BaseSpectrumSearchModel implements ISpectrumSearchModel, MetadataMa
 
     public void coloringOptionChanged()
     {
+    	System.out.println("BaseSpectrumSearchModel: coloringOptionChanged: ");
         coloringModel.fireColoringChanged();
     }
 

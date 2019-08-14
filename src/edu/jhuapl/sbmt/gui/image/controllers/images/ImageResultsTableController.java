@@ -1044,6 +1044,11 @@ public class ImageResultsTableController
         }
     }
 
+	public List<ImageKeyInterface> getImageKeys()
+	{
+		return imageKeys;
+	}
+
     //    class DragDropRowTableUI extends BasicTableUI {
     //
     //        private boolean draggingRow = false;
