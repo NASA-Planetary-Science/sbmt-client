@@ -59,7 +59,6 @@ import edu.jhuapl.sbmt.gui.image.ui.cubes.ImageCubePopupMenu;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePickManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupManager;
 import edu.jhuapl.sbmt.gui.image.ui.images.ImagePopupMenu;
-import edu.jhuapl.sbmt.gui.lidar.LidarPopupMenu;
 import edu.jhuapl.sbmt.model.bennu.shapeModel.BennuV4;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumSearchController;
 import edu.jhuapl.sbmt.model.bennu.spectra.OREXSpectrumTabbedPane;
@@ -350,12 +349,12 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
 		}
 
-		if (getPolyhedralModelConfig().hasLidarData)
-		{
-			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
-			PopupMenu popupMenu = new LidarPopupMenu(tmpTrackManager, getRenderer());
-			registerPopup(tmpTrackManager, popupMenu);
-		}
+//		if (getPolyhedralModelConfig().hasLidarData)
+//		{
+//			LidarTrackManager tmpTrackManager = (LidarTrackManager)getModel(ModelNames.LIDAR_SEARCH);
+//			PopupMenu popupMenu = new LidarPopupMenu(tmpTrackManager, getRenderer());
+//			registerPopup(tmpTrackManager, popupMenu);
+//		}
 
 		if (getPolyhedralModelConfig().hasLineamentData)
 		{
