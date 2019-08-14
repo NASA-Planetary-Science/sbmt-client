@@ -26,8 +26,8 @@ import edu.jhuapl.sbmt.client.BodyViewConfig;
 import edu.jhuapl.sbmt.lidar.hyperoctree.FSHyperTreeSkeleton;
 import edu.jhuapl.sbmt.lidar.hyperoctree.hayabusa2.Hayabusa2LidarHypertreeSkeleton;
 import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil;
-import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil.DataType;
 import edu.jhuapl.sbmt.model.lidar.LidarSearchParms;
+import edu.jhuapl.sbmt.model.lidar.LidarQueryUtil.DataType;
 import edu.jhuapl.sbmt.model.lidar.LidarTrackManager;
 
 public class LidarHyperTreeSearchPanel extends LidarSearchPanel
