@@ -42,6 +42,56 @@ import edu.jhuapl.sbmt.spectrum.rendering.SpectrumStringRenderer;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.spectrum.ui.table.SpectrumResultsTableView;
 
+
+/*
+ * // Table header
+		selectInvertB = GuiUtil.formButton(this, IconUtil.getSelectInvert());
+		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
+
+		selectNoneB = GuiUtil.formButton(this, IconUtil.getSelectNone());
+		selectNoneB.setToolTipText(ToolTipUtil.getSelectNone());
+
+		selectAllB = GuiUtil.formButton(this, IconUtil.getSelectAll());
+		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
+
+		titleL = new JLabel("Tracks: ---");
+		add(titleL, "growx,span,split");
+		add(selectInvertB, "w 24!,h 24!");
+		add(selectNoneB, "w 24!,h 24!");
+		add(selectAllB, "w 24!,h 24!,wrap 2");
+
+		// Table Content
+		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
+		tmpComposer.addAttribute(LookUp.IsVisible, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(LookUp.Color, ColorProvider.class, "Color", null);
+		tmpComposer.addAttribute(LookUp.Name, String.class, "Track", null);
+		tmpComposer.addAttribute(LookUp.NumPoints, Integer.class, "# pts", null);
+		tmpComposer.addAttribute(LookUp.BegTime, Double.class, "Start Time", null);
+		tmpComposer.addAttribute(LookUp.EndTime, Double.class, "End Time", null);
+		tmpComposer.addAttribute(LookUp.Source, String.class, "Source", null);
+
+		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
+		tmpComposer.setEditor(LookUp.IsVisible, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.IsVisible, new BooleanCellRenderer());
+		tmpComposer.setRenderer(LookUp.Color, new ColorProviderCellRenderer(false));
+		tmpComposer.setRenderer(LookUp.Name, new PrePendRenderer("Trk "));
+		tmpComposer.setRenderer(LookUp.NumPoints, new NumberRenderer("###,###,###", "---"));
+		tmpComposer.setRenderer(LookUp.BegTime, tmpTimeRenderer);
+		tmpComposer.setRenderer(LookUp.EndTime, tmpTimeRenderer);
+
+		ItemHandler<LidarTrack> tmpIH = new TrackItemHandler(refTrackManager, tmpComposer);
+		ItemProcessor<LidarTrack> tmpIP = refTrackManager;
+		lidarILP = new ItemListPanel<>(tmpIH, tmpIP, true);
+		lidarILP.setSortingEnabled(true);
+
+		JTable lidarTable = lidarILP.getTable();
+		lidarTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		lidarTable.addMouseListener(new LidarTablePopupListener<>(refTrackManager, lidarPopupMenu, lidarTable));
+		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
+ *
+ *
+ */
+
 public class SpectrumResultsTableController
 {
     protected SpectrumResultsTableView panel;
