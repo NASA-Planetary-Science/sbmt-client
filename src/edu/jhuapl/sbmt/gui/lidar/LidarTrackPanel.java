@@ -23,6 +23,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableCellRenderer;
 
+import com.jidesoft.swing.JideTabbedPane.ColorProvider;
+
 import edu.jhuapl.saavtk.colormap.SigFigNumberFormat;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.gui.util.IconUtil;
@@ -35,7 +37,6 @@ import edu.jhuapl.saavtk.pick.Picker;
 import edu.jhuapl.sbmt.client.SmallBodyViewConfig;
 import edu.jhuapl.sbmt.gui.lidar.color.ColorConfigPanel;
 import edu.jhuapl.sbmt.gui.lidar.color.ColorMode;
-import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.color.GroupColorProvider;
 import edu.jhuapl.sbmt.gui.lidar.popup.LidarGuiUtil;
