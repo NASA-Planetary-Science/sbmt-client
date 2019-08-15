@@ -1,6 +1,9 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -12,8 +15,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 
+import edu.jhuapl.saavtk.gui.util.IconUtil;
+import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
+import edu.jhuapl.sbmt.gui.lidar.LookUp;
+import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.ui.SpectrumItemHandler;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
+
+import glum.gui.GuiUtil;
+import glum.gui.misc.BooleanCellEditor;
+import glum.gui.misc.BooleanCellRenderer;
+import glum.gui.panel.itemList.ItemHandler;
+import glum.gui.panel.itemList.ItemListPanel;
+import glum.gui.panel.itemList.ItemProcessor;
+import glum.gui.panel.itemList.query.QueryComposer;
+import glum.item.ItemManagerUtil;
 
 public class SpectrumResultsTableView extends JPanel
 {
@@ -27,9 +45,17 @@ public class SpectrumResultsTableView extends JPanel
     private JButton saveSpectraListButton;
     private JButton saveSelectedSpectraListButton;
     private SpectrumPopupMenu spectrumPopupMenu;
-    protected SpectrumResultsTable resultList;
+//    protected SpectrumResultsTable resultList;
+    protected JTable resultList;
     private JLabel resultsLabel;
     private JLabel lblNumberBoundaries;
+
+    //for table
+    private JLabel titleL;
+    private JButton selectAllB, selectInvertB, selectNoneB;
+    private SpectraCollection spectrumCollection;
+    private ItemListPanel<BasicSpectrum> spectrumILP;
+    private ItemHandler<BasicSpectrum> tmpIH;
 
     /**
      * @wbp.parser.constructor
@@ -37,13 +63,15 @@ public class SpectrumResultsTableView extends JPanel
     public SpectrumResultsTableView(SpectraCollection spectrumCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
+        this.spectrumCollection = spectrumCollection;
         init();
     }
 
     protected void init()
     {
         resultsLabel = new JLabel("0 Results");
-        resultList = new SpectrumResultsTable();
+//        resultList = new SpectrumResultsTable();
+        resultList = buildTable();
         lblNumberBoundaries = new JLabel("Number Boundaries:");
         numberOfBoundariesComboBox = new JComboBox<Integer>();
         prevButton = new JButton("Prev");
@@ -103,6 +131,85 @@ public class SpectrumResultsTableView extends JPanel
         panel_2.add(saveSpectraListButton);
 
         panel_2.add(saveSelectedSpectraListButton);
+    }
+
+    private JTable buildTable()
+    {
+    	ActionListener listener = new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				Object source = e.getSource();
+
+				List<BasicSpectrum> tmpL = spectrumCollection.getSelectedItems().asList();
+				if (source == selectAllB)
+					ItemManagerUtil.selectAll(spectrumCollection);
+				else if (source == selectNoneB)
+					ItemManagerUtil.selectNone(spectrumCollection);
+				else if (source == selectInvertB)
+					ItemManagerUtil.selectInvert(spectrumCollection);
+			}
+		};
+
+    	// Table header
+		selectInvertB = GuiUtil.formButton(listener, IconUtil.getSelectInvert());
+		selectInvertB.setToolTipText(ToolTipUtil.getSelectInvert());
+
+		selectNoneB = GuiUtil.formButton(listener, IconUtil.getSelectNone());
+		selectNoneB.setToolTipText(ToolTipUtil.getSelectNone());
+
+		selectAllB = GuiUtil.formButton(listener, IconUtil.getSelectAll());
+		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
+
+		titleL = new JLabel("Spectra: ---");
+		add(titleL, "growx,span,split");
+		add(selectInvertB, "w 24!,h 24!");
+		add(selectNoneB, "w 24!,h 24!");
+		add(selectAllB, "w 24!,h 24!,wrap 2");
+
+		// Popup menu
+//		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarTrackPopupMenu(refTrackManager, aRenderer);
+
+		// Table Content
+		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
+		tmpComposer.addAttribute(LookUp.Map, Boolean.class, "Map", null);
+		tmpComposer.addAttribute(LookUp.Show, Boolean.class, "Show", null);
+		tmpComposer.addAttribute(LookUp.Frus, Boolean.class, "Frus", null);
+		tmpComposer.addAttribute(LookUp.Bndr, Boolean.class, "Bndr", null);
+		tmpComposer.addAttribute(LookUp.Id, Integer.class, "Id", null);
+		tmpComposer.addAttribute(LookUp.Filename, String.class, "Filename", null);
+		tmpComposer.addAttribute(LookUp.Date, Double.class, "Date", null);
+
+		EphemerisTimeRenderer tmpTimeRenderer = new EphemerisTimeRenderer(false);
+		tmpComposer.setEditor(LookUp.Map, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.Map, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Show, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Show, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.Show, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Frus, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.Frus, new BooleanCellRenderer());
+		tmpComposer.setEditor(LookUp.Bndr, new BooleanCellEditor());
+		tmpComposer.setRenderer(LookUp.Bndr, new BooleanCellRenderer());
+
+//    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Color, new ColorProviderCellRenderer(false));
+//    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Name, new PrePendRenderer("Trk "));
+//    	    			tmpComposer.setRenderer(SpectrumColumnLookup.NumPoints, new NumberRenderer("###,###,###", "---"));
+//    	    			tmpComposer.setRenderer(SpectrumColumnLookup.BegTime, tmpTimeRenderer);
+//    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Date, tmpTimeRenderer);
+
+		tmpIH = new SpectrumItemHandler(spectrumCollection, tmpComposer);
+		ItemProcessor<BasicSpectrum> tmpIP = spectrumCollection;
+		spectrumILP = new ItemListPanel<>(tmpIH, tmpIP, true);
+		spectrumILP.setSortingEnabled(true);
+
+		JTable spectrumTable = spectrumILP.getTable();
+		spectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		return spectrumTable;
+//		lidarTable.addMouseListener(new LidarTablePopupListener<>(spectrumCollection, lidarPopupMenu, lidarTable));
+//		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
     }
 
     public JTable getResultList()
@@ -170,40 +277,42 @@ public class SpectrumResultsTableView extends JPanel
         this.resultsLabel = resultsLabel;
     }
 
-    public int getMapColumnIndex()
-    {
-        return resultList.mapColumnIndex;
-    }
-
-    public int getShowFootprintColumnIndex()
-    {
-        return resultList.showFootprintColumnIndex;
-    }
-
-    public int getFrusColumnIndex()
-    {
-        return resultList.frusColumnIndex;
-    }
-
-    public int getBndrColumnIndex()
-    {
-        return resultList.bndrColumnIndex;
-    }
-
-    public int getDateColumnIndex()
-    {
-        return resultList.dateColumnIndex;
-    }
-
-    public int getIdColumnIndex()
-    {
-        return resultList.idColumnIndex;
-    }
-
-    public int getFilenameColumnIndex()
-    {
-        return resultList.filenameColumnIndex;
-    }
+//    public int getMapColumnIndex()
+//    {
+//    	return tmpIH.getColumnLabels().indexOf(LookUp.Map.toString());
+////    	return tmpIH.getColumnLabel(LookUp.Map);
+////        return resultList.mapColumnIndex;
+//    }
+//
+//    public int getShowFootprintColumnIndex()
+//    {
+//        return resultList.showFootprintColumnIndex;
+//    }
+//
+//    public int getFrusColumnIndex()
+//    {
+//        return resultList.frusColumnIndex;
+//    }
+//
+//    public int getBndrColumnIndex()
+//    {
+//        return resultList.bndrColumnIndex;
+//    }
+//
+//    public int getDateColumnIndex()
+//    {
+//        return resultList.dateColumnIndex;
+//    }
+//
+//    public int getIdColumnIndex()
+//    {
+//        return resultList.idColumnIndex;
+//    }
+//
+//    public int getFilenameColumnIndex()
+//    {
+//        return resultList.filenameColumnIndex;
+//    }
 
     public SpectrumPopupMenu getSpectrumPopupMenu()
     {

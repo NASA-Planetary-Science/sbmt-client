@@ -1,9 +1,9 @@
 package edu.jhuapl.sbmt.spectrum.ui;
 
+import edu.jhuapl.sbmt.gui.lidar.LookUp;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
 
-import glum.gui.dock.LookUp;
 import glum.gui.panel.itemList.BasicItemHandler;
 import glum.gui.panel.itemList.query.QueryComposer;
 

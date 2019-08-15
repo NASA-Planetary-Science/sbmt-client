@@ -4,11 +4,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -27,7 +30,12 @@ import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
-public class SpectraCollection extends AbstractModel implements PropertyChangeListener
+import glum.gui.panel.itemList.ItemProcessor;
+import glum.item.ItemEventListener;
+import glum.item.ItemEventType;
+import glum.item.ItemManager;
+
+public class SpectraCollection extends AbstractModel implements PropertyChangeListener, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
 {
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
     private HashMap<BasicSpectrum, IBasicSpectrumRenderer> fileToSpectrumMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer>();
@@ -42,6 +50,8 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     Map<IBasicSpectrumRenderer,Integer> ordinals=Maps.newHashMap();
     final static int defaultOrdinal=0;
+
+    private List<ItemEventListener> listeners;
 
     public SpectraCollection(ISmallBodyModel eros)
     {
@@ -469,5 +479,94 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 	public ISmallBodyModel getShapeModel()
 	{
 		return shapeModel;
+	}
+
+	@Override
+	public int getNumItems()
+	{
+		return getCount();
+	}
+
+	@Override
+	public Collection<? extends BasicSpectrum> getItems()
+	{
+		Set<IBasicSpectrumRenderer> spectraRenderer = getSpectra();
+		List<BasicSpectrum> spectra = new ArrayList<BasicSpectrum>();
+		for (IBasicSpectrumRenderer renderer : spectraRenderer)
+		{
+			spectra.add(renderer.getSpectrum());
+		}
+		return spectra;
+	}
+
+	@Override
+	public void addItemEventListener(ItemEventListener aListener)
+	{
+		listeners.add(aListener);
+	}
+
+	@Override
+	public void delItemEventListener(ItemEventListener aListener)
+	{
+		listeners.remove(aListener);
+	}
+
+	@Override
+	public void addListener(ItemEventListener aListener)
+	{
+		listeners.add(aListener);
+	}
+
+	@Override
+	public void delListener(ItemEventListener aListener)
+	{
+		listeners.remove(aListener);
+	}
+
+	@Override
+	public ImmutableList<BasicSpectrum> getAllItems()
+	{
+		return ImmutableList.copyOf(getItems());
+	}
+
+	@Override
+	public ImmutableSet<BasicSpectrum> getSelectedItems()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeItems(List<BasicSpectrum> aItemL)
+	{
+		for (BasicSpectrum spec : aItemL)
+			removeSpectrum(spec.getServerpath());
+
+		notifyListeners(this, ItemEventType.ItemsChanged);
+		notifyListeners(this, ItemEventType.ItemsSelected);
+	}
+
+	@Override
+	public void setAllItems(List<BasicSpectrum> aItemL)
+	{
+//		// Send out the appropriate notifications
+//		notifyListeners(this, ItemEventType.ItemsSelected);
+	}
+
+	@Override
+	public void setSelectedItems(List<BasicSpectrum> aItemL)
+	{
+
+//		// Send out the appropriate notifications
+//		notifyListeners(this, ItemEventType.ItemsSelected);
+	}
+
+	/**
+	 * Sends out notification to all the listeners of the specified event.
+	 */
+	protected void notifyListeners(Object aSource, ItemEventType aEventType)
+	{
+		for (ItemEventListener aListener : listeners)
+			aListener.handleItemEvent(aSource, aEventType);
 	}
 }
