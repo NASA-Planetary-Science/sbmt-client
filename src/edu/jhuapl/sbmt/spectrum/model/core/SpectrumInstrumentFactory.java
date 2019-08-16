@@ -1,11 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.model.core;
 
-import java.io.IOException;
 import java.util.Hashtable;
-
-import edu.jhuapl.sbmt.client.ISmallBodyModel;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 
 public class SpectrumInstrumentFactory
 {
@@ -21,10 +16,10 @@ public class SpectrumInstrumentFactory
         return spectralInstruments.get(name);
     }
 
-    static public Spectrum getSpectrumForName(String instrumentName, String filename,
-            ISmallBodyModel smallBodyModel) throws IOException
-    {
-        ISpectralInstrument instrument = getInstrumentForName(instrumentName);
-        return instrument.getSpectrumInstance(filename, smallBodyModel);
-    }
+//    static public Spectrum getSpectrumForName(String instrumentName, String filename,
+//            ISmallBodyModel smallBodyModel) throws IOException
+//    {
+//        ISpectralInstrument instrument = getInstrumentForName(instrumentName);
+//        return instrument.getSpectrumInstance(filename, smallBodyModel);
+//    }
 }

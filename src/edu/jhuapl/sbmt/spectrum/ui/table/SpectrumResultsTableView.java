@@ -1,5 +1,6 @@
 package edu.jhuapl.sbmt.spectrum.ui.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,15 +15,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableCellRenderer;
 
 import edu.jhuapl.saavtk.gui.util.IconUtil;
 import edu.jhuapl.saavtk.gui.util.ToolTipUtil;
 import edu.jhuapl.sbmt.gui.lidar.LookUp;
+import edu.jhuapl.sbmt.gui.lidar.color.ColorProvider;
+import edu.jhuapl.sbmt.gui.lidar.color.ConstColorProvider;
 import edu.jhuapl.sbmt.gui.table.EphemerisTimeRenderer;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumItemHandler;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
+import edu.jhuapl.sbmt.spectrum.ui.SpectrumTablePopupListener;
 
 import glum.gui.GuiUtil;
 import glum.gui.misc.BooleanCellEditor;
@@ -54,16 +60,18 @@ public class SpectrumResultsTableView extends JPanel
     private JLabel titleL;
     private JButton selectAllB, selectInvertB, selectNoneB;
     private SpectraCollection spectrumCollection;
+    private SpectrumBoundaryCollection boundaryCollection;
     private ItemListPanel<BasicSpectrum> spectrumILP;
-    private ItemHandler<BasicSpectrum> tmpIH;
+    private ItemHandler<BasicSpectrum> spectrumTableHandler;
 
     /**
      * @wbp.parser.constructor
      */
-    public SpectrumResultsTableView(SpectraCollection spectrumCollection, SpectrumPopupMenu spectrumPopupMenu)
+    public SpectrumResultsTableView(SpectraCollection spectrumCollection, SpectrumBoundaryCollection boundaryCollection, SpectrumPopupMenu spectrumPopupMenu)
     {
         this.spectrumPopupMenu = spectrumPopupMenu;
         this.spectrumCollection = spectrumCollection;
+        this.boundaryCollection = boundaryCollection;
         init();
     }
 
@@ -131,6 +139,8 @@ public class SpectrumResultsTableView extends JPanel
         panel_2.add(saveSpectraListButton);
 
         panel_2.add(saveSelectedSpectraListButton);
+
+
     }
 
     private JTable buildTable()
@@ -163,11 +173,15 @@ public class SpectrumResultsTableView extends JPanel
 		selectAllB = GuiUtil.formButton(listener, IconUtil.getSelectAll());
 		selectAllB.setToolTipText(ToolTipUtil.getSelectAll());
 
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		titleL = new JLabel("Spectra: ---");
-		add(titleL, "growx,span,split");
-		add(selectInvertB, "w 24!,h 24!");
-		add(selectNoneB, "w 24!,h 24!");
-		add(selectAllB, "w 24!,h 24!,wrap 2");
+		buttonPanel.add(titleL, "growx,span,split");
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(selectInvertB, "w 24!,h 24!");
+		buttonPanel.add(selectNoneB, "w 24!,h 24!");
+		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
+		add(buttonPanel);
 
 		// Popup menu
 //		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarTrackPopupMenu(refTrackManager, aRenderer);
@@ -200,13 +214,14 @@ public class SpectrumResultsTableView extends JPanel
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.BegTime, tmpTimeRenderer);
 //    	    			tmpComposer.setRenderer(SpectrumColumnLookup.Date, tmpTimeRenderer);
 
-		tmpIH = new SpectrumItemHandler(spectrumCollection, tmpComposer);
+		spectrumTableHandler = new SpectrumItemHandler(spectrumCollection, boundaryCollection, tmpComposer);
 		ItemProcessor<BasicSpectrum> tmpIP = spectrumCollection;
-		spectrumILP = new ItemListPanel<>(tmpIH, tmpIP, true);
+		spectrumILP = new ItemListPanel<>(spectrumTableHandler, tmpIP, true);
 		spectrumILP.setSortingEnabled(true);
-
+		configureColumnWidths();
 		JTable spectrumTable = spectrumILP.getTable();
 		spectrumTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		spectrumTable.addMouseListener(new SpectrumTablePopupListener<>(spectrumCollection, boundaryCollection, spectrumPopupMenu, spectrumTable));
 		return spectrumTable;
 //		lidarTable.addMouseListener(new LidarTablePopupListener<>(spectrumCollection, lidarPopupMenu, lidarTable));
 //		add(new JScrollPane(lidarTable), "growx,growy,pushx,pushy,span,wrap");
@@ -324,4 +339,37 @@ public class SpectrumResultsTableView extends JPanel
         this.spectrumPopupMenu = spectrumPopupMenu;
     }
 
+	public ItemHandler<BasicSpectrum> getSpectrumTableHandler()
+	{
+		return spectrumTableHandler;
+	}
+
+	private void configureColumnWidths()
+	{
+//		int maxPts = 99;
+//		String sourceStr = "Data Source";
+//		for (BasicSpectrum spec : spectrumCollection.getAllItems())
+//		{
+//			maxPts = Math.max(maxPts, spec.getNumberOfPoints());
+//			String tmpStr = SpectrumItemHandler.getSourceFileString(aTrack);
+//			if (tmpStr.length() > sourceStr.length())
+//				sourceStr = tmpStr;
+//		}
+
+		JTable tmpTable = spectrumILP.getTable();
+		String trackStr = "" + tmpTable.getRowCount();
+//		String pointStr = "" + maxPts;
+		String dateTimeStr = "9999-88-88T00:00:00.000000";
+		int minW = 30;
+
+		ColorProvider blackCP = new ConstColorProvider(Color.BLACK);
+		Object[] nomArr = { true, true, true, true, minW, dateTimeStr, dateTimeStr };
+		for (int aCol = 0; aCol < nomArr.length; aCol++)
+		{
+			TableCellRenderer tmpRenderer = tmpTable.getCellRenderer(0, aCol);
+			Component tmpComp = tmpRenderer.getTableCellRendererComponent(tmpTable, nomArr[aCol], false, false, 0, aCol);
+			int tmpW = Math.max(minW, tmpComp.getPreferredSize().width + 1);
+			tmpTable.getColumnModel().getColumn(aCol).setPreferredWidth(tmpW + 10);
+		}
+	}
 }

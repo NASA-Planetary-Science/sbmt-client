@@ -38,13 +38,15 @@ import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.saavtk.popup.PopupMenu;
 import edu.jhuapl.sbmt.client.SbmtInfoWindowManager;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics;
 import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatistics.Sample;
+import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
-import edu.jhuapl.sbmt.spectrum.model.statistics.SpectrumStatisticsCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 
 
 public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListener
@@ -64,12 +66,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     private JMenuItem showStatisticsMenuItem;
     private Renderer renderer;
 
-    private IBasicSpectrumRenderer spectrum;
+    private IBasicSpectrumRenderer spectrumRenderer;
     ComputeStatisticsTask task;
     JProgressBar statisticsProgressBar=new JProgressBar(0,100);
 
 //    AbstractSpectrumSearchController searchPanel;
     SpectraCollection collection;
+    SpectrumBoundaryCollection boundaries;
 
 //    public void setSearchPanel(AbstractSpectrumSearchController searchPanel)
 //    {
@@ -83,12 +86,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
      * 1 for right clicks on boundaries mapped on Eros, 2 for right clicks on images
      * mapped to Eros.
      */
-    public SpectrumPopupMenu(SpectraCollection collection,
+    public SpectrumPopupMenu(SpectraCollection collection, SpectrumBoundaryCollection sbc,
             ModelManager modelManager,
             SbmtInfoWindowManager infoPanelManager, Renderer renderer)
     {
         this.modelManager = modelManager;
         this.collection = collection;
+        this.boundaries = sbc;
         this.infoPanelManager = infoPanelManager;
         this.renderer=renderer;
         //this.erosModel = (SmallBodyModel)modelManager.getModel(ModelNames.SMALL_BODY);
@@ -148,9 +152,9 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     private void updateMenuItems()
     {
 //        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-        spectrum = collection.getSpectrumForName(currentSpectrum);
+        spectrumRenderer = collection.getSpectrumForName(currentSpectrum);
         boolean containsSpectrum = false;
-        if (spectrum != null) containsSpectrum = true;
+        if (spectrumRenderer != null) containsSpectrum = true;
         showRemoveSpectrumIn3DMenuItem.setSelected(containsSpectrum);
 
         if (showSpectrumInfoMenuItem != null)
@@ -160,13 +164,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
         if (containsSpectrum)
         {
-            showFrustumMenuItem.setSelected(spectrum.isFrustumShowing());
+            showFrustumMenuItem.setSelected(spectrumRenderer.isFrustumShowing());
             showFrustumMenuItem.setEnabled(true);
-            showOutlineMenuItem.setSelected(spectrum.isOutlineShowing());
-            showOutlineMenuItem.setSelected(spectrum.isSelected());
+            showOutlineMenuItem.setSelected(spectrumRenderer.isOutlineShowing());
+            showOutlineMenuItem.setSelected(boundaries.getVisibility(spectrumRenderer.getSpectrum()));
             showOutlineMenuItem.setEnabled(true);
             centerSpectrumMenuItem.setEnabled(true);
-            showToSunVectorMenuItem.setSelected(spectrum.isToSunVectorShowing());
+            showToSunVectorMenuItem.setSelected(spectrumRenderer.isToSunVectorShowing());
             showToSunVectorMenuItem.setEnabled(true);
             if (renderer.getLighting() == LightingType.FIXEDLIGHT) setIlluminationMenuItem.setSelected(true);
             else setIlluminationMenuItem.setSelected(false);
@@ -215,21 +219,22 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         public void actionPerformed(ActionEvent e)
         {
 //            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            try
-            {
+//            try
+//            {
                 if (showRemoveSpectrumIn3DMenuItem.isSelected())
                 {
-                    collection.addSpectrum(currentSpectrum, instrument, false);
+                	collection.addSpectrum(spectrumRenderer.getSpectrum(), false);
+//                	collection.addSpectrum(currentSpectrum, instrument, false);
 //                    if (searchPanel!=null)
 //                        searchPanel.updateColoring();
 
                 }
                 else
                     collection.removeSpectrum(currentSpectrum);
-            }
-            catch (IOException e1) {
-                e1.printStackTrace();
-            }
+//            }
+//            catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
 
 
         }
@@ -241,7 +246,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         {
             try
             {
-                infoPanelManager.addData(spectrum);
+                infoPanelManager.addData(spectrumRenderer);
                 updateMenuItems();
             }
             catch (IOException e1) {
@@ -276,7 +281,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 //        SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
         List<IBasicSpectrumRenderer> spectra = collection.getSelectedSpectra();
         if (spectra.size()==0)
-            spectra.add(spectrum);    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
+            spectra.add(spectrumRenderer);    // this was the old default behavior, but now we just do this if there are no spectra explicitly selected
 
         // compute statistics
         task=new ComputeStatisticsTask(spectra);
@@ -355,9 +360,9 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         {
 //            SpectraCollection model = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
 //            Spectrum spectrum = model.getSpectrum(currentSpectrum);
-            double[] up=new Vector3D(spectrum.getSpectrum().getFrustumCorner(1)).subtract(new Vector3D(spectrum.getSpectrum().getFrustumCorner(0))).toArray();
-            if (spectrum.getShiftedFootprint()!=null)
-                renderer.setCameraOrientation(spectrum.getSpectrum().getFrustumOrigin(), spectrum.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
+            double[] up=new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(1)).subtract(new Vector3D(spectrumRenderer.getSpectrum().getFrustumCorner(0))).toArray();
+            if (spectrumRenderer.getShiftedFootprint()!=null)
+                renderer.setCameraOrientation(spectrumRenderer.getSpectrum().getFrustumOrigin(), spectrumRenderer.getShiftedFootprint().GetCenter(), up, renderer.getCameraViewAngle());
         }
     }
 
@@ -365,7 +370,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     {
         public void actionPerformed(ActionEvent e)
         {
-            spectrum.setShowFrustum(showFrustumMenuItem.isSelected());
+            spectrumRenderer.setShowFrustum(showFrustumMenuItem.isSelected());
             updateMenuItems();
         }
     }
@@ -375,27 +380,8 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     {
         public void actionPerformed(ActionEvent e)
         {
-            try
-            {
-//                SpectraCollection collection = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-
-                if (showOutlineMenuItem.isSelected())
-                {
-                    collection.select(spectrum);
-                }
-                else
-                {
-                    collection.deselect(spectrum);
-                }
-                spectrum.setShowOutline(showOutlineMenuItem.isSelected());
-
-                updateMenuItems();
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-
+          	boundaries.setVisibility(spectrumRenderer.getSpectrum(), showOutlineMenuItem.isSelected());
+            updateMenuItems();
         }
     }
 
@@ -405,7 +391,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         {
             try
             {
-                spectrum.setShowToSunVector(showToSunVectorMenuItem.isSelected());
+                spectrumRenderer.setShowToSunVector(showToSunVectorMenuItem.isSelected());
                 updateMenuItems();
             }
             catch (Exception ex)
@@ -431,9 +417,9 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
                     renderer.setLighting(LightingType.FIXEDLIGHT);
                 }
 
-                Path fullPath=Paths.get(spectrum.getSpectrum().getFullPath());
+                Path fullPath=Paths.get(spectrumRenderer.getSpectrum().getFullPath());
                 Path relativePath=fullPath.subpath(fullPath.getNameCount()-2, fullPath.getNameCount());
-                Vector3D toSunVector=new Vector3D(spectrum.getSpectrum().getToSunUnitVector());
+                Vector3D toSunVector=new Vector3D(spectrumRenderer.getSpectrum().getToSunUnitVector());
                 renderer.setFixedLightDirection(toSunVector.toArray()); // the fixed light direction points to the light
 
                 updateMenuItems();
@@ -452,13 +438,13 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
         {
             try
             {
-                String name = new File(spectrum.getSpectrum().getFullPath()).getName();
+                String name = new File(spectrumRenderer.getSpectrum().getFullPath()).getName();
                 name = name.substring(0, name.length()-4) + ".txt";
                 File file = CustomFileChooser.showSaveDialog(saveSpectrumMenuItem, "Select File", name);
                 System.out.println("SpectrumPopupMenu.SaveSpectrumAction: actionPerformed: file is " + file.getAbsolutePath());
                 if (file != null)
                 {
-                    spectrum.getSpectrum().saveSpectrum(file);
+                    spectrumRenderer.getSpectrum().saveSpectrum(file);
                 }
             }
             catch (IOException e1)
@@ -477,13 +463,27 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
     public void showPopup(MouseEvent e, vtkProp pickedProp, int pickedCellId,
             double[] pickedPosition)
     {
-        if (pickedProp instanceof vtkActor)
-        {
-//            SpectraCollection msiImages = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
-            String name = collection.getSpectrumName((vtkActor)pickedProp);
-            setCurrentSpectrum(name);
-            show(e.getComponent(), e.getX(), e.getY());
-        }
+    	if (pickedProp == null)
+    	{
+	    	// Bail if we do not have selected items
+			List<BasicSpectrum> tmpS = collection.getSelectedItems().asList();
+			if (tmpS.size() == 0)
+				return;
+			System.out.println("SpectrumPopupMenu: showPopup: server path " + tmpS.get(0).getSpectrumName());
+			setCurrentSpectrum(tmpS.get(0).getSpectrumName());
+			show(e.getComponent(), e.getX(), e.getY());
+    	}
+    	else
+    	{
+	        if (pickedProp instanceof vtkActor)
+	        {
+	//            SpectraCollection msiImages = (SpectraCollection)modelManager.getModel(ModelNames.SPECTRA);
+	            String name = collection.getSpectrumName((vtkActor)pickedProp);
+	            System.out.println("SpectrumPopupMenu: showPopup: name is " + name);
+	            setCurrentSpectrum(name);
+	            show(e.getComponent(), e.getX(), e.getY());
+	        }
+    	}
     }
 
     @Override

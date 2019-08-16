@@ -35,6 +35,7 @@ import edu.jhuapl.saavtk.model.ModelManager;
 import edu.jhuapl.saavtk.model.ModelNames;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 
 public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChangeListener
@@ -165,8 +166,10 @@ public class SpectrumInfoPanel extends ModelInfoWindow implements PropertyChange
      */
     private void createMenus()
     {
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES);
+
         SpectrumPopupMenu msiImagesPopupMenu =
-            new SpectrumPopupMenu((SpectraCollection)getCollectionModel(), modelManager, null, null );
+            new SpectrumPopupMenu((SpectraCollection)getCollectionModel(), spectrumBoundaryCollection, modelManager, null, null );
 
         msiImagesPopupMenu.setCurrentSpectrum(spectrum.getSpectrumPathOnServer());
 

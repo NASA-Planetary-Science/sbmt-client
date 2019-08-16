@@ -14,7 +14,6 @@ import edu.jhuapl.saavtk.util.MapUtil;
 import edu.jhuapl.sbmt.model.image.PerspectiveImage;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.key.SpectrumKey;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 
@@ -79,7 +78,6 @@ public abstract class BasicSpectrum extends Spectrum
     public BasicSpectrum(String filename,
             BasicSpectrumInstrument instrument, boolean isCustom) throws IOException
     {
-
         this.serverpath = filename; // path on server relative to data
                                     // repository root (e.g. relative to
                                     // /project/nearsdc/data/)
@@ -100,7 +98,7 @@ public abstract class BasicSpectrum extends Spectrum
     }
 
     @Override
-    public ISpectralInstrument getInstrument()
+    public BasicSpectrumInstrument getInstrument()
     {
         return instrument;
     }

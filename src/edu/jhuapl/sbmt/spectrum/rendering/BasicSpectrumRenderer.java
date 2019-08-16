@@ -90,7 +90,6 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
 	@Override
 	public void generateFootprint()
     {
-		System.out.println("BasicSpectrumRenderer: generateFootprint: generating footprint");
         if (!spectrum.getLatLons().isEmpty())
         {
             vtkPolyData tmp = smallBodyModel.computeFrustumIntersection(
@@ -148,10 +147,8 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
 	@Override
 	public List<vtkProp> getProps()
     {
-		System.out.println("BasicSpectrumRenderer: getProps:");
         if (footprintActor == null && !spectrum.getLatLons().isEmpty())
         {
-        	System.out.println("BasicSpectrumRenderer: getProps: getting props");
             generateFootprint();
 
             vtkPolyDataMapper footprintMapper = new vtkPolyDataMapper();
@@ -259,7 +256,6 @@ public class BasicSpectrumRenderer extends AbstractModel implements IBasicSpectr
         footprintActors.add(selectionActor);
         footprintActors.add(toSunVectorActor);
         footprintActors.add(outlineActor);
-        System.out.println("BasicSpectrumRenderer: getProps: returning props " + footprintActors.size());
         return footprintActors;
     }
 

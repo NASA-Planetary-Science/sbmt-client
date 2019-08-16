@@ -56,6 +56,11 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
         if (visible == true)  { actor.VisibilityOn(); } else actor.VisibilityOff();
     }
 
+    public boolean getVisibility()
+    {
+    	return (actor.GetVisibility() == 0) ? false : true;
+    }
+
     public void setBoundaryColor(Color color)
     {
         double r = color.getRed();

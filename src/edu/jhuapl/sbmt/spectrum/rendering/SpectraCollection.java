@@ -2,43 +2,36 @@ package edu.jhuapl.sbmt.spectrum.rendering;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import vtk.vtkActor;
 import vtk.vtkProp;
 
-import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.ISmallBodyModel;
 import edu.jhuapl.sbmt.client.SbmtSpectrumModelFactory;
+import edu.jhuapl.sbmt.model.lidar.SaavtkItemManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
-import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
-import glum.gui.panel.itemList.ItemProcessor;
 import glum.item.ItemEventListener;
 import glum.item.ItemEventType;
-import glum.item.ItemManager;
 
-public class SpectraCollection extends AbstractModel implements PropertyChangeListener, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
+public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implements PropertyChangeListener //, ItemProcessor<BasicSpectrum>, ItemManager<BasicSpectrum>
 {
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectraActors = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
-    private HashMap<BasicSpectrum, IBasicSpectrumRenderer> fileToSpectrumMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer>();
+    private HashMap<BasicSpectrum, IBasicSpectrumRenderer> spectrumToRendererMap = new HashMap<BasicSpectrum, IBasicSpectrumRenderer>();
     private HashMap<vtkProp, String> actorToFileMap = new HashMap<vtkProp, String>();
     private HashMap<IBasicSpectrumRenderer, List<vtkProp>> spectrumToActorsMap = new HashMap<IBasicSpectrumRenderer, List<vtkProp>>();
     private HashMap<vtkProp, IBasicSpectrumRenderer> actorToSpectrumMap = new HashMap<vtkProp, IBasicSpectrumRenderer>();
@@ -56,6 +49,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     public SpectraCollection(ISmallBodyModel eros)
     {
         this.shapeModel = eros;
+        this.listeners = new ArrayList<ItemEventListener>();
     }
 
     public void reshiftFootprints()
@@ -137,40 +131,46 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         return null;
     }
 
-    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key) throws IOException
-    {
-        return addSpectrum(key.getName(), key.getInstrument(), false);
-    }
+//    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key) throws IOException
+//    {
+//        return addSpectrum(key.getName(), key.getInstrument(), false);
+//    }
 
-    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key, boolean isCustom) throws IOException
-    {
-        return addSpectrum(key.getName(), key.getInstrument(), isCustom);
-    }
+//    public IBasicSpectrumRenderer addSpectrum(SpectrumKeyInterface key, boolean isCustom) throws IOException
+//    {
+//        return addSpectrum(key.getName(), key.getInstrument(), isCustom);
+//    }
 
-    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle) throws IOException
-    {
-        return addSpectrum(path, instrument, coloringStyle, false);
-    }
+//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle) throws IOException
+//    {
+//        return addSpectrum(path, instrument, coloringStyle, false);
+//    }
 
-    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle, boolean isCustom) throws IOException
-    {
-    	IBasicSpectrumRenderer spec = addSpectrum(path, instrument, isCustom);
-        spec.getSpectrum().setColoringStyle(coloringStyle);
-        return spec;
-    }
+//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, SpectrumColoringStyle coloringStyle, boolean isCustom) throws IOException
+//    {
+//    	IBasicSpectrumRenderer spec = addSpectrum(path, instrument, isCustom);
+//        spec.getSpectrum().setColoringStyle(coloringStyle);
+//        return spec;
+//    }
 
-    public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) throws IOException
+    public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, SpectrumColoringStyle coloringStyle) //throws IOException
     {
         spectrum.setColoringStyle(coloringStyle);
-        return fileToSpectrumMap.get(spectrum);
+        return spectrumToRendererMap.get(spectrum);
+    }
+
+    public void addSpectrum(BasicSpectrum spec) //throws IOException
+    {
+    	spectrumToRendererMap.put(spec, null);
     }
 
 
-    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, boolean isCustom) throws IOException
+//    public IBasicSpectrumRenderer addSpectrum(String path, BasicSpectrumInstrument instrument, boolean isCustom) throws IOException
+    public IBasicSpectrumRenderer addSpectrum(BasicSpectrum spectrum, boolean isCustom) //throws IOException
     {
-        if (fileToSpectrumMap.containsKey(path))
+        if (spectrumToRendererMap.get(spectrum) != null)
         {
-        	IBasicSpectrumRenderer spec = fileToSpectrumMap.get(path);
+        	IBasicSpectrumRenderer spec = spectrumToRendererMap.get(spectrum);
             select(spec);
             spec.setVisible(true);
             return spec;
@@ -179,7 +179,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         IBasicSpectrumRenderer spectrumRenderer = null;
         try
         {
-        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(path, instrument);
+        	spectrumRenderer = SbmtSpectrumModelFactory.createSpectrumRenderer(spectrum, spectrum.getInstrument());
         	spectrumRenderer.getSpectrum().readSpectrumFromFile();
         }
         catch (Exception e) {
@@ -189,7 +189,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         shapeModel.addPropertyChangeListener(spectrumRenderer);
         spectrumRenderer.addPropertyChangeListener(this);
 
-        fileToSpectrumMap.put(spectrumRenderer.getSpectrum(), spectrumRenderer);
+        spectrumToRendererMap.put(spectrum, spectrumRenderer);
         spectraActors.put(spectrumRenderer, new ArrayList<vtkProp>());
 
         List<vtkProp> props = spectrumRenderer.getProps();
@@ -205,7 +205,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
 
         for (vtkProp act : props)
-            actorToFileMap.put(act, path);
+            actorToFileMap.put(act, spectrum.getServerpath());
         //select(spectrumRenderer);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
         return spectrumRenderer;
@@ -221,7 +221,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void removeSpectrum(String path)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = fileToSpectrumMap.get(path);
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(path);
         spectrumRenderer.setUnselected();
 
         List<vtkProp> actors = spectraActors.get(spectrumRenderer);
@@ -233,7 +233,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
         spectrumToActorsMap.remove(spectrumRenderer);
 
-        fileToSpectrumMap.remove(path);
+        spectrumToRendererMap.remove(path);
 
         spectrumRenderer.removePropertyChangeListener(this);
         shapeModel.removePropertyChangeListener(spectrumRenderer);
@@ -250,19 +250,24 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void removeAllSpectra()
     {
-        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)fileToSpectrumMap.clone();
+        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)spectrumToRendererMap.clone();
         for (String path : map.keySet())
             removeSpectrum(path);
     }
 
     public void removeAllSpectraForInstrument(ISpectralInstrument instrument)
     {
-        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)fileToSpectrumMap.clone();
+        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)spectrumToRendererMap.clone();
         for (String path : map.keySet())
         {
             if (map.get(path).getInstrument() == instrument)
                 removeSpectrum(path);
         }
+    }
+
+    public boolean isSpectrumMapped(BasicSpectrum spec)
+    {
+    	return spectrumToRendererMap.get(spec) != null;
     }
 
     public void setVisibility(IBasicSpectrumRenderer spectrumRenderer, boolean visibility)
@@ -271,10 +276,43 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
     }
 
-    public void setFrustumVisibility(IBasicSpectrumRenderer spectrumRenderer, boolean visibility)
+    public void setVisibility(BasicSpectrum spec, boolean visibility)
     {
-        spectrumRenderer.setShowFrustum(visibility);
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+        spectrumRenderer.setVisible(visibility);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
+    }
+
+    public boolean getVisibility(BasicSpectrum spec)
+    {
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	if (spectrumRenderer == null) return false;
+        return spectrumRenderer.isVisible();
+    }
+
+    public void setFrustumVisibility(BasicSpectrum spec, boolean visibility)
+    {
+        spectrumToRendererMap.get(spec).setShowFrustum(visibility);
+        this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spec);
+    }
+
+    public boolean getFrustumVisibility(BasicSpectrum spec)
+    {
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	if (spectrumRenderer == null) return false;
+        return spectrumRenderer.isFrustumShowing();
+    }
+
+    public boolean getBoundaryVisibility(BasicSpectrum spec)
+    {
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spec);
+    	if (spectrumRenderer == null) return false;
+        return spectrumRenderer.isOutlineShowing();
+    }
+
+    public IBasicSpectrumRenderer getRendererForSpectrum(BasicSpectrum spec)
+    {
+    	return spectrumToRendererMap.get(spec);
     }
 
     public void toggleSelect(IBasicSpectrumRenderer spectrumRenderer)
@@ -305,7 +343,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     {
         if (!selectAll) // we're not in "select all" mode so go ahead and select all actors
         {
-            for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+            for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
             {
                 spectrumRenderer.setSelected();
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -314,7 +352,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
         }
         else
         {
-            for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+            for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
             {
                 spectrumRenderer.setUnselected();
                 this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -326,7 +364,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void deselectAll()
     {
-        for (IBasicSpectrumRenderer spectrumRenderer : fileToSpectrumMap.values())
+        for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
         {
             spectrumRenderer.setUnselected();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
@@ -338,8 +376,8 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     public List<IBasicSpectrumRenderer> getSelectedSpectra()
     {
         List<IBasicSpectrumRenderer> spectra=Lists.newArrayList();
-        for (IBasicSpectrumRenderer s : fileToSpectrumMap.values())
-            if (s.isSelected())
+        for (IBasicSpectrumRenderer s : spectrumToRendererMap.values())
+            if ((s != null) && s.isSelected())
                 spectra.add(s);
         return spectra;
     }
@@ -352,7 +390,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     public String getClickStatusBarText(vtkProp prop, int cellId, double[] pickPosition)
     {
         String filename = actorToFileMap.get(prop);
-        IBasicSpectrumRenderer spectrum = this.fileToSpectrumMap.get(filename);
+        IBasicSpectrumRenderer spectrum = this.spectrumToRendererMap.get(filename);
         if (spectrum==null)
             return "";
         return spectrum.getSpectrum().getInstrument().getDisplayName() + " spectrum " + filename.substring(16, 25) + " acquired at " + spectrum.getSpectrum().getDateTime().toString() /*+ "(SCLK: " + ((OTESSpectrum)spectrum).getTime() + ")"*/;
@@ -365,12 +403,12 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public IBasicSpectrumRenderer getSpectrum(String file)
     {
-        return fileToSpectrumMap.get(file);
+        return spectrumToRendererMap.get(file);
     }
 
     public boolean containsSpectrum(String file)
     {
-        return fileToSpectrumMap.containsKey(file);
+        return spectrumToRendererMap.containsKey(file);
     }
 
     public void tagSpectraWithMetadata(BasicSpectrum spectrum, SearchSpec spec)
@@ -391,9 +429,10 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void setColoringStyle(SpectrumColoringStyle style)
     {
-        for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
+        for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer=this.fileToSpectrumMap.get(file);
+        	IBasicSpectrumRenderer spectrumRenderer=this.spectrumToRendererMap.get(spec);
+        	if (spectrumRenderer == null) continue;
             spectrumRenderer.getSpectrum().setColoringStyle(style);
             spectrumRenderer.updateChannelColoring();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, spectrumRenderer);
@@ -404,10 +443,11 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void setColoringStyleForInstrument(SpectrumColoringStyle style, ISpectralInstrument instrument)
     {
-        for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
+        for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer = this.fileToSpectrumMap.get(file);
-            if (spectrumRenderer.getSpectrum().getInstrument() == instrument)
+        	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
+        	if (spectrumRenderer == null) continue;
+        	if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
                 spectrumRenderer.getSpectrum().setColoringStyle(style);
                 spectrumRenderer.updateChannelColoring();
@@ -420,10 +460,11 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public void setChannelColoring(int[] channels, double[] mins, double[] maxs, ISpectralInstrument instrument)
     {
-        for (BasicSpectrum file : this.fileToSpectrumMap.keySet())
+        for (BasicSpectrum spec : this.spectrumToRendererMap.keySet())
         {
-        	IBasicSpectrumRenderer spectrumRenderer = this.fileToSpectrumMap.get(file);
-            if (spectrumRenderer.getSpectrum().getInstrument() == instrument)
+        	IBasicSpectrumRenderer spectrumRenderer = this.spectrumToRendererMap.get(spec);
+        	if (spectrumRenderer == null) continue;
+            if (spectrumRenderer.getSpectrum().getInstrument().getClass() == instrument.getClass() )
             {
                 spectrumRenderer.getSpectrum().setChannelColoring(channels, mins, maxs);
                 spectrumRenderer.updateChannelColoring();
@@ -442,6 +483,11 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
     public String getSpectrumName(vtkActor actor)
     {
         return actorToSpectrumMap.get(actor).getSpectrum().getSpectrumName();
+    }
+
+    public boolean containsSpectrum(BasicSpectrum spec)
+    {
+    	return spectrumToRendererMap.keySet().contains(spec);
     }
 
     public boolean containsSpectrumName(String name)
@@ -473,7 +519,7 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 
     public int getCount()
     {
-        return fileToSpectrumMap.size();
+        return spectrumToRendererMap.size();
     }
 
 	public ISmallBodyModel getShapeModel()
@@ -482,91 +528,37 @@ public class SpectraCollection extends AbstractModel implements PropertyChangeLi
 	}
 
 	@Override
-	public int getNumItems()
+	public void removeItems(List<BasicSpectrum> specs)
 	{
-		return getCount();
-	}
-
-	@Override
-	public Collection<? extends BasicSpectrum> getItems()
-	{
-		Set<IBasicSpectrumRenderer> spectraRenderer = getSpectra();
-		List<BasicSpectrum> spectra = new ArrayList<BasicSpectrum>();
-		for (IBasicSpectrumRenderer renderer : spectraRenderer)
+		// Remove relevant state and VTK mappings
+		for (BasicSpectrum spec : specs)
 		{
-			spectra.add(renderer.getSpectrum());
+			removeSpectrum(spec.getFullPath());
 		}
-		return spectra;
+
+		// Delegate
+		super.removeItems(specs);
+
+//		List<LidarTrack> tmpL = ImmutableList.of();
+//		updateVtkVars(tmpL);
 	}
 
 	@Override
-	public void addItemEventListener(ItemEventListener aListener)
+	public void setAllItems(List<BasicSpectrum> specs)
 	{
-		listeners.add(aListener);
-	}
+		for (BasicSpectrum spec : specs)
+		{
+			addSpectrum(spec);
+		}
 
-	@Override
-	public void delItemEventListener(ItemEventListener aListener)
-	{
-		listeners.remove(aListener);
-	}
-
-	@Override
-	public void addListener(ItemEventListener aListener)
-	{
-		listeners.add(aListener);
-	}
-
-	@Override
-	public void delListener(ItemEventListener aListener)
-	{
-		listeners.remove(aListener);
-	}
-
-	@Override
-	public ImmutableList<BasicSpectrum> getAllItems()
-	{
-		return ImmutableList.copyOf(getItems());
-	}
-
-	@Override
-	public ImmutableSet<BasicSpectrum> getSelectedItems()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void removeItems(List<BasicSpectrum> aItemL)
-	{
-		for (BasicSpectrum spec : aItemL)
-			removeSpectrum(spec.getServerpath());
-
-		notifyListeners(this, ItemEventType.ItemsChanged);
+		super.setAllItems(specs);
+		// Send out the appropriate notifications
 		notifyListeners(this, ItemEventType.ItemsSelected);
 	}
 
 	@Override
-	public void setAllItems(List<BasicSpectrum> aItemL)
+	public void setSelectedItems(List<BasicSpectrum> specs)
 	{
-//		// Send out the appropriate notifications
-//		notifyListeners(this, ItemEventType.ItemsSelected);
-	}
-
-	@Override
-	public void setSelectedItems(List<BasicSpectrum> aItemL)
-	{
-
-//		// Send out the appropriate notifications
-//		notifyListeners(this, ItemEventType.ItemsSelected);
-	}
-
-	/**
-	 * Sends out notification to all the listeners of the specified event.
-	 */
-	protected void notifyListeners(Object aSource, ItemEventType aEventType)
-	{
-		for (ItemEventListener aListener : listeners)
-			aListener.handleItemEvent(aSource, aEventType);
+		super.setSelectedItems(specs);
 	}
 }

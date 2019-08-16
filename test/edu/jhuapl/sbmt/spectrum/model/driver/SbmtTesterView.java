@@ -226,13 +226,14 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
+			SpectraCollection collection = new SpectraCollection(smallBodyModel);
+
 			System.out.println("SbmtTesterView: setupModelManager: has spectral data");
-			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel));
+			allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
 			HashMap<ModelNames, Model> models = new HashMap<ModelNames, Model>();
 
 			models.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-			SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
 			models.put(ModelNames.SPECTRA, collection);
 			allModels.putAll(models);
@@ -343,7 +344,9 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 		if (getPolyhedralModelConfig().hasSpectralData)
 		{
 			SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
-			PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
+			SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
+
+			PopupMenu popupMenu = new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), (SbmtInfoWindowManager) getInfoPanelManager(), getRenderer());
 			((SpectrumPopupMenu) popupMenu).setInstrument(getPolyhedralModelConfig().spectralInstruments[0]);
 			registerPopup(getModel(ModelNames.SPECTRA), popupMenu);
 
@@ -448,8 +451,10 @@ public class SbmtTesterView extends View implements PropertyChangeListener
 	protected void setupSpectrumPanelManager()
 	{
 		SpectraCollection spectrumCollection = (SpectraCollection)getModel(ModelNames.SPECTRA);
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)getModel(ModelNames.SPECTRA_BOUNDARIES);
+
 		PopupMenu spectralImagesPopupMenu =
-    	        new SpectrumPopupMenu(spectrumCollection, getModelManager(), null, null);
+    	        new SpectrumPopupMenu(spectrumCollection, spectrumBoundaryCollection, getModelManager(), null, null);
 		setSpectrumPanelManager(new SbmtSpectrumWindowManager(getModelManager(), spectralImagesPopupMenu));
 	}
 

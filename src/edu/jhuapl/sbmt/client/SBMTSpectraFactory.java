@@ -53,9 +53,9 @@ public class SBMTSpectraFactory
 					BasicSpectrumInstrument instrument) throws IOException
 			{
 				NISSpectrum spectrum = new NISSpectrum(path, smallBodyModel, instrument);
-
 				String str = path;
-                String strippedFileName=str.replace("/NIS/2000/", "");
+//                String strippedFileName=str.replace("/NIS/2000/", "");
+                String strippedFileName = str.substring(str.lastIndexOf("/NIS/2000/") + 10);
                 String detailedTime = NISSearchModel.nisFileToObservationTimeMap.get(strippedFileName);
                 List<String> result = new ArrayList<String>();
                 result.add(str);
@@ -72,6 +72,12 @@ public class SBMTSpectraFactory
 				}
 
 				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel) throws IOException
+			{
+				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
 
 			@Override
@@ -98,6 +104,12 @@ public class SBMTSpectraFactory
 			}
 
 			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel) throws IOException
+			{
+				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
+			}
+
+			@Override
 			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
 			{
 				OTESSpectrum spectrum = new OTESSpectrum(path, (SpectrumInstrumentMetadataIO)smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
@@ -118,6 +130,12 @@ public class SBMTSpectraFactory
 			}
 
 			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel) throws IOException
+			{
+				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
+			}
+
+			@Override
 			public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel, BasicSpectrumInstrument instrument) throws IOException
 			{
 				OVIRSSpectrum spectrum = new OVIRSSpectrum(path, smallBodyModel.getSmallBodyConfig().getHierarchicalSpectraSearchSpecification(), smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
@@ -135,6 +153,12 @@ public class SBMTSpectraFactory
 			{
 				NIRS3Spectrum spectrum = new NIRS3Spectrum(path, smallBodyModel, instrument);
 				return spectrum;
+			}
+
+			@Override
+			public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum, ISmallBodyModel smallBodyModel) throws IOException
+			{
+				return new BasicSpectrumRenderer(spectrum, smallBodyModel, false);
 			}
 
 			@Override

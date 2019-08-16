@@ -87,12 +87,13 @@ class OTESSearchModelTest
 		orexNode = new DefaultMutableTreeNode("OREX");
 
 		HashMap<ModelNames, Model> allModels = new HashMap<>();
+        SpectraCollection collection = new SpectraCollection(smallBodyModel);
+
 		allModels.put(ModelNames.SMALL_BODY, smallBodyModel);
-		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel));
+		allModels.put(ModelNames.SPECTRA_BOUNDARIES, new SpectrumBoundaryCollection(smallBodyModel, collection));
 
 		allModels.put(ModelNames.SPECTRA_HYPERTREE_SEARCH, new SpectraSearchDataCollection(smallBodyModel));
 
-        SpectraCollection collection = new SpectraCollection(smallBodyModel);
 
         allModels.put(ModelNames.SPECTRA, collection);
 

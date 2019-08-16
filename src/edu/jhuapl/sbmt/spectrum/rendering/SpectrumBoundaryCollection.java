@@ -17,6 +17,7 @@ import vtk.vtkProp;
 import edu.jhuapl.saavtk.model.AbstractModel;
 import edu.jhuapl.saavtk.util.Properties;
 import edu.jhuapl.sbmt.client.SmallBodyModel;
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundary;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
@@ -26,27 +27,45 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 {
     private HashMap<SpectrumBoundary, List<vtkProp>> boundaryToActorsMap = new HashMap<SpectrumBoundary, List<vtkProp>>();
     private HashMap<vtkProp, SpectrumBoundary> actorToBoundaryMap = new HashMap<vtkProp, SpectrumBoundary>();
+    private HashMap<BasicSpectrum, SpectrumBoundary> spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary>();
     private SmallBodyModel smallBodyModel;
     // Create a buffer of initial boundary colors to use. We cycle through these colors when creating new boundaries
     private Color[] initialColors = {Color.RED, Color.PINK.darker(), Color.ORANGE.darker(),
             Color.GREEN.darker(), Color.MAGENTA, Color.CYAN.darker(), Color.BLUE,
             Color.GRAY, Color.DARK_GRAY, Color.BLACK};
     private int initialColorIndex = 0;
+    private SpectraCollection spectrumCollection;
 
-    public SpectrumBoundaryCollection(SmallBodyModel smallBodyModel)
+    public SpectrumBoundaryCollection(SmallBodyModel smallBodyModel, SpectraCollection spectrumCollection)
     {
         this.smallBodyModel = smallBodyModel;
+        this.spectrumToBoundaryMap = new HashMap<BasicSpectrum, SpectrumBoundary>();
+        this.spectrumCollection = spectrumCollection;
     }
 
+//    protected SpectrumBoundary createBoundary(
+//            SpectrumKeyInterface key,
+//            SmallBodyModel smallBodyModel, SpectraCollection collection) throws IOException, FitsException
+//    {
+//        IBasicSpectrumRenderer spectrum = collection.getSpectrumFromKey(key);
+//        SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
+//        boundary.setBoundaryColor(initialColors[initialColorIndex++]);
+//        if (initialColorIndex >= initialColors.length)
+//            initialColorIndex = 0;
+//        spectrumToBoundaryMap.put(spectrum.getSpectrum(), boundary);
+//        return boundary;
+//    }
+
     protected SpectrumBoundary createBoundary(
-            SpectrumKeyInterface key,
-            SmallBodyModel smallBodyModel, SpectraCollection collection) throws IOException, FitsException
+            BasicSpectrum spec,
+            SmallBodyModel smallBodyModel) throws IOException, FitsException
     {
-        IBasicSpectrumRenderer spectrum = collection.getSpectrumFromKey(key);
+        IBasicSpectrumRenderer spectrum = spectrumCollection.getRendererForSpectrum(spec);
         SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
         boundary.setBoundaryColor(initialColors[initialColorIndex++]);
         if (initialColorIndex >= initialColors.length)
             initialColorIndex = 0;
+        spectrumToBoundaryMap.put(spec, boundary);
         return boundary;
     }
 
@@ -73,14 +92,16 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
     }
 
 
-    public void addBoundary(SpectrumKeyInterface key, SpectraCollection collection) throws FitsException, IOException
+//    public void addBoundary(SpectrumKeyInterface key, SpectraCollection collection) throws FitsException, IOException
+    public SpectrumBoundary addBoundary(BasicSpectrum spec) throws FitsException, IOException
     {
-        if (containsKey(key))
-            return;
+        if (spectrumToBoundaryMap.containsKey(spec))
+            return spectrumToBoundaryMap.get(spec);
 
-        if (collection.getSpectrumFromKey(key) == null) return;
+//        if (collection.getSpectrumFromKey(key) == null) return;
 
-        SpectrumBoundary boundary = createBoundary(key, smallBodyModel, collection);
+//        SpectrumBoundary boundary = createBoundary(key, smallBodyModel, collection);
+        SpectrumBoundary boundary = createBoundary(spec, smallBodyModel);
 
         smallBodyModel.addPropertyChangeListener(boundary);
         boundary.addPropertyChangeListener(this);
@@ -92,7 +113,10 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 
         for (vtkProp act : boundaryPieces)
             actorToBoundaryMap.put(act, boundary);
+//        spectrumToBoundaryMap.put(collection.getSpectrumFromKey(key).getSpectrum(), boundary);
+        spectrumToBoundaryMap.put(spec, boundary);
         this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
+        return boundary;
     }
 
     public void removeBoundary(SpectrumKeyInterface key)
@@ -171,6 +195,28 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
         return containsKey(key);
     }
 
+    public void setVisibility(BasicSpectrum spec, boolean visible)
+    {
+    	SpectrumBoundary boundary = spectrumToBoundaryMap.get(spec);
+    	if (boundary == null)
+			try
+			{
+				boundary = addBoundary(spec);
+			} catch (FitsException | IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+    	boundary.setVisibility(visible);
+    	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);
+    }
+
+    public boolean getVisibility(BasicSpectrum spec)
+    {
+    	if (spectrumToBoundaryMap.get(spec) == null) return false;
+    	return spectrumToBoundaryMap.get(spec).getVisibility();
+    }
 
     public void propertyChange(PropertyChangeEvent evt)
     {

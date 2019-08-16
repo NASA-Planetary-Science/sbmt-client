@@ -24,7 +24,6 @@ import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -88,6 +87,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectraHierarchicalSearchSpeci
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumListIO;
 import edu.jhuapl.sbmt.spectrum.rendering.IBasicSpectrumRenderer;
 import edu.jhuapl.sbmt.spectrum.rendering.SpectraCollection;
+import edu.jhuapl.sbmt.spectrum.rendering.SpectrumBoundaryCollection;
 import edu.jhuapl.sbmt.spectrum.ui.SpectrumPopupMenu;
 import edu.jhuapl.sbmt.spectrum.ui.math.SpectrumMathPanel;
 
@@ -127,7 +127,9 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
         this.instrument=instrument;
         this.hierarchicalSpectraSearchSpecification = hierarchicalSpectraSearchSpecification;
         this.hasHierarchicalSpectraSearch = hasHierarchicalSpectraSearch;
-        spectrumPopupMenu = new SpectrumPopupMenu((SpectraCollection)modelManager.getModel(ModelNames.SPECTRA), this.modelManager, infoPanelManager, renderer);
+		SpectrumBoundaryCollection spectrumBoundaryCollection = (SpectrumBoundaryCollection)modelManager.getModel(ModelNames.SPECTRA_BOUNDARIES);
+
+        spectrumPopupMenu = new SpectrumPopupMenu((SpectraCollection)modelManager.getModel(ModelNames.SPECTRA), spectrumBoundaryCollection, this.modelManager, infoPanelManager, renderer);
         spectrumPopupMenu.addPropertyChangeListener(this);
 
         // Setup hierarchical image search
@@ -480,14 +482,15 @@ public abstract class AbstractSpectrumSearchPanel extends JPanel implements Mous
             else if(i >= spectrumRawResults.size())
                 break;
 
-            try
-            {
-                String currentSpectrum = spectrumRawResults.get(i).getFullPath();
-                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
-            }
-            catch (IOException e1) {
-                e1.printStackTrace();
-            }
+//            try
+//            {
+//                String currentSpectrum = spectrumRawResults.get(i).getFullPath();
+//                model.addSpectrum(createSpectrumName(currentSpectrum), instrument, false);
+            	model.addSpectrum(spectrumRawResults.get(i), false);
+//            }
+//            catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
         }
         updateColoring();
     }

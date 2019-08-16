@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.joda.time.DateTime;
 
+import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 
 public abstract class Spectrum //extends AbstractModel implements PropertyChangeListener
@@ -16,7 +17,7 @@ public abstract class Spectrum //extends AbstractModel implements PropertyChange
     public boolean isCustomSpectra = false;
 
     public abstract DateTime getDateTime();
-    public abstract ISpectralInstrument getInstrument();
+    public abstract BasicSpectrumInstrument getInstrument();
     public abstract Double[] getBandCenters();
     public abstract double[] getSpectrum();
     public abstract String getFullPath();
