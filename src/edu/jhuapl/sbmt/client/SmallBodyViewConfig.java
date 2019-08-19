@@ -153,7 +153,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 //
 //        addMarsModels(configArray);
     }
-
+ 
     // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
     {

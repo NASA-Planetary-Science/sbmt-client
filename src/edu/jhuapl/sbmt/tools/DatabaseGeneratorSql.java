@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -380,7 +381,7 @@ public class DatabaseGeneratorSql
         }
     }
 
-    public void run(String fileList, ImageSource source) throws IOException
+    public void run(String fileList, ImageSource source, String diffFileList) throws IOException
     {
         smallBodyModel = SbmtModelFactory.createSmallBodyModel(smallBodyConfig);
 
@@ -393,6 +394,15 @@ public class DatabaseGeneratorSql
             else
                 throw new IOException("Image Source is neither type GASKELL or type SPICE");
         }
+
+        //Grab the list of the image filenames from the diffFileList, if it exists.
+        List<String> diffFiles = new ArrayList<String>();
+        if (diffFileList != null)
+        {
+        	diffFiles = FileUtil.getFileLinesAsStringList(diffFileList);
+        	System.out.println("DatabaseGeneratorSql: run: diff files count " + diffFiles.size());
+        }
+
 
         List<String> lines = null;
         try {
@@ -407,9 +417,24 @@ public class DatabaseGeneratorSql
             return;
         }
 
-//        System.out.println("Generating database for the following image files:");
-//        for (String file : files)
-//            System.out.println(file);
+        //Reduce the lines to only include those that match in the diff list, if it exists
+        if (diffFileList != null)
+        {
+        	List<String> truncatedLines = new ArrayList<String>();
+        	for (String line : lines)
+        	{
+        		for (String diffFile : diffFiles)
+        		{
+        			if (line.endsWith(diffFile))
+        			{
+        				truncatedLines.add(line);
+        				break;
+        			}
+        		}
+        	}
+        	lines = truncatedLines;
+        	System.out.println("DatabaseGeneratorSql: run: truncated lines count is now " + lines.size());
+        }
 
         String dburl = null;
         if (SbmtMultiMissionTool.getMission() == Mission.HAYABUSA2_STAGE)
@@ -1127,6 +1152,7 @@ public class DatabaseGeneratorSql
         String bodyName="";
         String authorName="";
         String versionString = null;
+        String diffFileList = null;
 
         int cameraIndex = 0;
 
@@ -1169,6 +1195,10 @@ public class DatabaseGeneratorSql
             else if (args[i].equals("--version"))
             {
             	versionString = args[++i];
+            }
+            else if (args[i].equals("--diffList"))
+            {
+            	diffFileList = args[++i];
             }
             else {
                 // We've encountered something that is not an option, must be at the args
@@ -1221,7 +1251,7 @@ public class DatabaseGeneratorSql
             }
 
             System.out.println("Generating: " + pathToFileList + ", mode=" + mode);
-            generator.run(pathToFileList, mode);
+            generator.run(pathToFileList, mode, diffFileList);
         }
     }
 }
