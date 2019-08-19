@@ -2,12 +2,11 @@ package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -35,7 +34,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         MarsConfigs c = new MarsConfigs();
 
@@ -109,7 +108,8 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/PHOBOS/m1phobos.llr.gz";
+        c.rootDirOnServer = "/THOMAS/PHOBOS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "m1phobos.llr.gz");
         c.setResolution(ImmutableList.of(32040));
 
         c.lidarSearchDataSourceMap = Maps.newHashMap(); // this must be instantiated, but can be empty
@@ -260,7 +260,8 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/DEIMOS/DEIMOS.vtk.gz";
+        c.rootDirOnServer = "/THOMAS/DEIMOS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "DEIMOS.vtk.gz");
 //        c.hasStateHistory = true;
 //        c.timeHistoryFile = "/DEIMOS/history/TimeHistory.bth";
 
@@ -277,7 +278,8 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
             c.author = ShapeModelType.BLENDER;
             c.modelLabel = "OLD Ernst et al. (in progress)";
-            c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL/DEIMOS.vtk.gz";
+            c.rootDirOnServer = "/THOMAS/DEIMOSEXPERIMENTAL";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "DEIMOS.vtk.gz");
             c.hasImageMap = true;
 
             c.imagingInstruments = new ImagingInstrument[] {

@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -17,12 +17,6 @@ import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
 import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
-import edu.jhuapl.sbmt.client.configs.BennuConfigs;
-import edu.jhuapl.sbmt.client.configs.CometConfigs;
-import edu.jhuapl.sbmt.client.configs.MarsConfigs;
-import edu.jhuapl.sbmt.client.configs.NewHorizonsConfigs;
-import edu.jhuapl.sbmt.client.configs.RyuguConfigs;
-import edu.jhuapl.sbmt.client.configs.SaturnConfigs;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -66,7 +60,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static List<ViewConfig> addRemoteEntries()
     {
-        List<ViewConfig> configs = new Vector<ViewConfig>();
+    	ConfigArrayList configs = new ConfigArrayList();
         File allBodies = FileCache.getFileFromServer("allBodies.json");
 //        System.out.println("SmallBodyViewConfig: addRemoteEntries: reading " + allBodies.getAbsolutePath());
         try
@@ -92,7 +86,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     private static ViewConfig fetchRemoteConfig(String name, String url)
     {
-        List<ViewConfig> ioConfigs = new Vector<ViewConfig>();
+    	ConfigArrayList ioConfigs = new ConfigArrayList();
         ioConfigs.add(new SmallBodyViewConfig(ImmutableList.<String> copyOf(DEFAULT_GASKELL_LABELS_PER_RESOLUTION), ImmutableList.<Integer> copyOf(DEFAULT_GASKELL_NUMBER_PLATES_PER_RESOLUTION)));
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
@@ -112,6 +106,11 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (UnauthorizedAccessException uae)
         {
         	System.err.println("No access allowed for URL, skipping");
+        	return null;
+        }
+        catch (RuntimeException re)
+        {
+        	System.err.println("Can't access URL, skipping");
         	return null;
         }
 
@@ -134,26 +133,19 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
 
     public static void initialize()
     {
-        List<ViewConfig> configArray = getBuiltInConfigs();
+    	ConfigArrayList configArray = getBuiltInConfigs();
 
         configArray.addAll(addRemoteEntries());
 
         AsteroidConfigs.initialize(configArray);
-        BennuConfigs.initialize(configArray);
-        CometConfigs.initialize(configArray);
-        MarsConfigs.initialize(configArray);
-        NewHorizonsConfigs.initialize(configArray);
-        RyuguConfigs.initialize(configArray);
-        SaturnConfigs.initialize(configArray);
-
-//
-////      addConfigsBeingRemoved(configArray);
-//
-//        addNewHorizonsModels(configArray);
-//
-//        addMarsModels(configArray);
+////        BennuConfigs.initialize(configArray);
+//        CometConfigs.initialize(configArray);
+//        MarsConfigs.initialize(configArray);
+//        NewHorizonsConfigs.initialize(configArray);
+//        RyuguConfigs.initialize(configArray);
+//        SaturnConfigs.initialize(configArray);
     }
- 
+
     // Imaging instrument helper methods.
     private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, ImageSource[] imageSources, ImageType imageType)
     {

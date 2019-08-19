@@ -1,10 +1,10 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
@@ -34,7 +34,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         NewHorizonsConfigs c = new NewHorizonsConfigs();
 
@@ -46,7 +46,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/JUPITER/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/JUPITER";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
             c.hasImageMap = false;
 
@@ -93,7 +94,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             // 2017-12-20: this name will be correct when "the new model" has been brought
             // in.
             // c.modelLabel = "Stooke (2016)";
-            c.rootDirOnServer = "/STOOKE/AMALTHEA/j5amalthea.llr.gz";
+            c.rootDirOnServer = "/STOOKE/AMALTHEA";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "j5amalthea.llr.gz");
             // 2017-12-12: exclude this body/model for now, but do not comment out
             // anything else in this block so that Eclipse updates will continue
             // to keep this code intact.
@@ -105,7 +107,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/CALLISTO/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/CALLISTO";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasImageMap = true;
 
             // imaging instruments
@@ -130,7 +133,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/EUROPA/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/EUROPA";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasImageMap = true;
             c.hasFlybyData = true;
 
@@ -170,7 +174,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/GANYMEDE/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/GANYMEDE";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasImageMap = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
@@ -209,7 +214,8 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.population = ShapeModelPopulation.JUPITER;
             c.dataUsed = null;
             c.author = null;
-            c.rootDirOnServer = "/NEWHORIZONS/IO/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/IO";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasImageMap = true;
             c.imageSearchDefaultStartDate = new GregorianCalendar(2007, 0, 8, 0, 0, 0).getTime();
             c.imageSearchDefaultEndDate = new GregorianCalendar(2007, 2, 5, 0, 0, 0).getTime();
@@ -250,10 +256,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.NIMMO;
             c.modelLabel = "Nimmo et al. (2017)";
 //            c.pathOnServer = "/NEWHORIZONS/PLUTO/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/NEWHORIZONS/PLUTO/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/PLUTO";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -297,10 +304,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.NIMMO;
             c.modelLabel = "Nimmo et al. (2017)";
 //           c.pathOnServer = "/NEWHORIZONS/CHARON/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/NEWHORIZONS/CHARON/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/CHARON";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
 
             c.imagingInstruments = new ImagingInstrument[] {
@@ -339,10 +347,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.WEAVER;
             c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/HYDRA/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/NEWHORIZONS/HYDRA/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/HYDRA";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
@@ -378,9 +387,10 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.WEAVER;
             c.modelLabel = "Weaver et al. (2016)";
-            c.rootDirOnServer = "/NEWHORIZONS/KERBEROS/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/KERBEROS";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(128880));
             configArray.add(c);
@@ -390,10 +400,11 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.WEAVER;
             c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/NEWHORIZONS/NIX/shape_res0.obj.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/NIX/";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {
                     new ImagingInstrument( //
@@ -428,9 +439,10 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.type = BodyType.KBO;
             c.population = ShapeModelPopulation.PLUTO;
             c.dataUsed = ShapeModelDataUsed.TRIAXIAL;
-            c.author = null;
+            c.author = ShapeModelType.WEAVER;
             c.modelLabel = "Weaver et al. (2016)";
-            c.rootDirOnServer = "/NEWHORIZONS/STYX/shape_res0.vtk.gz";
+            c.rootDirOnServer = "/NEWHORIZONS/STYX";
+            c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.vtk.gz");
             c.hasColoringData = false;
             c.setResolution(ImmutableList.of(128880));
             configArray.add(c);

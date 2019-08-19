@@ -1,12 +1,11 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
-import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -41,7 +40,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         SaturnConfigs c = new SaturnConfigs();
 
@@ -80,7 +79,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/EPIMETHEUS/s11epimetheus.llr.gz";
+        c.rootDirOnServer = "/THOMAS/EPIMETHEUS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s11epimetheus.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
@@ -120,7 +120,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/HYPERION/s7hyperion.llr.gz";
+        c.rootDirOnServer = "/THOMAS/HYPERION";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s7hyperion.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
         configArray.add(c);
@@ -132,7 +133,8 @@ public class SaturnConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas (2000)";
-        c.rootDirOnServer = "/THOMAS/JANUS/s10janus.llr.gz";
+        c.rootDirOnServer = "/THOMAS/JANUS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "s10janus.llr.gz");
         c.hasColoringData = false;
         c.setResolution(ImmutableList.of(5040));
         configArray.add(c);

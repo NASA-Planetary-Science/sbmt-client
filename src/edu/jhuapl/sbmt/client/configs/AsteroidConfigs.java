@@ -2,11 +2,10 @@ package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -35,7 +34,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         AsteroidConfigs c = new AsteroidConfigs();
 
@@ -105,7 +104,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.lidarBrowseIsInMeters = true;
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.NLR;
-//        configArray.add(c);
+        configArray.add(c);
 
         // Thomas Eros
         c = c.clone();
@@ -129,7 +128,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelType.EROSNLR;
         c.modelLabel = "Neumann et al. (2001)";
-        c.rootDirOnServer = "/OTHER/EROSNLR/nlrshape.llr2.gz";
+        c.rootDirOnServer = "/OTHER/EROSNLR";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "nlrshape.llr2.gz");
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO
         c.setResolution(ImmutableList.of(129600));
@@ -141,7 +141,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.LIDAR_BASED;
         c.author = ShapeModelType.EROSNAV;
         c.modelLabel = "NAV team (2001)";
-        c.rootDirOnServer = "/OTHER/EROSNAV/navplate.obj.gz";
+        c.rootDirOnServer = "/OTHER/EROSNAV";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "navplate.obj.gz");
         c.hasStateHistory = true;
         c.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth"; // TODO - use the shared/history directory
         c.setResolution(ImmutableList.of(56644));
@@ -218,7 +219,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.OSTRO;
         c.modelLabel = "Ostro et al. (2004)";
-        c.rootDirOnServer = "/HUDSON/ITOKAWA/25143itokawa.obj.gz";
+        c.rootDirOnServer = "/HUDSON/ITOKAWA";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "25143itokawa.obj.gz");
         c.setResolution(ImmutableList.of(12192));
         configArray.add(c);
 
@@ -396,7 +398,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas et al. (2000)";
-        c.rootDirOnServer = "/THOMAS/IDA/243ida.llr.gz";
+        c.rootDirOnServer = "/THOMAS/IDA";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "243ida.llr.gz");
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
@@ -443,7 +446,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas et al. (2000)";
-        c.rootDirOnServer = "/THOMAS/MATHILDE/253mathilde.llr.gz";
+        c.rootDirOnServer = "/THOMAS/MATHILDE";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "253mathilde.llr.gz");
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(14160));
 
@@ -497,7 +501,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Thomas et al. (2000)";
-        c.rootDirOnServer = "/THOMAS/GASPRA/951gaspra.llr.gz";
+        c.rootDirOnServer = "/THOMAS/GASPRA";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "951gaspra.llr.gz");
         c.hasImageMap = true;
         c.setResolution(ImmutableList.of(32040));
 
@@ -544,7 +549,8 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.JORDA;
         c.modelLabel = "Farnham and Jorda (2013)";
-        c.rootDirOnServer = "/JORDA/STEINS/steins_cart.plt.gz";
+        c.rootDirOnServer = "/JORDA/STEINS";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "steins_cart.plt.gz");
         c.setResolution(ImmutableList.of(20480));
         configArray.add(c);
     }

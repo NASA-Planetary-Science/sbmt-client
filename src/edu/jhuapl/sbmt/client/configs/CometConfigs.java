@@ -1,11 +1,10 @@
 package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.saavtk.config.ViewConfig;
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.Configuration;
@@ -31,7 +30,7 @@ public class CometConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         CometConfigs c = new CometConfigs();
 

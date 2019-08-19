@@ -2,10 +2,10 @@ package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.saavtk.config.ConfigArrayList;
 import edu.jhuapl.saavtk.config.ExtensibleTypedLookup.Builder;
 import edu.jhuapl.saavtk.config.ViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
@@ -47,7 +47,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(List<ViewConfig> configArray)
+	public static void initialize(ConfigArrayList configArray)
     {
         RyuguConfigs c = new RyuguConfigs();
         c = new RyuguConfigs();
@@ -1410,11 +1410,6 @@ public class RyuguConfigs extends SmallBodyViewConfig
 
             c.density = 1200.; // (kg/m^3)
             c.rotationRate = 0.00022871; // (rad/sec)
-
-            c.hasSpectralData = true;
-            c.spectralInstruments = new BasicSpectrumInstrument[] {
-                    new NIRS3()
-            };
 
             c.hasHierarchicalSpectraSearch = true;
             c.hasHypertreeBasedSpectraSearch = false;
