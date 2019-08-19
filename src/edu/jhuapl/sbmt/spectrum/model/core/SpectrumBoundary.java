@@ -3,7 +3,6 @@ package edu.jhuapl.sbmt.spectrum.model.core;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class SpectrumBoundary extends AbstractModel implements PropertyChangeLis
     private vtkActor actor;
     private IBasicSpectrumRenderer spectrumRenderer;
 
-    public SpectrumBoundary(IBasicSpectrumRenderer spectrum, SmallBodyModel smallBodyModel) throws IOException
+    public SpectrumBoundary(IBasicSpectrumRenderer spectrum, SmallBodyModel smallBodyModel) //throws IOException
     {
         this.spectrumRenderer = spectrum;
         this.actor = spectrum.getOutlineActor();

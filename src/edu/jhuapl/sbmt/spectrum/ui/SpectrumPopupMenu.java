@@ -230,7 +230,7 @@ public class SpectrumPopupMenu extends PopupMenu implements PropertyChangeListen
 
                 }
                 else
-                    collection.removeSpectrum(currentSpectrum);
+                    collection.removeSpectrum(spectrumRenderer.getSpectrum());
 //            }
 //            catch (IOException e1) {
 //                e1.printStackTrace();

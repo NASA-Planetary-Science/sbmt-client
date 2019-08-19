@@ -62,14 +62,14 @@ public class CustomSpectrumResultsTableController
 //        panel.getResultList().getColumnModel().getColumn(panel.getFrusColumnIndex()).setResizable(true);
 //        panel.getResultList().getColumnModel().getColumn(panel.getBndrColumnIndex()).setResizable(true);
 
-        panel.getRemoveAllSpectraButton().removeActionListener(panel.getRemoveAllSpectraButton().getActionListeners()[0]);
-        panel.getRemoveAllSpectraButton().addActionListener(new ActionListener()
+        panel.getRemoveSpectraButton().removeActionListener(panel.getRemoveSpectraButton().getActionListeners()[0]);
+        panel.getRemoveSpectraButton().addActionListener(new ActionListener()
         {
 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                removeAllFootprintsForAllInstrumentsButtonActionPerformed(e);
+                removeFootprintsForAllInstrumentsButtonActionPerformed(e);
             }
         });
 

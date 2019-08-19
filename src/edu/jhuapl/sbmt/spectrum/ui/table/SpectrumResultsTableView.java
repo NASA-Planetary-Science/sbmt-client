@@ -46,8 +46,10 @@ public class SpectrumResultsTableView extends JPanel
     private JButton nextButton;
     private JComboBox<Integer> numberOfBoundariesComboBox;
     private JButton prevButton;
-    private JButton removeAllButton;
-    private JButton removeAllSpectraButton;
+    private JButton removeBoundariesButton;
+    private JButton removeSpectraButton;
+    private JButton showBoundariesButton;
+    private JButton showSpectraButton;
     private JButton saveSpectraListButton;
     private JButton saveSelectedSpectraListButton;
     private SpectrumPopupMenu spectrumPopupMenu;
@@ -84,8 +86,10 @@ public class SpectrumResultsTableView extends JPanel
         numberOfBoundariesComboBox = new JComboBox<Integer>();
         prevButton = new JButton("Prev");
         nextButton = new JButton("Next");
-        removeAllSpectraButton = new JButton("Remove All Images");
-        removeAllButton = new JButton("Remove All Boundaries");
+        removeSpectraButton = new JButton("Remove Spectra");
+        removeBoundariesButton = new JButton("Remove Boundaries");
+        showSpectraButton = new JButton("Show Spectra");
+        showBoundariesButton = new JButton("Show Boundaries");
         loadSpectraListButton = new JButton("Load...");
         saveSpectraListButton = new JButton("Save...");
         saveSelectedSpectraListButton = new JButton("Save Selected...");
@@ -126,9 +130,13 @@ public class SpectrumResultsTableView extends JPanel
         add(panel_1);
         panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
 
-        panel_1.add(removeAllSpectraButton);
+        panel_1.add(showSpectraButton);
 
-        panel_1.add(removeAllButton);
+        panel_1.add(showBoundariesButton);
+
+        panel_1.add(removeSpectraButton);
+
+        panel_1.add(removeBoundariesButton);
 
         JPanel panel_2 = new JPanel();
         add(panel_2);
@@ -182,9 +190,6 @@ public class SpectrumResultsTableView extends JPanel
 		buttonPanel.add(selectNoneB, "w 24!,h 24!");
 		buttonPanel.add(selectAllB, "w 24!,h 24!,wrap 2");
 		add(buttonPanel);
-
-		// Popup menu
-//		LidarPopupMenu<?> lidarPopupMenu = LidarGuiUtil.formLidarTrackPopupMenu(refTrackManager, aRenderer);
 
 		// Table Content
 		QueryComposer<LookUp> tmpComposer = new QueryComposer<>();
@@ -262,14 +267,24 @@ public class SpectrumResultsTableView extends JPanel
         return prevButton;
     }
 
-    public JButton getRemoveAllButton()
+    public JButton getShowBoundariesButton()
     {
-        return removeAllButton;
+        return showBoundariesButton;
     }
 
-    public JButton getRemoveAllSpectraButton()
+    public JButton getShowSpectraButton()
     {
-        return removeAllSpectraButton;
+        return showSpectraButton;
+    }
+
+    public JButton getRemoveBoundariesButton()
+    {
+        return removeBoundariesButton;
+    }
+
+    public JButton getRemoveSpectraButton()
+    {
+        return removeSpectraButton;
     }
 
     public JButton getSaveSpectraListButton()
@@ -291,43 +306,6 @@ public class SpectrumResultsTableView extends JPanel
     {
         this.resultsLabel = resultsLabel;
     }
-
-//    public int getMapColumnIndex()
-//    {
-//    	return tmpIH.getColumnLabels().indexOf(LookUp.Map.toString());
-////    	return tmpIH.getColumnLabel(LookUp.Map);
-////        return resultList.mapColumnIndex;
-//    }
-//
-//    public int getShowFootprintColumnIndex()
-//    {
-//        return resultList.showFootprintColumnIndex;
-//    }
-//
-//    public int getFrusColumnIndex()
-//    {
-//        return resultList.frusColumnIndex;
-//    }
-//
-//    public int getBndrColumnIndex()
-//    {
-//        return resultList.bndrColumnIndex;
-//    }
-//
-//    public int getDateColumnIndex()
-//    {
-//        return resultList.dateColumnIndex;
-//    }
-//
-//    public int getIdColumnIndex()
-//    {
-//        return resultList.idColumnIndex;
-//    }
-//
-//    public int getFilenameColumnIndex()
-//    {
-//        return resultList.filenameColumnIndex;
-//    }
 
     public SpectrumPopupMenu getSpectrumPopupMenu()
     {

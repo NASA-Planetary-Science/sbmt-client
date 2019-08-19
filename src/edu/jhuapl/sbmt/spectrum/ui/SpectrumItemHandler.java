@@ -51,7 +51,12 @@ public class SpectrumItemHandler extends BasicItemHandler<BasicSpectrum, LookUp>
 	public void setColumnValue(BasicSpectrum spec, LookUp aEnum, Object aValue)
 	{
 		if (aEnum == LookUp.Map)
-			spectrumCollection.addSpectrum(spec, false);
+		{
+			if (!spectrumCollection.isSpectrumMapped(spec))
+				spectrumCollection.addSpectrum(spec, false);
+			else
+				spectrumCollection.removeSpectrum(spec);
+		}
 		else if (aEnum == LookUp.Show)
 			spectrumCollection.setVisibility(spec, (boolean) aValue);
 		else if (aEnum == LookUp.Frus)

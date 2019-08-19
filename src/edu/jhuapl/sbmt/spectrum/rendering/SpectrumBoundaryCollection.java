@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +19,6 @@ import edu.jhuapl.sbmt.client.SmallBodyModel;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.SpectrumBoundary;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
-
-import nom.tam.fits.FitsException;
 
 public class SpectrumBoundaryCollection extends AbstractModel implements PropertyChangeListener
 {
@@ -58,7 +55,7 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 
     protected SpectrumBoundary createBoundary(
             BasicSpectrum spec,
-            SmallBodyModel smallBodyModel) throws IOException, FitsException
+            SmallBodyModel smallBodyModel) //throws IOException, FitsException
     {
         IBasicSpectrumRenderer spectrum = spectrumCollection.getRendererForSpectrum(spec);
         SpectrumBoundary boundary = new SpectrumBoundary(spectrum, smallBodyModel);
@@ -93,15 +90,17 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 
 
 //    public void addBoundary(SpectrumKeyInterface key, SpectraCollection collection) throws FitsException, IOException
-    public SpectrumBoundary addBoundary(BasicSpectrum spec) throws FitsException, IOException
+    public SpectrumBoundary addBoundary(BasicSpectrum spec) //throws FitsException, IOException
     {
+    	SpectrumBoundary boundary = null;
         if (spectrumToBoundaryMap.containsKey(spec))
-            return spectrumToBoundaryMap.get(spec);
-
+            boundary = spectrumToBoundaryMap.get(spec);
+        else
+        	boundary = createBoundary(spec, smallBodyModel);
 //        if (collection.getSpectrumFromKey(key) == null) return;
 
 //        SpectrumBoundary boundary = createBoundary(key, smallBodyModel, collection);
-        SpectrumBoundary boundary = createBoundary(spec, smallBodyModel);
+//        SpectrumBoundary boundary = createBoundary(spec, smallBodyModel);
 
         smallBodyModel.addPropertyChangeListener(boundary);
         boundary.addPropertyChangeListener(this);
@@ -119,9 +118,11 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
         return boundary;
     }
 
-    public void removeBoundary(SpectrumKeyInterface key)
+//    public void removeBoundary(SpectrumKeyInterface key)
+    public void removeBoundary(BasicSpectrum spectrum)
     {
-        SpectrumBoundary boundary = getBoundaryFromKey(key);
+//        SpectrumBoundary boundary = getBoundaryFromKey(key);
+        SpectrumBoundary boundary = spectrumToBoundaryMap.get(spectrum);
 
         if(boundary != null)
         {
@@ -144,9 +145,9 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
 
     public void removeAllBoundaries()
     {
-        HashMap<SpectrumBoundary, List<vtkProp>> map = (HashMap<SpectrumBoundary, List<vtkProp>>)boundaryToActorsMap.clone();
-        for (SpectrumBoundary boundary : map.keySet())
-            removeBoundary(boundary.getKey());
+//        HashMap<SpectrumBoundary, List<vtkProp>> map = (HashMap<SpectrumBoundary, List<vtkProp>>)boundaryToActorsMap.clone();
+        for (BasicSpectrum spectrum : spectrumToBoundaryMap.keySet())
+            removeBoundary(spectrum);
     }
 
     public List<vtkProp> getProps()
@@ -199,14 +200,14 @@ public class SpectrumBoundaryCollection extends AbstractModel implements Propert
     {
     	SpectrumBoundary boundary = spectrumToBoundaryMap.get(spec);
     	if (boundary == null)
-			try
-			{
+//			try
+//			{
 				boundary = addBoundary(spec);
-			} catch (FitsException | IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			} catch (FitsException | IOException e)
+//			{
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 
     	boundary.setVisibility(visible);
     	this.pcs.firePropertyChange(Properties.MODEL_CHANGED, null, boundary);

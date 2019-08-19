@@ -21,7 +21,6 @@ import edu.jhuapl.sbmt.model.lidar.SaavtkItemManager;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
 import edu.jhuapl.sbmt.spectrum.model.core.interfaces.SearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.ISpectralInstrument;
-import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.Spectrum;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumColoringStyle;
 import edu.jhuapl.sbmt.spectrum.model.sbmtCore.spectra.SpectrumKeyInterface;
 
@@ -211,17 +210,24 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
         return spectrumRenderer;
     }
 
-    public void removeSpectrum(SpectrumKeyInterface key)
-    {
-        if (!containsKey(key))
-            return;
+//    public void removeSpectrum(BasicSpectrum spectrum)
+//    {
+//    	spectrumToRendererMap.put(spectrum, null);
+//    }
+//
+//    public void removeSpectrum(SpectrumKeyInterface key)
+//    {
+//        if (!containsKey(key))
+//            return;
+//
+//        removeSpectrum(key.getName());
+//    }
 
-        removeSpectrum(key.getName());
-    }
-
-    public void removeSpectrum(String path)
+//    public void removeSpectrum(String path)
+    public void removeSpectrum(BasicSpectrum spectrum)
     {
-    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(path);
+    	IBasicSpectrumRenderer spectrumRenderer = spectrumToRendererMap.get(spectrum);
+    	if (spectrumRenderer == null) return;
         spectrumRenderer.setUnselected();
 
         List<vtkProp> actors = spectraActors.get(spectrumRenderer);
@@ -233,7 +239,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
         spectrumToActorsMap.remove(spectrumRenderer);
 
-        spectrumToRendererMap.remove(path);
+        spectrumToRendererMap.put(spectrum, null);
 
         spectrumRenderer.removePropertyChangeListener(this);
         shapeModel.removePropertyChangeListener(spectrumRenderer);
@@ -250,18 +256,16 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 
     public void removeAllSpectra()
     {
-        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)spectrumToRendererMap.clone();
-        for (String path : map.keySet())
-            removeSpectrum(path);
+        for (BasicSpectrum spectrum : spectrumToRendererMap.keySet())
+            removeSpectrum(spectrum);
     }
 
     public void removeAllSpectraForInstrument(ISpectralInstrument instrument)
     {
-        HashMap<String, Spectrum> map = (HashMap<String, Spectrum>)spectrumToRendererMap.clone();
-        for (String path : map.keySet())
+        for (BasicSpectrum spectrum : spectrumToRendererMap.keySet())
         {
-            if (map.get(path).getInstrument() == instrument)
-                removeSpectrum(path);
+            if (spectrum.getInstrument().getClass() == instrument.getClass())
+                removeSpectrum(spectrum);
         }
     }
 
@@ -366,6 +370,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
     {
         for (IBasicSpectrumRenderer spectrumRenderer : spectrumToRendererMap.values())
         {
+        	if (spectrumRenderer == null) continue;
             spectrumRenderer.setUnselected();
             this.pcs.firePropertyChange(Properties.MODEL_CHANGED,null,spectrumRenderer);
         }
@@ -533,7 +538,7 @@ public class SpectraCollection extends SaavtkItemManager<BasicSpectrum> implemen
 		// Remove relevant state and VTK mappings
 		for (BasicSpectrum spec : specs)
 		{
-			removeSpectrum(spec.getFullPath());
+			removeSpectrum(spec);
 		}
 
 		// Delegate

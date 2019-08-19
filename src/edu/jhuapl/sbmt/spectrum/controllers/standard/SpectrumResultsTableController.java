@@ -14,6 +14,8 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import com.google.common.collect.ImmutableSet;
+
 import edu.jhuapl.saavtk.gui.dialog.CustomFileChooser;
 import edu.jhuapl.saavtk.gui.render.Renderer;
 import edu.jhuapl.saavtk.model.ModelManager;
@@ -169,17 +171,38 @@ public class SpectrumResultsTableController
             }
         });
 
-        panel.getRemoveAllButton().setText("Remove All Boundaries");
-        panel.getRemoveAllButton().addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeAllBoundariesButtonActionPerformed(evt);
+        panel.getShowSpectraButton().setText("Show Spectra");
+        panel.getShowSpectraButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                showSpectraButtonActionPerformed(evt);
             }
         });
 
-        panel.getRemoveAllSpectraButton().setText("Remove All Spectra");
-        panel.getRemoveAllSpectraButton().addActionListener(new java.awt.event.ActionListener() {
+        panel.getShowBoundariesButton().setText("Show Boundaries");
+        panel.getShowBoundariesButton().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                showBoundariesButtonActionPerformed(evt);
+            }
+        });
+//
+//        panel.getRemoveSpectraButton().setText("Remove Spectra");
+//        panel.getRemoveSpectraButton().addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                removeFootprintsButtonActionPerformed(evt);
+//            }
+//        });
+
+        panel.getRemoveBoundariesButton().setText("Remove Boundaries");
+        panel.getRemoveBoundariesButton().addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeAllFootprintsButtonActionPerformed(evt);
+                removeBoundariesButtonActionPerformed(evt);
+            }
+        });
+
+        panel.getRemoveSpectraButton().setText("Remove Spectra");
+        panel.getRemoveSpectraButton().addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeFootprintsButtonActionPerformed(evt);
             }
         });
 
@@ -337,6 +360,7 @@ public class SpectrumResultsTableController
 
     private void prevButtonActionPerformed(ActionEvent evt)
     {
+    	boundaries.removeAllBoundaries();
         IdPair resultIntervalCurrentlyShown = model.getResultIntervalCurrentlyShown();
         spectrumCollection.deselectAll();
         if (resultIntervalCurrentlyShown != null)
@@ -367,6 +391,8 @@ public class SpectrumResultsTableController
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt)
     {
+    	boundaries.removeAllBoundaries();
+
         IdPair resultIntervalCurrentlyShown = model.getResultIntervalCurrentlyShown();
         spectrumCollection.deselectAll();
         if (resultIntervalCurrentlyShown != null)
@@ -396,30 +422,77 @@ public class SpectrumResultsTableController
         }
     }
 
-    private void removeAllFootprintsButtonActionPerformed(ActionEvent evt)
+    private void showSpectraButtonActionPerformed(ActionEvent evt)
     {
-        spectrumCollection.removeAllSpectraForInstrument(instrument);
-        model.setResultIntervalCurrentlyShown(null);
-    }
-
-    protected void removeAllFootprintsForAllInstrumentsButtonActionPerformed(ActionEvent evt)
-    {
-        spectrumCollection.removeAllSpectra();
-        for (SpectrumKeyInterface key : spectrumKeys)
-        {
-            boundaries.removeBoundary(key);
+    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+    	for (BasicSpectrum spectrum: selectedItems)
+    	{
+    		spectrumCollection.addSpectrum(spectrum, false);
+            boundaries.addBoundary(spectrum);
         }
         model.setResultIntervalCurrentlyShown(null);
     }
 
-    private void removeAllBoundariesButtonActionPerformed(ActionEvent evt)
+    private void showBoundariesButtonActionPerformed(ActionEvent evt)
     {
-        boundaries.removeAllBoundaries();
-        for (SpectrumKeyInterface key : spectrumKeys)
-        {
-            boundaries.removeBoundary(key);
+    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+    	for (BasicSpectrum spectrum: selectedItems)
+    	{
+    		System.out.println("SpectrumResultsTableController: showBoundariesButtonActionPerformed: adding boundary");
+            boundaries.addBoundary(spectrum);
         }
         model.setResultIntervalCurrentlyShown(null);
+    }
+
+    private void removeFootprintsButtonActionPerformed(ActionEvent evt)
+    {
+    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+    	for (BasicSpectrum spectrum: selectedItems)
+    	{
+    		spectrumCollection.removeSpectrum(spectrum);
+            boundaries.removeBoundary(spectrum);
+        }
+        model.setResultIntervalCurrentlyShown(null);
+
+//        spectrumCollection.removeAllSpectraForInstrument(instrument);
+//        model.setResultIntervalCurrentlyShown(null);
+    }
+
+    protected void removeFootprintsForAllInstrumentsButtonActionPerformed(ActionEvent evt)
+    {
+    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+    	for (BasicSpectrum spectrum: selectedItems)
+    	{
+    		spectrumCollection.removeSpectrum(spectrum);
+            boundaries.removeBoundary(spectrum);
+        }
+        model.setResultIntervalCurrentlyShown(null);
+
+//        spectrumCollection.removeAllSpectra();
+////        for (SpectrumKeyInterface key : spectrumKeys)
+//       	for (BasicSpectrum spectrum: spectrumRawResults)
+//        {
+//            boundaries.removeBoundary(spectrum);
+//        }
+//        model.setResultIntervalCurrentlyShown(null);
+    }
+
+    private void removeBoundariesButtonActionPerformed(ActionEvent evt)
+    {
+    	ImmutableSet<BasicSpectrum> selectedItems = spectrumCollection.getSelectedItems();
+    	for (BasicSpectrum spectrum: selectedItems)
+    	{
+            boundaries.removeBoundary(spectrum);
+        }
+        model.setResultIntervalCurrentlyShown(null);
+
+//        boundaries.removeAllBoundaries();
+//        for (BasicSpectrum spectrum: spectrumRawResults)
+////        for (SpectrumKeyInterface key : spectrumKeys)
+//        {
+//            boundaries.removeBoundary(spectrum);
+//        }
+//        model.setResultIntervalCurrentlyShown(null);
     }
 
     private void numberOfBoundariesComboBoxActionPerformed(ActionEvent evt) {
@@ -471,7 +544,7 @@ public class SpectrumResultsTableController
         int startId = idPair.id1;
         int endId = idPair.id2;
         boundaries.removeAllBoundaries();
-
+        System.out.println("SpectrumResultsTableController: showSpectrumBoundaries: start id " + startId + " endID " + endId);
         for (int i=startId; i<endId; ++i)
         {
             if (i < 0)
@@ -481,10 +554,11 @@ public class SpectrumResultsTableController
 
             try
             {
-                String currentSpectrum = spectrumRawResults.get(i).getDataName();
+                BasicSpectrum currentSpectrum = spectrumRawResults.get(i);
 //                String boundaryName = currentSpectrum.substring(0,currentSpectrum.length()-4);
-                SpectrumKeyInterface key = model.createSpectrumKey(currentSpectrum, model.getInstrument());
-                boundaries.addBoundary(spectrumRawResults.get(i));
+//                SpectrumKeyInterface key = model.createSpectrumKey(currentSpectrum, model.getInstrument());
+                spectrumCollection.addSpectrum(currentSpectrum, false);
+                boundaries.addBoundary(currentSpectrum);
             }
             catch (Exception e1) {
                 JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(panel),
@@ -503,14 +577,16 @@ public class SpectrumResultsTableController
         JTable resultTable = panel.getResultList();
         panel.getResultsLabel().setText(results.size() + " spectra found");
         //clear out the old spectrum and boundaries from the spectrum and boundary collection
-        for (SpectrumKeyInterface key : spectrumKeys)
+//        for (SpectrumKeyInterface key : spectrumKeys)
+        for (BasicSpectrum spec : results)
         {
-            spectrumCollection.removeSpectrum(key);
-            boundaries.removeBoundary(key);
+            spectrumCollection.removeSpectrum(spec);
+            boundaries.removeBoundary(spec);
         }
         spectrumKeys.clear();
         spectrumRawResults = results;
         spectrumCollection.setAllItems(results);
+        showSpectrumBoundaries(new IdPair(0, Integer.parseInt((String)panel.getNumberOfBoundariesComboBox().getSelectedItem())));
 //        stringRenderer.setSpectrumRawResults(spectrumRawResults);
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss.SSS");
 //        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
