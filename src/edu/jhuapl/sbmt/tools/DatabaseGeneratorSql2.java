@@ -586,7 +586,7 @@ public class DatabaseGeneratorSql2
 
         for (DBRunInfo ri : runInfos)
         {
-        	if (!ri.name.equals(body)) continue;
+        	if (!ri.name.equals(body) || (ri.imageSource != mode)) continue;
             DatabaseGeneratorSql2 generator = new DatabaseGeneratorSql2(config, ri.databasePrefix, appendTables, modifyMain, cameraIndex);
 
             String pathToFileList = ri.pathToFileList;

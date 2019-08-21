@@ -1,4 +1,4 @@
-package edu.jhuapl.sbmt.client.configs;
+ package edu.jhuapl.sbmt.client.configs;
 
 import java.util.GregorianCalendar;
 
@@ -20,6 +20,7 @@ import edu.jhuapl.sbmt.model.image.ImageType;
 import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class CometConfigs extends SmallBodyViewConfig
 {
@@ -98,7 +99,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.DUXBURY;
         c.modelLabel = "Farnham et al. (2005)";
-        c.rootDirOnServer = "/OTHER/WILD2/wild2_cart_full.w2.gz";
+        c.rootDirOnServer = "/OTHER/WILD2";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "wild2_cart_full.w2.gz");
         c.setResolution(ImmutableList.of(17518));
         configArray.add(c);
 
@@ -142,6 +144,13 @@ public class CometConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P/IMAGING/imagelist-fullpath.txt", "67p"),
+            };
+
+
             configArray.add(c);
 
             c = c.clone();
@@ -159,6 +168,13 @@ public class CometConfigs extends SmallBodyViewConfig
                     17442, 72770, 298442, 1214922, 4895631, 16745283 //
                 )); //
             c.hasColoringData = false;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/DLR/67P/IMAGING/imagelist-fullpath.txt", "67p_dlr"),
+            };
+
+
             configArray.add(c);
 
             // 67P_V2
@@ -210,6 +226,13 @@ public class CometConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V2/IMAGING/imagelist-fullpath.txt", "67p_v2"),
+            };
+
+
             configArray.add(c);
 
             // 67P_V3
@@ -265,6 +288,13 @@ public class CometConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] { "NAC", "*WAC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody._67P.toString(), "/project/nearsdc/data/GASKELL/67P_V3/IMAGING/imagelist-fullpath.txt", "67p_v3"),
+            };
+
+
             configArray.add(c);
         }
 
@@ -275,7 +305,8 @@ public class CometConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.THOMAS;
         c.modelLabel = "Farnham and Thomas (2013)";
-        c.rootDirOnServer = "/THOMAS/HARTLEY/hartley2_2012_cart.plt.gz";
+        c.rootDirOnServer = "/THOMAS/HARTLEY";
+        c.shapeModelFileNames = prepend(c.rootDirOnServer, "hartley2_2012_cart.plt.gz");
         c.setResolution(ImmutableList.of(32040));
         configArray.add(c);
 

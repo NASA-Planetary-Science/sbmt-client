@@ -30,6 +30,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class SaturnConfigs extends SmallBodyViewConfig
 {
@@ -329,6 +330,13 @@ public class SaturnConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 400000.0;
             c.imageSearchDefaultMaxResolution = 5000.0;
             c.hasColoringData = false;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.ATLAS.toString(), "/project/sbmt2/data/atlas/gaskell/imaging/imagelist-fullpath.txt", "atlas"),
+            };
+
+
             configArray.add(c);
         }
 

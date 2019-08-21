@@ -1,6 +1,7 @@
 package edu.jhuapl.sbmt.client;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,7 @@ import edu.jhuapl.sbmt.model.image.ImagingInstrument;
 import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.SpectrumInstrumentFactory;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
+import edu.jhuapl.sbmt.tools.Authenticator;
 import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 import crucible.crust.metadata.api.Key;
@@ -34,6 +36,8 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     {
         SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(1, 0));
         Configuration.setAPLVersion(true);
+        SbmtMultiMissionTool.configureMission();
+        Authenticator.authenticate();
         SmallBodyViewConfig.initialize();
         for (ViewConfig each: SmallBodyViewConfig.getBuiltInConfigs())
         {
@@ -50,7 +54,10 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
             System.out.println("SmallBodyViewConfigMetadataIO: main: author " + config.author + " body " + config.body + " version " + version + " root " + ((SmallBodyViewConfig)config).rootDirOnServer);
             File file = new File("/Users/steelrj1/Desktop/configs4/" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
-            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            if (version != null && (version.length() > 0))
+            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body + " (" + version + ")"), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
+            else
+            	allBodiesMetadata.put(Key.of(config.author + "/" + config.body), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
 
             System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();
@@ -111,6 +118,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(rootDirOnServer, c.rootDirOnServer, configMetadata);
         write(shapeModelFileExtension, c.shapeModelFileExtension, configMetadata);
         write(shapeModelFileBaseName, c.shapeModelFileBaseName, configMetadata);
+        write(shapeModelFileNamesKey, c.shapeModelFileNames, configMetadata);
         String[] resolutionsToSave = new String[c.getResolutionLabels().size()];
         Integer[] platesPerResToSave = new Integer[c.getResolutionNumberElements().size()];
         write(resolutions, c.getResolutionLabels().toArray(resolutionsToSave), configMetadata);
@@ -146,8 +154,18 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         write(spectrumMetadataFile, c.spectrumMetadataFile, configMetadata);
 
         if (c.hasHierarchicalSpectraSearch && c.hierarchicalSpectraSearchSpecification != null)
+        {
+        	try
+			{
+				c.hierarchicalSpectraSearchSpecification.loadMetadata();
+			}
+        	catch (FileNotFoundException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             write(hierarchicalSpectraSearchSpecification, c.hierarchicalSpectraSearchSpecification.getMetadataManager().store(), configMetadata);
-
+        }
 
         writeDate(lidarSearchDefaultStartDate, c.lidarSearchDefaultStartDate, configMetadata);
         writeDate(lidarSearchDefaultEndDate, c.lidarSearchDefaultEndDate, configMetadata);
@@ -269,6 +287,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         c.shapeModelFileExtension = read(shapeModelFileExtension, configMetadata);
         c.shapeModelFileBaseName = read(shapeModelFileBaseName, configMetadata);
         String[] resolutionsToAdd = read(resolutions, configMetadata);
+        c.shapeModelFileNames = read(shapeModelFileNamesKey, configMetadata);
         Integer[] platesPerResToAdd = read(platesPerRes, configMetadata);
         c.setResolution(ImmutableList.copyOf(resolutionsToAdd), ImmutableList.copyOf(platesPerResToAdd));
         c.timeHistoryFile = read(timeHistoryFile, configMetadata);
@@ -316,12 +335,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
 //        	c.hierarchicalImageSearchSpecification.getMetadataManager().retrieve(read(hierarchicalImageSearchSpecification, configMetadata));
 
+
+        }
+
+        if (c.hasSpectralData && c.spectralInstruments.length > 0)
+        {
 	        c.hasHierarchicalSpectraSearch = read(hasHierarchicalSpectraSearch, configMetadata);
 	        c.hasHypertreeBasedSpectraSearch = read(hasHypertreeBasedSpectraSearch, configMetadata);
 	        c.spectraSearchDataSourceMap = read(spectraSearchDataSourceMap, configMetadata);
 	        c.spectrumMetadataFile = read(spectrumMetadataFile, configMetadata);
 
-//        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+	        if (c.hasHierarchicalSpectraSearch)
+	        {
+	        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+	        }
         }
 
         if (c.hasLidarData)
@@ -393,6 +420,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
     final Key<String> rootDirOnServer = Key.of("rootDirOnServer");
     final Key<String> shapeModelFileExtension = Key.of("shapeModelFileExtension");
     final Key<String> shapeModelFileBaseName = Key.of("shapeModelFileBaseName");
+    final Key<String[]> shapeModelFileNamesKey = Key.of("shapeModelFileNames");
     final Key<String[]> resolutions = Key.of("resolutions");
     final Key<Integer[]> platesPerRes = Key.of("platesPerRes");
     final Key<String> timeHistoryFile = Key.of("timeHistoryFile");

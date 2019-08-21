@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.phobos.PhobosExperimentalSearchSpecification;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class MarsConfigs extends SmallBodyViewConfig
 {
@@ -98,6 +99,12 @@ public class MarsConfigs extends SmallBodyViewConfig
         c.lidarSearchDataSourceMap = new LinkedHashMap<>();
         c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
+        c.databaseRunInfos = new DBRunInfo[]
+        {
+        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOS/IMAGING/pdsImageList.txt", ShapeModelBody.PHOBOS.toString().toLowerCase()),
+        };
+
+
         configArray.add(c);
 
         // Thomas Phobos
@@ -169,6 +176,12 @@ public class MarsConfigs extends SmallBodyViewConfig
 
             c.lidarSearchDataSourceMap = Maps.newHashMap();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/nearsdc/data/GASKELL/PHOBOSEXPERIMENTAL/IMAGING/imagelist.txt", "phobosexp"),
+            };
+
 
 //            configArray.add(c);
         }
@@ -250,6 +263,12 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.lidarSearchDataSourceMap = new LinkedHashMap<>();
             c.lidarSearchDataSourceMap.put("Default", "/GASKELL/PHOBOS/MOLA/tree/dataSource.lidar");
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PHOBOS.toString(), "/project/sbmt2/sbmt/data/bodies/phobos/ernst2018/imaging/imagelist-fullpath.txt", "phobos_ernst_2018"),
+            };
+
+
             configArray.add(c);
         }
 
@@ -305,6 +324,12 @@ public class MarsConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] { "Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC" };
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/THOMAS/DEIMOSEXPERIMENTAL/IMAGING/imagelist-fullpath.txt", "deimos"),
+            };
+
 //            configArray.add(c);
 
         }
@@ -349,6 +374,13 @@ public class MarsConfigs extends SmallBodyViewConfig
 //            c.imageSearchUserDefinedCheckBoxesNames = new String[]{"Viking Orbiter 1-A", "Viking Orbiter 1-B", "Viking Orbiter 2-A", "Viking Orbiter 2-B", "MEX HRSC"};
             c.imageSearchDefaultMaxSpacecraftDistance = 30000.0;
             c.imageSearchDefaultMaxResolution = 800.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/sbmt2/sbmt/data/bodies/deimos/ernst2018/imaging/imagelist-fullpath.txt", "deimos_ernst_2018"),
+            };
+
+
             configArray.add(c);
 
         }

@@ -16,7 +16,6 @@ import edu.jhuapl.saavtk.util.Configuration;
 import edu.jhuapl.saavtk.util.FileCache;
 import edu.jhuapl.saavtk.util.FileCache.UnauthorizedAccessException;
 import edu.jhuapl.saavtk.util.SafeURLPaths;
-import edu.jhuapl.sbmt.client.configs.AsteroidConfigs;
 import edu.jhuapl.sbmt.config.SBMTBodyConfiguration;
 import edu.jhuapl.sbmt.config.SBMTFileLocator;
 import edu.jhuapl.sbmt.config.SBMTFileLocators;
@@ -91,7 +90,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
         {
-//            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: reading " + name + " at " + url);
             File configFile = FileCache.getFileFromServer(url);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
@@ -100,6 +98,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (IOException e)
         {
             // TODO Auto-generated catch block
+        	System.out.println("SmallBodyViewConfig: fetchRemoteConfig: IO exception");
             e.printStackTrace();
             return null;
         }
@@ -111,6 +110,7 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         catch (RuntimeException re)
         {
         	System.err.println("Can't access URL, skipping");
+        	re.printStackTrace();
         	return null;
         }
 
@@ -134,11 +134,10 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     public static void initialize()
     {
     	ConfigArrayList configArray = getBuiltInConfigs();
-
         configArray.addAll(addRemoteEntries());
 
-        AsteroidConfigs.initialize(configArray);
-////        BennuConfigs.initialize(configArray);
+//        AsteroidConfigs.initialize(configArray);
+//        BennuConfigs.initialize(configArray);
 //        CometConfigs.initialize(configArray);
 //        MarsConfigs.initialize(configArray);
 //        NewHorizonsConfigs.initialize(configArray);

@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class NewHorizonsConfigs extends SmallBodyViewConfig
 {
@@ -297,6 +298,13 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.imageSearchDefaultMaxSpacecraftDistance = 1.0e9;
             c.imageSearchDefaultMaxResolution = 1.0e6;
             c.setResolution(ImmutableList.of(128880));
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.PLUTO.toString(), "/project/nearsdc/data/NEWHORIZONS/PLUTO/IMAGING/imagelist-fullpath.txt", ShapeModelBody.PLUTO.toString().toLowerCase()),
+            };
+
+
             configArray.add(c);
 
             c = c.clone();
@@ -338,6 +346,14 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             };
 
             c.setResolution(ImmutableList.of(128880));
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-sum.txt", "charon_nimmo2017_lorri"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.CHARON.toString(), "/project/sbmt2/sbmt/data/bodies/charon/nimmo2017/lorri/imagelist-fullpath-info.txt", "charon_nimmo2017_lorri"),
+            };
+
+
             configArray.add(c);
 
             NewHorizonsConfigs hydra = new NewHorizonsConfigs();
@@ -403,7 +419,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
             c.author = ShapeModelType.WEAVER;
             c.modelLabel = "Weaver et al. (2016)";
 //            c.pathOnServer = "/NEWHORIZONS/NIX/shape_res0.vtk.gz";
-            c.rootDirOnServer = "/NEWHORIZONS/NIX/";
+            c.rootDirOnServer = "/NEWHORIZONS/NIX";
             c.shapeModelFileNames = prepend(c.rootDirOnServer, "shape_res0.obj.gz");
             c.hasColoringData = false;
             c.imagingInstruments = new ImagingInstrument[] {

@@ -37,6 +37,7 @@ import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.QueryBase;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class RyuguConfigs extends SmallBodyViewConfig
 {
@@ -460,6 +461,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/onc", "ryugu_jaxasfmv20180627", "ryugu/jaxa-sfm-v20180627/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180627/tir", "ryugu_jaxasfmv20180627_tir", "ryugu/jaxa-sfm-v20180627/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -548,6 +556,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/onc", "ryugu_jaxasfmv20180714", "ryugu/jaxa-sfm-v20180714/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180714/tir", "ryugu_jaxasfmv20180714_tir", "ryugu/jaxa-sfm-v20180714/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -632,6 +647,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/onc", "ryugu_jaxasfmv201807252", "ryugu/jaxa-sfm-v20180725-2/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180725-2/tir", "ryugu_jaxasfmv201807252_tir", "ryugu/jaxa-sfm-v20180725-2/tir"),
+            };
+
 
             switch (SbmtMultiMissionTool.getMission())
             {
@@ -720,6 +742,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/onc", "ryugu_jaxasfmv20180804", "ryugu/jaxa-sfm-v20180804/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-sfm-v20180804/tir", "ryugu_jaxasfmv20180804_tir", "ryugu/jaxa-sfm-v20180804/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -804,6 +833,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+                	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/onc", "ryugu_jaxaspcv20180705", "ryugu/jaxa-spc-v20180705/onc"),
+                	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180705/tir", "ryugu_jaxaspcv20180705_tir", "ryugu/jaxa-spc-v20180705/tir"),
+            };
+
 
             switch (SbmtMultiMissionTool.getMission())
             {
@@ -894,6 +930,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/onc", "ryugu_jaxaspcv20180717", "ryugu/jaxa-spc-v20180717/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180717/tir", "ryugu_jaxaspcv20180717_tir", "ryugu/jaxa-spc-v20180717/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -980,6 +1023,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/onc", "ryugu_jaxaspcv201807192", "ryugu/jaxa-spc-v20180719-2/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180719-2/tir", "ryugu_jaxaspcv201807192_tir", "ryugu/jaxa-spc-v20180719-2/tir"),
+            };
+
 
             switch (SbmtMultiMissionTool.getMission())
             {
@@ -1070,6 +1120,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/onc", "ryugu_jaxaspcv20180731", "ryugu/jaxa-spc-v20180731/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180731/tir", "ryugu_jaxaspcv20180731_tir", "ryugu/jaxa-spc-v20180731/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -1159,6 +1216,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/onc", "ryugu_jaxaspcv20180810", "ryugu/jaxa-spc-v20180810/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180810/tir", "ryugu_jaxaspcv20180810_tir", "ryugu/jaxa-spc-v20180810/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -1247,6 +1311,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/onc", "ryugu_jaxaspcv20180816", "ryugu/jaxa-spc-v20180816/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180816/tir", "ryugu_jaxaspcv20180816_tir", "ryugu/jaxa-spc-v20180816/tir"),
+            };
+
 
             switch (SbmtMultiMissionTool.getMission())
             {
@@ -1338,6 +1409,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/onc", "ryugu_jaxaspcv20180829", "ryugu/jaxa-spc-v20180829/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20180829/tir", "ryugu_jaxaspcv20180829_tir", "ryugu/jaxa-spc-v20180829/tir"),
+            };
+
 
             switch (SbmtMultiMissionTool.getMission())
             {
@@ -1446,6 +1524,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/onc", "ryugu_jaxaspcv20181014", "ryugu/jaxa-spc-v20181014/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/jaxa-spc-v20181014/tir", "ryugu_jaxaspcv20181014_tir", "ryugu/jaxa-spc-v20181014/tir"),
+            };
+
+
             switch (SbmtMultiMissionTool.getMission())
             {
             case HAYABUSA2_DEV:
@@ -1535,6 +1620,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/onc", "ryugu_nasa001", "ryugu/nasa-001/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-001/tir", "ryugu_nasa001_tir", "ryugu/nasa-001/tir"),
+            };
+
+
             configArray.add(c);
         }
 
@@ -1612,6 +1704,12 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+                	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/onc", "ryugu_nasa002", "ryugu/nasa-002/onc"),
+                	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-002/tir", "ryugu_nasa002_tir", "ryugu/nasa-002/tir"),
+            };
 
             configArray.add(c);
         }
@@ -1694,6 +1792,13 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/onc", "ryugu_nasa003", "ryugu/nasa-003/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-003/tir", "ryugu_nasa003_tir", "ryugu/nasa-003/tir"),
+            };
+
             configArray.add(c);
         }
 
@@ -1772,6 +1877,12 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/onc", "ryugu_nasa004", "ryugu/nasa-004/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-004/tir", "ryugu_nasa004_tir", "ryugu/nasa-004/tir"),
+            };
 
             configArray.add(c);
         }
@@ -1852,6 +1963,12 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
 
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/onc", "ryugu_nasa005", "ryugu/nasa-005/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-005/tir", "ryugu_nasa005_tir", "ryugu/nasa-005/tir"),
+            };
+
             configArray.add(c);
         }
 
@@ -1930,6 +2047,12 @@ public class RyuguConfigs extends SmallBodyViewConfig
             c.lidarBrowseIsBinary = true;
             c.lidarBrowseBinaryRecordSize = 186;
             c.lidarOffsetScale = 0.0005;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/onc", "ryugu_nasa006", "ryugu/nasa-006/onc"),
+            	new DBRunInfo(ImageSource.SPICE, ShapeModelBody.RYUGU.toString(), "/project/sbmt2/sbmt/data/bodies/ryugu/nasa-006/tir", "ryugu_nasa006_tir", "ryugu/nasa-006/tir"),
+            };
 
             configArray.add(c);
         }

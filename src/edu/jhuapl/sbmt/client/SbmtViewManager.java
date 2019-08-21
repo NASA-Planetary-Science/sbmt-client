@@ -810,14 +810,14 @@ public class SbmtViewManager extends ViewManager
                 ////////////////////////////////////////
                 // Comets
                 ////////////////////////////////////////
-                "1P/Halley",
-                "9P/Tempel 1",
-                "81P/Wild 2",
-                "67P/Churyumov-Gerasimenko (SHAP4S)",
-                "67P/Churyumov-Gerasimenko (SHAP5 V0.3)",
-                "67P/Churyumov-Gerasimenko (V2)",
-                "67P/Churyumov-Gerasimenko (V3)",
-                "103P/Hartley 2",
+                "1P Halley",
+                "9P Tempel 1",
+                "81P Wild 2",
+                "67P Churyumov-Gerasimenko (SHAP4S)",
+                "67P Churyumov-Gerasimenko (SHAP5 V0.3)",
+                "67P Churyumov-Gerasimenko (V2)",
+                "67P Churyumov-Gerasimenko (V3)",
+                "103P Hartley 2",
 
                 ////////////////////////////////////////
                 // Kuiper Belt Objects

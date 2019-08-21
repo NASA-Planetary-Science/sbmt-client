@@ -24,6 +24,7 @@ import edu.jhuapl.sbmt.model.image.Instrument;
 import edu.jhuapl.sbmt.model.spectrum.instruments.BasicSpectrumInstrument;
 import edu.jhuapl.sbmt.query.database.GenericPhpQuery;
 import edu.jhuapl.sbmt.query.fixedlist.FixedListQuery;
+import edu.jhuapl.sbmt.tools.DBRunInfo;
 
 public class AsteroidConfigs extends SmallBodyViewConfig
 {
@@ -104,6 +105,13 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.lidarBrowseIsInMeters = true;
         c.lidarOffsetScale = 0.025;
         c.lidarInstrumentName = Instrument.NLR;
+
+        c.databaseRunInfos = new DBRunInfo[]
+        {
+        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.EROS.toString(), "/project/nearsdc/data/GASKELL/EROS/MSI/msiImageList.txt", "eros"),
+        };
+
+
         configArray.add(c);
 
         // Thomas Eros
@@ -209,6 +217,12 @@ public class AsteroidConfigs extends SmallBodyViewConfig
 
         c.spectralInstruments = new BasicSpectrumInstrument[] {};
 
+        c.databaseRunInfos = new DBRunInfo[]
+        {
+        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.ITOKAWA.toString(), "/project/nearsdc/data/GASKELL/ITOKAWA/AMICA/imagelist.txt", "amica"),
+        };
+
+
         configArray.add(c);
 
         // Ostro Itokawa
@@ -233,7 +247,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.RADAR_BASED;
         c.author = ShapeModelType.HUDSON;
         c.modelLabel = "Hudson et al. (2004)";
-        c.rootDirOnServer = "/toutatis/hudson/";
+        c.rootDirOnServer = "/toutatis/hudson";
         c.shapeModelFileExtension = ".obj";
         c.setResolution(ImmutableList.of("Low (12796 plates)", "High (39996 plates)"), ImmutableList.of(12796, 39996));
         configArray.add(c);
@@ -275,6 +289,12 @@ public class AsteroidConfigs extends SmallBodyViewConfig
             c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
             c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
             c.imageSearchDefaultMaxResolution = 4000.0;
+
+            c.databaseRunInfos = new DBRunInfo[]
+            {
+            	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.CERES.toString(), "/project/nearsdc/data/GASKELL/CERES/FC/uniqFcFiles.txt", "ceres"),
+            };
+
             configArray.add(c);
         }
 
@@ -315,6 +335,13 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.imageSearchUserDefinedCheckBoxesNames = new String[] { "FC1", "FC2" };
         c.imageSearchDefaultMaxSpacecraftDistance = 40000.0;
         c.imageSearchDefaultMaxResolution = 4000.0;
+
+        c.databaseRunInfos = new DBRunInfo[]
+        {
+        	new DBRunInfo(ImageSource.GASKELL, ShapeModelBody.DEIMOS.toString(), "/project/nearsdc/data/GASKELL/VESTA/FC/uniqFcFiles.txt", "fc"),
+        };
+
+
         configArray.add(c);
 
         c = new AsteroidConfigs();
@@ -430,7 +457,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "ida/stooke2016";
+        c.rootDirOnServer = "/ida/stooke2016";
         c.shapeModelFileExtension = ".obj";
         c.setResolution(ImmutableList.of(5040));
         // Provided with the delivery in the file aamanifest.txt.
@@ -485,7 +512,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "mathilde/stooke2016";
+        c.rootDirOnServer = "/mathilde/stooke2016";
         c.shapeModelFileExtension = ".obj";
         // Provided with the delivery in the file aamanifest.txt.
         c.density = 1300.;
@@ -533,7 +560,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         c.dataUsed = ShapeModelDataUsed.IMAGE_BASED;
         c.author = ShapeModelType.STOOKE;
         c.modelLabel = "Stooke (2016)";
-        c.rootDirOnServer = "gaspra/stooke2016";
+        c.rootDirOnServer = "/gaspra/stooke2016";
         c.shapeModelFileExtension = ".obj";
         // Provided with the delivery in the file aamanifest.txt.
         c.density = 2700.;
