@@ -46,20 +46,20 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
         List<ViewConfig> builtInConfigs = SmallBodyViewConfig.getBuiltInConfigs();
         for (ViewConfig config : builtInConfigs)
         {
-            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
+//            System.out.println("SmallBodyViewConfigMetadataIO: main: body is " + config.body);
             SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(config);
             String version = config.version == null ? "" : config.version;
 //            File file = new File("/Users/steelrj1/Desktop/configs3/" + config.author + "/" + config.author + "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
 //            allBodiesMetadata.put(Key.of(config.author + "/" + config.body + version), file.getAbsolutePath());
 
-            System.out.println("SmallBodyViewConfigMetadataIO: main: author " + config.author + " body " + config.body + " version " + version + " root " + ((SmallBodyViewConfig)config).rootDirOnServer);
+//            System.out.println("SmallBodyViewConfigMetadataIO: main: author " + config.author + " body " + config.body + " version " + version + " root " + ((SmallBodyViewConfig)config).rootDirOnServer);
             File file = new File("/Users/steelrj1/Desktop/configs4/" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
             if (version != null && (version.length() > 0))
             	allBodiesMetadata.put(Key.of(config.author + "/" + config.body + " (" + version + ")"), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
             else
             	allBodiesMetadata.put(Key.of(config.author + "/" + config.body), "http://sbmt.jhuapl.edu/sbmt/prod/data" + ((SmallBodyViewConfig)config).rootDirOnServer + "/" + config.author +  "_" + config.body.toString().replaceAll(" ", "_") + version + ".json");
 
-            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
+//            System.out.println("SmallBodyViewConfigMetadataIO: main: file is " + file);
             if (!file.exists()) file.getParentFile().mkdirs();
             io.write(config.getUniqueName(), file, io.store());
         }

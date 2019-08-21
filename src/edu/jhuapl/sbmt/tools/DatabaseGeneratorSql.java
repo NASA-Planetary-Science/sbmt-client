@@ -641,16 +641,17 @@ public class DatabaseGeneratorSql
 
         Mission mission = SbmtMultiMissionTool.getMission();
         System.out.println("Mission: " + mission);
-        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
+//        System.out.println("DatabaseGeneratorSql: main: number of run infos " + runInfos.length);
         for (DBRunInfo ri : runInfos)
         {
-        	System.out.println("DatabaseGeneratorSql: main: body " + bodyName + " image source " + mode + " instrument " + instrumentString);
-        	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
-        	System.out.println("DatabaseGeneratorSql: main: " + !ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()));
-        	System.out.println("DatabaseGeneratorSql: main: " + (ri.imageSource != mode));
-        	System.out.println("DatabaseGeneratorSql: main: " + (!ri.instrument.toString().equals(instrumentString)));
+//        	System.out.println("DatabaseGeneratorSql: main: body " + bodyName + " image source " + mode + " instrument " + instrumentString);
+//        	System.out.println("DatabaseGeneratorSql: main: run info " + ri.toString());
+//        	System.out.println("DatabaseGeneratorSql: main: " + !ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (ri.imageSource != mode));
+//        	System.out.println("DatabaseGeneratorSql: main: " + (!ri.instrument.toString().equals(instrumentString)));
         	if (!ri.name.equals(ShapeModelBody.valueOf(bodyName).toString()) || (ri.imageSource != mode) || (!ri.instrument.toString().equals(instrumentString))) continue;
-            DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
+            System.out.println("DatabaseGeneratorSql: main: writing to " + ri.databasePrefix + " for " + ri.instrument + " with " + ri.imageSource);
+        	DatabaseGeneratorSql generator = new DatabaseGeneratorSql(config, ri.databasePrefix, appendTables, modifyMain, ri.instrument);
 
             String pathToFileList = ri.pathToFileList;
             if (remote)

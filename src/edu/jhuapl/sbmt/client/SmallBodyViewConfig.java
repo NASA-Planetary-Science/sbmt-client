@@ -63,7 +63,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
     {
     	ConfigArrayList configs = new ConfigArrayList();
         File allBodies = FileCache.getFileFromServer("allBodies.json");
-        System.out.println("SmallBodyViewConfig: addRemoteEntries: reading " + allBodies.getAbsolutePath());
         try
         {
             FixedMetadata metadata = Serializers.deserialize(allBodies, "AllBodies");
@@ -95,7 +94,6 @@ public class SmallBodyViewConfig extends BodyViewConfig implements ISmallBodyVie
         SmallBodyViewConfigMetadataIO io = new SmallBodyViewConfigMetadataIO(ioConfigs);
         try
         {
-            System.out.println("SmallBodyViewConfig: fetchRemoteConfig: url is " + url);
             File configFile = FileCache.getFileFromServer(url);
             FixedMetadata metadata = Serializers.deserialize(configFile, name);
             io.retrieve(metadata);
