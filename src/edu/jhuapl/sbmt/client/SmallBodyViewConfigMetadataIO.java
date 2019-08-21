@@ -347,7 +347,7 @@ public class SmallBodyViewConfigMetadataIO implements MetadataManager
 
 	        if (c.hasHierarchicalSpectraSearch)
 	        {
-	        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
+//	        	c.hierarchicalSpectraSearchSpecification.getMetadataManager().retrieve(read(hierarchicalSpectraSearchSpecification, configMetadata));
 	        }
         }
 
