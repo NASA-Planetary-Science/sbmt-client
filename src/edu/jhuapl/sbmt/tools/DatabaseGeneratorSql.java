@@ -611,7 +611,7 @@ public class DatabaseGeneratorSql
 
         // There must be numRequiredArgs arguments remaining after the options.
         // Otherwise abort.
-        int numberRequiredArgs = 2;
+        int numberRequiredArgs = 1;
         if (args.length - i < numberRequiredArgs)
             usage();
 
